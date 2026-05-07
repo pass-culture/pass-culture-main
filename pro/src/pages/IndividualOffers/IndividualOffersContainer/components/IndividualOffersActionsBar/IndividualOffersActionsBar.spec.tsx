@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
@@ -50,7 +50,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
@@ -88,7 +88,7 @@ describe('ActionsBar', () => {
       logEvent: mockLogEvent,
     }))
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
-    vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
+    vi.spyOn(apiNew, 'patchAllOffersActiveStatus').mockResolvedValue({})
   })
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
@@ -140,9 +140,11 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: true,
+    expect(apiNew.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+      body: {
+        ids: [1, 2],
+        isActive: true,
+      },
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
@@ -162,12 +164,16 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Supprimer'))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
-    expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
-      ids: [1, 2],
+    expect(apiNew.deleteDraftOffers).toHaveBeenLastCalledWith({
+      body: {
+        ids: [1, 2],
+      },
     })
-    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-    expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
-      ids: [1, 2],
+    expect(apiNew.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(apiNew.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
+      body: {
+        ids: [1, 2],
+      },
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
     expect(
@@ -201,9 +207,11 @@ describe('ActionsBar', () => {
         has_selected_all_offers: false,
       }
     )
-    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: [1, 2, 3],
-      isActive: false,
+    expect(apiNew.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+      body: {
+        ids: [1, 2, 3],
+        isActive: false,
+      },
     })
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
 
@@ -225,22 +233,24 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     const expectedBody = {
-      categoryId: null,
-      creationMode: null,
-      isActive: true,
-      nameOrIsbn: null,
-      offererAddressId: null,
-      offererId: 1,
-      periodBeginningDate: null,
-      periodEndingDate: null,
-      status: null,
-      venueId: null,
+      body: {
+        categoryId: undefined,
+        creationMode: undefined,
+        isActive: true,
+        nameOrIsbn: undefined,
+        offererAddressId: undefined,
+        offererId: 1,
+        periodBeginningDate: undefined,
+        periodEndingDate: undefined,
+        status: undefined,
+        venueId: undefined,
+      },
     }
 
     const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
-    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -251,16 +261,18 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     const expectedBody = {
-      categoryId: null,
-      creationMode: null,
-      isActive: false,
-      nameOrIsbn: null,
-      offererAddressId: null,
-      offererId: 1,
-      periodBeginningDate: null,
-      periodEndingDate: null,
-      status: null,
-      venueId: null,
+      body: {
+        categoryId: undefined,
+        creationMode: undefined,
+        isActive: false,
+        nameOrIsbn: undefined,
+        offererAddressId: undefined,
+        offererId: 1,
+        periodBeginningDate: undefined,
+        periodEndingDate: undefined,
+        status: undefined,
+        venueId: undefined,
+      },
     }
 
     const deactivateButton = screen.getByText('Mettre en pause')
@@ -277,7 +289,7 @@ describe('ActionsBar', () => {
         has_selected_all_offers: true,
       }
     )
-    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -325,7 +337,7 @@ describe('ActionsBar', () => {
 
   it('should show an error message when an error occurs after clicking on "Publier" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-    vi.spyOn(api, 'patchAllOffersActiveStatus').mockRejectedValueOnce(null)
+    vi.spyOn(apiNew, 'patchAllOffersActiveStatus').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Publier')
@@ -339,7 +351,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
-    vi.spyOn(api, 'patchOffersActiveStatus').mockRejectedValueOnce(null)
+    vi.spyOn(apiNew, 'patchOffersActiveStatus').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Publier')
@@ -353,7 +365,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Supprimer" button when some offers are selected', async () => {
-    vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(null)
+    vi.spyOn(apiNew, 'deleteDraftOffers').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Supprimer')
@@ -391,22 +403,24 @@ describe('ActionsBar', () => {
       renderActionsBar(props)
 
       const expectedBody = {
-        categoryId: null,
-        creationMode: null,
-        isActive: true,
-        nameOrIsbn: null,
-        offererAddressId: 814,
-        offererId: 1,
-        periodBeginningDate: null,
-        periodEndingDate: null,
-        status: null,
-        venueId: null,
+        body: {
+          categoryId: undefined,
+          creationMode: undefined,
+          isActive: true,
+          nameOrIsbn: undefined,
+          offererAddressId: 814,
+          offererId: 1,
+          periodBeginningDate: undefined,
+          periodEndingDate: undefined,
+          status: undefined,
+          venueId: undefined,
+        },
       }
 
       const activateButton = screen.getByText('Publier')
       await userEvent.click(activateButton)
 
-      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+      expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
         expectedBody
       )
       expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -421,22 +435,24 @@ describe('ActionsBar', () => {
       renderActionsBar(props)
 
       const expectedBody = {
-        categoryId: null,
-        creationMode: null,
-        isActive: true,
-        nameOrIsbn: null,
-        offererAddressId: null,
-        offererId: 1,
-        periodBeginningDate: null,
-        periodEndingDate: null,
-        status: null,
-        venueId: 123,
+        body: {
+          categoryId: undefined,
+          creationMode: undefined,
+          isActive: true,
+          nameOrIsbn: undefined,
+          offererAddressId: undefined,
+          offererId: 1,
+          periodBeginningDate: undefined,
+          periodEndingDate: undefined,
+          status: undefined,
+          venueId: 123,
+        },
       }
 
       const activateButton = screen.getByText('Publier')
       await userEvent.click(activateButton)
 
-      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+      expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
         expectedBody
       )
       expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)

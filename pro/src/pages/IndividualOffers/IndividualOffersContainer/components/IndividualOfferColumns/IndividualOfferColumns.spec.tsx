@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import {
+  type HeadLineOfferResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -28,7 +31,6 @@ const baseOffer = listOffersOfferFactory({
   thumbUrl: '/image.png',
   location: {
     id: 1,
-    //id: 997,
     isVenueLocation: false,
     banId: '35288_7283_00001',
     inseeCode: '89001',
@@ -103,7 +105,7 @@ const renderTableWithOffer = (
 }
 describe('getIndividualOfferColumns', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
       venues: [],
     })
   })
@@ -159,7 +161,7 @@ describe('getIndividualOfferColumns', () => {
   })
 
   it('should redirect to stocks edition page when the offer is not isEvent', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
       venues: [],
     })
 
@@ -176,7 +178,7 @@ describe('getIndividualOfferColumns', () => {
   })
 
   it('should redirect to timetable edition page when the offer is isEvent', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
       venues: [],
     })
 

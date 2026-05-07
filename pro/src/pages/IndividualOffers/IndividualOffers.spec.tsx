@@ -149,7 +149,9 @@ describe('IndividualOffers', () => {
       scrollToContentWrapper: scrollToContentWrapperMock,
     })
 
-    vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue(
+      categoriesAndSubcategories
+    )
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
       offerersNamesWithPendingValidation: [],
@@ -494,7 +496,7 @@ describe('IndividualOffers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
-      vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
+      vi.spyOn(apiNew, 'getCategories').mockResolvedValueOnce({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {

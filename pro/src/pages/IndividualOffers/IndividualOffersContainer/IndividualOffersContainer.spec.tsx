@@ -2,12 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
 import {
   type GetOffererAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1'
-import type { ListOffersOfferResponseModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -97,10 +97,14 @@ vi.mock('@/commons/utils/date', async () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
+    getVenueHeadlineOffer: vi.fn(),
+    upsertHeadlineOffer: vi.fn(),
+    deleteHeadlineOffer: vi.fn(),
+  },
+  apiNew: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
-    getVenueHeadlineOffer: vi.fn(),
     getVenues: vi.fn(),
   },
 }))
@@ -489,7 +493,7 @@ describe('IndividualOffersScreen', () => {
         })
       )
 
-      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
+      const patchSpy = vi.spyOn(apiNew, 'patchAllOffersActiveStatus')
 
       renderOffers({
         ...props,
@@ -505,21 +509,23 @@ describe('IndividualOffersScreen', () => {
       // Expect a bulk, filter-based call (not per-page / per-id)
       expect(patchSpy).toHaveBeenCalledTimes(1)
       expect(patchSpy).toHaveBeenCalledWith({
-        categoryId: null,
-        creationMode: null,
-        isActive: true,
-        nameOrIsbn: null,
-        offererAddressId: null,
-        offererId: 1,
-        periodBeginningDate: null,
-        periodEndingDate: null,
-        status: null,
-        venueId: null,
+        body: {
+          categoryId: undefined,
+          creationMode: undefined,
+          isActive: true,
+          nameOrIsbn: undefined,
+          offererAddressId: undefined,
+          offererId: 1,
+          periodBeginningDate: undefined,
+          periodEndingDate: undefined,
+          status: undefined,
+          venueId: undefined,
+        },
       })
     })
 
     it('should activate only inactive offers when trying to activate draft or active offers', async () => {
-      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
+      const patchSpy = vi.spyOn(apiNew, 'patchAllOffersActiveStatus')
 
       const offers = [
         listOffersOfferFactory({ status: OfferStatus.DRAFT }),
@@ -539,16 +545,18 @@ describe('IndividualOffersScreen', () => {
         'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants.'
       )
       expect(patchSpy).toHaveBeenCalledWith({
-        categoryId: null,
-        creationMode: null,
-        isActive: true,
-        nameOrIsbn: null,
-        offererAddressId: null,
-        offererId: 1,
-        periodBeginningDate: null,
-        periodEndingDate: null,
-        status: null,
-        venueId: null,
+        body: {
+          categoryId: undefined,
+          creationMode: undefined,
+          isActive: true,
+          nameOrIsbn: undefined,
+          offererAddressId: undefined,
+          offererId: 1,
+          periodBeginningDate: undefined,
+          periodEndingDate: undefined,
+          status: undefined,
+          venueId: undefined,
+        },
       })
     })
 
@@ -598,7 +606,7 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should delete anyway even with active status', async () => {
-    vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
+    vi.spyOn(apiNew, 'deleteDraftOffers').mockResolvedValueOnce()
 
     renderOffers({
       ...props,
@@ -613,14 +621,14 @@ describe('IndividualOffersScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
-    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(apiNew.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(snackBarSuccess).toHaveBeenCalledWith(
       '2 brouillons ont bien été supprimés'
     )
   })
 
   it('should display headline offer block when feature is available', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
       venues: [
         venueListItemFactory({ name: 'Une venue physique & permanente' }),
       ],
