@@ -5,8 +5,10 @@ import { useForm } from 'react-hook-form'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
+import {
+  checkSiret,
+  getSiretData,
+} from '@/commons/core/Venue/utils/getSiretData'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -26,10 +28,11 @@ type SiretInputProps = {
   submitElement: (isSubmitting: boolean) => JSX.Element
   initialValues: OffererFormValues
   beforeCallCheck?: (formValues: OffererFormValues) => void
-  handleSiretData: (
+  handleSiretData?: (
     formValues: OffererFormValues,
     offererSiretData: StructureDataBodyModel
   ) => void
+  onSiretChecked?: (formValues: OffererFormValues) => void
 }
 
 export const SiretInputForm = ({
@@ -37,6 +40,7 @@ export const SiretInputForm = ({
   submitElement,
   beforeCallCheck,
   handleSiretData,
+  onSiretChecked,
 }: SiretInputProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -58,23 +62,26 @@ export const SiretInputForm = ({
     formState: { errors, isSubmitting },
   } = hookForm
 
-  if (isSubmitting && Object.keys(errors).length !== 0) {
-    snackBar.error(FORM_ERROR_MESSAGE)
-  }
-
   const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
     beforeCallCheck?.(formValues)
 
-    // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
-
-    let offererSiretData: StructureDataBodyModel
-
     try {
-      offererSiretData = await getSiretData(unhumanizeSiret(formValues.siret))
+      if (handleSiretData) {
+        // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
 
-      if (!offererSiretData) {
-        snackBar.error('Une erreur est survenue')
-        return
+        const offererSiretData = await getSiretData(
+          unhumanizeSiret(formValues.siret)
+        )
+
+        if (!offererSiretData) {
+          snackBar.error('Une erreur est survenue')
+          return
+        }
+
+        handleSiretData(formValues, offererSiretData)
+      } else {
+        await checkSiret(unhumanizeSiret(formValues.siret))
+        onSiretChecked?.(formValues)
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -86,7 +93,6 @@ export const SiretInputForm = ({
       }
       return
     }
-    handleSiretData(formValues, offererSiretData)
   }
 
   return (
