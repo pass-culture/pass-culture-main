@@ -17,7 +17,8 @@ def test_loads_all_venues_ids_and_names(client):
     venues = [first_venue, second_venue]
 
     pending_offerer = offerers_factories.PendingUserOffererFactory(user=user_offerer.user).offerer
-    with_pending_validation = offerers_factories.VenueFactory(managingOfferer=pending_offerer)
+    first_with_pending_validation = offerers_factories.VenueFactory(managingOfferer=pending_offerer, publicName="PV1")
+    second_with_pending_validation = offerers_factories.VenueFactory(managingOfferer=pending_offerer, publicName="PV2")
 
     client = client.with_session_auth(user_offerer.user.email)
 
@@ -32,7 +33,7 @@ def test_loads_all_venues_ids_and_names(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == len(venues)
 
-    expected = [
+    assert response.json["venues"] == [
         {
             "id": venue.id,
             "managingOffererId": venue.managingOffererId,
@@ -52,10 +53,10 @@ def test_loads_all_venues_ids_and_names(client):
                 "street": venue.offererAddress.address.street,
             },
         }
-        for venue in sorted(venues, key=lambda v: v.id)
+        for venue in sorted(venues, key=lambda v: v.publicName)
     ]
 
-    assert sorted(response.json["venues"], key=lambda v: v["id"]) == expected
+    with_pending_validations = [first_with_pending_validation, second_with_pending_validation]
     assert response.json["venuesWithPendingValidation"] == [
         {
             "id": with_pending_validation.id,
@@ -76,6 +77,7 @@ def test_loads_all_venues_ids_and_names(client):
                 "street": with_pending_validation.offererAddress.address.street,
             },
         }
+        for with_pending_validation in with_pending_validations
     ]
 
 
