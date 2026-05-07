@@ -13,15 +13,13 @@ const renderRegistrationStepper = (pathname: string) => {
 
 describe('<RegistrationStepper />', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderRegistrationStepper(
-      '/inscription/compte/creation'
-    )
+    const { container } = renderRegistrationStepper('/prefix/creation')
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render 4 steps with correct labels', () => {
-    renderRegistrationStepper('/inscription/compte/creation')
+    renderRegistrationStepper('/prefix/creation')
 
     expect(screen.getByText('Votre compte')).toBeInTheDocument()
     expect(screen.getByText('Votre structure')).toBeInTheDocument()
@@ -30,7 +28,7 @@ describe('<RegistrationStepper />', () => {
   })
 
   it('should return null when active step is not in the list', () => {
-    const { container } = renderRegistrationStepper('/inscription/unknown')
+    const { container } = renderRegistrationStepper('/prefix/unknown')
 
     expect(container).toBeEmptyDOMElement()
   })
