@@ -6,23 +6,26 @@ from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 @log_func_duration
-def create_eac_users_offerers() -> list[offerers_models.Offerer]:
-    # WARNING: please add offerers only at the end, because the order in the returned list is important to keep
-    # consistency in create_industrial_eac_data.create_venues.create_venues
-    offerers = []
+def create_eac_users_offerers() -> dict[str, offerers_models.Offerer]:
+    offerer_by_name = {}
+
+    name = "eac_1_lieu"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_1_lieu@example.com",
-        offerer__name="eac_1_lieu",
+        offerer__name=name,
         offerer__siren="552081317",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_2_lieu [BON EAC]"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_2_lieu@example.com",
-        offerer__name="eac_2_lieu [BON EAC]",
+        offerer__name=name,
         offerer__siren="444608442",
         offerer__allowedOnAdage=True,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="retention_structures@example.com",
         offerer=user_offerer.offerer,
@@ -43,111 +46,136 @@ def create_eac_users_offerers() -> list[offerers_models.Offerer]:
         offerer__siren="542107651",
     )
 
+    name = "eac_pending_bank_informations"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_pending_bank_informations@example.com",
-        offerer__name="eac_pending_bank_informations",
+        offerer__name=name,
         offerer__siren="552046955",
     )
     finance_factories.BankAccountFactory.create(
         offerer=user_offerer.offerer,
         status=BankAccountApplicationStatus.ON_GOING,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_no_cb"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_no_cb@example.com",
-        offerer__name="eac_no_cb",
+        offerer__name=name,
         offerer__siren="444786511",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_rejected"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_rejected@example.com",
-        offerer__name="eac_rejected",
+        offerer__name=name,
         offerer__siren="897492294",
         offerer__allowedOnAdage=False,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
     # DMS state
+    name = "eac_accepte"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_accepte@example.com",
-        offerer__name="eac_accepte",
+        offerer__name=name,
         offerer__siren="538160524",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_sans_suite"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_sans_suite@example.com",
-        offerer__name="eac_sans_suite",
+        offerer__name=name,
         offerer__siren="538160656",
         offerer__allowedOnAdage=False,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_en_construction"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_en_construction@example.com",
-        offerer__name="eac_en_construction",
+        offerer__name=name,
         offerer__siren="843082389",
         offerer__allowedOnAdage=False,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_refuse"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_refuse@example.com",
-        offerer__name="eac_refuse",
+        offerer__name=name,
         offerer__siren="524237351",
         offerer__allowedOnAdage=False,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_en_instruction"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_en_instruction@example.com",
-        offerer__name="eac_en_instruction",
+        offerer__name=name,
         offerer__siren="538160615",
         offerer__allowedOnAdage=False,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_complete_30+d"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_complete_30d@example.com",
-        offerer__name="eac_complete_30+d",
+        offerer__name=name,
         offerer__siren="456500537",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_complete_30-d"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_complete_30-d@example.com",
-        offerer__name="eac_complete_30-d",
+        offerer__name=name,
         offerer__siren="848009452",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
+
+    name = "eac_with_two_adage_venues"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_two_adage_venues@example.com",
-        offerer__name="eac_with_two_adage_venues",
+        offerer__name=name,
         offerer__siren="848171500",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
 
+    name = "eac_with_no_offers"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_no_offers@example.com",
-        offerer__name="eac_with_no_offers",
+        offerer__name=name,
         offerer__siren="956513147",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
 
+    name = "eac_with_application_with_no_venue"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_application_with_no_venue@example.com",
-        offerer__name="eac_with_application_with_no_venue",
+        offerer__name=name,
         offerer__siren="956513154",
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
 
+    name = "eac_with_displayed_status_cases"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_displayed_status_cases@example.com",
-        offerer__name="eac_with_displayed_status_cases",
+        offerer__name=name,
         offerer__siren="662042449",
         offerer__allowedOnAdage=True,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
 
+    name = "eac_with_deposits_by_period"
     user_offerer = offerers_factories.UserOffererFactory.create(
         user__email="eac_with_deposits_by_period@example.com",
-        offerer__name="eac_with_deposits_by_period",
+        offerer__name=name,
         offerer__siren="552120230",
         offerer__allowedOnAdage=True,
     )
-    offerers.append(user_offerer.offerer)
+    offerer_by_name[name] = user_offerer.offerer
 
-    return offerers
+    return offerer_by_name
