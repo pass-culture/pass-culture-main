@@ -15,7 +15,7 @@ dependencies = [
   "babel ==2.18.0",
   "bcrypt ==5.0.0",
   "beautifulsoup4 ==4.14.3",
-  "boto3 ==1.42.8",
+  "boto3==1.43.0",
   "brevo-python==4.0.10",
   "celery[redis] ==5.6.3",
   "click==8.3.3",
