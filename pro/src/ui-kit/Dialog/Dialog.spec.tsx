@@ -27,4 +27,10 @@ describe('Dialog', () => {
     expect(onCancel).not.toHaveBeenCalled()
     expect(onClose).toHaveBeenCalledTimes(1)
   })
+
+  it('should focus the title heading when the dialog opens', () => {
+    renderDialog()
+
+    expect(screen.getByText('dialog')).toHaveFocus()
+  })
 })

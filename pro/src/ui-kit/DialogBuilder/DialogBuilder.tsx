@@ -8,8 +8,6 @@ import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
 type DialogVariant = 'default' | 'drawer'
 
 export interface DialogBuilderProps {
-  /** `<dialog>` aria label element ID (usually the title). */
-  ariaLabelledby?: string
   /**
    * The trigger element that opens the dialog.
    */
@@ -59,6 +57,11 @@ export interface DialogBuilderProps {
    * If refToFocusOnClose.current is null, the trigger element will be focused as a fallback.
    */
   refToFocusOnClose?: React.RefObject<HTMLElement | null>
+  /**
+   * Ref of the element to focus on when the dialog opens.
+   * Falls back to the title heading when not provided.
+   */
+  refToFocusOnOpen?: React.RefObject<HTMLElement | null>
 }
 
 /**
@@ -81,7 +84,6 @@ export interface DialogBuilderProps {
 const DialogBuilderBase = ({
   trigger,
   title,
-  ariaLabelledby,
   isTitleHidden = false,
   imageTitle = null,
   children,
@@ -92,8 +94,10 @@ const DialogBuilderBase = ({
   className,
   variant = 'default',
   refToFocusOnClose,
+  refToFocusOnOpen,
 }: Readonly<DialogBuilderProps>) => {
   const contentRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
   return (
     <Dialog.Root
@@ -113,7 +117,6 @@ const DialogBuilderBase = ({
           <Dialog.Content
             className={cn(styles['dialog-builder-content'], className)}
             aria-describedby={undefined}
-            aria-labelledby={ariaLabelledby}
             ref={contentRef}
             onPointerDownOutside={(e) => {
               if (!contentRef.current) {
@@ -135,6 +138,13 @@ const DialogBuilderBase = ({
                 e.preventDefault()
               }
             }}
+            onOpenAutoFocus={(ev) => {
+              const target = refToFocusOnOpen?.current ?? titleRef.current
+              if (target) {
+                ev.preventDefault()
+                target.focus()
+              }
+            }}
             onCloseAutoFocus={(ev: Event) => {
               if (!refToFocusOnClose) {
                 return
@@ -144,9 +154,6 @@ const DialogBuilderBase = ({
               refToFocusOnClose.current?.focus()
             }}
           >
-            <DialogBuilderCloseButton
-              closeButtonClassName={closeButtonClassName}
-            />
             <section className={styles['dialog-builder-section']}>
               {title && (
                 <Dialog.Title asChild>
@@ -157,12 +164,21 @@ const DialogBuilderBase = ({
                       ]]: isTitleHidden,
                     })}
                   >
-                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                    <h1
+                      ref={titleRef}
+                      tabIndex={-1}
+                      className={styles['dialog-builder-title']}
+                    >
+                      {title}
+                    </h1>
                     {imageTitle}
                   </div>
                 </Dialog.Title>
               )}
               {children}
+              <DialogBuilderCloseButton
+                closeButtonClassName={closeButtonClassName}
+              />
             </section>
           </Dialog.Content>
         </Dialog.Overlay>

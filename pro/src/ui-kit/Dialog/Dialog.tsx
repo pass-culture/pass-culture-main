@@ -1,6 +1,6 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import type React from 'react'
-import { useId } from 'react'
+import { useRef } from 'react'
 
 import strokeErrorIcon from '@/icons/stroke-error.svg'
 import {
@@ -41,15 +41,15 @@ export const Dialog = ({
   open,
   refToFocusOnClose,
 }: DialogProps): JSX.Element => {
-  const titleId = useId()
+  const titleRef = useRef<HTMLDivElement>(null)
 
   return (
     <DialogBuilder
-      ariaLabelledby={titleId}
       open={open}
       onOpenChange={(open) => !open && (onClose ? onClose() : onCancel())}
       trigger={trigger}
       refToFocusOnClose={refToFocusOnClose}
+      refToFocusOnOpen={titleRef}
     >
       <div className={`${styles['dialog']} ${extraClassNames}`}>
         {!hideIcon && (
@@ -60,7 +60,7 @@ export const Dialog = ({
           />
         )}
         <RadixDialog.Title>
-          <div className={styles['dialog-title']} id={titleId}>
+          <div className={styles['dialog-title']} ref={titleRef} tabIndex={-1}>
             {title}
             <span className={styles['dialog-title-span']}>{secondTitle}</span>
           </div>

@@ -214,6 +214,16 @@ describe('DialogBuilder', () => {
     expect(overlay).toHaveClass('dialog-builder-overlay-drawer')
   })
 
+  it('should focus the title heading when the dialog opens', async () => {
+    renderDialogBuilder()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Open the dialog' })
+    )
+
+    expect(screen.getByRole('heading', { name: 'Dialog title' })).toHaveFocus()
+  })
+
   it('should focus external element on close when refToFocusOnClose is provided', async () => {
     const externalFocusRef = createRef<HTMLButtonElement>()
     renderDialogBuilder(
