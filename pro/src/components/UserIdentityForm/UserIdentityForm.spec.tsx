@@ -1,10 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { ApiError } from '@/apiClient/adage'
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import { ApiError, type ApiResult } from '@/apiClient/compat'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -12,7 +11,7 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import {
   UserIdentityForm,
   type UserIdentityFormProps,
-} from '../UserIdentityForm'
+} from './UserIdentityForm'
 
 const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   return renderWithProviders(
@@ -36,7 +35,7 @@ describe('components:UserIdentityForm', () => {
         lastName: 'lastName',
       },
     }
-    vi.spyOn(api, 'patchUserIdentity').mockResolvedValue({
+    vi.spyOn(apiNew, 'patchUserIdentity').mockResolvedValue({
       firstName: 'Jean',
       lastName: 'Dupont',
     })
@@ -54,11 +53,11 @@ describe('components:UserIdentityForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(api.patchUserIdentity).toHaveBeenCalledTimes(1)
+    expect(apiNew.patchUserIdentity).toHaveBeenCalledTimes(1)
   })
 
   it('should render api error when submitting', async () => {
-    vi.spyOn(api, 'patchUserIdentity').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'patchUserIdentity').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
