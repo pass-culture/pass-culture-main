@@ -1,4 +1,6 @@
+import copy
 import logging
+import uuid
 from datetime import datetime
 from unittest.mock import patch
 
@@ -8,13 +10,18 @@ from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_refresh_token
 
 from pcapi import settings
+from pcapi.connectors import apple_oauth
+from pcapi.core import token as token_utils
 from pcapi.core.history import factories as history_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import testing as brevo_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import NativeUserSession
+from pcapi.core.users.models import SingleSignOn
 from pcapi.models import db
 
 
@@ -490,3 +497,389 @@ class RefreshAccessTokenTest:
             )
             .count()
         )
+
+
+class SSOSigninTest:
+    valid_sso_user = users_schemas.SSOUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passkoultour.app",
+        email_verified=True,
+    )
+    device_info = {
+        "os": "iOS",
+        "deviceId": "ID",
+        "source": "app",
+    }
+
+    def test_fails_if_unknown_provider(self, client):
+        response = client.post(
+            "/native/v2/oauth/unknown_sso/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": "wontbechecked",
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_cant_fetch_apple_user(self, mocked_apple_oauth, client):
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.side_effect = apple_oauth.AppleSignInException
+
+        response = client.post(
+            "/native/v2/oauth/apple/authorize",
+            json={
+                "authorizationCode": "4/apple_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 401
+        assert response.json["code"] == "SSO_ERROR"
+        assert response.json["general"] == "L'authentification a échoué"
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_is_active(self, mocked_google_oauth, client, caplog):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/native/v2/oauth/google/authorize",
+                json={
+                    "authorizationCode": "4/google_code",
+                    "oauthStateToken": oauth_state_token.encoded_token,
+                    "device_info": self.device_info,
+                },
+            )
+
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.ACTIVE.value
+        assert "Successful authentication attempt" in caplog.messages
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_is_deleted(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=False)
+        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_sso_user.sub)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ERROR"
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_is_anonymized(self, mocked_google_oauth, client):
+        user = users_factories.AnonymizedUserFactory(email=self.valid_sso_user.email)
+        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_sso_user.sub)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ERROR"
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_creation_token_if_account_does_not_exist(self, mocked_google_oauth, client, caplog):
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/native/v2/oauth/google/authorize",
+                json={
+                    "authorizationCode": "4/google_code",
+                    "oauthStateToken": oauth_state_token.encoded_token,
+                    "device_info": self.device_info,
+                },
+            )
+
+        assert response.status_code == 401
+        assert set(["code", "accountCreationToken", "general", "email"]) == response.json.keys()
+        assert response.json["code"] == "SSO_EMAIL_NOT_FOUND"
+        assert response.json["email"] == self.valid_sso_user.email
+
+        decoded_account_creation_token = token_utils.UUIDToken.load_without_checking(
+            response.json["accountCreationToken"]
+        )
+        assert uuid.UUID(decoded_account_creation_token.key_suffix)
+        assert users_schemas.SSOUser.model_validate(decoded_account_creation_token.data)
+        assert not decoded_account_creation_token.check(
+            token_utils.TokenType.ACCOUNT_CREATION, decoded_account_creation_token.key_suffix
+        )
+
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_updates_single_sign_on_email_change(self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client):
+        user = users_factories.UserFactory(isActive=True)
+        google_sso = users_factories.SingleSignOnFactory(user=user, ssoUserId="old id", ssoProvider=sso_provider)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_google_oauth.return_value = self.valid_sso_user
+        user.email = self.valid_sso_user.email
+
+        response = client.post(
+            f"/native/v2/oauth/{sso_provider}/authorize",
+            json={
+                "authorizationCode": "fakeAuthCode",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 200
+        assert google_sso.ssoUserId == self.valid_sso_user.sub
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_single_sign_on_inserts_sso_method_if_email_found(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 200
+
+        created_sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "google").one()
+        )
+        assert created_sso.ssoUserId == self.valid_sso_user.sub
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_single_sign_on_raises_if_email_not_validated(self, mocked_google_oauth, client):
+        users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        unvalidated_email_google_user = copy.deepcopy(self.valid_sso_user)
+        unvalidated_email_google_user.email_verified = False
+        mocked_google_oauth.return_value = unvalidated_email_google_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_single_sign_on_validates_email_and_deletes_password(self, mocked_google_oauth, client, caplog):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isEmailValidated=False)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        assert user.isEmailValidated
+        assert user.password is None
+
+    @pytest.mark.parametrize("sso_provider", ("apple", "google"))
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_single_sign_on_does_not_duplicate_ssos(
+        self, mocked_apple_oauth, mocked_google_oauth, sso_provider, client
+    ):
+        single_sign_on = users_factories.SingleSignOnFactory(
+            user__email=self.valid_sso_user.email, ssoUserId=self.valid_sso_user.sub, ssoProvider=sso_provider
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            f"/native/v2/oauth/{sso_provider}/authorize",
+            json={
+                "authorizationCode": "fakeAuthCode",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 200
+        assert db.session.query(SingleSignOn).filter(SingleSignOn.user == single_sign_on.user).count() == 1
+
+    def test_oauth_state_token_past_expiration_date(self, client):
+        with time_machine.travel("2022-01-01"):
+            oauth_state_token = token_utils.UUIDToken.create(
+                token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+            )
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
+
+    def test_oauth_state_token_expired(self, client):
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        oauth_state_token.expire()
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_authorization_expires_oauth_state_token(self, mocked_google_oauth, client):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
+
+    def test_oauth_state_token_creation(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v2/oauth/state")
+            assert response.status_code == 200, response.json
+
+        oauth_state_token = token_utils.UUIDToken.load_without_checking(response.json["oauthStateToken"])
+        assert uuid.UUID(oauth_state_token.key_suffix)
+        assert not oauth_state_token.check(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_oauth_state_token_roundtrip(self, mocked_google_oauth, client):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        oauth_state_token_response = client.get("/native/v2/oauth/state")
+        authorization_response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token_response.json["oauthStateToken"],
+                "device_info": self.device_info,
+            },
+        )
+
+        assert authorization_response.status_code == 200, authorization_response.json
+
+    @pytest.mark.parametrize("header,is_web", [("web", True), ("", False), ("other", False)])
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_get_platform_from_request_headers(self, mocked_google_oauth, client, header, is_web):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_sso_user
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={
+                "authorizationCode": "4/google_code",
+                "oauthStateToken": oauth_state_token.encoded_token,
+                "device_info": self.device_info,
+            },
+            headers={"platform": header},
+        )
+
+        assert response.status_code == 200, response.json
+        mocked_google_oauth.assert_called_with("4/google_code", is_web)
+
+    def test_single_sign_on_fail_when_missing_device_info(self, client):
+        users_factories.SingleSignOnFactory(
+            ssoUserId=self.valid_sso_user.sub, user__email=self.valid_sso_user.email, user__isActive=True
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+
+        response = client.post(
+            "/native/v2/oauth/google/authorize",
+            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 400
