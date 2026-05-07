@@ -136,6 +136,19 @@ export const Offerer = (): JSX.Element => {
     }
   }, [offerer, initialAddress, setOfferer, setInitialAddress, reset, navigate])
 
+  const unHumanizeSiretOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (
+        watch('siret').length === 0 ||
+        e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
+        e.target.value.length === 14
+      ) {
+        setValue('siret', unhumanizeSiret(e.target.value))
+      }
+    },
+    [watch, setValue]
+  )
+
   const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
     // Check here if the siret we've just submitted is the same as already stored in localStorage
     // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
@@ -293,15 +306,7 @@ export const Offerer = (): JSX.Element => {
                     isSignupSimulationEnabled ? 'explicit' : 'symbol'
                   }
                   error={errors.siret?.message}
-                  onChange={(e) => {
-                    if (
-                      watch('siret').length === 0 ||
-                      e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
-                      e.target.value.length === 14
-                    ) {
-                      setValue('siret', unhumanizeSiret(e.target.value))
-                    }
-                  }}
+                  onChange={unHumanizeSiretOnChange}
                 />
               </div>
             </FormLayout.Row>

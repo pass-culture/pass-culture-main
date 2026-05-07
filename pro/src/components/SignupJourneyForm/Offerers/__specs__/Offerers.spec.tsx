@@ -372,7 +372,7 @@ describe('screens:SignupJourney::Offerers', () => {
         features: ['WIP_PRE_SIGNUP_SIMULATION'],
       })
 
-      expect(screen.getByRole('link', { name: 'Retour' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Retour' })).toBeVisible()
 
       expect(
         screen.queryByRole('button', {

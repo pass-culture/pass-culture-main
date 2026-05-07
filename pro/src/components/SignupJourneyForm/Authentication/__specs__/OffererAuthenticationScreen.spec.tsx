@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
@@ -14,17 +15,22 @@ import {
   tryRestoreInitialAddressFromStorage,
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { OffererAuthentication } from '../OffererAuthentication'
+
+const mockLogEvent = vi.fn()
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -168,6 +174,9 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     inMemoryLocalStorage.clear()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
     contextValue = {
       activity: null,
       offerer: {
@@ -375,6 +384,25 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       expect(
         screen.getByRole('button', { name: 'Continuer' })
       ).toBeInTheDocument()
+    })
+
+    it('should log navigation event when clicking "Continuer" button', async () => {
+      renderOffererAuthenticationScreen(contextValue, [
+        'WIP_PRE_SIGNUP_SIMULATION',
+      ])
+
+      await screen.findByRole('button', { name: 'Continuer' })
+
+      await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+        {
+          from: location.pathname,
+          to: REGISTRATION_STEP_IDS.ACTIVITY,
+          used: SignupJourneyAction.ActionBar,
+        }
+      )
     })
   })
 
