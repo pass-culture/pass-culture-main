@@ -256,7 +256,9 @@ describe('Desk', () => {
       await user.click(screen.getByRole('button', { name: 'Continuer' }))
 
       expect(
-        screen.getByText(/Erreur lors de la validation de la contremarque/)
+        screen.getByText(
+          "Cette contremarque a été validée. En l'invalidant vous indiquez qu'elle n'a pas été utilisée et vous ne serez pas remboursé."
+        )
       ).toBeInTheDocument()
     })
   })

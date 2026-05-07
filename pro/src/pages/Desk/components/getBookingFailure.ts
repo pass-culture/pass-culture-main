@@ -6,10 +6,17 @@ type DeskGetFailure = {
   message: string
 }
 
+const errors: Record<number, string> = {
+  401: 'Authentification nécessaire',
+  404: "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder.",
+  410: "Cette contremarque a été validée. En l'invalidant vous indiquez qu'elle n'a pas été utilisée et vous ne serez pas remboursé.",
+  422: 'Unprocessable Content',
+}
+
 export const getBookingFailure = (
   apiResponseError: ApiError
 ): DeskGetFailure => {
-  const errorMessage = apiResponseError.message
+  const errorMessage = errors[apiResponseError.status]
   if (apiResponseError.status === HTTP_STATUS.GONE) {
     // api return HTTP_STATUS.GONE when :
     // * booking is already been validated
