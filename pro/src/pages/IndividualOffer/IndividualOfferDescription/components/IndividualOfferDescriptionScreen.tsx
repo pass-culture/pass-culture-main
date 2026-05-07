@@ -11,6 +11,7 @@ import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
+  CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
@@ -19,6 +20,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -85,13 +87,27 @@ export const IndividualOfferDescriptionScreen = () => {
   })
 
   const hasSelectedProduct = !!form.watch('productId')
+
   const selectedSubcategoryId = form.watch('subcategoryId')
+
   const isEanSearchAvailable =
     selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
+
+  const isCulturalOutreachEnabled = useActiveFeature(
+    'WIP_ENABLE_CULTURAL_OUTREACH'
+  )
+
+  const canClaimCulturalOutreach =
+    isCulturalOutreachEnabled &&
+    selectedPartnerVenue.activity !== null &&
+    CULTURAL_OUTREACH_ALLOWED_ACTIVITIES.has(selectedPartnerVenue.activity)
+
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
+
   const isEanSearchCalloutDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
+
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
     hasSelectedProduct,
@@ -266,6 +282,7 @@ export const IndividualOfferDescriptionScreen = () => {
               hasSelectedProduct={hasSelectedProduct}
               isEanSearchDisplayed={isEanSearchInputDisplayed}
               readOnlyFields={readOnlyFields}
+              canClaimCulturalOutreach={canClaimCulturalOutreach}
             />
           </FormLayout>
 

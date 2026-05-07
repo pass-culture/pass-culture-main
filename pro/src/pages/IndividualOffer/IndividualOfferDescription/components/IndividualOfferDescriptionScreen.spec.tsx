@@ -462,6 +462,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         stageDirector: null,
         visa: null,
       },
+      hasCulturalOutreachClaim: false,
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
       name: 'My super offer',
@@ -565,6 +566,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         stageDirector: 'JCVD',
         visa: 'USA',
       },
+      hasCulturalOutreachClaim: false,
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
       name: 'My super offer',
@@ -885,6 +887,107 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(
       screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
     ).not.toBeChecked()
+  })
+
+  describe('cultural outreach checkbox', () => {
+    it('should render the checkbox when FF is enabled and venue activity is allowed', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(await screen.findByText('Action de médiation')).toBeInTheDocument()
+    })
+
+    it('should NOT render the checkbox when FF is disabled', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(screen.queryByText('Action de médiation')).not.toBeInTheDocument()
+    })
+
+    it('should NOT render the checkbox when activity is not allowed', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.RECORD_STORE,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(screen.queryByText('Action de médiation')).not.toBeInTheDocument()
+    })
+
+    it.each([
+      OfferStatus.PENDING,
+      OfferStatus.REJECTED,
+    ])('should disable the checkbox when offer status is %s', async (status) => {
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+          hasCulturalOutreachClaim: true,
+          status,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /L\u2019offre inclut une action de médiation spécifique/,
+      })
+      expect(checkbox).toBeDisabled()
+      expect(checkbox).toBeChecked()
+    })
   })
 
   describe('onboarding', () => {

@@ -187,8 +187,6 @@ export function getFormReadOnlyFields(
     DEFAULT_DETAILS_FORM_VALUES
   )
 
-  const hasPendingOrRejectedStatus = offer && isOfferDisabled(offer)
-
   // An EAN search was performed, so the form is product based.
   // Multiple fields are read-only.
   if (isNewOfferDraft && hasSelectedProduct) {
@@ -199,7 +197,7 @@ export function getFormReadOnlyFields(
     return []
   }
 
-  if (hasPendingOrRejectedStatus) {
+  if (offer && isOfferDisabled(offer)) {
     return [...allFieldsExceptAccessibility, 'accessibility']
   }
 
@@ -214,10 +212,15 @@ export function getFormReadOnlyFields(
     // when the venue is a MUSEUM
     if (venue.activity === DisplayableActivity.MUSEUM) {
       return allFieldsExceptAccessibility.filter(
-        (field) => field !== 'name' && field !== 'description'
+        (field) =>
+          field !== 'name' &&
+          field !== 'description' &&
+          field !== 'hasCulturalOutreachClaim'
       )
     }
-    return allFieldsExceptAccessibility
+    return allFieldsExceptAccessibility.filter(
+      (field) => field !== 'hasCulturalOutreachClaim'
+    )
   }
 
   return ['categoryId', 'subcategoryId', 'venueId']

@@ -14,7 +14,6 @@ import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferD
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { Subcategories } from './Subcategories/Subcategories'
 
@@ -24,6 +23,7 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readOnlyFields: string[]
+  canClaimCulturalOutreach: boolean
 }
 
 export const DetailsForm = ({
@@ -32,6 +32,7 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   readOnlyFields,
+  canClaimCulturalOutreach,
 }: DetailsFormProps): JSX.Element => {
   const {
     formState: { errors },
@@ -51,7 +52,7 @@ export const DetailsForm = ({
   return (
     <>
       <FormLayout.Section title="À propos de votre offre">
-        <FormLayout.Row className={styles.row}>
+        <FormLayout.Row>
           <TextInput
             maxCharactersCount={90}
             label="Titre de l’offre"
@@ -65,10 +66,29 @@ export const DetailsForm = ({
             autoComplete="false"
           />
         </FormLayout.Row>
-        <FormLayout.Row
-          sideComponent={<MarkdownInfoBox />}
-          className={styles.row}
-        >
+        {canClaimCulturalOutreach && (
+          <FormLayout.Row mdSpaceAfter>
+            <CheckboxGroup
+              label="Action de médiation"
+              variant="detailed"
+              disabled={readOnlyFields.includes('hasCulturalOutreachClaim')}
+              error={errors.hasCulturalOutreachClaim?.message}
+              options={[
+                {
+                  label: 'L’offre inclut une action de médiation spécifique',
+                  description:
+                    'Ex : rencontre avec des artistes, ateliers participatifs, comité de spectacteurs...',
+                  checked: Boolean(watch('hasCulturalOutreachClaim')),
+                  onChange: (e) =>
+                    setValue('hasCulturalOutreachClaim', e.target.checked, {
+                      shouldDirty: true,
+                    }),
+                },
+              ]}
+            />
+          </FormLayout.Row>
+        )}
+        <FormLayout.Row sideComponent={<MarkdownInfoBox />}>
           <TextArea
             label="Description"
             maxLength={10000}
