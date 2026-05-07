@@ -9,6 +9,7 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
+        runAsUser: 1000
       activeDeadlineSeconds: 3600
       containers:
         - name: pcapi
