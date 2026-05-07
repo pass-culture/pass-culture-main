@@ -64,7 +64,6 @@ class VenuesTest:
             "publicName": "Public name",
             "isOpenToPublic": venue.isOpenToPublic,
             "isPermanent": venue.isPermanent,
-            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             "withdrawalDetails": venue.withdrawalDetails,
             "address": venue.offererAddress.address.street,
             "street": venue.offererAddress.address.street,

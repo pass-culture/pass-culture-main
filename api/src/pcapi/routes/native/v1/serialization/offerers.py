@@ -110,7 +110,6 @@ class VenueResponse(BaseModel):
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None
-    isVirtual: bool = False  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
 
     class Config:
         orm_mode = True
