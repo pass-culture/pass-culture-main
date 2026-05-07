@@ -24,7 +24,7 @@ export const setSelectedAdminOffererById = createAsyncThunk<
     try {
       const state = getState()
       const offererNamesPendingIds =
-        state.offerer.offerersNamesWithPendingValidation?.map((o) => o.id)
+        state.user.offerersNamesWithPendingValidation?.map((o) => o.id)
       const offererId =
         typeof offererOrOffererId === 'number'
           ? offererOrOffererId

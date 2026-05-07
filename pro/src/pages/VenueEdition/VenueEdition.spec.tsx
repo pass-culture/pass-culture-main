@@ -173,9 +173,6 @@ describe('VenueEdition', () => {
 
       const options: RenderWithProvidersOptions = {
         storeOverrides: {
-          offerer: {
-            currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
-          },
           user: {
             selectedPartnerVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,

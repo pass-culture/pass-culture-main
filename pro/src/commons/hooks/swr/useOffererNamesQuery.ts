@@ -3,7 +3,7 @@ import useSWR, { type SWRResponse } from 'swr'
 import { api } from '@/apiClient/api'
 import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import { GET_OFFERER_NAMES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { updateOffererNames } from '@/commons/store/offerer/reducer'
+import { updateOffererNames } from '@/commons/store/user/reducer'
 
 import { useAppDispatch } from '../useAppDispatch'
 import { useAppSelector } from '../useAppSelector'
@@ -26,10 +26,10 @@ export const useOffererNamesQuery = (): SWRResponse<
   GetOffererNameResponseModel[]
 > => {
   const storeOffererNamesValidated = useAppSelector(
-    (state) => state.offerer.offererNamesValidated
+    (state) => state.user.offererNamesValidated
   )
   const storeOfferersNamesWithPendingValidation = useAppSelector(
-    (state) => state.offerer.offerersNamesWithPendingValidation
+    (state) => state.user.offerersNamesWithPendingValidation
   )
   const dispatch = useAppDispatch()
 

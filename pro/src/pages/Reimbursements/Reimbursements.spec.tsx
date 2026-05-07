@@ -42,9 +42,6 @@ function renderReimbursements(options?: RenderWithProvidersOptions) {
       user: {
         currentUser: user,
         selectedAdminOfferer: defaultGetOffererResponseModel,
-      },
-      offerer: {
-        currentOfferer: defaultGetOffererResponseModel,
         offererNamesValidated: [defaultGetOffererResponseModel],
         offererNames: offererNamesValidated,
       },
@@ -76,9 +73,6 @@ describe('Reimbursement page', () => {
             venuesWithNonFreeOffersWithoutBankAccounts: [2],
             hasBankAccountWithPendingCorrections: true,
           },
-        },
-        offerer: {
-          currentOfferer: defaultGetOffererResponseModel,
           offererNamesValidated: [defaultGetOffererResponseModel],
           offererNames: offererNamesValidated,
         },
@@ -120,6 +114,9 @@ describe('Reimbursement page', () => {
         user: {
           currentUser: user,
           selectedAdminOfferer: defaultGetOffererResponseModel,
+          offererNamesValidated: [],
+          offererNames: offererNamesValidated,
+          offerersNamesWithPendingValidation: offererNamesValidated,
         },
       },
     })

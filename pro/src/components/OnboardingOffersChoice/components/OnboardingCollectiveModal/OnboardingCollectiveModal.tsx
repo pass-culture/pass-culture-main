@@ -7,8 +7,8 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { updateUserAccess } from '@/commons/store/user/reducer'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullNextIcon from '@/icons/full-next.svg'
@@ -29,7 +29,8 @@ export const OnboardingCollectiveModal = ({
 }: OnboardingCollectiveModalProps): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const currentOffererId = useAppSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(ensureSelectedPartnerVenue)
+    .managingOfferer.id
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const dispatch = useAppDispatch()

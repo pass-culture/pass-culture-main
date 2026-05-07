@@ -3,10 +3,10 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import type {
-  GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
 } from '@/apiClient/v1'
+import type { GetVenueManagingOffererResponseModel } from '@/apiClient/v1/new'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -23,7 +23,7 @@ import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
 export interface VenueSettingsScreenProps {
-  offerer: GetOffererResponseModel
+  offerer: GetVenueManagingOffererResponseModel
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }

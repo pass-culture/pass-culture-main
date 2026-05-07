@@ -34,9 +34,8 @@ describe('setSelectedAdminOffererById', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
 
       const store = configureTestStore({
-        offerer: {
+        user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOfferer: null,
           currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 100 })],
           offerersNamesWithPendingValidation: null,
@@ -66,9 +65,8 @@ describe('setSelectedAdminOffererById', () => {
       const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
 
       const store = configureTestStore({
-        offerer: {
+        user: {
           offererNamesValidated: [getOffererNameFactory({ id: 200 })],
-          currentOfferer: null,
           currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 200 })],
           offerersNamesWithPendingValidation: null,
@@ -100,9 +98,8 @@ describe('setSelectedAdminOffererById', () => {
       })
 
       const store = configureTestStore({
-        offerer: {
+        user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOfferer: null,
           currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 100 })],
           offerersNamesWithPendingValidation: null,
@@ -125,11 +122,10 @@ describe('setSelectedAdminOffererById', () => {
       vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error('Network error'))
 
       const store = configureTestStore({
-        offerer: {
-          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOfferer: null,
+        user: {
+          offererNamesValidated: [getOffererNameFactory({ id: 200 })],
           currentOffererName: null,
-          offererNames: [getOffererNameFactory({ id: 100 })],
+          offererNames: [getOffererNameFactory({ id: 200 })],
           offerersNamesWithPendingValidation: null,
         },
       })
@@ -148,9 +144,8 @@ describe('setSelectedAdminOffererById', () => {
       const getOffererSpy = vi.spyOn(api, 'getOfferer')
 
       const store = configureTestStore({
-        offerer: {
+        user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOfferer: null,
           currentOffererName: null,
           offererNames: [
             getOffererNameFactory({ id: 100 }),

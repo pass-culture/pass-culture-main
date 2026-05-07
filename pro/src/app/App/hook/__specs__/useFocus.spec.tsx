@@ -45,11 +45,9 @@ const renderUseFocusRoutes = (url = '/accueil') => {
     {
       initialRouterEntries: [url],
       storeOverrides: {
-        offerer: {
-          offererNamesValidated: [{ id: 456, name: 'Offerer' }],
-        },
         user: {
           currentUser: { id: 123 },
+          offererNamesValidated: [{ id: 456, name: 'Offerer' }],
         },
       },
     }

@@ -18,9 +18,11 @@ describe('OnboardingOffersChoice Component', () => {
     }))
     renderWithProviders(<OnboardingOffersChoice />, {
       storeOverrides: {
-        offerer: {
-          currentOfferer: { id: 1, isOnboarded: false },
+        user: {
           offererNamesValidated: [],
+          selectedPartnerVenue: {
+            managingOfferer: { id: 1 },
+          },
         },
       },
     })

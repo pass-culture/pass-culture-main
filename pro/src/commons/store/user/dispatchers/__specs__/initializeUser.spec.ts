@@ -457,8 +457,8 @@ describe('error handling', () => {
     expect(state.user.access).toBeNull()
     expect(state.user.currentUser).toBeNull()
     expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.offerer.offererNamesValidated).toBeNull()
+    expect(state.user.currentOffererName).toBeNull()
+    expect(state.user.offererNamesValidated).toBeNull()
     expect(state.user.selectedPartnerVenue).toBeNull()
     expect(state.user.venues).toBeNull()
 

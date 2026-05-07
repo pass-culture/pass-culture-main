@@ -90,13 +90,13 @@ export const renderWithProviders = (
     user: overrides?.user
       ? {
           currentUser: overrides.user,
+          offererNamesValidated: [],
+          offererNames: [],
+          offerersNamesWithPendingValidation: [],
           ...overrides.storeOverrides?.user,
         }
       : overrides?.storeOverrides?.user,
     offerer: {
-      offererNamesValidated: [],
-      offererNames: [],
-      offerersNamesWithPendingValidation: [],
       ...overrides?.storeOverrides?.offerer,
     },
   }

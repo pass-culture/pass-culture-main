@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type {
+  GetOffererNameResponseModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
@@ -21,6 +22,11 @@ type UserState = {
   selectedPartnerVenue: GetVenueResponseModel | null
   venues: VenueListItemLiteResponseModel[] | null
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
+  // TODO (cmoinier, 2026-03-13): Refactor offererNames / offererNamesValidated / offerersNamesWithPendingValidation into a single array with a 'isAttached' boolean
+  currentOffererName: GetOffererNameResponseModel | null
+  offererNames: GetOffererNameResponseModel[] | null
+  offererNamesValidated: GetOffererNameResponseModel[] | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
 const initialState: UserState = {
@@ -30,11 +36,20 @@ const initialState: UserState = {
   selectedPartnerVenue: null,
   venues: null,
   venuesWithPendingValidation: null,
+  offererNamesValidated: null,
+  currentOffererName: null,
+  offerersNamesWithPendingValidation: null,
+  offererNames: null,
 }
 
 type UpdateVenuesPayload = {
   venues: VenueListItemLiteResponseModel[] | null
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
+}
+
+type UpdateOffererNamesPayload = {
+  offerersNames: GetOffererNameResponseModel[] | null
+  offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
 const userSlice = createSlice({
@@ -78,6 +93,26 @@ const userSlice = createSlice({
       state.venuesWithPendingValidation =
         action.payload.venuesWithPendingValidation
     },
+
+    setCurrentOffererName: (
+      state: UserState,
+      action: PayloadAction<GetOffererNameResponseModel | null>
+    ) => {
+      state.currentOffererName = action.payload
+    },
+
+    updateOffererNames: (
+      state: UserState,
+      action: PayloadAction<UpdateOffererNamesPayload>
+    ) => {
+      state.offererNames =
+        action.payload.offerersNames?.concat(
+          action.payload.offerersNamesWithPendingValidation ?? []
+        ) ?? null
+      state.offererNamesValidated = action.payload.offerersNames
+      state.offerersNamesWithPendingValidation =
+        action.payload.offerersNamesWithPendingValidation
+    },
   },
 })
 
@@ -89,4 +124,6 @@ export const {
   setSelectedAdminOfferer,
   setSelectedPartnerVenue,
   setVenues,
+  setCurrentOffererName,
+  updateOffererNames,
 } = userSlice.actions
