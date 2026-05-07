@@ -591,14 +591,19 @@ class Returns200Test:
         assert venue.visualDisabilityCompliant == None
 
     @patch("pcapi.core.offers.tasks.update_all_venue_offers_accessibility_task.delay")
-    def test_edit_venue_accessibility_with_applied_on_all_offers_with(
-        self, mocked_update_all_venue_offers_accessibility_task, client
+    @pytest.mark.parametrize("unchanged_value", [True, False, None])
+    def test_edit_venue_accessibility_with_applied_on_all_offers(
+        self, mocked_update_all_venue_offers_accessibility_task, client, unchanged_value
     ):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
             contact=None,
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=unchanged_value,
+            motorDisabilityCompliant=unchanged_value,
+            visualDisabilityCompliant=unchanged_value,
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -623,9 +628,9 @@ class Returns200Test:
                 "venue_id": venue.id,
                 "accessibility": {
                     "audioDisabilityCompliant": True,
-                    "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
-                    "motorDisabilityCompliant": venue.motorDisabilityCompliant,
-                    "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+                    "mentalDisabilityCompliant": unchanged_value,
+                    "motorDisabilityCompliant": unchanged_value,
+                    "visualDisabilityCompliant": unchanged_value,
                 },
             },
         )

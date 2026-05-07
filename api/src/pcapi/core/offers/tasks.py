@@ -100,7 +100,7 @@ def update_all_venue_offers_email_task(payload: UpdateAllVenueOffersEmailPayload
 
 class UpdateAllVenueOffersAccessibilityPayload(BaseModelV2):
     venue_id: int
-    accessibility: dict[str, bool]
+    accessibility: dict[str, bool | None]
 
 
 @celery_async_task(
