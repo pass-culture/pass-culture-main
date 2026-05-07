@@ -31,14 +31,13 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 
 @log_func_duration
 def create_eac_offers(
-    offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
+    offerer_by_name: dict[str, offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:
     reset_offer_id_seq()
     national_programs, domains = get_national_programs_and_domains()
-    offerers_iterator = iter(offerers)
 
     # eac_1
-    offerer = next(offerers_iterator)
+    offerer = offerer_by_name["eac_1_lieu"]
     provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
         provider=provider,
@@ -52,8 +51,9 @@ def create_eac_offers(
         institutions=institutions,
         domains=domains,
     )
+
     # eac_2
-    offerer = next(offerers_iterator)
+    offerer = offerer_by_name["eac_2_lieu [BON EAC]"]
     provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
         provider=provider,
@@ -69,7 +69,7 @@ def create_eac_offers(
     )
 
     # eac_pending_bank_informations
-    offerer = next(offerers_iterator)
+    offerer = offerer_by_name["eac_pending_bank_informations"]
     provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
         provider=provider,
@@ -86,7 +86,7 @@ def create_eac_offers(
     )
 
     # eac_no_cb
-    offerer = next(offerers_iterator)
+    offerer = offerer_by_name["eac_no_cb"]
     provider = create_collective_api_provider(offerer.managedVenues)
     create_offers_base_list(
         provider=provider,
@@ -103,7 +103,7 @@ def create_eac_offers(
     )
 
     # eac_with_displayed_status_cases
-    offerer = next(o for o in offerers if o.name == "eac_with_displayed_status_cases")
+    offerer = offerer_by_name["eac_with_displayed_status_cases"]
     provider = create_collective_api_provider(offerer.managedVenues, api_key_prefix="displayed_status")
 
     venue_pc_pro = next(v for v in offerer.managedVenues if "PC_PRO" in v.name)
@@ -123,12 +123,13 @@ def create_eac_offers(
 
 
 @log_func_duration
-def create_eac_offers_by_period(
-    offerers: list[offerers_models.Offerer], deposits: list[educational_models.EducationalDeposit]
-) -> None:
+def create_eac_offers_by_period(deposits: list[educational_models.EducationalDeposit]) -> None:
     now = date_utils.get_naive_utc_now()
-    offerer = next(o for o in offerers if o.name == "eac_with_deposits_by_period")
-    [venue] = offerer.managedVenues
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.name == "eac_with_deposits_by_period")
+        .one()
+    )
 
     for deposit in deposits:
         year = deposit.educationalYear

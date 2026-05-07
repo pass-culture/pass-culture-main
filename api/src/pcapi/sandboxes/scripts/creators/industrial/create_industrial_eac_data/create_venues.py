@@ -24,12 +24,12 @@ VENUE_EDUCATIONAL_STATUS = {
 
 
 @log_func_duration
-def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
+def create_eac_venues(offerer_by_name: dict[str, offerers_models.Offerer]) -> None:
     create_venue_educational_status()
-    offerer_iterator = iter(offerer_list)
     educational_status_iterator = cycle(VENUE_EDUCATIONAL_STATUS.keys())
+
     # eac_1
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_1_lieu"]
     create_venue(
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name} 56",
@@ -46,8 +46,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         longitude=-3.37,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
+
     # eac_2
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_2_lieu [BON EAC]"]
     create_venue(
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name} 91",
@@ -72,8 +73,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
+
     # eac_pending_bank_informations
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_pending_bank_informations"]
     offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name}",
@@ -85,7 +87,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
 
     # eac_no_cb
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_no_cb"]
     create_venue(
         managingOfferer=offerer,
         name=f"real_venue 1 {offerer.name}",
@@ -95,8 +97,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
     )
+
     # eac_rejected
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_rejected"]
     create_venue(
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name}",
@@ -112,10 +115,12 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
     )
+
     # DMS venues
     application_id_generator = count(11922836)
+
     # eac_accepte
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_accepte"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -135,8 +140,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
         state="accepte",
     )
+
     # eac_sans_suite
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_sans_suite"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -156,8 +162,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
         state="sans_suite",
     )
+
     # eac_en_construction
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_en_construction"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -177,8 +184,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=None,
         state="en_construction",
     )
+
     # eac_refuse
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_refuse"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -198,8 +206,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
         state="refuse",
     )
+
     # eac_en_instruction
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_en_instruction"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -219,8 +228,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=None,
         state="en_instruction",
     )
+
     # eac_complete_30+d
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_complete_30+d"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -242,8 +252,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2022-11-08 14:09:31+00:00"),
         state="accepte",
     )
+
     # eac_complete_30-d
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_complete_30-d"]
     venue = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -265,8 +276,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=date_utils.get_naive_utc_now(),
         state="accepte",
     )
+
     # eac_with_two_adage_venues
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_with_two_adage_venues"]
     venue_with_accepted_dms_status = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -307,7 +319,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
 
     # eac_with_no_offers
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_with_no_offers"]
     venue_with_accepted_dms_status = create_venue(
         managingOfferer=offerer,
         name=f"Lieu {offerer.name}",
@@ -318,7 +330,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
 
     # eac_with_application_with_no_venue
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_with_application_with_no_venue"]
     venue_with_accepted_dms_status = create_venue(
         managingOfferer=offerer,
         name=f"accepted_dms {offerer.name}",
@@ -350,8 +362,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
         state="refuse",
     )
+
     # eac_with_displayed_status_cases
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_with_displayed_status_cases"]
     create_venue(
         managingOfferer=offerer,
         name=f"{offerer.name} PC_PRO",
@@ -386,8 +399,9 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
+
     # eac_with_deposits_by_period
-    offerer = next(offerer_iterator)
+    offerer = offerer_by_name["eac_with_deposits_by_period"]
     create_venue(
         managingOfferer=offerer,
         name=offerer.name,

@@ -21,10 +21,10 @@ def create_eac_data() -> None:
     institutions = create_institutions()
     deposits = create_institutions_with_deposits_by_period()
 
-    offerers = create_eac_users_offerers()
-    create_eac_venues(offerers)
+    offerer_by_name = create_eac_users_offerers()
+    create_eac_venues(offerer_by_name)
 
-    create_eac_offers(offerers=offerers, institutions=institutions)
-    create_eac_offers_by_period(offerers=offerers, deposits=deposits)
+    create_eac_offers(offerer_by_name=offerer_by_name, institutions=institutions)
+    create_eac_offers_by_period(deposits=deposits)
 
     fill_adage_playlists()
