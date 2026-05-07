@@ -6,10 +6,6 @@ import { apiNew } from '@/apiClient/api'
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
-import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
-import { UserIdentityForm } from '@/components/UserIdentityForm/UserIdentityForm'
-import { UserPasswordForm } from '@/components/UserPasswordForm/UserPasswordForm'
-import { UserPhoneForm } from '@/components/UserPhoneForm/UserPhoneForm'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -17,15 +13,19 @@ import {
   IconPositionEnum,
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
+import type { UserIdentityFormValues } from '@/pages/User/UserProfile/UserIdentityForm/types'
+import { UserIdentityForm } from '@/pages/User/UserProfile/UserIdentityForm/UserIdentityForm'
+import { UserPasswordForm } from '@/pages/User/UserProfile/UserPasswordForm/UserPasswordForm'
+import { UserPhoneForm } from '@/pages/User/UserProfile/UserPhoneForm/UserPhoneForm'
 
+import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
 import { Forms } from './constants'
 import { UserAnonymization } from './UserAnonymization/UserAnonymization'
 import { UserDynamicPanel } from './UserDynamicPanel/UserDynamicPanel'
-import { BannerPendingEmailValidation } from './UserEmail/BannerPendingEmailValidation/BannerPendingEmailValidation'
 import {
   UserEmailForm,
   type UserEmailInitialValues,
-} from './UserEmail/UserEmailForm/UserEmailForm'
+} from './UserEmailForm/UserEmailForm'
 import styles from './UserProfile.module.scss'
 
 interface UserProfileProps {

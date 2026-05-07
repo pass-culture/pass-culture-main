@@ -1,14 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -25,7 +26,7 @@ export const UserPhoneForm = ({
   closeForm,
   initialValues,
 }: UserPhoneFormProps): JSX.Element => {
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
   const dispatch = useAppDispatch()
   const snackBar = useSnackBar()
 
@@ -49,7 +50,7 @@ export const UserPhoneForm = ({
     ).number
 
     try {
-      const response = await api.patchUserPhone(values)
+      const response = await apiNew.patchUserPhone({ body: values })
       dispatch(
         updateUser({
           ...currentUser,
