@@ -21,7 +21,6 @@ import {
 } from '@/commons/utils/date'
 import {
   bookingRecapFactory,
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'

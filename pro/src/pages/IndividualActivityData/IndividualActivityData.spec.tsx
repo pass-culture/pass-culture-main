@@ -17,6 +17,7 @@ import { Component as IndividualActivityData } from './IndividualActivityData'
 vi.mock('@/apiClient/api', () => ({
   api: {
     getBookingsCsv: vi.fn(),
+    getBookingsExcel: vi.fn(),
     getOffererAddresses: vi.fn(),
   },
 }))
@@ -148,5 +149,40 @@ describe('IndividualActivityData', () => {
     })
 
     expect(screen.getByLabelText('Date de l\u2019évènement')).toHaveValue('')
+  })
+
+  it('should track download clicks', async () => {
+    const FROM = '/administration/donnees-activite/individuel'
+
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getBookingsExcel').mockResolvedValue({})
+    renderIndividualActivityData()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
+      { from: FROM }
+    )
+
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
+      { from: FROM }
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
+      { from: FROM }
+    )
   })
 })

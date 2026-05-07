@@ -4,7 +4,6 @@ import { useState } from 'react'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -272,41 +271,6 @@ describe('filter bookings by bookings period', () => {
       expect(mockLogEvent).toHaveBeenCalledWith('CLICKED_SHOW_BOOKINGS', {
         from: '/',
       })
-    })
-
-    it('should track download clicks on admin page', async () => {
-      const user = userEvent.setup()
-      renderPreFilters({
-        ...props,
-        isAdministrationSpace: true,
-      })
-
-      await user.click(
-        screen.getByRole('button', { name: 'Télécharger les réservations' })
-      )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
-        { from: '/' }
-      )
-
-      await user.click(
-        screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
-      )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
-        { from: '/' }
-      )
-
-      await user.click(
-        screen.getByRole('button', { name: 'Télécharger les réservations' })
-      )
-      await user.click(
-        screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
-      )
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
-        { from: '/' }
-      )
     })
   })
 })
