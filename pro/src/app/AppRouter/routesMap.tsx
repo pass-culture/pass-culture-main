@@ -98,14 +98,6 @@ export const routes: CustomRouteTree = [
     },
   },
   {
-    lazy: () => import('@/pages/Desk/Desk'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/guichet',
-    handle: {
-      title: 'Guichet',
-    },
-  },
-  {
     lazy: () => import('@/pages/SignIn/SignIn'),
     loader: withUserPermissions(mustBeUnauthenticated),
     path: '/connexion',

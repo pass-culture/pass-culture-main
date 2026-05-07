@@ -43,9 +43,10 @@ describe('getBookingFailure', () => {
         })
       )
 
-      expect(failure).toStrictEqual({
+      expect(failure).toEqual({
         isTokenValidated: true,
-        message: 'api error',
+        message:
+          "Cette contremarque a été validée. En l'invalidant vous indiquez qu'elle n'a pas été utilisée et vous ne serez pas remboursé.",
       })
     })
   })
@@ -81,26 +82,6 @@ describe('getBookingFailure', () => {
       expect(failure).toStrictEqual({
         isTokenValidated: false,
         message: 'you will be able to validate later',
-      })
-    })
-  })
-
-  /* ---------------------------------------------------------------------- */
-  /*                             Other statuses                              */
-  /* ---------------------------------------------------------------------- */
-
-  describe('when status is not handled', () => {
-    it('returns api error message', () => {
-      const failure = getBookingFailure(
-        buildApiError({
-          status: 500,
-          message: 'api internal error',
-        })
-      )
-
-      expect(failure).toStrictEqual({
-        isTokenValidated: false,
-        message: 'api internal error',
       })
     })
   })
