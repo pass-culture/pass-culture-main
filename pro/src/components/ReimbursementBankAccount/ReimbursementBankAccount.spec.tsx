@@ -6,7 +6,7 @@ import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
   type ManagedVenue,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { defaultManagedVenue } from '@/commons/utils/factories/individualApiFactories'

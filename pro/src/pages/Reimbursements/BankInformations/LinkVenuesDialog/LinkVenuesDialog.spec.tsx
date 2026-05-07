@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { ApiError } from '@/apiClient/compat'
+import * as apiHelpers from '@/apiClient/helpers'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1/new'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultBankAccount,
@@ -39,6 +42,14 @@ const renderLinkVenuesDialog = (
 }
 
 describe('LinkVenueDialog', () => {
+  let snackBarsImport: ReturnType<typeof useSnackBar.useSnackBar>
+
+  beforeAll(async () => {
+    snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+  })
+
   it('should select all venues when clicking on select all checkbox', async () => {
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
@@ -88,7 +99,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should update venue selection when selecting pricing point', async () => {
-    vi.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
+    vi.spyOn(apiNew, 'linkVenueToPricingPoint').mockResolvedValue()
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, hasPricingPoint: true },
       {
@@ -125,12 +136,8 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should display error message when attach pricing point fail', async () => {
-    vi.spyOn(api, 'linkVenueToPricingPoint').mockRejectedValue({})
+    vi.spyOn(apiNew, 'linkVenueToPricingPoint').mockRejectedValue({})
     const snackBarError = vi.fn()
-
-    const snackBarsImport = (await vi.importActual(
-      '@/commons/hooks/useSnackBar'
-    )) as ReturnType<typeof useSnackBar.useSnackBar>
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       ...snackBarsImport,
       error: snackBarError,
@@ -261,5 +268,107 @@ describe('LinkVenueDialog', () => {
     expect(checkbox).toBeChecked()
     await userEvent.click(checkbox)
     expect(checkbox).not.toBeChecked()
+  })
+
+  it('should close dialog with update on successful form submission', async () => {
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
+    const closeDialog = vi.fn()
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues, closeDialog)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(closeDialog).toHaveBeenCalledWith(true)
+  })
+
+  it('should call serializeApiErrors when linkVenueToBankAccount fails with a 400 error', async () => {
+    const error = new ApiError('', 400, 'Bad Request', {
+      venuesIds: ['Erreur de validation'],
+    })
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(error)
+    vi.spyOn(apiHelpers, 'serializeApiErrors')
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(apiHelpers.serializeApiErrors).toHaveBeenCalledWith(
+      { venuesIds: ['Erreur de validation'] },
+      expect.any(Function)
+    )
+  })
+
+  it('should display error snackbar when linkVenueToBankAccount fails with a non-400 ApiError', async () => {
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+      new ApiError('', 500, 'Internal Server Error', {})
+    )
+    const snackBarError = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+    }))
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(snackBarError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
+  })
+
+  it('should display error snackbar when linkVenueToBankAccount fails with a non-400 error', async () => {
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+      new Error('Server error')
+    )
+    const snackBarError = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+    }))
+    const managedVenues = [
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        bankAccountId: null,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(snackBarError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
   })
 })
