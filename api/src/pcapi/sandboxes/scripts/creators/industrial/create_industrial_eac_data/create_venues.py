@@ -386,42 +386,6 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
-    # eac_with_addresses_cases
-    offerer = next(offerer_iterator)
-    create_venue(
-        managingOfferer=offerer,
-        name=f"{offerer.name} PC_PRO",
-        reimbursement=True,
-        adageId="123549",
-        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
-        venueEducationalStatusId=next(educational_status_iterator),
-        collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departmentCode="57",
-        postalCode="57000",
-        city="Lorient",
-        street="30 boulevard Léon Blum",
-        latitude=47.75,
-        longitude=-3.37,
-        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
-        pricing_point="self",
-    )
-    create_venue(
-        managingOfferer=offerer,
-        name=f"{offerer.name} PUBLIC_API",
-        reimbursement=True,
-        adageId="123550",
-        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
-        venueEducationalStatusId=next(educational_status_iterator),
-        collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departmentCode="33",
-        postalCode="33000",
-        city="Bordeaux",
-        street="10 rue Sainte-Colombe",
-        latitude=44.83,
-        longitude=-0.57,
-        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
-        pricing_point="self",
-    )
     # eac_with_deposits_by_period
     offerer = next(offerer_iterator)
     create_venue(
