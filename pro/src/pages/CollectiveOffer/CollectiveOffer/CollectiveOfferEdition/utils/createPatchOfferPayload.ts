@@ -3,7 +3,7 @@ import {
   CollectiveLocationType,
   type PatchCollectiveOfferBodyModel,
   type PatchCollectiveOfferTemplateBodyModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { serializeDates } from '@/commons/core/OfferEducational/utils/createOfferPayload'
 import { parseDuration } from '@/commons/core/OfferEducational/utils/parseDuration'
