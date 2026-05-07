@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -85,6 +86,53 @@ class Returns200Test:
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_update.id, stock_to_delete.id)]
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity is None  # unlimited because quantity=None and no activation codes
+
+    def test_updating_stock_quantity_only_with_booking_limit_datetime_keeping_date_value(self, client):
+        """
+        This test reproduces an issue where we had a 400 error when updating a stock's quantity for synchronized offers
+        The root cause was the value of the bookingLimitDatetime
+        It is set to a value during the day, but the frontend handles a date, not a datetime. It is converted to a datetime before sending the request, with the time set to 22:59:59.
+        This test emulates that behavior
+
+        The error was:
+        400 Bad Request - Les offres importées ne sont pas modifiables
+
+        Which is raised by validation.check_can_edit_synchronized_stock when a field other than `quantity` is updated
+        """
+
+        provider = providers_factories.PublicApiProviderFactory()
+        offer = offers_factories.ThingOfferFactory(lastProvider=provider, idAtProvider="1")
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        stock_to_update = offers_factories.ThingStockFactory(
+            offer=offer,
+            price=decimal.Decimal("14.5"),
+            quantity=1,
+            bookingLimitDatetime=datetime.datetime(2027, 2, 18, 6, 12, 12),  # set by the provider
+        )
+
+        payload = {
+            "stocks": [
+                {
+                    "id": stock_to_update.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    # the front uses a date picker, that has no idea of the time.Then the code takes the date and adds 22:59:59
+                    "bookingLimitDatetime": "2027-02-18T22:59:59Z",
+                    "offerId": offer.id,
+                    "price": 14.5,
+                    "quantity": 3,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 200
+        updated_stock = db.session.get(offers_models.Stock, stock_to_update.id)
+        assert updated_stock.price == 14.5
+        assert updated_stock.quantity == 3
 
     def test_create_with_activation_codes_sets_quantity(self, client):
         offer = offers_factories.DigitalOfferFactory()
