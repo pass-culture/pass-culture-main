@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -51,17 +51,7 @@ export const CollectiveOffers = () => {
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
 
-      return api.getCollectiveOffers(
-        params.name,
-        params.offererId,
-        params.status,
-        params.venueId,
-        params.periodBeginningDate,
-        params.periodEndingDate,
-        params.format,
-        params.locationType,
-        params.offererAddressId
-      )
+      return apiNew.getCollectiveOffers({ query: { ...params } })
     },
     { fallbackData: [] }
   )
@@ -75,7 +65,7 @@ export const CollectiveOffers = () => {
         initialSearchFilters={apiFilters}
         isLoading={offersQuery.isLoading}
         offererId={selectedOffererId.toString()}
-        offers={offersQuery.data}
+        offers={offersQuery.data || []}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}
       />

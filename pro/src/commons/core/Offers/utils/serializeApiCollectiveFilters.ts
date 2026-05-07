@@ -1,5 +1,8 @@
-import { EacFormat, type ListCollectiveOffersQueryModel } from '@/apiClient/v1'
-import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
+import {
+  CollectiveLocationType,
+  EacFormat,
+  type ListCollectiveOffersQueryModel,
+} from '@/apiClient/v1/new'
 import { nullifyEmptyProps } from '@/commons/utils/nullifyEmptyProps'
 import { toEnumOrNull } from '@/commons/utils/toEnumOrNull'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'

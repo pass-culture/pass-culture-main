@@ -6,7 +6,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   UserRole,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -51,13 +51,13 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    listOfferersNames: vi.fn().mockReturnValue({}),
-    deleteDraftOffers: vi.fn(),
-    getVenues: vi.fn(),
-  },
-}))
+vi.mock('@/apiClient/api', () => {
+  return {
+    api: {
+      getVenueAddresses: vi.fn(),
+    },
+  }
+})
 
 describe('CollectiveOffersScreen', () => {
   let props: CollectiveOffersScreenProps
