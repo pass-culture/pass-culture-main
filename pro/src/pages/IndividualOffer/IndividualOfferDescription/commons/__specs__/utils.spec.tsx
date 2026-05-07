@@ -282,6 +282,7 @@ describe('getInitialValuesFromOffer', () => {
       durationMinutes: '',
       ean: '1234567891234',
       gtl_id: '',
+      hasCulturalOutreachClaim: false,
       name: 'Le nom de l’offre 1',
       performer: 'Le Poing de Chuck',
       showSubType: 'PEGI 18',
@@ -384,8 +385,10 @@ describe('getFormReadOnlyFields', () => {
     ).toStrictEqual(['categoryId', 'subcategoryId', 'venueId'])
   })
 
-  it('should disable all fields for provided offers', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  it('should disable all fields except hasCulturalOutreachClaim for synchronized offers', () => {
+    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
+      (key) => key !== 'hasCulturalOutreachClaim'
+    )
 
     expect(
       getFormReadOnlyFields(
@@ -398,7 +401,7 @@ describe('getFormReadOnlyFields', () => {
     ).toStrictEqual(expectedValues)
   })
 
-  it('should disable all fields except name & description for provided offers when the venue is a museum', () => {
+  it('should disable all fields except name, description and hasCulturalOutreachClaim for synchronized offers when the venue is a museum', () => {
     const expectedValues = [
       'venueId',
       'categoryId',

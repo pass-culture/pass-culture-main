@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from '@/apiClient/v1'
+import { DisplayableActivity, WithdrawalTypeEnum } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
@@ -98,3 +98,13 @@ export enum COLLECTIVE_OFFER_SUBTYPE_DUPLICATE {
   NEW_OFFER = 'NEW_OFFER',
   DUPLICATE = 'DUPLICATE',
 }
+
+export const CULTURAL_OUTREACH_ALLOWED_ACTIVITIES = new Set([
+  DisplayableActivity.PRODUCTION_OR_PROMOTION_COMPANY,
+  DisplayableActivity.ARTISTIC_COMPANY,
+  DisplayableActivity.PERFORMANCE_HALL,
+  DisplayableActivity.MUSEUM,
+  DisplayableActivity.HERITAGE_SITE,
+  DisplayableActivity.LIBRARY,
+  DisplayableActivity.CULTURAL_MEDIATION,
+])

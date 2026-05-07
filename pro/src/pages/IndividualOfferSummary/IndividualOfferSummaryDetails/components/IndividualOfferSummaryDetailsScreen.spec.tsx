@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
@@ -9,8 +10,13 @@ import {
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import type { RenderComponentFunction } from '@/commons/utils/renderWithProviders'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  type RenderComponentFunction,
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
@@ -37,11 +43,24 @@ const renderIndividualOfferSummaryDetailsScreen: RenderComponentFunction<
     ...params.contextValues,
   }
 
+  const options: RenderWithProvidersOptions = {
+    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: offer.venue.id,
+        }),
+      },
+    },
+    ...params.options,
+  }
+
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
       <IndividualOfferSummaryDetailsScreen offer={offer} />
     </IndividualOfferContext.Provider>,
-    params.options
+    options
   )
 }
 
@@ -213,5 +232,88 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
 
     expect(screen.queryByText(/URL d’accès à l’offre/i)).not.toBeInTheDocument()
     expect(screen.queryByText(offer.url)).not.toBeInTheDocument()
+  })
+
+  describe('cultural outreach', () => {
+    it('should show the cultural outreach row when FF is enabled and venue activity is MUSEUM', () => {
+      const offer = {
+        ...offerBase,
+        hasCulturalOutreachClaim: true,
+      }
+
+      renderIndividualOfferSummaryDetailsScreen({
+        props: { offer },
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(
+        screen.getByText(/Inclut une action de médiation spécifique/)
+      ).toBeInTheDocument()
+      expect(screen.getByText('Oui')).toBeInTheDocument()
+    })
+
+    it('should NOT show the cultural outreach row when FF is disabled', () => {
+      const offer = {
+        ...offerBase,
+        hasCulturalOutreachClaim: true,
+      }
+
+      renderIndividualOfferSummaryDetailsScreen({
+        props: { offer },
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(
+        screen.queryByText(/Inclut une action de médiation spécifique/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should NOT show the cultural outreach row when activity is not allowed', () => {
+      const offer = {
+        ...offerBase,
+        hasCulturalOutreachClaim: true,
+      }
+
+      renderIndividualOfferSummaryDetailsScreen({
+        props: { offer },
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: 1,
+                activity: DisplayableActivity.RECORD_STORE,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(
+        screen.queryByText(/Inclut une action de médiation spécifique/)
+      ).not.toBeInTheDocument()
+    })
   })
 })

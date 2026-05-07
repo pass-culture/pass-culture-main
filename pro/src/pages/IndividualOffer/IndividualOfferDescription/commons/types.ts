@@ -11,6 +11,7 @@ export type DetailsFormValues = {
   description?: string
   venueId: string
   categoryId: string
+  hasCulturalOutreachClaim?: boolean
   subcategoryId: string
   showType?: string
   showSubType?: string

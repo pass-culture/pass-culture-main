@@ -12,9 +12,11 @@ import {
   OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
+  SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -33,6 +35,7 @@ import {
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
   getStocksResponseFactory,
+  subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -883,6 +886,118 @@ describe('IndividualOfferSummaryScreen', () => {
         publicationDatetime: expect.any(String),
         bookingAllowedDatetime: undefined,
       })
+    })
+
+    it('should show the cultural outreach row when FF is enabled and venue activity is MUSEUM', async () => {
+      renderIndividualOfferSummaryScreen({
+        contextValues: {
+          offer: { ...offerBase, hasCulturalOutreachClaim: true },
+        },
+        path,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: offerBase.venue.id,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      expect(
+        await screen.findByText('Inclut une action de médiation spécifique :')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Oui')).toBeInTheDocument()
+    })
+
+    it('should NOT show the cultural outreach row when FF is disabled', async () => {
+      renderIndividualOfferSummaryScreen({
+        contextValues: {
+          offer: { ...offerBase, hasCulturalOutreachClaim: true },
+        },
+        path,
+        options: {
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: offerBase.venue.id,
+                activity: DisplayableActivity.MUSEUM,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByText('Description')
+      expect(
+        screen.queryByText('Inclut une action de médiation spécifique :')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should NOT show the cultural outreach row when activity is not allowed', async () => {
+      renderIndividualOfferSummaryScreen({
+        contextValues: {
+          offer: { ...offerBase, hasCulturalOutreachClaim: true },
+        },
+        path,
+        options: {
+          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: offerBase.venue.id,
+                activity: DisplayableActivity.RECORD_STORE,
+              }),
+            },
+          },
+        },
+      })
+
+      await screen.findByText('Description')
+      expect(
+        screen.queryByText('Inclut une action de médiation spécifique :')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display booking contact when set on the offer', async () => {
+      const contextValues = {
+        offer: {
+          ...draftOfferBase,
+          bookingContact: 'contact@example.com',
+        },
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      expect(await screen.findByText('contact@example.com')).toBeInTheDocument()
+    })
+
+    it('should display music genre and show type rows when subcategory includes them', async () => {
+      const customSubcategory = subcategoryFactory({
+        id: SubcategoryIdEnum.CONCERT,
+        categoryId: MOCKED_CATEGORY.A.id,
+        conditionalFields: ['musicType', 'showType'],
+      })
+      const contextValues = {
+        offer: {
+          ...draftOfferBase,
+          subcategoryId: SubcategoryIdEnum.CONCERT,
+          extraData: { gtl_id: '07000000' },
+        },
+        subCategories: [customSubcategory],
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      expect(await screen.findByText(/Genre musical/)).toBeInTheDocument()
+      expect(screen.getByText(/Type de spectacle/)).toBeInTheDocument()
+      expect(await screen.findByText('Metal')).toBeInTheDocument()
     })
 
     it("should require publication date to be within two years when it's a scheduled publication", async () => {
