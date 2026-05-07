@@ -20,12 +20,10 @@ const renderActivityDetails = ({
   isOpenToPublic = 'true',
   activity = null,
   culturalDomains = [],
-  isVenueVirtual = false,
 }: {
   isOpenToPublic?: string
   activity?: string | null
   culturalDomains?: string[]
-  isVenueVirtual?: boolean
 } = {}) => {
   const Wrapper = () => {
     const form = useForm<FormValues>({
@@ -38,7 +36,7 @@ const renderActivityDetails = ({
     })
     return (
       <FormProvider {...form}>
-        <ActivityDetails isVenueVirtual={isVenueVirtual} />
+        <ActivityDetails />
       </FormProvider>
     )
   }
@@ -97,13 +95,6 @@ describe('ActivityDetails', () => {
           within(activitySelect).getByRole('option', { name: label })
         ).toBeInTheDocument()
       })
-    })
-
-    it('should be disabled for virtual venues', async () => {
-      renderActivityDetails({ isVenueVirtual: true })
-
-      const activitySelect = await screen.findByLabelText(/Activité principale/)
-      expect(activitySelect).toBeDisabled()
     })
   })
 

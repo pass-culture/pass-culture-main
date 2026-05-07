@@ -34,7 +34,6 @@ const GeneralInformation = () => {
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
-    isVenueVirtual: venue.isVirtual ?? false,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
     isOpenToPublic: venue.isOpenToPublic.toString(),
@@ -116,11 +115,9 @@ const GeneralInformation = () => {
           <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout fullWidthActions>
             <FormLayout.Section title="Informations administratives">
-              {!venue.isVirtual && (
-                <FormLayout.Row>
-                  <SiretOrCommentFields formContext={formContext} />
-                </FormLayout.Row>
-              )}
+              <FormLayout.Row>
+                <SiretOrCommentFields formContext={formContext} />
+              </FormLayout.Row>
 
               <FormLayout.Row mdSpaceAfter>
                 <TextInput
@@ -131,15 +128,13 @@ const GeneralInformation = () => {
                 />
               </FormLayout.Row>
 
-              {!venue.isVirtual && (
-                <FormLayout.Row>
-                  <TextInput
-                    {...register('publicName')}
-                    label="Nom public"
-                    description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
-                  />
-                </FormLayout.Row>
-              )}
+              <FormLayout.Row>
+                <TextInput
+                  {...register('publicName')}
+                  label="Nom public"
+                  description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
+                />
+              </FormLayout.Row>
             </FormLayout.Section>
 
             <FormLayout.SubSection title="Accueil du public">
@@ -166,7 +161,7 @@ const GeneralInformation = () => {
               )}
             </FormLayout.SubSection>
 
-            <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
+            <ActivityDetails />
 
             {venue.pricingPoint?.id && (
               <ReimbursementFields

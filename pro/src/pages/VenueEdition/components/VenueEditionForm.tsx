@@ -271,9 +271,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               )}
             </FormLayout.SubSection>
 
-            <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
+            <ActivityDetails />
 
-            {!venue.isVirtual && <WithdrawalDetails />}
+            <WithdrawalDetails />
 
             <FormLayout.SubSection
               title="Informations de contact"

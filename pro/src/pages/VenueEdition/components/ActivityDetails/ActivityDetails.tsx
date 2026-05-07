@@ -21,11 +21,7 @@ interface ActivityFormFields {
   description?: string
 }
 
-interface ActivityDetailsProps {
-  isVenueVirtual: boolean
-}
-
-export const ActivityDetails = ({ isVenueVirtual }: ActivityDetailsProps) => {
+export const ActivityDetails = () => {
   const { register, watch, setValue, formState } =
     useFormContext<ActivityFormFields>()
   const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
@@ -69,7 +65,6 @@ export const ActivityDetails = ({ isVenueVirtual }: ActivityDetailsProps) => {
             ),
           ]}
           label="Activité principale"
-          disabled={isVenueVirtual}
           error={formState.errors.activity?.message}
           required
         />
@@ -106,12 +101,10 @@ export const ActivityDetails = ({ isVenueVirtual }: ActivityDetailsProps) => {
         </FormLayout.Row>
       )}
       <FormLayout.Row>
-        {!isVenueVirtual && (
-          <p className={styles['description-helper']}>
-            Vous pouvez décrire les différentes actions que vous menez, votre
-            histoire ou préciser des informations sur votre activité.
-          </p>
-        )}
+        <p className={styles['description-helper']}>
+          Vous pouvez décrire les différentes actions que vous menez, votre
+          histoire ou préciser des informations sur votre activité.
+        </p>
         <TextArea
           label="Description"
           description="Par exemple : mon établissement propose des spectacles, de l'improvisation..."

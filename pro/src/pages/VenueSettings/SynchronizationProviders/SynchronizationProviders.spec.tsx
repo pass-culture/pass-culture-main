@@ -69,7 +69,7 @@ describe('SynchronizationProviders', () => {
 
   describe('when the venue is not virtual', () => {
     it('should render SynchronizationConnexions with no providers', async () => {
-      renderSynchronizationProviders({ isVirtual: false })
+      renderSynchronizationProviders()
 
       expect(
         await screen.findByTestId('synchronization-connexions')
@@ -82,21 +82,9 @@ describe('SynchronizationProviders', () => {
         venueProviders: [defaultVenueProvider],
       })
 
-      renderSynchronizationProviders({ isVirtual: false })
+      renderSynchronizationProviders()
 
       expect(await screen.findByText('1 fournisseur(s)')).toBeInTheDocument()
-    })
-  })
-
-  describe('when the venue is virtual', () => {
-    it('should not render SynchronizationConnexions', async () => {
-      renderSynchronizationProviders({ isVirtual: true })
-
-      await waitFor(() => {
-        expect(
-          screen.queryByTestId('synchronization-connexions')
-        ).not.toBeInTheDocument()
-      })
     })
   })
 })

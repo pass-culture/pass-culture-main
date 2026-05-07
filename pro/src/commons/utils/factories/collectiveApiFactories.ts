@@ -325,7 +325,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasPartnerPage: false,
   isOnboarded: false,
   isOpenToPublic: true,
-  isVirtual: false,
   location: {
     id: 2,
     banId: null,

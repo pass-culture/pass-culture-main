@@ -41,7 +41,6 @@ describe('toBody', () => {
     formContext = {
       isCaledonian: false,
       siren: '418166096',
-      isVenueVirtual: false,
       withSiret: true,
       isOpenToPublic: 'true',
       activity:

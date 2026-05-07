@@ -20,7 +20,6 @@ export const offerVenueFactory = (
   return {
     id,
     audioDisabilityCompliant: true,
-    isVirtual: false,
     managingOfferer: {
       id: 1,
       name: 'Le nom de l’offreur 1',
@@ -115,7 +114,6 @@ export const makeGetVenueResponseModel = <
     isOpenToPublic: false,
     isPermanent: false,
     isValidated: false,
-    isVirtual: false,
     location: location,
     managingOfferer: offerer,
     mentalDisabilityCompliant: false,

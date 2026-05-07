@@ -113,11 +113,7 @@ export const CollectiveDataForm = ({
           <FormLayout.Section title="Vos informations pour les enseignants">
             <FormLayout.SubSection
               title="Présentation pour les enseignants"
-              description={
-                selectedPartnerVenue.isVirtual
-                  ? undefined
-                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
-              }
+              description="Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité."
             >
               <FormLayout.Row>
                 <TextArea
@@ -182,7 +178,6 @@ export const CollectiveDataForm = ({
                     ),
                   ]}
                   label="Activité principale"
-                  disabled={selectedPartnerVenue.isVirtual}
                   error={errors.activity?.message}
                   required
                 />

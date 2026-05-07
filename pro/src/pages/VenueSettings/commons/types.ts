@@ -4,7 +4,6 @@ import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenTo
 
 export type VenueSettingsFormContext = {
   isCaledonian: boolean
-  isVenueVirtual: boolean
   siren: string | null
   withSiret: boolean
   isOpenToPublic?: string
