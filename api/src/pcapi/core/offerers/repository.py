@@ -234,6 +234,11 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
                 )
             )
             .options(
+                sa_orm.selectinload(models.Venue.collectiveDomains).load_only(
+                    educational_models.EducationalDomain.name,
+                )
+            )
+            .options(
                 sa_orm.joinedload(models.Venue.offererAddress)
                 .load_only()
                 .joinedload(models.OffererAddress.address)

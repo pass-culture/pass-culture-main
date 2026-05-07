@@ -2641,6 +2641,25 @@
                 "title": "Credit",
                 "type": "object"
             },
+            "CulturalDomainItem": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "CulturalDomainItem",
+                "type": "object"
+            },
             "CulturalSurveyAnswer": {
                 "properties": {
                     "id": {
@@ -8994,6 +9013,21 @@
                             }
                         ],
                         "default": null
+                    },
+                    "culturalDomains": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/CulturalDomainItem"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Culturaldomains"
                     },
                     "description": {
                         "anyOf": [

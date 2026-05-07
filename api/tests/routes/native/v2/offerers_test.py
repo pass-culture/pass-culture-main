@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
@@ -12,6 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetVenueTest:
     expected_num_queries = 1  # venue with joined tables
     expected_num_queries += 1  # opening hours (selectinload)
+    expected_num_queries += 1  # collectiveDomains / educational domains (selectinload)
 
     def test_get_venue(self, client):
         venue = offerers_factories.VenueFactory(
@@ -69,6 +71,7 @@ class GetVenueTest:
             "bannerIsFromGoogle": False,
             "bannerUrl": venue.bannerUrl,
             "city": venue.offererAddress.address.city,
+            "culturalDomains": None,
             "contact": {
                 "email": venue.contact.email,
                 "phoneNumber": venue.contact.phone_number,
@@ -164,6 +167,53 @@ class GetVenueTest:
         assert response.json["bannerCredit"] == "Henri"
         assert response.json["bannerIsFromGoogle"] is False
         assert response.json["bannerUrl"] == venue.bannerUrl
+
+    def test_get_venue_not_open_to_public_returns_cultural_domains(self, client):
+        domain_b = educational_factories.EducationalDomainFactory(name="Musique")
+        domain_a = educational_factories.EducationalDomainFactory(name="Architecture")
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            isOpenToPublic=False,
+            collectiveDomains=[domain_a, domain_b],
+        )
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries, expire_session=False):
+            response = client.get(f"/native/v2/venue/{venue_id}")
+            assert response.status_code == 200
+
+        assert response.json["isOpenToPublic"] is False
+        assert response.json["culturalDomains"] == sorted(
+            [
+                {"id": domain_a.id, "name": domain_a.name},
+                {"id": domain_b.id, "name": domain_b.name},
+            ],
+            key=lambda item: item["id"],
+        )
+
+    def test_get_venue_not_open_to_public_shortens_mapped_cultural_domain_labels(self, client):
+        long_label = "Arts du cirque et arts de la rue"
+        short_label = "Cirque et arts de la rue"
+        domain = educational_factories.EducationalDomainFactory(name=long_label)
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            isOpenToPublic=False,
+            collectiveDomains=[domain],
+        )
+        response = client.get(f"/native/v2/venue/{venue.id}")
+        assert response.status_code == 200
+        assert response.json["culturalDomains"] == [{"id": domain.id, "name": short_label}]
+
+    def test_get_venue_not_open_to_public_unknown_domain_label_unchanged(self, client):
+        label = "Nouveau domaine sans mapping dédié"
+        domain = educational_factories.EducationalDomainFactory(name=label)
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            isOpenToPublic=False,
+            collectiveDomains=[domain],
+        )
+        response = client.get(f"/native/v2/venue/{venue.id}")
+        assert response.status_code == 200
+        assert response.json["culturalDomains"] == [{"id": domain.id, "name": label}]
 
     def test_get_non_permanent_venue(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=False)
