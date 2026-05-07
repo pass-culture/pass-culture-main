@@ -1,4 +1,4 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -41,7 +41,11 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
         buttonType: 'unique',
       })
       downloadFile(
-        await api.getReimbursementsCsvV2([reference]),
+        (await apiNew.getReimbursementsCsvV2({
+          query: {
+            invoicesReferences: [reference],
+          },
+        })) as Blob,
         'remboursements_pass_culture.csv'
       )
     } catch {

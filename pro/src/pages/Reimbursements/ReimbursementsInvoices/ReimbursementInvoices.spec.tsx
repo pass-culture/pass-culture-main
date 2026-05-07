@@ -6,10 +6,11 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { BankAccountResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
@@ -87,33 +88,37 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+    vi.spyOn(
+      apiNew,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValue({
       id: 1,
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })
 
   it('shoud render a table with invoices', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
 
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(api.getInvoicesV2).toHaveBeenNthCalledWith(
-      1,
-      '2020-11-15',
-      '2020-12-15',
-      undefined,
-      1
-    )
+    expect(apiNew.getInvoicesV2).toHaveBeenNthCalledWith(1, {
+      query: {
+        bankAccountId: undefined,
+        offererId: 1,
+        periodBeginningDate: '2020-11-15',
+        periodEndingDate: '2020-12-15',
+      },
+    })
     expect((await screen.findAllByRole('row')).length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(7)
 
@@ -143,8 +148,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display the invoice table', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue([
       {
         reference: 'J123456789',
         date: '2022-11-02',
@@ -183,8 +188,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render no invoice yet information block', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([])
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue([])
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -203,8 +208,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render error block', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockRejectedValue([])
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockRejectedValue([])
 
     renderReimbursementsInvoices()
 
@@ -215,7 +220,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display invoice banner', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockResolvedValueOnce({
       id: 1,
@@ -237,7 +242,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should not disable filter if has invoices', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockResolvedValueOnce({
       id: 1,
@@ -253,8 +258,8 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
   })
 
-  it('should let peform actions on invoices', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([
+  it('should let perform actions on invoices', async () => {
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValueOnce([
       {
         reference: 'J123456789',
         date: '2022-11-02',
@@ -264,8 +269,8 @@ describe('reimbursementsWithFilters', () => {
         cashflowLabels: ['VIR7', 'VIR5'],
       },
     ])
-    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
 
     fetchMock.mockResponseOnce((request) => {
       if (
@@ -298,7 +303,11 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
-    expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith(['J123456789'])
+    expect(apiNew.getReimbursementsCsvV2).toHaveBeenCalledWith({
+      query: {
+        invoicesReferences: ['J123456789'],
+      },
+    })
     expect(mockLogEvent).toHaveBeenCalledTimes(2)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -321,9 +330,9 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let download several invoices at same time', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getCombinedInvoices').mockResolvedValue({})
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -334,12 +343,12 @@ describe('reimbursementsWithFilters', () => {
 
     await userEvent.click(screen.getByText('Télécharger les justificatifs'))
 
-    expect(api.getCombinedInvoices).toHaveBeenCalledTimes(1)
-    expect(api.getCombinedInvoices).toHaveBeenNthCalledWith(1, [
-      'J123456789',
-      'J666666666',
-      'J987654321',
-    ])
+    expect(apiNew.getCombinedInvoices).toHaveBeenCalledTimes(1)
+    expect(apiNew.getCombinedInvoices).toHaveBeenNthCalledWith(1, {
+      query: {
+        invoiceReferences: ['J123456789', 'J666666666', 'J987654321'],
+      },
+    })
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -353,8 +362,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it(`should block download several invoices at same time for more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(
       new Array(MAX_ITEMS_DOWNLOAD + 1).fill(null).map((_, i) => ({
         reference: `J${i + 1}`,
         date: '2022-11-02',
@@ -365,7 +374,7 @@ describe('reimbursementsWithFilters', () => {
       }))
     )
 
-    vi.spyOn(api, 'getCombinedInvoices').mockResolvedValueOnce({})
+    vi.spyOn(apiNew, 'getCombinedInvoices').mockResolvedValueOnce({})
 
     renderReimbursementsInvoices()
 
@@ -377,13 +386,13 @@ describe('reimbursementsWithFilters', () => {
 
     await userEvent.click(screen.getByText('Télécharger les justificatifs'))
 
-    expect(api.getCombinedInvoices).not.toHaveBeenCalled()
+    expect(apiNew.getCombinedInvoices).not.toHaveBeenCalled()
   })
 
   it('should let download several reimbursment csv at same time', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
 
     renderReimbursementsInvoices()
 
@@ -395,12 +404,12 @@ describe('reimbursementsWithFilters', () => {
 
     await userEvent.click(screen.getByText('Télécharger les détails'))
 
-    expect(api.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
-    expect(api.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, [
-      'J123456789',
-      'J666666666',
-      'J987654321',
-    ])
+    expect(apiNew.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
+    expect(apiNew.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, {
+      query: {
+        invoicesReferences: ['J123456789', 'J666666666', 'J987654321'],
+      },
+    })
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -415,7 +424,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should not display Bank account when only one linked', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockResolvedValueOnce({
       id: 1,
@@ -431,7 +440,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display Bank account filter when several ', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockResolvedValueOnce({
       id: 1,
@@ -445,11 +454,34 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
   })
 
-  it('should call api with requested filters', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+  it('should display error snackbar when getOffererBankAccountsAndAttachedVenues fails', async () => {
     vi.spyOn(
-      api,
+      apiNew,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockRejectedValue(new Error('Server error'))
+    const snackBarError = vi.fn()
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+    }))
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Impossible de récupérer les informations relatives à vos comptes bancaires.'
+    )
+  })
+
+  it('should call api with requested filters', async () => {
+    vi.spyOn(apiNew, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(apiNew, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(
+      apiNew,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockResolvedValueOnce({
       id: 1,
@@ -477,15 +509,17 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(screen.getByText('Lancer la recherche'))
 
     await waitFor(() => {
-      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2)
+      expect(apiNew.getInvoicesV2).toHaveBeenCalledTimes(2)
     })
 
-    expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
-      '2020-11-17',
-      '2020-11-19',
-      BASE_BANK_ACCOUNTS[0].id,
-      1
-    )
+    expect(apiNew.getInvoicesV2).toHaveBeenLastCalledWith({
+      query: {
+        bankAccountId: 1,
+        offererId: 1,
+        periodBeginningDate: '2020-11-17',
+        periodEndingDate: '2020-11-19',
+      },
+    })
 
     await userEvent.click(screen.getByText('Réinitialiser les filtres'))
 

@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { format } from 'date-fns'
 import { useState } from 'react'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseV2Model } from '@/apiClient/v1/new'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,

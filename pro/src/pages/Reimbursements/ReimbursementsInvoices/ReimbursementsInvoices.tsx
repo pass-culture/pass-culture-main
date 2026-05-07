@@ -3,13 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   GET_HAS_INVOICE_QUERY_KEY,
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -26,6 +27,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const isCaledonian = selectedAdminOfferer.isCaledonian
+  const snackBar = useSnackBar()
 
   const offererId = selectedAdminOfferer?.id
 
@@ -52,11 +54,11 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const hasInvoiceQuery = useSWR(
     offererId ? [GET_HAS_INVOICE_QUERY_KEY, offererId] : null,
-    ([, offererId]) => api.hasInvoice(offererId),
+    ([, offererId]) => apiNew.hasInvoice({ query: { offererId: offererId } }),
     { fallbackData: { hasInvoice: false } }
   )
 
-  const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
+  const hasInvoice = Boolean(hasInvoiceQuery.data?.hasInvoice)
 
   const getInvoicesQuery = useSWR(
     offererId && hasInvoice
@@ -64,15 +66,17 @@ const ReimbursementsInvoices = (): JSX.Element => {
       : null,
     async () => {
       const { periodStart, periodEnd, reimbursementPoint } = searchFilters
-      const invoices = await api.getInvoicesV2(
-        periodStart,
-        periodEnd,
-        reimbursementPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-          ? Number.parseInt(reimbursementPoint, 10)
-          : undefined,
-        offererId
-      )
-
+      const invoices = await apiNew.getInvoicesV2({
+        query: {
+          periodBeginningDate: periodStart,
+          periodEndingDate: periodEnd,
+          bankAccountId:
+            reimbursementPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+              ? Number.parseInt(reimbursementPoint, 10)
+              : undefined,
+          offererId: offererId,
+        },
+      })
       return invoices
     },
     {
@@ -85,7 +89,17 @@ const ReimbursementsInvoices = (): JSX.Element => {
       ? [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId]
       : null,
     ([, selectedOffererId]) =>
-      api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
+      apiNew.getOffererBankAccountsAndAttachedVenues({
+        path: {
+          offerer_id: selectedOffererId,
+        },
+      }),
+    {
+      onError: () =>
+        snackBar.error(
+          'Impossible de récupérer les informations relatives à vos comptes bancaires.'
+        ),
+    }
   )
 
   const handleSearch = useCallback(() => {
@@ -115,7 +129,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
     }))
   )
 
-  const invoices = getInvoicesQuery.data
+  const invoices = getInvoicesQuery.data ?? []
 
   return (
     <>
