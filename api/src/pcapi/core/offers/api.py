@@ -885,16 +885,28 @@ def edit_stock(
         validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
-        modifications["bookingLimitDatetime"] = booking_limit_datetime
-        if booking_limit_datetime:
-            validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
-                stock.offer,
+        if (
+            # bookingLimitDatetime can be set to any datetime through the public API.
+            # However, the pro routes and the client frontend treats it as a... date with a default time part.
+            # Which means that a stock update will include the default time, and the backend
+            # will try to update the bookingLimitDatetime, which could trigger some unexpected validation errors
+            booking_limit_datetime is not None
+            and stock.bookingLimitDatetime is not None
+            and booking_limit_datetime.date() == stock.bookingLimitDatetime.date()
+        ):
+            # nothing to do
+            pass
+        else:
+            modifications["bookingLimitDatetime"] = booking_limit_datetime
+            if booking_limit_datetime:
+                validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+                    stock.offer,
+                    booking_limit_datetime,
+                )
+            validation.check_activation_codes_expiration_datetime_on_stock_edition(
+                stock.activationCodes,
                 booking_limit_datetime,
             )
-        validation.check_activation_codes_expiration_datetime_on_stock_edition(
-            stock.activationCodes,
-            booking_limit_datetime,
-        )
 
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
         modifications["beginningDatetime"] = beginning_datetime
