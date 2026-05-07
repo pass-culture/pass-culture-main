@@ -1,12 +1,17 @@
+import type { JSX } from 'react'
+
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { UserProfile } from '@/pages/User/UserProfile/UserProfile'
 
 const Profile = (): JSX.Element => {
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
 
   return (
-    <BasicLayout mainHeading="Profil" isFullPage={true}>
+    <BasicLayout isFullPage={true}>
+      <MainHeading mainHeading="Profil" />
       <UserProfile
         userIdentityInitialValues={{
           firstName: currentUser.firstName || '',

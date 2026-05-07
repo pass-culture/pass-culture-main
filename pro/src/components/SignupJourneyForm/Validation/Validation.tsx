@@ -48,7 +48,7 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { formatPhoneNumber } from '@/pages/User/UserProfile/UserPhone/UserPhone'
+import { formatPhoneNumber } from '@/pages/User/UserProfile/UserProfile'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
