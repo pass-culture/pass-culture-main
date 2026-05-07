@@ -301,6 +301,10 @@ DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
 )
 
 
+class VenueState(enum.Enum):
+    CLOSED = "CLOSED"
+
+
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
     __tablename__ = "venue"
     thumb_path_component = "venues"
@@ -519,6 +523,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(Activity, use_values=False), nullable=True
+    )
+
+    state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(VenueState), nullable=True, default=None
     )
 
     __table_args__ = (
