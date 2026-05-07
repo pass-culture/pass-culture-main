@@ -26,7 +26,10 @@ import {
 } from '@/commons/utils/localStorageManager'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
-import { SiretInputForm } from '@/components/SiretInputForm/SiretInputForm'
+import {
+  type OffererFormValues,
+  SiretInputForm,
+} from '@/components/SiretInputForm/SiretInputForm'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -35,10 +38,6 @@ import {
   DEFAULT_OFFERER_FORM_VALUES,
 } from './constants'
 import styles from './Offerer.module.scss'
-
-interface OffererFormValues {
-  siret: string
-}
 
 export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
