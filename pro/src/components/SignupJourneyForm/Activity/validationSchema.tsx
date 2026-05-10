@@ -1,4 +1,3 @@
-import parsePhoneNumberFromString from 'libphonenumber-js'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
@@ -7,6 +6,7 @@ import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenTo
 import { getActivities } from '@/commons/mappings/mappings'
 import { objectKeys } from '@/commons/utils/object'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
+import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
 
 export const validationSchema = (
   notOpenToPublic: boolean
@@ -83,22 +83,8 @@ export const validationSchema = (
       })
       .required('Veuillez sélectionner au moins une option'),
 
-    phoneNumber: yup
-      .string()
-      .min(10, 'Veuillez renseigner au moins 10 chiffres')
-      .required('Veuillez renseigner un numéro de téléphone')
-      .max(20, 'Veuillez renseigner moins de 20 chiffres')
-      .test(
-        'isPhoneValid',
-        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
-        // TODO (jm) : Create a standard util function that can be used here and everywhere else (other "validationSchema.ts" files that checks phone numbers format
-        (value) => {
-          if (!value) {
-            return false
-          }
-          const phoneNumber = parsePhoneNumberFromString(value, 'FR')
-          return phoneNumber?.isValid()
-        }
-      ),
+    phoneNumber: phoneNumberSchema().required(
+      'Veuillez renseigner un numéro de téléphone'
+    ),
   })
 }

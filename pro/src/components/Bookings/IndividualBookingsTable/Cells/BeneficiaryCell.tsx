@@ -1,6 +1,7 @@
 import cn from 'classnames'
 
 import type { BookingRecapResponseBeneficiaryModel } from '@/apiClient/v1'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 
 import styles from './BeneficiaryCell.module.scss'
 
@@ -34,7 +35,7 @@ export const BeneficiaryCell = ({
       <br />
       {beneficiaryInfos.phonenumber && (
         <span className={styles['beneficiary-subtitle']}>
-          {beneficiaryInfos.phonenumber}
+          {formatPhoneNumber(beneficiaryInfos.phonenumber)}
         </span>
       )}
     </div>

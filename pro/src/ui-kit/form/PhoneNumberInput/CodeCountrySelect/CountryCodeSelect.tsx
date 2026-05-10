@@ -4,12 +4,12 @@ import { type ChangeEvent, type FocusEvent, useId } from 'react'
 import fullRightIcon from '@/icons/full-right.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import type { PhoneCodeSelectOption } from '../constants'
+import type { CountryCodeSelectOption } from '../PhoneNumberInput'
 import styles from './CountryCodeSelect.module.scss'
 
 interface CountryCodeSelectProps {
   disabled: boolean
-  options: PhoneCodeSelectOption[]
+  options: CountryCodeSelectOption[]
   className?: string
   value: string
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void

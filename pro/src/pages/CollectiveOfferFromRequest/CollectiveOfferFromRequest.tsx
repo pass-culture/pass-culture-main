@@ -13,6 +13,7 @@ import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/c
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDateToFrenchText } from '@/commons/utils/date'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -114,7 +115,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                   },
                   {
                     title: 'Téléphone',
-                    text: informations.phoneNumber ?? '-',
+                    text: formatPhoneNumber(informations.phoneNumber) || '-',
                   },
                   {
                     title: 'Email',

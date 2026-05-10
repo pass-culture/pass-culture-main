@@ -3,6 +3,7 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import {
   type Description,
   SummaryDescriptionList,
@@ -22,7 +23,10 @@ export const CollectiveOfferContactSection = ({
 
   const description: Description[] = [
     { title: 'Email', text: offer.contactEmail ?? '-' },
-    { title: 'Téléphone', text: offer.contactPhone ?? '-' },
+    {
+      title: 'Téléphone',
+      text: formatPhoneNumber(offer.contactPhone) || '-',
+    },
   ]
 
   if (isOfferTemplate) {

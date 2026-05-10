@@ -2,8 +2,9 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PHONE_EXAMPLE_MAP } from './constants'
+import { PHONE_EXAMPLE_MAP } from './constants'
 import {
+  countryCodeSelectOptions,
   PhoneNumberInput,
   type PhoneNumberInputProps,
 } from './PhoneNumberInput'
@@ -35,7 +36,7 @@ describe('PhoneNumberInput', () => {
   it('should have by default the first prefix of the list PHONE_CODE_COUNTRY_CODE_OPTIONS and its corresponding placeholder', () => {
     renderPhoneNumberInput({})
 
-    const defaultCountryCodeOption = PHONE_CODE_COUNTRY_CODE_OPTIONS[0]
+    const defaultCountryCodeOption = countryCodeSelectOptions[0]
     const defaultExample = PHONE_EXAMPLE_MAP[defaultCountryCodeOption.value]
 
     expect(defaultExample).toBeDefined()

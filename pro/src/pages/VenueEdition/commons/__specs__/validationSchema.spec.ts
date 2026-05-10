@@ -44,9 +44,9 @@ describe('VenueEditionForm validationSchema', () => {
     },
     {
       description: 'invalid form for a phone number with the wrong format',
-      formValues: { ...defaultValues, phoneNumber: '1212' },
+      formValues: { ...defaultValues, phoneNumber: '+331212' },
       expectedErrors: [
-        'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78',
       ],
     },
     {

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -36,7 +36,7 @@ export const UserPhoneForm = ({
   const hookForm = useForm({
     defaultValues: initialValues,
     resolver: yupResolver(validationSchema),
-    mode: 'onBlur',
+    mode: 'onTouched',
   })
 
   const {
@@ -46,11 +46,7 @@ export const UserPhoneForm = ({
     reset,
   } = hookForm
 
-  const onSubmit = async (values: UserPhoneInitialValues) => {
-    values.phoneNumber = parseAndValidateFrenchPhoneNumber(
-      values.phoneNumber
-    ).number
-
+  const onSubmit = async (values: UserPhoneBodyModel) => {
     try {
       const response = await apiNew.patchUserPhone({ body: values })
       dispatch(

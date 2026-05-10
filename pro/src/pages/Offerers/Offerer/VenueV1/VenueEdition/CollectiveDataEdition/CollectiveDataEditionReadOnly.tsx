@@ -1,6 +1,7 @@
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
@@ -88,7 +89,9 @@ export const CollectiveDataEditionReadOnly = () => {
           descriptions={[
             {
               title: 'Téléphone',
-              text: selectedPartnerVenue.collectivePhone ?? 'Non renseigné',
+              text:
+                formatPhoneNumber(selectedPartnerVenue.collectivePhone) ||
+                'Non renseigné',
             },
             {
               title: 'Adresse e-mail',

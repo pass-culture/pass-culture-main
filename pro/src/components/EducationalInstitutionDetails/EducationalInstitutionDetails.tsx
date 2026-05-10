@@ -1,4 +1,5 @@
 import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import {
   type Contact,
   EducationalRedactorDetails,
@@ -60,7 +61,7 @@ export const EducationalInstitutionDetails = ({
               src={strokePhoneIcon}
             />
           </dt>
-          <dd>{educationalInstitution.phoneNumber}</dd>
+          <dd>{formatPhoneNumber(educationalInstitution.phoneNumber)}</dd>
         </div>
 
         {newLayout ? (

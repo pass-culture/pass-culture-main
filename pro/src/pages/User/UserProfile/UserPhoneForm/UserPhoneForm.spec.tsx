@@ -15,6 +15,8 @@ const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   })
 }
 
+const INITIAL_PHONE_NUMBER = '0615142345' as const
+
 describe('components:UserPhoneForm', () => {
   let props: UserPhoneFormProps
 
@@ -22,7 +24,7 @@ describe('components:UserPhoneForm', () => {
     props = {
       closeForm: vi.fn(),
       initialValues: {
-        phoneNumber: '0615142345',
+        phoneNumber: INITIAL_PHONE_NUMBER,
       },
     }
   })
@@ -51,13 +53,13 @@ describe('components:UserPhoneForm', () => {
     })
 
     await userEvent.clear(phoneInput)
-    await userEvent.type(phoneInput, '0692790350')
+    await userEvent.type(phoneInput, '0621790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
     expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
       body: {
-        phoneNumber: '+262692790350',
+        phoneNumber: '+330621790350',
       },
     })
   })
@@ -89,15 +91,15 @@ describe('components:UserPhoneForm', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Votre numéro de téléphone n’est pas valide/)
+        screen.getByText(
+          'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
+        )
       ).toBeInTheDocument()
     })
   })
 
   it('should trigger onSubmit callback when submitting', async () => {
-    vi.spyOn(apiNew, 'patchUserPhone').mockResolvedValue({
-      phoneNumber: '+262692790350',
-    })
+    vi.spyOn(apiNew, 'patchUserPhone')
 
     renderUserPhoneForm(props)
 
@@ -106,22 +108,18 @@ describe('components:UserPhoneForm', () => {
     })
 
     await userEvent.clear(phoneInput)
-    await userEvent.type(phoneInput, '0692790350')
+    await userEvent.type(phoneInput, '0621790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
     expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
       body: {
-        phoneNumber: '+262692790350',
+        phoneNumber: '+330621790350',
       },
     })
   })
 
   it('should reset phone number onclick "annuler', async () => {
-    vi.spyOn(apiNew, 'patchUserPhone').mockResolvedValue({
-      phoneNumber: '+262692790350',
-    })
-
     renderUserPhoneForm(props)
 
     const phoneInput = screen.getByRole('textbox', {
@@ -131,6 +129,6 @@ describe('components:UserPhoneForm', () => {
     await userEvent.type(phoneInput, '0692790350')
     await userEvent.click(screen.getByText('Annuler'))
 
-    expect(phoneInput).toHaveValue('0615142345')
+    expect(phoneInput).toHaveValue(INITIAL_PHONE_NUMBER)
   })
 })

@@ -56,10 +56,17 @@ describe('Activity validationSchema', () => {
         ...validFormValues,
         phoneNumber: '',
       },
+      expectedErrors: ['Veuillez renseigner un numéro de téléphone'],
+      notOpenToPublic: false,
+    },
+    {
+      description: 'Invalid phone number',
+      formValues: {
+        ...validFormValues,
+        phoneNumber: '00',
+      },
       expectedErrors: [
-        'Veuillez renseigner au moins 10 chiffres',
-        'Veuillez renseigner un numéro de téléphone',
-        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78',
       ],
       notOpenToPublic: false,
     },

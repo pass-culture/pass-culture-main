@@ -3,24 +3,20 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 import { PhoneNumberInput } from './PhoneNumberInput'
+import { phoneNumberSchema } from './commons/phoneNumberSchema'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 
+const schema = yup.object().shape({
+  phone: phoneNumberSchema().required('Tel obligatoire')
+})
+type WrapperFormValues = yup.InferType<typeof schema>
 // <FormWrapper> provides a react-hook-form context, which is necessary for the storybook demo with error to work
-type WrapperFormValues = { phone: string }
 const FormWrapper = ({ children }: { children: React.ReactNode }) => {
-  const hookForm = useForm<WrapperFormValues>({
+  const hookForm = useForm({
     defaultValues: { phone: '+33612345678' },
-    resolver: yupResolver(
-      yup.object().shape({
-        phone: yup.string().required().test({
-          name: 'is-phone-valid',
-          message: 'Veuillez entrer un numéro de téléphone valide',
-          test: isPhoneValid,
-        }),
-      })
-    ),
+    resolver: yupResolver(schema),
     mode: 'onTouched',
   })
 
@@ -80,7 +76,8 @@ export const Default: Story = {
           error={errors.phone?.message}
         />
         <div style={demoStyles['wrapper']}>
-          RAW value: <pre style={demoStyles['pre']}>{phoneNumber}</pre>
+          RAW value: <pre style={demoStyles['pre']}>{phoneNumber}</pre><br />
+          Formatted value: <pre style={demoStyles['pre']}>{formatPhoneNumber(phoneNumber)}</pre>
         </div>
       </>
     )
