@@ -1,19 +1,9 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { emailSchema } from '@/commons/utils/isValidEmail'
+import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
 
 import type { RequestFormValues } from './type'
-
-const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone) {
-    return true
-  }
-
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  return Boolean(isValid)
-}
 
 export const validationSchema = yup.object<RequestFormValues>().shape({
   teacherEmail: yup
@@ -21,11 +11,7 @@ export const validationSchema = yup.object<RequestFormValues>().shape({
     .max(120)
     .test(emailSchema)
     .required('Veuillez renseigner une adresse email'),
-  teacherPhone: yup.string().test({
-    name: 'is-phone-valid',
-    message: 'Veuillez renseigner un numéro de téléphone valide',
-    test: isPhoneValid,
-  }),
+  teacherPhone: phoneNumberSchema(),
   offerDate: yup.string(),
   offerTime: yup.string(),
   nbStudents: yup

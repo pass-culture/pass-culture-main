@@ -15,6 +15,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -119,7 +120,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                   },
                   {
                     title: 'Téléphone',
-                    text: informations.phoneNumber ?? '-',
+                    text: formatPhoneNumber(informations.phoneNumber) || '-',
                   },
                   {
                     title: 'Email',

@@ -215,7 +215,7 @@ describe('VenueEditionFormScreen', () => {
           ...baseVenue,
           description: 'TOTOTO',
           contact: {
-            phoneNumber: '123',
+            phoneNumber: '0678123456',
             email: 'e@mail.fr',
             website: 'site.web',
             socialMedias: null,
@@ -233,7 +233,7 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText(/Adresse e-mail/)).toBeInTheDocument()
       expect(screen.getByText('e@mail.fr')).toBeInTheDocument()
       expect(screen.getByText(/Téléphone/)).toBeInTheDocument()
-      expect(screen.getByText('123')).toBeInTheDocument()
+      expect(screen.getByText('+33 6 78 12 34 56')).toBeInTheDocument()
       expect(screen.getByText(/URL de votre site web/)).toBeInTheDocument()
       expect(screen.getByText('site.web')).toBeInTheDocument()
       expect(screen.getByText('Bénévolat')).toBeInTheDocument()

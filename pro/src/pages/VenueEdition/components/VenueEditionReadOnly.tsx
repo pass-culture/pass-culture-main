@@ -5,6 +5,7 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
@@ -116,7 +117,9 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           descriptions={[
             {
               title: 'Téléphone',
-              text: venue.contact?.phoneNumber ?? 'Non renseigné',
+              text:
+                formatPhoneNumber(venue.contact?.phoneNumber) ||
+                'Non renseigné',
             },
             {
               title: 'Adresse e-mail',

@@ -30,6 +30,7 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
+import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { humanizeSiret } from '@/commons/utils/siren'
@@ -48,7 +49,6 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { formatPhoneNumber } from '@/pages/User/UserProfile/UserProfile'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -212,7 +212,7 @@ export const Validation = (): JSX.Element | undefined => {
       : null,
     {
       label: 'Téléphone',
-      value: formatPhoneNumber(activity.phoneNumber) ?? '',
+      value: formatPhoneNumber(activity.phoneNumber) || '',
     },
     activity.socialUrls.length > 0
       ? {

@@ -99,13 +99,13 @@ describe('CollectiveOfferSummary', () => {
     renderCollectiveOfferSummary({
       offer: getCollectiveOfferTemplateFactory({
         contactEmail: 'email@test.co',
-        contactPhone: '00000000',
+        contactPhone: '0602030405',
         contactForm: OfferContactFormEnum.FORM,
       }),
     })
 
     expect(screen.getByText('email@test.co')).toBeInTheDocument()
-    expect(screen.getByText('00000000')).toBeInTheDocument()
+    expect(screen.getByText('+33 6 02 03 04 05')).toBeInTheDocument()
     expect(
       screen.getByText('Le formulaire standard Pass Culture')
     ).toBeInTheDocument()

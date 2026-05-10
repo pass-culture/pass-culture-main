@@ -168,14 +168,14 @@ describe('CollectiveDataEdition', () => {
       const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.type(websiteField, 'wrong url')
-      await userEvent.type(phoneField, 'not a valid phone')
+      await userEvent.type(phoneField, '00')
       await userEvent.type(emailField, 'not a valid email')
 
       await userEvent.click(title)
 
       expect(
         screen.queryByText(
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+          'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
         )
       ).toBeInTheDocument()
       expect(
@@ -213,7 +213,7 @@ describe('CollectiveDataEdition', () => {
       )
       expect(
         screen.queryByText(
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+          'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
         )
       ).not.toBeInTheDocument()
       expect(
@@ -245,7 +245,7 @@ describe('CollectiveDataEdition', () => {
       )
       expect(
         screen.queryByText(
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+          'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
         )
       ).not.toBeInTheDocument()
       expect(

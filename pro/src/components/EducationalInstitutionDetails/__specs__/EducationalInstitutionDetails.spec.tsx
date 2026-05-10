@@ -49,7 +49,7 @@ describe('EducationalInstitutionDetails', () => {
         screen.getByText('Mon Établissement scolaire', { exact: false })
       ).toBeInTheDocument()
       expect(screen.getByRole('img', { name: 'Téléphone' })).toBeInTheDocument()
-      expect(screen.getByText('0600000000')).toBeInTheDocument()
+      expect(screen.getByText('+33 6 00 00 00 00')).toBeInTheDocument()
       // Ne doit pas afficher les sections teacher ou redactor
       expect(screen.queryByText('Offre destinée à :')).not.toBeInTheDocument()
       expect(

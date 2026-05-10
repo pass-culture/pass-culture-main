@@ -13,12 +13,36 @@ import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import type { RequiredIndicator } from '@/design-system/common/types'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
+import { isCountryCodeHandledByPassCulture } from './commons/utils/isCountryCodeHandledByPassCulture'
 import {
-  PHONE_CODE_COUNTRY_CODE_OPTIONS,
+  type PassCultureHandledCountryCode,
+  PC_HANDLED_PHONE_COUNTRY_CODES,
   PHONE_EXAMPLE_MAP,
-  type PlusString,
 } from './constants'
 import styles from './PhoneNumberInput.module.scss'
+
+export type CountryCodeSelectOption = { value: PassCultureHandledCountryCode }
+export const countryCodeSelectOptions = PC_HANDLED_PHONE_COUNTRY_CODES.map(
+  (countryCode) => ({ value: countryCode })
+)
+
+const extractPhoneParts = (
+  value: string
+): {
+  countryCode: PassCultureHandledCountryCode | null
+  phoneNumber: string
+} => {
+  const countryCode = PC_HANDLED_PHONE_COUNTRY_CODES.find((cc) =>
+    value.startsWith(cc)
+  )
+  if (countryCode && isCountryCodeHandledByPassCulture(countryCode)) {
+    return {
+      countryCode: countryCode,
+      phoneNumber: value.substring(countryCode.length),
+    }
+  }
+  return { countryCode: null, phoneNumber: value }
+}
 
 export type PhoneNumberInputProps = {
   // native props that are used by react-hook-form’s register() function
@@ -61,45 +85,48 @@ export const PhoneNumberInput = forwardRef<
     const inputId = useId()
     const errorId = useId()
 
-    const defaultPrefix = PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
+    const defaultCountryCode = PC_HANDLED_PHONE_COUNTRY_CODES[0]
 
-    // Initialize states with given value (splits prefix "+33" and phone number "612345678")
-    const { prefix: initialPrefix, phoneNumber: initialPhoneNumber } =
+    // Extract countryCode and nationalNumber to hydrate states from "value"
+    const { countryCode: initialCountryCode, phoneNumber: initialPhoneNumber } =
       extractPhoneParts(value)
 
-    const [prefix, setPrefix] = useState(initialPrefix || defaultPrefix)
-    const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber)
+    // Internal component states (countryCode and nationalNumber)
+    const [countryCode, setCountryCode] =
+      useState<PassCultureHandledCountryCode>(
+        initialCountryCode || defaultCountryCode
+      )
+    const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber || '')
 
     // Function that will updates internal states
-    const setPrefixAndPhoneNumberFrom = useCallback(
-      (value: string) => {
-        const { prefix: newPrefix, phoneNumber: newPhoneNumber } =
-          extractPhoneParts(value)
-        setPrefix(newPrefix || defaultPrefix)
-        setPhoneNumber(newPhoneNumber)
-      },
-      [defaultPrefix]
-    )
+    const setCountryCodeAndPhoneNumberFrom = useCallback((value: string) => {
+      const { countryCode: newCountryCode, phoneNumber: newPhoneNumber } =
+        extractPhoneParts(value)
+      setCountryCode(newCountryCode || defaultCountryCode)
+      setPhoneNumber(newPhoneNumber)
+    }, [])
 
     // Updates internal states when the "value" prop changes from the outside
     useEffect(() => {
-      setPrefixAndPhoneNumberFrom(value)
-    }, [value, setPrefixAndPhoneNumberFrom])
+      setCountryCodeAndPhoneNumberFrom(value)
+    }, [value, setCountryCodeAndPhoneNumberFrom])
 
-    // When <CountryCodeSelect> changes, combine prefix and phone number and notify the change up
-    const handlePrefixChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newPrefix = e.target.value
-      setPrefix(newPrefix)
+    // When <CountryCodeSelect> changes, combine countryCode and phoneNumber and notify the change up
+    const handleCountryCodeChange = (
+      e: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      const newCountryCode = e.target.value as PassCultureHandledCountryCode
+      setCountryCode(newCountryCode)
       if (onChange) {
         // fire an event object based on the original event, but with the combined value
         onChange({
           ...e,
-          target: { ...e.target, value: newPrefix + phoneNumber, name },
+          target: { ...e.target, value: newCountryCode + phoneNumber, name },
         })
       }
     }
 
-    // When input changes, combine prefix and phone number and notify the change up
+    // When input changes, combine countryCode and phoneNumber and notify the change up
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newPhoneNumber = e.target.value
       setPhoneNumber(newPhoneNumber)
@@ -107,7 +134,7 @@ export const PhoneNumberInput = forwardRef<
         // fire an event object based on the original event, but with the combined value
         onChange({
           ...e,
-          target: { ...e.target, value: prefix + newPhoneNumber, name },
+          target: { ...e.target, value: countryCode + newPhoneNumber, name },
         })
       }
     }
@@ -120,20 +147,20 @@ export const PhoneNumberInput = forwardRef<
         // fire an event object based on the original event, but with the combined value
         onBlur({
           ...e,
-          target: { ...e.target, value: prefix + phoneNumber, name },
+          target: { ...e.target, value: countryCode + phoneNumber, name },
         })
       }
     }
 
-    // This does the trick to combine prefix and phone number into a single value :
+    // This does the trick to combine countryCode and phoneNumber into a single value :
     // It will expose a reference to an dummy input element that can be used by react-hook-form or any other external usage that implies a ref
     useImperativeHandle(ref, () => {
       const element = document.createElement('input')
 
       Object.defineProperty(element, 'value', {
-        get: () => prefix + phoneNumber,
+        get: () => countryCode + phoneNumber,
         set: (newValue) => {
-          setPrefixAndPhoneNumberFrom(newValue)
+          setCountryCodeAndPhoneNumberFrom(newValue)
         },
       })
 
@@ -150,7 +177,7 @@ export const PhoneNumberInput = forwardRef<
         </legend>
         <div className={styles['phone-number-input-info']}>
           <p className={styles['phone-format']} id={formatId}>
-            Par exemple : {PHONE_EXAMPLE_MAP[prefix as PlusString]}
+            Par exemple : {PHONE_EXAMPLE_MAP[countryCode]}
           </p>
           {required && requiredIndicator === 'explicit' && (
             <span className={styles['field-header-right']}>Obligatoire</span>
@@ -162,10 +189,10 @@ export const PhoneNumberInput = forwardRef<
           </label>
           <CountryCodeSelect
             disabled={Boolean(disabled)}
-            options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
+            options={countryCodeSelectOptions}
             className={styles['country-code-select']}
-            value={prefix}
-            onChange={handlePrefixChange}
+            value={countryCode}
+            onChange={handleCountryCodeChange}
             onBlur={handleBlur}
           />
           <label htmlFor={inputId} className={styles['visually-hidden']}>
@@ -196,27 +223,3 @@ export const PhoneNumberInput = forwardRef<
 )
 
 PhoneNumberInput.displayName = 'PhoneNumberInput'
-
-/**
- * Splits a phone number into a valid prefix and phone number.
- *
- * @param {string} fullNumber - The full phone number including the country code prefix.
- * @returns {{ prefix: string, phoneNumber: string }} An object containing the extracted prefix and phone number.
- *
- * @example
- * // returns { prefix: "+33", phoneNumber: "612345678" }
- * extractPhoneParts("+33612345678")
- */
-export const extractPhoneParts = (fullNumber: string) => {
-  const prefixes = PHONE_CODE_COUNTRY_CODE_OPTIONS.map((o) => o.value)
-  const foundPrefix = prefixes.find((p) => fullNumber.startsWith(p))
-
-  if (foundPrefix) {
-    return {
-      prefix: foundPrefix,
-      phoneNumber: fullNumber.substring(foundPrefix.length),
-    }
-  }
-
-  return { prefix: '', phoneNumber: fullNumber }
-}

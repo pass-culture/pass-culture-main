@@ -1,12 +1,12 @@
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { objectKeys } from '@/commons/utils/object'
+import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
 
 import { getVolunteeringUrlError } from './getVolunteeringUrlError'
 import type { VenueEditionFormValues } from './types'
@@ -106,18 +106,7 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
         none: yup.boolean().nullable().default(null),
       }),
     email: yup.string().nullable().test(emailSchema),
-    phoneNumber: yup
-      .string()
-      .nullable()
-      .test({
-        name: 'is-phone-valid',
-        message:
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-        test: (phone?: string | null) => {
-          /* istanbul ignore next: DEBT, TO FIX */
-          return phone ? isPhoneValid(phone) : true
-        },
-      }),
+    phoneNumber: phoneNumberSchema(),
     isOpenToPublic: yup
       .string()
       .nullable()

@@ -146,7 +146,7 @@ describe('<CollectiveDataEditionReadOnly />', () => {
       collectivePhone: '0123456789',
     })
 
-    expect(screen.getByText('0123456789')).toBeInTheDocument()
+    expect(screen.getByText('+33 1 23 45 67 89')).toBeInTheDocument()
   })
 
   it('should display collective email', () => {

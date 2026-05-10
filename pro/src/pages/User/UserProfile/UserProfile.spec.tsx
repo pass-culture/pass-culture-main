@@ -5,7 +5,7 @@ import { apiNew } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { formatPhoneNumber, UserProfile } from './UserProfile'
+import { UserProfile } from './UserProfile'
 
 vi.mock('@/apiClient/api', () => ({
   apiNew: {
@@ -94,21 +94,5 @@ describe('UserProfile', () => {
     renderProfile()
 
     expect(screen.getByText('01 23 45 67 89')).toBeInTheDocument()
-  })
-})
-
-describe('formatPhoneNumber', () => {
-  it('should not format if the phone number is null or undefined', () => {
-    expect(formatPhoneNumber(null)).toBe(null)
-    expect(formatPhoneNumber(undefined)).toBe(undefined)
-  })
-  it('should format a phone number spaces correctly', () => {
-    expect(formatPhoneNumber('0123456789')).toBe('01 23 45 67 89')
-    expect(formatPhoneNumber('012 345 6789')).toBe('01 23 45 67 89')
-  })
-
-  it('should format a phone number region indicator correctly', () => {
-    expect(formatPhoneNumber('+33123456789')).toBe('+33 1 23 45 67 89')
-    expect(formatPhoneNumber('+33 123 456 789')).toBe('+33 1 23 45 67 89')
   })
 })

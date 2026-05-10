@@ -1,5 +1,4 @@
 import { addYears, isBefore } from 'date-fns'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
@@ -15,22 +14,12 @@ import type {
 import { checkCoords } from '@/commons/utils/coords'
 import { toDateStrippedOfTimezone } from '@/commons/utils/date'
 import { emailSchema } from '@/commons/utils/isValidEmail'
-import { extractPhoneParts } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
-
-const isPhoneValid = (phone: string | undefined): boolean => {
-  if (!phone || !extractPhoneParts(phone).phoneNumber) {
-    return true
-  }
-
-  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
-  const isValid = phoneNumber?.isValid()
-  return Boolean(isValid)
-}
 
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
@@ -106,22 +95,14 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
         motor: yup.boolean().required(),
         none: yup.boolean().required(),
       }),
-    phone: yup
-      .string()
-      .when(['contactOptions', 'isTemplate'], {
-        is: (
-          contactOptions: OfferEducationalFormValues['contactOptions'],
-          isTemplate: boolean
-        ) => isTemplate && contactOptions?.phone,
-        then: (schema) =>
-          schema.required('Veuillez renseigner un numéro de téléphone'),
-      })
-      .test({
-        name: 'is-phone-valid',
-        message:
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-        test: isPhoneValid,
-      }),
+    phone: phoneNumberSchema().when(['contactOptions', 'isTemplate'], {
+      is: (
+        contactOptions: OfferEducationalFormValues['contactOptions'],
+        isTemplate: boolean
+      ) => isTemplate && contactOptions?.phone,
+      then: (schema) =>
+        schema.required('Veuillez renseigner un numéro de téléphone'),
+    }),
     contactEmail: yup.string().when(['contactOptions', 'isTemplate'], {
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],

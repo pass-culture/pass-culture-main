@@ -235,7 +235,9 @@ describe('RequestFormDialog', () => {
     await userEvent.click(submitButton)
 
     expect(
-      screen.getByText('Veuillez renseigner un numéro de téléphone valide')
+      screen.getByText(
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
+      )
     ).toBeInTheDocument()
   })
 
