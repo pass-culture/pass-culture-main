@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { type Params, useNavigate, useParams } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -31,7 +31,7 @@ export const ResetPassword = (): JSX.Element => {
 
   useEffect(() => {
     if (token) {
-      api.postCheckToken({ token }).then(() => {
+      apiNew.postCheckToken({ body: { token } }).then(() => {
         setIsLoading(false)
       }, invalidTokenHandler)
     }
@@ -42,7 +42,9 @@ export const ResetPassword = (): JSX.Element => {
     try {
       // `as string` is used because TS it can be undefined
       // token is always defined as `submitChangePassword` is callable only in that case.
-      await api.postNewPassword({ newPassword, token: token as string })
+      await apiNew.postNewPassword({
+        body: { newPassword, token: token as string },
+      })
 
       snackBar.success('Mot de passe modifié.')
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -67,17 +69,15 @@ export const ResetPassword = (): JSX.Element => {
 
   return (
     <SignUpLayout mainHeading="Réinitialisez votre mot de passe">
-      <div>
-        <section>
-          <p className={styles['mandatory-info']}>
-            Veuillez définir votre nouveau mot de passe afin d’accéder à la
-            plateforme.
-          </p>
-          <FormProvider {...hookForm}>
-            <ChangePasswordForm onSubmit={submitChangePassword} />
-          </FormProvider>
-        </section>
-      </div>
+      <section>
+        <p className={styles['mandatory-info']}>
+          Veuillez définir votre nouveau mot de passe afin d’accéder à la
+          plateforme.
+        </p>
+        <FormProvider {...hookForm}>
+          <ChangePasswordForm onSubmit={submitChangePassword} />
+        </FormProvider>
+      </section>
     </SignUpLayout>
   )
 }

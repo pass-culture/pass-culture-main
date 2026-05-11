@@ -2,15 +2,16 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
+import { apiNew } from '@/apiClient/api'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 import * as utils from '@/commons/utils/recaptcha'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { LostPassword } from '../LostPassword'
+import { LostPassword } from './LostPassword'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getProfile: vi.fn().mockResolvedValue({}),
     resetPassword: vi.fn().mockResolvedValue({}),
   },
@@ -82,6 +83,55 @@ describe('LostPassword', () => {
         expect(
           screen.getByText(/Vous allez recevoir un email/)
         ).toBeInTheDocument()
+      })
+    })
+
+    it('should call resetPassword again when user resend email', async () => {
+      // given
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+
+      renderLostPassword()
+
+      // first submit
+      await userEvent.type(
+        screen.getByLabelText(/Adresse email */),
+        'coucou@example.com'
+      )
+
+      await userEvent.tab()
+
+      await userEvent.click(screen.getByText(/Réinitialiser/))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Vous allez recevoir un email/)
+        ).toBeInTheDocument()
+      })
+
+      // when
+      await userEvent.click(screen.getByText('cliquez ici'))
+
+      // then
+      await waitFor(() => {
+        expect(apiNew.resetPassword).toHaveBeenCalledTimes(2)
+      })
+
+      expect(apiNew.resetPassword).toHaveBeenNthCalledWith(1, {
+        body: {
+          token: 'token',
+          email: 'coucou@example.com',
+        },
+      })
+
+      expect(apiNew.resetPassword).toHaveBeenNthCalledWith(2, {
+        body: {
+          token: 'token',
+          email: 'coucou@example.com',
+        },
       })
     })
   })
