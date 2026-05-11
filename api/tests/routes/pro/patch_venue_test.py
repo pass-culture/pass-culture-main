@@ -1373,7 +1373,28 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {
             "openingHours.MONDAY": [
-                "Value error, opening hours start (10:00) cannot be after end (08:00)",
+                "Value error, opening hours start (10:00) cannot be after end (08:00), nor can they be equal",
+            ]
+        }
+
+    def test_update_with_opening_hours_having_same_start_and_end(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        venue_data = populate_missing_data_from_venue(
+            {"openingHours": {"MONDAY": [["10:00", "10:00"], ["14:00", "19:30"]]}}, venue
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
+        response = client.patch(f"/venues/{venue_id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "openingHours.MONDAY": [
+                "Value error, opening hours start (10:00) cannot be after end (10:00), nor can they be equal",
             ]
         }
 
