@@ -46,7 +46,7 @@ class CreateCulturalOutreachClaimTest:
             cultural_outreach_api.create_cultural_outreach_claim(offer)
 
         assert exc.value.errors == {
-            "global": ["Le secteur d'activité de la structure ne permet pas de déclarer une action de médiation"]
+            "global": ["L'activité principale de la structure ne permet pas de déclarer une action de médiation"]
         }
         count = db.session.scalar(sa.select(sa.func.count()).select_from(cultural_outreach_models.CulturalOutreach))
         assert count == 0
@@ -134,7 +134,7 @@ class UpdateCulturalOutreachClaimTest:
             cultural_outreach_api.update_cultural_outreach_claim(self.mock_claim_datetime, offer)
 
         assert exc.value.errors == {
-            "global": ["Le secteur d'activité de la structure ne permet pas de déclarer une action de médiation"]
+            "global": ["L'activité principale de la structure ne permet pas de déclarer une action de médiation"]
         }
 
     def test_raises_when_offer_is_pending_or_rejected(self):
