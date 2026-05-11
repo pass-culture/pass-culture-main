@@ -2,7 +2,6 @@ import { type LoaderFunctionArgs, redirect } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
-import { isFeatureActive } from '@/commons/store/features/selectors'
 import { addSnackBar } from '@/commons/store/snackBar/reducer'
 import { rootStore } from '@/commons/store/store'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
@@ -11,11 +10,6 @@ import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 export const validateSignupActivation = async (
   args: LoaderFunctionArgs<{ token: string }>
 ) => {
-  const state = rootStore.getState()
-  if (!isFeatureActive(state, 'WIP_SWITCH_VENUE')) {
-    return
-  }
-
   const { token } = args.params
   if (!token) {
     throw redirect('/connexion')

@@ -16,9 +16,6 @@ const setupStore = (options: {
   hasVenue?: boolean
 }) => {
   const store = configureTestStore({
-    features: {
-      list: [{ id: 1, isActive: true, name: 'WIP_SWITCH_VENUE' }],
-    },
     user: {
       access: options.access ?? null,
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,

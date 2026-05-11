@@ -5,7 +5,6 @@ import * as router from 'react-router'
 import { api } from '@/apiClient/api'
 import type {
   CollectiveOfferTemplateResponseModel,
-  GetOffererAddressResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -16,12 +15,14 @@ import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
@@ -59,7 +60,7 @@ vi.mock('@/apiClient/api', () => {
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
-      getOffererAddresses: vi.fn(),
+      getVenueAddresses: vi.fn(),
     },
   }
 })
@@ -108,11 +109,11 @@ vi.mock('repository/venuesService', async () => ({
 describe('route TemplateCollectiveOffers', () => {
   let offersRecap: CollectiveOfferTemplateResponseModel[]
 
-  const offererAddress: GetOffererAddressResponseModel[] = [
-    offererAddressFactory({
+  const offererAddress = [
+    venueAddressFactory(1, {
       label: 'Label',
     }),
-    offererAddressFactory({
+    venueAddressFactory(1, {
       city: 'New York',
     }),
   ]
@@ -130,7 +131,7 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(offererAddress)
   })
 
   afterEach(() => {
@@ -275,13 +276,13 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     const getMockedAddresses = () => [
-      offererAddressFactory({ label: 'Label' }),
-      offererAddressFactory({ city: 'New York' }),
+      venueAddressFactory(1, { label: 'Label' }),
+      venueAddressFactory(1, { city: 'New York' }),
     ]
 
     const setupAddresses = () => {
       const offererAddress = getMockedAddresses()
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+      vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(offererAddress)
       return offererAddress
     }
 

@@ -4,7 +4,6 @@ import {
   CollectiveLocationType,
   CollectiveOfferDisplayedStatus,
   EacFormat,
-  GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import {
@@ -15,9 +14,7 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
@@ -29,7 +26,7 @@ import styles from '../TemplateCollectiveOffersScreen.module.scss'
 interface TemplateOffersSearchFiltersProps {
   hasFilters: boolean
   applyFilters: (filters: CollectiveSearchFiltersParams) => void
-  offererId: string | undefined
+  offererId: string
   selectedFilters: CollectiveSearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
@@ -73,16 +70,10 @@ export const TemplateOffersSearchFilters = ({
   offererId,
   disableAllFilters,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
-  )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(
-    withSwitchVenueFeature ? venueAddressQuery.data : offererAddressQuery.data
-  )
+  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const locationOptions = [
     {
@@ -143,7 +134,7 @@ export const TemplateOffersSearchFilters = ({
     event.preventDefault()
     const newSearchFilters = {
       ...selectedFilters,
-      offererId: offererId?.toString() ?? '',
+      offererId,
     }
 
     applyFilters(newSearchFilters)
