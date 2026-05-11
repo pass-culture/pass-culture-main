@@ -19,7 +19,6 @@ type UserState = {
   venues: VenueListItemLiteResponseModel[] | null
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
   // TODO (cmoinier, 2026-03-13): Refactor offererNames / offererNamesValidated / offerersNamesWithPendingValidation into a single array with a 'isAttached' boolean
-  currentOffererName: GetOffererNameResponseModel | null
   offererNames: GetOffererNameResponseModel[] | null
   offererNamesValidated: GetOffererNameResponseModel[] | null
   offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
@@ -33,7 +32,6 @@ const initialState: UserState = {
   venues: null,
   venuesWithPendingValidation: null,
   offererNamesValidated: null,
-  currentOffererName: null,
   offerersNamesWithPendingValidation: null,
   offererNames: null,
 }
@@ -86,13 +84,6 @@ const userSlice = createSlice({
         action.payload.venuesWithPendingValidation
     },
 
-    setCurrentOffererName: (
-      state: UserState,
-      action: PayloadAction<GetOffererNameResponseModel | null>
-    ) => {
-      state.currentOffererName = action.payload
-    },
-
     updateOffererNames: (
       state: UserState,
       action: PayloadAction<UpdateOffererNamesPayload>
@@ -116,6 +107,5 @@ export const {
   setSelectedAdminOfferer,
   setSelectedPartnerVenue,
   setVenues,
-  setCurrentOffererName,
   updateOffererNames,
 } = userSlice.actions

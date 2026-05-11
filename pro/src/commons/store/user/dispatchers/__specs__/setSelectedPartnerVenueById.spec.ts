@@ -65,7 +65,6 @@ describe('setSelectedPartnerVenueById', () => {
           managingOffererId: 300,
         }),
       ],
-      currentOffererName: getOffererNameFactory({ id: 200 }),
       offererNamesValidated: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
@@ -99,7 +98,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).not.toHaveBeenCalled()
 
     const state = store.getState()
-    expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
@@ -133,7 +131,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
-    expect(state.user.currentOffererName?.id).toBe(100)
 
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
@@ -165,7 +162,6 @@ describe('setSelectedPartnerVenueById', () => {
     const state = store.getState()
     expect(state.user.access).toBe('no-onboarding')
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
-    expect(state.user.currentOffererName?.id).toBe(100)
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
@@ -189,7 +185,6 @@ describe('setSelectedPartnerVenueById', () => {
     const state = store.getState()
     expect(state.user.access).toBe('unattached')
     expect(state.user.selectedAdminOfferer?.id).toBe(300)
-    expect(state.user.currentOffererName?.id).toBe(300)
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
 
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('301')
@@ -263,7 +258,6 @@ describe('setSelectedPartnerVenueById', () => {
           }),
         ],
         venuesWithPendingValidation: null,
-        currentOffererName: getOffererNameFactory({ id: 200 }),
         offererNamesValidated: [
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),
@@ -328,7 +322,6 @@ describe('setSelectedPartnerVenueById', () => {
 
     const state = store.getState()
     expect(state.user.access).toBeNull()
-    expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')

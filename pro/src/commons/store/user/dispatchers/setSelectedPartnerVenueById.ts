@@ -16,7 +16,6 @@ import {
 
 import type { AppThunkApiConfig } from '../../store'
 import {
-  setCurrentOffererName,
   setSelectedPartnerVenue,
   type UserAccess,
   updateUserAccess,
@@ -109,8 +108,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedPartnerVenue.id)
       )
-      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedPartnerVenue(nextSelectedPartnerVenue))
       return {
         selectedPartnerVenue: nextSelectedPartnerVenue,
