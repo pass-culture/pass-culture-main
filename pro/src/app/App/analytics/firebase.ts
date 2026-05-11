@@ -1,5 +1,3 @@
-/* istanbul ignore file: DEBT, TO FIX */
-
 import {
   logEvent as analyticsLogEvent,
   getAnalytics,
@@ -21,7 +19,6 @@ import { isError } from '@/apiClient/helpers'
 import { firebaseConfig } from '@/commons/config/firebase'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useUtmQueryParams } from '@/commons/hooks/useUtmQueryParams'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 let firebaseApp: firebase.FirebaseApp | undefined
@@ -51,7 +48,9 @@ export const destroyFirebase = async () => {
 
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useAppSelector(selectCurrentUser)
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
 
@@ -79,12 +78,10 @@ export const useFirebase = (consentedToFirebase: boolean) => {
 
     if (consentedToFirebase) {
       if (!firebaseApp) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         loadAnalytics()
       }
     } else {
       if (firebaseApp) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         destroyFirebase()
         setIsFirebaseInitialized(false)
       }
@@ -98,12 +95,12 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [currentUser, isFirebaseInitialized])
 
   useEffect(() => {
-    if (isFirebaseInitialized && selectedOffererId) {
+    if (isFirebaseInitialized && selectedPartnerVenue) {
       setUserProperties(getAnalytics(firebaseApp), {
-        offerer_id: selectedOffererId.toString(),
+        offerer_id: selectedPartnerVenue.managingOfferer.id.toString(),
       })
     }
-  }, [selectedOffererId, isFirebaseInitialized])
+  }, [selectedPartnerVenue, isFirebaseInitialized])
 }
 
 export const useRemoteConfigParams = () => {

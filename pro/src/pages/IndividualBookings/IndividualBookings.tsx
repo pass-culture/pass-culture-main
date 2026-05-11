@@ -15,7 +15,6 @@ import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
@@ -45,7 +44,6 @@ export const IndividualBookings = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
@@ -64,7 +62,7 @@ export const IndividualBookings = () => {
     updateUrl,
   } = useBookingsFilters({
     venueId: selectedPartnerVenue.id.toString(),
-    offererId: selectedOfferer.id.toString(),
+    offererId: selectedPartnerVenue.managingOfferer.id.toString(),
   })
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY

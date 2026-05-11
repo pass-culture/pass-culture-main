@@ -519,7 +519,7 @@ describe('IndividualOffersScreen', () => {
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: undefined,
+          venueId: 2,
         },
       })
     })
@@ -555,7 +555,7 @@ describe('IndividualOffersScreen', () => {
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: undefined,
+          venueId: 2,
         },
       })
     })

@@ -1,11 +1,13 @@
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
-
 import { useAppSelector } from './useAppSelector'
 
 export const useIsCaledonian = (isAdmin = false) => {
-  const offerer = useAppSelector(selectCurrentOfferer)
-  const isAdminOfferer = useAppSelector(
+  const selectedPartnerVenue = useAppSelector(
+    (store) => store.user.selectedPartnerVenue
+  )
+  const selectedAdminOfferer = useAppSelector(
     (store) => store.user.selectedAdminOfferer
   )
-  return isAdmin ? isAdminOfferer?.isCaledonian : offerer?.isCaledonian
+  return isAdmin
+    ? selectedAdminOfferer?.isCaledonian
+    : selectedPartnerVenue?.isCaledonian
 }

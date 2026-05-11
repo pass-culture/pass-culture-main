@@ -14,6 +14,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   type RenderWithProvidersOptions,
@@ -73,7 +74,12 @@ const renderPartnerPages = (
     />,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: defaultGetVenue.id,
+          }),
+        },
         offerer: currentOffererFactory(),
       },
       ...options,
@@ -203,7 +209,12 @@ describe('VenueEditionHeader', () => {
       {
         user: sharedCurrentUserFactory(),
         storeOverrides: {
-          user: { currentUser: sharedCurrentUserFactory() },
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: defaultGetVenue.id,
+            }),
+          },
           offerer: currentOffererFactory(),
         },
       }

@@ -8,7 +8,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivityLabel } from '@/commons/mappings/mappings'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -36,7 +36,7 @@ export const VenueEditionHeader = ({
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const { syncVenue } = useSyncVenueCache()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const snackBar = useSnackBar()
 
@@ -59,7 +59,7 @@ export const VenueEditionHeader = ({
 
   const logButtonAddClick = () => {
     logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
-      offererId: selectedOffererId?.toString(),
+      offererId: selectedPartnerVenue.managingOfferer.id.toString(),
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
