@@ -64,7 +64,7 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
-    label: 'Horaires',
+    label: 'Horaires et stocks',
     shouldInclude: (ctx) => ctx.isEvent === null || ctx.isEvent === true,
     buildCanGoBeyondStep: () => (offer) => Boolean(offer?.hasStocks),
   },

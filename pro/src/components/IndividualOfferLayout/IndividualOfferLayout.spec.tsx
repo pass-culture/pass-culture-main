@@ -141,8 +141,7 @@ describe('IndividualOfferLayout', () => {
       expect(screen.getByText('Template child')).toBeInTheDocument()
       expect(screen.getByText('Description')).toBeInTheDocument()
       expect(screen.getByText('Tarifs')).toBeInTheDocument()
-      expect(screen.getByText('Horaires')).toBeInTheDocument()
-
+      expect(screen.getByText('Horaires et stocks')).toBeInTheDocument()
       expect(screen.getByText(/offer name/)).toBeInTheDocument()
     })
 
