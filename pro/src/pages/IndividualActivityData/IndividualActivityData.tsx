@@ -1,12 +1,15 @@
+import useSWR from 'swr'
+
+import { api } from '@/apiClient/api'
 import {
   GetOffererAddressesWithOffersOption,
   GetVenueAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { GET_OFFERER_ADDRESS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
-import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'
@@ -35,8 +38,16 @@ const IndividualActivityData = () => {
     offererId: selectedAdminOfferer.id.toString(),
   })
 
-  const offererAddressQuery = useOffererAddresses(
-    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+  const offererAddressQuery = useSWR(
+    [GET_OFFERER_ADDRESS_QUERY_KEY, selectedAdminOfferer.id],
+    ([, offererIdParam]) =>
+      offererIdParam
+        ? api.getOffererAddresses(
+            offererIdParam,
+            GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+          )
+        : [],
+    { fallbackData: [] }
   )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
