@@ -57,7 +57,7 @@ export const VenueEdition = (): JSX.Element | null => {
           />
 
           {context === 'collective' ? (
-            <CollectiveDataEdition venue={selectedPartnerVenue} />
+            <CollectiveDataEdition />
           ) : (
             <VenueEditionFormScreen venue={selectedPartnerVenue} />
           )}

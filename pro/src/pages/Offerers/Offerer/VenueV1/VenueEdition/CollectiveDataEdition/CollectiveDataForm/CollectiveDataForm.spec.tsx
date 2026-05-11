@@ -8,6 +8,8 @@ import {
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -41,7 +43,7 @@ vi.mock('swr', async () => {
 
 function renderCollectiveDataForm(
   options?: RenderWithProvidersOptions,
-  venueOverrides?: GetVenueResponseModel
+  venueOverrides?: Partial<GetVenueResponseModel>
 ) {
   return renderWithProviders(
     <CollectiveDataForm
@@ -59,9 +61,20 @@ function renderCollectiveDataForm(
         { id: '1', label: 'Arts numériques' },
         { id: '2', label: 'Architecture' },
       ]}
-      venue={{ ...defaultGetVenue, ...venueOverrides }}
     />,
-    options
+    {
+      ...options,
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            ...defaultGetVenue,
+            ...venueOverrides,
+          }),
+        },
+        ...options?.storeOverrides,
+      },
+    }
   )
 }
 
@@ -134,7 +147,7 @@ describe('CollectiveDataForm', () => {
   })
 
   it('should have blank activity field is activity is null', () => {
-    renderCollectiveDataForm({}, { ...defaultGetVenue, activity: null })
+    renderCollectiveDataForm({}, { activity: null })
 
     const activityField = screen.getByRole('combobox', {
       name: /Activité principale/,

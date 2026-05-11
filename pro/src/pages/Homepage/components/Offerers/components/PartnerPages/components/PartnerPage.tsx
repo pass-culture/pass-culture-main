@@ -87,15 +87,7 @@ export const PartnerPage = () => {
           venueName={selectedPartnerVenue.name}
         />
       )}
-      <PartnerPageCollectiveSection
-        lastCollectiveDmsApplication={
-          selectedPartnerVenue.lastCollectiveDmsApplication
-        }
-        venueId={selectedPartnerVenue.id}
-        venueName={selectedPartnerVenue.name}
-        allowedOnAdage={selectedPartnerVenue.allowedOnAdage}
-        isDisplayedInHomepage
-      />
+      <PartnerPageCollectiveSection isDisplayedInHomepage />
     </Panel>
   )
 }

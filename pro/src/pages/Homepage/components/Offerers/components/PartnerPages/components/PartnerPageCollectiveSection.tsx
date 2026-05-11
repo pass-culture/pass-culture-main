@@ -1,6 +1,8 @@
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import { DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -8,36 +10,29 @@ import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from './PartnerPage.module.scss'
 
-export type PartnerPageCollectiveSectionProps = {
-  lastCollectiveDmsApplication: DMSApplicationForEAC | null
-  venueId: number
-  venueName: string
-  allowedOnAdage: boolean
+interface PartnerPageCollectiveSectionProps {
   isDisplayedInHomepage?: boolean
 }
 
-export function PartnerPageCollectiveSection({
-  venueId,
-  venueName,
-  allowedOnAdage,
-  lastCollectiveDmsApplication,
+export const PartnerPageCollectiveSection = ({
   isDisplayedInHomepage = false,
-}: PartnerPageCollectiveSectionProps) {
+}: Readonly<PartnerPageCollectiveSectionProps>) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { logEvent } = useAnalytics()
 
   const logCollectiveHelpLinkClick = () => {
     logEvent(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
-      venueId: venueId,
+      venueId: selectedPartnerVenue.id,
     })
   }
 
   const logDMSApplicationLinkClick = () => {
     logEvent(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK, {
-      venueId: venueId,
+      venueId: selectedPartnerVenue.id,
     })
   }
 
-  if (allowedOnAdage) {
+  if (selectedPartnerVenue.allowedOnAdage) {
     return (
       <AdageInformations
         tagText="Référencé dans ADAGE"
@@ -48,17 +43,19 @@ export function PartnerPageCollectiveSection({
             ? 'Les enseignants voient les offres vitrines et celles que vous adressez à leur établissement sur ADAGE. Complétez vos informations à destination des enseignants pour qu’ils vous contactent !'
             : undefined
         }
-        venueName={venueName}
+        venueName={selectedPartnerVenue.name}
       />
     )
-  } else if (lastCollectiveDmsApplication === null) {
+  }
+
+  if (selectedPartnerVenue.lastCollectiveDmsApplication === null) {
     return (
       <AdageInformations
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.DEFAULT}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Éducation nationale dédiée à l’EAC."
-        venueName={venueName}
+        venueName={selectedPartnerVenue.name}
       >
         <div className={styles['details-link']}>
           <Button
@@ -87,9 +84,13 @@ export function PartnerPageCollectiveSection({
         </div>
       </AdageInformations>
     )
-  } else if (
-    lastCollectiveDmsApplication.state === DMSApplicationstatus.REFUSE ||
-    lastCollectiveDmsApplication.state === DMSApplicationstatus.SANS_SUITE
+  }
+
+  if (
+    selectedPartnerVenue.lastCollectiveDmsApplication.state ===
+      DMSApplicationstatus.REFUSE ||
+    selectedPartnerVenue.lastCollectiveDmsApplication.state ===
+      DMSApplicationstatus.SANS_SUITE
   ) {
     return (
       <AdageInformations
@@ -99,21 +100,18 @@ export function PartnerPageCollectiveSection({
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être
         référencé dans ADAGE, l’application du ministère de l’Éducation
         nationale dédiée à l’EAC."
-        venueName={venueName}
+        venueName={selectedPartnerVenue.name}
       />
     )
   }
-  // Last case :
-  // (lastCollectiveDmsApplication?.state === DMSApplicationstatus.ACCEPTE && !hasAdageId) ||
-  // lastCollectiveDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
-  // lastCollectiveDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION)
+
   return (
     <AdageInformations
       tagText="Référencement en cours"
       variant={TagVariant.WARNING}
       isDisplayedInHomepage={isDisplayedInHomepage}
       description="Votre démarche de référencement est en cours de traitement par ADAGE."
-      venueName={venueName}
+      venueName={selectedPartnerVenue.name}
     >
       <div className={styles['details-link']}>
         <Button

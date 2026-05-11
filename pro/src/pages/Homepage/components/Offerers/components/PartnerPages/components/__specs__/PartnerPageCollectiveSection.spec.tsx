@@ -1,25 +1,41 @@
 import { screen } from '@testing-library/react'
 
-import { DMSApplicationstatus } from '@/apiClient/v1'
+import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import {
-  PartnerPageCollectiveSection,
-  type PartnerPageCollectiveSectionProps,
-} from '../PartnerPageCollectiveSection'
+import { PartnerPageCollectiveSection } from '../PartnerPageCollectiveSection'
 
-const renderPartnerPageCollectiveSection = (
-  props: Partial<PartnerPageCollectiveSectionProps>
-) => {
+type RenderOptions = {
+  lastCollectiveDmsApplication?: DMSApplicationForEAC | null
+  allowedOnAdage?: boolean
+  isDisplayedInHomepage?: boolean
+}
+
+const renderPartnerPageCollectiveSection = ({
+  lastCollectiveDmsApplication = defaultDMSApplicationForEAC,
+  allowedOnAdage = false,
+  isDisplayedInHomepage,
+}: RenderOptions = {}) => {
   renderWithProviders(
     <PartnerPageCollectiveSection
-      lastCollectiveDmsApplication={defaultDMSApplicationForEAC}
-      venueId={7}
-      venueName="Venue name"
-      allowedOnAdage={false}
-      {...props}
-    />
+      isDisplayedInHomepage={isDisplayedInHomepage}
+    />,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 7,
+            name: 'Venue name',
+            allowedOnAdage,
+            lastCollectiveDmsApplication,
+          }),
+        },
+      },
+    }
   )
 }
 
