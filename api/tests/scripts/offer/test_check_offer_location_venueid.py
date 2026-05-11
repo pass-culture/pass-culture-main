@@ -9,6 +9,7 @@ from pcapi.core.offerers.factories import OfferLocationFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.models import LocationType
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -34,6 +35,9 @@ def test_check_incorrect_offer_location_venueid():
         offererAddress=offer1.offererAddress,
         locationType=educational_models.CollectiveLocationType.ADDRESS,
     )
+    db.session.flush()
+    venue1.isSoftDeleted = True
+    db.session.flush()
     from pcapi.scripts.check_offer_location_venueid.main import main
 
     main(apply=True, locations_to_exclude=[])

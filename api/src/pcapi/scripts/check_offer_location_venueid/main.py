@@ -6,7 +6,7 @@ You can start the job from the infra repository with github cli :
 gh workflow run on_dispatch_pcapi_console_job.yaml \
   -f ENVIRONMENT_SHORT_NAME=tst \
   -f RESOURCES="512Mi/.5" \
-  -f BRANCH_NAME=bdalbianco/PC-40096 \
+  -f BRANCH_NAME=PC-41032-ne-pas-laisser-de-localisations-liees-a-des-venues-soft-deleted \
   -f NAMESPACE=check_offer_location_venueid \
   -f SCRIPT_ARGUMENTS="";
 
@@ -121,28 +121,27 @@ def find_incorrect_offers(
 
 
 def main(apply: bool, locations_to_exclude: list[int]) -> None:
+    offer_locations_to_check_query = (
+        db.session.query(offerers_models.OffererAddress)
+        .join(offerers_models.OffererAddress.venue)
+        .filter(
+            offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            offerers_models.Venue.isSoftDeleted == True,
+        )
+        .execution_options(include_deleted=True)
+    )
     if locations_to_exclude:
-        offer_locations_to_check = (
-            db.session.query(offerers_models.OffererAddress)
-            .filter(
-                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
-                offerers_models.OffererAddress.id.not_in(locations_to_exclude),
-            )
-            .all()
+        offer_locations_to_check_query = offer_locations_to_check_query.filter(
+            offerers_models.OffererAddress.id.not_in(locations_to_exclude),
         )
-    else:
-        offer_locations_to_check = (
-            db.session.query(offerers_models.OffererAddress)
-            .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION)
-            .all()
-        )
+    offer_locations_to_check = offer_locations_to_check_query.all()
     counter = 0
     for location in offer_locations_to_check:
         try:
             with atomic():
                 db.session.query(offerers_models.Venue.id).filter(
                     offerers_models.Venue.managingOffererId == location.offererId
-                ).one()
+                ).execution_options(include_deleted=True).one()
         except sa_exc.MultipleResultsFound:
             find_incorrect_offers(location, apply=apply, offer_model=educational_models.CollectiveOfferTemplate)
             find_incorrect_offers(location, apply=apply, offer_model=educational_models.CollectiveOffer)
