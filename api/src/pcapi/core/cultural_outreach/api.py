@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def _check_can_claim_cultural_outreach(offer: offers_models.Offer) -> bool:
     if offer.venue.activity not in CULTURAL_OUTREACH_ALLOWED_ACTIVITIES:
         raise CulturalOutreachException(
-            {"global": ["Le secteur d'activité de la structure ne permet pas de déclarer une action de médiation"]}
+            {"global": ["L'activité principale de la structure ne permet pas de déclarer une action de médiation"]}
         )
 
     if offer.validation not in CULTURAL_OUTREACH_ALLOWED_VALIDATION_STATUSES:
