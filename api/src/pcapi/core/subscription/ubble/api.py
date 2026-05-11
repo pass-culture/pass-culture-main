@@ -7,6 +7,7 @@ import re
 import shutil
 import tempfile
 import typing
+import urllib.parse
 from functools import partial
 
 import flask
@@ -16,6 +17,7 @@ from pydantic.v1.networks import HttpUrl
 
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
+from pcapi import settings
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
@@ -150,7 +152,9 @@ def start_ubble_workflow(
     from pcapi.core.subscription.ubble import tasks as ubble_tasks
 
     if webhook_url is None:
-        webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
+        webhook_url = urllib.parse.urljoin(
+            settings.API_URL, flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=False)
+        )
 
     ubble_fraud_check = _get_last_ubble_fraud_check(user)
     if ubble_fraud_check is None or not _should_reattempt_identity_verification(ubble_fraud_check):
