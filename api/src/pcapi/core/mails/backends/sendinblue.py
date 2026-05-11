@@ -175,7 +175,10 @@ class SendinblueBackend(BaseBackend):
             #     "message": "Unable to update contact, email is already associated with another Contact",
             #     "metadata":{"duplicate_identifiers":["email"]}
             # }
-            if code == "duplicate_parameter" and data.get("metadata", {}).get("duplicate_identifiers") == ["email"]:
+            # Same body with "code": "invalid_parameter".
+            if code in ("duplicate_parameter", "invalid_parameter") and data.get("metadata", {}).get(
+                "duplicate_identifiers"
+            ) == ["email"]:
                 return self.delete_contact(payload.email)
 
             if code:
