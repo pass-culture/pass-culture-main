@@ -1,10 +1,7 @@
 import { vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import {
-  SAVED_OFFERER_ID_KEY,
-  SAVED_VENUE_ID_KEY,
-} from '@/commons/core/shared/constants'
+import { SAVED_VENUE_ID_KEY } from '@/commons/core/shared/constants'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import * as handleErrorModule from '@/commons/errors/handleError'
 import type { RootState } from '@/commons/store/store'
@@ -83,7 +80,6 @@ describe('setSelectedPartnerVenueById', () => {
   }
 
   beforeEach(() => {
-    localStorage.setItem(SAVED_OFFERER_ID_KEY, '200')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '201')
   })
 
@@ -106,7 +102,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
   })
 
@@ -140,7 +135,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
     expect(state.user.currentOffererName?.id).toBe(100)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
@@ -174,7 +168,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.currentOffererName?.id).toBe(100)
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
@@ -199,7 +192,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.currentOffererName?.id).toBe(300)
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('300')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('301')
   })
 
@@ -234,7 +226,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).not.toHaveBeenCalled()
     expect(api.getOfferer).not.toHaveBeenCalled()
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
   })
 
@@ -306,7 +297,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
   })
 
@@ -341,7 +331,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
   })
 

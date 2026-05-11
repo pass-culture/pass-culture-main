@@ -106,10 +106,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         '`nextSelectedOffererName` is undefined.'
       )
       localStorageManager.setItem(
-        LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID,
-        String(nextSelectedOfferer.id)
-      )
-      localStorageManager.setItem(
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedPartnerVenue.id)
       )

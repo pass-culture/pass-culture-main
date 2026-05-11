@@ -43,11 +43,11 @@ describe('localStorageManager', () => {
     localStorageManager.removeItem(key)
     expect(localStorage.getItem(key)).toBe('seed')
 
-    localStorageManager.clearPassCultureKeys()
+    localStorageManager.clear()
     expect(localStorage.getItem('PASS_CULTURE_SELECTED_VENUE_ID')).toBe('seed')
   })
 
-  it('should remove only keys prefixed with PASS_CULTURE_ when calling clearPassCultureKeys', () => {
+  it('should remove every key — prefixed or not — when calling clear', () => {
     vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
 
     localStorage.setItem('PASS_CULTURE_SELECTED_VENUE_ID', 'venue-1')
@@ -58,22 +58,22 @@ describe('localStorageManager', () => {
     localStorage.setItem('homepageSelectedOffererId', '42')
     localStorage.setItem('someOtherKey', 'value')
 
-    localStorageManager.clearPassCultureKeys()
+    localStorageManager.clear()
 
     expect(localStorage.getItem('PASS_CULTURE_SELECTED_VENUE_ID')).toBeNull()
     expect(
       localStorage.getItem('PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS')
     ).toBeNull()
-    expect(localStorage.getItem('homepageSelectedOffererId')).toBe('42')
-    expect(localStorage.getItem('someOtherKey')).toBe('value')
+    expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
+    expect(localStorage.getItem('someOtherKey')).toBeNull()
   })
 
-  it('should preserve persistent keys when calling clearPassCultureKeys', () => {
+  it('should preserve persistent keys when calling clear', () => {
     vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
 
     localStorage.setItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION', 'true')
 
-    localStorageManager.clearPassCultureKeys()
+    localStorageManager.clear()
 
     expect(
       localStorage.getItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')

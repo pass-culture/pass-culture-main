@@ -485,9 +485,6 @@ describe('error handling', () => {
 
     await store.dispatch(initializeUser({ user })).unwrap()
 
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-    ).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
@@ -496,7 +493,6 @@ describe('error handling', () => {
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
     vi.spyOn(api, 'signout').mockResolvedValue()
 
-    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '34')
 
     const store = configureTestStore()
@@ -514,9 +510,6 @@ describe('error handling', () => {
     expect(state.user.selectedPartnerVenue).toBeNull()
     expect(state.user.venues).toBeNull()
 
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
-    ).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 })

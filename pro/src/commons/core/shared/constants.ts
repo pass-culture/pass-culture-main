@@ -14,7 +14,6 @@ export const FORM_ERROR_MESSAGE =
 
 export const NBSP = '\u00a0'
 
-export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
 export const SAVED_VENUE_ID_KEY = `${PASS_CULTURE_PREFIX}SELECTED_VENUE_ID`
 
 export const DEFAULT_MARSEILLE_STUDENTS = [
