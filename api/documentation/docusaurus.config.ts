@@ -176,6 +176,7 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+  clientModules: [require.resolve("./src/hash-nav.js")], // fixes processing of hashes in url
 };
 
 export default config;
