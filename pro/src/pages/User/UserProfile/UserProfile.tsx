@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { apiNew } from '@/apiClient/api'
-import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
 import { Button } from '@/design-system/Button/Button'
@@ -16,7 +15,10 @@ import fullBackIcon from '@/icons/full-back.svg'
 import type { UserIdentityFormValues } from '@/pages/User/UserProfile/UserIdentityForm/types'
 import { UserIdentityForm } from '@/pages/User/UserProfile/UserIdentityForm/UserIdentityForm'
 import { UserPasswordForm } from '@/pages/User/UserProfile/UserPasswordForm/UserPasswordForm'
-import { UserPhoneForm } from '@/pages/User/UserProfile/UserPhoneForm/UserPhoneForm'
+import {
+  UserPhoneForm,
+  type UserPhoneInitialValues,
+} from '@/pages/User/UserProfile/UserPhoneForm/UserPhoneForm'
 
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
 import { Forms } from './constants'
@@ -30,7 +32,7 @@ import styles from './UserProfile.module.scss'
 
 interface UserProfileProps {
   userIdentityInitialValues: UserIdentityFormValues
-  userPhoneInitialValues: UserPhoneBodyModel
+  userPhoneInitialValues: UserPhoneInitialValues
   userEmailInitialValues: UserEmailInitialValues
 }
 
