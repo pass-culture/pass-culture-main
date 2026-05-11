@@ -13,7 +13,7 @@ import {
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   Banner,
   type BannerLink,
@@ -34,7 +34,7 @@ export const CancelledBanner = ({
 }) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const snackBar = useSnackBar()
 
   const message = useMemo(() => {
@@ -75,7 +75,7 @@ export const CancelledBanner = ({
           onClick: async () => {
             logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
               from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-              offererId: selectedOffererId?.toString(),
+              offererId: selectedPartnerVenue.managingOfferer.id.toString(),
               offerId,
               offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
               offerType: 'collective',

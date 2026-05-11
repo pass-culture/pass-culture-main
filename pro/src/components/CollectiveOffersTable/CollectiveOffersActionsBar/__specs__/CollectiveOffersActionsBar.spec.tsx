@@ -19,7 +19,6 @@ import {
   collectiveOfferTemplateFactory,
   defaultGetVenue,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -41,9 +40,6 @@ const renderActionsBar = (
     </>,
     {
       storeOverrides: {
-        offerer: {
-          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-        },
         user: {
           selectedPartnerVenue: defaultGetVenue,
         },

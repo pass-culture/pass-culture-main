@@ -5,7 +5,7 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
@@ -14,7 +14,6 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import { updateCurrentOfferer } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import {
   setCurrentOffererName,
@@ -90,8 +89,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
           : 'no-onboarding'
         dispatch(updateUserAccess(nextUserAccess))
       }
-
-      dispatch(updateCurrentOfferer(nextSelectedOfferer))
 
       if (shouldAlignSelectedAdminOfferer) {
         await dispatch(

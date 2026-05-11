@@ -11,7 +11,6 @@ import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -22,9 +21,6 @@ function renderCollectiveOfferSelectionDuplication() {
     storeOverrides: {
       user: {
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
-      },
-      offerer: {
-        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
       },
     },
   })

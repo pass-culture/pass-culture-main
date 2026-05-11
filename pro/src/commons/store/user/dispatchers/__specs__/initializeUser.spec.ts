@@ -79,7 +79,7 @@ describe('initializeUser', () => {
     const state = store.getState()
     expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
-    expect(state.offerer.currentOfferer?.id).toBe(100)
+    expect(state.user.selectedAdminOfferer?.id).toBe(100)
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
       '101'
@@ -508,7 +508,7 @@ describe('error handling', () => {
     const state = store.getState()
     expect(state.user.access).toBeNull()
     expect(state.user.currentUser).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
+    expect(state.user.selectedAdminOfferer).toBeNull()
     expect(state.user.currentOffererName).toBeNull()
     expect(state.user.offererNamesValidated).toBeNull()
     expect(state.user.selectedPartnerVenue).toBeNull()

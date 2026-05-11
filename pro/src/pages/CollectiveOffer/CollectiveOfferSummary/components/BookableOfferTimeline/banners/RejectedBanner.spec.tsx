@@ -8,9 +8,16 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import * as duplicateBookableOffer from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { RejectedBanner } from './RejectedBanner'
+
+const storeOverrides = {
+  user: {
+    selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+  },
+}
 
 describe('RejectedBanner', () => {
   const mockLogEvent = vi.fn()
@@ -29,7 +36,9 @@ describe('RejectedBanner', () => {
   })
 
   it('should log event on press Dupliquer', async () => {
-    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />)
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />, {
+      storeOverrides,
+    })
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -39,6 +48,7 @@ describe('RejectedBanner', () => {
       Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
         from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
+        offererId: '1',
         offerId: 2,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.REJECTED,
@@ -47,7 +57,9 @@ describe('RejectedBanner', () => {
   })
 
   it('should duplicate offer on press Dupliquer', async () => {
-    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />)
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />, {
+      storeOverrides,
+    })
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -56,7 +68,9 @@ describe('RejectedBanner', () => {
   })
 
   it('should not show duplicate button if canDuplicate is false', () => {
-    renderWithProviders(<RejectedBanner offerId={2} canDuplicate={false} />)
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate={false} />, {
+      storeOverrides,
+    })
     expect(screen.queryByText("Dupliquer l'offre")).not.toBeInTheDocument()
   })
 })

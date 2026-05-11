@@ -5,7 +5,6 @@ import * as reactRouter from 'react-router'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { makeUseLocationReturn } from '@/commons/utils/tests/mocks/react-router'
 
 import { useCollectiveOffersSwrKeys } from '../useCollectiveOffersSwrKeys'
@@ -29,9 +28,6 @@ const renderUseCollectiveOffersSwrKeys = (
         name,
         isActive: true,
       })),
-    },
-    offerer: {
-      currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
     },
     user: {
       selectedPartnerVenue: defaultGetVenue,

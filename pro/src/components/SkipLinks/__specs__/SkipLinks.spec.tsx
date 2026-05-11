@@ -3,6 +3,7 @@ import { createRef } from 'react'
 import { Route, Routes } from 'react-router'
 
 import { LateralPanel } from '@/app/App/layouts/BasicLayout/LateralPanel/LateralPanel'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
@@ -45,7 +46,14 @@ const renderApp = ({
         path="/accueil"
       />
     </Routes>,
-    { initialRouterEntries: ['/accueil'] }
+    {
+      initialRouterEntries: ['/accueil'],
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 
 describe('SkipLinks', () => {

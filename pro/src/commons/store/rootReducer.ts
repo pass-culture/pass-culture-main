@@ -1,7 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
 import { featuresReducer } from '@/commons/store/features/reducer'
-import { offererReducer } from '@/commons/store/offerer/reducer'
 import { snackBarReducer } from '@/commons/store/snackBar/reducer'
 import { userReducer } from '@/commons/store/user/reducer'
 
@@ -15,6 +14,5 @@ export const rootReducer = combineReducers({
   user: userReducer,
   nav: navReducer,
   adageFilter: adageFilterReducer,
-  offerer: offererReducer,
   staticData: musicTypesReducer,
 })

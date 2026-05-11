@@ -11,6 +11,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -42,7 +43,16 @@ const collectiveOfferTemplate = getCollectiveOfferTemplateFactory({
 const renderCollectiveOfferCreation = async (
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferConfirmation />, { ...options })
+  renderWithProviders(<CollectiveOfferConfirmation />, {
+    ...options,
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        ...options?.storeOverrides?.user,
+      },
+      ...options?.storeOverrides,
+    },
+  })
   await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
 }
 
@@ -141,7 +151,9 @@ describe('CollectiveOfferConfirmation - template', () => {
 
     await renderCollectiveOfferCreation()
 
-    expect(screen.getByText('Créer une offre')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Créer une offre/ })
+    ).toBeInTheDocument()
     expect(screen.getByText('Offre de test')).toBeInTheDocument()
     expect(screen.getByText('Lien de l’offre')).toBeInTheDocument()
   })

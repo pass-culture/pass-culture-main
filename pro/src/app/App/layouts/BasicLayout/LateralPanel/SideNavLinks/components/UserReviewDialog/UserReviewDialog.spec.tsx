@@ -4,10 +4,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/design-system/Button/Button'
 
@@ -19,8 +17,8 @@ const renderUserReviewDialog = () => {
   const storeOverrides = {
     user: {
       currentUser: sharedCurrentUserFactory(),
+      selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
     },
-    offerer: currentOffererFactory(),
   }
   return renderWithProviders(
     <Dialog.Root defaultOpen>

@@ -8,10 +8,7 @@ import {
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
@@ -58,7 +55,6 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
           ),
         ],
       },
-      offerer: currentOffererFactory(),
     },
     initialRouterEntries: route ? [route] : undefined,
   })

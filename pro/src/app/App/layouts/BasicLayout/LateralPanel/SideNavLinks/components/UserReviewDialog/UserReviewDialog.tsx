@@ -9,7 +9,6 @@ import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
@@ -71,7 +70,12 @@ export const UserReviewDialog = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(
+    (state) =>
+      state.user.selectedPartnerVenue?.managingOfferer?.id ??
+      state.user.selectedAdminOfferer?.id ??
+      null
+  )
   const location = useLocation()
 
   const group: IconRadioGroupValues[] = [

@@ -18,10 +18,7 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   venueAddressFactory,
@@ -68,7 +65,6 @@ const renderOffers = async (
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
-      offerer: currentOffererFactory(),
     },
   })
 

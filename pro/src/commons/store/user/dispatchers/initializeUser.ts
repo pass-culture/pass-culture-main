@@ -1,8 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
-import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import {
   setVenues,
@@ -41,7 +40,7 @@ export const initializeUser = createAsyncThunk<
      * 3. Auto-select the first venue of this "new" offerer as their selected partner venue.
      */
     newOffererId?: number
-    user: SharedCurrentUserResponseModel | SharedCurrentUserResponseModelNew
+    user: SharedCurrentUserResponseModel
   },
   AppThunkApiConfig
 >('user/initializeUser', async ({ newOffererId, user }, { dispatch }) => {

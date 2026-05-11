@@ -6,16 +6,12 @@ import type {
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
   VenueListItemLiteResponseModel,
-} from '@/apiClient/v1'
-import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 
 export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
 
 type UserState = {
-  currentUser:
-    | null
-    | SharedCurrentUserResponseModel
-    | SharedCurrentUserResponseModelNew
+  currentUser: null | SharedCurrentUserResponseModel
   // TODO (igabriele, 2025-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
   access: null | UserAccess
   selectedAdminOfferer: GetOffererResponseModel | null
@@ -58,11 +54,7 @@ const userSlice = createSlice({
   reducers: {
     updateUser: (
       state,
-      action: PayloadAction<
-        | SharedCurrentUserResponseModel
-        | SharedCurrentUserResponseModelNew
-        | null
-      >
+      action: PayloadAction<SharedCurrentUserResponseModel | null>
     ) => {
       state.currentUser = action.payload
     },

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SkipLinksProvider } from '@/components/SkipLinks/SkipLinksContext'
 
@@ -16,7 +17,14 @@ const renderBasicLayout = () => {
   renderWithProviders(
     <SkipLinksProvider>
       <BasicLayout mainHeading="Titre" />
-    </SkipLinksProvider>
+    </SkipLinksProvider>,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 }
 
@@ -56,7 +64,7 @@ describe('BasicLayout', () => {
         await userEvent.click(screen.getByLabelText('Menu'))
 
         expect(screen.getByLabelText('Fermer')).toHaveFocus()
-        const NB_ITEMS_IN_NAV = 12
+        const NB_ITEMS_IN_NAV = 15
         for (let i = 0; i < NB_ITEMS_IN_NAV; i++) {
           await userEvent.tab()
         }

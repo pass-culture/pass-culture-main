@@ -91,12 +91,6 @@ vi.mock('react-router', async () => ({
   useNavigate: () => mockUseNavigate,
 }))
 
-const selectCurrentOffererId = vi.hoisted(() => vi.fn())
-vi.mock('@/commons/store/offerer/selectors', async () => ({
-  ...(await vi.importActual('@/commons/store/offerer/selectors')),
-  selectCurrentOffererId,
-}))
-
 const baseVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   publicName: 'Cinéma des iles',
@@ -110,7 +104,6 @@ describe('VenueEdition', () => {
     vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [],
     })
-    selectCurrentOffererId.mockReturnValue(defaultGetOffererResponseModel.id)
     mockUseNavigate.mockClear()
   })
 

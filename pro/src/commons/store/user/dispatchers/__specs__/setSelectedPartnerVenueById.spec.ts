@@ -36,9 +36,6 @@ vi.mock('@/commons/errors/handleError', () => ({
 
 describe('setSelectedPartnerVenueById', () => {
   const storeDataBase: Partial<RootState> = {
-    offerer: {
-      currentOfferer: { ...defaultGetOffererResponseModel, id: 200 },
-    },
     user: {
       access: null,
       currentUser: null,
@@ -106,7 +103,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).not.toHaveBeenCalled()
 
     const state = store.getState()
-    expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
@@ -141,7 +137,7 @@ describe('setSelectedPartnerVenueById', () => {
     const state = store.getState()
     expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
-    expect(state.offerer.currentOfferer?.id).toBe(100)
+    expect(state.user.selectedAdminOfferer?.id).toBe(100)
     expect(state.user.currentOffererName?.id).toBe(100)
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('100')
@@ -174,7 +170,7 @@ describe('setSelectedPartnerVenueById', () => {
 
     const state = store.getState()
     expect(state.user.access).toBe('no-onboarding')
-    expect(state.offerer.currentOfferer?.id).toBe(100)
+    expect(state.user.selectedAdminOfferer?.id).toBe(100)
     expect(state.user.currentOffererName?.id).toBe(100)
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
@@ -199,7 +195,7 @@ describe('setSelectedPartnerVenueById', () => {
 
     const state = store.getState()
     expect(state.user.access).toBe('unattached')
-    expect(state.offerer.currentOfferer?.id).toBe(300)
+    expect(state.user.selectedAdminOfferer?.id).toBe(300)
     expect(state.user.currentOffererName?.id).toBe(300)
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
 
@@ -214,9 +210,6 @@ describe('setSelectedPartnerVenueById', () => {
 
     const store = configureTestStore({
       ...storeDataBase,
-      offerer: {
-        ...storeDataBase.offerer!,
-      },
       user: {
         offererNames: null,
       },
@@ -260,9 +253,6 @@ describe('setSelectedPartnerVenueById', () => {
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
     const store = configureTestStore({
-      offerer: {
-        currentOfferer: { ...defaultGetOffererResponseModel, id: 200 },
-      },
       user: {
         access: null,
         currentUser: null,
@@ -348,7 +338,6 @@ describe('setSelectedPartnerVenueById', () => {
 
     const state = store.getState()
     expect(state.user.access).toBeNull()
-    expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.user.currentOffererName?.id).toBe(200)
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 

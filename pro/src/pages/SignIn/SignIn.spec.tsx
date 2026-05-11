@@ -227,7 +227,7 @@ describe('SignIn', () => {
     expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({ user: {} })
   })
 
-  it('should navigate to user default path on successful login with WIP_SWITCH_VENUE', async () => {
+  it('should navigate to user default path on successful login with API_SIRENE_AVAILABLE', async () => {
     const mockNavigate = vi.fn()
     vi.spyOn(await import('react-router'), 'useNavigate').mockReturnValue(
       mockNavigate
@@ -241,7 +241,7 @@ describe('SignIn', () => {
       mockThunk
     )
 
-    renderSignIn({ features: ['API_SIRENE_AVAILABLE', 'WIP_SWITCH_VENUE'] })
+    renderSignIn({ features: ['API_SIRENE_AVAILABLE'] })
 
     await userEvent.type(
       screen.getByRole('textbox', { name: 'Adresse email' }),

@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { useState } from 'react'
 import { Link } from 'react-router'
 
-import type { GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -12,12 +12,11 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectSelectedPartnerPageId } from '@/commons/store/nav/selector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
-import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -43,9 +42,7 @@ interface SideNavLinksProps {
 }
 
 const generateNavItems = (
-  selectedOfferer?: GetOffererResponseModel | null,
-  selectedPartnerPageVenueId?: string | number,
-  venueId?: string | number,
+  selectedPartnerVenue: GetVenueResponseModel,
   isVolunteeringActive?: boolean
 ): NavItem[] => {
   const hasSeenVolunteeringSection =
@@ -53,7 +50,7 @@ const generateNavItems = (
       LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
     ) === 'true'
 
-  const individuelChildren: NavItem[] = [
+  const individualChildren: NavItem[] = [
     {
       key: 'offers',
       type: 'link',
@@ -77,7 +74,7 @@ const generateNavItems = (
       title: 'Guichet',
       to: '/guichet',
     },
-    ...(selectedOfferer && selectedPartnerPageVenueId
+    ...(selectedPartnerVenue.hasPartnerPage
       ? [
           {
             key: 'page',
@@ -108,18 +105,14 @@ const generateNavItems = (
       title: 'Offres réservables',
       to: '/offres/collectives',
     },
-    ...(selectedOfferer && venueId
-      ? [
-          {
-            key: 'adage_page',
-            type: 'link',
-            group: 'main' as const,
-            title: 'Page dans ADAGE',
-            to: `/partenaire/page-collective`,
-            end: true,
-          },
-        ]
-      : []),
+    {
+      key: 'adage_page',
+      type: 'link',
+      group: 'main' as const,
+      title: 'Page dans ADAGE',
+      to: `/partenaire/page-collective`,
+      end: true,
+    },
   ]
 
   const navItems: NavItem[] = [
@@ -137,7 +130,7 @@ const generateNavItems = (
       title: 'Individuel',
       icon: strokePhoneIcon,
       key: 'individual',
-      children: individuelChildren,
+      children: individualChildren,
     },
     {
       type: 'section',
@@ -155,38 +148,11 @@ const generateNavItems = (
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
-  const selectedOfferer = useAppSelector(
-    (state) => state.offerer.currentOfferer
-  )
-  const selectedPartnerVenue = useAppSelector(
-    (state) => state.user.selectedPartnerVenue
-  )
-  const hasPartnerPageVenues =
-    selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
-  const venueId = selectedPartnerVenue?.id
-
-  const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
-  const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
-    'partnerPage',
-    selectedOfferer?.id
-  )
-  const stillRelevantSavedPartnerPageVenueId = hasPartnerPageVenues
-    .find((v) => v.id.toString() === savedPartnerPageVenueId)
-    ?.id.toString()
-
-  const selectedPartnerPageVenueId =
-    reduxStoredPartnerPageId ||
-    stillRelevantSavedPartnerPageVenueId ||
-    hasPartnerPageVenues[0]?.id
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const navItems = generateNavItems(
-    selectedOfferer,
-    selectedPartnerPageVenueId,
-    venueId,
-    isVolunteeringActive
-  )
+  const navItems = generateNavItems(selectedPartnerVenue, isVolunteeringActive)
 
   return (
     <div
@@ -205,58 +171,55 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           fullWidth
         />
       </div>
-      {selectedOfferer && (
-        <div className={styles['nav-links-group-switch-venue']}>
-          {selectedPartnerVenue && (
-            <div className={styles['nav-links-switch-venue-button']}>
-              <Button
-                as="a"
-                aria-label={`Changer de structure (actuellement sélectionnée : ${selectedPartnerVenue.publicName})`}
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                icon={fullLeftIcon}
-                to="/hub"
-                label={selectedPartnerVenue.publicName}
-                fullWidth
-                fullHeight
-              />
-            </div>
-          )}
 
-          <div className={styles['nav-section-create-button-wrapper']}>
-            <Dropdown
-              title="Créer une offre"
-              open={isOpen}
-              onOpenChange={setIsOpen}
-              align="start"
-              trigger={
-                <Button
-                  label="Créer une offre"
-                  variant={ButtonVariant.PRIMARY}
-                  icon={isOpen ? fullUpIcon : fullDownIcon}
-                  iconPosition={IconPositionEnum.RIGHT}
-                  fullWidth
-                />
-              }
-            >
-              <DropdownItem icon={strokePhoneIcon}>
-                <Link
-                  to={getIndividualOfferUrl({
-                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                    mode: OFFER_WIZARD_MODE.CREATION,
-                    isOnboarding: false,
-                  })}
-                >
-                  Pour le grand public
-                </Link>
-              </DropdownItem>
-              <DropdownItem icon={strokeBagIcon}>
-                <Link to="/offre/creation">Pour les groupes scolaires</Link>
-              </DropdownItem>
-            </Dropdown>
-          </div>
+      <div className={styles['nav-links-group-switch-venue']}>
+        <div className={styles['nav-links-switch-venue-button']}>
+          <Button
+            as="a"
+            aria-label={`Changer de structure (actuellement sélectionnée : ${selectedPartnerVenue.publicName})`}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullLeftIcon}
+            to="/hub"
+            label={selectedPartnerVenue.publicName}
+            fullWidth
+            fullHeight
+          />
         </div>
-      )}
+
+        <div className={styles['nav-section-create-button-wrapper']}>
+          <Dropdown
+            title="Créer une offre"
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            align="start"
+            trigger={
+              <Button
+                label="Créer une offre"
+                variant={ButtonVariant.PRIMARY}
+                icon={isOpen ? fullUpIcon : fullDownIcon}
+                iconPosition={IconPositionEnum.RIGHT}
+                fullWidth
+              />
+            }
+          >
+            <DropdownItem icon={strokePhoneIcon}>
+              <Link
+                to={getIndividualOfferUrl({
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                  isOnboarding: false,
+                })}
+              >
+                Pour le grand public
+              </Link>
+            </DropdownItem>
+            <DropdownItem icon={strokeBagIcon}>
+              <Link to="/offre/creation">Pour les groupes scolaires</Link>
+            </DropdownItem>
+          </Dropdown>
+        </div>
+      </div>
 
       <SideNavLinks navItems={navItems} />
     </div>

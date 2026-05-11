@@ -8,7 +8,6 @@ import { OfferStatus } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -33,9 +32,6 @@ const renderActionsBar = (
     </>,
     {
       storeOverrides: {
-        offerer: {
-          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-        },
         user: {
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },

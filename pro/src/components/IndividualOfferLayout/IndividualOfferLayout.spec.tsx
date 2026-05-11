@@ -13,10 +13,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
@@ -79,7 +76,6 @@ const renderIndividualOfferLayout: RenderComponentFunction<
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
-      offerer: currentOffererFactory({}),
     },
     ...params.options,
   }

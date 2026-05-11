@@ -2,10 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -44,9 +41,6 @@ const renderCollectiveOfferEdition = (
           makeVenueListItemLiteResponseModel({ id: props.offer.venue.id }),
         ],
       },
-      offerer: currentOffererFactory({
-        currentOfferer: { id: 10 },
-      }),
     },
   })
 }

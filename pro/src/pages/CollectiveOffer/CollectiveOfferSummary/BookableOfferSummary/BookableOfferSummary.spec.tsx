@@ -17,10 +17,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -49,7 +46,6 @@ const renderBookableOfferSummary = (
         currentUser: sharedCurrentUserFactory(),
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
       },
-      offerer: currentOffererFactory(),
     },
     ...options,
   })

@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
@@ -37,7 +34,6 @@ function renderComponent(props: OfferEducationalProps) {
           ),
         ],
       },
-      offerer: currentOffererFactory(),
     },
   })
 }

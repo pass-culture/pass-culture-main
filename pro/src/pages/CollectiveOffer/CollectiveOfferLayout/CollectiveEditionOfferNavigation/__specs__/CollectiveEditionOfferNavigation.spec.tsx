@@ -25,10 +25,8 @@ import {
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
@@ -66,8 +64,10 @@ const renderCollectiveEditingOfferNavigation = (
 ) =>
   renderWithProviders(<CollectiveEditionOfferNavigation {...props} />, {
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
-      offerer: currentOffererFactory(),
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
     },
     features,
   })

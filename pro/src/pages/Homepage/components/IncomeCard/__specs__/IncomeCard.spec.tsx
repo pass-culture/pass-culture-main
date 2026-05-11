@@ -8,10 +8,7 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IncomeCard } from '../IncomeCard'
@@ -43,9 +40,6 @@ const renderIncomeCard = (
     <IncomeCard venueId={venueId} bankAccountStatus={bankAccountStatus} />,
     {
       user: sharedCurrentUserFactory(),
-      storeOverrides: {
-        offerer: currentOffererFactory(),
-      },
       initialRouterEntries,
     }
   )
