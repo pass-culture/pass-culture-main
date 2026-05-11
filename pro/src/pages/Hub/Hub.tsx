@@ -65,6 +65,7 @@ export const Hub = () => {
     await dispatch(
       setSelectedPartnerVenueById({
         nextSelectedPartnerVenueId: nextSelectedVenueId,
+        shouldAlignSelectedAdminOfferer: true,
       })
     ).unwrap()
 

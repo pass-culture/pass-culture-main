@@ -15,6 +15,7 @@ import { getInitialAdminOffererId } from '../utils/getInitialAdminOffererId'
 import { getInitialPartnerVenueId } from '../utils/getInitialPartnerVenueId'
 import { logout } from './logout'
 import { setSelectedPartnerVenueById } from './setSelectedPartnerVenueById'
+import { unsetSelectedAdminOfferer } from './unsetSelectedAdminOfferer'
 import { unsetSelectedPartnerVenue } from './unsetSelectedPartnerVenue'
 
 export const initializeUser = createAsyncThunk<
@@ -66,26 +67,31 @@ export const initializeUser = createAsyncThunk<
       ? await dispatch(
           setSelectedPartnerVenueById({
             nextSelectedPartnerVenueId: initialVenueId,
+            shouldAlignSelectedAdminOfferer: false,
           })
         ).unwrap()
       : {
           selectedPartnerVenue: null,
         }
+    // or unset it if none is selected
     if (!initialVenueId) {
-      // We want to unselect any previously selected venue in this case
       dispatch(unsetSelectedPartnerVenue())
+    }
 
-      const initialAdminOffererId =
-        newOffererId ??
-        getInitialAdminOffererId({
-          selectedPartnerVenue,
-          offererNames: offererNames,
-        })
+    const initialAdminOffererId =
+      newOffererId ??
+      getInitialAdminOffererId({
+        selectedPartnerVenue,
+        offererNames: offererNames,
+      })
 
-      // Initialize the Administration Space selected offerer if any
-      if (initialAdminOffererId) {
-        await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
-      }
+    // Initialize the Administration Space selected offerer if any
+    if (initialAdminOffererId) {
+      await dispatch(setSelectedAdminOffererById(initialAdminOffererId))
+    }
+    // or unset it if none is selected
+    else {
+      dispatch(unsetSelectedAdminOfferer())
     }
   } catch (_err: unknown) {
     await logout()
