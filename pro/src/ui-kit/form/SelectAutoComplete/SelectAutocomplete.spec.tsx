@@ -194,13 +194,10 @@ describe('SelectAutocomplete', () => {
     })
   })
 
-  it('should call "onChange" and "onBlur" when user selects a valid option', async () => {
-    const onBlur = vi.fn()
+  it('should call "onChange" when user selects a valid option', async () => {
     const onChange = vi.fn()
 
-    render(
-      <SelectAutocomplete {...props} onChange={onChange} onBlur={onBlur} />
-    )
+    render(<SelectAutocomplete {...props} onChange={onChange} />)
     const user = userEvent.setup()
 
     const input = screen.getByRole('combobox')
@@ -215,9 +212,24 @@ describe('SelectAutocomplete', () => {
       type: 'change',
       target: { name: 'departement', value: '02' },
     })
-    expect(onBlur).toHaveBeenCalledWith({
-      type: 'blur',
-      target: { name: 'departement', value: '02' },
+  })
+
+  it('should call "onChange" when user creates a new option', async () => {
+    const onChange = vi.fn()
+
+    render(
+      <SelectAutocomplete
+        {...props}
+        onChange={onChange}
+        creatableOption="Paris"
+      />
+    )
+    const user = userEvent.setup()
+    await user.type(screen.getByRole('combobox'), 'Paris')
+    await user.click(screen.getByText('Ajouter "Paris"'))
+    expect(onChange).toHaveBeenCalledWith({
+      type: 'change',
+      target: { name: 'departement', value: 'Paris' },
     })
   })
 

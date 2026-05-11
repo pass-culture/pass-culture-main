@@ -1,6 +1,8 @@
 import type { StoryObj } from '@storybook/react-vite'
 
-import { ApiSelect, ApiOption } from './ApiSelect'
+import { ApiSelect } from './ApiSelect'
+
+import type { ApiOption } from '@/commons/custom_types/form'
 
 export default {
   title: '@/ui-kit/forms/ApiSelect',

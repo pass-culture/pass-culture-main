@@ -61,6 +61,8 @@ export type SelectAutocompleteProps = {
   searchInOptions?(options: SelectOption[], pattern: string): SelectOption[]
   /** Called when the dropdown opens */
   shouldResetOnOpen?: boolean
+  /** Value of the creatable option */
+  creatableOption?: string
 }
 
 export const SelectAutocomplete = forwardRef(
@@ -84,6 +86,7 @@ export const SelectAutocomplete = forwardRef(
         options.filter((opt) =>
           opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
         ),
+      creatableOption,
       shouldResetOnOpen = false,
     }: SelectAutocompleteProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -127,6 +130,8 @@ export const SelectAutocomplete = forwardRef(
 
     const filteredOptions = searchInOptions(options, searchField)
 
+    const optionsListSize = filteredOptions.length + (creatableOption ? 1 : 0)
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
       switch (event.key) {
         case 'ArrowUp':
@@ -134,8 +139,7 @@ export const SelectAutocomplete = forwardRef(
             event.preventDefault()
 
             const newIndex =
-              (hoveredOptionIndex - 1 + filteredOptions.length) %
-              filteredOptions.length
+              (hoveredOptionIndex - 1 + optionsListSize) % optionsListSize
 
             setHoveredOptionIndex(newIndex)
             const nextHoveredElement =
@@ -146,11 +150,11 @@ export const SelectAutocomplete = forwardRef(
         case 'ArrowDown':
           openDropdown()
           if (hoveredOptionIndex === null) {
-            if (filteredOptions.length > 0) {
+            if (optionsListSize > 0) {
               setHoveredOptionIndex(0)
             }
           } else {
-            const newIndex = (hoveredOptionIndex + 1) % filteredOptions.length
+            const newIndex = (hoveredOptionIndex + 1) % optionsListSize
 
             setHoveredOptionIndex(newIndex)
             const nextHoveredElement =
@@ -159,14 +163,17 @@ export const SelectAutocomplete = forwardRef(
           }
           break
         case 'Enter':
-          if (
-            isDropdownOpen &&
-            hoveredOptionIndex !== null &&
-            filteredOptions[hoveredOptionIndex]
-          ) {
+          if (isDropdownOpen && hoveredOptionIndex !== null) {
             event.preventDefault()
-            if (filteredOptions[hoveredOptionIndex]) {
-              selectOption(filteredOptions[hoveredOptionIndex])
+            if (creatableOption) {
+              if (hoveredOptionIndex === 0) {
+                createOption(creatableOption)
+              } else {
+                selectOption(filteredOptions[hoveredOptionIndex - 1])
+              }
+            } else {
+              filteredOptions[hoveredOptionIndex] &&
+                selectOption(filteredOptions[hoveredOptionIndex])
             }
           }
           break
@@ -195,9 +202,15 @@ export const SelectAutocomplete = forwardRef(
         type: 'change',
         target: { name, value: option.value },
       })
-      onBlur({
-        type: 'blur',
-        target: { name, value: option.value },
+
+      setIsDropdownOpen(false)
+      setHoveredOptionIndex(null)
+    }
+
+    const createOption = (creatableOption: string) => {
+      onChange({
+        type: 'change',
+        target: { name, value: creatableOption },
       })
 
       setIsDropdownOpen(false)
@@ -315,7 +328,9 @@ export const SelectAutocomplete = forwardRef(
                 listRef={listRef}
                 hoveredOptionIndex={hoveredOptionIndex}
                 selectOption={selectOption}
+                createOption={createOption}
                 thumbPlaceholder={thumbPlaceholder}
+                creatableOption={creatableOption}
               />
             )}
           </div>

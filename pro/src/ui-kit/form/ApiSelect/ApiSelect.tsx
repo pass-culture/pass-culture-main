@@ -1,16 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
-import type { SelectOption } from '@/commons/custom_types/form'
+import type { ApiOption, SelectOption } from '@/commons/custom_types/form'
 import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
-export interface ApiOption extends SelectOption {
-  [key: string]: unknown
-}
-
-export type ApiSelectProps<T extends ApiOption> = {
+export type ApiSelectProps<T extends ApiOption> = Readonly<{
   name: string
   label: string | JSX.Element
   disabled?: boolean
@@ -25,9 +21,9 @@ export type ApiSelectProps<T extends ApiOption> = {
   searchApi: (searchText: string) => Promise<T[]>
   value?: string
   thumbPlaceholder?: string
-}
+}>
 
-export const ApiSelect = function ApiSelect<T extends ApiOption>({
+export function ApiSelect<T extends ApiOption>({
   name,
   label,
   disabled = false,

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { createEvent, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 
@@ -35,6 +35,7 @@ const DEFAULT_PROPS: OptionsListProps = {
   hoveredOptionIndex: 0,
   listRef: createRef(),
   selectOption: vi.fn(),
+  createOption: vi.fn(),
 }
 
 const renderOptionsList = (
@@ -57,7 +58,7 @@ describe('<OptionsList />', () => {
   })
 
   it('should render options with correct data attributes', () => {
-    renderOptionsList(DEFAULT_PROPS)
+    renderOptionsList()
 
     const options = screen.getAllByRole('option')
     expect(options[0]).toHaveAttribute('data-value', '01')
@@ -78,7 +79,7 @@ describe('<OptionsList />', () => {
     expect(DEFAULT_PROPS.setHoveredOptionIndex).toHaveBeenCalledWith(3)
   })
 
-  it('should call selectOption with options on click', async () => {
+  it('should call selectOption on click', async () => {
     const user = userEvent.setup()
     renderOptionsList()
 
@@ -90,62 +91,107 @@ describe('<OptionsList />', () => {
     })
   })
 
-  it('should render option thumbnails when thumbPlaceholder is provided', () => {
-    renderOptionsList({
-      ...DEFAULT_PROPS,
-      thumbPlaceholder: '/placeholder.png',
-    })
+  it('should call createOption on click', async () => {
+    const user = userEvent.setup()
+    renderOptionsList({ ...DEFAULT_PROPS, creatableOption: 'Paris' })
 
-    const imgs = screen.getAllByRole('presentation', { hidden: true })
-    expect(imgs).toHaveLength(15)
-    expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
+    const creatableOption = screen.getByText('Ajouter "Paris"')
+    await user.click(creatableOption)
+    expect(DEFAULT_PROPS.createOption).toHaveBeenCalledWith('Paris')
   })
 
-  it('should render both placeholder and thumbUrl', () => {
-    renderOptionsList({
-      ...DEFAULT_PROPS,
-      filteredOptions: [
-        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
-      ],
-      thumbPlaceholder: '/placeholder.png',
-    })
-
-    const imgs = screen.getAllByRole('presentation', { hidden: true })
-    expect(imgs).toHaveLength(2)
-    expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
-    expect(imgs[1]).toHaveAttribute('src', 'https://example.com/ain.jpg')
+  it('should prevent default on mousedown', () => {
+    renderOptionsList()
+    const option = screen.getAllByRole('option')[0]
+    const event = createEvent.mouseDown(option)
+    fireEvent(option, event)
+    expect(event.defaultPrevented).toBe(true)
   })
 
-  it('should make thumbUrl visible after it loads', () => {
-    renderOptionsList({
-      ...DEFAULT_PROPS,
-      filteredOptions: [
-        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
-      ],
-      thumbPlaceholder: '/placeholder.png',
+  describe('option items', () => {
+    it('should render option thumbnails when thumbPlaceholder is provided', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        thumbPlaceholder: '/placeholder.png',
+      })
+
+      const imgs = screen.getAllByRole('presentation', { hidden: true })
+      expect(imgs).toHaveLength(15)
+      expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
     })
 
-    const imgs = screen.getAllByRole('presentation', { hidden: true })
-    const realImg = imgs[1]
+    it('should render both placeholder and thumbUrl', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        filteredOptions: [
+          {
+            value: '01',
+            label: 'Ain',
+            thumbUrl: 'https://example.com/ain.jpg',
+          },
+        ],
+        thumbPlaceholder: '/placeholder.png',
+      })
 
-    expect(realImg).not.toHaveClass('options-img-visible')
-    fireEvent.load(realImg)
-    expect(realImg).toHaveClass('options-img-visible')
+      const imgs = screen.getAllByRole('presentation', { hidden: true })
+      expect(imgs).toHaveLength(2)
+      expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
+      expect(imgs[1]).toHaveAttribute('src', 'https://example.com/ain.jpg')
+    })
+
+    it('should make thumbUrl visible after it loads', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        filteredOptions: [
+          {
+            value: '01',
+            label: 'Ain',
+            thumbUrl: 'https://example.com/ain.jpg',
+          },
+        ],
+        thumbPlaceholder: '/placeholder.png',
+      })
+
+      const imgs = screen.getAllByRole('presentation', { hidden: true })
+      const realImg = imgs[1]
+
+      expect(realImg).not.toHaveClass('options-img-visible')
+      fireEvent.load(realImg)
+      expect(realImg).toHaveClass('options-img-visible')
+    })
+
+    it('should keep thumbUrl hidden when thumbUrl fails to load', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        filteredOptions: [
+          {
+            value: '01',
+            label: 'Ain',
+            thumbUrl: 'https://example.com/ain.jpg',
+          },
+        ],
+        thumbPlaceholder: '/placeholder.png',
+      })
+
+      const imgs = screen.getAllByRole('presentation', { hidden: true })
+      const realImg = imgs[1]
+
+      fireEvent.error(realImg)
+      expect(realImg).not.toHaveClass('options-img-visible')
+    })
   })
 
-  it('should keep thumbUrl hidden when thumbUrl fails to load', () => {
-    renderOptionsList({
-      ...DEFAULT_PROPS,
-      filteredOptions: [
-        { value: '01', label: 'Ain', thumbUrl: 'https://example.com/ain.jpg' },
-      ],
-      thumbPlaceholder: '/placeholder.png',
+  describe('creatable option items', () => {
+    it('should render creatable option', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        creatableOption: 'Paris',
+      })
+
+      expect(screen.getByText('Ajouter "Paris"')).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', { name: 'Ajouter Paris' })
+      ).toBeInTheDocument()
     })
-
-    const imgs = screen.getAllByRole('presentation', { hidden: true })
-    const realImg = imgs[1]
-
-    fireEvent.error(realImg)
-    expect(realImg).not.toHaveClass('options-img-visible')
   })
 })

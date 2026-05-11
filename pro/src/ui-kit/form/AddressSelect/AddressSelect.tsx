@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useDebouncedCallback } from 'use-debounce'
 
 import type {
@@ -73,6 +74,8 @@ export const AddressSelect = forwardRef(
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
+    const formContext = useFormContext()
+
     const [addressOptions, setAddressOptions] = useState<SelectOption[]>([])
     const addressesMap = useRef<Map<string, AdresseData>>(new Map())
     const inputRef = useRef<HTMLInputElement>(null) // Ref to pass to <SelectAutoComplete />
@@ -144,6 +147,7 @@ export const AddressSelect = forwardRef(
         }}
         onChange={(event) => {
           onChange?.(event)
+          void formContext?.trigger(name)
           const addressData = addressesMap.current.get(event.target.value)
           if (addressData) {
             onAddressChosen?.(addressData)

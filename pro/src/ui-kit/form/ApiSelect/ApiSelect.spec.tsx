@@ -2,7 +2,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { type ApiOption, ApiSelect, type ApiSelectProps } from './ApiSelect'
+import type { ApiOption } from '@/commons/custom_types/form'
+
+import { ApiSelect, type ApiSelectProps } from './ApiSelect'
 
 const name = 'any-name'
 const apiSelectLabel = 'any-label'
