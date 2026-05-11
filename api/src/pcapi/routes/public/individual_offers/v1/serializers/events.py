@@ -369,12 +369,6 @@ class GetEventCategoriesResponse(pydantic_v2.RootModel):
 # Cinema serializers
 
 
-def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
-    formatted_value = serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
-    assert formatted_value  # to make mypy happy
-    return formatted_value
-
-
 def _validate_features(value: list[ShowFeatures]) -> list[ShowFeatures]:
     if ShowFeatures.VF not in value and ShowFeatures.VO not in value:
         raise PydanticError("You must indicate if cinema session is in `VF` or in `VO`")
@@ -412,10 +406,7 @@ class CinemaStock(serialization.HttpBodyModel):
             description='Show/session features. You must indicate the show/session language: either `"VF"` or `"VO"`.'
         ),
     ]
-    beginning_datetime: Annotated[
-        datetime.datetime,
-        pydantic_v2.AfterValidator(_validate_datetime),
-    ] = fields_v2.BEGINNING_DATETIME
+    beginning_datetime: serialization_utils.future_tz_aware_datetime = fields_v2.BEGINNING_DATETIME
 
 
 class CinemaPriceCategory(serialization.HttpBodyModel):
@@ -514,7 +505,7 @@ def _validate_there_is_no_duplicated_film_id_for_location(value: list[CinemaOffe
                     f'Film id "{offer.film_id}" is duplicated in payload for address {offer.address.id}'
                 )
 
-            # store filmd_id
+            # store film_id
             address_films_ids.add(offer.film_id)
             addresses_film_ids[offer.address.id] = address_films_ids
         else:
