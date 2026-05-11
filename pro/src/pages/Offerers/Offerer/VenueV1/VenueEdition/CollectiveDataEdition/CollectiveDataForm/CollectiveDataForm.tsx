@@ -6,7 +6,6 @@ import { api } from '@/apiClient/api'
 import {
   type ActivityNotOpenToPublic,
   type ActivityOpenToPublic,
-  type GetVenueResponseModel,
   StudentLevels,
 } from '@/apiClient/v1'
 import {
@@ -17,9 +16,11 @@ import { offerInterventionOptions } from '@/commons/core/shared/interventionOpti
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivities } from '@/commons/mappings/mappings'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -40,7 +41,6 @@ import { validationSchema } from './validationSchema'
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
   domains: Option[]
-  venue: GetVenueResponseModel
 }
 
 const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
@@ -51,13 +51,13 @@ const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
 export const CollectiveDataForm = ({
   statuses,
   domains,
-  venue,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const initialValues = extractInitialValuesFromVenue(venue)
+  const initialValues = extractInitialValuesFromVenue(selectedPartnerVenue)
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
 
@@ -83,16 +83,19 @@ export const CollectiveDataForm = ({
 
   const onSubmit = async (values: CollectiveDataFormValues): Promise<void> => {
     try {
-      const updatedVenue = await api.editVenueCollectiveData(venue.id, {
-        ...values,
-        activity: values.activity as
-          | ActivityOpenToPublic
-          | ActivityNotOpenToPublic,
-        collectiveDomains: values.collectiveDomains?.map(Number),
-        collectiveLegalStatus: values.collectiveLegalStatus
-          ? Number(values.collectiveLegalStatus)
-          : null,
-      })
+      const updatedVenue = await api.editVenueCollectiveData(
+        selectedPartnerVenue.id,
+        {
+          ...values,
+          activity: values.activity as
+            | ActivityOpenToPublic
+            | ActivityNotOpenToPublic,
+          collectiveDomains: values.collectiveDomains?.map(Number),
+          collectiveLegalStatus: values.collectiveLegalStatus
+            ? Number(values.collectiveLegalStatus)
+            : null,
+        }
+      )
 
       dispatch(setSelectedPartnerVenue(updatedVenue))
 
@@ -111,7 +114,7 @@ export const CollectiveDataForm = ({
             <FormLayout.SubSection
               title="Présentation pour les enseignants"
               description={
-                venue.isVirtual
+                selectedPartnerVenue.isVirtual
                   ? undefined
                   : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
               }
@@ -162,7 +165,7 @@ export const CollectiveDataForm = ({
                 <Select
                   {...register('activity')}
                   options={[
-                    ...(venue.activity === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                    ...(selectedPartnerVenue.activity === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
                       ? [
                           {
                             value: '',
@@ -172,14 +175,14 @@ export const CollectiveDataForm = ({
                       : []),
                     ...buildSelectOptions(
                       getActivities(
-                        venue.isOpenToPublic
+                        selectedPartnerVenue.isOpenToPublic
                           ? 'OPEN_TO_PUBLIC'
                           : 'NOT_OPEN_TO_PUBLIC'
                       )
                     ),
                   ]}
                   label="Activité principale"
-                  disabled={venue.isVirtual}
+                  disabled={selectedPartnerVenue.isVirtual}
                   error={errors.activity?.message}
                   required
                 />

@@ -1,13 +1,11 @@
 import { useFormContext } from 'react-hook-form'
 
-import type {
-  DMSApplicationForEAC,
-  GetOffererResponseModel,
-} from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from '@/commons/core/Offers/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -19,60 +17,54 @@ import strokeTemplateOfferIcon from '@/icons/stroke-template-offer.svg'
 
 import styles from './CollectiveOfferType.module.scss'
 
-interface CollectiveOfferTypeProps {
-  offerer: GetOffererResponseModel | null
-  lastCollectiveDmsApplication?: DMSApplicationForEAC | null
-}
-
-export const CollectiveOfferType = ({
-  offerer,
-  lastCollectiveDmsApplication,
-}: CollectiveOfferTypeProps) => {
+export const CollectiveOfferType = () => {
   const { setValue, getValues, watch } = useFormContext()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   return (
     <>
-      {offerer?.isValidated && offerer.allowedOnAdage && (
-        <div className={styles['container']}>
-          <RadioButtonGroup
-            variant="detailed"
-            name={watch('offer.collectiveOfferSubtype')}
-            label={
-              <h2 className={styles['radio-group-title']}>
-                Quel est le type de l’offre ?
-              </h2>
-            }
-            onChange={(e) =>
-              setValue('offer.collectiveOfferSubtype', e.target.value)
-            }
-            checkedOption={getValues('offer.collectiveOfferSubtype')}
-            options={[
-              {
-                label: 'Une offre réservable',
-                value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
-                description:
-                  'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
-                asset: {
-                  variant: 'icon',
-                  src: strokeBookedIcon,
+      {selectedPartnerVenue.isValidated &&
+        selectedPartnerVenue.allowedOnAdage && (
+          <div className={styles['container']}>
+            <RadioButtonGroup
+              variant="detailed"
+              name={watch('offer.collectiveOfferSubtype')}
+              label={
+                <h2 className={styles['radio-group-title']}>
+                  Quel est le type de l’offre ?
+                </h2>
+              }
+              onChange={(e) =>
+                setValue('offer.collectiveOfferSubtype', e.target.value)
+              }
+              checkedOption={getValues('offer.collectiveOfferSubtype')}
+              options={[
+                {
+                  label: 'Une offre réservable',
+                  value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+                  description:
+                    'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
+                  asset: {
+                    variant: 'icon',
+                    src: strokeBookedIcon,
+                  },
                 },
-              },
-              {
-                label: 'Une offre vitrine',
-                value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
-                description:
-                  'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
-                asset: {
-                  variant: 'icon',
-                  src: strokeTemplateOfferIcon,
+                {
+                  label: 'Une offre vitrine',
+                  value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
+                  description:
+                    'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
+                  asset: {
+                    variant: 'icon',
+                    src: strokeTemplateOfferIcon,
+                  },
                 },
-              },
-            ]}
-          />
-        </div>
-      )}
+              ]}
+            />
+          </div>
+        )}
 
-      {offerer?.allowedOnAdage &&
+      {selectedPartnerVenue.allowedOnAdage &&
         getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <div className={styles['container']}>
@@ -118,7 +110,7 @@ export const CollectiveOfferType = ({
           </div>
         )}
 
-      {!offerer?.isValidated && (
+      {!selectedPartnerVenue.isValidated && (
         <div className={styles['pending-offerer-callout']}>
           <Banner
             title="Validation en cours"
@@ -127,8 +119,8 @@ export const CollectiveOfferType = ({
         </div>
       )}
 
-      {!offerer?.allowedOnAdage &&
-        (lastCollectiveDmsApplication ? (
+      {!selectedPartnerVenue.allowedOnAdage &&
+        (selectedPartnerVenue.lastCollectiveDmsApplication ? (
           <div className={styles['pending-offerer-callout']}>
             <Banner
               title="Référencement en cours"

@@ -1,41 +1,52 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { DisplayableActivity, StudentLevels } from '@/apiClient/v1'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  StudentLevels,
+} from '@/apiClient/v1'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 
+const renderCollectiveDataEditionReadOnly = (
+  venueOverrides: Partial<GetVenueResponseModel> = {}
+) =>
+  renderWithProviders(<CollectiveDataEditionReadOnly />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          ...venueOverrides,
+        }),
+      },
+    },
+  })
+
 describe('<CollectiveDataEditionReadOnly />', () => {
   it('should render without accessibility violations', async () => {
-    const venue = makeGetVenueResponseModel({ id: 1 })
-    const { container } = renderWithProviders(
-      <CollectiveDataEditionReadOnly venue={venue} />
-    )
+    const { container } = renderCollectiveDataEditionReadOnly()
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display collective description', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveDescription: 'Notre démarche éducative',
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('Notre démarche éducative')).toBeInTheDocument()
   })
 
   it('should display "Non renseignée" when collective description is not provided', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveDescription: null,
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getAllByText('Non renseignée').length).toBeGreaterThanOrEqual(
       1
@@ -43,34 +54,25 @@ describe('<CollectiveDataEditionReadOnly />', () => {
   })
 
   it('should display collective students', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveStudents: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('Collège - 4e, Collège - 3e')).toBeInTheDocument()
   })
 
   it('should display collective website', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveWebsite: 'https://example.com',
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('https://example.com')).toBeInTheDocument()
   })
 
   it('should display activity when provided', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       activity: DisplayableActivity.PERFORMANCE_HALL,
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText(/Activité/i)).toBeInTheDocument()
     expect(
@@ -79,26 +81,20 @@ describe('<CollectiveDataEditionReadOnly />', () => {
   })
 
   it('should display collective domains', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveDomains: [
         { id: 1, name: 'Arts visuels' },
         { id: 2, name: 'Danse' },
       ],
     })
 
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
-
     expect(screen.getByText('Arts visuels, Danse')).toBeInTheDocument()
   })
 
   it('should display "Non renseigné" when collective domains are empty', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveDomains: [],
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(
       screen.getByText(/Domaine artistique et culturel/i)
@@ -109,15 +105,12 @@ describe('<CollectiveDataEditionReadOnly />', () => {
   })
 
   it('should display collective domains in plural if there are multiple domains', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveDomains: [
         { id: 1, name: 'Arts visuels' },
         { id: 2, name: 'Danse' },
       ],
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(
       screen.getByText(/Domaines artistiques et culturels/)
@@ -125,62 +118,47 @@ describe('<CollectiveDataEditionReadOnly />', () => {
   })
 
   it('should display collective intervention area', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveInterventionArea: ['75'],
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText(/Zone de mobilité/i)).toBeInTheDocument()
   })
 
   it('should display collective intervention area in plural if there are multiple areas', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveInterventionArea: ['75', '92'],
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText(/Zones de mobilité/)).toBeInTheDocument()
   })
 
   it('should display collective legal status', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveLegalStatus: { id: 1, name: 'Association' },
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('Association')).toBeInTheDocument()
   })
 
   it('should display collective phone', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectivePhone: '0123456789',
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('0123456789')).toBeInTheDocument()
   })
 
   it('should display collective email', () => {
-    const venue = makeGetVenueResponseModel({
-      id: 1,
+    renderCollectiveDataEditionReadOnly({
       collectiveEmail: 'contact@example.com',
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     expect(screen.getByText('contact@example.com')).toBeInTheDocument()
   })
 
   it('should display edit link with correct path', () => {
-    const venue = makeGetVenueResponseModel({
+    renderCollectiveDataEditionReadOnly({
       id: 42,
       managingOfferer: {
         id: 10,
@@ -189,8 +167,6 @@ describe('<CollectiveDataEditionReadOnly />', () => {
         siren: '123456789',
       },
     })
-
-    renderWithProviders(<CollectiveDataEditionReadOnly venue={venue} />)
 
     const editLink = screen.getByRole('link', {
       name: /Modifier/,

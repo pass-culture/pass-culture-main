@@ -6,7 +6,7 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
+import { ApiError, type GetVenueResponseModel } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -15,16 +15,14 @@ import {
   defaultDMSApplicationForEACV2,
   defaultGetVenue,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import {
-  CollectiveDataEdition,
-  type CollectiveDataEditionProps,
-} from './CollectiveDataEdition'
+import { CollectiveDataEdition } from './CollectiveDataEdition'
 
 const mockedUsedNavigate = vi.fn()
 vi.mock('react-router', async () => ({
@@ -33,24 +31,23 @@ vi.mock('react-router', async () => ({
 }))
 
 const renderCollectiveDataEdition = (
-  props: Partial<CollectiveDataEditionProps> = {},
+  venueOverrides: Partial<GetVenueResponseModel> = {},
   options?: RenderWithProvidersOptions
 ) =>
-  renderWithProviders(
-    <CollectiveDataEdition
-      venue={{ ...defaultGetVenue, hasAdageId: true }}
-      {...props}
-    />,
-    {
-      initialRouterEntries: ['/edition'],
-      storeOverrides: {
-        user: {
-          selectedAdminOfferer: defaultGetOffererResponseModel,
-        },
+  renderWithProviders(<CollectiveDataEdition />, {
+    initialRouterEntries: ['/edition'],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          ...defaultGetVenue,
+          hasAdageId: true,
+          ...venueOverrides,
+        }),
       },
-      ...options,
-    }
-  )
+    },
+    ...options,
+  })
 
 describe('CollectiveDataEdition', () => {
   const snackBarError = vi.fn()
@@ -128,12 +125,9 @@ describe('CollectiveDataEdition', () => {
 
     it('should display dms timeline if venue has dms application and ff active', async () => {
       renderCollectiveDataEdition({
-        venue: {
-          ...defaultGetVenue,
-          id: 1,
-          hasAdageId: false,
-          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
-        },
+        id: 1,
+        hasAdageId: false,
+        lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
       })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -305,19 +299,16 @@ describe('CollectiveDataEdition', () => {
   describe('prefill', () => {
     it('should prefill form with venue collective data', async () => {
       renderCollectiveDataEdition({
-        venue: {
-          ...defaultGetVenue,
-          hasAdageId: true,
-          collectiveDomains: [{ id: 1, name: 'domain 1' }],
-          collectiveDescription: '',
-          collectiveEmail: 'toto@domain.com',
-          collectiveInterventionArea: [],
-          collectiveLegalStatus: { id: 1, name: 'statut 1' },
-          collectivePhone: '',
-          collectiveStudents: [],
-          collectiveWebsite: '',
-          siret: '1234567890',
-        },
+        hasAdageId: true,
+        collectiveDomains: [{ id: 1, name: 'domain 1' }],
+        collectiveDescription: '',
+        collectiveEmail: 'toto@domain.com',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: { id: 1, name: 'statut 1' },
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: '1234567890',
       })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

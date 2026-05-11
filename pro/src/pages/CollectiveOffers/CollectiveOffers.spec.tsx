@@ -38,11 +38,11 @@ const makeQuery = (
   locationType: null,
   name: null,
   offererAddressId: null,
-  offererId: 1,
+  offererId: null,
   periodBeginningDate: null,
   periodEndingDate: null,
   status: null,
-  venueId: null,
+  venueId: 2,
   ...overrides,
 })
 

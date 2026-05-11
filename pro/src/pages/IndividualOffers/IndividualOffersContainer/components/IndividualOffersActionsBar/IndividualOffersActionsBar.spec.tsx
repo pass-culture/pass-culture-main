@@ -9,6 +9,7 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -36,7 +37,7 @@ const renderActionsBar = (
           currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
         },
         user: {
-          selectedPartnerVenue: { id: 1 },
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },
       },
       ...overrides,
@@ -243,7 +244,7 @@ describe('ActionsBar', () => {
         periodBeginningDate: undefined,
         periodEndingDate: undefined,
         status: undefined,
-        venueId: undefined,
+        venueId: 1,
       },
     }
 
@@ -271,7 +272,7 @@ describe('ActionsBar', () => {
         periodBeginningDate: undefined,
         periodEndingDate: undefined,
         status: undefined,
-        venueId: undefined,
+        venueId: 1,
       },
     }
 
@@ -413,7 +414,7 @@ describe('ActionsBar', () => {
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: undefined,
+          venueId: 1,
         },
       }
 
@@ -445,7 +446,7 @@ describe('ActionsBar', () => {
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: 123,
+          venueId: 1,
         },
       }
 

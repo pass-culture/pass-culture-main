@@ -26,7 +26,7 @@ import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useColle
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
@@ -63,7 +63,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -95,7 +95,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS_MODAL,
-      offererId: selectedOffererId?.toString(),
+      offererId: selectedPartnerVenue.managingOfferer.id.toString(),
       offerId: offer.id,
       offerType: 'collective',
       offerStatus: offer.displayedStatus,
@@ -117,7 +117,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
-          offererId: selectedOffererId?.toString(),
+          offererId: selectedPartnerVenue.managingOfferer.id.toString(),
           offerId: offer.id,
           offerType: 'collective',
           offerStatus: offer.displayedStatus,
@@ -134,7 +134,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     } else {
       logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
         from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
-        offererId: selectedOffererId?.toString(),
+        offererId: selectedPartnerVenue.managingOfferer.id.toString(),
         offerId: offer.id,
         offerStatus: offer.displayedStatus,
         offerType: 'collective',

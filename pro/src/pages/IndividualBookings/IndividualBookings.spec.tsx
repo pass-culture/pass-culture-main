@@ -29,7 +29,10 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { venueAddressFactory } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  venueAddressFactory,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
@@ -104,7 +107,9 @@ const renderBookingsRecap = (
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedPartnerVenue: defaultGetOffererVenueResponseModel,
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: defaultGetOffererVenueResponseModel.id,
+        }),
       },
       offerer: currentOffererFactory(),
       ...overrides,

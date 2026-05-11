@@ -1,18 +1,15 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
-interface CollectiveDataEditionReadOnlyProps {
-  venue: GetVenueResponseModel
-}
+export const CollectiveDataEditionReadOnly = () => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-export const CollectiveDataEditionReadOnly = ({
-  venue,
-}: CollectiveDataEditionReadOnlyProps) => {
   return (
     <SummarySection
       title="Vos informations pour les enseignants"
@@ -23,15 +20,18 @@ export const CollectiveDataEditionReadOnly = ({
           descriptions={[
             {
               title: 'Démarche d’éducation artistique et culturelle',
-              text: venue.collectiveDescription ?? 'Non renseignée',
+              text:
+                selectedPartnerVenue.collectiveDescription ?? 'Non renseignée',
             },
             {
               title: 'Public cible',
-              text: venue.collectiveStudents?.join(', ') ?? 'Non renseignée',
+              text:
+                selectedPartnerVenue.collectiveStudents?.join(', ') ??
+                'Non renseignée',
             },
             {
               title: 'URL de votre site web',
-              text: venue.collectiveWebsite ?? 'Non renseignée',
+              text: selectedPartnerVenue.collectiveWebsite ?? 'Non renseignée',
             },
           ]}
         />
@@ -40,40 +40,44 @@ export const CollectiveDataEditionReadOnly = ({
       <SummarySubSection title="Informations de la structure">
         <SummaryDescriptionList
           descriptions={[
-            ...(venue.activity
+            ...(selectedPartnerVenue.activity
               ? [
                   {
                     title: 'Activité',
-                    text: getActivityLabel(venue.activity),
+                    text: getActivityLabel(selectedPartnerVenue.activity),
                   },
                 ]
               : []),
             {
               title: pluralizeFr(
-                venue.collectiveDomains.length,
+                selectedPartnerVenue.collectiveDomains.length,
                 'Domaine artistique et culturel',
                 'Domaines artistiques et culturels'
               ),
               text:
-                venue.collectiveDomains.length > 0
-                  ? venue.collectiveDomains
+                selectedPartnerVenue.collectiveDomains.length > 0
+                  ? selectedPartnerVenue.collectiveDomains
                       .map((domain) => domain.name)
                       .join(', ')
                   : 'Non renseigné',
             },
             {
               title: pluralizeFr(
-                venue.collectiveInterventionArea?.length ?? 0,
+                selectedPartnerVenue.collectiveInterventionArea?.length ?? 0,
                 'Zone de mobilité',
                 'Zones de mobilité'
               ),
-              text: venue.collectiveInterventionArea?.length
-                ? getInterventionAreaLabels(venue.collectiveInterventionArea)
+              text: selectedPartnerVenue.collectiveInterventionArea?.length
+                ? getInterventionAreaLabels(
+                    selectedPartnerVenue.collectiveInterventionArea
+                  )
                 : 'Non renseignée',
             },
             {
               title: 'Statut',
-              text: venue.collectiveLegalStatus?.name ?? 'Non renseigné',
+              text:
+                selectedPartnerVenue.collectiveLegalStatus?.name ??
+                'Non renseigné',
             },
           ]}
         />
@@ -84,11 +88,11 @@ export const CollectiveDataEditionReadOnly = ({
           descriptions={[
             {
               title: 'Téléphone',
-              text: venue.collectivePhone ?? 'Non renseigné',
+              text: selectedPartnerVenue.collectivePhone ?? 'Non renseigné',
             },
             {
               title: 'Adresse e-mail',
-              text: venue.collectiveEmail ?? 'Non renseignée',
+              text: selectedPartnerVenue.collectiveEmail ?? 'Non renseignée',
             },
           ]}
         />

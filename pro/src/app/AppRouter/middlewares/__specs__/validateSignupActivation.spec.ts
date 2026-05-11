@@ -1,5 +1,4 @@
 import type { LoaderFunctionArgs } from 'react-router'
-import * as reactRouter from 'react-router'
 
 import { api } from '@/apiClient/api'
 import * as storeModule from '@/commons/store/store'
@@ -31,16 +30,8 @@ vi.mock('@/commons/store/user/dispatchers/initializeUser', () => ({
   })),
 }))
 
-const setupStore = (features: string[]) => {
-  const store = configureTestStore({
-    features: {
-      list: features.map((name, index) => ({
-        id: index,
-        isActive: true,
-        name,
-      })),
-    },
-  })
+const setupStore = () => {
+  const store = configureTestStore()
   vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
   return store
@@ -59,19 +50,8 @@ describe('validateSignupActivation', () => {
     vi.clearAllMocks()
   })
 
-  it('should return early when WIP_SWITCH_VENUE feature is not active', async () => {
-    setupStore([])
-    const args = createMockLoaderArgs('some-token')
-
-    const result = await validateSignupActivation(args)
-
-    expect(result).toBeUndefined()
-    expect(api.validateUser).not.toHaveBeenCalled()
-    expect(reactRouter.redirect).not.toHaveBeenCalled()
-  })
-
   it('should redirect to /connexion when token is missing', async () => {
-    setupStore(['WIP_SWITCH_VENUE'])
+    setupStore()
     const args = createMockLoaderArgs()
 
     await expect(validateSignupActivation(args)).rejects.toEqual({
@@ -83,7 +63,7 @@ describe('validateSignupActivation', () => {
   })
 
   it('should validate user, initialize profile, show success snackbar and redirect to /connexion', async () => {
-    const store = setupStore(['WIP_SWITCH_VENUE'])
+    const store = setupStore()
     const mockUser = sharedCurrentUserFactory()
     vi.spyOn(api, 'validateUser').mockResolvedValueOnce(undefined)
     vi.spyOn(api, 'getProfile').mockResolvedValueOnce(mockUser)
@@ -112,7 +92,7 @@ describe('validateSignupActivation', () => {
   })
 
   it('should show error snackbar and redirect to /connexion when API returns an error', async () => {
-    const store = setupStore(['WIP_SWITCH_VENUE'])
+    const store = setupStore()
     vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       makeApiError({ body: { global: 'Token expired' } })
     )
@@ -138,7 +118,7 @@ describe('validateSignupActivation', () => {
   })
 
   it('should redirect to /connexion without snackbar when a non-API error is thrown', async () => {
-    const store = setupStore(['WIP_SWITCH_VENUE'])
+    const store = setupStore()
     vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       new Error('Network error')
     )

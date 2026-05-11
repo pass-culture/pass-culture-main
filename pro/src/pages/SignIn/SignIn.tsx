@@ -11,7 +11,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -37,8 +36,6 @@ interface SigninApiErrorResponse {
 }
 
 export const SignIn = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -78,9 +75,7 @@ export const SignIn = (): JSX.Element => {
 
       await dispatch(initializeUser({ user })).unwrap()
 
-      if (withSwitchVenueFeature) {
-        navigate(getUserDefaultPath())
-      }
+      navigate(getUserDefaultPath())
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
         if (isErrorAPIError(error)) {

@@ -61,11 +61,9 @@ export const IndividualOffers = () => {
       audience?: Audience
     }
   ) => {
-    // We dont need to pass the offererId in the URL since
-    // its already present in the redux store (useSelector(selectCurrentOfferer))
+    // TODO (igabriele, 2026-05-07): Delete this line once `offererId` is removed and `venueId` made mandatory in `ListOffersQueryModel`
     delete filters.offererId
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 

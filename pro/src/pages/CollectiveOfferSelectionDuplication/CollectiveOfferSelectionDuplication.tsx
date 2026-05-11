@@ -15,7 +15,6 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -48,7 +47,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   const { handleSubmit: handleSubmitSearch } = form
 
-  const currentOffererId = useAppSelector(ensureCurrentOfferer).id
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
@@ -64,7 +62,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   } = serializeApiCollectiveFilters({
     ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     name: searchedOfferName,
-    offererId: currentOffererId.toString(),
+    offererId: selectedPartnerVenue.managingOfferer.id.toString(),
     venueId: selectedPartnerVenue.id.toString(),
     status: [
       CollectiveOfferDisplayedStatus.PUBLISHED,

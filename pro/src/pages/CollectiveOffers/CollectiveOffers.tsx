@@ -12,8 +12,6 @@ import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/use
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
@@ -21,8 +19,6 @@ export const CollectiveOffers = () => {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const navigate = useNavigate()
-
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const [queryKey, apiFilters] = useCollectiveOffersSwrKeys({
     isInTemplateOffersPage: false,
@@ -33,9 +29,10 @@ export const CollectiveOffers = () => {
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
   ) => {
-    // We dont need to pass the offererId in the URL since
-    // its already present in the redux store (useSelector(selectCurrentOffererId))
+    // The offererId and partner venueId come from the Redux store, no need
+    // to also reflect them in the URL.
     delete filters.offererId
+    delete filters.venueId
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
@@ -64,7 +61,6 @@ export const CollectiveOffers = () => {
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}
         isLoading={offersQuery.isLoading}
-        offererId={selectedOffererId.toString()}
         offers={offersQuery.data || []}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}

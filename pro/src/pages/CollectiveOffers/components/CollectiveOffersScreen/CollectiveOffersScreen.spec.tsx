@@ -14,6 +14,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -34,7 +35,7 @@ const renderOffers = (
         currentUser: sharedCurrentUserFactory({
           roles: [UserRole.PRO],
         }),
-        selectedPartnerVenue: { id: 1 },
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
       },
       offerer: currentOffererFactory(),
     },
@@ -71,7 +72,6 @@ describe('CollectiveOffersScreen', () => {
     props = {
       currentPageNumber: 1,
       isLoading: false,
-      offererId: '1',
       offers: offersRecap,
       urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,

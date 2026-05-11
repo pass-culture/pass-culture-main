@@ -3,9 +3,10 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -20,7 +21,7 @@ interface UserAnonymizationFormValues {
 
 export const UserAnonymizationForm = (): JSX.Element => {
   const snackBar = useSnackBar()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
 
   const {
     register,

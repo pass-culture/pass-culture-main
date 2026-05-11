@@ -11,7 +11,7 @@ import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -131,13 +131,14 @@ export const IndividualOffersActionsBar = ({
 }: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = useStoredFilterConfig('individual')
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualOffersFilters>),
+    venueId: selectedPartnerVenue.id,
   }
 
   const { mutate } = useSWRConfig()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const dactivateButtonRef = useRef<HTMLButtonElement>(null)
@@ -149,7 +150,7 @@ export const IndividualOffersActionsBar = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedPartnerVenue.managingOfferer.id
   )
 
   const handleClose = () => {

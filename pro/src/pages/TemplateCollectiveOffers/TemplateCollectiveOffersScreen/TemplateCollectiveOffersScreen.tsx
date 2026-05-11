@@ -12,8 +12,10 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
@@ -31,7 +33,6 @@ import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/Templ
 export type TemplateCollectiveOffersScreenProps = {
   currentPageNumber: number
   isLoading: boolean
-  offererId: string | undefined
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
     filters: Partial<CollectiveSearchFiltersParams> & {
@@ -45,13 +46,14 @@ export type TemplateCollectiveOffersScreenProps = {
 export const TemplateCollectiveOffersScreen = ({
   currentPageNumber,
   isLoading,
-  offererId,
   initialSearchFilters,
   redirectWithUrlFilters,
   urlSearchFilters,
   offers,
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
+
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferTemplateResponseModel[]
   >([])
@@ -143,7 +145,7 @@ export const TemplateCollectiveOffersScreen = ({
         hasFilters={hasFilters}
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
-        offererId={offererId}
+        offererId={selectedPartnerVenue.managingOfferer.id.toString()}
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
@@ -208,7 +210,7 @@ export const TemplateCollectiveOffersScreen = ({
             onPageClick: (page) => {
               applyUrlFiltersAndRedirect({
                 ...urlSearchFilters,
-                offererId: offererId?.toString() ?? '',
+                offererId: selectedPartnerVenue.managingOfferer.id.toString(),
                 page,
               })
               scrollToContentWrapper()

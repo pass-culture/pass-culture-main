@@ -10,10 +10,6 @@ import {
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import {
-  ensureCurrentOfferer,
-  selectCurrentOfferer,
-} from '@/commons/store/offerer/selectors'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 
@@ -25,7 +21,6 @@ import type { OfferTypeFormValues } from './types'
 export const OfferTypeScreen = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const snackBar = useSnackBar()
@@ -42,8 +37,6 @@ export const OfferTypeScreen = () => {
 
   const { handleSubmit } = methods
 
-  const offerer = useAppSelector(selectCurrentOfferer)
-
   const onSubmit = async ({ offer }: OfferTypeFormValues) => {
     if (offer.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return navigate({
@@ -58,7 +51,7 @@ export const OfferTypeScreen = () => {
     ) {
       const apiFilters = {
         ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-        offererId: selectedOffererId.toString(),
+        offererId: selectedPartnerVenue.managingOfferer.id.toString(),
         venueId: selectedPartnerVenue.id.toString(),
       }
       const {
@@ -109,14 +102,11 @@ export const OfferTypeScreen = () => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
-            <CollectiveOfferType
-              offerer={offerer}
-              lastCollectiveDmsApplication={
-                selectedPartnerVenue.lastCollectiveDmsApplication
-              }
-            />
+            <CollectiveOfferType />
 
-            <ActionsBar disableNextButton={!offerer?.allowedOnAdage} />
+            <ActionsBar
+              disableNextButton={!selectedPartnerVenue.allowedOnAdage}
+            />
           </FormLayout>
         </form>
       </FormProvider>

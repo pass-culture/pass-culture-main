@@ -11,7 +11,7 @@ import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   ModalImageUpsertOrEdit,
@@ -36,7 +36,6 @@ export const HeadlineOfferImageDialogs = ({
   offerId,
   isInOfferJourney = false,
 }: HeadlineOfferImageDialogsProps) => {
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const { mutate } = useSWRConfig()
 
   const { headlineOffer, upsertHeadlineOffer } = useHeadlineOfferContext()
@@ -46,14 +45,16 @@ export const HeadlineOfferImageDialogs = ({
   const snackBar = useSnackBar()
   const { storedFilters } = useStoredFilterConfig('individual')
   const urlSearchFilters = useQuerySearchFilters()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualOffersFilters>),
+    venueId: selectedPartnerVenue.id,
   }
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedPartnerVenue.managingOfferer.id
   )
 
   const onImageUpload = async ({

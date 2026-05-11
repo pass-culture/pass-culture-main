@@ -10,7 +10,8 @@ import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -36,9 +37,7 @@ export function IndividualOfferPracticalInfosForm({
 }: IndividualOfferPracticalInfosFormProps) {
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 
-  const {
-    currentUser: { email },
-  } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
 
   const receiveNotificationEmails = form.watch('receiveNotificationEmails')
   const bookingEmail = form.watch('bookingEmail')
@@ -135,7 +134,7 @@ export function IndividualOfferPracticalInfosForm({
               if (e.target.checked && !bookingEmail) {
                 form.setValue(
                   'bookingEmail',
-                  offer?.venue.bookingEmail ?? email
+                  offer?.venue.bookingEmail ?? currentUser.email
                 )
               }
 

@@ -18,7 +18,7 @@ import {
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import penIcon from '@/icons/full-edit.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
@@ -50,11 +50,12 @@ export const IndividualActionsCells = ({
 }: IndividualActionsCellsProps) => {
   const { storedFilters } = useStoredFilterConfig('individual')
   const { upsertHeadlineOffer } = useHeadlineOfferContext()
-  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const urlSearchFilters = useQuerySearchFilters()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualOffersFilters>),
+    venueId: selectedPartnerVenue.id,
   }
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
@@ -84,7 +85,7 @@ export const IndividualActionsCells = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedPartnerVenue.managingOfferer.id
   )
 
   const onConfirmDeleteDraftOffer = async () => {
