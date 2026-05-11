@@ -1,12 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
+import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -23,7 +24,7 @@ export const UserIdentityForm = ({
   closeForm,
   initialValues,
 }: UserIdentityFormProps): JSX.Element => {
-  const { currentUser } = useCurrentUser()
+  const currentUser = useAppSelector(ensureCurrentUser)
   const dispatch = useAppDispatch()
   const snackBar = useSnackBar()
 
@@ -40,7 +41,7 @@ export const UserIdentityForm = ({
 
   const onSubmit = async (values: UserIdentityFormValues) => {
     try {
-      const response = await api.patchUserIdentity(values)
+      const response = await apiNew.patchUserIdentity({ body: values })
       dispatch(
         updateUser({
           ...currentUser,

@@ -1,14 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { ApiError, type ApiResult } from '@/apiClient/compat'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { UserPhoneForm, type UserPhoneFormProps } from '../UserPhoneForm'
+import { UserPhoneForm, type UserPhoneFormProps } from './UserPhoneForm'
 
 const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   return renderWithProviders(<UserPhoneForm {...props} />, {
@@ -34,7 +33,7 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should render api error when submitting', async () => {
-    vi.spyOn(api, 'patchUserPhone').mockRejectedValue(
+    vi.spyOn(apiNew, 'patchUserPhone').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -56,8 +55,10 @@ describe('components:UserPhoneForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(api.patchUserPhone).toHaveBeenCalledWith({
-      phoneNumber: '+262692790350',
+    expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
+      body: {
+        phoneNumber: '+262692790350',
+      },
     })
   })
 
@@ -94,7 +95,7 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should trigger onSubmit callback when submitting', async () => {
-    vi.spyOn(api, 'patchUserPhone').mockResolvedValue({
+    vi.spyOn(apiNew, 'patchUserPhone').mockResolvedValue({
       phoneNumber: '+262692790350',
     })
 
@@ -109,13 +110,15 @@ describe('components:UserPhoneForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(api.patchUserPhone).toHaveBeenCalledWith({
-      phoneNumber: '+262692790350',
+    expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
+      body: {
+        phoneNumber: '+262692790350',
+      },
     })
   })
 
   it('should reset phone number onclick "annuler', async () => {
-    vi.spyOn(api, 'patchUserPhone').mockResolvedValue({
+    vi.spyOn(apiNew, 'patchUserPhone').mockResolvedValue({
       phoneNumber: '+262692790350',
     })
 

@@ -19,6 +19,10 @@ export interface UserEmailFormProps {
   closeForm: () => void
 }
 
+export interface UserEmailInitialValues {
+  email: string
+}
+
 type UserEmailFormValues = {
   email: string
   password: string
@@ -72,9 +76,9 @@ export const UserEmailForm = ({
   return (
     <>
       <span className={styles['header-secondary']}>
-        Adresse email actuelle:
-      </span>
-      <span>{currentUser.email}</span>
+        Adresse email actuelle :
+      </span>{' '}
+      {currentUser.email}
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLayout mediumWidthForm>
           <FormLayout.Row mdSpaceAfter>

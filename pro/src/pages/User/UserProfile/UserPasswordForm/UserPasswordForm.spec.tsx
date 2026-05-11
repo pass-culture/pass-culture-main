@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   UserPasswordForm,
   type UserPasswordFormProps,
-} from '../UserPasswordForm'
+} from './UserPasswordForm'
 
 const renderUserPasswordForm = (props: UserPasswordFormProps) => {
   return renderWithProviders(<UserPasswordForm {...props} />, {
