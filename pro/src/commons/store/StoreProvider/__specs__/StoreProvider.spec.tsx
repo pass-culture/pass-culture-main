@@ -82,7 +82,8 @@ describe('src | App', () => {
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).
+    expect(api.getOfferer).toHaveBeenCalledTimes(2)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
   })
 })

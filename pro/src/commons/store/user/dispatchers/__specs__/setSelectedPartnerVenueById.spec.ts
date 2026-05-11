@@ -14,11 +14,13 @@ import {
   getOffererNameFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
+  makeGetVenueManagingOffererResponseModel,
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
 } from '@/commons/utils/factories/venueFactories'
 
 import * as logoutModule from '../logout'
+import * as setSelectedAdminOffererByIdModule from '../setSelectedAdminOffererById'
 import { setSelectedPartnerVenueById } from '../setSelectedPartnerVenueById'
 
 vi.mock('@/apiClient/api', () => ({
@@ -93,7 +95,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 201 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 201,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -123,7 +128,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -154,7 +162,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -176,7 +187,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 301 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 301,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -210,7 +224,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -280,7 +297,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -310,7 +330,10 @@ describe('setSelectedPartnerVenueById', () => {
 
     await store
       .dispatch(
-        setSelectedPartnerVenueById({ nextSelectedPartnerVenueId: 101 })
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
       )
       .unwrap()
 
@@ -331,5 +354,67 @@ describe('setSelectedPartnerVenueById', () => {
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('200')
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
+  })
+
+  it('should align the selected admin offerer when shouldAlignSelectedAdminOfferer is true', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+    const setSelectedAdminOffererByIdSpy = vi.spyOn(
+      setSelectedAdminOffererByIdModule,
+      'setSelectedAdminOffererById'
+    )
+
+    const store = configureTestStore(storeDataBase)
+
+    await store
+      .dispatch(
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: true,
+        })
+      )
+      .unwrap()
+
+    expect(setSelectedAdminOffererByIdSpy).toHaveBeenCalledExactlyOnceWith(100)
+  })
+
+  it('should not align the selected admin offerer when shouldAlignSelectedAdminOfferer is false', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+    const setSelectedAdminOffererByIdSpy = vi.spyOn(
+      setSelectedAdminOffererByIdModule,
+      'setSelectedAdminOffererById'
+    )
+
+    const store = configureTestStore(storeDataBase)
+
+    await store
+      .dispatch(
+        setSelectedPartnerVenueById({
+          nextSelectedPartnerVenueId: 101,
+          shouldAlignSelectedAdminOfferer: false,
+        })
+      )
+      .unwrap()
+
+    expect(setSelectedAdminOffererByIdSpy).not.toHaveBeenCalled()
   })
 })

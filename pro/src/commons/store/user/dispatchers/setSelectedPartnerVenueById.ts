@@ -31,11 +31,15 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
   },
   {
     nextSelectedPartnerVenueId: number
+    shouldAlignSelectedAdminOfferer: boolean
   },
   AppThunkApiConfig
 >(
   'user/setSelectedPartnerVenueById',
-  async ({ nextSelectedPartnerVenueId }, { dispatch, getState }) => {
+  async (
+    { nextSelectedPartnerVenueId, shouldAlignSelectedAdminOfferer },
+    { dispatch, getState }
+  ) => {
     try {
       const state = getState()
 
@@ -52,7 +56,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       const venuesWithPendingValidationIds =
         state.user.venuesWithPendingValidation?.map((v) => v.id)
       let nextSelectedPartnerVenue: GetVenueResponseModel
-      let nextSelectedOfferer: GetOffererResponseModel
+      let nextSelectedOfferer: GetOffererResponseModel | undefined
       let nextUserAccess: UserAccess
       if (
         venuesWithPendingValidationIds?.length &&
@@ -89,7 +93,13 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
 
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
 
-      await dispatch(setSelectedAdminOffererById(nextSelectedOfferer))
+      if (shouldAlignSelectedAdminOfferer) {
+        await dispatch(
+          setSelectedAdminOffererById(
+            nextSelectedPartnerVenue.managingOfferer.id
+          )
+        )
+      }
 
       const nextSelectedOffererName = offererNames.find(
         (offerer) => offerer.id === nextSelectedOfferer.id

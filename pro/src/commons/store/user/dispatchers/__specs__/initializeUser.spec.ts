@@ -199,6 +199,8 @@ describe('initializeUser', () => {
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
     const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '999')
+
     const store = configureTestStore()
 
     await store.dispatch(initializeUser({ user })).unwrap()
@@ -208,6 +210,10 @@ describe('initializeUser', () => {
 
     const state = store.getState()
     expect(state.user.access).toBeNull()
+    expect(state.user.selectedAdminOfferer).toBeNull()
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
+    ).toBeNull()
   })
 
   it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
@@ -390,6 +396,52 @@ describe('initializeUser', () => {
     const state = store.getState()
     expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
+  })
+
+  it('should keep the admin offerer from localStorage independently from the partner venue selection', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNamesWithPendingValidation: [],
+      offerersNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          managingOffererId: 100,
+        }),
+      ],
+      venuesWithPendingValidation: [],
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockImplementation(
+      (offererId: number) =>
+        Promise.resolve({
+          ...defaultGetOffererResponseModel,
+          id: offererId,
+          isOnboarded: true,
+        }) as ReturnType<typeof api.getOfferer>
+    )
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '200')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser({ user })).unwrap()
+
+    const state = store.getState()
+    expect(state.user.selectedPartnerVenue?.id).toBe(101)
+    expect(state.user.selectedAdminOfferer?.id).toBe(200)
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
+    ).toBe('200')
   })
 })
 
