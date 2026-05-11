@@ -411,6 +411,57 @@ def create_eac_venues(offerer_by_name: dict[str, offerers_models.Offerer]) -> No
         adageId="123599",
     )
 
+    # eac_location_search
+    offerer = offerer_by_name["eac_location_search"]
+    create_venue(
+        managingOfferer=offerer,
+        name="La Compagnie de l'Avion",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="41481521700032",
+        adageId="123600",
+        pricing_point="self",
+        # address
+        departmentCode="91",
+        postalCode="91000",
+        city="Corbeil-Essonnes",
+        street="Rue Henri Auguste Desbruères",
+        latitude=48.61,
+        longitude=2.44,
+    )
+    create_venue(
+        managingOfferer=offerer,
+        name="Le Manoir des Cygnes",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="44218537700011",
+        adageId="123601",
+        pricing_point="self",
+        # address
+        departmentCode="91",
+        postalCode="91830",
+        city="Le Coudray-Montceaux",
+        street="150 Les Berges de Seine",
+        latitude=48.57,
+        longitude=2.50,
+    )
+    create_venue(
+        managingOfferer=offerer,
+        name="Château de Vaux-le-Vicomte",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="78495660900019",
+        adageId="123602",
+        pricing_point="self",
+        # address
+        departmentCode="77",
+        postalCode="77950",
+        city="Maincy",
+        street="Route du chateau de Vaux-le-Vicomte",
+        latitude=48.56,
+        longitude=2.71,
+    )
+
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
     location_fields = {

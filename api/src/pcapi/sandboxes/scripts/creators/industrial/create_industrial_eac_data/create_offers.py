@@ -119,6 +119,10 @@ def create_eac_offers(
 
     create_complete_collective_offers_with_template()
 
+    # eac_location_search
+    offerer = offerer_by_name["eac_location_search"]
+    create_collective_offer_templates_for_search(offerer)
+
     search.index_all_collective_offers_and_templates()
 
 
@@ -734,6 +738,104 @@ def create_collective_offer_templates_with_different_displayed_status(
             bookingEmails=["toto@totoland.com"],
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         )
+
+
+def create_collective_offer_templates_for_search(offerer: offerers_models.Offerer) -> None:
+    venue = next(v for v in offerer.managedVenues if v.name == "La Compagnie de l'Avion")
+
+    kwargs = {
+        "venue": venue,
+        "bookingEmails": ["toto@totoland.com"],
+        "formats": [EacFormat.PROJECTION_AUDIOVISUELLE],
+    }
+    # located at the venue
+    educational_factories.CollectiveOfferTemplateOnAddressVenueLocationFactory.create(
+        **kwargs, name="Avion - structure", interventionArea=[]
+    )
+    # other address
+    educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory.create(
+        **kwargs,
+        name="Avion - autre adresse",
+        interventionArea=[],
+        offererAddress__label="Autre adresse",
+        offererAddress__address__departmentCode="91",
+        offererAddress__address__postalCode="91250",
+        offererAddress__address__city="Saintry-sur-Seine",
+        offererAddress__address__street="130 Rte de Morsang",
+        offererAddress__address__latitude=48.59,
+        offererAddress__address__longitude=2.49,
+    )
+    # school, venue department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Avion - dans l'école", interventionArea=[91]
+    )
+    # school, other department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Avion - dans l'école - hors département", interventionArea=[73]
+    )
+    # to be defined, venue department
+    educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory.create(
+        **kwargs, name="Avion - à définir", interventionArea=[91]
+    )
+    # to be defined, other department
+    educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory.create(
+        **kwargs, name="Avion - à définir - hors département", interventionArea=[73]
+    )
+
+    venue = next(v for v in offerer.managedVenues if v.name == "Le Manoir des Cygnes")
+    address = venue.offererAddress.address
+    kwargs = {
+        "venue": venue,
+        "bookingEmails": ["toto@totoland.com"],
+        "formats": [EacFormat.PROJECTION_AUDIOVISUELLE],
+    }
+    # located at the venue
+    educational_factories.CollectiveOfferTemplateOnAddressVenueLocationFactory.create(
+        **kwargs, name="Les Cygnes - structure", interventionArea=[]
+    )
+    # school, venue department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Les Cygnes - dans l'école", interventionArea=[91]
+    )
+    # school, other department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Les Cygnes - dans l'école - hors département", interventionArea=[73]
+    )
+    # to be defined, venue department
+    educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory.create(
+        **kwargs, name="Les Cygnes - à définir", interventionArea=[91]
+    )
+    # to be defined, other department
+    educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory.create(
+        **kwargs, name="Les Cygnes - à définir - hors département", interventionArea=[73]
+    )
+
+    venue = next(v for v in offerer.managedVenues if v.name == "Château de Vaux-le-Vicomte")
+    kwargs = {
+        "venue": venue,
+        "bookingEmails": ["toto@totoland.com"],
+        "formats": [EacFormat.PROJECTION_AUDIOVISUELLE],
+    }
+    # located at the venue
+    educational_factories.CollectiveOfferTemplateOnAddressVenueLocationFactory.create(
+        **kwargs, name="Vaux-le-Vicomte - structure", interventionArea=[]
+    )
+    # other address
+    educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory.create(
+        **kwargs,
+        name="Vaux-le-Vicomte - autre adresse (les Cygnes)",
+        interventionArea=[],
+        offererAddress__label="Les Cygnes",
+        offererAddress__address=address,
+    )
+    # school, venue department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Vaux-le-Vicomte - dans l'école", interventionArea=[91]
+    )
+    # school, other department
+    educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
+        **kwargs, name="Vaux-le-Vicomte - dans l'école - hors département", interventionArea=[73]
+    )
 
 
 def create_booking_base_list(
