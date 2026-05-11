@@ -1,5 +1,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .title {
   @include fonts.title1;
@@ -17,10 +18,13 @@
 
 .container {
   margin: var(--size-spacing-xxl) auto;
+  max-width: rem.torem(640px);
 }
 
 .actionbar-container {
   width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   max-width: 640px;
   flex-flow: column-reverse wrap;

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -6,6 +7,7 @@ import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type { CreateOffererBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type Offerer,
@@ -17,12 +19,14 @@ import {
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import { generateVenueDataLines } from '@/components/SignupJourneyForm/Offerers/utils'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
@@ -46,6 +50,10 @@ import {
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -199,26 +207,48 @@ export const Offerers = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['existing-offerers-layout-wrapper']}>
-      <div>
-        <h1 className={styles['title']}>Ce SIRET est déjà inscrit</h1>
-        <h2 className={styles['subtitle']}>
-          Ce SIRET est déjà associé à{' '}
-          {pluralizeFr(
-            displayedVenuesNames.length,
-            'une structure',
-            'plusieurs structures'
-          )}{' '}
-          sur le pass Culture Pro.
-        </h2>
+    <div
+      className={cn({
+        [styles['existing-offerers-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      <MainHeading
+        className={styles['main-heading']}
+        mainHeading="Ce SIRET est déjà inscrit"
+      />
+      <p className={styles['subheading-description']}>
+        Ce SIRET est déjà associé à{' '}
+        {pluralizeFr(
+          displayedVenuesNames.length,
+          'une structure',
+          'plusieurs structures'
+        )}{' '}
+        sur le pass Culture Pro.
+      </p>
+
+      <div className={styles['venues-layout']}>
+        <DescriptionList lines={venuesLines} />
       </div>
 
-      <div className={styles['existing-offerers-layout']}>
-        <div className={styles['venues-layout']}>
-          <DescriptionList lines={venuesLines} />
-        </div>
+      <div className={styles['next-actions']}>
+        {isSignupSimulationEnabled && (
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => {
+              setOfferer(null)
+              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                from: location.pathname,
+                to: REGISTRATION_STEP_IDS.SIRET,
+                used: SignupJourneyAction.ActionBar,
+              })
+            }}
+            to="/inscription/structure/recherche"
+            label="Retour"
+          />
+        )}
+
         <Button
-          variant={ButtonVariant.PRIMARY}
           onClick={doLinkUserToOfferer}
           ref={joinSpaceButtonRef}
           label="Rejoindre cet espace"
@@ -240,16 +270,20 @@ export const Offerers = (): JSX.Element => {
           />
         </>
       )}
-      <ActionBar
-        previousStepTitle="Retour à la recherche de SIRET"
-        hideRightButton
-        onClickPrevious={() => {
-          setOfferer(null)
-          navigate('/inscription/structure/recherche')
-        }}
-        previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-        isDisabled={false}
-      />
+
+      {!isSignupSimulationEnabled && (
+        <ActionBar
+          previousStepTitle="Retour à la recherche de SIRET"
+          hideRightButton
+          onClickPrevious={() => {
+            setOfferer(null)
+            navigate('/inscription/structure/recherche')
+          }}
+          previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+          isDisabled={false}
+        />
+      )}
+
       <ConfirmDialog
         hideIcon={true}
         onCancel={cancelLinkUserToOfferer}

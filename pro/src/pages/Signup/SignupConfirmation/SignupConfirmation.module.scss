@@ -1,4 +1,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.signup-confirmation-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .signup-confirmation {
   @include fonts.body;

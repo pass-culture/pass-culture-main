@@ -1,8 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import cn from 'classnames'
 import { useCallback, useEffect } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type Offerer,
@@ -15,10 +18,14 @@ import {
   tryRestoreInitialAddressFromStorage,
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
+import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
@@ -34,6 +41,7 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -55,6 +63,12 @@ export const OffererAuthentication = (): JSX.Element => {
     activity,
     setActivity,
   } = useSignupJourneyContext()
+
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
+  const { logEvent } = useAnalytics()
 
   const addressAutocomplete =
     `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`.trim()
@@ -180,69 +194,114 @@ export const OffererAuthentication = (): JSX.Element => {
   }
 
   return (
-    <FormLayout>
-      <FormProvider {...methods}>
-        <form
-          className={styles['signup-offerer-authentication-form']}
-          onSubmit={methods.handleSubmit(onSubmit)}
-          data-testid="signup-offerer-authentication-form"
-        >
-          <h2 className={styles['subtitle']}>
-            Complétez les informations de votre structure
-          </h2>
-          <FormLayout.MandatoryInfo />
-          {!offerer?.isDiffusible && (
-            <div className={styles['warning-callout']}>
-              <Banner
-                variant={BannerVariants.WARNING}
-                title="Certaines informations de votre structure ne sont pas diffusibles."
-                description={
-                  <p className={styles['warning-callout-text']}>
-                    Pour créer votre structure au sein du Pass Culture, vous
-                    devez communiquer un nom public. Aucune information protégée
-                    ne sera diffusée.
-                  </p>
-                }
-                actions={[
-                  {
-                    href: 'https://annuaire-entreprises.data.gouv.fr/faq/entreprise-non-diffusible',
-                    label: 'En savoir plus',
-                    isExternal: true,
-                    icon: fullLinkIcon,
-                    iconAlt: 'Nouvelle fenêtre',
-                    type: 'link',
-                  },
-                ]}
-              />
-            </div>
-          )}
-          <div className={styles['displaying-data']}>
-            <div className={styles['displaying-data-header']}>
-              <h2 className={styles['title']}>Informations</h2>
-              <Button
-                as="a"
-                to="/inscription/structure/recherche"
-                variant={ButtonVariant.SECONDARY}
-                color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
-                iconPosition={IconPositionEnum.LEFT}
-                icon={fullEditIcon}
-                label="Modifier le SIRET"
-              />
-            </div>
-            <DescriptionList lines={venueLines} />
-          </div>
-          <OffererAuthenticationForm />
-          <ActionBar
-            onClickPrevious={handlePreviousStep}
-            previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-            nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
-            previousStepTitle="Retour"
-            nextStepTitle="Continuer"
-            isDisabled={methods.formState.isSubmitting}
+    <div
+      className={cn({
+        [styles['offerer-authentication-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      {isSignupSimulationEnabled && (
+        <>
+          <RegistrationStepper />
+          <MainHeading
+            mainHeading="Votre structure"
+            className={styles['main-heading']}
           />
-        </form>
-      </FormProvider>
-    </FormLayout>
+          <p className={styles['subheading-description']}>
+            Vérifiez les informations récupérées depuis votre SIRET et complétez
+            les champs manquants.
+          </p>
+        </>
+      )}
+
+      <FormLayout>
+        <FormProvider {...methods}>
+          <form
+            className={styles['signup-offerer-authentication-form']}
+            onSubmit={methods.handleSubmit(onSubmit)}
+            data-testid="signup-offerer-authentication-form"
+          >
+            {!isSignupSimulationEnabled && (
+              <>
+                <h2 className={styles['subtitle']}>
+                  Complétez les informations de votre structure
+                </h2>
+                <FormLayout.MandatoryInfo />
+              </>
+            )}
+
+            {!offerer?.isDiffusible && (
+              <div className={styles['warning-callout']}>
+                <Banner
+                  variant={BannerVariants.WARNING}
+                  title="Certaines informations de votre structure ne sont pas diffusibles."
+                  description={
+                    <p className={styles['warning-callout-text']}>
+                      Pour créer votre structure au sein du Pass Culture, vous
+                      devez communiquer un nom public. Aucune information
+                      protégée ne sera diffusée.
+                    </p>
+                  }
+                  actions={[
+                    {
+                      href: 'https://annuaire-entreprises.data.gouv.fr/faq/entreprise-non-diffusible',
+                      label: 'En savoir plus',
+                      isExternal: true,
+                      icon: fullLinkIcon,
+                      iconAlt: 'Nouvelle fenêtre',
+                      type: 'link',
+                    },
+                  ]}
+                />
+              </div>
+            )}
+            <div className={styles['displaying-data']}>
+              <div className={styles['displaying-data-header']}>
+                <h2 className={styles['displaying-data-title']}>
+                  Informations
+                </h2>
+                <Button
+                  as="a"
+                  to="/inscription/structure/recherche"
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  size={ButtonSize.SMALL}
+                  iconPosition={IconPositionEnum.LEFT}
+                  icon={fullEditIcon}
+                  label="Modifier le SIRET"
+                />
+              </div>
+              <DescriptionList lines={venueLines} />
+            </div>
+            <OffererAuthenticationForm />
+
+            {isSignupSimulationEnabled ? (
+              <div className={styles['next-actions']}>
+                <Button
+                  type="submit"
+                  label="Continuer"
+                  onClick={() => {
+                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                      from: location.pathname,
+                      to: REGISTRATION_STEP_IDS.ACTIVITY,
+                      used: SignupJourneyAction.ActionBar,
+                    })
+                  }}
+                  disabled={methods.formState.isSubmitting}
+                />
+              </div>
+            ) : (
+              <ActionBar
+                onClickPrevious={handlePreviousStep}
+                previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+                nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
+                previousStepTitle="Retour"
+                nextStepTitle="Continuer"
+                isDisabled={methods.formState.isSubmitting}
+              />
+            )}
+          </form>
+        </FormProvider>
+      </FormLayout>
+    </div>
   )
 }

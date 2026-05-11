@@ -1,15 +1,21 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-$offerers-gap: var(--size-spacing-l);
-$medium-gap: var(--size-spacing-l);
-$small-gap: var(--size-spacing-s);
+.existing-offerers-container {
+  max-width: rem.torem(640px);
+  margin-left: auto;
+  margin-right: auto;
+}
 
-.existing-offerers-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: $offerers-gap;
+.main-heading {
+  margin-bottom: var(--size-spacing-s);
+}
+
+.subheading-description {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .venues-layout {
@@ -29,23 +35,12 @@ $small-gap: var(--size-spacing-s);
   padding: 0 rem.torem(85px);
 }
 
-.existing-offerers-layout-wrapper {
-  margin-bottom: var(--size-spacing-xxxl);
-}
-
-.title {
-  @include fonts.title1;
-
-  margin-bottom: var(--size-spacing-s);
-}
-
-.subtitle {
-  @include fonts.body-xs;
-
-  color: var(--color-text-subtle, #696a6f);
-  margin-bottom: var(--size-spacing-xxl);
-}
-
 .view-move-button {
   text-align: right;
+}
+
+.next-actions {
+  margin-top: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: space-between;
 }

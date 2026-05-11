@@ -1,8 +1,11 @@
+import cn from 'classnames'
 import { useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -14,6 +17,10 @@ export const ConfirmedAttachment = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
 
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
+
   const logNavigation = () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
@@ -24,18 +31,25 @@ export const ConfirmedAttachment = (): JSX.Element => {
     navigate(getUserDefaultPath())
   }
   return (
-    <div className={styles['confirmed-attachment-layout']}>
+    <div
+      className={cn({
+        [styles['confirmed-attachment-container']]: isSignupSimulationEnabled,
+      })}
+    >
       <div>
-        <h2 className={styles['title']}>Votre demande a été envoyée</h2>
-        <div className={styles['subtitle']}>
+        <MainHeading
+          className={styles['main-heading']}
+          mainHeading="Votre demande a été envoyée"
+        />
+        <p className={styles['subheading-description']}>
           Nos équipes valideront votre rattachement par email. Vous aurez alors
           accès à l'ensemble des fonctionnalités du pass Culture Pro.
-        </div>
+        </p>
       </div>
       <Button
         onClick={logNavigation}
         variant={ButtonVariant.PRIMARY}
-        label="Accéder à votre espace"
+        label="Accéder à mon espace"
       />
     </div>
   )

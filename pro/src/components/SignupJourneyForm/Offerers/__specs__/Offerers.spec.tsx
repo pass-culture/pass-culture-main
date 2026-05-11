@@ -366,6 +366,22 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
   })
 
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display "Retour" button instead of ActionBar', async () => {
+      await renderOfferersScreen(contextValue, {
+        features: ['WIP_PRE_SIGNUP_SIMULATION'],
+      })
+
+      expect(screen.getByRole('link', { name: 'Retour' })).toBeVisible()
+
+      expect(
+        screen.queryByRole('button', {
+          name: 'Retour à la recherche de SIRET',
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('modal handling', () => {
     it('should display confirmation dialog when user want to be linked to the structure', async () => {
       await renderOfferersScreen(contextValue)

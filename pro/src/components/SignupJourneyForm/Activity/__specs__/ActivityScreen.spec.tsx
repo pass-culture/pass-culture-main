@@ -5,6 +5,7 @@ import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
 import { Target } from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -17,18 +18,23 @@ import {
   tryRestoreInitialAddressFromStorage,
   tryRestoreOffererFromStorage,
 } from '@/commons/context/SignupJourneyContext/storage'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { Activity } from '../Activity'
+
+const mockLogEvent = vi.fn()
 
 const inMemoryLocalStorage = new Map<string, string>()
 
@@ -124,10 +130,15 @@ const renderActivityScreen = (
   )
 }
 
+Element.prototype.scrollIntoView = vi.fn()
+
 describe('screens:SignupJourney::Activity', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     inMemoryLocalStorage.clear()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,
       offerer: {
@@ -181,6 +192,60 @@ describe('screens:SignupJourney::Activity', () => {
     expect(
       await screen.findByRole('button', { name: 'Retour' })
     ).toBeInTheDocument()
+  })
+
+  describe('when WIP_PRE_SIGNUP_SIMULATION is enabled', () => {
+    it('should display new heading and description instead of old subtitle', async () => {
+      contextValue.activity = null
+      renderActivityScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
+
+      expect(
+        await screen.findByRole('heading', { name: 'Votre activité' })
+      ).toBeVisible()
+
+      expect(
+        screen.getByText(
+          /Ces informations déterminent la visibilité de vos offres/
+        )
+      ).toBeVisible()
+
+      expect(
+        screen.queryByRole('heading', {
+          name: /définissez l'activité de votre structure/,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should log navigation events when clicking "Retour" and "Continuer" buttons', async () => {
+      contextValue.activity = null
+      renderActivityScreen(contextValue, ['WIP_PRE_SIGNUP_SIMULATION'])
+
+      const user = userEvent.setup()
+
+      await screen.findByRole('button', { name: 'Continuer' })
+
+      await user.click(screen.getByRole('button', { name: 'Continuer' }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+        {
+          from: location.pathname,
+          to: REGISTRATION_STEP_IDS.VALIDATION,
+          used: SignupJourneyAction.ActionBar,
+        }
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Retour' }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
+        {
+          from: location.pathname,
+          to: REGISTRATION_STEP_IDS.STRUCTURE,
+          used: SignupJourneyAction.ActionBar,
+        }
+      )
+    })
   })
 
   describe('Restore contexts from storage', () => {
