@@ -1,11 +1,11 @@
 import datetime
 import typing
-from functools import partial
 
 import flask
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 import pytz
+from typing_extensions import Annotated
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
@@ -156,15 +156,11 @@ def check_date_in_future(value: datetime.datetime | NOW_LITERAL | None) -> datet
     return value
 
 
-# TODO(jbaudet-09/2025) remove once database models uses timezone
-# aware columns. Migrate to `check_date_in_future`.
 def check_date_in_future_and_remove_timezone(
     value: datetime.datetime | NOW_LITERAL | None,
     pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
-) -> datetime.datetime | None:
+) -> datetime.datetime:
     ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
-    if not value:
-        return None
 
     if value == "now":
         return get_naive_utc_now()
@@ -180,9 +176,20 @@ def check_date_in_future_and_remove_timezone(
 
 
 def validate_datetime(field_name: str, always: bool = False) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(
-        partial(check_date_in_future_and_remove_timezone, pydantic_version="v1")
-    )
+    # TODO: (tcoudray-pass, 11/05/26) Should not accept `None` value
+    def _check_if_not_none(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
+        if not value:
+            return None
+        return check_date_in_future_and_remove_timezone(value, "v1")
+
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(_check_if_not_none)
+
+
+def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
+    return check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
+
+
+future_tz_aware_datetime = Annotated[datetime.datetime, pydantic_v2.AfterValidator(_validate_datetime)]
 
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
