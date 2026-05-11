@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -17,9 +16,13 @@ import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInpu
 
 import { validationSchema } from './validationSchema'
 
+export interface UserPhoneInitialValues {
+  phoneNumber: string
+}
+
 export interface UserPhoneFormProps {
   closeForm: () => void
-  initialValues: UserPhoneBodyModel
+  initialValues: UserPhoneInitialValues
 }
 
 export const UserPhoneForm = ({
@@ -44,7 +47,7 @@ export const UserPhoneForm = ({
     setValue,
   } = hookForm
 
-  const onSubmit = async (values: UserPhoneBodyModel) => {
+  const onSubmit = async (values: UserPhoneInitialValues) => {
     values.phoneNumber = parseAndValidateFrenchPhoneNumber(
       values.phoneNumber
     ).number
