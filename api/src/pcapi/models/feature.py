@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
+    ENABLE_NATIVE_APP_FEEDBACK = "Activer l'envoi des commentaires app vers Harvestr"
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
     ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING = (

@@ -1,7 +1,9 @@
 import logging
+from unittest import mock
 
 import pytest
 
+from pcapi.connectors.harvestr import HaverstrRequester
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.users import factories as users_factories
 
@@ -14,8 +16,10 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(ENABLE_NATIVE_APP_FEEDBACK=True)
 class PostFeedbackTest:
-    def test_post_feedback(self, client, caplog):
+    @mock.patch("pcapi.connectors.harvestr.create_message")
+    def test_post_feedback(self, harvestr_create_message, client, caplog):
         user = users_factories.BeneficiaryFactory()
         bookings_factories.BookingFactory(user=user)
 
@@ -35,3 +39,28 @@ class PostFeedbackTest:
             "analyticsSource": "app-native",
         }
         assert caplog.records[0].technical_message_id == "user_feedback"
+        harvestr_create_message.assert_called_with(
+            title="Retour - app jeunes",
+            content=LOREM_IPSUM,
+            requester=HaverstrRequester(
+                name=user.full_name,
+                externalUid=str(user.id),
+                email=user.email,
+                origin="NATIVE_APP",
+            ),
+            labels=["Jeune"],
+        )
+
+    @pytest.mark.features(ENABLE_NATIVE_APP_FEEDBACK=False)
+    @mock.patch("pcapi.connectors.harvestr.create_message")
+    def test_feature_is_disabled(self, harvestr_create_message, client):
+        user = users_factories.BeneficiaryFactory()
+        bookings_factories.BookingFactory(user=user)
+
+        response = client.with_token(user).post(
+            "/native/v1/feedback",
+            json={"feedback": LOREM_IPSUM},
+        )
+
+        assert response.status_code == 204
+        harvestr_create_message.assert_not_called()

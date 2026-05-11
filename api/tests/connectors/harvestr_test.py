@@ -13,7 +13,7 @@ class HarvestrConnectorTest:
             title="Test",
             content="J'aimerais un petit miracle !",
             labels=["AC"],
-            requester=harvestr.HaverstrRequester(name="Jean Pass", externalUid="345", email="jean@passculture.app"),
+            requester=harvestr.HaverstrRequester(name="Jean Pass", externalUid="345", email="jean@passkoultour.com"),
         )
 
         assert requests_mock.last_request.json() == {
@@ -27,7 +27,8 @@ class HarvestrConnectorTest:
                 "type": "USER",
                 "name": "Jean Pass",
                 "externalUid": "345",
-                "email": "jean@passculture.app",
+                "origin": "PRO",
+                "email": "jean@passkoultour.com",
             },
         }
 
@@ -39,5 +40,39 @@ class HarvestrConnectorTest:
                 title="Test",
                 content="J'aimerais un petit miracle !",
                 labels=["AC"],
-                requester=harvestr.HaverstrRequester(name="Jean Pass", externalUid="345", email="jean@passculture.app"),
+                requester=harvestr.HaverstrRequester(
+                    name="Jean Pass", externalUid="345", email="jean@passkoultour.com"
+                ),
             )
+
+    @pytest.mark.settings(ENV="jeunes", WEBAPP_V2_URL="https://app.passculture.example.com")
+    def test_create_message_feedback_native_app(self, requests_mock):
+        requests_mock.post("https://rest.harvestr.io/v1/message")
+
+        harvestr.create_message(
+            title="Test",
+            content="J'aimerais un petit miracle !",
+            labels=["Jeunes"],
+            requester=harvestr.HaverstrRequester(
+                name="Jean Pass",
+                externalUid="345",
+                email="jean@passkoultour.com",
+                origin="NATIVE_APP",
+            ),
+        )
+
+        assert requests_mock.last_request.json() == {
+            "integrationId": "jeunes",
+            "integrationUrl": "https://app.passculture.example.com",
+            "channel": "FORM",
+            "title": "Test",
+            "content": "J'aimerais un petit miracle !",
+            "labels": ["Jeunes"],
+            "requester": {
+                "type": "USER",
+                "name": "Jean Pass",
+                "externalUid": "345",
+                "origin": "NATIVE_APP",
+                "email": "jean@passkoultour.com",
+            },
+        }
