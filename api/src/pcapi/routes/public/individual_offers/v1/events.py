@@ -812,8 +812,11 @@ def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
     return events_serializers.GetEventCategoriesResponse(root=event_categories_response)
 
 
-def _get_address(address_id: int) -> geography_models.Address | None:
-    return db.session.query(geography_models.Address).filter(geography_models.Address.id == address_id).one_or_none()
+def _get_existing_addresses_ids(addresses_ids: set[int]) -> set[int]:
+    query = (
+        db.session.query(geography_models.Address.id).filter(geography_models.Address.id.in_(addresses_ids)).tuples()
+    )
+    return {address_id for (address_id,) in query}
 
 
 @blueprints.public_api.route("/public/offers/v1/events/cinema_sessions", methods=["PUT"])
@@ -840,7 +843,7 @@ def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions)
     **⚠️ WARNING: This endpoint is not yet functional (offers & stocks will not be created), this is an endpoint preview to test
     its interface.**
 
-    This endpoint allows for the batch update (update/insert/delete) cinema sessions for a venue.
+    This endpoint allows for the batch update (update/insert/delete) of cinema sessions for a venue.
 
     **ℹ️Important information:**
 
@@ -853,11 +856,13 @@ def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions)
     venue_provider = authorization.get_venue_provider_or_raise_404(body.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
 
-    for index, offer in enumerate(body.offers):
-        # Check addresses exist in DB
-        if offer.address:
-            address = _get_address(offer.address.id)
-            if not address:
-                raise api_errors.ResourceNotFoundError({f"offers.{index}.address.id": ["Address not found"]})
+    addresses_ids = body.get_addresses_ids()
+    if addresses_ids:
+        existing_addresses_ids = _get_existing_addresses_ids(addresses_ids)
+        missing_addresses_ids = addresses_ids - existing_addresses_ids
+        if missing_addresses_ids:
+            raise api_errors.ResourceNotFoundError(
+                {"global": [f"Addresse(s) not found. Missing ids: {list(missing_addresses_ids)}"]}
+            )
 
     logger.info("Update cinema sessions", extra={"venue_id": venue.id, "payload": body.model_dump()})
