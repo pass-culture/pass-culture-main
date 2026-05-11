@@ -1,13 +1,6 @@
-import useSWR from 'swr'
-
-import { api } from '@/apiClient/api'
-import {
-  GetOffererAddressesWithOffersOption,
-  GetVenueAddressesWithOffersOption,
-} from '@/apiClient/v1'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
-import { GET_OFFERER_ADDRESS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatAndOrderAddresses } from '@/commons/format/venuesService'
 import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
@@ -38,17 +31,6 @@ const IndividualActivityData = () => {
     offererId: selectedAdminOfferer.id.toString(),
   })
 
-  const offererAddressQuery = useSWR(
-    [GET_OFFERER_ADDRESS_QUERY_KEY, selectedAdminOfferer.id],
-    ([, offererIdParam]) =>
-      offererIdParam
-        ? api.getOffererAddresses(
-            offererIdParam,
-            GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
-          )
-        : [],
-    { fallbackData: [] }
-  )
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
@@ -71,7 +53,7 @@ const IndividualActivityData = () => {
         hasPreFilters={hasPreFilters}
         hasResult={false}
         isAdministrationSpace
-        isLocalLoading={offererAddressQuery.isLoading}
+        isLocalLoading={venueAddressQuery.isLoading}
         isRefreshRequired={isRefreshRequired}
         isTableLoading={false}
         offererAddresses={offererAddresses}
