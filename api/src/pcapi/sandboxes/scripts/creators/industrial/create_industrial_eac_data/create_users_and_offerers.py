@@ -178,4 +178,13 @@ def create_eac_users_offerers() -> dict[str, offerers_models.Offerer]:
     )
     offerer_by_name[name] = user_offerer.offerer
 
+    name = "eac_location_search"
+    user_offerer = offerers_factories.UserOffererFactory.create(
+        user__email="eac_location_search@example.com",
+        offerer__name=name,
+        offerer__siren="414815217",
+        offerer__allowedOnAdage=True,
+    )
+    offerer_by_name[name] = user_offerer.offerer
+
     return offerer_by_name
