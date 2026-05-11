@@ -128,9 +128,10 @@ class SendinblueBackendTest:
         )
         mock_delete_contact.assert_not_called()
 
+    @pytest.mark.parametrize("code", ["duplicate_parameter", "invalid_parameter"])
     @patch("brevo.contacts.client.ContactsClient.delete_contact")
     @patch("brevo.contacts.client.ContactsClient.create_contact")
-    def test_create_contact_duplicate_email(self, mock_create_contact, mock_delete_contact):
+    def test_create_contact_duplicate_email(self, mock_create_contact, mock_delete_contact, code):
         payload = serialization.UpdateBrevoContactRequest(
             email="old.email@example.com",
             use_pro_subaccount=True,
@@ -143,7 +144,7 @@ class SendinblueBackendTest:
             status_code=400,
             headers={"Content-Type": "application/json"},
             body={
-                "code": "duplicate_parameter",
+                "code": code,
                 "message": "Unable to update contact, email is already associated with another Contact",
                 "metadata": {"duplicate_identifiers": ["email"]},
             },
