@@ -5,6 +5,7 @@ import { addDays, isBefore } from 'date-fns'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
@@ -87,7 +88,13 @@ export const OfferEducationalStock = <
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
     setIsLoading(true)
-    await onSubmit(offer, values)
+    try {
+      await onSubmit(offer, values)
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status < 500) {
+        serializeApiErrors(error.body, form.setError)
+      }
+    }
     setIsLoading(false)
   }
 
