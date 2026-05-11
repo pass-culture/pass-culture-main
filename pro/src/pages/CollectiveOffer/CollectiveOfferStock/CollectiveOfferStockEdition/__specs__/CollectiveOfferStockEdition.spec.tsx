@@ -12,10 +12,6 @@ import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/Collective
 
 import { CollectiveOfferStockEdition } from '../CollectiveOfferStockEdition'
 
-vi.mock('@/apiClient/api', () => ({
-  api: {},
-}))
-
 const renderCollectiveStockEdition = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps

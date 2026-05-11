@@ -1,4 +1,4 @@
-import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
+import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1/new'
 import { isEqual } from '@/commons/utils/isEqual'
 
 import type { OfferEducationalStockFormValues } from '../types'
