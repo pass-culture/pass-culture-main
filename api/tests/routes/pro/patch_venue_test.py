@@ -1356,6 +1356,27 @@ class Returns400Test:
             ]
         }
 
+    def test_update_with_incoherent_opening_hours(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        venue_data = populate_missing_data_from_venue(
+            {"openingHours": {"MONDAY": [["10:00", "08:00"], ["14:00", "19:30"]]}}, venue
+        )
+
+        client = client.with_session_auth(user_offerer.user.email)
+        venue_id = venue.id
+        response = client.patch(f"/venues/{venue_id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "openingHours.MONDAY": [
+                "Value error, opening hours start (10:00) cannot be after end (08:00)",
+            ]
+        }
+
 
 @pytest.mark.parametrize(
     "enforce_siret_check,disable_siret_check,expected_result",
