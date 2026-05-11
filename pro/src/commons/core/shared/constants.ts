@@ -1,5 +1,4 @@
 import { StudentLevels } from '@/apiClient/v1'
-import { PASS_CULTURE_PREFIX } from '@/commons/utils/localStorageManager'
 
 export const PATCH_SUCCESS_MESSAGE =
   'Vos modifications ont bien été enregistrées'
@@ -13,8 +12,6 @@ export const FORM_ERROR_MESSAGE =
   'Une ou plusieurs erreurs sont présentes dans le formulaire'
 
 export const NBSP = '\u00a0'
-
-export const SAVED_VENUE_ID_KEY = `${PASS_CULTURE_PREFIX}SELECTED_VENUE_ID`
 
 export const DEFAULT_MARSEILLE_STUDENTS = [
   StudentLevels._COLES_MARSEILLE_MATERNELLE,

@@ -1,7 +1,6 @@
 import { vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { SAVED_VENUE_ID_KEY } from '@/commons/core/shared/constants'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import * as handleErrorModule from '@/commons/errors/handleError'
 import type { RootState } from '@/commons/store/store'
@@ -15,6 +14,7 @@ import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
 } from '@/commons/utils/factories/venueFactories'
+import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import * as logoutModule from '../logout'
 import * as setSelectedAdminOffererByIdModule from '../setSelectedAdminOffererById'
@@ -79,7 +79,7 @@ describe('setSelectedPartnerVenueById', () => {
   }
 
   beforeEach(() => {
-    localStorage.setItem(SAVED_VENUE_ID_KEY, '201')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '201')
   })
 
   it('should early-return when selecting the same venue', async () => {
@@ -100,7 +100,9 @@ describe('setSelectedPartnerVenueById', () => {
     const state = store.getState()
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '201'
+    )
   })
 
   it('should compute nextSelectedPartnerVenue, fetch its offerer, update user access and persist it', async () => {
@@ -132,7 +134,9 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '101'
+    )
   })
 
   it('should set access to no-onboarding when offerer is not onboarded', async () => {
@@ -164,7 +168,9 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '101'
+    )
   })
 
   it('should not call getVenue, getOfferer, and set access to unattached when offerer is not attached', async () => {
@@ -187,7 +193,9 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.selectedAdminOfferer?.id).toBe(300)
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('301')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '301'
+    )
   })
 
   it('should throw when offererNames is null', async () => {
@@ -221,7 +229,7 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).not.toHaveBeenCalled()
     expect(api.getOfferer).not.toHaveBeenCalled()
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
   it('should throw when nextSelectedOffererName is undefined', async () => {
@@ -291,7 +299,7 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
   it('should handle unknown error without logging out (no APIError, no FrontendError)', async () => {
@@ -324,7 +332,9 @@ describe('setSelectedPartnerVenueById', () => {
     expect(state.user.access).toBeNull()
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('201')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '201'
+    )
   })
 
   it('should align the selected admin offerer when shouldAlignSelectedAdminOfferer is true', async () => {
