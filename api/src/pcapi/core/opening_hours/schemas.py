@@ -130,8 +130,10 @@ def validate_opening_hours_timespan(timespan: list[OpeningHoursV2]) -> list[Open
         raise ValueError("Invalid opening hours timespan")
 
     for start, end in timespan:
-        if start > end:
-            raise ValueError("opening hours start ({}) cannot be after end ({})".format(start, end))
+        if start >= end:
+            raise ValueError(
+                "opening hours start ({}) cannot be after end ({}), nor can they be equal".format(start, end)
+            )
 
     return timespan
 
