@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   AggregatedRevenueModel,
   StatisticsModel,
@@ -77,7 +77,7 @@ const renderIncome = (
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getStatistics: vi.fn(),
   },
 }))
@@ -92,7 +92,7 @@ describe('Income', () => {
     })
 
     it('should display an empty screen if no venues were found', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome([])
@@ -103,7 +103,7 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
 
@@ -112,14 +112,13 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
       )
-      expect(api.getStatistics).toHaveBeenNthCalledWith(
-        1,
-        MOCK_DATA.venues.map((venue) => venue.id)
-      )
+      expect(apiNew.getStatistics).toHaveBeenNthCalledWith(1, {
+        query: { venueIds: MOCK_DATA.venues.map((venue) => venue.id) },
+      })
     })
 
     it('should display an error message if income couldnt be fetched', async () => {
-      vi.spyOn(api, 'getStatistics').mockRejectedValue(new Error('error'))
+      vi.spyOn(apiNew, 'getStatistics').mockRejectedValue(new Error('error'))
       renderIncome()
 
       await waitFor(() =>
@@ -128,7 +127,7 @@ describe('Income', () => {
     })
 
     it('should display an empty screen if no income data was found', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: {} })
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({ incomeByYear: {} })
       renderIncome()
 
       await waitFor(() =>
@@ -137,7 +136,7 @@ describe('Income', () => {
     })
 
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome([MOCK_DATA.venues[0]])
@@ -162,7 +161,7 @@ describe('Income', () => {
     })
 
     it('should display a set of year filters with the last year selected by default', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome()
@@ -189,7 +188,7 @@ describe('Income', () => {
     })
 
     it('should auto-focus the last year filter if there is only one venue', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome([MOCK_DATA.venues[0]])
@@ -216,7 +215,7 @@ describe('Income', () => {
     })
 
     it('should display the income results', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome()
@@ -238,7 +237,7 @@ describe('Income', () => {
     })
 
     it('should display an error if no venues are selected and avoid fetching income data', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
 
@@ -271,11 +270,11 @@ describe('Income', () => {
       )
 
       // It should not attempt to fetch income data if no venues are selected.
-      expect(api.getStatistics).toHaveBeenCalledTimes(1)
+      expect(apiNew.getStatistics).toHaveBeenCalledTimes(1)
     })
 
     it('should attempt to fetch income data with the selected venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
 
@@ -298,7 +297,9 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
       )
-      expect(api.getStatistics).toHaveBeenNthCalledWith(2, [2])
+      expect(apiNew.getStatistics).toHaveBeenNthCalledWith(2, {
+        query: { venueIds: [2] },
+      })
     })
   })
 
@@ -311,7 +312,7 @@ describe('Income', () => {
     })
 
     it('should display the income results for the selected year', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome()
@@ -378,7 +379,7 @@ describe('Income', () => {
     })
 
     it('should display en empty screen if no data is available for the selected year', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
       renderIncome()
@@ -402,7 +403,7 @@ describe('Income', () => {
     })
 
     it('should display previsionnal income only for current year', async () => {
-      vi.spyOn(api, 'getStatistics').mockResolvedValue({
+      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
 
