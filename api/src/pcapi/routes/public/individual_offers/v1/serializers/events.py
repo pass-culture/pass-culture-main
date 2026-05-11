@@ -511,7 +511,7 @@ def _validate_there_is_no_duplicated_film_id_for_location(value: list[CinemaOffe
         else:
             # check for duplicate
             if offer.film_id in venue_film_ids:
-                raise PydanticError(f'Film id "{offer.film_id}" is duplicated in payload')
+                raise PydanticError(f'Film id "{offer.film_id}" is duplicated in payload for venue address')
 
             # store film_id
             venue_film_ids.add(offer.film_id)
@@ -525,3 +525,11 @@ class PutCinemaSessions(serialization.HttpBodyModel):
         pydantic_v2.Field(min_length=1, max_length=250, description=descriptions.CINEMA_OFFER_LIST),
         pydantic_v2.AfterValidator(_validate_there_is_no_duplicated_film_id_for_location),
     ]
+
+    def get_addresses_ids(self) -> set[int]:
+        address_ids = set()
+        for offer in self.offers:
+            if offer.address:
+                address_ids.add(offer.address.id)
+
+        return address_ids

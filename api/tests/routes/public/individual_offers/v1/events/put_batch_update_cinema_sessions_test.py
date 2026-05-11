@@ -47,17 +47,17 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
         response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue.id))
-        assert response.status_code == 404
+        assert response.status_code == 404, response.json
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_provider.venueId))
-        assert response.status_code == 404
+        assert response.status_code == 404, response.json
 
     def test_should_raise_404_because_venue_does_not_exist(self):
         plain_api_key, _ = self.setup_provider()
         response = self.make_request(plain_api_key, json_body=self._get_base_payload(1))
-        assert response.status_code == 404
+        assert response.status_code == 404, response.json
 
     def test_should_raise_404_because_address_does_not_exist(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -65,8 +65,8 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         payload["offers"][0]["address"] = {"id": 1, "label": "Quelque part"}
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 404
-        assert response.json == {"offers.0.address.id": ["Address not found"]}
+        assert response.status_code == 404, response.json
+        assert response.json == {"global": ["Addresse(s) not found. Missing ids: [1]"]}
 
     ### 400 errors (serializer)
 
@@ -88,7 +88,7 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         payload["offers"][0]["filmId"] = film_id
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert response.json == expected_response_json
 
     @pytest.mark.parametrize(
@@ -167,7 +167,7 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         payload["offers"][0]["priceCategories"] = price_categories
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert response.json == expected_response_json
 
     @time_machine.travel(datetime.datetime(2025, 6, 27), tick=False)
@@ -254,7 +254,7 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         payload["offers"][0]["stocks"] = stocks
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert response.json == expected_response_json
 
     @pytest.mark.parametrize(
@@ -286,7 +286,7 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         payload["offers"][0]["address"] = address
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert response.json == expected_response_json
 
     def test_should_raise_400_because_priceCategoryIdAtProvider_is_missing(self):
@@ -309,7 +309,7 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         }
 
         response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
         assert response.json == {"offers.0": ["Missing `priceCategoryIdAtProvider`: idNotFound, idNotFoundBis"]}
 
     def test_should_raise_400_because_offers_contains_2_venue_offers_with_the_same_film_id(self):
@@ -332,7 +332,9 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
 
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 400, response.json
-        assert response.json == {"offers": ['Film id "allocine_id:1000015954" is duplicated in payload']}
+        assert response.json == {
+            "offers": ['Film id "allocine_id:1000015954" is duplicated in payload for venue address']
+        }
 
     def test_should_raise_400_because_offers_contains_2_address_offers_with_the_same_film_id(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
