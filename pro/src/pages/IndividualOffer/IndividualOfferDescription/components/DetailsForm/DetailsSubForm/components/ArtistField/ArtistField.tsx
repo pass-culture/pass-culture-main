@@ -38,7 +38,6 @@ export function ArtistField({
   fieldArray,
 }: Readonly<ArtistFieldProps>) {
   const {
-    register,
     setValue,
     watch,
     setFocus,
@@ -75,7 +74,6 @@ export function ArtistField({
   return (
     <>
       {fieldsForType.map(({ field, index }) => {
-        const { ref } = register(`artistOfferLinks.${index}.artistName`)
         const name = `artistOfferLinks.${index}`
         const artistName = watch(`artistOfferLinks.${index}.artistName`)
         const isTrashDisabled =
@@ -100,14 +98,21 @@ export function ArtistField({
                     )
                   }
                 }}
-                onSearch={(searchText) => {
+                onCreate={(artistName) => {
                   setValue(
                     `artistOfferLinks.${index}`,
                     {
                       artistId: null,
-                      artistName: searchText,
+                      artistName: artistName,
                       artistType,
                     },
+                    { shouldValidate: true }
+                  )
+                }}
+                onReset={() => {
+                  setValue(
+                    `artistOfferLinks.${index}`,
+                    { artistId: null, artistName: '', artistType },
                     { shouldValidate: true }
                   )
                 }}
@@ -131,7 +136,7 @@ export function ArtistField({
                 disabled={readOnly}
                 required={false}
                 thumbPlaceholder={avatarPlaceholder}
-                ref={ref}
+                value={artistName}
               />
             </div>
 
