@@ -13,7 +13,7 @@ describe('TemplateOffersSearchFilters', () => {
         setSelectedFilters={() => vi.fn()}
         disableAllFilters={false}
         resetFilters={() => vi.fn()}
-        offererId={undefined}
+        offererId="1"
         selectedFilters={{
           name: '',
           offererId: '',

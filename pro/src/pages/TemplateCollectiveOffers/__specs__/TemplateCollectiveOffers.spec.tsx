@@ -108,7 +108,7 @@ describe('TemplateCollectiveOffers', () => {
     ).toBeInTheDocument()
   })
 
-  const offererId = 1
+  const venueId = 2
 
   describe('filters', () => {
     describe('status filters', () => {
@@ -136,9 +136,9 @@ describe('TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenNthCalledWith(
             2,
             null,
-            offererId,
-            [CollectiveOfferDisplayedStatus.REJECTED],
             null,
+            [CollectiveOfferDisplayedStatus.REJECTED],
+            venueId,
             null,
             null,
             null,
@@ -172,9 +172,9 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenCalledWith(
             'Any word',
-            offererId,
             null,
             null,
+            venueId,
             null,
             null,
             null,
@@ -198,9 +198,9 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
             null,
-            offererId,
             null,
             null,
+            venueId,
             '2020-12-25',
             null,
             null,
@@ -224,9 +224,9 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
             null,
-            offererId,
             null,
             null,
+            venueId,
             null,
             '2020-12-27',
             null,

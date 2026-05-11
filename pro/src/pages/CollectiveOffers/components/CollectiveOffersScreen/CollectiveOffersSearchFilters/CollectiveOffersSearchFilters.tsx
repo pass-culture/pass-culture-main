@@ -27,7 +27,7 @@ import styles from '../CollectiveOffersScreen.module.scss'
 export interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
   applyFilters?: (filters: CollectiveSearchFiltersParams) => void
-  offererId: string | undefined
+  offererId: string
   selectedFilters: CollectiveSearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters?: boolean
@@ -39,11 +39,11 @@ export interface CollectiveOffersSearchFiltersProps {
 export const CollectiveOffersSearchFilters = ({
   hasFilters,
   applyFilters,
+  offererId,
   selectedFilters,
   isAdministrationSpace = false,
   setSelectedFilters,
   resetFilters,
-  offererId,
   disableAllFilters = false,
   searchButtonRef,
 }: Readonly<CollectiveOffersSearchFiltersProps>): JSX.Element => {
@@ -104,7 +104,7 @@ export const CollectiveOffersSearchFilters = ({
     event.preventDefault()
     const newSearchFilters = {
       ...selectedFilters,
-      offererId: offererId?.toString() ?? '',
+      offererId,
     }
 
     applyFilters?.(newSearchFilters)

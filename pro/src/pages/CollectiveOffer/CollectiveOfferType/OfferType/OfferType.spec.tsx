@@ -70,6 +70,8 @@ const renderOfferTypes = (
           currentUser: sharedCurrentUserFactory(),
           selectedPartnerVenue: makeGetVenueResponseModel({
             id: 2,
+            isValidated: true,
+            allowedOnAdage: true,
             ...venueOverrides,
           }),
         },
@@ -179,6 +181,7 @@ describe('OfferType', () => {
     }
 
     renderOfferTypes(offerer, {
+      allowedOnAdage: false,
       lastCollectiveDmsApplication: {
         ...defaultDMSApplicationForEAC,
         application: 1,
@@ -287,12 +290,7 @@ describe('OfferType', () => {
   })
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
-    const offerer = {
-      ...defaultGetOffererResponseModel,
-      isValidated: false,
-    }
-
-    renderOfferTypes(offerer)
+    renderOfferTypes(undefined, { isValidated: false })
 
     expect(
       await screen.findByText(
@@ -302,12 +300,7 @@ describe('OfferType', () => {
   })
 
   it('should display DS banner if structure not allowed on adage and last ds reference request not found ', async () => {
-    const offerer = {
-      ...defaultGetOffererResponseModel,
-      allowedOnAdage: false,
-    }
-
-    renderOfferTypes(offerer)
+    renderOfferTypes(undefined, { allowedOnAdage: false })
 
     expect(
       await screen.findByText('Faire une demande de référencement')
