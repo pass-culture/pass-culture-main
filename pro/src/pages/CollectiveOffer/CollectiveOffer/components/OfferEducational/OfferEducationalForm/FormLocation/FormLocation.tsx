@@ -5,7 +5,7 @@ import type { AdresseData } from '@/apiClient/adresse/types'
 import {
   CollectiveLocationType,
   type VenueListItemResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'

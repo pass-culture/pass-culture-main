@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
@@ -24,7 +24,7 @@ describe('screens | OfferEducational: edition', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
       venues: [makeVenueListItem({ id: 1 })],
     })
 

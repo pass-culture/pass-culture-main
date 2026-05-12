@@ -16,7 +16,7 @@ import {
 } from '../OfferEducational'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getVenues: vi.fn(),
   },
 }))
