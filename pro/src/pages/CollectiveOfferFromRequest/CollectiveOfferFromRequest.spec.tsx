@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -27,14 +27,15 @@ const mockNavigate = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
-    listEducationalDomains: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
+  },
+  apiNew: {
+    getCollectiveOfferTemplate: vi.fn(),
     listEducationalOfferers: vi.fn(),
-    getNationalPrograms: vi.fn(),
-    createCollectiveOffer: vi.fn(),
-    attachOfferImage: vi.fn(),
     getVenues: vi.fn(),
+    attachOfferImage: vi.fn(),
+    createCollectiveOffer: vi.fn(),
   },
 }))
 
@@ -80,6 +81,20 @@ describe('CollectiveOfferFromRequest', () => {
       error: snackBarError,
     }))
 
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+      getCollectiveOfferTemplateFactory({
+        name: 'mon offre',
+        venue: getCollectiveOfferVenueFactory({
+          managingOfferer: getCollectiveOfferManagingOffererFactory({
+            id: offererId,
+          }),
+        }),
+        dates: {
+          end: new Date().toISOString(),
+          start: new Date().toISOString(),
+        },
+      })
+    )
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
       getCollectiveOfferTemplateFactory({
         name: 'mon offre',
@@ -94,12 +109,14 @@ describe('CollectiveOfferFromRequest', () => {
         },
       })
     )
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
-    vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValue({
+      imageUrl: 'https://example.com/image.jpg',
+    })
   })
 
   it('should display request information', async () => {

@@ -4,7 +4,7 @@ import * as router from 'react-router'
 
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   ApiError,
   CollectiveOfferAllowedAction,
@@ -79,18 +79,22 @@ describe('CollectiveEditionOfferNavigation', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
       venues: [makeVenueListItem({ id: 2 })],
     })
 
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(templateOffer)
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+      templateOffer
+    )
     vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({ id: props.offerId })
     )
 
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
+
+    vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
 
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
@@ -224,7 +228,9 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should return an error when the collective offer could not be retrieved', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('error')
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockRejectedValueOnce(
+      'error'
+    )
 
     renderCollectiveEditingOfferNavigation({
       ...props,
@@ -248,10 +254,7 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should show an error notification when the duplication failed', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
-      getCollectiveOfferTemplateFactory()
-    )
-    vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'createCollectiveOffer').mockRejectedValueOnce(
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 

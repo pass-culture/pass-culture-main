@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
@@ -67,14 +67,16 @@ const renderOfferActionsCell = (
 vi.mock('@/apiClient/api', () => ({
   api: {
     patchCollectiveOffersArchive: vi.fn(),
-    createCollectiveOffer: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    listEducationalOfferers: vi.fn(),
-    duplicateCollectiveOffer: vi.fn(),
-    attachOfferImage: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
+  },
+  apiNew: {
+    getCollectiveOffer: vi.fn(),
+    duplicateCollectiveOffer: vi.fn(),
+    createCollectiveOffer: vi.fn(),
+    attachOfferImage: vi.fn(),
+    listEducationalOfferers: vi.fn(),
     getVenues: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
@@ -214,16 +216,16 @@ describe('OfferActionsCells', () => {
 
   describe('CollectiveActionsCells:Duplicate', () => {
     beforeEach(() => {
-      vi.spyOn(api, 'listEducationalOfferers').mockResolvedValueOnce({
+      vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValueOnce({
         educationalOfferers: [],
       })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
+      vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
         venues: [makeVenueListItem({ id: 4 })],
       })
     })
 
     it('should show an error when bookable offer duplication fails', async () => {
-      vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce({})
+      vi.spyOn(apiNew, 'getCollectiveOffer').mockRejectedValueOnce({})
       renderOfferActionsCell({
         offer: collectiveOfferFactory({
           id: 200,
@@ -241,14 +243,14 @@ describe('OfferActionsCells', () => {
     })
 
     it('should duplicate a bookable', async () => {
-      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({
           imageUrl: 'https://http.cat/201',
           imageCredit: 'chats',
         })
       )
 
-      vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'duplicateCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({ id: 201 })
       )
       renderOfferActionsCell({
@@ -262,15 +264,20 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Dupliquer'))
-      expect(api.duplicateCollectiveOffer).toBeCalledWith(200)
+      expect(apiNew.duplicateCollectiveOffer).toHaveBeenCalledWith({
+        path: { offer_id: 200 },
+      })
       expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
-      expect(api.attachOfferImage).toBeCalledWith(201, {
-        credit: 'chats',
-        croppingRectHeight: 1,
-        croppingRectWidth: 1,
-        croppingRectX: 0,
-        croppingRectY: 0,
-        thumb: expect.anything(),
+      expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+        path: { offer_id: 201 },
+        body: {
+          credit: 'chats',
+          croppingRectHeight: 1,
+          croppingRectWidth: 1,
+          croppingRectX: 0,
+          croppingRectY: 0,
+          thumb: expect.anything(),
+        },
       })
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offre/collectif/201/creation?structure=1'
@@ -278,7 +285,7 @@ describe('OfferActionsCells', () => {
     })
 
     it('should log event when duplicating a bookable offer', async () => {
-      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({
           imageUrl: 'https://http.cat/201',
           imageCredit: 'chats',
@@ -325,10 +332,12 @@ describe('OfferActionsCells', () => {
           locationComment: null,
         },
       })
-      vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
         collectiveOfferTemplate
       )
-      vi.spyOn(api, 'createCollectiveOffer').mockResolvedValueOnce({ id: 202 })
+      vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValueOnce({
+        id: 202,
+      })
       renderOfferActionsCell({
         offer: collectiveOfferTemplateFactory({
           id: 200,
@@ -342,39 +351,44 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Créer une offre réservable'))
-      expect(api.createCollectiveOffer).toBeCalledWith({
-        audioDisabilityCompliant: false,
-        bookingEmails: ['toto@example.com'],
-        contactEmail: 'toto@example.com',
-        contactPhone: '0600000000',
-        description: 'blablabla,',
-        domains: [1],
-        durationMinutes: undefined,
-        formats: ['Atelier de pratique'],
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: false,
-        name: 'Offre de test',
-        nationalProgramId: 1,
-        interventionArea: [],
-        location: {
+      expect(apiNew.createCollectiveOffer).toHaveBeenCalledWith({
+        body: {
+          audioDisabilityCompliant: false,
+          bookingEmails: ['toto@example.com'],
+          contactEmail: 'toto@example.com',
+          contactPhone: '0600000000',
+          description: 'blablabla,',
+          domains: [1],
+          durationMinutes: undefined,
+          formats: ['Atelier de pratique'],
+          mentalDisabilityCompliant: false,
+          motorDisabilityCompliant: false,
+          name: 'Offre de test',
+          nationalProgramId: 1,
+          interventionArea: [],
           location: {
-            isVenueLocation: true,
+            location: {
+              isVenueLocation: true,
+            },
+            locationType: 'ADDRESS',
           },
-          locationType: 'ADDRESS',
+          students: ['Collège - 3e'],
+          templateId: 200,
+          venueId: 4,
+          visualDisabilityCompliant: false,
         },
-        students: ['Collège - 3e'],
-        templateId: 200,
-        venueId: 4,
-        visualDisabilityCompliant: false,
       })
       expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
-      expect(api.attachOfferImage).toBeCalledWith(202, {
-        credit: 'chats',
-        croppingRectHeight: 1,
-        croppingRectWidth: 1,
-        croppingRectX: 0,
-        croppingRectY: 0,
-        thumb: expect.anything(),
+      expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+        path: { offer_id: 202 },
+        body: {
+          credit: 'chats',
+          croppingRectHeight: 1,
+          croppingRectWidth: 1,
+          croppingRectX: 0,
+          croppingRectY: 0,
+          thumb: expect.anything(),
+        },
       })
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offre/collectif/202/creation?structure=4'
