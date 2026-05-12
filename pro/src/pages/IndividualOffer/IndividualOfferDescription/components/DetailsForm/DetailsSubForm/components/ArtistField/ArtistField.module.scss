@@ -2,7 +2,7 @@
 
 .row {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--size-spacing-s);
 
   .select {

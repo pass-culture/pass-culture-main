@@ -106,6 +106,7 @@ describe('ArtistField', () => {
     expect(props.disabled).toBe(false)
     expect(props.required).toBe(false)
     expect(props.thumbPlaceholder).toBeDefined()
+    expect(props.value).toBe('any-name')
   })
 
   it('should not render ApiSelect', () => {
@@ -178,11 +179,11 @@ describe('ArtistField', () => {
     })
   })
 
-  it('onSearch should update form value with search text', async () => {
+  it('onCreate should update form value with search text', async () => {
     const { getValues } = renderArtistField()
     const props = apiSelectSpy.mock.calls[0][0]
 
-    props.onSearch?.('John')
+    props.onCreate('John')
 
     await waitFor(() => {
       const artistOfferLinks = getValues().artistOfferLinks
@@ -205,6 +206,22 @@ describe('ArtistField', () => {
       expect(artistOfferLinks[0]).toEqual({
         artistId: '42',
         artistName: 'John Doe',
+        artistType: ArtistType.AUTHOR,
+      })
+    })
+  })
+
+  it('onReset should update form value with empty string', async () => {
+    const { getValues } = renderArtistField()
+    const props = apiSelectSpy.mock.calls[0][0]
+
+    props.onReset?.()
+
+    await waitFor(() => {
+      const artistOfferLinks = getValues().artistOfferLinks
+      expect(artistOfferLinks[0]).toEqual({
+        artistId: null,
+        artistName: '',
         artistType: ArtistType.AUTHOR,
       })
     })
