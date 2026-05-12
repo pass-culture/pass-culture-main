@@ -8,6 +8,7 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -59,30 +60,11 @@ export const IndividualOfferLayout = ({
       OfferStatus.SCHEDULED,
     ].includes(offer.status)
 
-  const shouldDisplayHighlightsBanner =
-    !!offer &&
-    offer.isEvent &&
-    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
-      offer.status
-    )
-
-  const shouldDisplayRecommendation =
-    !!offer &&
-    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
-      offer.status
-    )
-
-  const isProduct = !!offer?.productId
-  const hasImage = !!offer?.thumbUrl
-  // If an offer without an image is product-based, it cannot become
-  // a headline offer since product-based offers cannot have their images
-  // updated & headline offers without images are prohibited.
-  const isNotAProductWithoutImage = !isProduct || hasImage
-
-  const shouldDisplayHeadlineOfferCard =
-    !!offer &&
-    [OfferStatus.ACTIVE].includes(offer.status) &&
-    isNotAProductWithoutImage
+  const {
+    shouldDisplayRecommendationCard,
+    shouldDisplayHighlightCard,
+    shouldDisplayHeadlineCard,
+  } = getOfferEnhancementCardsVisibility(offer)
 
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -148,28 +130,28 @@ export const IndividualOfferLayout = ({
           />
         </div>
       )}
-      {mode !== OFFER_WIZARD_MODE.CREATION && (
+      {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
         <div className={styles['banner-container']}>
           {isOfferRecommendationEnabled ? (
             <>
-              {(shouldDisplayRecommendation ||
-                shouldDisplayHighlightsBanner ||
-                shouldDisplayHeadlineOfferCard) && (
+              {(shouldDisplayRecommendationCard ||
+                shouldDisplayHighlightCard ||
+                shouldDisplayHeadlineCard) && (
                 <h2 className={styles['banner-container-title']}>
                   Mises en avant de votre offre
                 </h2>
               )}
               <div className={styles['cards-container']}>
-                {shouldDisplayRecommendation && (
+                {shouldDisplayRecommendationCard && (
                   <OfferRecommendationCard offerId={offer.id} />
                 )}
-                {shouldDisplayHighlightsBanner && (
+                {shouldDisplayHighlightCard && (
                   <OfferHighlightCard
                     offerId={offer.id}
                     highlightRequests={offer.highlightRequests}
                   />
                 )}
-                {shouldDisplayHeadlineOfferCard && (
+                {shouldDisplayHeadlineCard && (
                   <OfferHeadlineCard
                     offerId={offer.id}
                     hasThumb={!!offer.thumbUrl}
@@ -178,7 +160,7 @@ export const IndividualOfferLayout = ({
               </div>
             </>
           ) : (
-            shouldDisplayHighlightsBanner && (
+            shouldDisplayHighlightCard && (
               <OfferHighlightBanner
                 offerId={offer.id}
                 highlightRequests={offer.highlightRequests}
