@@ -11,9 +11,16 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import * as duplicateBookableOffer from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CancelledBanner } from './CancelledBanner'
+
+const storeOverrides = {
+  user: {
+    selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+  },
+}
 
 describe('CancelledBanner', () => {
   const mockLogEvent = vi.fn()
@@ -76,25 +83,31 @@ describe('CancelledBanner', () => {
     Object.keys(messagePerReason) as CollectiveBookingCancellationReasons[]
   )('should display the correct message for reason %s', (reason) => {
     renderWithProviders(
-      <CancelledBanner offerId={2} reason={reason} canDuplicate />
+      <CancelledBanner offerId={2} reason={reason} canDuplicate />,
+      { storeOverrides }
     )
     expect(screen.getByText(messagePerReason[reason])).toBeInTheDocument()
   })
 
   it('should display the correct message when no reason are provided', () => {
-    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />, {
+      storeOverrides,
+    })
     expect(screen.getByText(cancelledByExpiredMessage)).toBeInTheDocument()
   })
 
   it('should display the correct message when reason is null', () => {
     renderWithProviders(
-      <CancelledBanner offerId={2} reason={null} canDuplicate />
+      <CancelledBanner offerId={2} reason={null} canDuplicate />,
+      { storeOverrides }
     )
     expect(screen.getByText(cancelledByExpiredMessage)).toBeInTheDocument()
   })
 
   it('should log event on press Dupliquer', async () => {
-    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />, {
+      storeOverrides,
+    })
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -104,6 +117,7 @@ describe('CancelledBanner', () => {
       Events.CLICKED_DUPLICATE_BOOKABLE_OFFER,
       {
         from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
+        offererId: '1',
         offerId: 2,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
@@ -112,7 +126,9 @@ describe('CancelledBanner', () => {
   })
 
   it('should duplicate offer on press Dupliquer', async () => {
-    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />, {
+      storeOverrides,
+    })
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -121,7 +137,9 @@ describe('CancelledBanner', () => {
   })
 
   it('should not show duplicate button if canDuplicate is false', () => {
-    renderWithProviders(<CancelledBanner offerId={2} canDuplicate={false} />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate={false} />, {
+      storeOverrides,
+    })
     expect(screen.queryByText("Dupliquer l'offre")).not.toBeInTheDocument()
   })
 })

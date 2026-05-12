@@ -6,16 +6,12 @@ import type {
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
   VenueListItemLiteResponseModel,
-} from '@/apiClient/v1'
-import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 
 export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
 
 type UserState = {
-  currentUser:
-    | null
-    | SharedCurrentUserResponseModel
-    | SharedCurrentUserResponseModelNew
+  currentUser: null | SharedCurrentUserResponseModel
   // TODO (igabriele, 2025-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
   access: null | UserAccess
   selectedAdminOfferer: GetOffererResponseModel | null
@@ -23,7 +19,6 @@ type UserState = {
   venues: VenueListItemLiteResponseModel[] | null
   venuesWithPendingValidation: VenueListItemLiteResponseModel[] | null
   // TODO (cmoinier, 2026-03-13): Refactor offererNames / offererNamesValidated / offerersNamesWithPendingValidation into a single array with a 'isAttached' boolean
-  currentOffererName: GetOffererNameResponseModel | null
   offererNames: GetOffererNameResponseModel[] | null
   offererNamesValidated: GetOffererNameResponseModel[] | null
   offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
@@ -37,7 +32,6 @@ const initialState: UserState = {
   venues: null,
   venuesWithPendingValidation: null,
   offererNamesValidated: null,
-  currentOffererName: null,
   offerersNamesWithPendingValidation: null,
   offererNames: null,
 }
@@ -58,11 +52,7 @@ const userSlice = createSlice({
   reducers: {
     updateUser: (
       state,
-      action: PayloadAction<
-        | SharedCurrentUserResponseModel
-        | SharedCurrentUserResponseModelNew
-        | null
-      >
+      action: PayloadAction<SharedCurrentUserResponseModel | null>
     ) => {
       state.currentUser = action.payload
     },
@@ -94,13 +84,6 @@ const userSlice = createSlice({
         action.payload.venuesWithPendingValidation
     },
 
-    setCurrentOffererName: (
-      state: UserState,
-      action: PayloadAction<GetOffererNameResponseModel | null>
-    ) => {
-      state.currentOffererName = action.payload
-    },
-
     updateOffererNames: (
       state: UserState,
       action: PayloadAction<UpdateOffererNamesPayload>
@@ -124,6 +107,5 @@ export const {
   setSelectedAdminOfferer,
   setSelectedPartnerVenue,
   setVenues,
-  setCurrentOffererName,
   updateOffererNames,
 } = userSlice.actions

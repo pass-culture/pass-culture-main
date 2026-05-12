@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Link, Route, Routes } from 'react-router'
 
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { BasicLayout } from '../../layouts/BasicLayout/BasicLayout'
@@ -48,6 +49,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         user: {
           currentUser: { id: 123 },
           offererNamesValidated: [{ id: 456, name: 'Offerer' }],
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },
       },
     }

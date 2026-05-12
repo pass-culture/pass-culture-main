@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -16,6 +16,13 @@ const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<LateralMenu isLateralPanelOpen={true} />, {
     initialRouterEntries: ['/'],
     user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        ...options.storeOverrides?.user,
+      },
+      ...options.storeOverrides,
+    },
     ...options,
   })
 }
@@ -27,16 +34,7 @@ describe('LateralMenu', () => {
   })
 
   it('should show a create offer dropdown button with individual and collective choices', async () => {
-    renderSideNavLinks({
-      storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            ...defaultGetOffererResponseModel,
-            isValidated: true,
-          },
-        },
-      },
-    })
+    renderSideNavLinks()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Créer une offre' })
@@ -49,21 +47,17 @@ describe('LateralMenu', () => {
       screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
     ).toBeInTheDocument()
   })
+
   it('should display switch venue button with selected venue name', () => {
     const selectedPartnerVenuePublicName = 'Nom public de la structure'
 
     renderSideNavLinks({
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            ...defaultGetOffererResponseModel,
-          },
-        },
         user: {
-          selectedPartnerVenue: {
+          selectedPartnerVenue: makeGetVenueResponseModel({
             id: 123,
             publicName: selectedPartnerVenuePublicName,
-          },
+          }),
         },
       },
     })
@@ -80,22 +74,37 @@ describe('LateralMenu', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display switch venue button when no venue is selected', () => {
+  it('should hide partner page link when the selected venue has no partner page', () => {
     renderSideNavLinks({
       storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            ...defaultGetOffererResponseModel,
-          },
-        },
         user: {
-          selectedPartnerVenue: null,
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            hasPartnerPage: false,
+          }),
         },
       },
     })
 
     expect(
-      screen.queryByRole('link', { name: /Changer de structure/ })
+      screen.queryByRole('link', { name: /Page sur l’application/ })
     ).not.toBeInTheDocument()
+  })
+
+  it('should show partner page link when the selected venue has a partner page', () => {
+    renderSideNavLinks({
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            hasPartnerPage: true,
+          }),
+        },
+      },
+    })
+
+    expect(
+      screen.getByRole('link', { name: /Page sur l’application/ })
+    ).toBeInTheDocument()
   })
 })

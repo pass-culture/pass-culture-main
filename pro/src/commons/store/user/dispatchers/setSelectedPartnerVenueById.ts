@@ -5,7 +5,7 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
@@ -14,10 +14,8 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import { updateCurrentOfferer } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import {
-  setCurrentOffererName,
   setSelectedPartnerVenue,
   type UserAccess,
   updateUserAccess,
@@ -91,8 +89,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         dispatch(updateUserAccess(nextUserAccess))
       }
 
-      dispatch(updateCurrentOfferer(nextSelectedOfferer))
-
       if (shouldAlignSelectedAdminOfferer) {
         await dispatch(
           setSelectedAdminOffererById(
@@ -109,15 +105,9 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         '`nextSelectedOffererName` is undefined.'
       )
       localStorageManager.setItem(
-        LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID,
-        String(nextSelectedOfferer.id)
-      )
-      localStorageManager.setItem(
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedPartnerVenue.id)
       )
-      // TODO (igabriele, 2026-02-04): Delete this statement once `WIP_SWITCH_VENUE` FF is enabled and removed.
-      dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedPartnerVenue(nextSelectedPartnerVenue))
       return {
         selectedPartnerVenue: nextSelectedPartnerVenue,

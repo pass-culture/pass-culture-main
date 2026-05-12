@@ -25,10 +25,7 @@ import {
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   venueAddressFactory,
@@ -111,7 +108,6 @@ const renderBookingsRecap = (
           id: defaultGetOffererVenueResponseModel.id,
         }),
       },
-      offerer: currentOffererFactory(),
       ...overrides,
     },
     features: features,

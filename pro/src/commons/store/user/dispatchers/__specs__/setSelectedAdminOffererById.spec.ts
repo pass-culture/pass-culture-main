@@ -36,7 +36,6 @@ describe('setSelectedAdminOffererById', () => {
       const store = configureTestStore({
         user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 100 })],
           offerersNamesWithPendingValidation: null,
         },
@@ -67,7 +66,6 @@ describe('setSelectedAdminOffererById', () => {
       const store = configureTestStore({
         user: {
           offererNamesValidated: [getOffererNameFactory({ id: 200 })],
-          currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 200 })],
           offerersNamesWithPendingValidation: null,
         },
@@ -100,7 +98,6 @@ describe('setSelectedAdminOffererById', () => {
       const store = configureTestStore({
         user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 100 })],
           offerersNamesWithPendingValidation: null,
         },
@@ -124,7 +121,6 @@ describe('setSelectedAdminOffererById', () => {
       const store = configureTestStore({
         user: {
           offererNamesValidated: [getOffererNameFactory({ id: 200 })],
-          currentOffererName: null,
           offererNames: [getOffererNameFactory({ id: 200 })],
           offerersNamesWithPendingValidation: null,
         },
@@ -146,7 +142,6 @@ describe('setSelectedAdminOffererById', () => {
       const store = configureTestStore({
         user: {
           offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          currentOffererName: null,
           offererNames: [
             getOffererNameFactory({ id: 100 }),
             getOffererNameFactory({ id: 101 }),

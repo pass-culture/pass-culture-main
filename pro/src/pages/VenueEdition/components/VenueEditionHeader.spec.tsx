@@ -10,10 +10,7 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
@@ -80,7 +77,6 @@ const renderPartnerPages = (
             id: defaultGetVenue.id,
           }),
         },
-        offerer: currentOffererFactory(),
       },
       ...options,
     }
@@ -215,7 +211,6 @@ describe('VenueEditionHeader', () => {
               id: defaultGetVenue.id,
             }),
           },
-          offerer: currentOffererFactory(),
         },
       }
     )

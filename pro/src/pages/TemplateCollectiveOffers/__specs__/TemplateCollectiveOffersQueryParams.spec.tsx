@@ -15,10 +15,7 @@ import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   venueAddressFactory,
@@ -90,7 +87,6 @@ const renderOffers = async (
           currentUser: user,
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
-        offerer: currentOffererFactory(),
       },
     }
   )

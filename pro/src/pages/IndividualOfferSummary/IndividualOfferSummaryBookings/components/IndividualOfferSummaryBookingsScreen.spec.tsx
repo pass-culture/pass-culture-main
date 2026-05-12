@@ -13,6 +13,7 @@ import {
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferSummaryBookingsScreen } from './IndividualOfferSummaryBookingsScreen'
@@ -23,7 +24,14 @@ const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <IndividualOfferSummaryBookingsScreen offer={offer} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 }
 

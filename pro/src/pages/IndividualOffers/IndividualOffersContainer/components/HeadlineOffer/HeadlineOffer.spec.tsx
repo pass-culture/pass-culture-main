@@ -3,10 +3,7 @@ import userEvent from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -46,7 +43,6 @@ describe('HeadlineOffer', () => {
             currentUser: user,
             selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
           },
-          offerer: currentOffererFactory(),
         },
       }
     )

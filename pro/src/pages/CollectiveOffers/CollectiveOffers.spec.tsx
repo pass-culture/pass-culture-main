@@ -18,10 +18,7 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constan
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   venueAddressFactory,
@@ -106,7 +103,6 @@ const renderOffers = (
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
       },
-      offerer: currentOffererFactory(),
     },
   })
 }

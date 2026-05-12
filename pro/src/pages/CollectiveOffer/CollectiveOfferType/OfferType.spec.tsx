@@ -23,9 +23,11 @@ const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
       storeOverrides: {
         user: {
           currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 2,
+            allowedOnAdage,
+          }),
         },
-        offerer: { currentOfferer: { allowedOnAdage } },
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],

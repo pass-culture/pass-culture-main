@@ -2,15 +2,16 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
-import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueManagingOffererResponseModel,
+  makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { OptionalCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
@@ -34,8 +35,9 @@ const renderCollectiveOfferCreation = (
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        selectedPartnerVenue: managedVenueFactory({
+        selectedPartnerVenue: makeGetVenueResponseModel({
           id: props.offer?.venue?.id ?? 1,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 10 }),
         }),
         venues: [
           makeVenueListItemLiteResponseModel({
@@ -43,9 +45,6 @@ const renderCollectiveOfferCreation = (
           }),
         ],
       },
-      offerer: currentOffererFactory({
-        currentOfferer: { id: 10 },
-      }),
     },
   })
 }

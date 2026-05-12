@@ -5,6 +5,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import type { EventDatesInfos } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal'
@@ -25,7 +26,14 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
           onCloseDialog={() => {}}
         />
       </Dialog.Content>
-    </Dialog.Root>
+    </Dialog.Root>,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 }
 
@@ -142,6 +150,7 @@ describe('DownloadBookingModal', () => {
       bookingStatus: 'validated',
       offerId: MOCK_OFFER_ID,
       offerType: 'individual',
+      offererId: '1',
     })
   })
 
@@ -219,6 +228,7 @@ describe('DownloadBookingModal', () => {
       bookingStatus: 'all',
       offerId: MOCK_OFFER_ID,
       offerType: 'individual',
+      offererId: '1',
     })
   })
 })

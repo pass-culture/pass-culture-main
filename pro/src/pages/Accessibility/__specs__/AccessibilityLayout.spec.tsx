@@ -1,9 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderComponentFunction,
   renderWithProviders,
@@ -29,7 +26,6 @@ describe('Accessibility layout', () => {
     renderAccessibilityLayout({
       options: {
         storeOverrides: {
-          offerer: currentOffererFactory(),
           user: { currentUser: sharedCurrentUserFactory() },
         },
       },

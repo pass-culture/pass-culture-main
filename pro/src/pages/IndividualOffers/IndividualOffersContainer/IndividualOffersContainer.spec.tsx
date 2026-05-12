@@ -20,10 +20,7 @@ import {
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -57,7 +54,6 @@ const renderOffers = (
           currentUser: user,
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
-        offerer: currentOffererFactory(),
       },
       ...options,
     }

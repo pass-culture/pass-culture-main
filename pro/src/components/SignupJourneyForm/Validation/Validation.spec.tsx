@@ -53,7 +53,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
       removeItem: vi.fn((key: LocalStorageKeyType) => {
         inMemoryLocalStorage.delete(key)
       }),
-      clearPassCultureKeys: vi.fn(() => {
+      clear: vi.fn(() => {
         inMemoryLocalStorage.clear()
       }),
     },

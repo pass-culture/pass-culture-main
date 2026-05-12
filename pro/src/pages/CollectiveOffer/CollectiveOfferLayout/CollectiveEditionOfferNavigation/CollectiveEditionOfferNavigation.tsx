@@ -26,7 +26,7 @@ import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/du
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
@@ -67,7 +67,7 @@ export const CollectiveEditionOfferNavigation = ({
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 
@@ -207,7 +207,7 @@ export const CollectiveEditionOfferNavigation = ({
             onClick={async () => {
               logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
                 from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-                offererId: selectedOffererId?.toString(),
+                offererId: selectedPartnerVenue.managingOfferer.id.toString(),
                 offerId,
                 offerStatus: offer?.displayedStatus,
                 offerType: 'collective',
@@ -228,7 +228,7 @@ export const CollectiveEditionOfferNavigation = ({
               if (isTemplate) {
                 logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                   from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
-                  offererId: selectedOffererId?.toString(),
+                  offererId: selectedPartnerVenue.managingOfferer.id.toString(),
                   offerId,
                   offerType: 'collective',
                   offerStatus: offer.displayedStatus,

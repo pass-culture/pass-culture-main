@@ -10,9 +10,16 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferFromRequest } from './CollectiveOfferFromRequest'
+
+const storeOverrides = {
+  user: {
+    selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+  },
+}
 
 const offererId = 666
 const mockLogEvent = vi.fn()
@@ -113,7 +120,7 @@ describe('CollectiveOfferFromRequest', () => {
       collectiveRequest
     )
 
-    renderWithProviders(<CollectiveOfferFromRequest />)
+    renderWithProviders(<CollectiveOfferFromRequest />, { storeOverrides })
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -149,7 +156,7 @@ describe('CollectiveOfferFromRequest', () => {
       collectiveRequest
     )
 
-    renderWithProviders(<CollectiveOfferFromRequest />)
+    renderWithProviders(<CollectiveOfferFromRequest />, { storeOverrides })
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 

@@ -11,7 +11,7 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -53,7 +53,7 @@ export const DownloadBookingsModal = ({
   priceCategoryAndScheduleCountByDate,
   onCloseDialog,
 }: DownloadBookingsModalProps) => {
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { logEvent } = useAnalytics()
 
   const numberOfDates = priceCategoryAndScheduleCountByDate.length
@@ -103,7 +103,7 @@ export const DownloadBookingsModal = ({
       bookingStatus: data.selectedBookingType,
       offerId,
       offerType: 'individual',
-      offererId: selectedOffererId?.toString(),
+      offererId: selectedPartnerVenue.managingOfferer.id.toString(),
     })
 
     onCloseDialog()

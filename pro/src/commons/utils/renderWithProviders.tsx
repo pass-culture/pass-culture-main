@@ -96,9 +96,6 @@ export const renderWithProviders = (
           ...overrides.storeOverrides?.user,
         }
       : overrides?.storeOverrides?.user,
-    offerer: {
-      ...overrides?.storeOverrides?.offerer,
-    },
   }
 
   const store = configureTestStore(storeOverrides as RootState)

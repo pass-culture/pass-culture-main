@@ -8,6 +8,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
@@ -37,6 +38,11 @@ const renderCollectiveOfferPreviewCreation = (
   renderWithProviders(<CollectiveOfferPreviewEdition {...props} />, {
     features,
     initialRouterEntries: [path],
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
   })
 }
 

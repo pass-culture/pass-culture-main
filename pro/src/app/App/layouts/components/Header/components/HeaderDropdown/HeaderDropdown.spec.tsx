@@ -28,18 +28,16 @@ const baseVenues = [
   }),
 ]
 const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
-  if (!options?.storeOverrides?.offerer) {
-    options = {
-      ...options,
-      storeOverrides: {
-        ...options?.storeOverrides,
-        user: {
-          ...options?.storeOverrides?.user,
-          venues: baseVenues,
-        },
+  options = {
+    ...options,
+    storeOverrides: {
+      ...options?.storeOverrides,
+      user: {
+        ...options?.storeOverrides?.user,
+        venues: baseVenues,
       },
-      features: [],
-    }
+    },
+    features: [],
   }
   renderWithProviders(<HeaderDropdown />, options)
 }

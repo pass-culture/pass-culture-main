@@ -2,10 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -38,7 +35,6 @@ function renderComponent(props: OfferEducationalProps) {
           ),
         ],
       },
-      offerer: currentOffererFactory(),
     },
   })
 }

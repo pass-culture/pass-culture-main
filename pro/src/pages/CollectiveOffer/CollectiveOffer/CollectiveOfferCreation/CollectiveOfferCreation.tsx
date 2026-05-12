@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
   type OptionalCollectiveOfferFromParamsProps,
@@ -20,10 +20,9 @@ export const CollectiveOfferCreation = ({
 }: OptionalCollectiveOfferFromParamsProps): JSX.Element => {
   const location = useLocation()
   const { requete: requestId } = queryParamsFromOfferer(location)
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const offererId = selectedOffererId?.toString()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
-    Number(offererId),
+    selectedPartnerVenue.managingOfferer.id,
     offer
   )
 

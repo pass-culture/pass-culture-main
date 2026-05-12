@@ -40,7 +40,6 @@ const renderHub: RenderComponentFunction<
         currentUser: sharedCurrentUserFactory(),
         selectedPartnerVenue: null,
         venues,
-        currentOffererName: getOffererNameFactory({ id: 100 }),
         offererNames: [
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),

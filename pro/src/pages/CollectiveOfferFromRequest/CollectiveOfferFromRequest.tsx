@@ -13,7 +13,7 @@ import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/c
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { Button } from '@/design-system/Button/Button'
@@ -27,7 +27,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
@@ -55,7 +55,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       offerType: 'collective',
       templateOfferId: offerId,
-      offererId: selectedOffererId?.toString(),
+      offererId: selectedPartnerVenue.managingOfferer.id.toString(),
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(

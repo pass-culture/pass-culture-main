@@ -10,10 +10,7 @@ import {
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -37,7 +34,6 @@ const renderOffers = (
         }),
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
       },
-      offerer: currentOffererFactory(),
     },
     ...options,
   })

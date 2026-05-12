@@ -1,10 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -33,9 +30,6 @@ const renderCollectiveStockEdition = (
           allowedOnAdage: true,
         }),
       },
-      offerer: currentOffererFactory({
-        currentOfferer: { id: 10 },
-      }),
     },
   })
 }

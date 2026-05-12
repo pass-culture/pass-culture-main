@@ -8,10 +8,7 @@ import {
 } from '@/apiClient/v1/new'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
@@ -98,7 +95,6 @@ const renderTableWithOffer = (
           currentUser: sharedCurrentUserFactory(),
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
-        offerer: currentOffererFactory(),
       },
     }
   )

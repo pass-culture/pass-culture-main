@@ -10,11 +10,7 @@ import {
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -36,7 +32,6 @@ const renderOffers = (
         currentUser: sharedCurrentUserFactory(),
         selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
       },
-      offerer: currentOffererFactory(),
     },
     ...options,
   })
@@ -180,9 +175,6 @@ describe('TemplateCollectiveOffersScreen', () => {
   it('should display actionsBar when at least one offer is selected', async () => {
     renderWithProviders(<TemplateCollectiveOffersScreen {...props} />, {
       storeOverrides: {
-        offerer: {
-          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-        },
         user: {
           currentUser,
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),

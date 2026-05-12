@@ -1,10 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
@@ -33,7 +30,6 @@ function renderOfferEducational(props: OfferEducationalProps) {
           ),
         ],
       },
-      offerer: currentOffererFactory(),
     },
   })
 }

@@ -25,10 +25,7 @@ import {
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 
@@ -63,9 +60,6 @@ const renderOfferActionsCell = (
   return renderWithProviders(<OfferActionsCell {...defaultProps} />, {
     features,
     storeOverrides: {
-      offerer: {
-        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-      },
       user: {
         selectedPartnerVenue: defaultGetVenue,
       },

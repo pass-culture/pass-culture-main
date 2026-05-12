@@ -2,10 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
@@ -40,7 +37,6 @@ function renderComponent(props: OfferEducationalProps) {
           ),
         ],
       },
-      offerer: currentOffererFactory(),
     },
   })
 }

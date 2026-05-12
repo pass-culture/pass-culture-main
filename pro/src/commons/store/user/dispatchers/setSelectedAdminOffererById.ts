@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1/new'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {

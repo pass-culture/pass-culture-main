@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import type { RouteObject } from 'react-router'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PartnerLayout } from './PartnerLayout'
@@ -26,7 +27,12 @@ const renderPartnerLayout = () => {
     routes,
     initialRouterEntries: ['/accueil'],
     user,
-    storeOverrides: { user: { currentUser: user } },
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
   })
 }
 

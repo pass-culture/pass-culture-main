@@ -27,8 +27,13 @@ vi.mock('./components/SideNavLink', () => ({
 }))
 
 vi.mock('./components/UserReviewDialog/UserReviewDialog', () => ({
-  UserReviewDialog: ({ dialogTrigger }: any) => (
-    <div data-testid="user-review-mock">{dialogTrigger}</div>
+  UserReviewDialog: ({ dialogTrigger, isAdminSpace }: any) => (
+    <div
+      data-testid="user-review-mock"
+      data-is-admin-space={String(Boolean(isAdminSpace))}
+    >
+      {dialogTrigger}
+    </div>
   ),
 }))
 
@@ -73,6 +78,24 @@ describe('SideNavLinks', () => {
     render(<SideNavLinks navItems={itemsWithNotification} />)
 
     expect(screen.getByTestId('nav-item-notification')).toBeInTheDocument()
+  })
+
+  it('should forward isAdminSpace=false to UserReviewDialog by default', () => {
+    render(<SideNavLinks navItems={navItems} />)
+
+    expect(screen.getByTestId('user-review-mock')).toHaveAttribute(
+      'data-is-admin-space',
+      'false'
+    )
+  })
+
+  it('should forward isAdminSpace=true to UserReviewDialog when set', () => {
+    render(<SideNavLinks isAdminSpace navItems={navItems} />)
+
+    expect(screen.getByTestId('user-review-mock')).toHaveAttribute(
+      'data-is-admin-space',
+      'true'
+    )
   })
 
   it('should toggle active section correctly', async () => {

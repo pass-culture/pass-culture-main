@@ -7,7 +7,6 @@ import { HeaderDropdown } from '@/app/App/layouts/components/Header/components/H
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { RootState } from '@/commons/store/store'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
-import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 const mockLogEvent = vi.fn()
@@ -29,7 +28,6 @@ const renderLogExtraProData = async (
       initialRouterEntries: ['/accueil'],
       storeOverrides: {
         ...overrides,
-        offerer: currentOffererFactory(),
         user: {
           offererNamesValidated: [
             getOffererNameFactory({ id: 1 }),
@@ -64,7 +62,6 @@ describe('useLogExtraProData', () => {
       user: {
         selectedPartnerVenue: { id: 123, publicName: 'toto' },
       },
-      offerer: currentOffererFactory(),
     })
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)

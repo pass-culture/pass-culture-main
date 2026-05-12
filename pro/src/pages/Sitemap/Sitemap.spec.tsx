@@ -1,10 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -26,7 +23,6 @@ const renderSitemap = (options: RenderWithProvidersOptions = {}) => {
           hasPartnerPage: true,
         },
       },
-      offerer: currentOffererFactory({ currentOfferer: { id: 42 } }),
       nav: {
         selectedPartnerPageId: '2',
       },

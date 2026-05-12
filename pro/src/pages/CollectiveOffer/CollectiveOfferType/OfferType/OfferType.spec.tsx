@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -14,10 +11,7 @@ import {
   collectiveOfferTemplateFactory,
   defaultDMSApplicationForEAC,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  getOffererNameFactory,
-} from '@/commons/utils/factories/individualApiFactories'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -40,10 +34,7 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderOfferTypes = (
-  offerer?: GetOffererResponseModel,
-  venueOverrides?: Partial<GetVenueResponseModel>
-) => {
+const renderOfferTypes = (venueOverrides?: Partial<GetVenueResponseModel>) => {
   renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferTypeScreen />} />
@@ -74,13 +65,6 @@ const renderOfferTypes = (
             allowedOnAdage: true,
             ...venueOverrides,
           }),
-        },
-        offerer: {
-          currentOfferer: {
-            ...defaultGetOffererResponseModel,
-            isValidated: true,
-            ...offerer,
-          },
         },
       },
       user: sharedCurrentUserFactory(),
@@ -175,12 +159,7 @@ describe('OfferType', () => {
   })
 
   it('should display dms application banner if offerer can not create collective offer but has a dms application', async () => {
-    const offerer: GetOffererResponseModel = {
-      ...defaultGetOffererResponseModel,
-      allowedOnAdage: false,
-    }
-
-    renderOfferTypes(offerer, {
+    renderOfferTypes({
       allowedOnAdage: false,
       lastCollectiveDmsApplication: {
         ...defaultDMSApplicationForEAC,
@@ -290,7 +269,7 @@ describe('OfferType', () => {
   })
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
-    renderOfferTypes(undefined, { isValidated: false })
+    renderOfferTypes({ isValidated: false })
 
     expect(
       await screen.findByText(
@@ -300,7 +279,7 @@ describe('OfferType', () => {
   })
 
   it('should display DS banner if structure not allowed on adage and last ds reference request not found ', async () => {
-    renderOfferTypes(undefined, { allowedOnAdage: false })
+    renderOfferTypes({ allowedOnAdage: false })
 
     expect(
       await screen.findByText('Faire une demande de référencement')
