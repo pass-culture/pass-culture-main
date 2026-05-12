@@ -506,7 +506,7 @@ def get_nearby_bookable_screenings_from_product(
         .where(
             ST_DWithin(offer_location, request_location, around_radius, False),
             models.Offer.productId == product.id,
-            models.Offer.is_eligible_for_search.is_(True),
+            models.Offer.isPublished.is_(True),
             models.Stock.beginningDatetime >= from_datetime,
             models.Stock.beginningDatetime < to_datetime,
         )
@@ -515,9 +515,12 @@ def get_nearby_bookable_screenings_from_product(
     result_objects_query = (
         sa.select(
             ST_Distance(offer_location, request_location).label("distance"),
+            models.Offer.id.label("offer_id"),
+            providers_models.Provider.localClass.label("provider_class"),
             models.Stock.id.label("stock_id"),
             models.Stock.beginningDatetime.label("beginning_datetime"),
             models.Stock.features,
+            models.Stock.isSoldOut.label("is_sold_out"),
             models.Stock.price,
             geography_models.Address.city,
             geography_models.Address.postalCode.label("postal_code"),
@@ -528,6 +531,7 @@ def get_nearby_bookable_screenings_from_product(
         )
         .select_from(models.Stock)
         .join(models.Offer)
+        .outerjoin(providers_models.Provider, models.Offer.lastProviderId == providers_models.Provider.id)
         .join(offerers_models.Venue)
         .join(offerers_models.OffererAddress, models.Offer.offererAddressId == offerers_models.OffererAddress.id)
         .join(geography_models.Address)
@@ -552,8 +556,12 @@ def get_bookable_screenings_from_venue(
             .options(
                 sa_orm.contains_eager(models.Offer.stocks).load_only(
                     models.Stock.beginningDatetime,
-                    models.Stock.price,
+                    models.Stock.dnBookedQuantity,
                     models.Stock.features,
+                    models.Stock.isSoftDeleted,
+                    models.Stock.offerId,
+                    models.Stock.price,
+                    models.Stock.quantity,
                 )
             )
             .options(
@@ -575,10 +583,11 @@ def get_bookable_screenings_from_venue(
                 .joinedload(models.Product.productMediations)
                 .load_only(models.ProductMediation.imageType, models.ProductMediation.uuid)
             )
+            .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
             .where(
                 models.Offer.venueId == venue_id,
                 models.Offer.subcategoryId == subcategories.SEANCE_CINE.id,
-                models.Offer.is_eligible_for_search.is_(True),
+                models.Offer.isPublished.is_(True),
                 models.Stock.beginningDatetime >= from_datetime,
                 models.Stock.beginningDatetime < to_datetime,
             )

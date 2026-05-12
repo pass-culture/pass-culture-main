@@ -383,3 +383,10 @@ def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any
         )
 
         venue_provider.isActive = False
+
+
+def get_is_cinema_provider_disabled(provider_class: str | None) -> bool:
+    return (
+        provider_class in providers_constants.PROVIDER_LOCAL_CLASS_TO_FF
+        and providers_constants.PROVIDER_LOCAL_CLASS_TO_FF[provider_class].is_active()
+    )

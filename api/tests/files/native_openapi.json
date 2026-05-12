@@ -758,6 +758,18 @@
                 "title": "BookType",
                 "type": "object"
             },
+            "Bookability": {
+                "enum": [
+                    "BOOKABLE",
+                    "STOCK_BOOKING_IS_DISABLED",
+                    "STOCK_IS_SOLD_OUT",
+                    "USER_CANNOT_BOOK",
+                    "USER_HAS_ALREADY_BOOKED_OFFER",
+                    "USER_HAS_INSUFFICIENT_CREDIT"
+                ],
+                "title": "Bookability",
+                "type": "string"
+            },
             "BookingActivationCodeResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -3913,6 +3925,29 @@
                     "parking"
                 ],
                 "title": "MotorDisability",
+                "type": "object"
+            },
+            "MovieCalendarForUserResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "calendar": {
+                        "additionalProperties": {
+                            "items": {
+                                "$ref": "#/components/schemas/VenueScreeningsForUser"
+                            },
+                            "type": "array"
+                        },
+                        "propertyNames": {
+                            "format": "date"
+                        },
+                        "title": "Calendar",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "calendar"
+                ],
+                "title": "MovieCalendarForUserResponse",
                 "type": "object"
             },
             "MovieCalendarResponse": {
@@ -7080,6 +7115,9 @@
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
+                    "bookability": {
+                        "$ref": "#/components/schemas/Bookability"
+                    },
                     "features": {
                         "items": {
                             "type": "string"
@@ -7098,11 +7136,49 @@
                 },
                 "required": [
                     "beginningDatetime",
+                    "bookability",
                     "features",
                     "price",
                     "stockId"
                 ],
                 "title": "Screening",
+                "type": "object"
+            },
+            "ScreeningForUser": {
+                "additionalProperties": false,
+                "properties": {
+                    "beginningDatetime": {
+                        "format": "date-time",
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "bookability": {
+                        "$ref": "#/components/schemas/Bookability"
+                    },
+                    "features": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Features",
+                        "type": "array"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "number"
+                    },
+                    "stockId": {
+                        "title": "Stockid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "beginningDatetime",
+                    "bookability",
+                    "features",
+                    "price",
+                    "stockId"
+                ],
+                "title": "ScreeningForUser",
                 "type": "object"
             },
             "SearchGroupResponseModelv2": {
@@ -9263,6 +9339,10 @@
                             }
                         ]
                     },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "integer"
+                    },
                     "thumbUrl": {
                         "anyOf": [
                             {
@@ -9283,12 +9363,78 @@
                     "address",
                     "distance",
                     "label",
+                    "offerId",
                     "thumbUrl",
                     "venueId",
                     "dayScreenings",
                     "nextScreening"
                 ],
                 "title": "VenueScreenings",
+                "type": "object"
+            },
+            "VenueScreeningsForUser": {
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "title": "Address",
+                        "type": "string"
+                    },
+                    "dayScreenings": {
+                        "items": {
+                            "$ref": "#/components/schemas/ScreeningForUser"
+                        },
+                        "title": "Dayscreenings",
+                        "type": "array"
+                    },
+                    "distance": {
+                        "title": "Distance",
+                        "type": "number"
+                    },
+                    "label": {
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "nextScreening": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ScreeningForUser"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "integer"
+                    },
+                    "thumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Thumburl"
+                    },
+                    "venueId": {
+                        "title": "Venueid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "address",
+                    "distance",
+                    "label",
+                    "offerId",
+                    "thumbUrl",
+                    "venueId",
+                    "dayScreenings",
+                    "nextScreening"
+                ],
+                "title": "VenueScreeningsForUser",
                 "type": "object"
             },
             "VisualDisability": {
@@ -10902,6 +11048,141 @@
                     }
                 },
                 "summary": "get_movie_screenings <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/movie/calendar/me": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_movie_calendar_me",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "allocineId",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Allocineid"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "visa",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Visa"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "latitude",
+                        "required": true,
+                        "schema": {
+                            "title": "Latitude",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "longitude",
+                        "required": true,
+                        "schema": {
+                            "title": "Longitude",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "aroundRadius",
+                        "required": false,
+                        "schema": {
+                            "default": 50000,
+                            "title": "Aroundradius",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "from",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "From",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "to",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "To",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovieCalendarForUserResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_movie_screenings_for_user <GET>",
                 "tags": []
             }
         },

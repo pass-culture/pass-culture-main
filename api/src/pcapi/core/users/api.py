@@ -734,7 +734,7 @@ def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:
 
 
 def get_domains_credit(
-    user: models.User, user_bookings: list[bookings_models.Booking] | None = None
+    user: models.User, user_bookings: typing.Sequence[bookings_models.Booking] | None = None
 ) -> models.DomainsCredit | None:
     if not user.deposit:
         return None

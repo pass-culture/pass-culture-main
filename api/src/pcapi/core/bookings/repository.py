@@ -274,6 +274,7 @@ def get_bookings_from_deposit(deposit_id: int) -> Sequence[models.Booking]:
         .options(
             sa_orm.load_only(
                 models.Booking.amount,
+                models.Booking.depositId,
                 models.Booking.quantity,
                 models.Booking.status,
             )
