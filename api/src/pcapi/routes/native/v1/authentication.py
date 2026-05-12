@@ -53,6 +53,7 @@ logger = logging.getLogger(__name__)
     on_success_status=200,
     on_error_statuses=[400, 401],
     api=blueprint.api,
+    deprecated=True,
 )
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
@@ -99,7 +100,9 @@ def signout() -> None:
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
 @atomic()
 @authenticated_with_refresh_token
-@spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
+@spectree_serialize(
+    response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401], deprecated=True
+)
 def refresh() -> authentication.RefreshResponse:
     users_api.update_last_connection_date(current_user)
     try:
@@ -205,7 +208,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
 
 @blueprint.native_route("/oauth/state", methods=["GET"])
-@spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
+@spectree_serialize(
+    response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api, deprecated=True
+)
 def sso_oauth_state() -> authentication.OauthStateResponse:
     encoded_oauth_state_token = users_api.create_oauth_state_token()
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
@@ -223,6 +228,7 @@ _SSO_ACCESS_DENIED_ERROR = {
     on_success_status=200,
     on_error_statuses=[400, 401],
     api=blueprint.api,
+    deprecated=True,
 )
 def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) -> authentication.SigninResponse:
     if sso_provider not in authentication.SSOProvider:

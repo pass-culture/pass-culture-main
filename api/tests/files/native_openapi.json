@@ -10873,6 +10873,7 @@
         },
         "/native/v1/oauth/state": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_oauth_state",
                 "parameters": [],
@@ -10964,6 +10965,7 @@
         },
         "/native/v1/oauth/{sso_provider}/authorize": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_oauth_{sso_provider}_authorize",
                 "parameters": [
@@ -11800,6 +11802,7 @@
         },
         "/native/v1/refresh_access_token": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_refresh_access_token",
                 "parameters": [],
@@ -12126,6 +12129,7 @@
         },
         "/native/v1/signin": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_signin",
                 "parameters": [],
