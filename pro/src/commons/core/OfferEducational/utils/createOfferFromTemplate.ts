@@ -1,6 +1,7 @@
 import type { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import { apiCall } from '@/commons/api/apiCall'
 import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -19,21 +20,35 @@ export const createOfferFromTemplate = async (
   setIsCreatingNewOffer?: (isCreating: boolean) => void
 ) => {
   try {
-    const offerTemplateResponse =
-      await api.getCollectiveOfferTemplate(templateOfferId)
+    const offerTemplateResponse = await apiCall(
+      apiNew.getCollectiveOfferTemplate({
+        path: { offer_id: templateOfferId },
+      })
+    )
 
     const offererId = offerTemplateResponse.venue.managingOfferer.id
     const targetOffererId =
       offerTemplateResponse.venue.managingOfferer.id || offererId
-    const { educationalOfferers } =
-      await api.listEducationalOfferers(targetOffererId)
+    const { educationalOfferers } = await apiCall(
+      apiNew.listEducationalOfferers({
+        query: { offererId: targetOffererId },
+      })
+    )
     const targetOfferer = educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === targetOffererId
     )
     const offerers = targetOfferer
       ? serializeEducationalOfferer(targetOfferer)
       : null
-    const { venues } = await api.getVenues(null, true, targetOffererId)
+    const { venues } = await apiCall(
+      apiNew.getVenues({
+        query: {
+          validated: null,
+          activeOfferersOnly: true,
+          offererId: targetOffererId,
+        },
+      })
+    )
 
     const initialValues = computeInitialValuesFromOffer(
       offerers,
@@ -47,7 +62,9 @@ export const createOfferFromTemplate = async (
     const payload = createCollectiveOfferPayload(initialValues, templateOfferId)
 
     try {
-      const response = await api.createCollectiveOffer(payload)
+      const response = await apiCall(
+        apiNew.createCollectiveOffer({ body: payload })
+      )
       await postCollectiveOfferImage({
         initialValues,
         snackBar,
