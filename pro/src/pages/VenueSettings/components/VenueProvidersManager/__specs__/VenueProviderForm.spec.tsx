@@ -2,12 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
+import { ApiError } from '@/apiClient/compat'
 import * as apiHelpers from '@/apiClient/helpers'
-import type { ProviderResponse } from '@/apiClient/v1'
-import { ApiError } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ProviderResponse } from '@/apiClient/v1/new'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
@@ -19,7 +18,7 @@ const snackBarSuccess = vi.fn()
 const snackBarError = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     createVenueProvider: vi.fn(),
   },
 }))
@@ -69,14 +68,14 @@ describe('VenueProviderForm', () => {
   })
 
   describe('createVenueProvider - success case', () => {
-    it('should call api.createVenueProvider, show success message, call afterSubmit, return true and focus button', async () => {
+    it('should call apiNew.createVenueProvider, show success message, call afterSubmit, return true and focus button', async () => {
       const button = document.createElement('button')
       const focusSpy = vi.spyOn(button, 'focus')
       const selectSoftwareButtonRef = {
         current: button,
       } as React.RefObject<HTMLButtonElement | null>
 
-      vi.spyOn(api, 'createVenueProvider').mockResolvedValue(
+      vi.spyOn(apiNew, 'createVenueProvider').mockResolvedValue(
         defaultVenueProvider
       )
 
@@ -95,7 +94,7 @@ describe('VenueProviderForm', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(api.createVenueProvider).toHaveBeenCalledTimes(1)
+        expect(apiNew.createVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       await waitFor(() => {
@@ -112,7 +111,7 @@ describe('VenueProviderForm', () => {
     })
 
     it('should work without selectSoftwareButtonRef', async () => {
-      vi.spyOn(api, 'createVenueProvider').mockResolvedValue(
+      vi.spyOn(apiNew, 'createVenueProvider').mockResolvedValue(
         defaultVenueProvider
       )
 
@@ -128,7 +127,7 @@ describe('VenueProviderForm', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(api.createVenueProvider).toHaveBeenCalledTimes(1)
+        expect(apiNew.createVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       await waitFor(() => {
@@ -144,7 +143,7 @@ describe('VenueProviderForm', () => {
   })
 
   describe('createVenueProvider - error case', () => {
-    it('should call api.createVenueProvider, show error message, call afterSubmit, return false and focus button', async () => {
+    it('should call apiNew.createVenueProvider, show error message, call afterSubmit, return false and focus button', async () => {
       const button = document.createElement('button')
       const focusSpy = vi.spyOn(button, 'focus')
       const selectSoftwareButtonRef = {
@@ -160,7 +159,7 @@ describe('VenueProviderForm', () => {
         'Test error'
       )
 
-      vi.spyOn(api, 'createVenueProvider').mockRejectedValue(error)
+      vi.spyOn(apiNew, 'createVenueProvider').mockRejectedValue(error)
       vi.spyOn(apiHelpers, 'getHumanReadableApiError').mockReturnValue(
         'Test error message'
       )
@@ -180,7 +179,7 @@ describe('VenueProviderForm', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(api.createVenueProvider).toHaveBeenCalledTimes(1)
+        expect(apiNew.createVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       await waitFor(() => {
@@ -208,7 +207,7 @@ describe('VenueProviderForm', () => {
         'Test error'
       )
 
-      vi.spyOn(api, 'createVenueProvider').mockRejectedValue(error)
+      vi.spyOn(apiNew, 'createVenueProvider').mockRejectedValue(error)
       vi.spyOn(apiHelpers, 'getHumanReadableApiError').mockReturnValue(
         'Test error message'
       )
@@ -225,7 +224,7 @@ describe('VenueProviderForm', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(api.createVenueProvider).toHaveBeenCalledTimes(1)
+        expect(apiNew.createVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       await waitFor(() => {

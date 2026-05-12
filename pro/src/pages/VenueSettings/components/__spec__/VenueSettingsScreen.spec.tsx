@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -130,7 +130,7 @@ Element.prototype.scrollIntoView = vi.fn()
 describe('VenueSettingsScreen', () => {
   beforeEach(() => {
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
-    vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
+    vi.spyOn(apiNew, 'getProvidersByVenue').mockResolvedValue([
       {
         name: 'Ciné Office',
         id: 12,
@@ -278,7 +278,7 @@ describe('VenueSettingsScreen', () => {
 
   it('should submit the form with valid payload', async () => {
     const apiPatchVenue = vi
-      .spyOn(api, 'editVenue')
+      .spyOn(apiNew, 'editVenue')
       .mockResolvedValueOnce(defaultVenue)
     await renderForm({ venue: { ...defaultVenue, siret: '123 456 789 01234' } })
 
@@ -290,28 +290,31 @@ describe('VenueSettingsScreen', () => {
     await userEvent.type(publicNameField, 'Lieu Exemple Public Updated')
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiPatchVenue).toHaveBeenCalledWith(1, {
-      banId: '12345',
-      bookingEmail: 'contact@lieuexemple.com',
-      city: 'Ville Exemple',
-      comment: '',
-      isManualEdition: false,
-      latitude: 48.8566,
-      longitude: 2.3522,
-      name: 'Lieu de test',
-      postalCode: '75001',
-      inseeCode: '75111',
-      publicName: 'Lieu Exemple Public Updated',
-      street: '123 Rue Principale',
-      siret: '12345678901234',
-      withdrawalDetails:
-        "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+    expect(apiPatchVenue).toHaveBeenCalledWith({
+      path: { venue_id: 1 },
+      body: {
+        banId: '12345',
+        bookingEmail: 'contact@lieuexemple.com',
+        city: 'Ville Exemple',
+        comment: '',
+        isManualEdition: false,
+        latitude: 48.8566,
+        longitude: 2.3522,
+        name: 'Lieu de test',
+        postalCode: '75001',
+        inseeCode: '75111',
+        publicName: 'Lieu Exemple Public Updated',
+        street: '123 Rue Principale',
+        siret: '12345678901234',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
     })
   })
 
   it('should submit the form with valid payload for New Caledonia', async () => {
     const apiPatchVenue = vi
-      .spyOn(api, 'editVenue')
+      .spyOn(apiNew, 'editVenue')
       .mockResolvedValueOnce(defaultVenue)
 
     await renderForm({
@@ -331,27 +334,30 @@ describe('VenueSettingsScreen', () => {
     await userEvent.type(publicNameField, 'Lieu Exemple Public Updated')
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiPatchVenue).toHaveBeenCalledWith(1, {
-      banId: '12345',
-      bookingEmail: 'contact@lieuexemple.com',
-      city: 'Ville Exemple',
-      comment: '',
-      isManualEdition: false,
-      latitude: 48.8566,
-      longitude: 2.3522,
-      name: 'Lieu de test',
-      postalCode: '75001',
-      inseeCode: '75111',
-      publicName: 'Lieu Exemple Public Updated',
-      street: '123 Rue Principale',
-      siret: 'NC1234567890XX',
-      withdrawalDetails:
-        "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+    expect(apiPatchVenue).toHaveBeenCalledWith({
+      path: { venue_id: 1 },
+      body: {
+        banId: '12345',
+        bookingEmail: 'contact@lieuexemple.com',
+        city: 'Ville Exemple',
+        comment: '',
+        isManualEdition: false,
+        latitude: 48.8566,
+        longitude: 2.3522,
+        name: 'Lieu de test',
+        postalCode: '75001',
+        inseeCode: '75111',
+        publicName: 'Lieu Exemple Public Updated',
+        street: '123 Rue Principale',
+        siret: 'NC1234567890XX',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
     })
   })
 
   it('should not change name if siret is not diffusible', async () => {
-    vi.spyOn(api, 'getStructureData').mockResolvedValue({
+    vi.spyOn(apiNew, 'getStructureData').mockResolvedValue({
       ...structureDataBodyModelFactory(),
       name: "Le Siret n'est pas diffusible",
       isDiffusible: false,
@@ -418,7 +424,7 @@ describe('VenueSettingsScreen', () => {
 
   it('should update address fields when an address is selected from autocomplete', async () => {
     const apiPatchVenue = vi
-      .spyOn(api, 'editVenue')
+      .spyOn(apiNew, 'editVenue')
       .mockResolvedValueOnce(defaultVenue)
     await renderForm({
       venue: {
@@ -445,28 +451,31 @@ describe('VenueSettingsScreen', () => {
 
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiPatchVenue).toHaveBeenCalledWith(1, {
-      street: '10 Rue des lilas',
-      postalCode: '69002',
-      city: 'Lyon',
-      banId: '1',
-      inseeCode: '69002',
-      latitude: 11.1,
-      longitude: -11.1,
-      isManualEdition: false,
-      comment: '',
-      bookingEmail: 'contact@lieuexemple.com',
-      name: 'Lieu de test',
-      publicName: 'Lieu Exemple Public',
-      siret: '12345678901234',
-      withdrawalDetails:
-        "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+    expect(apiPatchVenue).toHaveBeenCalledWith({
+      path: { venue_id: 1 },
+      body: {
+        street: '10 Rue des lilas',
+        postalCode: '69002',
+        city: 'Lyon',
+        banId: '1',
+        inseeCode: '69002',
+        latitude: 11.1,
+        longitude: -11.1,
+        isManualEdition: false,
+        comment: '',
+        bookingEmail: 'contact@lieuexemple.com',
+        name: 'Lieu de test',
+        publicName: 'Lieu Exemple Public',
+        siret: '12345678901234',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
     })
   })
 
   it('should update address fields when an address is selected from manual', async () => {
     const apiPatchVenue = vi
-      .spyOn(api, 'editVenue')
+      .spyOn(apiNew, 'editVenue')
       .mockResolvedValueOnce(defaultVenue)
 
     await renderForm({
@@ -497,22 +506,25 @@ describe('VenueSettingsScreen', () => {
 
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiPatchVenue).toHaveBeenCalledWith(1, {
-      street: '10 rue des oiseaux',
-      postalCode: '75001',
-      inseeCode: null,
-      city: 'Paris',
-      latitude: 48.87004,
-      longitude: 2.3785,
-      banId: null,
-      isManualEdition: true,
-      bookingEmail: 'contact@lieuexemple.com',
-      name: 'Lieu de test',
-      publicName: 'Lieu Exemple Public',
-      siret: '12345678901234',
-      comment: '',
-      withdrawalDetails:
-        "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+    expect(apiPatchVenue).toHaveBeenCalledWith({
+      path: { venue_id: 1 },
+      body: {
+        street: '10 rue des oiseaux',
+        postalCode: '75001',
+        inseeCode: null,
+        city: 'Paris',
+        latitude: 48.87004,
+        longitude: 2.3785,
+        banId: null,
+        isManualEdition: true,
+        bookingEmail: 'contact@lieuexemple.com',
+        name: 'Lieu de test',
+        publicName: 'Lieu Exemple Public',
+        siret: '12345678901234',
+        comment: '',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
     })
   })
 })

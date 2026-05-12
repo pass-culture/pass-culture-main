@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetVenueResponseModel,
   PutVenueProviderBody,
@@ -42,7 +42,10 @@ export const ToggleVenueProviderStatusButton = ({
     }
 
     try {
-      await api.updateVenueProvider(venueProvider.id, payload)
+      await apiNew.updateVenueProvider({
+        path: { venue_provider_id: Number(venueProvider.id) },
+        body: payload,
+      })
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')

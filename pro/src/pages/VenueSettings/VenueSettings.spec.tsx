@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -22,7 +22,7 @@ vi.mock('./components/VenueSettingsScreen', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getVenue: vi.fn(),
     listVenueProviders: vi.fn(),
   },
@@ -50,8 +50,8 @@ describe('VenueSettings', () => {
   it('should render VenueSettingsScreen when data is ready', async () => {
     const venue = makeGetVenueResponseModel({ id: 1 })
 
-    vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
-    vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(venue)
+    vi.spyOn(apiNew, 'listVenueProviders').mockResolvedValue({
       venueProviders: [{ ...defaultVenueProvider }],
     })
 
@@ -61,8 +61,12 @@ describe('VenueSettings', () => {
       await screen.findByTestId('venue-settings-screen')
     ).toBeInTheDocument()
     expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-    expect(api.getVenue).toHaveBeenCalledWith(1)
-    expect(api.listVenueProviders).toHaveBeenCalledWith(1)
+    expect(apiNew.getVenue).toHaveBeenCalledWith({
+      path: { venue_id: venue.id },
+    })
+    expect(apiNew.listVenueProviders).toHaveBeenCalledWith({
+      path: { venue_id: venue.id },
+    })
 
     expect(mockVenueSettingsScreen).toHaveBeenCalledWith(
       {

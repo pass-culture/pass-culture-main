@@ -5,7 +5,7 @@ import type { AdresseData } from '@/apiClient/adresse/types'
 import type {
   GetVenueResponseModel,
   VenueProviderResponse,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

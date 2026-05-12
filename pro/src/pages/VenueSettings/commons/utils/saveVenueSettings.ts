@@ -1,7 +1,7 @@
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 import type {
@@ -15,6 +15,9 @@ export const saveVenueSettings = async (
   formContext: VenueSettingsFormContext,
   { venue }: { venue: GetVenueResponseModel }
 ) => {
-  await api.editVenue(venue.id, toBody(formValues, formContext))
+  await apiNew.editVenue({
+    path: { venue_id: Number(venue.id) },
+    body: toBody(formValues, formContext),
+  })
   await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 }
