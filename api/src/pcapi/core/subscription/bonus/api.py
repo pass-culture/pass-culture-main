@@ -38,8 +38,12 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     status = subscription_models.FraudCheckStatus.KO
     try:
         quotient_familial_response = _get_user_quotient_familial_response(source_data.custodian, user)
-    except api_particulier.ParticulierApiNotFound:
-        reason_codes = [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
+    except api_particulier.ParticulierApiApplicationNotFound:
+        reason_codes = [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+        http_status_code = 404
+    except api_particulier.ParticulierApiPersonNotFound:
+        reason_codes = [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
+        http_status_code = 422
     except Exception:
         with atomic():
             quotient_familial_fraud_check.updatedAt = datetime.datetime.now(tz=None)
@@ -47,32 +51,37 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         raise
     else:
         status, reason_codes = _get_credit_bonus_status(user, quotient_familial_response.data)
+        http_status_code = 200
 
     given_recredit = None
     with atomic():
         quotient_familial_fraud_check.status = status
         quotient_familial_fraud_check.reasonCodes = reason_codes
 
-        if quotient_familial_response:
-            _update_bonus_fraud_check_content(quotient_familial_fraud_check, quotient_familial_response.data)
-            if status == subscription_models.FraudCheckStatus.OK:
-                given_recredit = deposit_api.recredit_bonus_credit(user)
+        _update_bonus_fraud_check_content(
+            quotient_familial_fraud_check,
+            quotient_familial_response.data if quotient_familial_response else None,
+            http_status_code,
+        )
 
-    if status == subscription_models.FraudCheckStatus.OK:
-        if given_recredit:
-            logger.info("Recredited user %s with bonus credit", user.id)
-            trigger_events.track_has_received_bonus(user.id)
-            transactional_mails.send_bonus_granted_email(user)
-        elif deposit_api.can_receive_bonus_credit(user):
-            logger.error(
-                "Failed to recredit user with bonus credit despite status = %s Quotient Familial fraud check",
-                status,
-                extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
-            )
-    elif status == subscription_models.FraudCheckStatus.KO:
-        transactional_mails.send_bonus_declined_email(user)
+        if status == subscription_models.FraudCheckStatus.OK:
+            given_recredit = deposit_api.recredit_bonus_credit(user)
 
-    external_attributes_api.update_external_user(user)
+            if given_recredit:
+                logger.info("Recredited user %s with bonus credit", user.id)
+                trigger_events.track_has_received_bonus(user.id)
+                transactional_mails.send_bonus_granted_email(user)
+            elif deposit_api.can_receive_bonus_credit(user):
+                logger.error(
+                    "Failed to recredit user with bonus credit despite status = %s Quotient Familial fraud check",
+                    status,
+                    extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+                )
+
+        if status == subscription_models.FraudCheckStatus.KO:
+            transactional_mails.send_bonus_declined_email(user)
+
+        external_attributes_api.update_external_user(user)
 
 
 def _get_user_quotient_familial_response(
@@ -154,32 +163,36 @@ def _get_credit_bonus_status(
 
 def _update_bonus_fraud_check_content(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
-    quotient_familial_data: api_particulier.QuotientFamilialData,
+    quotient_familial_data: api_particulier.QuotientFamilialData | None,
+    http_status_code: int,
 ) -> None:
     if not fraud_check.resultContent:
         fraud_check.resultContent = {}
 
-    if not fraud_check.resultContent.get("quotient_familial"):
-        fraud_check.resultContent["quotient_familial"] = {}
+    fraud_check.resultContent["http_status_code"] = http_status_code
 
-    quotient_familial_content = bonus_schemas.QuotientFamilialContent(
-        provider=quotient_familial_data.quotient_familial.fournisseur,
-        value=quotient_familial_data.quotient_familial.valeur,
-        year=quotient_familial_data.quotient_familial.annee,
-        month=quotient_familial_data.quotient_familial.mois,
-        computation_year=quotient_familial_data.quotient_familial.annee_calcul,
-        computation_month=quotient_familial_data.quotient_familial.mois_calcul,
-    )
-    fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
+    if quotient_familial_data:
+        if not fraud_check.resultContent.get("quotient_familial"):
+            fraud_check.resultContent["quotient_familial"] = {}
 
-    tax_household_children = [
-        bonus_schemas.QuotientFamilialChild(
-            last_name=child.nom_naissance,
-            common_name=child.nom_usage,
-            first_names=child.prenoms.split(" ") if child.prenoms else [],
-            birth_date=child.date_naissance,
-            gender=child.sexe,
+        quotient_familial_content = bonus_schemas.QuotientFamilialContent(
+            provider=quotient_familial_data.quotient_familial.fournisseur,
+            value=quotient_familial_data.quotient_familial.valeur,
+            year=quotient_familial_data.quotient_familial.annee,
+            month=quotient_familial_data.quotient_familial.mois,
+            computation_year=quotient_familial_data.quotient_familial.annee_calcul,
+            computation_month=quotient_familial_data.quotient_familial.mois_calcul,
         )
-        for child in quotient_familial_data.enfants
-    ]
-    fraud_check.resultContent["children"] = [child.model_dump() for child in tax_household_children]
+        fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
+
+        tax_household_children = [
+            bonus_schemas.QuotientFamilialChild(
+                last_name=child.nom_naissance,
+                common_name=child.nom_usage,
+                first_names=child.prenoms.split(" ") if child.prenoms else [],
+                birth_date=child.date_naissance,
+                gender=child.sexe,
+            )
+            for child in quotient_familial_data.enfants
+        ]
+        fraud_check.resultContent["children"] = [child.model_dump() for child in tax_household_children]

@@ -29,7 +29,11 @@ class ParticulierApiForbidden(ParticulierApiException):
     pass
 
 
-class ParticulierApiNotFound(ParticulierApiException):
+class ParticulierApiApplicationNotFound(ParticulierApiException):
+    pass
+
+
+class ParticulierApiPersonNotFound(ParticulierApiException):
     pass
 
 
@@ -123,7 +127,9 @@ def get_quotient_familial(
     if response.status_code == 403:
         raise ParticulierApiForbidden("The API token does not have the correct permissions")
     if response.status_code == 404:
-        raise ParticulierApiNotFound("Custodian not found")
+        raise ParticulierApiApplicationNotFound("Custodian application not found")
+    if response.status_code == 422:
+        raise ParticulierApiPersonNotFound("Custodian not found")
     if response.status_code == 429:
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
 
@@ -203,7 +209,9 @@ def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultA
     if response.status_code == 403:
         raise ParticulierApiForbidden("The API token does not have the correct permissions")
     if response.status_code == 404:
-        raise ParticulierApiNotFound("Person not found")
+        raise ParticulierApiApplicationNotFound("Application not found")
+    if response.status_code == 422:
+        raise ParticulierApiPersonNotFound("Person not found")
     if response.status_code == 429:
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
 
@@ -289,7 +297,9 @@ def get_disabled_child_education_allowance(person: bonus_schemas.Person) -> Disa
     if response.status_code == 403:
         raise ParticulierApiForbidden("The API token does not have the correct permissions")
     if response.status_code == 404:
-        raise ParticulierApiNotFound("Person not found")
+        raise ParticulierApiApplicationNotFound("Application not found")
+    if response.status_code == 422:
+        raise ParticulierApiPersonNotFound("Person not found")
     if response.status_code == 429:
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
 
