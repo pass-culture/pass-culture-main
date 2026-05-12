@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -13,18 +14,30 @@ import { UserReviewDialog } from './UserReviewDialog'
 
 const snackBarError = vi.fn()
 
-const renderUserReviewDialog = () => {
+type RenderOptions = {
+  isAdminSpace?: boolean
+  storeUserOverrides?: Record<string, unknown>
+}
+
+const renderUserReviewDialog = ({
+  isAdminSpace = false,
+  storeUserOverrides,
+}: RenderOptions = {}) => {
   const storeOverrides = {
     user: {
       currentUser: sharedCurrentUserFactory(),
       selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      ...storeUserOverrides,
     },
   }
   return renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
         <Dialog.Title>Title</Dialog.Title>
-        <UserReviewDialog dialogTrigger={<Button label="Trigger"></Button>} />
+        <UserReviewDialog
+          dialogTrigger={<Button label="Trigger"></Button>}
+          isAdminSpace={isAdminSpace}
+        />
       </Dialog.Content>
     </Dialog.Root>,
     { storeOverrides }
@@ -99,6 +112,56 @@ describe('UserReviewDialog', () => {
     expect(
       screen.queryByRole('heading', { name: 'Votre avis compte !' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should submit with the selected admin offerer id in admin space', async () => {
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
+    renderUserReviewDialog({
+      isAdminSpace: true,
+      storeUserOverrides: {
+        selectedAdminOfferer: { ...defaultGetOffererResponseModel, id: 42 },
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
+    await userEvent.type(screen.getByRole('textbox'), 'description')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Envoyer' }))
+
+    expect(api.submitUserReview).toHaveBeenCalledWith(
+      expect.objectContaining({ offererId: 42 })
+    )
+  })
+
+  it('should not call submitUserReview when no offerer is selected in admin space', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    const submitSpy = vi.spyOn(api, 'submitUserReview').mockResolvedValue()
+    renderUserReviewDialog({
+      isAdminSpace: true,
+      storeUserOverrides: {
+        selectedAdminOfferer: null,
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Excellente' }))
+    await userEvent.type(screen.getByRole('textbox'), 'description')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Envoyer' }))
+
+    expect(submitSpy).not.toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: '`selectedOffererId` is null.',
+      })
+    )
   })
 
   it('should show error message and close dialog on error', async () => {

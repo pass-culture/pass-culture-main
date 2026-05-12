@@ -26,7 +26,14 @@ export interface NavItem {
   showNotification?: boolean
 }
 
-export const SideNavLinks = ({ navItems }: { navItems: NavItem[] }) => {
+interface SideNavLinksProps {
+  navItems: NavItem[]
+  isAdminSpace?: boolean
+}
+export const SideNavLinks = ({
+  isAdminSpace = false,
+  navItems,
+}: Readonly<SideNavLinksProps>) => {
   const mainItems = navItems.filter((i) => i.group === 'main')
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
@@ -98,6 +105,7 @@ export const SideNavLinks = ({ navItems }: { navItems: NavItem[] }) => {
                       color={ButtonColor.NEUTRAL}
                     />
                   }
+                  isAdminSpace={isAdminSpace}
                 />
               </li>
               <li>

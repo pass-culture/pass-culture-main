@@ -30,13 +30,34 @@ export interface UserReviewDialogFormValues {
   userComment: string
 }
 
+interface UserReviewDialogProps {
+  dialogTrigger: ReactNode
+  isAdminSpace?: boolean
+}
+
 export const UserReviewDialog = ({
   dialogTrigger,
-}: Readonly<{
-  dialogTrigger: ReactNode
-}>) => {
+  isAdminSpace = false,
+}: Readonly<UserReviewDialogProps>) => {
+  const location = useLocation()
   const snackBar = useSnackBar()
+  const selectedOffererId = useAppSelector((state) =>
+    isAdminSpace
+      ? state.user.selectedAdminOfferer?.id
+      : state.user.selectedPartnerVenue?.managingOfferer?.id
+  )
+
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
+
+  const initialValues: UserReviewDialogFormValues = {
+    userSatisfaction: 'Correcte',
+    userComment: '',
+  }
+  const form = useForm<UserReviewDialogFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
+  })
+
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
     try {
       if (!selectedOffererId) {
@@ -59,24 +80,6 @@ export const UserReviewDialog = ({
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')
     }
   }
-
-  const initialValues: UserReviewDialogFormValues = {
-    userSatisfaction: 'Correcte',
-    userComment: '',
-  }
-
-  const form = useForm<UserReviewDialogFormValues>({
-    defaultValues: initialValues,
-    resolver: yupResolver(validationSchema),
-  })
-
-  const selectedOffererId = useAppSelector(
-    (state) =>
-      state.user.selectedPartnerVenue?.managingOfferer?.id ??
-      state.user.selectedAdminOfferer?.id ??
-      null
-  )
-  const location = useLocation()
 
   const group: IconRadioGroupValues[] = [
     {
