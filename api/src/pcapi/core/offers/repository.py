@@ -556,8 +556,11 @@ def get_bookable_screenings_from_venue(
             .options(
                 sa_orm.contains_eager(models.Offer.stocks).load_only(
                     models.Stock.beginningDatetime,
-                    models.Stock.price,
+                    models.Stock.dnBookedQuantity,
                     models.Stock.features,
+                    models.Stock.isSoftDeleted,
+                    models.Stock.price,
+                    models.Stock.quantity,
                 )
             )
             .options(
@@ -579,10 +582,11 @@ def get_bookable_screenings_from_venue(
                 .joinedload(models.Product.productMediations)
                 .load_only(models.ProductMediation.imageType, models.ProductMediation.uuid)
             )
+            .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
             .where(
                 models.Offer.venueId == venue_id,
                 models.Offer.subcategoryId == subcategories.SEANCE_CINE.id,
-                models.Offer.is_eligible_for_search.is_(True),
+                models.Offer.isPublished.is_(True),
                 models.Stock.beginningDatetime >= from_datetime,
                 models.Stock.beginningDatetime < to_datetime,
             )

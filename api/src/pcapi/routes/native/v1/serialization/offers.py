@@ -682,6 +682,7 @@ class VenueMovieScreeningsRequest(HttpBodyModel):
 class MovieScreenings(HttpBodyModel):
     duration: int | None
     genres: list[str]
+    is_booking_disabled: bool
     last_30_days_bookings: int
     movie_name: str
     offer_id: int
@@ -702,9 +703,15 @@ class MovieScreenings(HttpBodyModel):
         if offer.product and offer.product.last_30_days_booking:
             last_30_days_bookings = offer.product.last_30_days_booking
 
+        is_booking_disabled = bool(
+            offer.lastProvider
+            and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF
+            and provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[offer.lastProvider.localClass].is_active()
+        )
         return cls(
             duration=offer.durationMinutes,
             genres=genres,
+            is_booking_disabled=is_booking_disabled,
             last_30_days_bookings=last_30_days_bookings,
             movie_name=offer.name,
             offer_id=offer.id,

@@ -1800,6 +1800,7 @@ class VenueMovieCalendarTest:
                 {
                     "duration": 116,
                     "genres": [],
+                    "isBookingDisabled": False,
                     "last30DaysBookings": 0,
                     "movieName": stock.offer.name,
                     "offerId": stock.offer.id,
@@ -1808,6 +1809,7 @@ class VenueMovieCalendarTest:
                         {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                             "features": [],
+                            "isSoldOut": False,
                             "price": 10.1,
                             "stockId": stock.id,
                         }
@@ -1815,6 +1817,7 @@ class VenueMovieCalendarTest:
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],
+                        "isSoldOut": False,
                         "price": 10.1,
                         "stockId": stock.id,
                     },
@@ -1824,6 +1827,7 @@ class VenueMovieCalendarTest:
                 {
                     "duration": 116,
                     "genres": [],
+                    "isBookingDisabled": False,
                     "last30DaysBookings": 0,
                     "movieName": stock.offer.name,
                     "offerId": stock.offer.id,
@@ -1832,6 +1836,7 @@ class VenueMovieCalendarTest:
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],
+                        "isSoldOut": False,
                         "price": 10.1,
                         "stockId": stock.id,
                     },
@@ -1947,6 +1952,44 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         assert response.json["calendar"] == {tomorrow.isoformat(): [], in_two_days.isoformat(): []}
+
+    def test_sold_out_screening(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        print(calendar)
+        assert calendar[today.isoformat()][0]["dayScreenings"][0]["isSoldOut"] is True
+        assert calendar[today.isoformat()][0]["nextScreening"]["isSoldOut"] is True
+
+    @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
+    def test_disabled_booking(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        disabled_provider = get_provider_by_local_class("BoostStocks")
+        stock = offers_factories.EventStockFactory(
+            offer__lastProvider=disabled_provider,
+            offer__product=product,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[today.isoformat()][0]["isBookingDisabled"] is True
 
 
 class OffersStocksV2Test:
