@@ -35,7 +35,7 @@ def apple_app_site_association() -> Response:
     return response
 
 
-@public_api.route("/.well-knwon/assetlinks.json", methods=["GET"])
+@public_api.route("/.well-known/assetlinks.json", methods=["GET"])
 def asset_links() -> Response:
     response = jsonify(
         [
