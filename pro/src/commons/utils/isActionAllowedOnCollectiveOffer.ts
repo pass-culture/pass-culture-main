@@ -1,12 +1,31 @@
 import {
   CollectiveOfferAllowedAction,
-  type CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel as CollectiveOfferResponseModelV1,
   CollectiveOfferTemplateAllowedAction,
-  type CollectiveOfferTemplateResponseModel,
-  type GetCollectiveOfferResponseModel,
-  type GetCollectiveOfferTemplateResponseModel,
+  type CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelV1,
+  type GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelV1,
+  type GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelV1,
 } from '@/apiClient/v1'
+import type {
+  CollectiveOfferResponseModel as CollectiveOfferResponseModelV2,
+  CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelV2,
+  GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelV2,
+  GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelV2,
+} from '@/apiClient/v1/new'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
+
+type CollectiveOfferResponseModel =
+  | CollectiveOfferResponseModelV1
+  | CollectiveOfferResponseModelV2
+type CollectiveOfferTemplateResponseModel =
+  | CollectiveOfferTemplateResponseModelV1
+  | CollectiveOfferTemplateResponseModelV2
+type GetCollectiveOfferResponseModel =
+  | GetCollectiveOfferResponseModelV1
+  | GetCollectiveOfferResponseModelV2
+type GetCollectiveOfferTemplateResponseModel =
+  | GetCollectiveOfferTemplateResponseModelV1
+  | GetCollectiveOfferTemplateResponseModelV2
 
 export function isActionAllowedOnCollectiveOffer(
   offer:

@@ -1,4 +1,4 @@
-import type { CollectiveStockCreationBodyModel } from '@/apiClient/v1'
+import type { CollectiveStockCreationBodyModel } from '@/apiClient/v1/new'
 
 import type { OfferEducationalStockFormValues } from '../types'
 import {
