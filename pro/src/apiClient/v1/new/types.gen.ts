@@ -1215,6 +1215,46 @@ export enum DisplayableActivity {
 }
 
 /**
+ * DownloadBookingsQueryModel
+ */
+export type DownloadBookingsQueryModel = {
+    /**
+     * Bookingperiodbeginningdate
+     */
+    bookingPeriodBeginningDate?: string | null;
+    /**
+     * Bookingperiodendingdate
+     */
+    bookingPeriodEndingDate?: string | null;
+    bookingStatusFilter?: BookingStatusFilter | null;
+    /**
+     * Eventdate
+     */
+    eventDate?: string | null;
+    exportType?: BookingExportType | null;
+    /**
+     * Offerid
+     */
+    offerId?: number | null;
+    /**
+     * Offereraddressid
+     */
+    offererAddressId?: number | null;
+    /**
+     * Offererid
+     */
+    offererId: number;
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Venueid
+     */
+    venueId?: number | null;
+};
+
+/**
  * EacFormat
  */
 export enum EacFormat {
@@ -1851,6 +1891,63 @@ export type GetBookingResponse = {
      * Venuename
      */
     venueName: string;
+};
+
+/**
+ * GetBookingsProQueryModel
+ */
+export type GetBookingsProQueryModel = {
+    /**
+     * Bookingperiodbeginningdate
+     */
+    bookingPeriodBeginningDate?: string | null;
+    /**
+     * Bookingperiodendingdate
+     */
+    bookingPeriodEndingDate?: string | null;
+    bookingStatusFilter?: BookingStatusFilter | null;
+    /**
+     * Eventdate
+     */
+    eventDate?: string | null;
+    /**
+     * Offerid
+     */
+    offerId?: number | null;
+    /**
+     * Offereraddressid
+     */
+    offererAddressId?: number | null;
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Venueid
+     */
+    venueId: number;
+};
+
+/**
+ * GetBookingsProResponseModel
+ */
+export type GetBookingsProResponseModel = {
+    /**
+     * Bookingsrecap
+     */
+    bookingsRecap: Array<BookingRecapResponseModel>;
+    /**
+     * Page
+     */
+    page: number;
+    /**
+     * Pages
+     */
+    pages: number;
+    /**
+     * Total
+     */
+    total: number;
 };
 
 /**
@@ -3767,68 +3864,6 @@ export type LinkedVenue = {
      * Id
      */
     id: number;
-};
-
-/**
- * ListBookingsQueryModel
- */
-export type ListBookingsQueryModel = {
-    /**
-     * Bookingperiodbeginningdate
-     */
-    bookingPeriodBeginningDate?: string | null;
-    /**
-     * Bookingperiodendingdate
-     */
-    bookingPeriodEndingDate?: string | null;
-    bookingStatusFilter?: BookingStatusFilter | null;
-    /**
-     * Eventdate
-     */
-    eventDate?: string | null;
-    exportType?: BookingExportType | null;
-    /**
-     * Offerid
-     */
-    offerId?: number | null;
-    /**
-     * Offereraddressid
-     */
-    offererAddressId?: number | null;
-    /**
-     * Offererid
-     */
-    offererId: number;
-    /**
-     * Page
-     */
-    page?: number;
-    /**
-     * Venueid
-     */
-    venueId?: number | null;
-};
-
-/**
- * ListBookingsResponseModel
- */
-export type ListBookingsResponseModel = {
-    /**
-     * Bookingsrecap
-     */
-    bookingsRecap: Array<BookingRecapResponseModel>;
-    /**
-     * Page
-     */
-    page: number;
-    /**
-     * Pages
-     */
-    pages: number;
-    /**
-     * Total
-     */
-    total: number;
 };
 
 /**
@@ -6812,14 +6847,6 @@ export type getBookingsCsvData = {
          */
         page?: number;
         /**
-         * Offererid
-         */
-        offererId: number;
-        /**
-         * Venueid
-         */
-        venueId?: number | null;
-        /**
          * Offerid
          */
         offerId?: number | null;
@@ -6840,6 +6867,14 @@ export type getBookingsCsvData = {
          * Offereraddressid
          */
         offererAddressId?: number | null;
+        /**
+         * Offererid
+         */
+        offererId: number;
+        /**
+         * Venueid
+         */
+        venueId?: number | null;
         exportType?: BookingExportType | null;
     };
     url: '/bookings/csv';
@@ -6905,14 +6940,6 @@ export type getBookingsExcelData = {
          */
         page?: number;
         /**
-         * Offererid
-         */
-        offererId: number;
-        /**
-         * Venueid
-         */
-        venueId?: number | null;
-        /**
          * Offerid
          */
         offerId?: number | null;
@@ -6933,6 +6960,14 @@ export type getBookingsExcelData = {
          * Offereraddressid
          */
         offererAddressId?: number | null;
+        /**
+         * Offererid
+         */
+        offererId: number;
+        /**
+         * Venueid
+         */
+        venueId?: number | null;
         exportType?: BookingExportType | null;
     };
     url: '/bookings/excel';
@@ -7076,14 +7111,6 @@ export type getBookingsProData = {
          */
         page?: number;
         /**
-         * Offererid
-         */
-        offererId: number;
-        /**
-         * Venueid
-         */
-        venueId?: number | null;
-        /**
          * Offerid
          */
         offerId?: number | null;
@@ -7104,7 +7131,10 @@ export type getBookingsProData = {
          * Offereraddressid
          */
         offererAddressId?: number | null;
-        exportType?: BookingExportType | null;
+        /**
+         * Venueid
+         */
+        venueId: number;
     };
     url: '/bookings/pro';
 };
@@ -7126,7 +7156,7 @@ export type getBookingsProResponses = {
     /**
      * OK
      */
-    200: ListBookingsResponseModel;
+    200: GetBookingsProResponseModel;
 };
 
 export type getBookingsProResponse = getBookingsProResponses[keyof getBookingsProResponses];

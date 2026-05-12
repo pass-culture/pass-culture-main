@@ -5,14 +5,12 @@ import { isDateValid } from '@/commons/utils/date'
 import { downloadFile } from '@/commons/utils/downloadFile'
 
 export const downloadIndividualBookingsXLSFile = async (
-  filters: PreFiltersParams & { page?: number }
+  filters: PreFiltersParams & { page?: number },
+  offererId: number
 ) => {
   const bookingsXLSText = await api.getBookingsExcel(
-    Number(filters.offererId),
+    offererId,
     filters.page,
-    filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
-      ? Number(filters.offerVenueId)
-      : null,
     null,
     filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
       isDateValid(filters.offerEventDate)

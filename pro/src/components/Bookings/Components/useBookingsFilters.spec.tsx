@@ -1,5 +1,4 @@
-import { act, screen, within } from '@testing-library/react'
-import { useState } from 'react'
+import { act } from '@testing-library/react'
 import type { RouteObject } from 'react-router'
 
 import { BookingStatusFilter } from '@/apiClient/v1'
@@ -13,25 +12,15 @@ vi.mock('@/commons/utils/date', async () => ({
   getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 
-type HookParams = Parameters<typeof useBookingsFilters>[0]
 type HookReturn = ReturnType<typeof useBookingsFilters>
 
 let hookResult: HookReturn
-let setParamsFromOutside: (params: HookParams) => void
 
-function HookConsumer({ initialParams }: { initialParams: HookParams }) {
-  const [params, setParams] = useState(initialParams)
-  setParamsFromOutside = setParams
-  hookResult = useBookingsFilters(params)
+function HookConsumer() {
+  hookResult = useBookingsFilters()
 
   return (
     <div data-testid="hook-output">
-      <span data-testid="offererId">
-        {hookResult.selectedPreFilters.offererId}
-      </span>
-      <span data-testid="offerVenueId">
-        {hookResult.selectedPreFilters.offerVenueId}
-      </span>
       <span data-testid="bookingBeginningDate">
         {hookResult.selectedPreFilters.bookingBeginningDate}
       </span>
@@ -60,52 +49,23 @@ function HookConsumer({ initialParams }: { initialParams: HookParams }) {
   )
 }
 
-function renderHook(
-  params: HookParams = { offererId: '42' },
-  initialRouterEntries: string[] = ['/test']
-) {
+function renderHook(initialRouterEntries: string[] = ['/test']) {
   const routes: RouteObject[] = [
     {
       path: '/test',
       id: 'test',
-      element: <HookConsumer initialParams={params} />,
+      element: <HookConsumer />,
     },
   ]
 
   return renderWithProviders(null, { routes, initialRouterEntries })
 }
 
-function getDisplayedFilter(testId: string): string {
-  return (
-    within(screen.getByTestId('hook-output')).getByTestId(testId).textContent ??
-    ''
-  )
-}
-
 describe('useBookingsFilters', () => {
-  describe('initialAppliedFilters', () => {
-    it('should use DEFAULT_PRE_FILTERS merged with offererId when only offererId is provided', () => {
-      renderHook()
-
-      expect(hookResult.initialAppliedFilters).toEqual({
-        ...DEFAULT_PRE_FILTERS,
-        offererId: '42',
-      })
-    })
-
-    it('should override offerVenueId when venueId is provided', () => {
-      renderHook({ offererId: '42', venueId: '99' })
-
-      expect(hookResult.initialAppliedFilters.offerVenueId).toBe('99')
-      expect(hookResult.initialAppliedFilters.offererId).toBe('42')
-    })
-  })
-
   describe('selectedPreFilters initialization', () => {
-    it('should initialize selectedPreFilters from initialAppliedFilters', () => {
+    it('should initialize selectedPreFilters from DEFAULT_PRE_FILTERS', () => {
       renderHook()
 
-      expect(hookResult.selectedPreFilters.offererId).toBe('42')
       expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
         BookingStatusFilter.BOOKED
       )
@@ -123,118 +83,9 @@ describe('useBookingsFilters', () => {
     })
   })
 
-  describe('filter state reset on offererId / venueId change', () => {
-    it('should reset selectedPreFilters when offererId changes', () => {
-      renderHook()
-
-      act(() => {
-        hookResult.updateSelectedFilters({
-          bookingStatusFilter: BookingStatusFilter.VALIDATED,
-        })
-      })
-
-      expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
-        BookingStatusFilter.VALIDATED
-      )
-
-      act(() => {
-        setParamsFromOutside({ offererId: '99' })
-      })
-
-      expect(getDisplayedFilter('offererId')).toBe('99')
-      expect(getDisplayedFilter('bookingStatusFilter')).toBe(
-        BookingStatusFilter.BOOKED
-      )
-    })
-
-    it('should reset selectedPreFilters when venueId changes', () => {
-      renderHook({ offererId: '42', venueId: '10' })
-
-      act(() => {
-        hookResult.updateSelectedFilters({
-          bookingStatusFilter: BookingStatusFilter.REIMBURSED,
-        })
-      })
-
-      expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
-        BookingStatusFilter.REIMBURSED
-      )
-
-      act(() => {
-        setParamsFromOutside({ offererId: '42', venueId: '20' })
-      })
-
-      expect(getDisplayedFilter('offerVenueId')).toBe('20')
-      expect(getDisplayedFilter('bookingStatusFilter')).toBe(
-        BookingStatusFilter.BOOKED
-      )
-    })
-
-    it('should reset wereBookingsRequested when params change', () => {
-      renderHook()
-
-      act(() => {
-        hookResult.setWereBookingsRequested(true)
-      })
-
-      expect(hookResult.wereBookingsRequested).toBe(true)
-
-      act(() => {
-        setParamsFromOutside({ offererId: '99' })
-      })
-
-      expect(getDisplayedFilter('wereBookingsRequested')).toBe('false')
-    })
-
-    it('should not reset when the same offererId is provided again', () => {
-      renderHook()
-
-      act(() => {
-        hookResult.updateSelectedFilters({
-          bookingStatusFilter: BookingStatusFilter.VALIDATED,
-        })
-      })
-
-      act(() => {
-        setParamsFromOutside({ offererId: '42' })
-      })
-
-      expect(getDisplayedFilter('bookingStatusFilter')).toBe(
-        BookingStatusFilter.VALIDATED
-      )
-    })
-
-    it('should reset appliedPreFilters along with selectedPreFilters', () => {
-      renderHook()
-
-      act(() => {
-        hookResult.updateSelectedFilters({
-          bookingStatusFilter: BookingStatusFilter.VALIDATED,
-        })
-      })
-
-      act(() => {
-        hookResult.applyPreFilters(hookResult.selectedPreFilters)
-      })
-
-      expect(hookResult.appliedPreFilters.bookingStatusFilter).toBe(
-        BookingStatusFilter.VALIDATED
-      )
-
-      act(() => {
-        setParamsFromOutside({ offererId: '99' })
-      })
-
-      expect(hookResult.appliedPreFilters.offererId).toBe('99')
-      expect(hookResult.appliedPreFilters.bookingStatusFilter).toBe(
-        BookingStatusFilter.BOOKED
-      )
-    })
-  })
-
   describe('URL params synchronization', () => {
     it('should read filters from URL search params on mount', () => {
-      renderHook(undefined, [
+      renderHook([
         '/test?bookingStatusFilter=validated&bookingBeginningDate=2020-01-01&bookingEndingDate=2020-06-01',
       ])
 
@@ -247,30 +98,14 @@ describe('useBookingsFilters', () => {
       expect(hookResult.selectedPreFilters.bookingEndingDate).toBe('2020-06-01')
     })
 
-    it('should always use initialAppliedFilters.offererId regardless of URL', () => {
-      renderHook(undefined, ['/test?offererId=999&bookingStatusFilter=booked'])
-
-      expect(hookResult.selectedPreFilters.offererId).toBe('42')
-    })
-
-    it('should read offerVenueId from URL', () => {
-      renderHook(undefined, [
-        '/test?offerVenueId=55&bookingStatusFilter=booked',
-      ])
-
-      expect(hookResult.selectedPreFilters.offerVenueId).toBe('55')
-    })
-
     it('should read offererAddressId from URL', () => {
-      renderHook(undefined, [
-        '/test?offererAddressId=77&bookingStatusFilter=booked',
-      ])
+      renderHook(['/test?offererAddressId=77&bookingStatusFilter=booked'])
 
       expect(hookResult.selectedPreFilters.offererAddressId).toBe('77')
     })
 
     it('should clear booking dates when URL has offerEventDate but no booking dates', () => {
-      renderHook(undefined, ['/test?offerEventDate=2020-06-10'])
+      renderHook(['/test?offerEventDate=2020-06-10'])
 
       expect(hookResult.selectedPreFilters.offerEventDate).toBe('2020-06-10')
       expect(hookResult.selectedPreFilters.bookingBeginningDate).toBe('')
@@ -278,7 +113,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should keep booking dates from URL when both offerEventDate and dates are present', () => {
-      renderHook(undefined, [
+      renderHook([
         '/test?offerEventDate=2020-06-10&bookingBeginningDate=2020-01-01&bookingEndingDate=2020-06-01',
       ])
 
@@ -290,7 +125,7 @@ describe('useBookingsFilters', () => {
     })
 
     it('should fallback invalid bookingStatusFilter to default', () => {
-      renderHook(undefined, ['/test?bookingStatusFilter=invalid_value'])
+      renderHook(['/test?bookingStatusFilter=invalid_value'])
 
       expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
         DEFAULT_PRE_FILTERS.bookingStatusFilter
@@ -298,11 +133,9 @@ describe('useBookingsFilters', () => {
     })
 
     it('should not apply URL overrides when no recognized params are in URL', () => {
-      renderHook(undefined, ['/test?unrelated=true'])
+      renderHook(['/test?unrelated=true'])
 
-      expect(hookResult.selectedPreFilters).toEqual(
-        hookResult.initialAppliedFilters
-      )
+      expect(hookResult.selectedPreFilters).toEqual(DEFAULT_PRE_FILTERS)
     })
   })
 
@@ -365,7 +198,9 @@ describe('useBookingsFilters', () => {
         })
       })
 
-      expect(hookResult.selectedPreFilters.offererId).toBe('42')
+      expect(hookResult.selectedPreFilters.bookingStatusFilter).toBe(
+        BookingStatusFilter.BOOKED
+      )
       expect(hookResult.selectedPreFilters.bookingBeginningDate).toBe(
         '2020-01-01'
       )
@@ -373,7 +208,7 @@ describe('useBookingsFilters', () => {
   })
 
   describe('hasPreFilters', () => {
-    it('should be false when selectedPreFilters match initialAppliedFilters', () => {
+    it('should be false when selectedPreFilters match defaults', () => {
       renderHook()
 
       expect(hookResult.hasPreFilters).toBe(false)
@@ -446,7 +281,6 @@ describe('useBookingsFilters', () => {
 
       act(() => {
         hookResult.applyNow()
-        hookResult.setWereBookingsRequested(true)
       })
 
       act(() => {
@@ -463,7 +297,6 @@ describe('useBookingsFilters', () => {
 
       act(() => {
         hookResult.applyNow()
-        hookResult.setWereBookingsRequested(true)
       })
 
       act(() => {
@@ -507,7 +340,7 @@ describe('useBookingsFilters', () => {
   })
 
   describe('resetPreFilters', () => {
-    it('should reset all filters to initialAppliedFilters', () => {
+    it('should reset all filters to defaults', () => {
       renderHook()
 
       act(() => {
@@ -516,19 +349,14 @@ describe('useBookingsFilters', () => {
           bookingBeginningDate: '2020-01-01',
         })
         hookResult.applyNow()
-        hookResult.setWereBookingsRequested(true)
       })
 
       act(() => {
         hookResult.resetPreFilters()
       })
 
-      expect(hookResult.selectedPreFilters).toEqual(
-        hookResult.initialAppliedFilters
-      )
-      expect(hookResult.appliedPreFilters).toEqual(
-        hookResult.initialAppliedFilters
-      )
+      expect(hookResult.selectedPreFilters).toEqual(DEFAULT_PRE_FILTERS)
+      expect(hookResult.appliedPreFilters).toEqual(DEFAULT_PRE_FILTERS)
       expect(hookResult.wereBookingsRequested).toBe(false)
     })
   })

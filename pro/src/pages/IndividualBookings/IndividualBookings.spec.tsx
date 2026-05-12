@@ -88,10 +88,10 @@ vi.mock('@/commons/utils/date', async () => {
 
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 2,
-  eventDate: 5,
-  bookingBeginningDate: 7,
-  bookingEndingDate: 8,
-  offererAddressId: 9,
+  eventDate: 4,
+  bookingBeginningDate: 6,
+  bookingEndingDate: 7,
+  offererAddressId: 8,
 }
 
 const user = sharedCurrentUserFactory()
@@ -166,12 +166,14 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     const eventDateFilter = screen.getByLabelText('Date de l’évènement')
-    const eventVenueFilter = screen.getByLabelText('Localisation')
+    const eventoffererAddressFilter = screen.getByLabelText('Localisation')
     const eventBookingPeriodFilter = screen.getByText('Période de réservation')
     expect(eventDateFilter).toBeInTheDocument()
-    expect(eventVenueFilter).toBeInTheDocument()
+    expect(eventoffererAddressFilter).toBeInTheDocument()
     expect(eventBookingPeriodFilter).toBeInTheDocument()
-    expect(eventVenueFilter).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
+    expect(eventoffererAddressFilter).toHaveValue(
+      DEFAULT_PRE_FILTERS.offererAddressId
+    )
     expect(eventDateFilter).not.toHaveValue()
   })
 
@@ -212,7 +214,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[0][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id.toString())
+    ).toBe(offererAddress[0].id)
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -259,7 +261,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(resetButton)
 
     expect(screen.getByLabelText('Localisation')).toHaveValue(
-      DEFAULT_PRE_FILTERS.offerVenueId
+      DEFAULT_PRE_FILTERS.offererAddressId
     )
   })
 
@@ -315,7 +317,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(resetButton)
 
     expect(screen.getByLabelText('Localisation')).toHaveValue(
-      DEFAULT_PRE_FILTERS.offerVenueId
+      DEFAULT_PRE_FILTERS.offererAddressId
     )
 
     await waitFor(() =>
@@ -403,7 +405,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[0][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id.toString())
+    ).toBe(offererAddress[0].id)
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
@@ -411,7 +413,7 @@ describe('components | BookingsRecap | Pro user', () => {
       spyGetBookingsPro.mock.calls[1][
         NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
       ]
-    ).toBe(offererAddress[0].id.toString())
+    ).toBe(offererAddress[0].id)
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -766,7 +768,7 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBeInTheDocument()
   })
 
-  it('should fetch bookings using both offererId and venueId when clicking "Afficher"', async () => {
+  it('should fetch bookings using venueId when clicking "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -785,8 +787,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     const callArgs = spyGetBookingsPro.mock.calls[0]
-    expect(callArgs[0]).toBe('1')
-    expect(callArgs[2]).toBe(defaultGetOffererVenueResponseModel.id.toString())
+    expect(callArgs[0]).toBe(1)
   })
 
   it('should reset filters to venue-scoped defaults', async () => {

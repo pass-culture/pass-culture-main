@@ -1,14 +1,12 @@
 import classNames from 'classnames'
-import { type SubmitEvent, useCallback, useState } from 'react'
+import type { SubmitEvent } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { DownloadDropdown } from '@/components/DownloadDropdown/DownloadDropdown'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -20,8 +18,6 @@ import { Select } from '@/ui-kit/form/Select/Select'
 
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import styles from './PreFilters.module.scss'
-import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
-import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
 
 export interface PreFiltersProps {
   selectedPreFilters: PreFiltersParams
@@ -40,6 +36,8 @@ export interface PreFiltersProps {
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
   offererAddresses: SelectOption<string | number>[]
+  download?: (type: 'CSV' | 'XLS') => Promise<void>
+  isDownloading?: boolean
 }
 
 export const PreFilters = ({
@@ -55,38 +53,15 @@ export const PreFilters = ({
   isLocalLoading,
   resetPreFilters,
   offererAddresses,
+  download,
+  isDownloading,
 }: PreFiltersProps): JSX.Element => {
-  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-
-  const [isDownloading, setIsDownloading] = useState(false)
 
   const requestFilteredBookings = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyNow()
   }
-
-  const download = useCallback(
-    async (type: 'CSV' | 'XLS') => {
-      setIsDownloading(true)
-
-      const filters = { ...selectedPreFilters, page: 1 }
-
-      try {
-        /* istanbul ignore next: DEBT to fix */
-        if (type === 'CSV') {
-          await downloadIndividualBookingsCSVFile(filters)
-        } else {
-          await downloadIndividualBookingsXLSFile(filters)
-        }
-      } catch {
-        snackBar.error(GET_DATA_ERROR_MESSAGE)
-      }
-
-      setIsDownloading(false)
-    },
-    [selectedPreFilters, snackBar]
-  )
 
   return (
     <>
@@ -165,7 +140,7 @@ export const PreFilters = ({
           </FormLayout.Row>
         </div>
 
-        {isAdministrationSpace && (
+        {isAdministrationSpace && download && (
           <DownloadDropdown
             isDisabled={isDownloading || isFiltersDisabled || isLocalLoading}
             label="Télécharger les réservations"

@@ -1,10 +1,11 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { setSelectedAdminOfferer } from '@/commons/store/user/reducer'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -16,6 +17,7 @@ import { Component as IndividualActivityData } from './IndividualActivityData'
 vi.mock('@/apiClient/api', () => ({
   api: {
     getBookingsCsv: vi.fn(),
+    getBookingsExcel: vi.fn(),
     getOffererAddresses: vi.fn(),
   },
 }))
@@ -51,6 +53,8 @@ const routes: RouteObject[] = [
   },
 ]
 
+const secondOfferer = { ...defaultGetOffererResponseModel, id: 2 }
+
 const renderIndividualActivityData = () =>
   renderWithProviders(null, {
     routes,
@@ -60,7 +64,7 @@ const renderIndividualActivityData = () =>
       user: {
         currentUser: user,
         selectedAdminOfferer: defaultGetOffererResponseModel,
-        offererNamesValidated: [defaultGetOffererResponseModel],
+        offererNamesValidated: [defaultGetOffererResponseModel, secondOfferer],
       },
     },
   })
@@ -121,11 +125,64 @@ describe('IndividualActivityData', () => {
       1,
       null,
       null,
-      null,
       DEFAULT_PRE_FILTERS.bookingStatusFilter,
       DEFAULT_PRE_FILTERS.bookingBeginningDate,
       DEFAULT_PRE_FILTERS.bookingEndingDate,
       null
+    )
+  })
+
+  it('should reset filters when the selected offerer changes', async () => {
+    const secondOfferer = { ...defaultGetOffererResponseModel, id: 2 }
+
+    const { store } = renderIndividualActivityData()
+
+    const eventDateInput = screen.getByLabelText('Date de l\u2019évènement')
+    await userEvent.type(eventDateInput, '2020-06-08')
+
+    expect(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    ).toBeEnabled()
+
+    act(() => {
+      store.dispatch(setSelectedAdminOfferer(secondOfferer))
+    })
+
+    expect(screen.getByLabelText('Date de l\u2019évènement')).toHaveValue('')
+  })
+
+  it('should track download clicks', async () => {
+    const FROM = '/administration/donnees-activite/individuel'
+
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getBookingsExcel').mockResolvedValue({})
+    renderIndividualActivityData()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS,
+      { from: FROM }
+    )
+
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS,
+      { from: FROM }
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    )
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV,
+      { from: FROM }
     )
   })
 })

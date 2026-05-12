@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import { Provider } from 'react-redux'
 import { useParams } from 'react-router'
 import { SWRConfig } from 'swr'
 
@@ -7,8 +8,12 @@ import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { configureTestStore } from '@/commons/store/testUtils'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-import { offerVenueFactory } from '@/commons/utils/factories/venueFactories'
+import {
+  makeGetVenueResponseModel,
+  offerVenueFactory,
+} from '@/commons/utils/factories/venueFactories'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
@@ -29,21 +34,29 @@ vi.mock('react-router', async () => ({
 }))
 
 const renderUseIndividualOfferContext = async () => {
+  const store = configureTestStore({
+    user: {
+      selectedPartnerVenue: makeGetVenueResponseModel({ id: 4 }),
+    },
+  })
+
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <SWRConfig
-      value={{
-        // Ensure a fresh, isolated cache per test run
-        provider: () => new Map(),
-        dedupingInterval: 0,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        shouldRetryOnError: false,
-      }}
-    >
-      <IndividualOfferContextProvider>
-        {children}
-      </IndividualOfferContextProvider>
-    </SWRConfig>
+    <Provider store={store}>
+      <SWRConfig
+        value={{
+          // Ensure a fresh, isolated cache per test run
+          provider: () => new Map(),
+          dedupingInterval: 0,
+          revalidateOnFocus: false,
+          revalidateOnReconnect: false,
+          shouldRetryOnError: false,
+        }}
+      >
+        <IndividualOfferContextProvider>
+          {children}
+        </IndividualOfferContextProvider>
+      </SWRConfig>
+    </Provider>
   )
 
   const { rerender, result, unmount } = renderHook(

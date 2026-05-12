@@ -16,7 +16,6 @@ import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DownloadsMovedBanner } from '@/components/DownloadsMovedBanner/DownloadsMovedBanner'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -47,11 +46,9 @@ export const IndividualBookings = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
-    initialAppliedFilters,
     appliedPreFilters,
     selectedPreFilters,
     wereBookingsRequested,
-    setWereBookingsRequested,
     urlParams,
     hasPreFilters,
     isRefreshRequired,
@@ -60,23 +57,20 @@ export const IndividualBookings = () => {
     resetPreFilters,
     resetAndApplyPreFilters,
     updateUrl,
-  } = useBookingsFilters({
-    venueId: selectedPartnerVenue.id.toString(),
-    offererId: selectedPartnerVenue.managingOfferer.id.toString(),
-  })
+  } = useBookingsFilters()
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
   const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const { data: bookingsQuery, isLoading } = useSWR(
-    isEqual(appliedPreFilters, initialAppliedFilters)
-      ? null
-      : [GET_BOOKINGS_QUERY_KEY, appliedPreFilters],
+    wereBookingsRequested ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters] : null,
     async ([, filterParams]) => {
-      setWereBookingsRequested(true)
       const { bookings, pages, currentPage } =
-        await getFilteredIndividualBookingsAdapter({ ...filterParams })
+        await getFilteredIndividualBookingsAdapter(
+          filterParams,
+          selectedPartnerVenue.id
+        )
 
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
         snackBar.success(

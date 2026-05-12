@@ -81,10 +81,10 @@ def booking_export_header() -> list[str]:
     return BOOKING_EXPORT_HEADER
 
 
-def find_by_venues(
+def find_by_venue(
     *,
     pro_user_id: int,
-    venue_ids: list[int],
+    venue_id: int,
     booking_period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -95,7 +95,7 @@ def find_by_venues(
 ) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         pro_user_id=pro_user_id,
-        venue_ids=venue_ids,
+        venue_id=venue_id,
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
@@ -105,7 +105,7 @@ def find_by_venues(
 
     bookings_query = _get_filtered_booking_pro(
         pro_user_id=pro_user_id,
-        venue_ids=venue_ids,
+        venue_id=venue_id,
         period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
@@ -496,7 +496,7 @@ def _get_filtered_bookings_query(
 def _get_filtered_bookings_count(
     *,
     pro_user_id: int,
-    venue_ids: list[int],
+    venue_id: int,
     period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -506,7 +506,7 @@ def _get_filtered_bookings_count(
     bookings = (
         _get_filtered_bookings_query(
             pro_user_id=pro_user_id,
-            venue_ids=venue_ids,
+            venue_ids=[venue_id],
             period=period,
             status_filter=status_filter,
             event_date=event_date,
@@ -597,7 +597,7 @@ def _get_filtered_booking_report(
 def _get_filtered_booking_pro(
     *,
     pro_user_id: int,
-    venue_ids: list[int],
+    venue_id: int,
     period: tuple[date, date] | None = None,
     status_filter: models.BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -635,7 +635,7 @@ def _get_filtered_booking_pro(
 
     bookings_query = _get_filtered_bookings_query(
         pro_user_id=pro_user_id,
-        venue_ids=venue_ids,
+        venue_ids=[venue_id],
         period=period,
         status_filter=status_filter,
         event_date=event_date,

@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BookingRecapResponseModel } from './BookingRecapResponseModel';
-export type ListBookingsResponseModel = {
+export type GetBookingsProResponseModel = {
   bookingsRecap: Array<BookingRecapResponseModel>;
   page: number;
   pages: number;

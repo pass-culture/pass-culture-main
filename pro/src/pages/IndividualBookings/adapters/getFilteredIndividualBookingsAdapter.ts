@@ -6,7 +6,11 @@ import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 const MAX_LOADED_PAGES = 10
 
 export const getFilteredIndividualBookingsAdapter = async (
-  apiFilters: PreFiltersParams & { page?: number }
+  apiFilters: PreFiltersParams & {
+    page?: number
+  },
+  venueId: number,
+  offerId?: number
 ) => {
   let allBookings: BookingRecapResponseModel[] = []
   let currentPage = 0
@@ -19,22 +23,17 @@ export const getFilteredIndividualBookingsAdapter = async (
       page: currentPage,
     }
     const {
-      venueId,
-      offererId,
-      offererAddressId,
-      offerId,
+      page = 1,
       eventDate,
+      bookingStatusFilter,
       bookingPeriodBeginningDate,
       bookingPeriodEndingDate,
-      bookingStatusFilter,
-      page,
+      offererAddressId,
     } = buildBookingsRecapQuery(nextPageFilters)
 
     const bookings = await api.getBookingsPro(
-      // @ts-expect-error api expect number
-      offererId,
-      page,
       venueId,
+      page,
       offerId,
       eventDate,
       bookingStatusFilter,
