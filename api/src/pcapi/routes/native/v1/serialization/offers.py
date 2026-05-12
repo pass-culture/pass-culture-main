@@ -537,9 +537,12 @@ class RawScreening:
     beginning_datetime: datetime
     distance: float
     features: list[str]
+    is_sold_out: bool
     label: str
+    offer_id: int
     price: float
     postal_code: str
+    provider_class: str
     stock_id: int
     street: str
     thumb_url: str
@@ -570,32 +573,38 @@ class MovieScreeningsRequest(HttpQueryParamsModel):
 class Screening(HttpBodyModel):
     beginning_datetime: datetime
     features: list[str]
+    is_sold_out: bool
     price: float
     stock_id: int
 
     @classmethod
     def from_raw_screening(cls, screening: RawScreening) -> "Screening":
         return cls(
-            stock_id=screening.stock_id,
-            price=screening.price,
-            features=screening.features,
             beginning_datetime=screening.beginning_datetime,
+            features=screening.features,
+            is_sold_out=screening.is_sold_out,
+            price=screening.price,
+            stock_id=screening.stock_id,
         )
 
     @classmethod
     def from_stock(cls, stock: models.Stock) -> "Screening":
+        assert stock.beginningDatetime is not None
         return cls(
-            stock_id=stock.id,
-            price=stock.price,
-            features=stock.features,
             beginning_datetime=stock.beginningDatetime,
+            features=stock.features,
+            is_sold_out=stock.isSoldOut,
+            price=float(stock.price),
+            stock_id=stock.id,
         )
 
 
 class VenueScreenings(HttpBodyModel):
     address: str
     distance: float
+    is_booking_disabled: bool
     label: str
+    offer_id: int
     thumb_url: str | None
     venue_id: int
     day_screenings: list[Screening]
@@ -603,10 +612,16 @@ class VenueScreenings(HttpBodyModel):
 
     @classmethod
     def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
+        is_booking_disabled = (
+            screening.provider_class in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF
+            and provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[screening.provider_class].is_active()
+        )
         return cls(
             address=f"{screening.street}, {screening.postal_code} {screening.city}",
             distance=screening.distance,
+            is_booking_disabled=is_booking_disabled,
             label=screening.label,
+            offer_id=screening.offer_id,
             thumb_url=screening.thumb_url,
             venue_id=screening.venue_id,
             day_screenings=[],

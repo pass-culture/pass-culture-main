@@ -3966,6 +3966,10 @@
                         "title": "Genres",
                         "type": "array"
                     },
+                    "isBookingDisabled": {
+                        "title": "Isbookingdisabled",
+                        "type": "boolean"
+                    },
                     "last30DaysBookings": {
                         "title": "Last30Daysbookings",
                         "type": "integer"
@@ -4003,6 +4007,7 @@
                 "required": [
                     "duration",
                     "genres",
+                    "isBookingDisabled",
                     "last30DaysBookings",
                     "movieName",
                     "offerId",
@@ -7087,6 +7092,10 @@
                         "title": "Features",
                         "type": "array"
                     },
+                    "isSoldOut": {
+                        "title": "Issoldout",
+                        "type": "boolean"
+                    },
                     "price": {
                         "title": "Price",
                         "type": "number"
@@ -7099,6 +7108,7 @@
                 "required": [
                     "beginningDatetime",
                     "features",
+                    "isSoldOut",
                     "price",
                     "stockId"
                 ],
@@ -9249,6 +9259,10 @@
                         "title": "Distance",
                         "type": "number"
                     },
+                    "isBookingDisabled": {
+                        "title": "Isbookingdisabled",
+                        "type": "boolean"
+                    },
                     "label": {
                         "title": "Label",
                         "type": "string"
@@ -9262,6 +9276,10 @@
                                 "type": "null"
                             }
                         ]
+                    },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "integer"
                     },
                     "thumbUrl": {
                         "anyOf": [
@@ -9282,7 +9300,9 @@
                 "required": [
                     "address",
                     "distance",
+                    "isBookingDisabled",
                     "label",
+                    "offerId",
                     "thumbUrl",
                     "venueId",
                     "dayScreenings",

@@ -1426,17 +1426,21 @@ class MovieCalendarTest:
                         {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                             "features": [],
+                            "isSoldOut": False,
                             "price": float(stock.price),
                             "stockId": stock.id,
                         }
                     ],
+                    "isBookingDisabled": False,
                     "label": stock.offer.offererAddress.label,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],
+                        "isSoldOut": False,
                         "price": float(stock.price),
                         "stockId": stock.id,
                     },
+                    "offerId": stock.offer.id,
                     "thumbUrl": None,
                     "venueId": stock.offer.venue.id,
                 },
@@ -1446,13 +1450,16 @@ class MovieCalendarTest:
                     "address": f"{address.street}, {address.postalCode} {address.city}",
                     "distance": 0.0,
                     "dayScreenings": [],
+                    "isBookingDisabled": False,
                     "label": stock.offer.offererAddress.label,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "features": [],
+                        "isSoldOut": False,
                         "price": 10.1,
                         "stockId": stock.id,
                     },
+                    "offerId": stock.offer.id,
                     "thumbUrl": None,
                     "venueId": stock.offer.venue.id,
                 },
@@ -1711,6 +1718,66 @@ class MovieCalendarTest:
         assert len(today_screenings) == 1
         assert len(today_screenings[0]["dayScreenings"]) == 1
         assert today_screenings[0]["distance"] < 10_000
+
+    def test_sold_out_screening(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        _sold_out_stock = offers_factories.EventStockFactory(
+            quantity=1,
+            dnBookedQuantity=1,
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[today.isoformat()][0]["dayScreenings"][0]["isSoldOut"] is True
+        assert calendar[today.isoformat()][0]["nextScreening"]["isSoldOut"] is True
+
+    @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
+    def test_disabled_booking(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        disabled_provider = get_provider_by_local_class("BoostStocks")
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        _stock = offers_factories.EventStockFactory(
+            offer__lastProvider=disabled_provider,
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar", params=params)
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[today.isoformat()][0]["isBookingDisabled"] is True
 
 
 class VenueMovieCalendarTest:
