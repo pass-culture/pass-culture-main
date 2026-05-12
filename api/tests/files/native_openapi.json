@@ -469,8 +469,7 @@
                     "performer",
                     "stage_director"
                 ],
-                "title": "ArtistType",
-                "type": "string"
+                "title": "ArtistType"
             },
             "AudioDisability": {
                 "additionalProperties": false,
@@ -11019,55 +11018,6 @@
                 "tags": []
             }
         },
-        "/native/v1/offer/{offer_id}": {
-            "get": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "get__native_v1_offer_{offer_id}",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "offer_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_offer <GET>",
-                "tags": []
-            }
-        },
         "/native/v1/offer/{offer_id}/advices": {
             "get": {
                 "description": "",
@@ -12913,55 +12863,6 @@
                     }
                 ],
                 "summary": "get_bookings_list <GET>",
-                "tags": []
-            }
-        },
-        "/native/v2/offer/{offer_id}": {
-            "get": {
-                "deprecated": true,
-                "description": "",
-                "operationId": "get__native_v2_offer_{offer_id}",
-                "parameters": [
-                    {
-                        "description": "",
-                        "in": "path",
-                        "name": "offer_id",
-                        "required": true,
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferResponseV2"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "summary": "get_offer_v2 <GET>",
                 "tags": []
             }
         },
