@@ -18,7 +18,6 @@ import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
-import { apiCall } from '../../commons/api/apiCall'
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
@@ -63,15 +62,13 @@ export const SignIn = (): JSX.Element => {
     const { email, password } = values
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
-      const user = await apiCall(
-        apiNew.signin({
-          body: {
-            identifier: email,
-            password,
-            captchaToken,
-          },
-        })
-      )
+      const user = await apiNew.signin({
+        body: {
+          identifier: email,
+          password,
+          captchaToken,
+        },
+      })
 
       await dispatch(initializeUser({ user })).unwrap()
 
