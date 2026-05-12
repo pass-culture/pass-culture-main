@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -17,11 +17,8 @@ import type { MandatoryCollectiveOfferFromParamsProps } from '../../components/O
 import { CollectiveOfferEdition } from '../CollectiveOfferEdition'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    listEducationalDomains: vi.fn(),
+  apiNew: {
     listEducationalOfferers: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 
@@ -58,7 +55,7 @@ describe('CollectiveOfferEdition', () => {
   }
 
   beforeEach(() => {
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
   })

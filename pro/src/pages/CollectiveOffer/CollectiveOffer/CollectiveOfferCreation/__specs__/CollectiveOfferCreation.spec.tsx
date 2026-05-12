@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -18,11 +18,8 @@ import type { OptionalCollectiveOfferFromParamsProps } from '@/pages/CollectiveO
 import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    listEducationalDomains: vi.fn(),
+  apiNew: {
     listEducationalOfferers: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 
@@ -69,10 +66,9 @@ describe('CollectiveOfferCreation', () => {
   }
 
   beforeEach(() => {
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
   })
   it('should render collective offer creation form', async () => {
     renderCollectiveOfferCreation('/offre/creation/collectif', {
