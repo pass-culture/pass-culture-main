@@ -157,6 +157,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.READ_HIGHLIGHT,
         perm_models.Permissions.MANAGE_HIGHLIGHT,
+        perm_models.Permissions.MANAGE_CULTURAL_OUTREACH,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -240,6 +241,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.READ_HIGHLIGHT,
         perm_models.Permissions.MANAGE_HIGHLIGHT,
+        perm_models.Permissions.MANAGE_CULTURAL_OUTREACH,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.CLOSE_OFFERER,
@@ -295,6 +297,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.READ_HIGHLIGHT,
         perm_models.Permissions.MANAGE_HIGHLIGHT,
+        perm_models.Permissions.MANAGE_CULTURAL_OUTREACH,
         perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST,
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT,

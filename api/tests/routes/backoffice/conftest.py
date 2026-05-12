@@ -192,6 +192,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_CHRONICLE,
         perm_models.Permissions.READ_HIGHLIGHT,
         perm_models.Permissions.MANAGE_HIGHLIGHT,
+        perm_models.Permissions.MANAGE_CULTURAL_OUTREACH,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,

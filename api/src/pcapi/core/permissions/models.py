@@ -49,6 +49,7 @@ class Permissions(enum.Enum):
     MANAGE_CHRONICLE = "gérer les chroniques"
     READ_HIGHLIGHT = "visualiser valorisations thématiques"
     MANAGE_HIGHLIGHT = "gérer les valorisations thématiques"
+    MANAGE_CULTURAL_OUTREACH = "valider les actions de médiation spécifique"
     READ_USER_PROFILE_REFRESH_CAMPAIGN = (
         "visualiser les campagnes de mise à jour des profils bénéficiaires/grand public"
     )
