@@ -4244,6 +4244,29 @@
                 "title": "OAuthSigninRequest",
                 "type": "object"
             },
+            "OAuthSigninRequestV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "authorizationCode": {
+                        "title": "Authorizationcode",
+                        "type": "string"
+                    },
+                    "deviceInfo": {
+                        "$ref": "#/components/schemas/DeviceInfoV2"
+                    },
+                    "oauthStateToken": {
+                        "title": "Oauthstatetoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "authorizationCode",
+                    "oauthStateToken",
+                    "deviceInfo"
+                ],
+                "title": "OAuthSigninRequestV2",
+                "type": "object"
+            },
             "OauthStateResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -4256,6 +4279,20 @@
                     "oauthStateToken"
                 ],
                 "title": "OauthStateResponse",
+                "type": "object"
+            },
+            "OauthStateResponseV2": {
+                "additionalProperties": false,
+                "properties": {
+                    "oauthStateToken": {
+                        "title": "Oauthstatetoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "oauthStateToken"
+                ],
+                "title": "OauthStateResponseV2",
                 "type": "object"
             },
             "OfferAccessibilityResponse": {
@@ -10870,6 +10907,7 @@
         },
         "/native/v1/oauth/state": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_oauth_state",
                 "parameters": [],
@@ -10961,6 +10999,7 @@
         },
         "/native/v1/oauth/{sso_provider}/authorize": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_oauth_{sso_provider}_authorize",
                 "parameters": [
@@ -11797,6 +11836,7 @@
         },
         "/native/v1/refresh_access_token": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_refresh_access_token",
                 "parameters": [],
@@ -12123,6 +12163,7 @@
         },
         "/native/v1/signin": {
             "post": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "post__native_v1_signin",
                 "parameters": [],
@@ -12913,6 +12954,100 @@
                     }
                 ],
                 "summary": "get_bookings_list <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/oauth/state": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_oauth_state",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OauthStateResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "sso_oauth_state <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/oauth/{sso_provider}/authorize": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v2_oauth_{sso_provider}_authorize",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "sso_provider",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OAuthSigninRequestV2"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SigninResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "sso_authorize <POST>",
                 "tags": []
             }
         },
