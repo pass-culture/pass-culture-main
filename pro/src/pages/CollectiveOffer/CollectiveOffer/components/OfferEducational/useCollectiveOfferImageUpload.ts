@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
+import { apiCall } from '@/commons/api/apiCall'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
@@ -47,9 +48,11 @@ export const useCollectiveOfferImageUpload = (
 
         try {
           if (isTemplate) {
-            await api.deleteOfferTemplateImage(offerId)
+            await apiNew.deleteOfferTemplateImage({
+              path: { offer_id: offerId },
+            })
           } else {
-            await api.deleteOfferImage(offerId)
+            await apiNew.deleteOfferImage({ path: { offer_id: offerId } })
           }
         } catch {
           snackBar.error(
@@ -76,8 +79,18 @@ export const useCollectiveOfferImageUpload = (
         }
 
         const payload = isTemplate
-          ? await api.attachOfferTemplateImage(offerId, params)
-          : await api.attachOfferImage(offerId, params)
+          ? await apiCall(
+              apiNew.attachOfferTemplateImage({
+                path: { offer_id: offerId },
+                body: params,
+              })
+            )
+          : await apiCall(
+              apiNew.attachOfferImage({
+                path: { offer_id: offerId },
+                body: params,
+              })
+            )
         setImageOffer({
           url: payload.imageUrl,
           credit: imageToUpload.credit,
