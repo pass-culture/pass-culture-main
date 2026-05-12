@@ -219,7 +219,7 @@ test.describe('Create individual offers new flow', () => {
     await Promise.all([
       page.waitForResponse(isGetOffersResponse),
       page.waitForResponse(isGetCategoriesResponse),
-      page.getByText('Voir la liste des offres').click(),
+      page.getByText('Accéder à la liste des offres').click(),
     ])
 
     await expect(
@@ -295,7 +295,7 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Publier l’offre').click(),
     ])
 
-    await page.getByText('Voir la liste des offres').click()
+    await page.getByText('Accéder à la liste des offres').click()
     const expectedNewResults = [
       ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
       [
