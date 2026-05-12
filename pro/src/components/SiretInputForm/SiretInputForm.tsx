@@ -20,25 +20,25 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
 
-export interface OffererFormValues {
+export interface SiretInputFormValues {
   siret: string
 }
 
 type SiretInputProps = {
   submitElement: (isSubmitting: boolean) => JSX.Element
-  initialValues: OffererFormValues
-  beforeCallCheck?: (formValues: OffererFormValues) => void
+  initialValues: SiretInputFormValues
+  checkShouldSubmit?: (formValues: SiretInputFormValues) => boolean
   handleSiretData?: (
-    formValues: OffererFormValues,
+    formValues: SiretInputFormValues,
     offererSiretData: StructureDataBodyModel
   ) => void
-  onSiretChecked?: (formValues: OffererFormValues) => void
+  onSiretChecked?: (formValues: SiretInputFormValues) => void
 }
 
 export const SiretInputForm = ({
   initialValues,
   submitElement,
-  beforeCallCheck,
+  checkShouldSubmit,
   handleSiretData,
   onSiretChecked,
 }: SiretInputProps): JSX.Element => {
@@ -62,36 +62,39 @@ export const SiretInputForm = ({
     formState: { errors, isSubmitting },
   } = hookForm
 
-  const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
-    beforeCallCheck?.(formValues)
+  const onSubmit = async (formValues: SiretInputFormValues): Promise<void> => {
+    const shouldSubmit =
+      checkShouldSubmit === undefined || checkShouldSubmit?.(formValues)
 
-    try {
-      if (handleSiretData) {
-        // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
+    if (shouldSubmit) {
+      try {
+        if (handleSiretData) {
+          // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
 
-        const offererSiretData = await getSiretData(
-          unhumanizeSiret(formValues.siret)
-        )
+          const offererSiretData = await getSiretData(
+            unhumanizeSiret(formValues.siret)
+          )
 
-        if (!offererSiretData) {
-          snackBar.error('Une erreur est survenue')
-          return
+          if (!offererSiretData) {
+            snackBar.error('Une erreur est survenue')
+            return
+          }
+
+          handleSiretData(formValues, offererSiretData)
+        } else if (onSiretChecked) {
+          await checkSiret(unhumanizeSiret(formValues.siret))
+          onSiretChecked?.(formValues)
         }
-
-        handleSiretData(formValues, offererSiretData)
-      } else {
-        await checkSiret(unhumanizeSiret(formValues.siret))
-        onSiretChecked?.(formValues)
+      } catch (error) {
+        if (error instanceof Error) {
+          setShowInvisibleBanner(
+            error.message ===
+              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+          )
+          setError('siret', { message: error.message })
+        }
+        return
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        setShowInvisibleBanner(
-          error.message ===
-            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-        )
-        setError('siret', { message: error.message })
-      }
-      return
     }
   }
 

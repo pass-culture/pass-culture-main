@@ -13,7 +13,3 @@ class StructureDataBodyModel(HttpBodyModel):
     apeCode: str | None
     location: LocationModelV2 | None
     isDiffusible: bool
-
-
-class CheckSiretExistQueryModel(HttpBodyModel):
-    token: str

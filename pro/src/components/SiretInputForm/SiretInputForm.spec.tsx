@@ -36,7 +36,6 @@ vi.mock('@/commons/utils/memoize', () => ({
   memoize: (func: unknown) => func,
 }))
 
-const mockBeforeCall = vi.fn()
 const mockHandleSiretData = vi.fn()
 const renderInputForm = (initialValues = DEFAULT_OFFERER_FORM_VALUES) => {
   return renderWithProviders(
@@ -47,7 +46,7 @@ const renderInputForm = (initialValues = DEFAULT_OFFERER_FORM_VALUES) => {
             submit
           </button>
         )}
-        beforeCallCheck={mockBeforeCall}
+        checkShouldSubmit={() => true}
         initialValues={initialValues}
         handleSiretData={mockHandleSiretData}
       />
@@ -60,6 +59,7 @@ describe('<SiretInputForm />', () => {
     vi.spyOn(api, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
+    vi.spyOn(api, 'checkStructure').mockResolvedValue()
   })
 
   it('should render without accessibility violations', async () => {
@@ -117,8 +117,39 @@ describe('<SiretInputForm />', () => {
     expect(api.getStructureData).toHaveBeenCalledOnce()
 
     expect(screen.queryByText("Le SIRET n'existe pas")).not.toBeInTheDocument()
-    expect(mockBeforeCall).toHaveBeenCalled()
     expect(mockHandleSiretData).toHaveBeenCalled()
+  })
+
+  it('should not submit when check is false', async () => {
+    const mockBeforeFalse = vi.fn().mockImplementation(() => false)
+    renderWithProviders(
+      <>
+        <SiretInputForm
+          submitElement={(isSubmitting) => (
+            <button type="submit" disabled={isSubmitting}>
+              submit
+            </button>
+          )}
+          checkShouldSubmit={mockBeforeFalse}
+          initialValues={DEFAULT_OFFERER_FORM_VALUES}
+          handleSiretData={mockHandleSiretData}
+        />
+        <SnackBarContainer />
+      </>
+    )
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678999999'
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'submit' }))
+
+    expect(screen.queryByText("Le SIRET n'existe pas")).not.toBeInTheDocument()
+
+    expect(mockBeforeFalse).toHaveBeenCalled()
+    expect(mockHandleSiretData).not.toHaveBeenCalled()
+    expect(api.getStructureData).not.toHaveBeenCalled()
   })
 
   it('should not continue submit on api error', async () => {
@@ -148,7 +179,6 @@ describe('<SiretInputForm />', () => {
 
     expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
     expect(api.getStructureData).toHaveBeenCalled()
-    expect(mockBeforeCall).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
   })
 
@@ -255,5 +285,37 @@ describe('<SiretInputForm />', () => {
         screen.queryByText('Modifier la visibilité de mon SIRET')
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should check siret if needed', async () => {
+    const checkSiretMock = vi.fn()
+    renderWithProviders(
+      <>
+        <SiretInputForm
+          submitElement={(isSubmitting) => (
+            <button type="submit" disabled={isSubmitting}>
+              submit
+            </button>
+          )}
+          checkShouldSubmit={() => true}
+          initialValues={DEFAULT_OFFERER_FORM_VALUES}
+          onSiretChecked={checkSiretMock}
+        />
+        <SnackBarContainer />
+      </>
+    )
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678999999'
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'submit' }))
+
+    expect(api.getStructureData).not.toHaveBeenCalled()
+    expect(api.checkStructure).toHaveBeenCalledOnce()
+
+    expect(mockHandleSiretData).not.toHaveBeenCalled()
+    expect(checkSiretMock).toHaveBeenCalled()
   })
 })

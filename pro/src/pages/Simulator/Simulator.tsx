@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router'
 
 import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPageLayout'
+import { SimulatorContextProvider } from '@/pages/Simulator/SimulatorContext'
 
 import styles from './Simulator.module.scss'
 
@@ -19,7 +20,9 @@ export const Simulator = (): JSX.Element => {
       <div className={styles['step-title']}>
         {stepTitles[location.pathname]}
       </div>
-      <Outlet />
+      <SimulatorContextProvider>
+        <Outlet />
+      </SimulatorContextProvider>
     </FullPageLayout>
   )
 }

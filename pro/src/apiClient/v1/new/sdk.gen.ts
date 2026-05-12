@@ -976,7 +976,7 @@ export const bulkCreateEventStocks = <ThrowOnError extends boolean = true>(optio
 /**
  * check_structure <GET>
  */
-export const checkStructure = <ThrowOnError extends boolean = false>(options: Options<getStructureCheckBySearchInputData, ThrowOnError>) => (options.client ?? client).get<getStructureCheckBySearchInputResponses, getStructureCheckBySearchInputErrors, ThrowOnError, 'data'>({
+export const checkStructure = <ThrowOnError extends boolean = true>(options: Options<getStructureCheckBySearchInputData, ThrowOnError>) => (options.client ?? client).get<getStructureCheckBySearchInputResponses, getStructureCheckBySearchInputErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/structure/check/{search_input}',
     ...options

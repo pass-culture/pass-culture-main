@@ -27,8 +27,8 @@ import {
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import {
-  type OffererFormValues,
   SiretInputForm,
+  type SiretInputFormValues,
 } from '@/components/SiretInputForm/SiretInputForm'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
@@ -50,7 +50,7 @@ export const Offerer = (): JSX.Element => {
     initialAddress,
     setInitialAddress,
   } = useSignupJourneyContext()
-  const [initialValues, setInitialValues] = useState<OffererFormValues>(
+  const [initialValues, setInitialValues] = useState<SiretInputFormValues>(
     offerer
       ? { siret: offerer.siret }
       : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
@@ -100,7 +100,7 @@ export const Offerer = (): JSX.Element => {
     navigate,
   ])
 
-  const beforeCallCheck = (formValues: OffererFormValues) => {
+  const beforeCallCheck = (formValues: SiretInputFormValues): boolean => {
     // Check here if the siret we've just submitted is the same as already stored in localStorage
     // In that case, we don't need to fetch the siret data again and we can immediately redirect the user to the next step
     try {
@@ -111,15 +111,16 @@ export const Offerer = (): JSX.Element => {
 
       if (offererStoredData?.siret?.trim() === formValues.siret.trim()) {
         navigateToNextStep(offererStoredData.hasVenueWithSiret)
-        return
+        return false
       }
     } catch {
       // Any error while parsing localStorage is considered as a fallback to the normal flow
     }
+    return true
   }
 
   const handleSiretData = async (
-    formValues: OffererFormValues,
+    formValues: SiretInputFormValues,
     offererSiretData: StructureDataBodyModel
   ): Promise<void> => {
     const formattedSiret = unhumanizeSiret(formValues.siret)
@@ -199,22 +200,24 @@ export const Offerer = (): JSX.Element => {
     }
   }
 
+  const submitElement = (isSubmitting: boolean) => (
+    <ActionBar
+      isDisabled={isSubmitting}
+      onClickPrevious={() => navigate('/hub')}
+      nextStepTitle="Continuer"
+      previousStepTitle="Annuler et quitter"
+    />
+  )
+
   return (
     <div>
       <h2 className={styles['subtitle']}>
         Dites-nous pour quelle structure vous travaillez
       </h2>
       <SiretInputForm
-        submitElement={(isSubmitting) => (
-          <ActionBar
-            isDisabled={isSubmitting}
-            onClickPrevious={() => navigate('/hub')}
-            nextStepTitle="Continuer"
-            previousStepTitle="Annuler et quitter"
-          />
-        )}
+        submitElement={submitElement}
         initialValues={initialValues}
-        beforeCallCheck={beforeCallCheck}
+        checkShouldSubmit={beforeCallCheck}
         handleSiretData={handleSiretData}
       />
     </div>
