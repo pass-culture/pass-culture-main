@@ -5,6 +5,7 @@ import {
 } from 'playwright-core'
 
 import { checkAccessibility } from './helpers/accessibility'
+import { mockSiretCheck } from './helpers/apiEntreprise'
 import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL } from './helpers/sandbox'
 
@@ -131,7 +132,23 @@ test.describe('Pre signup pages', () => {
 
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Continuer' }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
+
+    await page.pause()
+
+    await expect(
+      page
+        .getByRole('alert')
+        .filter({ hasText: 'Veuillez renseigner un SIRET' })
+    ).toBeVisible()
+
+    await mockSiretCheck(page)
+
+    await page
+      .getByLabel(/Numéro de SIRET à 14 chiffres/)
+      .fill('11111111111111')
+
+    await page.getByRole('button', { name: 'Continuer' }).click()
 
     await expect(
       page.getByRole('heading', {

@@ -1,15 +1,21 @@
 import { useNavigate } from 'react-router'
 
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
-import { SiretInputForm } from '@/components/SiretInputForm/SiretInputForm'
+import {
+  SiretInputForm,
+  type SiretInputFormValues,
+} from '@/components/SiretInputForm/SiretInputForm'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
+import { useSimulatorContext } from '@/pages/Simulator/SimulatorContext'
 
 export const SimulatorSiret = (): JSX.Element => {
   const navigate = useNavigate()
-  const onSiretChecked = () => {
-    // SAVE TO thing
+  const { setSiretAndSave } = useSimulatorContext()
+
+  const onSiretChecked = (formValues: SiretInputFormValues) => {
+    setSiretAndSave(formValues.siret)
     navigate('/inscription/preparation/activite')
   }
 
