@@ -1527,10 +1527,13 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
         if subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH in reason_codes:
             return subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH
 
-        if subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND in reason_codes:
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
             return subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND
 
-    return subscription_models.QFBonificationStatus.UNKNOWN_KO
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND
+
+    return subscription_models.QFBonificationStatus.KO
 
 
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:

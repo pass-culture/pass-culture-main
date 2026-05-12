@@ -11,6 +11,7 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 from pcapi.utils import requests
+from pcapi.utils.requests import Response
 
 
 logger = logging.getLogger(__name__)
@@ -22,14 +23,29 @@ AEEH_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/allocation_enfant_handic
 
 
 class ParticulierApiException(Exception):
-    pass
+    def __init__(
+        self,
+        message: str = "",
+        *,
+        status_code: int | None = None,
+        error_code: str | None = None,
+        error_title: str | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.error_code = error_code
+        self.error_title = error_title
 
 
 class ParticulierApiForbidden(ParticulierApiException):
     pass
 
 
-class ParticulierApiNotFound(ParticulierApiException):
+class ParticulierApiApplicationNotFound(ParticulierApiException):
+    pass
+
+
+class ParticulierApiPersonNotFound(ParticulierApiException):
     pass
 
 
@@ -120,31 +136,7 @@ def get_quotient_familial(
         params={key: value for (key, value) in query_params.items() if value},
     )
 
-    if response.status_code == 403:
-        raise ParticulierApiForbidden("The API token does not have the correct permissions")
-    if response.status_code == 404:
-        raise ParticulierApiNotFound("Custodian not found")
-    if response.status_code == 429:
-        raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
-
-    if response.status_code // 100 == 4:
-        logger.error(
-            "Invalid query for Particulier API",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiQueryError("Invalid query for Particulier API")
-    if response.status_code // 100 == 5:
-        logger.error(
-            "Particulier API is not responding",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiUnavailable("Particulier API is not responding")
-    elif not response.ok:
-        logger.error(
-            "Unexpected response from Particulier API",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiException("Unexpected response from Particulier API")
+    _raise_for_status(response, "quotient familial")
 
     return QuotientFamilialResponse.model_validate(response.json())
 
@@ -200,31 +192,7 @@ def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultA
         params={key: value for (key, value) in query_params.items() if value},
     )
 
-    if response.status_code == 403:
-        raise ParticulierApiForbidden("The API token does not have the correct permissions")
-    if response.status_code == 404:
-        raise ParticulierApiNotFound("Person not found")
-    if response.status_code == 429:
-        raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
-
-    if response.status_code // 100 == 4:
-        logger.error(
-            "Invalid query for Particulier API",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiQueryError("Invalid query for Particulier API")
-    if response.status_code // 100 == 5:
-        logger.error(
-            "Particulier API is not responding",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiUnavailable("Particulier API is not responding")
-    elif not response.ok:
-        logger.error(
-            "Unexpected response from Particulier API",
-            extra={"response": response.content, "status_code": response.status_code},
-        )
-        raise ParticulierApiException("Unexpected response from Particulier API")
+    _raise_for_status(response, "aah")
 
     return DisabledAdultAllowanceResponse.model_validate(response.json())
 
@@ -286,21 +254,42 @@ def get_disabled_child_education_allowance(person: bonus_schemas.Person) -> Disa
         params={key: value for (key, value) in query_params.items() if value},
     )
 
-    if response.status_code == 403:
-        raise ParticulierApiForbidden("The API token does not have the correct permissions")
-    if response.status_code == 404:
-        raise ParticulierApiNotFound("Person not found")
-    if response.status_code == 429:
-        raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
-
-    if response.status_code // 100 == 4:
-        logger.error("Invalid query for Particulier API", extra={"response": response.content})
-        raise ParticulierApiQueryError("Invalid query for Particulier API")
-    if response.status_code // 100 == 5:
-        logger.error("Particulier API is not responding", extra={"response": response.content})
-        raise ParticulierApiUnavailable("Particulier API is not responding")
-    elif not response.ok:
-        logger.error("Unexpected response from Particulier API", extra={"response": response.content})
-        raise ParticulierApiException("Unexpected response from Particulier API")
+    _raise_for_status(response, "aeeh")
 
     return DisabledChildEducationAllowanceResponse.model_validate(response.json())
+
+
+def _raise_for_status(response: Response, endpoint_label: str) -> None:
+    if response.ok:
+        return
+
+    try:
+        api_particulier_error = response.json()["errors"][0]
+        error_code, error_title = api_particulier_error["code"], api_particulier_error["title"]
+        message = f"{endpoint_label} {response.status_code} error_code={error_code} error_title={error_title}"
+    except (ValueError, KeyError):  # JSON decode error
+        error_code, error_title = None, None
+        message = f"{endpoint_label} unparsable error"
+
+    ExceptionClass = ParticulierApiException
+    if response.status_code == 403:
+        ExceptionClass = ParticulierApiForbidden
+    elif response.status_code == 404:
+        # the person was found, but no application was found
+        ExceptionClass = ParticulierApiApplicationNotFound
+    elif response.status_code == 422:
+        # what we usually think of 404 not found
+        ExceptionClass = ParticulierApiPersonNotFound
+    elif response.status_code == 429:
+        ExceptionClass = ParticulierApiRateLimitExceeded
+    elif response.status_code // 100 == 4:
+        ExceptionClass = ParticulierApiQueryError
+    elif response.status_code // 100 == 5:
+        ExceptionClass = ParticulierApiUnavailable
+
+    raise ExceptionClass(
+        message,
+        status_code=response.status_code,
+        error_code=error_code,
+        error_title=error_title,
+    )
