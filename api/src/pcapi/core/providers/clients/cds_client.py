@@ -103,12 +103,13 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
         return data
 
-    def _authenticated_put(self, url: str, payload: dict) -> dict | list[dict] | list | None:
+    def _authenticated_put(self, url: str, payload: str) -> dict | list[dict] | list | None:
         """
         Make an authenticated PUT by adding an `api_token` in query params.
 
         If an error occurred, it returns the JSON body explaining the error.
 
+        :payload: Must be a stringified JSON
         :raise: CineDigitalServiceAPIException
         """
         response = requests.put(
@@ -316,7 +317,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
         api_response = self._authenticated_put(
             f"{self.base_url}transaction/cancel",
-            payload={"paiementtypeid": paiement_type_id, "barcodes": barcodes_cast_to_int},
+            payload=json.dumps({"paiementtypeid": paiement_type_id, "barcodes": barcodes_cast_to_int}),
         )
 
         if api_response:
