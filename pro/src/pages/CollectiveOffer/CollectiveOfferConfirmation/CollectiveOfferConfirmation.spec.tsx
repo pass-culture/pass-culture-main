@@ -1,11 +1,11 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as reactRouter from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   defaultEducationalInstitution,
   getCollectiveOfferFactory,
@@ -22,7 +22,7 @@ import { Component as CollectiveOfferConfirmation } from './CollectiveOfferConfi
 const mockedOfferId = 1
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
   },
@@ -40,7 +40,7 @@ const collectiveOfferTemplate = getCollectiveOfferTemplateFactory({
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
 })
 
-const renderCollectiveOfferCreation = async (
+const renderCollectiveOfferConfirmation = async (
   options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(<CollectiveOfferConfirmation />, {
@@ -58,7 +58,7 @@ const renderCollectiveOfferCreation = async (
 
 describe('CollectiveOfferConfirmation', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: {
@@ -70,12 +70,12 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is pending', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
       })
     )
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(
       screen.getByText('Offre en cours de validation !')
@@ -83,7 +83,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and associated to an institution', async () => {
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(
       screen.getByText('Votre offre a été publiée sur ADAGE')
@@ -94,13 +94,13 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is not associated to an institution', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: null,
       })
     )
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(
       screen.getByText('Votre offre a été publiée sur ADAGE')
@@ -111,7 +111,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and associated to all institutions', async () => {
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(
       screen.getByText('Votre offre a été publiée sur ADAGE')
@@ -127,7 +127,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should link to /offres/collectives when isShowcase is false', async () => {
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
     const link = screen.getByRole('link', { name: /voir mes offres/i })
     expect(link).toHaveAttribute('href', '/offres/collectives')
   })
@@ -135,7 +135,7 @@ describe('CollectiveOfferConfirmation', () => {
 
 describe('CollectiveOfferConfirmation - template', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
       collectiveOfferTemplate
     )
     vi.spyOn(reactRouter, 'useParams').mockReturnValue({
@@ -144,12 +144,12 @@ describe('CollectiveOfferConfirmation - template', () => {
   })
 
   it('should display ShareTemplateOfferLink when offer is template', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
       ...collectiveOfferTemplate,
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
     })
 
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(
       screen.getByRole('heading', { level: 1, name: /Créer une offre/ })
@@ -159,14 +159,14 @@ describe('CollectiveOfferConfirmation - template', () => {
   })
 
   it('should link to /offres/vitrines when offer is template', async () => {
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     const link = screen.getByRole('link', { name: /voir mes offres/i })
     expect(link).toHaveAttribute('href', '/offres/vitrines')
   })
 
   it('should not display institution when offer is template', async () => {
-    await renderCollectiveOfferCreation()
+    await renderCollectiveOfferConfirmation()
 
     expect(screen.queryByText('établissement scolaire')).not.toBeInTheDocument()
   })

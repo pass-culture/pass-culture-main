@@ -2,12 +2,13 @@ import type { ComponentType } from 'react'
 import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1/new'
+import { apiCall } from '@/commons/api/apiCall'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -57,8 +58,16 @@ export const useCollectiveOfferFromParams = (
       : null,
     ([, offerIdParams]) =>
       isTemplate
-        ? api.getCollectiveOfferTemplate(offerIdParams)
-        : api.getCollectiveOffer(offerIdParams)
+        ? apiCall(
+            apiNew.getCollectiveOfferTemplate({
+              path: { offer_id: offerIdParams },
+            })
+          )
+        : apiCall(
+            apiNew.getCollectiveOffer({
+              path: { offer_id: offerIdParams },
+            })
+          )
   )
 
   if (offerIdFromParams === undefined) {

@@ -2,11 +2,11 @@ import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
@@ -22,7 +22,7 @@ vi.mock('@/commons/hooks/useSnackBar')
 vi.mock('@/commons/utils/sendSentryCustomError')
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     deleteOfferImage: vi.fn(),
     deleteOfferTemplateImage: vi.fn(),
     attachOfferImage: vi.fn(),
@@ -43,7 +43,7 @@ const renderUseCollectiveOfferImageUploadWrapper = ({
     | GetCollectiveOfferTemplateResponseModel
   isTemplate?: boolean
 }) => {
-  const store = configureTestStore({})
+  const store = configureTestStore()
 
   const wrapper = ({ children }: { children: ReactNode }) => (
     <Provider store={store}>{children}</Provider>
@@ -53,6 +53,8 @@ const renderUseCollectiveOfferImageUploadWrapper = ({
     wrapper,
   })
 }
+
+const offer = getCollectiveOfferFactory()
 
 describe('useCollectiveOfferImageUpload', () => {
   beforeEach(() => {
@@ -66,16 +68,13 @@ describe('useCollectiveOfferImageUpload', () => {
     )
   })
   it('should initialize with current image', () => {
-    const offer = getCollectiveOfferFactory()
-
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     expect(result.current.imageOffer?.url).toBe(offer.imageUrl)
   })
 
   it('should submit uploaded image in case of normal offer', async () => {
-    const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
-    vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
+    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
 
@@ -85,16 +84,16 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.attachOfferImage).toHaveBeenCalled()
+    expect(apiNew.attachOfferImage).toHaveBeenCalled()
   })
 
   it('should submit uploaded image in case of template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     const image = imageUploadArgsFactory()
-    vi.spyOn(api, 'attachOfferTemplateImage').mockResolvedValue({
+    vi.spyOn(apiNew, 'attachOfferTemplateImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
 
@@ -107,25 +106,23 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.attachOfferTemplateImage).toHaveBeenCalled()
+    expect(apiNew.attachOfferTemplateImage).toHaveBeenCalled()
   })
 
   it('should delete image in case of normal offer', async () => {
-    const offer = getCollectiveOfferFactory()
-
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     act(() => {
       result.current.onImageDelete()
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.deleteOfferImage).toHaveBeenCalled()
+    expect(apiNew.deleteOfferImage).toHaveBeenCalled()
   })
 
   it('should delete image in case of template offer', async () => {
@@ -140,10 +137,10 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.deleteOfferTemplateImage).toHaveBeenCalled()
+    expect(apiNew.deleteOfferTemplateImage).toHaveBeenCalled()
   })
 
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
@@ -155,10 +152,10 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.deleteOfferTemplateImage).not.toHaveBeenCalled()
+    expect(apiNew.deleteOfferTemplateImage).not.toHaveBeenCalled()
   })
 
   it('should return early if imageOffer is null and offer had no image initially', async () => {
@@ -167,10 +164,10 @@ describe('useCollectiveOfferImageUpload', () => {
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.deleteOfferImage).not.toHaveBeenCalled()
+    expect(apiNew.deleteOfferImage).not.toHaveBeenCalled()
     expect(snackBarError).not.toHaveBeenCalled()
   })
 
@@ -180,16 +177,15 @@ describe('useCollectiveOfferImageUpload', () => {
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.deleteOfferImage).not.toHaveBeenCalled()
+    expect(apiNew.deleteOfferImage).not.toHaveBeenCalled()
     expect(snackBarError).not.toHaveBeenCalled()
   })
 
   it('should show error message when image deletion fails for normal offer', async () => {
-    const offer = getCollectiveOfferFactory()
-    vi.spyOn(api, 'deleteOfferImage').mockRejectedValue(
+    vi.spyOn(apiNew, 'deleteOfferImage').mockRejectedValue(
       new Error('Delete failed')
     )
 
@@ -199,7 +195,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
     expect(snackBarError).toHaveBeenCalledWith(
@@ -209,7 +205,7 @@ describe('useCollectiveOfferImageUpload', () => {
 
   it('should show error message when image deletion fails for template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
-    vi.spyOn(api, 'deleteOfferTemplateImage').mockRejectedValue(
+    vi.spyOn(apiNew, 'deleteOfferTemplateImage').mockRejectedValue(
       new Error('Delete failed')
     )
 
@@ -222,7 +218,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
     expect(snackBarError).toHaveBeenCalledWith(
@@ -231,7 +227,6 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should pass crop parameters when uploading image', async () => {
-    const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
     image.credit = 'Test credit'
     image.cropParams = {
@@ -240,7 +235,7 @@ describe('useCollectiveOfferImageUpload', () => {
       width: 200,
       height: 300,
     }
-    vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
+    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
 
@@ -250,25 +245,27 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
-    expect(api.attachOfferImage).toHaveBeenCalledWith(3, {
-      thumb: image.imageFile,
-      credit: 'Test credit',
-      croppingRectHeight: 300,
-      croppingRectWidth: 200,
-      croppingRectX: 10,
-      croppingRectY: 20,
+    expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: {
+        thumb: image.imageFile,
+        credit: 'Test credit',
+        croppingRectHeight: 300,
+        croppingRectWidth: 200,
+        croppingRectX: 10,
+        croppingRectY: 20,
+      },
     })
   })
 
   it('should use default values when crop params are missing', async () => {
-    const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
     image.credit = ''
     image.cropParams = undefined
-    vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
+    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })
 
@@ -278,24 +275,25 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
-
-    expect(api.attachOfferImage).toHaveBeenCalledWith(3, {
-      thumb: image.imageFile,
-      credit: '',
-      croppingRectHeight: 0,
-      croppingRectWidth: 0,
-      croppingRectX: 0,
-      croppingRectY: 0,
+    expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: {
+        thumb: image.imageFile,
+        credit: '',
+        croppingRectHeight: 0,
+        croppingRectWidth: 0,
+        croppingRectX: 0,
+        croppingRectY: 0,
+      },
     })
   })
 
   it('should send error to Sentry and show error message when image upload fails for normal offer', async () => {
-    const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
     const error = new Error('Upload failed')
-    vi.spyOn(api, 'attachOfferImage').mockRejectedValue(error)
+    vi.spyOn(apiNew, 'attachOfferImage').mockRejectedValue(error)
 
     const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     act(() => {
@@ -303,7 +301,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
     expect(sendSentryCustomErrorSpy).toHaveBeenCalledWith(error)
@@ -316,7 +314,7 @@ describe('useCollectiveOfferImageUpload', () => {
     const offer = getCollectiveOfferTemplateFactory()
     const image = imageUploadArgsFactory()
     const error = new Error('Upload failed')
-    vi.spyOn(api, 'attachOfferTemplateImage').mockRejectedValue(error)
+    vi.spyOn(apiNew, 'attachOfferTemplateImage').mockRejectedValue(error)
 
     const { result } = renderUseCollectiveOfferImageUploadWrapper({
       offer,
@@ -327,7 +325,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     await act(async () => {
-      await result.current.handleImageOnSubmit(3)
+      await result.current.handleImageOnSubmit(offer.id)
     })
 
     expect(sendSentryCustomErrorSpy).toHaveBeenCalledWith(error)
