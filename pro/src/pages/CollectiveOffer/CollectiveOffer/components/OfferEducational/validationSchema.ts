@@ -2,7 +2,7 @@ import { addYears, isBefore } from 'date-fns'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import { CollectiveLocationType, type StudentLevels } from '@/apiClient/v1'
+import { CollectiveLocationType, type StudentLevels } from '@/apiClient/v1/new'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,

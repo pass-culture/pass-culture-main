@@ -7,7 +7,7 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   StudentLevels,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type {
   AccessibilityFormValues,
   FlatAddressFormValues,

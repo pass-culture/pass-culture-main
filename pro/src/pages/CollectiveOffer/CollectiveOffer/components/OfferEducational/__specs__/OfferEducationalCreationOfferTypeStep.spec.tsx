@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -42,7 +42,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
       venues: [venueListItemFactory()],
     })
 

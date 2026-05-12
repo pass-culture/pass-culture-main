@@ -6,7 +6,7 @@ import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
   CollectiveLocationType,
   type VenueListItemResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
