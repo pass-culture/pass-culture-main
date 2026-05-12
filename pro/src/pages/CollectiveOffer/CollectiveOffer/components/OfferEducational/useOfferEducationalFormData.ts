@@ -1,13 +1,14 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
+import { apiCall } from '@/commons/api/apiCall'
 import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -45,14 +46,24 @@ export const useOfferEducationalFormData = (
       targetOffererId
         ? [GET_EDUCATIONAL_OFFERERS_QUERY_KEY, targetOffererId]
         : null,
-      ([, offererId]) => api.listEducationalOfferers(offererId),
+      ([, offererId]) =>
+        apiNew.listEducationalOfferers({ query: { offererId } }),
       { fallback: [] }
     )
 
   // Getting selected venue at step 1 (details) to infer address fields
   const { data: venues, isLoading: loadingVenues } = useSWR(
     [GET_VENUES_QUERY_KEY, targetOffererId],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    ([, offererIdParam]) =>
+      apiCall(
+        apiNew.getVenues({
+          query: {
+            validated: null,
+            activeOfferersOnly: true,
+            offererId: offererIdParam,
+          },
+        })
+      ),
     { fallbackData: { venues: [] } }
   )
 
