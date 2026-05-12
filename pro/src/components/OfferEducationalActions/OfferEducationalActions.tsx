@@ -1,12 +1,12 @@
 import cn from 'classnames'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -45,9 +45,11 @@ export const OfferEducationalActions = ({
 
   const setIsOfferActive = async (isActive: boolean) => {
     try {
-      await api.patchCollectiveOffersTemplateActiveStatus({
-        ids: [offer.id],
-        isActive,
+      await apiNew.patchCollectiveOffersTemplateActiveStatus({
+        body: {
+          ids: [offer.id],
+          isActive,
+        },
       })
       snackBar.success(
         isActive
