@@ -22,11 +22,15 @@ import { OfferHighlightDialogBuilder } from './OfferHighlightDialogBuilder'
 export type OfferHighlightCardProps = {
   offerId: number
   highlightRequests: Array<ShortHighlightResponseModel>
+  onSubmit?: () => void
+  submitLabel?: string
 }
 
 export const OfferHighlightCard = ({
   offerId,
   highlightRequests,
+  onSubmit,
+  submitLabel,
 }: OfferHighlightCardProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
@@ -82,6 +86,8 @@ export const OfferHighlightCard = ({
           offerId={offerId}
           isOpen={isOpen}
           highlightRequests={highlightRequests}
+          onSubmit={onSubmit}
+          submitLabel={submitLabel}
         >
           <Button
             variant={

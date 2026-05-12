@@ -28,7 +28,8 @@ import styles from './OfferRecommendationForm.module.scss'
 interface OfferRecommendationFormProps {
   offerId: number
   proAdvice: ProAdviceModel | null
-  onClose: () => void
+  onSuccess: () => void
+  submitLabel?: string
 }
 
 interface OfferRecommendationFormValues {
@@ -51,7 +52,8 @@ const validationSchema = yup.object().shape({
 export function OfferRecommendationForm({
   offerId,
   proAdvice,
-  onClose,
+  onSuccess,
+  submitLabel,
 }: Readonly<OfferRecommendationFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
@@ -99,7 +101,7 @@ export function OfferRecommendationForm({
         action: 'validated',
       })
       snackBar.success('Votre recommandation a bien été ajoutée')
-      onClose()
+      onSuccess()
     } catch {
       snackBar.error('Une erreur est survenue lors de l’enregistrement')
     }
@@ -116,7 +118,7 @@ export function OfferRecommendationForm({
         offerId,
         action: 'deleted',
       })
-      onClose()
+      onSuccess()
     } catch {
       snackBar.error('Une erreur est survenue lors de la suppression')
     }
@@ -193,7 +195,7 @@ export function OfferRecommendationForm({
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
-                  label="Enregistrer la recommandation"
+                  label={submitLabel ?? 'Enregistrer la recommandation'}
                 />
               </div>
             </DialogBuilder.Footer>
