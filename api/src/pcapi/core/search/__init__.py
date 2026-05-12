@@ -413,9 +413,24 @@ def _reindex_collective_offer_template_ids(
     from_error_queue: bool = False,
 ) -> None:
     logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
-    query = get_base_query_for_collective_template_offer_indexation()
-    collective_offers_templates = query.filter(
-        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
+
+    collective_offers_templates = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids))
+        # load relations used in serialize_collective_offer_template
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
+            ),
+            sa_orm.selectinload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
+            ),
+        )
+        .all()
     )
 
     to_add = [
@@ -501,17 +516,6 @@ def index_offers_of_venues_in_queue() -> None:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not index offers of venues from queue")
-
-
-def get_base_query_for_collective_template_offer_indexation() -> (
-    "sa_orm.Query[educational_models.CollectiveOfferTemplate]"
-):
-    return db.session.query(educational_models.CollectiveOfferTemplate).options(
-        sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
-        ),
-    )
 
 
 def get_base_query_for_offer_indexation() -> sa_orm.Query:

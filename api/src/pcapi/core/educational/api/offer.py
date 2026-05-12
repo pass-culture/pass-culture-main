@@ -111,7 +111,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         )
 
 
-def unindex_expired_or_archived_collective_offers_template(process_all_expired: bool = False) -> None:
+def unindex_expired_or_archived_collective_offers_template() -> None:
     """Unindex collective offers template that have expired or are archived."""
     page = 0
     limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
