@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * authenticate <GET>
  */
-export const authenticate = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeAuthenticateData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeAuthenticateResponses, getAdageIframeAuthenticateErrors, ThrowOnError, 'data'>({
+export const authenticate = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeAuthenticateData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeAuthenticateResponses, getAdageIframeAuthenticateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/authenticate',
@@ -31,7 +31,7 @@ export const authenticate = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * get_academies <GET>
  */
-export const getAcademies = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeCollectiveAcademiesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveAcademiesResponses, getAdageIframeCollectiveAcademiesErrors, ThrowOnError, 'data'>({
+export const getAcademies = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeCollectiveAcademiesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveAcademiesResponses, getAdageIframeCollectiveAcademiesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/academies',
@@ -41,7 +41,7 @@ export const getAcademies = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * book_collective_offer <POST>
  */
-export const bookCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeCollectiveBookingsData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveBookingsResponses, postAdageIframeCollectiveBookingsErrors, ThrowOnError, 'data'>({
+export const bookCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeCollectiveBookingsData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveBookingsResponses, postAdageIframeCollectiveBookingsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/bookings',
@@ -55,7 +55,7 @@ export const bookCollectiveOffer = <ThrowOnError extends boolean = false>(option
 /**
  * get_collective_favorites <GET>
  */
-export const getCollectiveFavorites = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeCollectiveFavoritesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveFavoritesResponses, getAdageIframeCollectiveFavoritesErrors, ThrowOnError, 'data'>({
+export const getCollectiveFavorites = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeCollectiveFavoritesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveFavoritesResponses, getAdageIframeCollectiveFavoritesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/favorites',
@@ -65,7 +65,7 @@ export const getCollectiveFavorites = <ThrowOnError extends boolean = false>(opt
 /**
  * get_educational_institution_with_budget <GET>
  */
-export const getEducationalInstitutionWithBudget = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeCollectiveInstitutionData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveInstitutionResponses, getAdageIframeCollectiveInstitutionErrors, ThrowOnError, 'data'>({
+export const getEducationalInstitutionWithBudget = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeCollectiveInstitutionData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveInstitutionResponses, getAdageIframeCollectiveInstitutionErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/institution',
@@ -75,7 +75,7 @@ export const getEducationalInstitutionWithBudget = <ThrowOnError extends boolean
 /**
  * get_collective_offer_templates <GET>
  */
-export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = false>(options: Options<getAdageIframeCollectiveOffersTemplateData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersTemplateResponses, getAdageIframeCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = true>(options: Options<getAdageIframeCollectiveOffersTemplateData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersTemplateResponses, getAdageIframeCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/offers-template/',
@@ -85,7 +85,7 @@ export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = false
 /**
  * get_collective_offer_template <GET>
  */
-export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = false>(options: Options<getAdageIframeCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersTemplateByOfferIdResponses, getAdageIframeCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = true>(options: Options<getAdageIframeCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersTemplateByOfferIdResponses, getAdageIframeCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/offers-template/{offer_id}',
@@ -95,7 +95,7 @@ export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = false>
 /**
  * create_collective_request <POST>
  */
-export const createCollectiveRequest = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeCollectiveOffersTemplateByOfferIdRequestData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveOffersTemplateByOfferIdRequestResponses, postAdageIframeCollectiveOffersTemplateByOfferIdRequestErrors, ThrowOnError, 'data'>({
+export const createCollectiveRequest = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeCollectiveOffersTemplateByOfferIdRequestData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveOffersTemplateByOfferIdRequestResponses, postAdageIframeCollectiveOffersTemplateByOfferIdRequestErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/offers-template/{offer_id}/request',
@@ -109,7 +109,7 @@ export const createCollectiveRequest = <ThrowOnError extends boolean = false>(op
 /**
  * get_collective_offers_for_my_institution <GET>
  */
-export const getCollectiveOffersForMyInstitution = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeCollectiveOffersMyInstitutionData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveOffersMyInstitutionResponses, getAdageIframeCollectiveOffersMyInstitutionErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffersForMyInstitution = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeCollectiveOffersMyInstitutionData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeCollectiveOffersMyInstitutionResponses, getAdageIframeCollectiveOffersMyInstitutionErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/offers/my_institution',
@@ -119,7 +119,7 @@ export const getCollectiveOffersForMyInstitution = <ThrowOnError extends boolean
 /**
  * get_collective_offer <GET>
  */
-export const getCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<getAdageIframeCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersByOfferIdResponses, getAdageIframeCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<getAdageIframeCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeCollectiveOffersByOfferIdResponses, getAdageIframeCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/offers/{offer_id}',
@@ -129,7 +129,7 @@ export const getCollectiveOffer = <ThrowOnError extends boolean = false>(options
 /**
  * delete_favorite_for_collective_offer_template <DELETE>
  */
-export const deleteFavoriteForCollectiveOfferTemplate = <ThrowOnError extends boolean = false>(options: Options<deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesData, ThrowOnError>) => (options.client ?? client).delete<deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesResponses, deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesErrors, ThrowOnError, 'data'>({
+export const deleteFavoriteForCollectiveOfferTemplate = <ThrowOnError extends boolean = true>(options: Options<deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesData, ThrowOnError>) => (options.client ?? client).delete<deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesResponses, deleteAdageIframeCollectiveTemplateByOfferTemplateIdFavoritesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/template/{offer_template_id}/favorites',
@@ -139,7 +139,7 @@ export const deleteFavoriteForCollectiveOfferTemplate = <ThrowOnError extends bo
 /**
  * post_collective_template_favorites <POST>
  */
-export const postCollectiveTemplateFavorites = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeCollectiveTemplatesByOfferIdFavoritesData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponses, postAdageIframeCollectiveTemplatesByOfferIdFavoritesErrors, ThrowOnError, 'data'>({
+export const postCollectiveTemplateFavorites = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeCollectiveTemplatesByOfferIdFavoritesData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponses, postAdageIframeCollectiveTemplatesByOfferIdFavoritesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/collective/templates/{offer_id}/favorites',
@@ -149,7 +149,7 @@ export const postCollectiveTemplateFavorites = <ThrowOnError extends boolean = f
 /**
  * list_features <GET>
  */
-export const listFeatures = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeFeaturesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeFeaturesResponses, getAdageIframeFeaturesErrors, ThrowOnError, 'data'>({
+export const listFeatures = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeFeaturesData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeFeaturesResponses, getAdageIframeFeaturesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/features',
@@ -159,7 +159,7 @@ export const listFeatures = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * log_booking_modal_button_click <POST>
  */
-export const logBookingModalButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsBookingModalButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsBookingModalButtonResponses, postAdageIframeLogsBookingModalButtonErrors, ThrowOnError, 'data'>({
+export const logBookingModalButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsBookingModalButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsBookingModalButtonResponses, postAdageIframeLogsBookingModalButtonErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/booking-modal-button',
@@ -173,7 +173,7 @@ export const logBookingModalButtonClick = <ThrowOnError extends boolean = false>
 /**
  * log_catalog_view <POST>
  */
-export const logCatalogView = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsCatalogViewData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsCatalogViewResponses, postAdageIframeLogsCatalogViewErrors, ThrowOnError, 'data'>({
+export const logCatalogView = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsCatalogViewData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsCatalogViewResponses, postAdageIframeLogsCatalogViewErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/catalog-view',
@@ -187,7 +187,7 @@ export const logCatalogView = <ThrowOnError extends boolean = false>(options: Op
 /**
  * log_consult_offer <POST>
  */
-export const logConsultOffer = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsConsultOfferData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsConsultOfferResponses, postAdageIframeLogsConsultOfferErrors, ThrowOnError, 'data'>({
+export const logConsultOffer = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsConsultOfferData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsConsultOfferResponses, postAdageIframeLogsConsultOfferErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/consult-offer',
@@ -201,7 +201,7 @@ export const logConsultOffer = <ThrowOnError extends boolean = false>(options: O
 /**
  * log_consult_playlist_element <POST>
  */
-export const logConsultPlaylistElement = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsConsultPlaylistElementData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsConsultPlaylistElementResponses, postAdageIframeLogsConsultPlaylistElementErrors, ThrowOnError, 'data'>({
+export const logConsultPlaylistElement = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsConsultPlaylistElementData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsConsultPlaylistElementResponses, postAdageIframeLogsConsultPlaylistElementErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/consult-playlist-element',
@@ -215,7 +215,7 @@ export const logConsultPlaylistElement = <ThrowOnError extends boolean = false>(
 /**
  * log_contact_modal_button_click <POST>
  */
-export const logContactModalButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsContactModalButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsContactModalButtonResponses, postAdageIframeLogsContactModalButtonErrors, ThrowOnError, 'data'>({
+export const logContactModalButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsContactModalButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsContactModalButtonResponses, postAdageIframeLogsContactModalButtonErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/contact-modal-button',
@@ -229,7 +229,7 @@ export const logContactModalButtonClick = <ThrowOnError extends boolean = false>
 /**
  * log_contact_url_click <POST>
  */
-export const logContactUrlClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsContactUrlClickData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsContactUrlClickResponses, postAdageIframeLogsContactUrlClickErrors, ThrowOnError, 'data'>({
+export const logContactUrlClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsContactUrlClickData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsContactUrlClickResponses, postAdageIframeLogsContactUrlClickErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/contact-url-click',
@@ -243,7 +243,7 @@ export const logContactUrlClick = <ThrowOnError extends boolean = false>(options
 /**
  * log_fav_offer_button_click <POST>
  */
-export const logFavOfferButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsFavOfferData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsFavOfferResponses, postAdageIframeLogsFavOfferErrors, ThrowOnError, 'data'>({
+export const logFavOfferButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsFavOfferData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsFavOfferResponses, postAdageIframeLogsFavOfferErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/fav-offer/',
@@ -257,7 +257,7 @@ export const logFavOfferButtonClick = <ThrowOnError extends boolean = false>(opt
 /**
  * log_has_seen_whole_playlist <POST>
  */
-export const logHasSeenWholePlaylist = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsHasSeenWholePlaylistData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHasSeenWholePlaylistResponses, postAdageIframeLogsHasSeenWholePlaylistErrors, ThrowOnError, 'data'>({
+export const logHasSeenWholePlaylist = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsHasSeenWholePlaylistData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHasSeenWholePlaylistResponses, postAdageIframeLogsHasSeenWholePlaylistErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/has-seen-whole-playlist/',
@@ -271,7 +271,7 @@ export const logHasSeenWholePlaylist = <ThrowOnError extends boolean = false>(op
 /**
  * log_header_link_click <POST>
  */
-export const logHeaderLinkClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsHeaderLinkClickData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHeaderLinkClickResponses, postAdageIframeLogsHeaderLinkClickErrors, ThrowOnError, 'data'>({
+export const logHeaderLinkClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsHeaderLinkClickData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHeaderLinkClickResponses, postAdageIframeLogsHeaderLinkClickErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/header-link-click/',
@@ -285,7 +285,7 @@ export const logHeaderLinkClick = <ThrowOnError extends boolean = false>(options
 /**
  * log_open_highlight_banner <POST>
  */
-export const logOpenHighlightBanner = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsHighlightBannerData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHighlightBannerResponses, postAdageIframeLogsHighlightBannerErrors, ThrowOnError, 'data'>({
+export const logOpenHighlightBanner = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsHighlightBannerData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsHighlightBannerResponses, postAdageIframeLogsHighlightBannerErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/highlight-banner',
@@ -299,7 +299,7 @@ export const logOpenHighlightBanner = <ThrowOnError extends boolean = false>(opt
 /**
  * log_offer_details_button_click <POST>
  */
-export const logOfferDetailsButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsOfferDetailData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferDetailResponses, postAdageIframeLogsOfferDetailErrors, ThrowOnError, 'data'>({
+export const logOfferDetailsButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsOfferDetailData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferDetailResponses, postAdageIframeLogsOfferDetailErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/offer-detail',
@@ -313,7 +313,7 @@ export const logOfferDetailsButtonClick = <ThrowOnError extends boolean = false>
 /**
  * log_offer_list_view_switch <POST>
  */
-export const logOfferListViewSwitch = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsOfferListViewSwitchData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferListViewSwitchResponses, postAdageIframeLogsOfferListViewSwitchErrors, ThrowOnError, 'data'>({
+export const logOfferListViewSwitch = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsOfferListViewSwitchData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferListViewSwitchResponses, postAdageIframeLogsOfferListViewSwitchErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/offer-list-view-switch',
@@ -327,7 +327,7 @@ export const logOfferListViewSwitch = <ThrowOnError extends boolean = false>(opt
 /**
  * log_offer_template_details_button_click <POST>
  */
-export const logOfferTemplateDetailsButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsOfferTemplateDetailData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferTemplateDetailResponses, postAdageIframeLogsOfferTemplateDetailErrors, ThrowOnError, 'data'>({
+export const logOfferTemplateDetailsButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsOfferTemplateDetailData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsOfferTemplateDetailResponses, postAdageIframeLogsOfferTemplateDetailErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/offer-template-detail',
@@ -341,7 +341,7 @@ export const logOfferTemplateDetailsButtonClick = <ThrowOnError extends boolean 
 /**
  * log_has_seen_all_playlist <POST>
  */
-export const logHasSeenAllPlaylist = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsPlaylistData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsPlaylistResponses, postAdageIframeLogsPlaylistErrors, ThrowOnError, 'data'>({
+export const logHasSeenAllPlaylist = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsPlaylistData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsPlaylistResponses, postAdageIframeLogsPlaylistErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/playlist',
@@ -355,7 +355,7 @@ export const logHasSeenAllPlaylist = <ThrowOnError extends boolean = false>(opti
 /**
  * log_request_form_popin_dismiss <POST>
  */
-export const logRequestFormPopinDismiss = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsRequestPopinDismissData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsRequestPopinDismissResponses, postAdageIframeLogsRequestPopinDismissErrors, ThrowOnError, 'data'>({
+export const logRequestFormPopinDismiss = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsRequestPopinDismissData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsRequestPopinDismissResponses, postAdageIframeLogsRequestPopinDismissErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/request-popin-dismiss',
@@ -369,7 +369,7 @@ export const logRequestFormPopinDismiss = <ThrowOnError extends boolean = false>
 /**
  * log_open_satisfaction_survey <POST>
  */
-export const logOpenSatisfactionSurvey = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsSatSurveyData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSatSurveyResponses, postAdageIframeLogsSatSurveyErrors, ThrowOnError, 'data'>({
+export const logOpenSatisfactionSurvey = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsSatSurveyData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSatSurveyResponses, postAdageIframeLogsSatSurveyErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/sat-survey',
@@ -383,7 +383,7 @@ export const logOpenSatisfactionSurvey = <ThrowOnError extends boolean = false>(
 /**
  * log_search_button_click <POST>
  */
-export const logSearchButtonClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsSearchButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSearchButtonResponses, postAdageIframeLogsSearchButtonErrors, ThrowOnError, 'data'>({
+export const logSearchButtonClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsSearchButtonData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSearchButtonResponses, postAdageIframeLogsSearchButtonErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/search-button',
@@ -397,7 +397,7 @@ export const logSearchButtonClick = <ThrowOnError extends boolean = false>(optio
 /**
  * log_search_show_more <POST>
  */
-export const logSearchShowMore = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsSearchShowMoreData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSearchShowMoreResponses, postAdageIframeLogsSearchShowMoreErrors, ThrowOnError, 'data'>({
+export const logSearchShowMore = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsSearchShowMoreData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsSearchShowMoreResponses, postAdageIframeLogsSearchShowMoreErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/search-show-more',
@@ -411,7 +411,7 @@ export const logSearchShowMore = <ThrowOnError extends boolean = false>(options:
 /**
  * log_tracking_autocomplete_suggestion_click <POST>
  */
-export const logTrackingAutocompleteSuggestionClick = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsTrackingAutocompletionData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingAutocompletionResponses, postAdageIframeLogsTrackingAutocompletionErrors, ThrowOnError, 'data'>({
+export const logTrackingAutocompleteSuggestionClick = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsTrackingAutocompletionData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingAutocompletionResponses, postAdageIframeLogsTrackingAutocompletionErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/tracking-autocompletion',
@@ -425,7 +425,7 @@ export const logTrackingAutocompleteSuggestionClick = <ThrowOnError extends bool
 /**
  * log_tracking_cta_share <POST>
  */
-export const logTrackingCtaShare = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsTrackingCtaShareData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingCtaShareResponses, postAdageIframeLogsTrackingCtaShareErrors, ThrowOnError, 'data'>({
+export const logTrackingCtaShare = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsTrackingCtaShareData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingCtaShareResponses, postAdageIframeLogsTrackingCtaShareErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/tracking-cta-share',
@@ -439,7 +439,7 @@ export const logTrackingCtaShare = <ThrowOnError extends boolean = false>(option
 /**
  * log_tracking_filter <POST>
  */
-export const logTrackingFilter = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsTrackingFilterData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingFilterResponses, postAdageIframeLogsTrackingFilterErrors, ThrowOnError, 'data'>({
+export const logTrackingFilter = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsTrackingFilterData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingFilterResponses, postAdageIframeLogsTrackingFilterErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/tracking-filter',
@@ -453,7 +453,7 @@ export const logTrackingFilter = <ThrowOnError extends boolean = false>(options:
 /**
  * log_tracking_map <POST>
  */
-export const logTrackingMap = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeLogsTrackingMapData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingMapResponses, postAdageIframeLogsTrackingMapErrors, ThrowOnError, 'data'>({
+export const logTrackingMap = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeLogsTrackingMapData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeLogsTrackingMapResponses, postAdageIframeLogsTrackingMapErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/logs/tracking-map',
@@ -467,7 +467,7 @@ export const logTrackingMap = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_classroom_playlist <GET>
  */
-export const getClassroomPlaylist = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframePlaylistsClassroomData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsClassroomResponses, getAdageIframePlaylistsClassroomErrors, ThrowOnError, 'data'>({
+export const getClassroomPlaylist = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframePlaylistsClassroomData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsClassroomResponses, getAdageIframePlaylistsClassroomErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/playlists/classroom',
@@ -477,7 +477,7 @@ export const getClassroomPlaylist = <ThrowOnError extends boolean = false>(optio
 /**
  * get_local_offerers_playlist <GET>
  */
-export const getLocalOfferersPlaylist = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframePlaylistsLocalOfferersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsLocalOfferersResponses, getAdageIframePlaylistsLocalOfferersErrors, ThrowOnError, 'data'>({
+export const getLocalOfferersPlaylist = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframePlaylistsLocalOfferersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsLocalOfferersResponses, getAdageIframePlaylistsLocalOfferersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/playlists/local-offerers',
@@ -487,7 +487,7 @@ export const getLocalOfferersPlaylist = <ThrowOnError extends boolean = false>(o
 /**
  * get_new_offerers_playlist <GET>
  */
-export const getNewOfferersPlaylist = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframePlaylistsNewOfferersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsNewOfferersResponses, getAdageIframePlaylistsNewOfferersErrors, ThrowOnError, 'data'>({
+export const getNewOfferersPlaylist = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframePlaylistsNewOfferersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsNewOfferersResponses, getAdageIframePlaylistsNewOfferersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/playlists/new_offerers',
@@ -497,7 +497,7 @@ export const getNewOfferersPlaylist = <ThrowOnError extends boolean = false>(opt
 /**
  * new_template_offers_playlist <GET>
  */
-export const newTemplateOffersPlaylist = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframePlaylistsNewTemplateOffersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsNewTemplateOffersResponses, getAdageIframePlaylistsNewTemplateOffersErrors, ThrowOnError, 'data'>({
+export const newTemplateOffersPlaylist = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframePlaylistsNewTemplateOffersData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframePlaylistsNewTemplateOffersResponses, getAdageIframePlaylistsNewTemplateOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/playlists/new_template_offers',
@@ -507,7 +507,7 @@ export const newTemplateOffersPlaylist = <ThrowOnError extends boolean = false>(
 /**
  * save_redactor_preferences <POST>
  */
-export const saveRedactorPreferences = <ThrowOnError extends boolean = false>(options: Options<postAdageIframeRedactorPreferencesData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeRedactorPreferencesResponses, postAdageIframeRedactorPreferencesErrors, ThrowOnError, 'data'>({
+export const saveRedactorPreferences = <ThrowOnError extends boolean = true>(options: Options<postAdageIframeRedactorPreferencesData, ThrowOnError>) => (options.client ?? client).post<postAdageIframeRedactorPreferencesResponses, postAdageIframeRedactorPreferencesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/redactor/preferences',
@@ -521,7 +521,7 @@ export const saveRedactorPreferences = <ThrowOnError extends boolean = false>(op
 /**
  * create_adage_jwt_fake_token <GET>
  */
-export const createAdageJwtFakeToken = <ThrowOnError extends boolean = false>(options?: Options<getAdageIframeTestingTokenData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeTestingTokenResponses, getAdageIframeTestingTokenErrors, ThrowOnError, 'data'>({
+export const createAdageJwtFakeToken = <ThrowOnError extends boolean = true>(options?: Options<getAdageIframeTestingTokenData, ThrowOnError>) => (options?.client ?? client).get<getAdageIframeTestingTokenResponses, getAdageIframeTestingTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/adage-iframe/testing/token',
     ...options
@@ -530,7 +530,7 @@ export const createAdageJwtFakeToken = <ThrowOnError extends boolean = false>(op
 /**
  * get_venue_by_siret <GET>
  */
-export const getVenueBySiret = <ThrowOnError extends boolean = false>(options: Options<getAdageIframeVenuesSiretBySiretData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeVenuesSiretBySiretResponses, getAdageIframeVenuesSiretBySiretErrors, ThrowOnError, 'data'>({
+export const getVenueBySiret = <ThrowOnError extends boolean = true>(options: Options<getAdageIframeVenuesSiretBySiretData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeVenuesSiretBySiretResponses, getAdageIframeVenuesSiretBySiretErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/venues/siret/{siret}',
@@ -540,7 +540,7 @@ export const getVenueBySiret = <ThrowOnError extends boolean = false>(options: O
 /**
  * get_venue_by_id <GET>
  */
-export const getVenueById = <ThrowOnError extends boolean = false>(options: Options<getAdageIframeVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeVenuesByVenueIdResponses, getAdageIframeVenuesByVenueIdErrors, ThrowOnError, 'data'>({
+export const getVenueById = <ThrowOnError extends boolean = true>(options: Options<getAdageIframeVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).get<getAdageIframeVenuesByVenueIdResponses, getAdageIframeVenuesByVenueIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/adage-iframe/venues/{venue_id}',

@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * get_artists <GET>
  */
-export const getArtists = <ThrowOnError extends boolean = false>(options: Options<getArtistsData, ThrowOnError>) => (options.client ?? client).get<getArtistsResponses, getArtistsErrors, ThrowOnError, 'data'>({
+export const getArtists = <ThrowOnError extends boolean = true>(options: Options<getArtistsData, ThrowOnError>) => (options.client ?? client).get<getArtistsResponses, getArtistsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/artists',
     ...options
@@ -30,7 +30,7 @@ export const getArtists = <ThrowOnError extends boolean = false>(options: Option
 /**
  * get_bookings_csv <GET>
  */
-export const getBookingsCsv = <ThrowOnError extends boolean = false>(options: Options<getBookingsCsvData, ThrowOnError>) => (options.client ?? client).get<getBookingsCsvResponses, getBookingsCsvErrors, ThrowOnError, 'data'>({
+export const getBookingsCsv = <ThrowOnError extends boolean = true>(options: Options<getBookingsCsvData, ThrowOnError>) => (options.client ?? client).get<getBookingsCsvResponses, getBookingsCsvErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/csv',
     ...options
@@ -39,7 +39,7 @@ export const getBookingsCsv = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_offer_price_categories_and_schedules_by_dates <GET>
  */
-export const getOfferPriceCategoriesAndSchedulesByDates = <ThrowOnError extends boolean = false>(options: Options<getBookingsDatesByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getBookingsDatesByOfferIdResponses, getBookingsDatesByOfferIdErrors, ThrowOnError, 'data'>({
+export const getOfferPriceCategoriesAndSchedulesByDates = <ThrowOnError extends boolean = true>(options: Options<getBookingsDatesByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getBookingsDatesByOfferIdResponses, getBookingsDatesByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/dates/{offer_id}',
     ...options
@@ -48,7 +48,7 @@ export const getOfferPriceCategoriesAndSchedulesByDates = <ThrowOnError extends 
 /**
  * get_bookings_excel <GET>
  */
-export const getBookingsExcel = <ThrowOnError extends boolean = false>(options: Options<getBookingsExcelData, ThrowOnError>) => (options.client ?? client).get<getBookingsExcelResponses, getBookingsExcelErrors, ThrowOnError, 'data'>({
+export const getBookingsExcel = <ThrowOnError extends boolean = true>(options: Options<getBookingsExcelData, ThrowOnError>) => (options.client ?? client).get<getBookingsExcelResponses, getBookingsExcelErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/excel',
     ...options
@@ -57,7 +57,7 @@ export const getBookingsExcel = <ThrowOnError extends boolean = false>(options: 
 /**
  * patch_booking_keep_by_token <PATCH>
  */
-export const patchBookingKeepByToken = <ThrowOnError extends boolean = false>(options: Options<patchBookingsKeepTokenByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchBookingsKeepTokenByTokenResponses, patchBookingsKeepTokenByTokenErrors, ThrowOnError, 'data'>({
+export const patchBookingKeepByToken = <ThrowOnError extends boolean = true>(options: Options<patchBookingsKeepTokenByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchBookingsKeepTokenByTokenResponses, patchBookingsKeepTokenByTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/keep/token/{token}',
     ...options
@@ -66,7 +66,7 @@ export const patchBookingKeepByToken = <ThrowOnError extends boolean = false>(op
 /**
  * export_bookings_for_offer_as_csv <GET>
  */
-export const exportBookingsForOfferAsCsv = <ThrowOnError extends boolean = false>(options: Options<getBookingsOfferByOfferIdCsvData, ThrowOnError>) => (options.client ?? client).get<getBookingsOfferByOfferIdCsvResponses, getBookingsOfferByOfferIdCsvErrors, ThrowOnError, 'data'>({
+export const exportBookingsForOfferAsCsv = <ThrowOnError extends boolean = true>(options: Options<getBookingsOfferByOfferIdCsvData, ThrowOnError>) => (options.client ?? client).get<getBookingsOfferByOfferIdCsvResponses, getBookingsOfferByOfferIdCsvErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/offer/{offer_id}/csv',
     ...options
@@ -75,7 +75,7 @@ export const exportBookingsForOfferAsCsv = <ThrowOnError extends boolean = false
 /**
  * export_bookings_for_offer_as_excel <GET>
  */
-export const exportBookingsForOfferAsExcel = <ThrowOnError extends boolean = false>(options: Options<getBookingsOfferByOfferIdExcelData, ThrowOnError>) => (options.client ?? client).get<getBookingsOfferByOfferIdExcelResponses, getBookingsOfferByOfferIdExcelErrors, ThrowOnError, 'data'>({
+export const exportBookingsForOfferAsExcel = <ThrowOnError extends boolean = true>(options: Options<getBookingsOfferByOfferIdExcelData, ThrowOnError>) => (options.client ?? client).get<getBookingsOfferByOfferIdExcelResponses, getBookingsOfferByOfferIdExcelErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/offer/{offer_id}/excel',
     ...options
@@ -84,7 +84,7 @@ export const exportBookingsForOfferAsExcel = <ThrowOnError extends boolean = fal
 /**
  * get_bookings_pro <GET>
  */
-export const getBookingsPro = <ThrowOnError extends boolean = false>(options: Options<getBookingsProData, ThrowOnError>) => (options.client ?? client).get<getBookingsProResponses, getBookingsProErrors, ThrowOnError, 'data'>({
+export const getBookingsPro = <ThrowOnError extends boolean = true>(options: Options<getBookingsProData, ThrowOnError>) => (options.client ?? client).get<getBookingsProResponses, getBookingsProErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/pro',
     ...options
@@ -93,7 +93,7 @@ export const getBookingsPro = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_user_has_bookings <GET>
  */
-export const getUserHasBookings = <ThrowOnError extends boolean = false>(options?: Options<getBookingsProUserHasBookingsData, ThrowOnError>) => (options?.client ?? client).get<getBookingsProUserHasBookingsResponses, getBookingsProUserHasBookingsErrors, ThrowOnError, 'data'>({
+export const getUserHasBookings = <ThrowOnError extends boolean = true>(options?: Options<getBookingsProUserHasBookingsData, ThrowOnError>) => (options?.client ?? client).get<getBookingsProUserHasBookingsResponses, getBookingsProUserHasBookingsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/pro/userHasBookings',
     ...options
@@ -102,7 +102,7 @@ export const getUserHasBookings = <ThrowOnError extends boolean = false>(options
 /**
  * get_booking_by_token <GET>
  */
-export const getBookingByToken = <ThrowOnError extends boolean = false>(options: Options<getBookingsTokenByTokenData, ThrowOnError>) => (options.client ?? client).get<getBookingsTokenByTokenResponses, getBookingsTokenByTokenErrors, ThrowOnError, 'data'>({
+export const getBookingByToken = <ThrowOnError extends boolean = true>(options: Options<getBookingsTokenByTokenData, ThrowOnError>) => (options.client ?? client).get<getBookingsTokenByTokenResponses, getBookingsTokenByTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/token/{token}',
     ...options
@@ -111,7 +111,7 @@ export const getBookingByToken = <ThrowOnError extends boolean = false>(options:
 /**
  * patch_booking_use_by_token <PATCH>
  */
-export const patchBookingUseByToken = <ThrowOnError extends boolean = false>(options: Options<patchBookingsUseTokenByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchBookingsUseTokenByTokenResponses, patchBookingsUseTokenByTokenErrors, ThrowOnError, 'data'>({
+export const patchBookingUseByToken = <ThrowOnError extends boolean = true>(options: Options<patchBookingsUseTokenByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchBookingsUseTokenByTokenResponses, patchBookingsUseTokenByTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/bookings/use/token/{token}',
     ...options
@@ -120,7 +120,7 @@ export const patchBookingUseByToken = <ThrowOnError extends boolean = false>(opt
 /**
  * get_collective_offers <GET>
  */
-export const getCollectiveOffers = <ThrowOnError extends boolean = false>(options?: Options<getCollectiveBookableOffersData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveBookableOffersResponses, getCollectiveBookableOffersErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffers = <ThrowOnError extends boolean = true>(options?: Options<getCollectiveBookableOffersData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveBookableOffersResponses, getCollectiveBookableOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/bookable-offers',
     ...options
@@ -129,7 +129,7 @@ export const getCollectiveOffers = <ThrowOnError extends boolean = false>(option
 /**
  * list_educational_domains <GET>
  */
-export const listEducationalDomains = <ThrowOnError extends boolean = false>(options?: Options<getCollectiveEducationalDomainsData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveEducationalDomainsResponses, getCollectiveEducationalDomainsErrors, ThrowOnError, 'data'>({
+export const listEducationalDomains = <ThrowOnError extends boolean = true>(options?: Options<getCollectiveEducationalDomainsData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveEducationalDomainsResponses, getCollectiveEducationalDomainsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/educational-domains',
     ...options
@@ -138,7 +138,7 @@ export const listEducationalDomains = <ThrowOnError extends boolean = false>(opt
 /**
  * get_collective_offers_home <GET>
  */
-export const getCollectiveOffersHome = <ThrowOnError extends boolean = false>(options: Options<getCollectiveHomeBookableOffersData, ThrowOnError>) => (options.client ?? client).get<getCollectiveHomeBookableOffersResponses, getCollectiveHomeBookableOffersErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffersHome = <ThrowOnError extends boolean = true>(options: Options<getCollectiveHomeBookableOffersData, ThrowOnError>) => (options.client ?? client).get<getCollectiveHomeBookableOffersResponses, getCollectiveHomeBookableOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/home/bookable-offers',
     ...options
@@ -147,7 +147,7 @@ export const getCollectiveOffersHome = <ThrowOnError extends boolean = false>(op
 /**
  * get_collective_offer_templates_home <GET>
  */
-export const getCollectiveOfferTemplatesHome = <ThrowOnError extends boolean = false>(options: Options<getCollectiveHomeOffersTemplateData, ThrowOnError>) => (options.client ?? client).get<getCollectiveHomeOffersTemplateResponses, getCollectiveHomeOffersTemplateErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferTemplatesHome = <ThrowOnError extends boolean = true>(options: Options<getCollectiveHomeOffersTemplateData, ThrowOnError>) => (options.client ?? client).get<getCollectiveHomeOffersTemplateResponses, getCollectiveHomeOffersTemplateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/home/offers-template',
     ...options
@@ -156,7 +156,7 @@ export const getCollectiveOfferTemplatesHome = <ThrowOnError extends boolean = f
 /**
  * create_collective_offer <POST>
  */
-export const createCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<postCollectiveOffersData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersResponses, postCollectiveOffersErrors, ThrowOnError, 'data'>({
+export const createCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<postCollectiveOffersData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersResponses, postCollectiveOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers',
     ...options,
@@ -169,7 +169,7 @@ export const createCollectiveOffer = <ThrowOnError extends boolean = false>(opti
 /**
  * get_collective_offer_templates <GET>
  */
-export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = false>(options?: Options<getCollectiveOffersTemplateData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersTemplateResponses, getCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = true>(options?: Options<getCollectiveOffersTemplateData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersTemplateResponses, getCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template',
     ...options
@@ -178,7 +178,7 @@ export const getCollectiveOfferTemplates = <ThrowOnError extends boolean = false
 /**
  * create_collective_offer_template <POST>
  */
-export const createCollectiveOfferTemplate = <ThrowOnError extends boolean = false>(options: Options<postCollectiveOffersTemplateData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersTemplateResponses, postCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
+export const createCollectiveOfferTemplate = <ThrowOnError extends boolean = true>(options: Options<postCollectiveOffersTemplateData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersTemplateResponses, postCollectiveOffersTemplateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template',
     ...options,
@@ -191,7 +191,7 @@ export const createCollectiveOfferTemplate = <ThrowOnError extends boolean = fal
 /**
  * patch_collective_offers_template_active_status <PATCH>
  */
-export const patchCollectiveOffersTemplateActiveStatus = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersTemplateActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateActiveStatusResponses, patchCollectiveOffersTemplateActiveStatusErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOffersTemplateActiveStatus = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersTemplateActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateActiveStatusResponses, patchCollectiveOffersTemplateActiveStatusErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/active-status',
     ...options,
@@ -204,7 +204,7 @@ export const patchCollectiveOffersTemplateActiveStatus = <ThrowOnError extends b
 /**
  * patch_collective_offers_template_archive <PATCH>
  */
-export const patchCollectiveOffersTemplateArchive = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersTemplateArchiveData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateArchiveResponses, patchCollectiveOffersTemplateArchiveErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOffersTemplateArchive = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersTemplateArchiveData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateArchiveResponses, patchCollectiveOffersTemplateArchiveErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/archive',
     ...options,
@@ -217,7 +217,7 @@ export const patchCollectiveOffersTemplateArchive = <ThrowOnError extends boolea
 /**
  * get_collective_offer_request <GET>
  */
-export const getCollectiveOfferRequest = <ThrowOnError extends boolean = false>(options: Options<getCollectiveOffersTemplateRequestByRequestIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersTemplateRequestByRequestIdResponses, getCollectiveOffersTemplateRequestByRequestIdErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferRequest = <ThrowOnError extends boolean = true>(options: Options<getCollectiveOffersTemplateRequestByRequestIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersTemplateRequestByRequestIdResponses, getCollectiveOffersTemplateRequestByRequestIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/request/{request_id}',
     ...options
@@ -226,7 +226,7 @@ export const getCollectiveOfferRequest = <ThrowOnError extends boolean = false>(
 /**
  * get_collective_offer_template <GET>
  */
-export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = false>(options: Options<getCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersTemplateByOfferIdResponses, getCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
+export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = true>(options: Options<getCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersTemplateByOfferIdResponses, getCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/{offer_id}',
     ...options
@@ -235,7 +235,7 @@ export const getCollectiveOfferTemplate = <ThrowOnError extends boolean = false>
 /**
  * edit_collective_offer_template <PATCH>
  */
-export const editCollectiveOfferTemplate = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateByOfferIdResponses, patchCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
+export const editCollectiveOfferTemplate = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersTemplateByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateByOfferIdResponses, patchCollectiveOffersTemplateByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/{offer_id}',
     ...options,
@@ -248,7 +248,7 @@ export const editCollectiveOfferTemplate = <ThrowOnError extends boolean = false
 /**
  * delete_offer_template_image <DELETE>
  */
-export const deleteOfferTemplateImage = <ThrowOnError extends boolean = false>(options: Options<deleteCollectiveOffersTemplateByOfferIdImageData, ThrowOnError>) => (options.client ?? client).delete<deleteCollectiveOffersTemplateByOfferIdImageResponses, deleteCollectiveOffersTemplateByOfferIdImageErrors, ThrowOnError, 'data'>({
+export const deleteOfferTemplateImage = <ThrowOnError extends boolean = true>(options: Options<deleteCollectiveOffersTemplateByOfferIdImageData, ThrowOnError>) => (options.client ?? client).delete<deleteCollectiveOffersTemplateByOfferIdImageResponses, deleteCollectiveOffersTemplateByOfferIdImageErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/{offer_id}/image',
     ...options
@@ -257,7 +257,7 @@ export const deleteOfferTemplateImage = <ThrowOnError extends boolean = false>(o
 /**
  * attach_offer_template_image <POST>
  */
-export const attachOfferTemplateImage = <ThrowOnError extends boolean = false>(options: Options<postCollectiveOffersTemplateByOfferIdImageData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersTemplateByOfferIdImageResponses, postCollectiveOffersTemplateByOfferIdImageErrors, ThrowOnError, 'data'>({
+export const attachOfferTemplateImage = <ThrowOnError extends boolean = true>(options: Options<postCollectiveOffersTemplateByOfferIdImageData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersTemplateByOfferIdImageResponses, postCollectiveOffersTemplateByOfferIdImageErrors, ThrowOnError, 'data'>({
     ...formDataBodySerializer,
     responseStyle: 'data',
     url: '/collective/offers-template/{offer_id}/image',
@@ -271,7 +271,7 @@ export const attachOfferTemplateImage = <ThrowOnError extends boolean = false>(o
 /**
  * patch_collective_offer_template_publication <PATCH>
  */
-export const patchCollectiveOfferTemplatePublication = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersTemplateByOfferIdPublishData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateByOfferIdPublishResponses, patchCollectiveOffersTemplateByOfferIdPublishErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOfferTemplatePublication = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersTemplateByOfferIdPublishData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersTemplateByOfferIdPublishResponses, patchCollectiveOffersTemplateByOfferIdPublishErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers-template/{offer_id}/publish',
     ...options
@@ -280,7 +280,7 @@ export const patchCollectiveOfferTemplatePublication = <ThrowOnError extends boo
 /**
  * patch_collective_offers_archive <PATCH>
  */
-export const patchCollectiveOffersArchive = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersArchiveData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersArchiveResponses, patchCollectiveOffersArchiveErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOffersArchive = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersArchiveData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersArchiveResponses, patchCollectiveOffersArchiveErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/archive',
     ...options,
@@ -293,7 +293,7 @@ export const patchCollectiveOffersArchive = <ThrowOnError extends boolean = fals
 /**
  * get_collective_offers_csv <GET>
  */
-export const getCollectiveOffersCsv = <ThrowOnError extends boolean = false>(options?: Options<getCollectiveOffersCsvData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersCsvResponses, getCollectiveOffersCsvErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffersCsv = <ThrowOnError extends boolean = true>(options?: Options<getCollectiveOffersCsvData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersCsvResponses, getCollectiveOffersCsvErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/csv',
     ...options
@@ -302,7 +302,7 @@ export const getCollectiveOffersCsv = <ThrowOnError extends boolean = false>(opt
 /**
  * get_collective_offers_excel <GET>
  */
-export const getCollectiveOffersExcel = <ThrowOnError extends boolean = false>(options?: Options<getCollectiveOffersExcelData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersExcelResponses, getCollectiveOffersExcelErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffersExcel = <ThrowOnError extends boolean = true>(options?: Options<getCollectiveOffersExcelData, ThrowOnError>) => (options?.client ?? client).get<getCollectiveOffersExcelResponses, getCollectiveOffersExcelErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/excel',
     ...options
@@ -311,7 +311,7 @@ export const getCollectiveOffersExcel = <ThrowOnError extends boolean = false>(o
 /**
  * get_autocomplete_educational_redactors_for_uai <GET>
  */
-export const getAutocompleteEducationalRedactorsForUai = <ThrowOnError extends boolean = false>(options: Options<getCollectiveOffersRedactorsData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersRedactorsResponses, getCollectiveOffersRedactorsErrors, ThrowOnError, 'data'>({
+export const getAutocompleteEducationalRedactorsForUai = <ThrowOnError extends boolean = true>(options: Options<getCollectiveOffersRedactorsData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersRedactorsResponses, getCollectiveOffersRedactorsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/redactors',
     ...options
@@ -320,7 +320,7 @@ export const getAutocompleteEducationalRedactorsForUai = <ThrowOnError extends b
 /**
  * get_collective_offer <GET>
  */
-export const getCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<getCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersByOfferIdResponses, getCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
+export const getCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<getCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getCollectiveOffersByOfferIdResponses, getCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}',
     ...options
@@ -329,7 +329,7 @@ export const getCollectiveOffer = <ThrowOnError extends boolean = false>(options
 /**
  * edit_collective_offer <PATCH>
  */
-export const editCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdResponses, patchCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
+export const editCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdResponses, patchCollectiveOffersByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}',
     ...options,
@@ -342,7 +342,7 @@ export const editCollectiveOffer = <ThrowOnError extends boolean = false>(option
 /**
  * cancel_collective_offer_booking <PATCH>
  */
-export const cancelCollectiveOfferBooking = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersByOfferIdCancelBookingData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdCancelBookingResponses, patchCollectiveOffersByOfferIdCancelBookingErrors, ThrowOnError, 'data'>({
+export const cancelCollectiveOfferBooking = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersByOfferIdCancelBookingData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdCancelBookingResponses, patchCollectiveOffersByOfferIdCancelBookingErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/cancel_booking',
     ...options
@@ -351,7 +351,7 @@ export const cancelCollectiveOfferBooking = <ThrowOnError extends boolean = fals
 /**
  * duplicate_collective_offer <POST>
  */
-export const duplicateCollectiveOffer = <ThrowOnError extends boolean = false>(options: Options<postCollectiveOffersByOfferIdDuplicateData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersByOfferIdDuplicateResponses, postCollectiveOffersByOfferIdDuplicateErrors, ThrowOnError, 'data'>({
+export const duplicateCollectiveOffer = <ThrowOnError extends boolean = true>(options: Options<postCollectiveOffersByOfferIdDuplicateData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersByOfferIdDuplicateResponses, postCollectiveOffersByOfferIdDuplicateErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/duplicate',
     ...options
@@ -360,7 +360,7 @@ export const duplicateCollectiveOffer = <ThrowOnError extends boolean = false>(o
 /**
  * patch_collective_offers_educational_institution <PATCH>
  */
-export const patchCollectiveOffersEducationalInstitution = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersByOfferIdEducationalInstitutionData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdEducationalInstitutionResponses, patchCollectiveOffersByOfferIdEducationalInstitutionErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOffersEducationalInstitution = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersByOfferIdEducationalInstitutionData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdEducationalInstitutionResponses, patchCollectiveOffersByOfferIdEducationalInstitutionErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/educational_institution',
     ...options,
@@ -373,7 +373,7 @@ export const patchCollectiveOffersEducationalInstitution = <ThrowOnError extends
 /**
  * delete_offer_image <DELETE>
  */
-export const deleteOfferImage = <ThrowOnError extends boolean = false>(options: Options<deleteCollectiveOffersByOfferIdImageData, ThrowOnError>) => (options.client ?? client).delete<deleteCollectiveOffersByOfferIdImageResponses, deleteCollectiveOffersByOfferIdImageErrors, ThrowOnError, 'data'>({
+export const deleteOfferImage = <ThrowOnError extends boolean = true>(options: Options<deleteCollectiveOffersByOfferIdImageData, ThrowOnError>) => (options.client ?? client).delete<deleteCollectiveOffersByOfferIdImageResponses, deleteCollectiveOffersByOfferIdImageErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/image',
     ...options
@@ -382,7 +382,7 @@ export const deleteOfferImage = <ThrowOnError extends boolean = false>(options: 
 /**
  * attach_offer_image <POST>
  */
-export const attachOfferImage = <ThrowOnError extends boolean = false>(options: Options<postCollectiveOffersByOfferIdImageData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersByOfferIdImageResponses, postCollectiveOffersByOfferIdImageErrors, ThrowOnError, 'data'>({
+export const attachOfferImage = <ThrowOnError extends boolean = true>(options: Options<postCollectiveOffersByOfferIdImageData, ThrowOnError>) => (options.client ?? client).post<postCollectiveOffersByOfferIdImageResponses, postCollectiveOffersByOfferIdImageErrors, ThrowOnError, 'data'>({
     ...formDataBodySerializer,
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/image',
@@ -396,7 +396,7 @@ export const attachOfferImage = <ThrowOnError extends boolean = false>(options: 
 /**
  * patch_collective_offer_publication <PATCH>
  */
-export const patchCollectiveOfferPublication = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveOffersByOfferIdPublishData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdPublishResponses, patchCollectiveOffersByOfferIdPublishErrors, ThrowOnError, 'data'>({
+export const patchCollectiveOfferPublication = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveOffersByOfferIdPublishData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveOffersByOfferIdPublishResponses, patchCollectiveOffersByOfferIdPublishErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/offers/{offer_id}/publish',
     ...options
@@ -405,7 +405,7 @@ export const patchCollectiveOfferPublication = <ThrowOnError extends boolean = f
 /**
  * create_collective_stock <POST>
  */
-export const createCollectiveStock = <ThrowOnError extends boolean = false>(options: Options<postCollectiveStocksData, ThrowOnError>) => (options.client ?? client).post<postCollectiveStocksResponses, postCollectiveStocksErrors, ThrowOnError, 'data'>({
+export const createCollectiveStock = <ThrowOnError extends boolean = true>(options: Options<postCollectiveStocksData, ThrowOnError>) => (options.client ?? client).post<postCollectiveStocksResponses, postCollectiveStocksErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/stocks',
     ...options,
@@ -418,7 +418,7 @@ export const createCollectiveStock = <ThrowOnError extends boolean = false>(opti
 /**
  * edit_collective_stock <PATCH>
  */
-export const editCollectiveStock = <ThrowOnError extends boolean = false>(options: Options<patchCollectiveStocksByCollectiveStockIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveStocksByCollectiveStockIdResponses, patchCollectiveStocksByCollectiveStockIdErrors, ThrowOnError, 'data'>({
+export const editCollectiveStock = <ThrowOnError extends boolean = true>(options: Options<patchCollectiveStocksByCollectiveStockIdData, ThrowOnError>) => (options.client ?? client).patch<patchCollectiveStocksByCollectiveStockIdResponses, patchCollectiveStocksByCollectiveStockIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/collective/stocks/{collective_stock_id}',
     ...options,
@@ -431,7 +431,7 @@ export const editCollectiveStock = <ThrowOnError extends boolean = false>(option
 /**
  * get_educational_institutions <GET>
  */
-export const getEducationalInstitutions = <ThrowOnError extends boolean = false>(options?: Options<getEducationalInstitutionsData, ThrowOnError>) => (options?.client ?? client).get<getEducationalInstitutionsResponses, getEducationalInstitutionsErrors, ThrowOnError, 'data'>({
+export const getEducationalInstitutions = <ThrowOnError extends boolean = true>(options?: Options<getEducationalInstitutionsData, ThrowOnError>) => (options?.client ?? client).get<getEducationalInstitutionsResponses, getEducationalInstitutionsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/educational_institutions',
     ...options
@@ -440,7 +440,7 @@ export const getEducationalInstitutions = <ThrowOnError extends boolean = false>
 /**
  * list_features <GET>
  */
-export const listFeatures = <ThrowOnError extends boolean = false>(options?: Options<getFeaturesData, ThrowOnError>) => (options?.client ?? client).get<getFeaturesResponses, getFeaturesErrors, ThrowOnError, 'data'>({
+export const listFeatures = <ThrowOnError extends boolean = true>(options?: Options<getFeaturesData, ThrowOnError>) => (options?.client ?? client).get<getFeaturesResponses, getFeaturesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/features',
     ...options
@@ -449,7 +449,7 @@ export const listFeatures = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * get_bank_accounts <GET>
  */
-export const getBankAccounts = <ThrowOnError extends boolean = false>(options?: Options<getFinanceBankAccountsData, ThrowOnError>) => (options?.client ?? client).get<getFinanceBankAccountsResponses, getFinanceBankAccountsErrors, ThrowOnError, 'data'>({
+export const getBankAccounts = <ThrowOnError extends boolean = true>(options?: Options<getFinanceBankAccountsData, ThrowOnError>) => (options?.client ?? client).get<getFinanceBankAccountsResponses, getFinanceBankAccountsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/finance/bank-accounts',
     ...options
@@ -458,7 +458,7 @@ export const getBankAccounts = <ThrowOnError extends boolean = false>(options?: 
 /**
  * get_combined_invoices <GET>
  */
-export const getCombinedInvoices = <ThrowOnError extends boolean = false>(options: Options<getFinanceCombinedInvoicesData, ThrowOnError>) => (options.client ?? client).get<getFinanceCombinedInvoicesResponses, getFinanceCombinedInvoicesErrors, ThrowOnError, 'data'>({
+export const getCombinedInvoices = <ThrowOnError extends boolean = true>(options: Options<getFinanceCombinedInvoicesData, ThrowOnError>) => (options.client ?? client).get<getFinanceCombinedInvoicesResponses, getFinanceCombinedInvoicesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/finance/combined-invoices',
     ...options
@@ -467,7 +467,7 @@ export const getCombinedInvoices = <ThrowOnError extends boolean = false>(option
 /**
  * get_offer_video_metadata <GET>
  */
-export const getOfferVideoMetadata = <ThrowOnError extends boolean = false>(options: Options<getGetOfferVideoDataData, ThrowOnError>) => (options.client ?? client).get<getGetOfferVideoDataResponses, getGetOfferVideoDataErrors, ThrowOnError, 'data'>({
+export const getOfferVideoMetadata = <ThrowOnError extends boolean = true>(options: Options<getGetOfferVideoDataData, ThrowOnError>) => (options.client ?? client).get<getGetOfferVideoDataResponses, getGetOfferVideoDataErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/get-offer-video-data',
     ...options
@@ -476,7 +476,7 @@ export const getOfferVideoMetadata = <ThrowOnError extends boolean = false>(opti
 /**
  * get_statistics <GET>
  */
-export const getStatistics = <ThrowOnError extends boolean = false>(options?: Options<getGetStatisticsData, ThrowOnError>) => (options?.client ?? client).get<getGetStatisticsResponses, getGetStatisticsErrors, ThrowOnError, 'data'>({
+export const getStatistics = <ThrowOnError extends boolean = true>(options?: Options<getGetStatisticsData, ThrowOnError>) => (options?.client ?? client).get<getGetStatisticsResponses, getGetStatisticsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/get-statistics',
     ...options
@@ -485,7 +485,7 @@ export const getStatistics = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * get_product_by_ean <GET>
  */
-export const getProductByEan = <ThrowOnError extends boolean = false>(options: Options<getGetProductByEanByEanByOffererIdData, ThrowOnError>) => (options.client ?? client).get<getGetProductByEanByEanByOffererIdResponses, getGetProductByEanByEanByOffererIdErrors, ThrowOnError, 'data'>({
+export const getProductByEan = <ThrowOnError extends boolean = true>(options: Options<getGetProductByEanByEanByOffererIdData, ThrowOnError>) => (options.client ?? client).get<getGetProductByEanByEanByOffererIdResponses, getGetProductByEanByEanByOffererIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/get_product_by_ean/{ean}/{offerer_id}',
     ...options
@@ -494,7 +494,7 @@ export const getProductByEan = <ThrowOnError extends boolean = false>(options: O
 /**
  * get_highlights <GET>
  */
-export const getHighlights = <ThrowOnError extends boolean = false>(options?: Options<getHighlightsData, ThrowOnError>) => (options?.client ?? client).get<getHighlightsResponses, getHighlightsErrors, ThrowOnError, 'data'>({
+export const getHighlights = <ThrowOnError extends boolean = true>(options?: Options<getHighlightsData, ThrowOnError>) => (options?.client ?? client).get<getHighlightsResponses, getHighlightsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/highlights',
     ...options
@@ -503,7 +503,7 @@ export const getHighlights = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * get_venues_lite <GET>
  */
-export const getVenuesLite = <ThrowOnError extends boolean = false>(options?: Options<getLiteVenuesData, ThrowOnError>) => (options?.client ?? client).get<getLiteVenuesResponses, getLiteVenuesErrors, ThrowOnError, 'data'>({
+export const getVenuesLite = <ThrowOnError extends boolean = true>(options?: Options<getLiteVenuesData, ThrowOnError>) => (options?.client ?? client).get<getLiteVenuesResponses, getLiteVenuesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/lite/venues',
     ...options
@@ -512,7 +512,7 @@ export const getVenuesLite = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * create_offerer <POST>
  */
-export const createOfferer = <ThrowOnError extends boolean = false>(options: Options<postOfferersData, ThrowOnError>) => (options.client ?? client).post<postOfferersResponses, postOfferersErrors, ThrowOnError, 'data'>({
+export const createOfferer = <ThrowOnError extends boolean = true>(options: Options<postOfferersData, ThrowOnError>) => (options.client ?? client).post<postOfferersResponses, postOfferersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers',
     ...options,
@@ -525,7 +525,7 @@ export const createOfferer = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * list_educational_offerers <GET>
  */
-export const listEducationalOfferers = <ThrowOnError extends boolean = false>(options?: Options<getOfferersEducationalData, ThrowOnError>) => (options?.client ?? client).get<getOfferersEducationalResponses, getOfferersEducationalErrors, ThrowOnError, 'data'>({
+export const listEducationalOfferers = <ThrowOnError extends boolean = true>(options?: Options<getOfferersEducationalData, ThrowOnError>) => (options?.client ?? client).get<getOfferersEducationalResponses, getOfferersEducationalErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/educational',
     ...options
@@ -534,7 +534,7 @@ export const listEducationalOfferers = <ThrowOnError extends boolean = false>(op
 /**
  * list_offerers_names <GET>
  */
-export const listOfferersNames = <ThrowOnError extends boolean = false>(options?: Options<getOfferersNamesData, ThrowOnError>) => (options?.client ?? client).get<getOfferersNamesResponses, getOfferersNamesErrors, ThrowOnError, 'data'>({
+export const listOfferersNames = <ThrowOnError extends boolean = true>(options?: Options<getOfferersNamesData, ThrowOnError>) => (options?.client ?? client).get<getOfferersNamesResponses, getOfferersNamesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/names',
     ...options
@@ -543,7 +543,7 @@ export const listOfferersNames = <ThrowOnError extends boolean = false>(options?
 /**
  * save_new_onboarding_data <POST>
  */
-export const saveNewOnboardingData = <ThrowOnError extends boolean = false>(options: Options<postOfferersNewData, ThrowOnError>) => (options.client ?? client).post<postOfferersNewResponses, postOfferersNewErrors, ThrowOnError, 'data'>({
+export const saveNewOnboardingData = <ThrowOnError extends boolean = true>(options: Options<postOfferersNewData, ThrowOnError>) => (options.client ?? client).post<postOfferersNewResponses, postOfferersNewErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/new',
     ...options,
@@ -556,7 +556,7 @@ export const saveNewOnboardingData = <ThrowOnError extends boolean = false>(opti
 /**
  * get_offerer <GET>
  */
-export const getOfferer = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdResponses, getOfferersByOffererIdErrors, ThrowOnError, 'data'>({
+export const getOfferer = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdResponses, getOfferersByOffererIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}',
     ...options
@@ -565,7 +565,7 @@ export const getOfferer = <ThrowOnError extends boolean = false>(options: Option
 /**
  * get_offerer_bank_accounts_and_attached_venues <GET>
  */
-export const getOffererBankAccountsAndAttachedVenues = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdBankAccountsData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdBankAccountsResponses, getOfferersByOffererIdBankAccountsErrors, ThrowOnError, 'data'>({
+export const getOffererBankAccountsAndAttachedVenues = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdBankAccountsData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdBankAccountsResponses, getOfferersByOffererIdBankAccountsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/bank-accounts',
     ...options
@@ -574,7 +574,7 @@ export const getOffererBankAccountsAndAttachedVenues = <ThrowOnError extends boo
 /**
  * link_venue_to_bank_account <PATCH>
  */
-export const linkVenueToBankAccount = <ThrowOnError extends boolean = false>(options: Options<patchOfferersByOffererIdBankAccountsByBankAccountIdData, ThrowOnError>) => (options.client ?? client).patch<patchOfferersByOffererIdBankAccountsByBankAccountIdResponses, patchOfferersByOffererIdBankAccountsByBankAccountIdErrors, ThrowOnError, 'data'>({
+export const linkVenueToBankAccount = <ThrowOnError extends boolean = true>(options: Options<patchOfferersByOffererIdBankAccountsByBankAccountIdData, ThrowOnError>) => (options.client ?? client).patch<patchOfferersByOffererIdBankAccountsByBankAccountIdResponses, patchOfferersByOffererIdBankAccountsByBankAccountIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/bank-accounts/{bank_account_id}',
     ...options,
@@ -587,7 +587,7 @@ export const linkVenueToBankAccount = <ThrowOnError extends boolean = false>(opt
 /**
  * get_offerer_eligibility <GET>
  */
-export const getOffererEligibility = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdEligibilityData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdEligibilityResponses, getOfferersByOffererIdEligibilityErrors, ThrowOnError, 'data'>({
+export const getOffererEligibility = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdEligibilityData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdEligibilityResponses, getOfferersByOffererIdEligibilityErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/eligibility',
     ...options
@@ -596,7 +596,7 @@ export const getOffererEligibility = <ThrowOnError extends boolean = false>(opti
 /**
  * invite_member <POST>
  */
-export const inviteMember = <ThrowOnError extends boolean = false>(options: Options<postOfferersByOffererIdInviteData, ThrowOnError>) => (options.client ?? client).post<postOfferersByOffererIdInviteResponses, postOfferersByOffererIdInviteErrors, ThrowOnError, 'data'>({
+export const inviteMember = <ThrowOnError extends boolean = true>(options: Options<postOfferersByOffererIdInviteData, ThrowOnError>) => (options.client ?? client).post<postOfferersByOffererIdInviteResponses, postOfferersByOffererIdInviteErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/invite',
     ...options,
@@ -609,7 +609,7 @@ export const inviteMember = <ThrowOnError extends boolean = false>(options: Opti
 /**
  * invite_member_again <POST>
  */
-export const inviteMemberAgain = <ThrowOnError extends boolean = false>(options: Options<postOfferersByOffererIdInviteAgainData, ThrowOnError>) => (options.client ?? client).post<postOfferersByOffererIdInviteAgainResponses, postOfferersByOffererIdInviteAgainErrors, ThrowOnError, 'data'>({
+export const inviteMemberAgain = <ThrowOnError extends boolean = true>(options: Options<postOfferersByOffererIdInviteAgainData, ThrowOnError>) => (options.client ?? client).post<postOfferersByOffererIdInviteAgainResponses, postOfferersByOffererIdInviteAgainErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/invite-again',
     ...options,
@@ -622,7 +622,7 @@ export const inviteMemberAgain = <ThrowOnError extends boolean = false>(options:
 /**
  * get_offerer_members <GET>
  */
-export const getOffererMembers = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdMembersData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdMembersResponses, getOfferersByOffererIdMembersErrors, ThrowOnError, 'data'>({
+export const getOffererMembers = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdMembersData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdMembersResponses, getOfferersByOffererIdMembersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/members',
     ...options
@@ -631,7 +631,7 @@ export const getOffererMembers = <ThrowOnError extends boolean = false>(options:
 /**
  * get_offerer_addresses <GET>
  */
-export const getOffererAddresses = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdOffererAddressesData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdOffererAddressesResponses, getOfferersByOffererIdOffererAddressesErrors, ThrowOnError, 'data'>({
+export const getOffererAddresses = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdOffererAddressesData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdOffererAddressesResponses, getOfferersByOffererIdOffererAddressesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/offerer_addresses',
     ...options
@@ -642,7 +642,7 @@ export const getOffererAddresses = <ThrowOnError extends boolean = false>(option
  *
  * @deprecated
  */
-export const getOffererV2Stats = <ThrowOnError extends boolean = false>(options: Options<getOfferersByOffererIdV2StatsData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdV2StatsResponses, getOfferersByOffererIdV2StatsErrors, ThrowOnError, 'data'>({
+export const getOffererV2Stats = <ThrowOnError extends boolean = true>(options: Options<getOfferersByOffererIdV2StatsData, ThrowOnError>) => (options.client ?? client).get<getOfferersByOffererIdV2StatsResponses, getOfferersByOffererIdV2StatsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offerers/{offerer_id}/v2/stats',
     ...options
@@ -651,7 +651,7 @@ export const getOffererV2Stats = <ThrowOnError extends boolean = false>(options:
 /**
  * list_offers <GET>
  */
-export const listOffers = <ThrowOnError extends boolean = false>(options?: Options<getOffersData, ThrowOnError>) => (options?.client ?? client).get<getOffersResponses, getOffersErrors, ThrowOnError, 'data'>({
+export const listOffers = <ThrowOnError extends boolean = true>(options?: Options<getOffersData, ThrowOnError>) => (options?.client ?? client).get<getOffersResponses, getOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers',
     ...options
@@ -660,7 +660,7 @@ export const listOffers = <ThrowOnError extends boolean = false>(options?: Optio
 /**
  * post_offer <POST>
  */
-export const postOffer = <ThrowOnError extends boolean = false>(options: Options<postOffersData, ThrowOnError>) => (options.client ?? client).post<postOffersResponses, postOffersErrors, ThrowOnError, 'data'>({
+export const postOffer = <ThrowOnError extends boolean = true>(options: Options<postOffersData, ThrowOnError>) => (options.client ?? client).post<postOffersResponses, postOffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers',
     ...options,
@@ -673,7 +673,7 @@ export const postOffer = <ThrowOnError extends boolean = false>(options: Options
 /**
  * patch_offers_active_status <PATCH>
  */
-export const patchOffersActiveStatus = <ThrowOnError extends boolean = false>(options: Options<patchOffersActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchOffersActiveStatusResponses, patchOffersActiveStatusErrors, ThrowOnError, 'data'>({
+export const patchOffersActiveStatus = <ThrowOnError extends boolean = true>(options: Options<patchOffersActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchOffersActiveStatusResponses, patchOffersActiveStatusErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/active-status',
     ...options,
@@ -686,7 +686,7 @@ export const patchOffersActiveStatus = <ThrowOnError extends boolean = false>(op
 /**
  * patch_all_offers_active_status <PATCH>
  */
-export const patchAllOffersActiveStatus = <ThrowOnError extends boolean = false>(options: Options<patchOffersAllActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchOffersAllActiveStatusResponses, patchOffersAllActiveStatusErrors, ThrowOnError, 'data'>({
+export const patchAllOffersActiveStatus = <ThrowOnError extends boolean = true>(options: Options<patchOffersAllActiveStatusData, ThrowOnError>) => (options.client ?? client).patch<patchOffersAllActiveStatusResponses, patchOffersAllActiveStatusErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/all-active-status',
     ...options,
@@ -699,7 +699,7 @@ export const patchAllOffersActiveStatus = <ThrowOnError extends boolean = false>
 /**
  * get_categories <GET>
  */
-export const getCategories = <ThrowOnError extends boolean = false>(options?: Options<getOffersCategoriesData, ThrowOnError>) => (options?.client ?? client).get<getOffersCategoriesResponses, getOffersCategoriesErrors, ThrowOnError, 'data'>({
+export const getCategories = <ThrowOnError extends boolean = true>(options?: Options<getOffersCategoriesData, ThrowOnError>) => (options?.client ?? client).get<getOffersCategoriesResponses, getOffersCategoriesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/categories',
     ...options
@@ -708,7 +708,7 @@ export const getCategories = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * delete_draft_offers <POST>
  */
-export const deleteDraftOffers = <ThrowOnError extends boolean = false>(options: Options<postOffersDeleteDraftData, ThrowOnError>) => (options.client ?? client).post<postOffersDeleteDraftResponses, postOffersDeleteDraftErrors, ThrowOnError, 'data'>({
+export const deleteDraftOffers = <ThrowOnError extends boolean = true>(options: Options<postOffersDeleteDraftData, ThrowOnError>) => (options.client ?? client).post<postOffersDeleteDraftResponses, postOffersDeleteDraftErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/delete-draft',
     ...options,
@@ -721,7 +721,7 @@ export const deleteDraftOffers = <ThrowOnError extends boolean = false>(options:
 /**
  * delete_headline_offer <POST>
  */
-export const deleteHeadlineOffer = <ThrowOnError extends boolean = false>(options: Options<postOffersDeleteHeadlineData, ThrowOnError>) => (options.client ?? client).post<postOffersDeleteHeadlineResponses, postOffersDeleteHeadlineErrors, ThrowOnError, 'data'>({
+export const deleteHeadlineOffer = <ThrowOnError extends boolean = true>(options: Options<postOffersDeleteHeadlineData, ThrowOnError>) => (options.client ?? client).post<postOffersDeleteHeadlineResponses, postOffersDeleteHeadlineErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/delete_headline',
     ...options,
@@ -734,7 +734,7 @@ export const deleteHeadlineOffer = <ThrowOnError extends boolean = false>(option
 /**
  * list_offers_home <GET>
  */
-export const listOffersHome = <ThrowOnError extends boolean = false>(options: Options<getOffersHomeData, ThrowOnError>) => (options.client ?? client).get<getOffersHomeResponses, getOffersHomeErrors, ThrowOnError, 'data'>({
+export const listOffersHome = <ThrowOnError extends boolean = true>(options: Options<getOffersHomeData, ThrowOnError>) => (options.client ?? client).get<getOffersHomeResponses, getOffersHomeErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/home',
     ...options
@@ -743,7 +743,7 @@ export const listOffersHome = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_music_types <GET>
  */
-export const getMusicTypes = <ThrowOnError extends boolean = false>(options?: Options<getOffersMusicTypesData, ThrowOnError>) => (options?.client ?? client).get<getOffersMusicTypesResponses, getOffersMusicTypesErrors, ThrowOnError, 'data'>({
+export const getMusicTypes = <ThrowOnError extends boolean = true>(options?: Options<getOffersMusicTypesData, ThrowOnError>) => (options?.client ?? client).get<getOffersMusicTypesResponses, getOffersMusicTypesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/music-types',
     ...options
@@ -752,7 +752,7 @@ export const getMusicTypes = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * patch_publish_offer <PATCH>
  */
-export const patchPublishOffer = <ThrowOnError extends boolean = false>(options: Options<patchOffersPublishData, ThrowOnError>) => (options.client ?? client).patch<patchOffersPublishResponses, patchOffersPublishErrors, ThrowOnError, 'data'>({
+export const patchPublishOffer = <ThrowOnError extends boolean = true>(options: Options<patchOffersPublishData, ThrowOnError>) => (options.client ?? client).patch<patchOffersPublishResponses, patchOffersPublishErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/publish',
     ...options,
@@ -765,7 +765,7 @@ export const patchPublishOffer = <ThrowOnError extends boolean = false>(options:
 /**
  * create_thumbnail <POST>
  */
-export const createThumbnail = <ThrowOnError extends boolean = false>(options: Options<postOffersThumbnailsData, ThrowOnError>) => (options.client ?? client).post<postOffersThumbnailsResponses, postOffersThumbnailsErrors, ThrowOnError, 'data'>({
+export const createThumbnail = <ThrowOnError extends boolean = true>(options: Options<postOffersThumbnailsData, ThrowOnError>) => (options.client ?? client).post<postOffersThumbnailsResponses, postOffersThumbnailsErrors, ThrowOnError, 'data'>({
     ...formDataBodySerializer,
     responseStyle: 'data',
     url: '/offers/thumbnails',
@@ -779,7 +779,7 @@ export const createThumbnail = <ThrowOnError extends boolean = false>(options: O
 /**
  * delete_thumbnail <DELETE>
  */
-export const deleteThumbnail = <ThrowOnError extends boolean = false>(options: Options<deleteOffersThumbnailsByOfferIdData, ThrowOnError>) => (options.client ?? client).delete<deleteOffersThumbnailsByOfferIdResponses, deleteOffersThumbnailsByOfferIdErrors, ThrowOnError, 'data'>({
+export const deleteThumbnail = <ThrowOnError extends boolean = true>(options: Options<deleteOffersThumbnailsByOfferIdData, ThrowOnError>) => (options.client ?? client).delete<deleteOffersThumbnailsByOfferIdResponses, deleteOffersThumbnailsByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/thumbnails/{offer_id}',
     ...options
@@ -788,7 +788,7 @@ export const deleteThumbnail = <ThrowOnError extends boolean = false>(options: O
 /**
  * upsert_headline_offer <POST>
  */
-export const upsertHeadlineOffer = <ThrowOnError extends boolean = false>(options: Options<postOffersUpsertHeadlineData, ThrowOnError>) => (options.client ?? client).post<postOffersUpsertHeadlineResponses, postOffersUpsertHeadlineErrors, ThrowOnError, 'data'>({
+export const upsertHeadlineOffer = <ThrowOnError extends boolean = true>(options: Options<postOffersUpsertHeadlineData, ThrowOnError>) => (options.client ?? client).post<postOffersUpsertHeadlineResponses, postOffersUpsertHeadlineErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/upsert_headline',
     ...options,
@@ -801,7 +801,7 @@ export const upsertHeadlineOffer = <ThrowOnError extends boolean = false>(option
 /**
  * get_offer <GET>
  */
-export const getOffer = <ThrowOnError extends boolean = false>(options: Options<getOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdResponses, getOffersByOfferIdErrors, ThrowOnError, 'data'>({
+export const getOffer = <ThrowOnError extends boolean = true>(options: Options<getOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdResponses, getOffersByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}',
     ...options
@@ -810,7 +810,7 @@ export const getOffer = <ThrowOnError extends boolean = false>(options: Options<
 /**
  * patch_offer <PATCH>
  */
-export const patchOffer = <ThrowOnError extends boolean = false>(options: Options<patchOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdResponses, patchOffersByOfferIdErrors, ThrowOnError, 'data'>({
+export const patchOffer = <ThrowOnError extends boolean = true>(options: Options<patchOffersByOfferIdData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdResponses, patchOffersByOfferIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}',
     ...options,
@@ -823,7 +823,7 @@ export const patchOffer = <ThrowOnError extends boolean = false>(options: Option
 /**
  * post_highlight_request_offer <POST>
  */
-export const postHighlightRequestOffer = <ThrowOnError extends boolean = false>(options: Options<postOffersByOfferIdHighlightRequestsData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdHighlightRequestsResponses, postOffersByOfferIdHighlightRequestsErrors, ThrowOnError, 'data'>({
+export const postHighlightRequestOffer = <ThrowOnError extends boolean = true>(options: Options<postOffersByOfferIdHighlightRequestsData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdHighlightRequestsResponses, postOffersByOfferIdHighlightRequestsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/highlight-requests',
     ...options,
@@ -838,7 +838,7 @@ export const postHighlightRequestOffer = <ThrowOnError extends boolean = false>(
  *
  * - If a price category exists in the DB but not in `price_categories`, it is deleted. - Otherwise, price categories are updated or created as needed.
  */
-export const replaceOfferPriceCategories = <ThrowOnError extends boolean = false>(options: Options<putOffersByOfferIdPriceCategoriesData, ThrowOnError>) => (options.client ?? client).put<putOffersByOfferIdPriceCategoriesResponses, putOffersByOfferIdPriceCategoriesErrors, ThrowOnError, 'data'>({
+export const replaceOfferPriceCategories = <ThrowOnError extends boolean = true>(options: Options<putOffersByOfferIdPriceCategoriesData, ThrowOnError>) => (options.client ?? client).put<putOffersByOfferIdPriceCategoriesResponses, putOffersByOfferIdPriceCategoriesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/price_categories',
     ...options,
@@ -851,7 +851,7 @@ export const replaceOfferPriceCategories = <ThrowOnError extends boolean = false
 /**
  * delete_offer_pro_advice <DELETE>
  */
-export const deleteOfferProAdvice = <ThrowOnError extends boolean = false>(options: Options<deleteOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).delete<deleteOffersByOfferIdProAdviceResponses, deleteOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
+export const deleteOfferProAdvice = <ThrowOnError extends boolean = true>(options: Options<deleteOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).delete<deleteOffersByOfferIdProAdviceResponses, deleteOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/pro_advice',
     ...options
@@ -860,7 +860,7 @@ export const deleteOfferProAdvice = <ThrowOnError extends boolean = false>(optio
 /**
  * get_offer_pro_advice <GET>
  */
-export const getOfferProAdvice = <ThrowOnError extends boolean = false>(options: Options<getOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdProAdviceResponses, getOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
+export const getOfferProAdvice = <ThrowOnError extends boolean = true>(options: Options<getOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdProAdviceResponses, getOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/pro_advice',
     ...options
@@ -869,7 +869,7 @@ export const getOfferProAdvice = <ThrowOnError extends boolean = false>(options:
 /**
  * update_offer_pro_advice <PATCH>
  */
-export const updateOfferProAdvice = <ThrowOnError extends boolean = false>(options: Options<patchOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdProAdviceResponses, patchOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
+export const updateOfferProAdvice = <ThrowOnError extends boolean = true>(options: Options<patchOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdProAdviceResponses, patchOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/pro_advice',
     ...options,
@@ -882,7 +882,7 @@ export const updateOfferProAdvice = <ThrowOnError extends boolean = false>(optio
 /**
  * create_offer_pro_advice <POST>
  */
-export const createOfferProAdvice = <ThrowOnError extends boolean = false>(options: Options<postOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdProAdviceResponses, postOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
+export const createOfferProAdvice = <ThrowOnError extends boolean = true>(options: Options<postOffersByOfferIdProAdviceData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdProAdviceResponses, postOffersByOfferIdProAdviceErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/pro_advice',
     ...options,
@@ -895,7 +895,7 @@ export const createOfferProAdvice = <ThrowOnError extends boolean = false>(optio
 /**
  * get_stocks_stats <GET>
  */
-export const getStocksStats = <ThrowOnError extends boolean = false>(options: Options<getOffersByOfferIdStocksStatsData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdStocksStatsResponses, getOffersByOfferIdStocksStatsErrors, ThrowOnError, 'data'>({
+export const getStocksStats = <ThrowOnError extends boolean = true>(options: Options<getOffersByOfferIdStocksStatsData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdStocksStatsResponses, getOffersByOfferIdStocksStatsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/stocks-stats',
     ...options
@@ -904,7 +904,7 @@ export const getStocksStats = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_stocks <GET>
  */
-export const getStocks = <ThrowOnError extends boolean = false>(options: Options<getOffersByOfferIdStocksData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdStocksResponses, getOffersByOfferIdStocksErrors, ThrowOnError, 'data'>({
+export const getStocks = <ThrowOnError extends boolean = true>(options: Options<getOffersByOfferIdStocksData, ThrowOnError>) => (options.client ?? client).get<getOffersByOfferIdStocksResponses, getOffersByOfferIdStocksErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/stocks/',
     ...options
@@ -915,7 +915,7 @@ export const getStocks = <ThrowOnError extends boolean = false>(options: Options
  *
  * - If a stock exists in the DB but not in `stocks`, it is soft-deleted. - Otherwise, stocks are updated or created as needed.
  */
-export const upsertOfferStocks = <ThrowOnError extends boolean = false>(options: Options<patchOffersByOfferIdStocksData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdStocksResponses, patchOffersByOfferIdStocksErrors, ThrowOnError, 'data'>({
+export const upsertOfferStocks = <ThrowOnError extends boolean = true>(options: Options<patchOffersByOfferIdStocksData, ThrowOnError>) => (options.client ?? client).patch<patchOffersByOfferIdStocksResponses, patchOffersByOfferIdStocksErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/stocks/',
     ...options,
@@ -928,7 +928,7 @@ export const upsertOfferStocks = <ThrowOnError extends boolean = false>(options:
 /**
  * delete_stocks <POST>
  */
-export const deleteStocks = <ThrowOnError extends boolean = false>(options: Options<postOffersByOfferIdStocksDeleteData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdStocksDeleteResponses, postOffersByOfferIdStocksDeleteErrors, ThrowOnError, 'data'>({
+export const deleteStocks = <ThrowOnError extends boolean = true>(options: Options<postOffersByOfferIdStocksDeleteData, ThrowOnError>) => (options.client ?? client).post<postOffersByOfferIdStocksDeleteResponses, postOffersByOfferIdStocksDeleteErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{offer_id}/stocks/delete',
     ...options,
@@ -941,7 +941,7 @@ export const deleteStocks = <ThrowOnError extends boolean = false>(options: Opti
 /**
  * get_active_venue_offer_by_ean <GET>
  */
-export const getActiveVenueOfferByEan = <ThrowOnError extends boolean = false>(options: Options<getOffersByVenueIdEanByEanData, ThrowOnError>) => (options.client ?? client).get<getOffersByVenueIdEanByEanResponses, getOffersByVenueIdEanByEanErrors, ThrowOnError, 'data'>({
+export const getActiveVenueOfferByEan = <ThrowOnError extends boolean = true>(options: Options<getOffersByVenueIdEanByEanData, ThrowOnError>) => (options.client ?? client).get<getOffersByVenueIdEanByEanResponses, getOffersByVenueIdEanByEanErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/offers/{venue_id}/ean/{ean}',
     ...options
@@ -950,7 +950,7 @@ export const getActiveVenueOfferByEan = <ThrowOnError extends boolean = false>(o
 /**
  * bulk_update_event_stocks <PATCH>
  */
-export const bulkUpdateEventStocks = <ThrowOnError extends boolean = false>(options: Options<patchStocksBulkData, ThrowOnError>) => (options.client ?? client).patch<patchStocksBulkResponses, patchStocksBulkErrors, ThrowOnError, 'data'>({
+export const bulkUpdateEventStocks = <ThrowOnError extends boolean = true>(options: Options<patchStocksBulkData, ThrowOnError>) => (options.client ?? client).patch<patchStocksBulkResponses, patchStocksBulkErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/stocks/bulk',
     ...options,
@@ -963,7 +963,7 @@ export const bulkUpdateEventStocks = <ThrowOnError extends boolean = false>(opti
 /**
  * bulk_create_event_stocks <POST>
  */
-export const bulkCreateEventStocks = <ThrowOnError extends boolean = false>(options: Options<postStocksBulkData, ThrowOnError>) => (options.client ?? client).post<postStocksBulkResponses, postStocksBulkErrors, ThrowOnError, 'data'>({
+export const bulkCreateEventStocks = <ThrowOnError extends boolean = true>(options: Options<postStocksBulkData, ThrowOnError>) => (options.client ?? client).post<postStocksBulkResponses, postStocksBulkErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/stocks/bulk',
     ...options,
@@ -976,7 +976,7 @@ export const bulkCreateEventStocks = <ThrowOnError extends boolean = false>(opti
 /**
  * get_structure_data <GET>
  */
-export const getStructureData = <ThrowOnError extends boolean = false>(options: Options<getStructureSearchBySearchInputData, ThrowOnError>) => (options.client ?? client).get<getStructureSearchBySearchInputResponses, getStructureSearchBySearchInputErrors, ThrowOnError, 'data'>({
+export const getStructureData = <ThrowOnError extends boolean = true>(options: Options<getStructureSearchBySearchInputData, ThrowOnError>) => (options.client ?? client).get<getStructureSearchBySearchInputResponses, getStructureSearchBySearchInputErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/structure/search/{search_input}',
     ...options
@@ -985,7 +985,7 @@ export const getStructureData = <ThrowOnError extends boolean = false>(options: 
 /**
  * anonymize <POST>
  */
-export const anonymize = <ThrowOnError extends boolean = false>(options?: Options<postUsersAnonymizeData, ThrowOnError>) => (options?.client ?? client).post<postUsersAnonymizeResponses, postUsersAnonymizeErrors, ThrowOnError, 'data'>({
+export const anonymize = <ThrowOnError extends boolean = true>(options?: Options<postUsersAnonymizeData, ThrowOnError>) => (options?.client ?? client).post<postUsersAnonymizeResponses, postUsersAnonymizeErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/anonymize',
     ...options
@@ -994,7 +994,7 @@ export const anonymize = <ThrowOnError extends boolean = false>(options?: Option
 /**
  * get_pro_anonymization_eligibility <GET>
  */
-export const getProAnonymizationEligibility = <ThrowOnError extends boolean = false>(options?: Options<getUsersAnonymizeEligibilityData, ThrowOnError>) => (options?.client ?? client).get<getUsersAnonymizeEligibilityResponses, getUsersAnonymizeEligibilityErrors, ThrowOnError, 'data'>({
+export const getProAnonymizationEligibility = <ThrowOnError extends boolean = true>(options?: Options<getUsersAnonymizeEligibilityData, ThrowOnError>) => (options?.client ?? client).get<getUsersAnonymizeEligibilityResponses, getUsersAnonymizeEligibilityErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/anonymize/eligibility',
     ...options
@@ -1003,7 +1003,7 @@ export const getProAnonymizationEligibility = <ThrowOnError extends boolean = fa
 /**
  * post_check_token <POST>
  */
-export const postCheckToken = <ThrowOnError extends boolean = false>(options: Options<postUsersCheckTokenData, ThrowOnError>) => (options.client ?? client).post<postUsersCheckTokenResponses, postUsersCheckTokenErrors, ThrowOnError, 'data'>({
+export const postCheckToken = <ThrowOnError extends boolean = true>(options: Options<postUsersCheckTokenData, ThrowOnError>) => (options.client ?? client).post<postUsersCheckTokenResponses, postUsersCheckTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/check-token',
     ...options,
@@ -1016,7 +1016,7 @@ export const postCheckToken = <ThrowOnError extends boolean = false>(options: Op
 /**
  * connect_as <GET>
  */
-export const connectAs = <ThrowOnError extends boolean = false>(options: Options<getUsersConnectAsByTokenData, ThrowOnError>) => (options.client ?? client).get<getUsersConnectAsByTokenResponses, getUsersConnectAsByTokenErrors, ThrowOnError, 'data'>({
+export const connectAs = <ThrowOnError extends boolean = true>(options: Options<getUsersConnectAsByTokenData, ThrowOnError>) => (options.client ?? client).get<getUsersConnectAsByTokenResponses, getUsersConnectAsByTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/connect-as/{token}',
     ...options
@@ -1025,7 +1025,7 @@ export const connectAs = <ThrowOnError extends boolean = false>(options: Options
 /**
  * cookies_consent <POST>
  */
-export const cookiesConsent = <ThrowOnError extends boolean = false>(options: Options<postUsersCookiesData, ThrowOnError>) => (options.client ?? client).post<postUsersCookiesResponses, postUsersCookiesErrors, ThrowOnError, 'data'>({
+export const cookiesConsent = <ThrowOnError extends boolean = true>(options: Options<postUsersCookiesData, ThrowOnError>) => (options.client ?? client).post<postUsersCookiesResponses, postUsersCookiesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/cookies',
     ...options,
@@ -1038,7 +1038,7 @@ export const cookiesConsent = <ThrowOnError extends boolean = false>(options: Op
 /**
  * get_profile <GET>
  */
-export const getProfile = <ThrowOnError extends boolean = false>(options?: Options<getUsersCurrentData, ThrowOnError>) => (options?.client ?? client).get<getUsersCurrentResponses, getUsersCurrentErrors, ThrowOnError, 'data'>({
+export const getProfile = <ThrowOnError extends boolean = true>(options?: Options<getUsersCurrentData, ThrowOnError>) => (options?.client ?? client).get<getUsersCurrentResponses, getUsersCurrentErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/current',
     ...options
@@ -1047,7 +1047,7 @@ export const getProfile = <ThrowOnError extends boolean = false>(options?: Optio
 /**
  * post_user_email <POST>
  */
-export const postUserEmail = <ThrowOnError extends boolean = false>(options: Options<postUsersEmailData, ThrowOnError>) => (options.client ?? client).post<postUsersEmailResponses, postUsersEmailErrors, ThrowOnError, 'data'>({
+export const postUserEmail = <ThrowOnError extends boolean = true>(options: Options<postUsersEmailData, ThrowOnError>) => (options.client ?? client).post<postUsersEmailResponses, postUsersEmailErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/email',
     ...options,
@@ -1060,7 +1060,7 @@ export const postUserEmail = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * get_user_email_pending_validation <GET>
  */
-export const getUserEmailPendingValidation = <ThrowOnError extends boolean = false>(options?: Options<getUsersEmailPendingValidationData, ThrowOnError>) => (options?.client ?? client).get<getUsersEmailPendingValidationResponses, getUsersEmailPendingValidationErrors, ThrowOnError, 'data'>({
+export const getUserEmailPendingValidation = <ThrowOnError extends boolean = true>(options?: Options<getUsersEmailPendingValidationData, ThrowOnError>) => (options?.client ?? client).get<getUsersEmailPendingValidationResponses, getUsersEmailPendingValidationErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/email_pending_validation',
     ...options
@@ -1069,7 +1069,7 @@ export const getUserEmailPendingValidation = <ThrowOnError extends boolean = fal
 /**
  * patch_user_identity <PATCH>
  */
-export const patchUserIdentity = <ThrowOnError extends boolean = false>(options: Options<patchUsersIdentityData, ThrowOnError>) => (options.client ?? client).patch<patchUsersIdentityResponses, patchUsersIdentityErrors, ThrowOnError, 'data'>({
+export const patchUserIdentity = <ThrowOnError extends boolean = true>(options: Options<patchUsersIdentityData, ThrowOnError>) => (options.client ?? client).patch<patchUsersIdentityResponses, patchUsersIdentityErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/identity',
     ...options,
@@ -1082,7 +1082,7 @@ export const patchUserIdentity = <ThrowOnError extends boolean = false>(options:
 /**
  * submit_user_review <POST>
  */
-export const submitUserReview = <ThrowOnError extends boolean = false>(options: Options<postUsersLogUserReviewData, ThrowOnError>) => (options.client ?? client).post<postUsersLogUserReviewResponses, postUsersLogUserReviewErrors, ThrowOnError, 'data'>({
+export const submitUserReview = <ThrowOnError extends boolean = true>(options: Options<postUsersLogUserReviewData, ThrowOnError>) => (options.client ?? client).post<postUsersLogUserReviewResponses, postUsersLogUserReviewErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/log-user-review',
     ...options,
@@ -1095,7 +1095,7 @@ export const submitUserReview = <ThrowOnError extends boolean = false>(options: 
 /**
  * post_new_password <POST>
  */
-export const postNewPassword = <ThrowOnError extends boolean = false>(options: Options<postUsersNewPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersNewPasswordResponses, postUsersNewPasswordErrors, ThrowOnError, 'data'>({
+export const postNewPassword = <ThrowOnError extends boolean = true>(options: Options<postUsersNewPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersNewPasswordResponses, postUsersNewPasswordErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/new-password',
     ...options,
@@ -1108,7 +1108,7 @@ export const postNewPassword = <ThrowOnError extends boolean = false>(options: O
 /**
  * post_change_password <POST>
  */
-export const postChangePassword = <ThrowOnError extends boolean = false>(options: Options<postUsersPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersPasswordResponses, postUsersPasswordErrors, ThrowOnError, 'data'>({
+export const postChangePassword = <ThrowOnError extends boolean = true>(options: Options<postUsersPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersPasswordResponses, postUsersPasswordErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/password',
     ...options,
@@ -1121,7 +1121,7 @@ export const postChangePassword = <ThrowOnError extends boolean = false>(options
 /**
  * patch_user_phone <PATCH>
  */
-export const patchUserPhone = <ThrowOnError extends boolean = false>(options: Options<patchUsersPhoneData, ThrowOnError>) => (options.client ?? client).patch<patchUsersPhoneResponses, patchUsersPhoneErrors, ThrowOnError, 'data'>({
+export const patchUserPhone = <ThrowOnError extends boolean = true>(options: Options<patchUsersPhoneData, ThrowOnError>) => (options.client ?? client).patch<patchUsersPhoneResponses, patchUsersPhoneErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/phone',
     ...options,
@@ -1134,7 +1134,7 @@ export const patchUserPhone = <ThrowOnError extends boolean = false>(options: Op
 /**
  * reset_password <POST>
  */
-export const resetPassword = <ThrowOnError extends boolean = false>(options: Options<postUsersResetPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersResetPasswordResponses, postUsersResetPasswordErrors, ThrowOnError, 'data'>({
+export const resetPassword = <ThrowOnError extends boolean = true>(options: Options<postUsersResetPasswordData, ThrowOnError>) => (options.client ?? client).post<postUsersResetPasswordResponses, postUsersResetPasswordErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/reset-password',
     ...options,
@@ -1147,7 +1147,7 @@ export const resetPassword = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * signin <POST>
  */
-export const signin = <ThrowOnError extends boolean = false>(options: Options<postUsersSigninData, ThrowOnError>) => (options.client ?? client).post<postUsersSigninResponses, postUsersSigninErrors, ThrowOnError, 'data'>({
+export const signin = <ThrowOnError extends boolean = true>(options: Options<postUsersSigninData, ThrowOnError>) => (options.client ?? client).post<postUsersSigninResponses, postUsersSigninErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/signin',
     ...options,
@@ -1160,7 +1160,7 @@ export const signin = <ThrowOnError extends boolean = false>(options: Options<po
 /**
  * signout <GET>
  */
-export const signout = <ThrowOnError extends boolean = false>(options?: Options<getUsersSignoutData, ThrowOnError>) => (options?.client ?? client).get<getUsersSignoutResponses, getUsersSignoutErrors, ThrowOnError, 'data'>({
+export const signout = <ThrowOnError extends boolean = true>(options?: Options<getUsersSignoutData, ThrowOnError>) => (options?.client ?? client).get<getUsersSignoutResponses, getUsersSignoutErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/signout',
     ...options
@@ -1169,7 +1169,7 @@ export const signout = <ThrowOnError extends boolean = false>(options?: Options<
 /**
  * signup_pro <POST>
  */
-export const signupPro = <ThrowOnError extends boolean = false>(options: Options<postUsersSignupData, ThrowOnError>) => (options.client ?? client).post<postUsersSignupResponses, postUsersSignupErrors, ThrowOnError, 'data'>({
+export const signupPro = <ThrowOnError extends boolean = true>(options: Options<postUsersSignupData, ThrowOnError>) => (options.client ?? client).post<postUsersSignupResponses, postUsersSignupErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/signup',
     ...options,
@@ -1182,7 +1182,7 @@ export const signupPro = <ThrowOnError extends boolean = false>(options: Options
 /**
  * patch_validate_email <PATCH>
  */
-export const patchValidateEmail = <ThrowOnError extends boolean = false>(options: Options<patchUsersValidateEmailData, ThrowOnError>) => (options.client ?? client).patch<patchUsersValidateEmailResponses, patchUsersValidateEmailErrors, ThrowOnError, 'data'>({
+export const patchValidateEmail = <ThrowOnError extends boolean = true>(options: Options<patchUsersValidateEmailData, ThrowOnError>) => (options.client ?? client).patch<patchUsersValidateEmailResponses, patchUsersValidateEmailErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/validate_email',
     ...options,
@@ -1195,7 +1195,7 @@ export const patchValidateEmail = <ThrowOnError extends boolean = false>(options
 /**
  * validate_user <PATCH>
  */
-export const validateUser = <ThrowOnError extends boolean = false>(options: Options<patchUsersValidateSignupByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchUsersValidateSignupByTokenResponses, patchUsersValidateSignupByTokenErrors, ThrowOnError, 'data'>({
+export const validateUser = <ThrowOnError extends boolean = true>(options: Options<patchUsersValidateSignupByTokenData, ThrowOnError>) => (options.client ?? client).patch<patchUsersValidateSignupByTokenResponses, patchUsersValidateSignupByTokenErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/users/validate_signup/{token}',
     ...options
@@ -1204,7 +1204,7 @@ export const validateUser = <ThrowOnError extends boolean = false>(options: Opti
 /**
  * has_invoice <GET>
  */
-export const hasInvoice = <ThrowOnError extends boolean = false>(options: Options<getV2FinanceHasInvoiceData, ThrowOnError>) => (options.client ?? client).get<getV2FinanceHasInvoiceResponses, getV2FinanceHasInvoiceErrors, ThrowOnError, 'data'>({
+export const hasInvoice = <ThrowOnError extends boolean = true>(options: Options<getV2FinanceHasInvoiceData, ThrowOnError>) => (options.client ?? client).get<getV2FinanceHasInvoiceResponses, getV2FinanceHasInvoiceErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/v2/finance/has-invoice',
     ...options
@@ -1213,7 +1213,7 @@ export const hasInvoice = <ThrowOnError extends boolean = false>(options: Option
 /**
  * get_invoices_v2 <GET>
  */
-export const getInvoicesV2 = <ThrowOnError extends boolean = false>(options?: Options<getV2FinanceInvoicesData, ThrowOnError>) => (options?.client ?? client).get<getV2FinanceInvoicesResponses, getV2FinanceInvoicesErrors, ThrowOnError, 'data'>({
+export const getInvoicesV2 = <ThrowOnError extends boolean = true>(options?: Options<getV2FinanceInvoicesData, ThrowOnError>) => (options?.client ?? client).get<getV2FinanceInvoicesResponses, getV2FinanceInvoicesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/v2/finance/invoices',
     ...options
@@ -1222,7 +1222,7 @@ export const getInvoicesV2 = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * create_offer <POST>
  */
-export const createOffer = <ThrowOnError extends boolean = false>(options: Options<postV2OffersData, ThrowOnError>) => (options.client ?? client).post<postV2OffersResponses, postV2OffersErrors, ThrowOnError, 'data'>({
+export const createOffer = <ThrowOnError extends boolean = true>(options: Options<postV2OffersData, ThrowOnError>) => (options.client ?? client).post<postV2OffersResponses, postV2OffersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/v2/offers',
     ...options,
@@ -1235,7 +1235,7 @@ export const createOffer = <ThrowOnError extends boolean = false>(options: Optio
 /**
  * get_reimbursements_csv_v2 <GET>
  */
-export const getReimbursementsCsvV2 = <ThrowOnError extends boolean = false>(options: Options<getV2ReimbursementsCsvData, ThrowOnError>) => (options.client ?? client).get<getV2ReimbursementsCsvResponses, getV2ReimbursementsCsvErrors, ThrowOnError, 'data'>({
+export const getReimbursementsCsvV2 = <ThrowOnError extends boolean = true>(options: Options<getV2ReimbursementsCsvData, ThrowOnError>) => (options.client ?? client).get<getV2ReimbursementsCsvResponses, getV2ReimbursementsCsvErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/v2/reimbursements/csv',
     ...options
@@ -1244,7 +1244,7 @@ export const getReimbursementsCsvV2 = <ThrowOnError extends boolean = false>(opt
 /**
  * fetch_venue_labels <GET>
  */
-export const fetchVenueLabels = <ThrowOnError extends boolean = false>(options?: Options<getVenueLabelsData, ThrowOnError>) => (options?.client ?? client).get<getVenueLabelsResponses, getVenueLabelsErrors, ThrowOnError, 'data'>({
+export const fetchVenueLabels = <ThrowOnError extends boolean = true>(options?: Options<getVenueLabelsData, ThrowOnError>) => (options?.client ?? client).get<getVenueLabelsResponses, getVenueLabelsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venue-labels',
     ...options
@@ -1253,7 +1253,7 @@ export const fetchVenueLabels = <ThrowOnError extends boolean = false>(options?:
 /**
  * delete_venue_provider <DELETE>
  */
-export const deleteVenueProvider = <ThrowOnError extends boolean = false>(options: Options<deleteVenueProvidersByVenueProviderIdData, ThrowOnError>) => (options.client ?? client).delete<deleteVenueProvidersByVenueProviderIdResponses, deleteVenueProvidersByVenueProviderIdErrors, ThrowOnError, 'data'>({
+export const deleteVenueProvider = <ThrowOnError extends boolean = true>(options: Options<deleteVenueProvidersByVenueProviderIdData, ThrowOnError>) => (options.client ?? client).delete<deleteVenueProvidersByVenueProviderIdResponses, deleteVenueProvidersByVenueProviderIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venue-providers/{venue_provider_id}',
     ...options
@@ -1262,7 +1262,7 @@ export const deleteVenueProvider = <ThrowOnError extends boolean = false>(option
 /**
  * update_venue_provider <PUT>
  */
-export const updateVenueProvider = <ThrowOnError extends boolean = false>(options: Options<putVenueProvidersByVenueProviderIdData, ThrowOnError>) => (options.client ?? client).put<putVenueProvidersByVenueProviderIdResponses, putVenueProvidersByVenueProviderIdErrors, ThrowOnError, 'data'>({
+export const updateVenueProvider = <ThrowOnError extends boolean = true>(options: Options<putVenueProvidersByVenueProviderIdData, ThrowOnError>) => (options.client ?? client).put<putVenueProvidersByVenueProviderIdResponses, putVenueProvidersByVenueProviderIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venue-providers/{venue_provider_id}',
     ...options,
@@ -1275,7 +1275,7 @@ export const updateVenueProvider = <ThrowOnError extends boolean = false>(option
 /**
  * get_offers_statistics <GET>
  */
-export const getOffersStatistics = <ThrowOnError extends boolean = false>(options: Options<getVenueByVenueIdOffersStatisticsData, ThrowOnError>) => (options.client ?? client).get<getVenueByVenueIdOffersStatisticsResponses, getVenueByVenueIdOffersStatisticsErrors, ThrowOnError, 'data'>({
+export const getOffersStatistics = <ThrowOnError extends boolean = true>(options: Options<getVenueByVenueIdOffersStatisticsData, ThrowOnError>) => (options.client ?? client).get<getVenueByVenueIdOffersStatisticsResponses, getVenueByVenueIdOffersStatisticsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venue/{venue_id}/offers-statistics',
     ...options
@@ -1288,7 +1288,7 @@ export const getOffersStatistics = <ThrowOnError extends boolean = false>(option
  *
  * @deprecated
  */
-export const getVenues = <ThrowOnError extends boolean = false>(options?: Options<getVenuesData, ThrowOnError>) => (options?.client ?? client).get<getVenuesResponses, getVenuesErrors, ThrowOnError, 'data'>({
+export const getVenues = <ThrowOnError extends boolean = true>(options?: Options<getVenuesData, ThrowOnError>) => (options?.client ?? client).get<getVenuesResponses, getVenuesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues',
     ...options
@@ -1297,7 +1297,7 @@ export const getVenues = <ThrowOnError extends boolean = false>(options?: Option
 /**
  * get_venues_educational_statuses <GET>
  */
-export const getVenuesEducationalStatuses = <ThrowOnError extends boolean = false>(options?: Options<getVenuesEducationalStatusesData, ThrowOnError>) => (options?.client ?? client).get<getVenuesEducationalStatusesResponses, getVenuesEducationalStatusesErrors, ThrowOnError, 'data'>({
+export const getVenuesEducationalStatuses = <ThrowOnError extends boolean = true>(options?: Options<getVenuesEducationalStatusesData, ThrowOnError>) => (options?.client ?? client).get<getVenuesEducationalStatusesResponses, getVenuesEducationalStatusesErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues-educational-statuses',
     ...options
@@ -1306,7 +1306,7 @@ export const getVenuesEducationalStatuses = <ThrowOnError extends boolean = fals
 /**
  * get_venues_of_offerer_from_siret <GET>
  */
-export const getVenuesOfOffererFromSiret = <ThrowOnError extends boolean = false>(options: Options<getVenuesSiretBySiretData, ThrowOnError>) => (options.client ?? client).get<getVenuesSiretBySiretResponses, getVenuesSiretBySiretErrors, ThrowOnError, 'data'>({
+export const getVenuesOfOffererFromSiret = <ThrowOnError extends boolean = true>(options: Options<getVenuesSiretBySiretData, ThrowOnError>) => (options.client ?? client).get<getVenuesSiretBySiretResponses, getVenuesSiretBySiretErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/siret/{siret}',
     ...options
@@ -1315,7 +1315,7 @@ export const getVenuesOfOffererFromSiret = <ThrowOnError extends boolean = false
 /**
  * get_venue <GET>
  */
-export const getVenue = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdResponses, getVenuesByVenueIdErrors, ThrowOnError, 'data'>({
+export const getVenue = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdResponses, getVenuesByVenueIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}',
     ...options
@@ -1324,7 +1324,7 @@ export const getVenue = <ThrowOnError extends boolean = false>(options: Options<
 /**
  * edit_venue <PATCH>
  */
-export const editVenue = <ThrowOnError extends boolean = false>(options: Options<patchVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).patch<patchVenuesByVenueIdResponses, patchVenuesByVenueIdErrors, ThrowOnError, 'data'>({
+export const editVenue = <ThrowOnError extends boolean = true>(options: Options<patchVenuesByVenueIdData, ThrowOnError>) => (options.client ?? client).patch<patchVenuesByVenueIdResponses, patchVenuesByVenueIdErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}',
     ...options,
@@ -1337,7 +1337,7 @@ export const editVenue = <ThrowOnError extends boolean = false>(options: Options
 /**
  * delete_venue_banner <DELETE>
  */
-export const deleteVenueBanner = <ThrowOnError extends boolean = false>(options: Options<deleteVenuesByVenueIdBannerData, ThrowOnError>) => (options.client ?? client).delete<deleteVenuesByVenueIdBannerResponses, deleteVenuesByVenueIdBannerErrors, ThrowOnError, 'data'>({
+export const deleteVenueBanner = <ThrowOnError extends boolean = true>(options: Options<deleteVenuesByVenueIdBannerData, ThrowOnError>) => (options.client ?? client).delete<deleteVenuesByVenueIdBannerResponses, deleteVenuesByVenueIdBannerErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/banner',
     ...options
@@ -1346,7 +1346,7 @@ export const deleteVenueBanner = <ThrowOnError extends boolean = false>(options:
 /**
  * edit_venue_collective_data <PATCH>
  */
-export const editVenueCollectiveData = <ThrowOnError extends boolean = false>(options: Options<patchVenuesByVenueIdCollectiveDataData, ThrowOnError>) => (options.client ?? client).patch<patchVenuesByVenueIdCollectiveDataResponses, patchVenuesByVenueIdCollectiveDataErrors, ThrowOnError, 'data'>({
+export const editVenueCollectiveData = <ThrowOnError extends boolean = true>(options: Options<patchVenuesByVenueIdCollectiveDataData, ThrowOnError>) => (options.client ?? client).patch<patchVenuesByVenueIdCollectiveDataResponses, patchVenuesByVenueIdCollectiveDataErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/collective-data',
     ...options,
@@ -1359,7 +1359,7 @@ export const editVenueCollectiveData = <ThrowOnError extends boolean = false>(op
 /**
  * get_venue_headline_offer <GET>
  */
-export const getVenueHeadlineOffer = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdHeadlineOfferData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdHeadlineOfferResponses, getVenuesByVenueIdHeadlineOfferErrors, ThrowOnError, 'data'>({
+export const getVenueHeadlineOffer = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdHeadlineOfferData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdHeadlineOfferResponses, getVenuesByVenueIdHeadlineOfferErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/headline-offer',
     ...options
@@ -1368,7 +1368,7 @@ export const getVenueHeadlineOffer = <ThrowOnError extends boolean = false>(opti
 /**
  * get_venue_addresses <GET>
  */
-export const getVenueAddresses = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdLocationsData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdLocationsResponses, getVenuesByVenueIdLocationsErrors, ThrowOnError, 'data'>({
+export const getVenueAddresses = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdLocationsData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdLocationsResponses, getVenuesByVenueIdLocationsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/locations',
     ...options
@@ -1377,7 +1377,7 @@ export const getVenueAddresses = <ThrowOnError extends boolean = false>(options:
 /**
  * get_venue_offers_stats <GET>
  */
-export const getVenueOffersStats = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdOffersStatisticsData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdOffersStatisticsResponses, getVenuesByVenueIdOffersStatisticsErrors, ThrowOnError, 'data'>({
+export const getVenueOffersStats = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdOffersStatisticsData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdOffersStatisticsResponses, getVenuesByVenueIdOffersStatisticsErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/offers-statistics',
     ...options
@@ -1386,7 +1386,7 @@ export const getVenueOffersStats = <ThrowOnError extends boolean = false>(option
 /**
  * link_venue_to_pricing_point <POST>
  */
-export const linkVenueToPricingPoint = <ThrowOnError extends boolean = false>(options: Options<postVenuesByVenueIdPricingPointData, ThrowOnError>) => (options.client ?? client).post<postVenuesByVenueIdPricingPointResponses, postVenuesByVenueIdPricingPointErrors, ThrowOnError, 'data'>({
+export const linkVenueToPricingPoint = <ThrowOnError extends boolean = true>(options: Options<postVenuesByVenueIdPricingPointData, ThrowOnError>) => (options.client ?? client).post<postVenuesByVenueIdPricingPointResponses, postVenuesByVenueIdPricingPointErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/pricing-point',
     ...options,
@@ -1399,7 +1399,7 @@ export const linkVenueToPricingPoint = <ThrowOnError extends boolean = false>(op
 /**
  * get_providers_by_venue <GET>
  */
-export const getProvidersByVenue = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdProvidersData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdProvidersResponses, getVenuesByVenueIdProvidersErrors, ThrowOnError, 'data'>({
+export const getProvidersByVenue = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdProvidersData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdProvidersResponses, getVenuesByVenueIdProvidersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/providers',
     ...options
@@ -1408,7 +1408,7 @@ export const getProvidersByVenue = <ThrowOnError extends boolean = false>(option
 /**
  * list_venue_providers <GET>
  */
-export const listVenueProviders = <ThrowOnError extends boolean = false>(options: Options<getVenuesByVenueIdVenueProvidersData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdVenueProvidersResponses, getVenuesByVenueIdVenueProvidersErrors, ThrowOnError, 'data'>({
+export const listVenueProviders = <ThrowOnError extends boolean = true>(options: Options<getVenuesByVenueIdVenueProvidersData, ThrowOnError>) => (options.client ?? client).get<getVenuesByVenueIdVenueProvidersResponses, getVenuesByVenueIdVenueProvidersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/venue-providers',
     ...options
@@ -1417,7 +1417,7 @@ export const listVenueProviders = <ThrowOnError extends boolean = false>(options
 /**
  * create_venue_provider <POST>
  */
-export const createVenueProvider = <ThrowOnError extends boolean = false>(options: Options<postVenuesByVenueIdVenueProvidersData, ThrowOnError>) => (options.client ?? client).post<postVenuesByVenueIdVenueProvidersResponses, postVenuesByVenueIdVenueProvidersErrors, ThrowOnError, 'data'>({
+export const createVenueProvider = <ThrowOnError extends boolean = true>(options: Options<postVenuesByVenueIdVenueProvidersData, ThrowOnError>) => (options.client ?? client).post<postVenuesByVenueIdVenueProvidersResponses, postVenuesByVenueIdVenueProvidersErrors, ThrowOnError, 'data'>({
     responseStyle: 'data',
     url: '/venues/{venue_id}/venue-providers',
     ...options,
