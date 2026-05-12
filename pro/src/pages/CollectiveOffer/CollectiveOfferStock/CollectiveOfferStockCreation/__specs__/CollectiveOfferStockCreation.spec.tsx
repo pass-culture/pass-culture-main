@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -13,7 +13,7 @@ import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/Collective
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
@@ -68,10 +68,12 @@ describe('CollectiveOfferStockCreation', () => {
     const offerTemplate = getCollectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+      offerTemplate
+    )
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
     await waitFor(() => {
-      expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
+      expect(apiNew.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -79,13 +81,15 @@ describe('CollectiveOfferStockCreation', () => {
     const offerTemplate = getCollectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+      offerTemplate
+    )
     renderCollectiveStockCreation(
       '/offre/A1/collectif/stocks?requete=1',
       defaultProps
     )
     await waitFor(() => {
-      expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+      expect(apiNew.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
     })
   })
 })
