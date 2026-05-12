@@ -566,10 +566,10 @@ def _get_user_bonification_attribute(user: users_models.User) -> subscription_mo
 
     bonification_status = users_api.get_user_qf_bonification_status(user)
     if bonification_status in (
+        subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND,
         subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
         subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
         subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
-        subscription_models.QFBonificationStatus.UNKNOWN_KO,
     ):
         return subscription_models.QFBonificationStatus.KO
     return bonification_status

@@ -28,7 +28,7 @@ import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 
 
 @pytest.mark.usefixtures("db_session")
-class GetQuotientFamilialTest:
+class QuotientFamilialApplicationTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
     def test_apply_for_quotient_familial_bonus(self, update_external_user_mock):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
@@ -85,6 +85,7 @@ class GetQuotientFamilialTest:
                     gender=users_models.GenderEnum.M,
                 )
             ],
+            http_status_code=200,
         )
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -160,7 +161,7 @@ class GetQuotientFamilialTest:
             any_order=True,
         )
 
-    def test_custodian_not_found(self):
+    def test_application_not_found(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -172,16 +173,60 @@ class GetQuotientFamilialTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=404)
+            mock.get(
+                api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+                status_code=404,
+                json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
+            )
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+        assert bonus_fraud_check.source_data().quotient_familial is None
+        assert bonus_fraud_check.source_data().http_status_code == 404
+        assert bonus_fraud_check.source_data().error_code == "37003"
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "ko"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "ko"
+
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
+
+    def test_person_not_found(self):
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                quotient_familial=None
+            ).model_dump(),
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+                status_code=422,
+                json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
+            )
+
+            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
         assert bonus_fraud_check.source_data().quotient_familial is None
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
         assert len(push_testing.requests) == 2
         push_request1, push_request2 = push_testing.requests
         assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
@@ -215,6 +260,12 @@ class GetQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "ko"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "ko"
+
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
@@ -245,6 +296,12 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "ko"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "ko"
 
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
@@ -289,7 +346,7 @@ class GetQuotientFamilialTest:
                 except api_particulier.ParticulierApiUnavailable as exc:
                     sentry_sdk.capture_exception(exc)
 
-        assert len(captured_events) == 2
+        assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
         assert stacktrace_frames[1]["vars"]["quotient_familial_response"] == "[REDACTED]"
@@ -319,9 +376,11 @@ class GetQuotientFamilialTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=422, json={})
+            mock.get(
+                api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR
+            )
 
-            with pytest.raises(api_particulier.ParticulierApiQueryError):
+            with pytest.raises(api_particulier.ParticulierApiException):
                 bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.updatedAt > twelve_hours_ago

@@ -609,8 +609,12 @@ class AccountTest:
                 subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
             ),
             (
-                subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND,
+                subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
                 subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
+            ),
+            (
+                subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
+                subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND,
             ),
         ],
     )
@@ -665,7 +669,7 @@ class AccountTest:
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.UNKNOWN_KO.value
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.KO.value
 
     def test_get_user_profile_bonification_status_takes_latest_fraud_check(self, client):
         user = users_factories.BeneficiaryFactory(age=18)

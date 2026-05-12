@@ -95,7 +95,8 @@ class FraudReasonCode(enum.Enum):
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
     # Specific to API Particulier
-    CUSTODIAN_NOT_FOUND = "quotient_familial_not_found"
+    APPLICATION_NOT_FOUND = "application_not_found"
+    PERSON_NOT_FOUND = "person_not_found"
     NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
     QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
 
@@ -129,11 +130,22 @@ class QFBonificationStatus(enum.Enum):
     NOT_ELIGIBLE = "not_eligible"
     STARTED = "started"
     CUSTODIAN_NOT_FOUND = "custodian_not_found"
+    APPLICATION_NOT_FOUND = "application_not_found"
     NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
     QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
     TOO_MANY_RETRIES = "too_many_retries"
     GRANTED = "granted"
-    UNKNOWN_KO = "unknown_ko"
+    KO = "ko"
+
+
+class DisabilityBonificationStatus(enum.Enum):
+    ELIGIBLE = "eligible"
+    NOT_ELIGIBLE = "not_eligible"
+    STARTED = "started"
+    TOO_MANY_RETRIES = "too_many_retries"
+    PERSON_NOT_FOUND = "person_not_found"
+    APPLICATION_NOT_FOUND = "application_not_found"
+    GRANTED = "granted"
     KO = "ko"
 
 

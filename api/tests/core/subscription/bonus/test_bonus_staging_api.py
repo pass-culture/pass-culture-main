@@ -111,13 +111,15 @@ class StagingQuotientFamilialTest:
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
         )
         requests_mock.get(
-            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=bonus_fixtures.CUSTODIAN_NOT_FOUND_FIXTURE, status_code=404
+            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+            json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
+            status_code=404,
         )
 
         bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
 
         assert qf_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert qf_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
+        assert qf_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits

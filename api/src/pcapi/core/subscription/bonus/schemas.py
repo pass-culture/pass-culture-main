@@ -47,6 +47,7 @@ class QuotientFamilialBonusCreditContent(BaseModelV2):
     quotient_familial: QuotientFamilialContent | None = None
     children: list[QuotientFamilialChild] | None = None
     http_status_code: int | None = None
+    error_code: str | None = None
 
 
 class DisabilityBonusCreditContent(BaseModelV2):
