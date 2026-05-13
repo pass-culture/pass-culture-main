@@ -1015,7 +1015,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @hybrid_property
     def isReleased(self) -> bool:
         offerer = self.venue.managingOfferer
-        return self._released and offerer.isActive and offerer.isValidated
+        return self.isPublished and offerer.isActive and offerer.isValidated
 
     @isReleased.inplace.expression
     @classmethod
@@ -1024,21 +1024,21 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
         # explicit join on Venue then Offerer
         return sa.and_(
-            cls._released,
+            cls.isPublished,
             offerers_models.Offerer.isActive,
             offerers_models.Offerer.isValidated,
         )
 
     @hybrid_property
-    def _released(self) -> bool:
+    def isPublished(self) -> bool:
         now = datetime.datetime.now(datetime.UTC)
         return self.validation == OfferValidationStatus.APPROVED and (
             self.publicationDatetime is not None and self.publicationDatetime <= now
         )
 
-    @_released.inplace.expression
+    @isPublished.inplace.expression
     @classmethod
-    def _releasedExpression(cls) -> ColumnElement[bool]:
+    def _isPublishedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             cls.validation == OfferValidationStatus.APPROVED,
             cls.publicationDatetime != None,
@@ -1125,7 +1125,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @is_eligible_for_search.inplace.expression
     @classmethod
     def _is_eligible_for_search_expression(cls) -> ColumnElement[bool]:
-        return sa.and_(cls._released, Stock._bookable)
+        return sa.and_(cls.isPublished, Stock._bookable)
 
     @hybrid_property
     def is_released_and_bookable(self) -> bool:
@@ -1134,7 +1134,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @is_released_and_bookable.inplace.expression
     @classmethod
     def _is_released_and_bookable_expression(cls) -> ColumnElement[bool]:
-        return sa.and_(cls._released, Stock._bookable)
+        return sa.and_(cls.isPublished, Stock._bookable)
 
     @hybrid_property
     def is_offer_released_with_bookable_stock(self) -> bool:
@@ -1143,7 +1143,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @is_offer_released_with_bookable_stock.inplace.expression
     @classmethod
     def _is_offer_released_with_bookable_stock_expression(cls) -> ColumnElement[bool]:
-        return sa.and_(cls._released, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
+        return sa.and_(cls.isPublished, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
