@@ -26,6 +26,7 @@ from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.core.finance import api as finance_api
@@ -896,6 +897,18 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
             return "Épuisée"
         case offer_mixin.OfferStatus.INACTIVE:
             return "En pause"
+        case _:
+            return status.value
+
+
+def format_cultural_outreach_status(status: cultural_outreach_models.CulturalOutreachStatus) -> str:
+    match status:
+        case cultural_outreach_models.CulturalOutreachStatus.PENDING:
+            return "En attente"
+        case cultural_outreach_models.CulturalOutreachStatus.QUALIFIED:
+            return "Qualifiée"
+        case cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED:
+            return "Disqualifiée"
         case _:
             return status.value
 
@@ -2375,3 +2388,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_postal_code_to_departement_name"] = format_postal_code_to_departement_name
     app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
     app.jinja_env.filters["format_time"] = format_time
+    app.jinja_env.filters["format_cultural_outreach_status"] = format_cultural_outreach_status

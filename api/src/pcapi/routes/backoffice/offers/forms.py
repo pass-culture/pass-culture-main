@@ -14,6 +14,7 @@ from flask_wtf import FlaskForm
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import show
+from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -57,6 +58,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     HIGHLIGHT_REQUEST = "Valorisation thématique (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
     ALLOCINE_ID = "Identifiant Allociné"
+    CULTURAL_OUTREACH = "Action de médiation"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -120,6 +122,7 @@ form_field_configuration = {
     "HEADLINE": {"field": "boolean", "operator": ["EQUALS"]},
     "HIGHLIGHT_REQUEST": {"field": "highlight", "operator": ["IN"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
+    "CULTURAL_OUTREACH": {"field": "cultural_outreach", "operator": ["IN"]},
 }
 
 algolia_form_field_configuration = {
@@ -205,6 +208,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "boolean",
                 "provider",
                 "offerer_tags",
+                "cultural_outreach",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -386,6 +390,15 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     show_type = fields.PCSelectMultipleField(
         "Type de spectacle",
         choices=[(str(s), show.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show.SHOW_TYPES_LABEL_BY_CODE],
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    cultural_outreach = fields.PCSelectMultipleField(
+        "Action de médiation",
+        choices=forms_utils.choices_from_enum(
+            cultural_outreach_models.CulturalOutreachStatus,
+            formatter=filters.format_cultural_outreach_status,
+        ),
         search_inline=True,
         field_list_compatibility=True,
     )
