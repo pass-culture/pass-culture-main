@@ -72,7 +72,8 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         raise CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
 
 
-class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
+class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
+    # aka: CDS
     def __init__(
         self,
         cinema_id: str,

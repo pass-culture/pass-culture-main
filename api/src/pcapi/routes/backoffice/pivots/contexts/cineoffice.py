@@ -8,8 +8,8 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
-from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIException
+from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
 from pcapi.models import db
 from pcapi.utils import requests
 
@@ -109,7 +109,7 @@ class CineofficeContext(PivotContext):
     @classmethod
     def check_if_api_call_is_ok(cls, account_id: str, api_token: str) -> None:
         try:
-            client = CineDigitalServiceAPIClient(cinema_id="", account_id=account_id, cinema_api_token=api_token)
+            client = CineOfficeAPIClient(cinema_id="", account_id=account_id, cinema_api_token=api_token)
             client.get_rating()
             flash("Connexion à l'API OK.", "success")
         except (requests.exceptions.RequestException, CineDigitalServiceAPIException) as exc:

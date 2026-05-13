@@ -16,7 +16,7 @@ import pcapi.utils.date as utils_date
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
+from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
 from pcapi.core.providers.clients.cds_serializers import MediaCDS
 from pcapi.core.providers.clients.cds_serializers import ShowCDS
 from pcapi.core.providers.models import VenueProvider
@@ -54,7 +54,7 @@ class CDSStocks(LocalProvider):
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
-        self.client_cds = CineDigitalServiceAPIClient(
+        self.client_cds = CineOfficeAPIClient(
             cinema_id=self.cinema_id,
             account_id=self.accountId,
             cinema_api_token=self.apiToken,
