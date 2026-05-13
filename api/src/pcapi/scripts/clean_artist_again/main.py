@@ -20,9 +20,11 @@ import os
 import typing
 
 import sqlalchemy as sa
+from sqlalchemy import exc as sa_exc
 
 from pcapi.core.artist import models as artist_models
 from pcapi.models import db
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -84,17 +86,31 @@ def process_batch(batch_rows: tuple, commit: bool) -> None:
         )
 
     # Update
-    try:
-        for link in artist_offer_links_to_update:
-            update_stmt = (
-                sa.update(artist_models.ArtistOfferLink)
-                .filter_by(
-                    offer_id=link["offer_id"],
-                    artist_id=link["_target_artist_id"],
+    for link in artist_offer_links_to_update:
+        try:
+            with atomic():
+                update_stmt = (
+                    sa.update(artist_models.ArtistOfferLink)
+                    .filter_by(
+                        offer_id=link["offer_id"],
+                        artist_id=link["_target_artist_id"],
+                    )
+                    .values(artist_id=None, custom_name=link["custom_name"])
                 )
-                .values(artist_id=None, custom_name=link["custom_name"])
+                db.session.execute(update_stmt)
+
+        except sa_exc.IntegrityError:
+            # Si on arrive ici, c'est que (offer_id, artist_type, custom_name) existe déjà,
+            # du coup on supprime la ligne qui contient l'artist_id
+            logger.info(
+                f"Suppression de l'offer artist link pour l'offre {row[OFFER_ID_HEADER]} avec l'artist id: {link['_target_artist_id']}"
             )
-            db.session.execute(update_stmt)
+
+            delete_stmt = sa.delete(artist_models.ArtistOfferLink).where(
+                artist_models.ArtistOfferLink.offer_id == link["offer_id"],
+                artist_models.ArtistOfferLink.artist_id == link["_target_artist_id"],
+            )
+            db.session.execute(delete_stmt)
 
         if commit:
             db.session.commit()
@@ -102,11 +118,8 @@ def process_batch(batch_rows: tuple, commit: bool) -> None:
         else:
             db.session.flush()
             logger.info(f"Dry run : {len(artist_offer_links_to_update)} liens auraient été mis à jour.")
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Erreur lors du batch : {e}")
-    finally:
-        db.session.expunge_all()
+
+    db.session.expunge_all()
 
 
 def main(commit: bool, filename: str, start_from_batch: int = 1) -> None:

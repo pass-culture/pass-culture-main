@@ -109,3 +109,36 @@ def test_without_artist_id_should_not_update(mock_read_csv):
     assert link.artist_id == None
     assert link.custom_name == "Ursula K. Le Guin"
     assert link.artist_name == "Ursula K. Le Guin"
+
+
+@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
+def test_handle_duplicates(mock_read_csv):
+    offer = offers_factories.OfferFactory()
+    artist = artist_factories.ArtistFactory(name="Mariana Enriquez")
+    another_artist = artist_factories.ArtistFactory(name="Mariana Enriquez")
+    artist_factories.ArtistOfferLinkFactory(
+        offer=offer, custom_name=None, artist=artist, artist_type=artist_models.ArtistType.AUTHOR
+    )
+    artist_factories.ArtistOfferLinkFactory(
+        offer=offer, custom_name=None, artist=another_artist, artist_type=artist_models.ArtistType.AUTHOR
+    )
+
+    offer_id = offer.id
+    artist_name = "mariana enriquez"
+    mock_read_csv.return_value = [
+        {
+            "offer_id": str(offer_id),
+            "custom_name": artist_name,
+            "artist_id": str(artist.id),
+        },
+        {
+            "offer_id": str(offer_id),
+            "custom_name": artist_name,
+            "artist_id": str(another_artist.id),
+        },
+    ]
+
+    main(commit=True, filename="mock_filename")
+
+    links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).all()
+    assert len(links) == 1
