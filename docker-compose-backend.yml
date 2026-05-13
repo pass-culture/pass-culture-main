@@ -44,10 +44,13 @@ services:
         - action: sync
           path: ./api
           target: /usr/src/app
-          # Exclude the project virtual environment — it could be for a
-          # different platform in the container
           ignore:
+            # Exclude the project virtual environment — it could be for a
+            # different platform in the container
             - .venv/
+            # Exclude mounted volumes
+            - tests/
+            - documentation/static/openapi.json
         - action: rebuild
           path: ./api/uv.lock
     env_file:
@@ -81,10 +84,12 @@ services:
         - action: sync
           path: ./api
           target: /usr/src/app
-          # Exclude the project virtual environment — it could be for a
-          # different platform in the container
           ignore:
+            # Exclude the project virtual environment — it could be for a
+            # different platform in the container
             - .venv/
+            # Exclude mounted volumes
+            - tests/
         - action: rebuild
           path: ./api/uv.lock
     env_file:
