@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest'
 import { formatPhoneNumber } from '../formatPhoneNumber'
 
 describe('formatPhoneNumber', () => {
-  it('should return formatted number in INTERNATIONAL format for +33618886536', () => {
-    expect(formatPhoneNumber('+33618886536')).toBe('+33 6 18 88 65 36')
+  it('should return formatted number in INTERNATIONAL format for +33612345678', () => {
+    expect(formatPhoneNumber('+33612345678')).toBe('+33 6 12 34 56 78')
   })
 
-  it('should return formatted number in NATIONAL format for +33618886536', () => {
-    expect(formatPhoneNumber('+33618886536', 'NATIONAL')).toBe('06 18 88 65 36')
+  it('should return formatted number in NATIONAL format for +33612345678', () => {
+    expect(formatPhoneNumber('+33612345678', 'NATIONAL')).toBe('06 12 34 56 78')
   })
 
   it('should return formatted number in INTERNATIONAL format for +262690886536', () => {
