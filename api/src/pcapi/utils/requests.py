@@ -75,9 +75,9 @@ def _redact_url(url: str | None) -> str | None:
             "codeCogInseeCommuneNaissance",
             "annee",
             "mois",
-            # Allociné and Cine Digital Service (CDS) want authentication token to appear in GET
+            # Allociné and Ciné Office (ex-CDS) want authentication token to appear in GET
             # requests. We don't want to log them.
-            # For Allociné, the query param name is 'token'. For CDS, the name is 'api_token'
+            # For Allociné, the query param name is 'token'. For Ciné Office, the name is 'api_token'
             "token",
         ]
     )

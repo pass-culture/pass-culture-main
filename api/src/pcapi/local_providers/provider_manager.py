@@ -7,8 +7,8 @@ import pcapi.connectors.ems as ems_connectors
 from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
-from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
 from pcapi.core.providers.etls.cgr_etl import CGRExtractTransformLoadProcess
+from pcapi.core.providers.etls.cine_office_etl import CineOfficeExtractTransformLoadProcess
 from pcapi.local_providers.allocine.allocine_stocks import AllocineStocks
 from pcapi.local_providers.cinema_providers.boost.boost_stocks import BoostStocks
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
@@ -27,18 +27,18 @@ logger = logging.getLogger(__name__)
 _NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
     "AllocineStocks": AllocineStocks,
     "BoostStocks": BoostStocks,
-    "CDSStocks": CDSStocks,
+    "CDSStocks": CDSStocks,  # INFO: CDS is the old name of CineOffice
     "CGRStocks": CGRStocks,
 }
 
 _LOCAL_CLASS_NAME_TO_ETL_CLASS: dict[
     str,
     Type[BoostExtractTransformLoadProcess]
-    | Type[CDSExtractTransformLoadProcess]
+    | Type[CineOfficeExtractTransformLoadProcess]
     | Type[CGRExtractTransformLoadProcess],
 ] = {
     "BoostStocks": BoostExtractTransformLoadProcess,
-    "CDSStocks": CDSExtractTransformLoadProcess,
+    "CDSStocks": CineOfficeExtractTransformLoadProcess,  # INFO: CDS is the old name of CineOffice
     "CGRStocks": CGRExtractTransformLoadProcess,
 }
 

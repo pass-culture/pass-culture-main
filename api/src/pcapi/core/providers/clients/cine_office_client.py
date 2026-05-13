@@ -19,7 +19,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
-from . import cds_serializers
+from . import cine_office_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ SEATMAP_HARDCODED_LABELS_SCREENID = "SEATMAP_HARDCODED_LABELS_SCREENID_"
 CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE = "TICKET_ALREADY_CANCELED"
 
 
-class CineDigitalServiceAPIException(external_bookings_exceptions.ExternalBookingException):
+class CineOfficeAPIException(external_bookings_exceptions.ExternalBookingException):
     pass
 
 
@@ -63,16 +63,17 @@ def _extract_reason_from_response(response: requests.Response) -> str:
 
 def _raise_for_status(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
     """
-    Raise `CineDigitalServiceAPIException` is status >= 400
+    Raise `CineOfficeAPIException` is status >= 400
     """
     if response.status_code >= 400:
         reason = _extract_reason_from_response(response)
         if cinema_api_token:
             reason = reason.replace(cinema_api_token, "")  # filter out token
-        raise CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
+        raise CineOfficeAPIException(f"Error on CineOffice API on {request_detail} : {reason}")
 
 
-class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
+# INFO: The old name of CineOffice was CineDigitalService or CDS
+class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -93,7 +94,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
         This method logs response at debug level.
 
-        :raise: CineDigitalServiceAPIException
+        :raise: CineOfficeAPIException
         """
         response = requests.get(url, params={"api_token": self.token}, timeout=self.request_timeout)
         _raise_for_status(response, self.token, f"GET {url}")
@@ -110,7 +111,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         If an error occurred, it returns the JSON body explaining the error.
 
         :payload: Must be a stringified JSON
-        :raise: CineDigitalServiceAPIException
+        :raise: CineOfficeAPIException
         """
         response = requests.put(
             url,
@@ -133,7 +134,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         """
         Make an authenticated POST by adding an `api_token` in query params.
 
-        :raise: CineDigitalServiceAPIException
+        :raise: CineOfficeAPIException
         """
         response = requests.post(
             url,
@@ -157,79 +158,79 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         by caching their results based on their input arguments, thus avoiding costly recomputations.
         """
         data = self._authenticated_get(f"{self.base_url}cinemas")
-        cinemas = TypeAdapter(list[cds_serializers.CinemaCDS]).validate_python(data)
+        cinemas = TypeAdapter(list[cine_office_serializers.Cinema]).validate_python(data)
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
                 return cinema.is_internet_sale_gauge_active
-        raise CineDigitalServiceAPIException(
+        raise CineOfficeAPIException(
             f"Cinema internet_sale_gauge_active not found in Cine Digital Service API "
             f"for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
-    def get_shows(self) -> list[cds_serializers.ShowCDS]:
+    def get_shows(self) -> list[cine_office_serializers.Show]:
         data = self._authenticated_get(f"{self.base_url}shows")
-        shows = TypeAdapter(list[cds_serializers.ShowCDS]).validate_python(data)
+        shows = TypeAdapter(list[cine_office_serializers.Show]).validate_python(data)
 
         if not shows:
             logger.warning("[CDS] Api call returned no show", extra={"cinemaId": self.cinema_id, "url": self.base_url})
 
         return shows
 
-    def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
+    def get_show(self, show_id: int) -> cine_office_serializers.Show:
         """
         Fetch all shows and filter them using `show_id`
 
         :raise: `ExternalBookingShowDoesNotExistError` if no show has the given `show_id`
         """
         data = self._authenticated_get(f"{self.base_url}shows")
-        shows = TypeAdapter(list[cds_serializers.ShowCDS]).validate_python(data)
+        shows = TypeAdapter(list[cine_office_serializers.Show]).validate_python(data)
         for show in shows:
             if show.id == show_id:
                 return show
         raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
 
-    def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
+    def get_venue_movies(self) -> list[cine_office_serializers.Media]:
         data = self._authenticated_get(f"{self.base_url}media")
-        return TypeAdapter(list[cds_serializers.MediaCDS]).validate_python(data)
+        return TypeAdapter(list[cine_office_serializers.Media]).validate_python(data)
 
     def get_rating(self) -> dict:  # method used by BO to check authentication is working
         return self._authenticated_get(f"{self.base_url}rating")
 
-    def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
+    def get_voucher_payment_type(self) -> cine_office_serializers.PaymentTypeCDS:
         data = self._authenticated_get(f"{self.base_url}paiementtype")
-        payment_types = TypeAdapter(list[cds_serializers.PaymentTypeCDS]).validate_python(data)
+        payment_types = TypeAdapter(list[cine_office_serializers.PaymentTypeCDS]).validate_python(data)
         for payment_type in payment_types:
             if payment_type.internal_code == VOUCHER_PAYMENT_TYPE_CDS:
                 return payment_type
 
-        raise CineDigitalServiceAPIException(
+        raise CineOfficeAPIException(
             f"Pass Culture payment type not found in Cine Digital Service API for cinemaId={self.cinema_id}"
             f" & url={self.base_url}"
         )
 
     @lru_cache
-    def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
+    def get_pc_voucher_types(self) -> list[cine_office_serializers.VoucherType]:
         data = self._authenticated_get(f"{self.base_url}vouchertype")
-        voucher_types = TypeAdapter(list[cds_serializers.VoucherTypeCDS]).validate_python(data)
+        voucher_types = TypeAdapter(list[cine_office_serializers.VoucherType]).validate_python(data)
         return [
             voucher_type
             for voucher_type in voucher_types
             if voucher_type.code == PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
 
-    def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
+    def get_screen(self, screen_id: int) -> cine_office_serializers.Screen:
         data = self._authenticated_get(f"{self.base_url}screens")
-        screens = TypeAdapter(list[cds_serializers.ScreenCDS]).validate_python(data)
+        screens = TypeAdapter(list[cine_office_serializers.Screen]).validate_python(data)
         for screen in screens:
             if screen.id == screen_id:
                 return screen
-        raise CineDigitalServiceAPIException(
+        raise CineOfficeAPIException(
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     def get_hardcoded_seatmap(
         self,
-        show: cds_serializers.ShowCDS,
+        show: cine_office_serializers.Show,
     ) -> list[list[str | typing.Literal[0]]]:
         """Return a matrix (a list of lists) of values, where each
         value is a seat number as a string (e.g. "A7" or "123"), or
@@ -247,8 +248,8 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         return seatmap
 
     def get_available_seat(
-        self, show: cds_serializers.ShowCDS, screen: cds_serializers.ScreenCDS
-    ) -> list[cds_serializers.SeatCDS]:
+        self, show: cine_office_serializers.Show, screen: cine_office_serializers.Screen
+    ) -> list[cine_office_serializers.Seat]:
         seatmap = self.get_seatmap(show.id)
         available_seats_index = [
             (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] == 1
@@ -258,11 +259,11 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         best_seat = self._get_closest_seat_to_center((seatmap.nb_row // 2, seatmap.nb_col // 2), available_seats_index)
 
         hardcoded_seatmap = self.get_hardcoded_seatmap(show)
-        return [cds_serializers.SeatCDS(best_seat, screen, seatmap, hardcoded_seatmap)]
+        return [cine_office_serializers.Seat(best_seat, screen, seatmap, hardcoded_seatmap)]
 
     def get_available_duo_seat(
-        self, show: cds_serializers.ShowCDS, screen: cds_serializers.ScreenCDS
-    ) -> list[cds_serializers.SeatCDS]:
+        self, show: cine_office_serializers.Show, screen: cine_office_serializers.Screen
+    ) -> list[cine_office_serializers.Seat]:
         seatmap = self.get_seatmap(show.id)
         seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
@@ -287,13 +288,13 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         hardcoded_seatmap = self.get_hardcoded_seatmap(show)
 
         return [
-            cds_serializers.SeatCDS(first_seat, screen, seatmap, hardcoded_seatmap),
-            cds_serializers.SeatCDS(second_seat, screen, seatmap, hardcoded_seatmap),
+            cine_office_serializers.Seat(first_seat, screen, seatmap, hardcoded_seatmap),
+            cine_office_serializers.Seat(second_seat, screen, seatmap, hardcoded_seatmap),
         ]
 
-    def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
+    def get_seatmap(self, show_id: int) -> cine_office_serializers.Seatmap:
         data = self._authenticated_get(f"{self.base_url}shows/{show_id}/seatmap")
-        seatmap_cds = cds_serializers.SeatmapCDS.model_validate(data)
+        seatmap_cds = cine_office_serializers.Seatmap.model_validate(data)
         return seatmap_cds
 
     def _get_closest_seat_to_center(
@@ -321,11 +322,11 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         )
 
         if api_response:
-            cancel_errors = cds_serializers.CancelBookingsErrorsCDS.model_validate(api_response)
+            cancel_errors = cine_office_serializers.CancelBookingsErrors.model_validate(api_response)
             if {CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE} == set(cancel_errors.root.values()):
                 return  # We don't raise if the tickets have already been cancelled
             sep = "\n"
-            raise CineDigitalServiceAPIException(
+            raise CineOfficeAPIException(
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.root.items()])}"
             )
 
@@ -335,18 +336,18 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
     ) -> list[cinema_client.Ticket]:
         quantity = booking.quantity
         if quantity < 0 or quantity > 2:
-            raise CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
+            raise CineOfficeAPIException(f"Booking quantity={quantity} should be 1 or 2")
 
         show = self.get_show(show_id)
         screen = self.get_screen(show.screen.id)
         show_voucher_type = self.get_voucher_type_for_show(show)
         if not show_voucher_type:
-            raise CineDigitalServiceAPIException(f"Unavailable pass culture tariff for show={show.id}")
+            raise CineOfficeAPIException(f"Unavailable pass culture tariff for show={show.id}")
 
         ticket_sale_collection = self._create_ticket_sale_dict(show, quantity, screen, show_voucher_type)
         payement_collection = self._create_transaction_payment(quantity, show_voucher_type)
 
-        create_transaction_body = cds_serializers.CreateTransactionBodyCDS(
+        create_transaction_body = cine_office_serializers.CreateTransactionBody(
             cinema_id=self.cinema_id,
             is_cancelled=False,
             transaction_date=date_utils.get_naive_utc_now().strftime(CDS_DATE_FORMAT),
@@ -356,7 +357,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
         json_response = self._authenticated_post(f"{self.base_url}transaction/create", payload=create_transaction_body)
 
-        create_transaction_response = cds_serializers.CreateTransactionResponseCDS.model_validate(json_response)
+        create_transaction_response = cine_office_serializers.CreateTransactionResponse.model_validate(json_response)
 
         for ticket in create_transaction_response.tickets:
             add_to_queue(
@@ -377,11 +378,11 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
     def _create_ticket_sale_dict(
         self,
-        show: cds_serializers.ShowCDS,
+        show: cine_office_serializers.Show,
         booking_quantity: int,
-        screen: cds_serializers.ScreenCDS,
-        show_voucher_type: cds_serializers.VoucherTypeCDS,
-    ) -> list[cds_serializers.TicketSaleCDS]:
+        screen: cine_office_serializers.Screen,
+        show_voucher_type: cine_office_serializers.VoucherType,
+    ) -> list[cine_office_serializers.TicketSale]:
         seats_to_book = []
         if not show.is_disabled_seatmap and not show.is_empty_seatmap:
             seats_to_book = (
@@ -397,7 +398,7 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
 
         ticket_sale_list = []
         for i in range(booking_quantity):
-            ticket_sale = cds_serializers.TicketSaleCDS(
+            ticket_sale = cine_office_serializers.TicketSale(
                 id=(i + 1) * -1,
                 cinema_id=self.cinema_id,
                 operation_date=date_utils.get_naive_utc_now().strftime(CDS_DATE_FORMAT),
@@ -405,8 +406,8 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
                 seat_col=seats_to_book[i].seatCol if bool(seats_to_book) else None,
                 seat_row=seats_to_book[i].seatRow if bool(seats_to_book) else None,
                 seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,
-                tariff=cds_serializers.IdObjectCDS(id=show_voucher_type.tariff.id),
-                show=cds_serializers.IdObjectCDS(id=show.id),
+                tariff=cine_office_serializers.IdObject(id=show_voucher_type.tariff.id),
+                show=cine_office_serializers.IdObject(id=show.id),
                 voucher_type=PASS_CULTURE_VOUCHER_CODE,
                 disabled_person=False,
             )
@@ -415,18 +416,18 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         return ticket_sale_list
 
     def _create_transaction_payment(
-        self, booking_quantity: int, show_voucher_type: cds_serializers.VoucherTypeCDS
-    ) -> list[cds_serializers.TransactionPayementCDS]:
+        self, booking_quantity: int, show_voucher_type: cine_office_serializers.VoucherType
+    ) -> list[cine_office_serializers.TransactionPayement]:
         payment_type = self.get_voucher_payment_type()
 
         assert show_voucher_type.tariff
         payement_collection = []
         for i in range(booking_quantity):
-            payment = cds_serializers.TransactionPayementCDS(
+            payment = cine_office_serializers.TransactionPayement(
                 id=(i + 1) * -1,
                 amount=show_voucher_type.tariff.price,
-                payement_type=cds_serializers.IdObjectCDS(id=payment_type.id),
-                voucher_type=cds_serializers.IdObjectCDS(id=show_voucher_type.id),
+                payement_type=cine_office_serializers.IdObject(id=payment_type.id),
+                voucher_type=cine_office_serializers.IdObject(id=show_voucher_type.id),
             )
             payement_collection.append(payment)
 
@@ -436,9 +437,9 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
     # when `CDSStocks` is removed
     def get_voucher_type_for_show(
         self,
-        show: cds_serializers.ShowCDS,
-        pc_voucher_types: list[cds_serializers.VoucherTypeCDS] | None = None,
-    ) -> cds_serializers.VoucherTypeCDS | None:
+        show: cine_office_serializers.Show,
+        pc_voucher_types: list[cine_office_serializers.VoucherType] | None = None,
+    ) -> cine_office_serializers.VoucherType | None:
         pc_voucher_types = pc_voucher_types or self.get_pc_voucher_types()
 
         show_pc_vouchers = []
@@ -455,18 +456,18 @@ class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
         min_price_voucher = min(show_pc_vouchers, key=attrgetter("tariff.price"))
         return min_price_voucher
 
-    def get_cinema_infos(self) -> cds_serializers.CinemaCDS:
+    def get_cinema_infos(self) -> cine_office_serializers.Cinema:
         data = self._authenticated_get(f"{self.base_url}cinemas")
-        cinemas = TypeAdapter(list[cds_serializers.CinemaCDS]).validate_python(data)
+        cinemas = TypeAdapter(list[cine_office_serializers.Cinema]).validate_python(data)
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
                 return cinema
-        raise CineDigitalServiceAPIException(
+        raise CineOfficeAPIException(
             f"Cinema not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     @lru_cache
     def get_media_options(self) -> dict[int, str]:
         data = self._authenticated_get(f"{self.base_url}mediaoptions")
-        media_options = TypeAdapter(list[cds_serializers.MediaOptionCDS]).validate_python(data)
+        media_options = TypeAdapter(list[cine_office_serializers.MediaOption]).validate_python(data)
         return {media_option.id: media_option.ticketlabel for media_option in media_options if media_option.ticketlabel}

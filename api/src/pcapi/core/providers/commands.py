@@ -15,8 +15,8 @@ from pcapi.utils import logging as logging_utils
 from pcapi.utils.blueprint import Blueprint
 
 from .etls.boost_etl import BoostExtractTransformLoadProcess
-from .etls.cds_etl import CDSExtractTransformLoadProcess
 from .etls.cgr_etl import CGRExtractTransformLoadProcess
+from .etls.cine_office_etl import CineOfficeExtractTransformLoadProcess
 from .etls.ems_etl import EMSExtractTransformLoadProcess
 from .titelive_utils import generate_titelive_gtl_from_file
 
@@ -52,12 +52,13 @@ def test_etl_integration(venue_provider_id: int) -> None:
     local_class_to_etl_mapping: dict[
         str,
         Type[BoostExtractTransformLoadProcess]
-        | Type[CDSExtractTransformLoadProcess]
+        | Type[CineOfficeExtractTransformLoadProcess]
         | Type[CGRExtractTransformLoadProcess]
         | Type[EMSExtractTransformLoadProcess],
     ] = {
         "BoostStocks": BoostExtractTransformLoadProcess,
-        "CDSStocks": CDSExtractTransformLoadProcess,
+        # INFO: CDS is the old name of CineOffice
+        "CDSStocks": CineOfficeExtractTransformLoadProcess,
         "CGRStocks": CGRExtractTransformLoadProcess,
         "EMSStocks": EMSExtractTransformLoadProcess,
     }
@@ -157,7 +158,7 @@ def synchronize_allocine_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
 def synchronize_cine_office_stocks() -> None:
-    """Launch Cine Office synchronization."""
+    """Launch Ciné Office synchronization."""
     cine_office_stocks_provider = providers_repository.get_provider_by_local_class("CDSStocks")
     assert cine_office_stocks_provider  # helps mypy
     venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider.id)
