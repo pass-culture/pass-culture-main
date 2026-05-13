@@ -186,7 +186,7 @@ export const OfferEducationalStock = <
                 <DatePicker
                   disabled={!canEditDates}
                   label={BOOKING_LIMIT_DATETIME_LABEL}
-                  minDate={new Date(offer.dateCreated)}
+                  minDate={new Date()}
                   maxDate={
                     isDateValid(new Date(values.startDatetime))
                       ? new Date(values.startDatetime)
