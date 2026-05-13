@@ -117,6 +117,7 @@ class GetVenueResponseModel(HttpBodyModel):
     location: address_serialize.LocationResponseModelV2
     hasActiveIndividualOffer: bool
     is_caledonian: bool
+    isOnboarded: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None
     isValidated: bool
     allowedOnAdage: bool
@@ -132,7 +133,12 @@ class GetVenueResponseModel(HttpBodyModel):
     visualDisabilityCompliant: bool | None
 
     @classmethod
-    def build(cls, venue: offerers_models.Venue, has_non_free_offers: bool) -> typing.Self:
+    def build(
+        cls,
+        venue: offerers_models.Venue,
+        has_non_free_offers: bool,
+        is_onboarded: bool,
+    ) -> typing.Self:
         external_accessibility_data = None
         external_accessibility_id = None
         if venue.accessibilityProvider:
@@ -171,6 +177,7 @@ class GetVenueResponseModel(HttpBodyModel):
             description=venue.description,
             externalAccessibilityData=external_accessibility_data,
             externalAccessibilityId=external_accessibility_id,
+            isOnboarded=is_onboarded,
             isOpenToPublic=venue.isOpenToPublic,
             isPermanent=venue.isPermanent,
             publicName=venue.publicName,
