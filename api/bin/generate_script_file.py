@@ -53,7 +53,6 @@ PYTHON_TEMPLATE = """\
 import argparse
 import logging
 
-from pcapi.app import app
 from pcapi.models import db
 
 
@@ -64,6 +63,8 @@ def main() -> None:
     pass
 
 if __name__ == "__main__":
+    from pcapi.app import app
+
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
