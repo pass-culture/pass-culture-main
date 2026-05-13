@@ -6,7 +6,7 @@ import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenTo
 import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { objectKeys } from '@/commons/utils/object'
-import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
+import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
 import { getVolunteeringUrlError } from './getVolunteeringUrlError'
 import type { VenueEditionFormValues } from './types'

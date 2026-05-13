@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 import { emailSchema } from '@/commons/utils/isValidEmail'
-import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
+import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
 import type { RequestFormValues } from './type'
 

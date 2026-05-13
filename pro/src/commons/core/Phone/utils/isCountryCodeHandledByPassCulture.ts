@@ -2,7 +2,7 @@ import {
   type PassCultureHandledCountryCode,
   PC_HANDLED_PHONE_COUNTRY_CODES,
   type PlusString,
-} from '../../constants'
+} from '@/commons/core/Phone/constants'
 
 /**
  * Checks if the given country code is handled by Pass Culture.
