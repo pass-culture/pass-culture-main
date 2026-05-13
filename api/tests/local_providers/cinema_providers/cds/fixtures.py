@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from pcapi.core.providers.clients.cds_serializers import IdObjectCDS
-from pcapi.core.providers.clients.cds_serializers import MediaCDS
-from pcapi.core.providers.clients.cds_serializers import ShowCDS
-from pcapi.core.providers.clients.cds_serializers import ShowTariffCDS
-from pcapi.core.providers.clients.cds_serializers import ShowsMediaoptionsCDS
+from pcapi.core.providers.clients.cine_office_serializers import IdObject
+from pcapi.core.providers.clients.cine_office_serializers import Media
+from pcapi.core.providers.clients.cine_office_serializers import Show
+from pcapi.core.providers.clients.cine_office_serializers import ShowTariff
+from pcapi.core.providers.clients.cine_office_serializers import ShowsMediaOptions
 
 
-MOVIE_1 = MediaCDS(
+MOVIE_1 = Media(
     id=123,
     title="Coupez !",
     duration=7200,
@@ -17,7 +17,7 @@ MOVIE_1 = MediaCDS(
     allocineid="291483",
 )
 
-MOVIE_2 = MediaCDS(
+MOVIE_2 = Media(
     id=51,
     title="Top Gun",
     duration=9000,
@@ -27,7 +27,7 @@ MOVIE_2 = MediaCDS(
     allocineid="2133",
 )
 
-MOVIE_1_SHOW_1 = ShowCDS(
+MOVIE_1_SHOW_1 = Show(
     id=1,
     is_cancelled=False,
     is_deleted=False,
@@ -36,13 +36,13 @@ MOVIE_1_SHOW_1 = ShowCDS(
     remaining_place=77,
     internet_remaining_place=10,
     showtime=datetime(2022, 6, 20, 11, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=123),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=123),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
-MOVIE_1_SHOW_1_SOLD_OUT = ShowCDS(
+MOVIE_1_SHOW_1_SOLD_OUT = Show(
     id=1,
     is_cancelled=False,
     is_deleted=False,
@@ -51,13 +51,13 @@ MOVIE_1_SHOW_1_SOLD_OUT = ShowCDS(
     remaining_place=77,
     internet_remaining_place=0,
     showtime=datetime(2022, 6, 20, 11, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=123),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=123),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
-MOVIE_2_SHOW_1 = ShowCDS(
+MOVIE_2_SHOW_1 = Show(
     id=2,
     is_cancelled=False,
     is_deleted=False,
@@ -66,13 +66,13 @@ MOVIE_2_SHOW_1 = ShowCDS(
     remaining_place=78,
     internet_remaining_place=10,
     showtime=datetime(2022, 7, 1, 12, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=51),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=51),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
-MOVIE_1_SHOW_2 = ShowCDS(
+MOVIE_1_SHOW_2 = Show(
     id=3,
     is_cancelled=False,
     is_deleted=False,
@@ -81,13 +81,13 @@ MOVIE_1_SHOW_2 = ShowCDS(
     remaining_place=78,
     internet_remaining_place=11,
     showtime=datetime(2022, 7, 1, 12, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=123),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=123),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
-MOVIE_OTHER_SHOW_1 = ShowCDS(
+MOVIE_OTHER_SHOW_1 = Show(
     id=1,
     is_cancelled=False,
     is_deleted=False,
@@ -96,13 +96,13 @@ MOVIE_OTHER_SHOW_1 = ShowCDS(
     remaining_place=77,
     internet_remaining_place=10,
     showtime=datetime(2022, 6, 20, 11, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=88888),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=88888),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
-MOVIE_OTHER_SHOW_2 = ShowCDS(
+MOVIE_OTHER_SHOW_2 = Show(
     id=2,
     is_cancelled=False,
     is_deleted=False,
@@ -111,10 +111,10 @@ MOVIE_OTHER_SHOW_2 = ShowCDS(
     remaining_place=77,
     internet_remaining_place=10,
     showtime=datetime(2022, 7, 1, 12, 00, 00),
-    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-    screen=IdObjectCDS(id=1),
-    media=IdObjectCDS(id=88888),
-    showsMediaoptionsCollection=[ShowsMediaoptionsCDS(mediaoptionsid=IdObjectCDS(id=5))],
+    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+    screen=IdObject(id=1),
+    media=IdObject(id=88888),
+    showsMediaoptionsCollection=[ShowsMediaOptions(mediaoptionsid=IdObject(id=5))],
 )
 
 CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE = {

@@ -94,9 +94,9 @@ class EditCGRForm(EditPivotForm):
 
 
 class EditCineOfficeForm(EditPivotForm):
-    cinema_id = fields.PCStringField("Identifiant cinéma (CDS)")
-    account_id = fields.PCStringField("Nom de compte (CDS)")
-    api_token = fields.PCStringField("Clé API (CDS)")
+    cinema_id = fields.PCStringField("Identifiant cinéma (Ciné Office)")
+    account_id = fields.PCStringField("Nom de compte (Ciné Office)")
+    api_token = fields.PCStringField("Clé API (Ciné Office)")
 
     def validate_account_id(self, account_id: fields.PCStringField) -> fields.PCStringField:
         # account_id is used to build a url; only some specific characters are allowed

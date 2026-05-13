@@ -38,7 +38,7 @@ class FeatureToggle(enum.Enum):
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
-    DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
+    DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Ciné Office (ex-CDS)"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
     DISCORD_ENABLE_NEW_ACCESS = "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
@@ -56,7 +56,7 @@ class FeatureToggle(enum.Enum):
         "Active la synchronisation des comptes bancaires avec l'outil finance externe (Cegid XRP Flex)"
     )
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
-    ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
+    ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API Ciné Office (ex-CDS)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des entités juridiques avec un cron"
     ENABLE_CHRONICLES_SYNC = "Activer la synchronisation des chroniques"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"

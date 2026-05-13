@@ -5,8 +5,8 @@ import typing
 from pcapi import settings
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
-from pcapi.core.providers.clients import cds_serializers
-from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
+from pcapi.core.providers.clients import cine_office_serializers
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate
@@ -18,20 +18,19 @@ from .cinema_etl_template import ShowStockData
 logger = logging.getLogger(__name__)
 
 
-class CineDigitalServiceExtractResult(typing.TypedDict):
-    movies: list[cds_serializers.MediaCDS]
+class CineOfficeExtractResult(typing.TypedDict):
+    movies: list[cine_office_serializers.Media]
     media_options: dict[int, str]
-    shows: list[cds_serializers.ShowCDS]
-    voucher_types: list[cds_serializers.VoucherTypeCDS]
+    shows: list[cine_office_serializers.Show]
+    voucher_types: list[cine_office_serializers.VoucherType]
     is_internet_sale_gauge_active: bool
 
 
-class CDSExtractTransformLoadProcess(
-    CinemaETLProcessTemplate[CineDigitalServiceAPIClient, CineDigitalServiceExtractResult]
-):
+# INFO: The old name of CineOffice was CineDigitalService or CDS
+class CineOfficeExtractTransformLoadProcess(CinemaETLProcessTemplate[CineOfficeAPIClient, CineOfficeExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
-    linked to `CDS`.
+    linked to `Ciné Office`.
     """
 
     def __init__(self, venue_provider: models.VenueProvider):
@@ -42,7 +41,7 @@ class CDSExtractTransformLoadProcess(
         cinema_details = repository.get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
         super().__init__(
             venue_provider=venue_provider,
-            api_client=CineDigitalServiceAPIClient(
+            api_client=CineOfficeAPIClient(
                 cinema_id=venue_provider.venueIdAtOfferProvider,
                 account_id=cinema_details.accountId,
                 cinema_api_token=cinema_details.cinemaApiToken,
@@ -50,7 +49,7 @@ class CDSExtractTransformLoadProcess(
             ),
         )
 
-    def _extract(self) -> CineDigitalServiceExtractResult:
+    def _extract(self) -> CineOfficeExtractResult:
         """
         Step 1: Fetch data from CDS API
         """
@@ -62,7 +61,7 @@ class CDSExtractTransformLoadProcess(
             "is_internet_sale_gauge_active": self.api_client.get_internet_sale_gauge_active(),
         }
 
-    def _transform(self, extract_result: CineDigitalServiceExtractResult) -> list[LoadableMovie]:
+    def _transform(self, extract_result: CineOfficeExtractResult) -> list[LoadableMovie]:
         loadable_data_by_movie_uuid: dict[str, LoadableMovie] = {}
         is_internet_sale_gauge_active = extract_result["is_internet_sale_gauge_active"]
         for movie in extract_result["movies"]:
@@ -151,7 +150,7 @@ class CDSExtractTransformLoadProcess(
 
         return loadable_movies
 
-    def _extract_result_to_log_dict(self, extract_result: CineDigitalServiceExtractResult) -> dict:
+    def _extract_result_to_log_dict(self, extract_result: CineOfficeExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
         return {
             "movies": [movie.model_dump_json() for movie in extract_result["movies"]],

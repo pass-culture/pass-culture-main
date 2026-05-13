@@ -31,8 +31,8 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.providers.clients import cds_client
 from pcapi.core.providers.clients import cgr_client
+from pcapi.core.providers.clients import cine_office_client
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
@@ -516,7 +516,7 @@ def _batch_cancel_bookings(
                 mark_transaction_as_invalid()
             except (
                 cgr_client.CGRAPIException,
-                cds_client.CineDigitalServiceAPIException,
+                cine_office_client.CineOfficeAPIException,
                 ems.EMSAPIException,
             ) as exc:
                 logger.info(

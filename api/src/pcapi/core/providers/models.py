@@ -266,7 +266,7 @@ class CinemaProviderPivot(PcObject, Model):
 
 
 class CDSCinemaDetails(PcObject, Model):
-    """Stores info on the specific login details of a cinema synced with CDS"""
+    """Stores info on the specific login details of a cinema synced with CineOffice (CDS is the old name)"""
 
     __tablename__ = "cds_cinema_details"
 

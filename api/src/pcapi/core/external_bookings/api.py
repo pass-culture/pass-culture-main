@@ -20,8 +20,8 @@ from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.clients.boost_client import BoostAPIClient
-from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.core.providers.clients.cgr_client import CGRAPIClient
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.models import db
 from pcapi.models import feature
@@ -124,7 +124,7 @@ def _check_cinema_booking_is_enabled(local_class: str) -> None:
 
 def _instantiate_cinema_api_client(
     venue_id: int,
-) -> CineDigitalServiceAPIClient | BoostAPIClient | CGRAPIClient | EMSAPIClient:
+) -> CineOfficeAPIClient | BoostAPIClient | CGRAPIClient | EMSAPIClient:
     local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
     sentry_sdk.set_tag("cinema-provider-local-class", local_class)
 
@@ -135,7 +135,7 @@ def _instantiate_cinema_api_client(
             cds_cinema_details = providers_repository.get_cds_cinema_details(cinema_id)
             cinema_api_token = cds_cinema_details.cinemaApiToken
             account_id = cds_cinema_details.accountId
-            return CineDigitalServiceAPIClient(
+            return CineOfficeAPIClient(
                 cinema_id, account_id, cinema_api_token, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
             )
         case "BoostStocks":

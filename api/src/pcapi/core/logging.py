@@ -291,7 +291,7 @@ def install_logging() -> None:
 def _enable_cinema_provider_debug_logging() -> None:
     logging.getLogger("pcapi.connectors.api_allocine").setLevel(logging.DEBUG)
     logging.getLogger("pcapi.core.providers.clients.boost_client").setLevel(logging.DEBUG)
-    logging.getLogger("pcapi.core.providers.clients.cds_client").setLevel(logging.DEBUG)
+    logging.getLogger("pcapi.core.providers.clients.cine_office_client").setLevel(logging.DEBUG)
     logging.getLogger("pcapi.core.providers.clients.cgr_client").setLevel(logging.DEBUG)
     logging.getLogger("pcapi.connectors.ems").setLevel(logging.DEBUG)
 

@@ -9,10 +9,10 @@ import pcapi.core.providers.repository as providers_repository
 import pcapi.core.providers.tasks as providers_tasks
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.models import Movie
-from pcapi.core.providers.clients.cds_serializers import IdObjectCDS
-from pcapi.core.providers.clients.cds_serializers import ShowCDS
-from pcapi.core.providers.clients.cds_serializers import ShowTariffCDS
-from pcapi.core.providers.clients.cds_serializers import ShowsMediaoptionsCDS
+from pcapi.core.providers.clients.cine_office_serializers import IdObject
+from pcapi.core.providers.clients.cine_office_serializers import Show
+from pcapi.core.providers.clients.cine_office_serializers import ShowTariff
+from pcapi.core.providers.clients.cine_office_serializers import ShowsMediaOptions
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
@@ -184,7 +184,7 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_venue_movies")
+    @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         venue = offerers_factories.VenueFactory()
@@ -226,7 +226,7 @@ class Returns201Test:
 
         mocked_shows = [
             {
-                "show_information": ShowCDS(
+                "show_information": Show(
                     id=1,
                     is_cancelled=False,
                     is_deleted=False,
@@ -235,16 +235,16 @@ class Returns201Test:
                     remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=123),
-                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
+                    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+                    screen=IdObject(id=1),
+                    media=IdObject(id=123),
+                    shows_mediaoptions_collection=[ShowsMediaOptions(media_options_id=IdObject(id=12))],
                 ),
                 "price": 5,
                 "price_label": "pass Culture",
             },
             {
-                "show_information": ShowCDS(
+                "show_information": Show(
                     id=2,
                     is_cancelled=False,
                     is_deleted=False,
@@ -253,10 +253,10 @@ class Returns201Test:
                     remaining_place=78,
                     internet_remaining_place=11,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
-                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-                    screen=IdObjectCDS(id=1),
-                    media=IdObjectCDS(id=51),
-                    shows_mediaoptions_collection=[ShowsMediaoptionsCDS(media_options_id=IdObjectCDS(id=12))],
+                    shows_tariff_pos_type_collection=[ShowTariff(tariff=IdObject(id=4))],
+                    screen=IdObject(id=1),
+                    media=IdObject(id=51),
+                    shows_mediaoptions_collection=[ShowsMediaOptions(media_options_id=IdObject(id=12))],
                 ),
                 "price": 6,
                 "price_label": "pass Culture",

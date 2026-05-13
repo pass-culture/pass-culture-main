@@ -10,8 +10,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.providers.clients import cds_serializers
-from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
+from pcapi.core.providers.clients import cine_office_serializers
+from pcapi.core.providers.etls.cine_office_etl import CineOfficeExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -27,7 +27,7 @@ FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=60)).strftime
 
 
 @mock.patch("pcapi.settings.CDS_API_URL", "cds_api.fake/")
-class CDSExtractTransformLoadProcessTest:
+class CineOfficeExtractTransformLoadProcessTest:
     def setup_cinema_objects(self):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(
@@ -72,7 +72,7 @@ class CDSExtractTransformLoadProcessTest:
     def test_execute_should_raise_inactive_provider(self):
         venue_provider = self.setup_cinema_objects()
         venue_provider.provider.isActive = False
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveProvider):
             etl_process.execute()
@@ -80,14 +80,14 @@ class CDSExtractTransformLoadProcessTest:
     def test_execute_should_raise_inactive_venue_provider_provider(self):
         venue_provider = self.setup_cinema_objects()
         venue_provider.isActive = False
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveVenueProvider):
             etl_process.execute()
 
     def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
         venue_provider = self.setup_cinema_objects()
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
         requests_mock.get(
             "https://account_id.cds_api.fake/media?api_token=fake_token",
             exc=requests.exceptions.ConnectTimeout("pas le time"),
@@ -99,7 +99,7 @@ class CDSExtractTransformLoadProcessTest:
 
         assert len(caplog.records) >= 1
         last_record = caplog.records[-1]
-        assert last_record.message == "[CDSExtractTransformLoadProcess] Step 1 - Extract failed"
+        assert last_record.message == "[CineOfficeExtractTransformLoadProcess] Step 1 - Extract failed"
         assert last_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -112,13 +112,13 @@ class CDSExtractTransformLoadProcessTest:
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
 
         assert extract_result == {
             "movies": [
-                cds_serializers.MediaCDS(
+                cine_office_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -127,7 +127,7 @@ class CDSExtractTransformLoadProcessTest:
                     visanumber="123",
                     allocineid=None,
                 ),
-                cds_serializers.MediaCDS(
+                cine_office_serializers.Media(
                     id=2,
                     title="Test movie #2",
                     duration=5400,
@@ -136,7 +136,7 @@ class CDSExtractTransformLoadProcessTest:
                     visanumber="456",
                     allocineid=None,
                 ),
-                cds_serializers.MediaCDS(
+                cine_office_serializers.Media(
                     id=3,
                     title="Test movie #3",
                     duration=6600,
@@ -152,20 +152,22 @@ class CDSExtractTransformLoadProcessTest:
                 14: "3D",
             },
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cine_office_serializers.VoucherType(
                     id=2,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
+                    tariff=cine_office_serializers.Tariff(
+                        id=96, price=5, active=True, labeltariff="Tarif pass Culture"
+                    ),
                 ),
-                cds_serializers.VoucherTypeCDS(
+                cine_office_serializers.VoucherType(
                     id=3,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=97, price=6, active=True, labeltariff="Tarif PC"),
+                    tariff=cine_office_serializers.Tariff(id=97, price=6, active=True, labeltariff="Tarif PC"),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cine_office_serializers.Show(
                     id=1,
                     is_cancelled=False,
                     is_deleted=False,
@@ -177,17 +179,19 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 28, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96)),
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=96)),
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=3)),
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cine_office_serializers.IdObject(id=10),
+                    media=cine_office_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=12)
+                        )
                     ],
                 ),
-                cds_serializers.ShowCDS(
+                cine_office_serializers.Show(
                     id=2,
                     is_cancelled=False,
                     is_deleted=False,
@@ -199,16 +203,20 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 29, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96))
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=96))
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cine_office_serializers.IdObject(id=10),
+                    media=cine_office_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12)),
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=14)),
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=12)
+                        ),
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=14)
+                        ),
                     ],
                 ),
-                cds_serializers.ShowCDS(
+                cine_office_serializers.Show(
                     id=3,
                     is_cancelled=False,
                     is_deleted=False,
@@ -220,12 +228,14 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 30, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96))
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=96))
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=20),
-                    media=cds_serializers.IdObjectCDS(id=2),
+                    screen=cine_office_serializers.IdObject(id=20),
+                    media=cine_office_serializers.IdObject(id=2),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=13))
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=13)
+                        )
                     ],
                 ),
             ],
@@ -236,7 +246,7 @@ class CDSExtractTransformLoadProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result)
@@ -298,10 +308,10 @@ class CDSExtractTransformLoadProcessTest:
     def test_transform_should_drop_show_without_pc_voucher_type(self, caplog):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
-                cds_serializers.MediaCDS(
+                cine_office_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -313,15 +323,15 @@ class CDSExtractTransformLoadProcessTest:
             ],
             "media_options": {},
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cine_office_serializers.VoucherType(
                     id=2,
                     code="FULL_PRICE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Plein tarif"),
+                    tariff=cine_office_serializers.Tariff(id=96, price=5, active=True, labeltariff="Plein tarif"),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cine_office_serializers.Show(
                     id=53,
                     is_cancelled=False,
                     is_deleted=False,
@@ -334,12 +344,14 @@ class CDSExtractTransformLoadProcessTest:
                     ),
                     shows_tariff_pos_type_collection=[
                         # only full price tariff
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cine_office_serializers.IdObject(id=10),
+                    media=cine_office_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=12)
+                        )
                     ],
                 ),
             ],
@@ -351,7 +363,10 @@ class CDSExtractTransformLoadProcessTest:
 
         assert len(caplog.records) >= 2
         missing_tariff_record = caplog.records[-2]
-        assert missing_tariff_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing pass Culture pricing"
+        assert (
+            missing_tariff_record.message
+            == "[CineOfficeExtractTransformLoadProcess] Step 2 - Missing pass Culture pricing"
+        )
         assert missing_tariff_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -367,7 +382,8 @@ class CDSExtractTransformLoadProcessTest:
 
         movie_without_show_record = caplog.records[-1]
         assert (
-            movie_without_show_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Movie does not have shows"
+            movie_without_show_record.message
+            == "[CineOfficeExtractTransformLoadProcess] Step 2 - Movie does not have shows"
         )
         assert movie_without_show_record.extra == {
             "venue_id": venue_provider.venueId,
@@ -385,10 +401,10 @@ class CDSExtractTransformLoadProcessTest:
     def test_transform_should_drop_show_without_movie(self, caplog):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        etl_process = CDSExtractTransformLoadProcess(venue_provider)
+        etl_process = CineOfficeExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
-                cds_serializers.MediaCDS(
+                cine_office_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -400,15 +416,17 @@ class CDSExtractTransformLoadProcessTest:
             ],
             "media_options": {},
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cine_office_serializers.VoucherType(
                     id=2,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
+                    tariff=cine_office_serializers.Tariff(
+                        id=96, price=5, active=True, labeltariff="Tarif pass Culture"
+                    ),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cine_office_serializers.Show(
                     id=56,
                     is_cancelled=False,
                     is_deleted=False,
@@ -420,12 +438,14 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 28, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cine_office_serializers.ShowTariff(tariff=cine_office_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=2),  # not present in movie
+                    screen=cine_office_serializers.IdObject(id=10),
+                    media=cine_office_serializers.IdObject(id=2),  # not present in movie
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cine_office_serializers.ShowsMediaOptions(
+                            media_options_id=cine_office_serializers.IdObject(id=12)
+                        )
                     ],
                 ),
             ],
@@ -437,7 +457,7 @@ class CDSExtractTransformLoadProcessTest:
 
         assert len(caplog.records) >= 2
         missing_movie_record = caplog.records[-2]
-        assert missing_movie_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing movie"
+        assert missing_movie_record.message == "[CineOfficeExtractTransformLoadProcess] Step 2 - Missing movie"
         assert missing_movie_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -453,7 +473,8 @@ class CDSExtractTransformLoadProcessTest:
 
         movie_without_show_record = caplog.records[-1]
         assert (
-            movie_without_show_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Movie does not have shows"
+            movie_without_show_record.message
+            == "[CineOfficeExtractTransformLoadProcess] Step 2 - Movie does not have shows"
         )
         assert movie_without_show_record.extra == {
             "venue_id": venue_provider.venueId,
@@ -475,7 +496,7 @@ class CDSExtractTransformLoadProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
-        CDSExtractTransformLoadProcess(venue_provider).execute()
+        CineOfficeExtractTransformLoadProcess(venue_provider).execute()
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"1%{venue_id}%CDS").one_or_none()
         offer_2 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"2%{venue_id}%CDS").one_or_none()
@@ -567,7 +588,7 @@ class CDSExtractTransformLoadProcessTest:
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
 
-        CDSExtractTransformLoadProcess(venue_provider).execute()
+        CineOfficeExtractTransformLoadProcess(venue_provider).execute()
         db.session.query(offers_models.PriceCategory).count() == 2
-        CDSExtractTransformLoadProcess(venue_provider).execute()
+        CineOfficeExtractTransformLoadProcess(venue_provider).execute()
         db.session.query(offers_models.PriceCategory).count() == 2
