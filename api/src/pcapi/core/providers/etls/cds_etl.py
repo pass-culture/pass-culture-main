@@ -6,7 +6,7 @@ from pcapi import settings
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
 from pcapi.core.providers.clients import cds_serializers
-from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate

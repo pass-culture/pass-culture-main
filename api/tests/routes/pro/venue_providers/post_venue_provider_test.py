@@ -184,7 +184,7 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_venue_movies")
+    @patch("pcapi.core.providers.clients.cine_office_client.CineDigitalServiceAPIClient.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         venue = offerers_factories.VenueFactory()

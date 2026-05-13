@@ -20,7 +20,7 @@ from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
 from pcapi.core.external_bookings.api import send_booking_notification_to_external_service
-from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 

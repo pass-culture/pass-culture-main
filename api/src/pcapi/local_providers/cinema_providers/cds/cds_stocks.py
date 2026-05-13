@@ -16,9 +16,9 @@ import pcapi.utils.date as utils_date
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
 from pcapi.core.providers.clients.cds_serializers import MediaCDS
 from pcapi.core.providers.clients.cds_serializers import ShowCDS
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider

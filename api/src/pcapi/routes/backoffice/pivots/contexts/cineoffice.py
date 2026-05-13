@@ -8,8 +8,8 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
-from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIException
-from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
+from pcapi.core.providers.clients.cine_office_client import CineDigitalServiceAPIException
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.models import db
 from pcapi.utils import requests
 

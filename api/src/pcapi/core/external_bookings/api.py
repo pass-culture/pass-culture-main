@@ -20,8 +20,8 @@ from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.clients.boost_client import BoostAPIClient
-from pcapi.core.providers.clients.cds_client import CineOfficeAPIClient
 from pcapi.core.providers.clients.cgr_client import CGRAPIClient
+from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.models import db
 from pcapi.models import feature

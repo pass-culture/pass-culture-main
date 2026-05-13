@@ -11,7 +11,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
-from pcapi.core.providers.clients import cds_client
+from pcapi.core.providers.clients import cine_office_client
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils.crypto import decrypt
@@ -476,7 +476,7 @@ class CreatePivotTest(PostEndpointHelper):
 
     @patch(
         "pcapi.routes.backoffice.pivots.contexts.cineoffice.CineofficeContext.check_if_api_call_is_ok",
-        side_effect=cds_client.CineDigitalServiceAPIException("Test"),
+        side_effect=cine_office_client.CineDigitalServiceAPIException("Test"),
     )
     def test_create_pivot_with_external_booking_exception(self, mock_check_if_api_call_is_ok, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
