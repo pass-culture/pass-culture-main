@@ -11,7 +11,6 @@ import { parse } from '@/commons/utils/query-string'
 
 import { administrationRouteGroup } from './routes/administrationRouteGroup'
 import { partnerRouteGroup } from './routes/partnerRouteGroup'
-import { reimbursementsRouteGroup } from './routes/reimbursementsRouteGroup'
 import { routesEcoDesign } from './subroutesEcoDesignMap'
 import {
   routesIndividualOfferWizard,
@@ -45,7 +44,6 @@ export const routes: CustomRouteTree = [
   },
   administrationRouteGroup,
   partnerRouteGroup,
-  reimbursementsRouteGroup,
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),

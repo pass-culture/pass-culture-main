@@ -3,12 +3,14 @@ import { AdministrationLayout } from '@/layouts/AdministrationLayout/Administrat
 
 import type { CustomRouteGroup } from '../types'
 import { mustHaveSelectedAdminOfferer } from '../utils'
+import { reimbursementsRouteGroup } from './reimbursementsRouteGroup'
 
 export const administrationRouteGroup: CustomRouteGroup = {
   path: '/administration',
   loader: withUserPermissions(mustHaveSelectedAdminOfferer),
   Component: AdministrationLayout,
   children: [
+    reimbursementsRouteGroup,
     {
       path: 'collaborateurs',
       handle: {

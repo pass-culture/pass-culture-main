@@ -1,13 +1,7 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { login } from './helpers/auth'
-import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
-
-interface ProUserResponse {
-  user: {
-    email: string
-  }
-}
+import { BASE_API_URL, createRegularOnboardedProUser } from './helpers/sandbox'
 
 test.describe('Navigation', () => {
   let userEmail: string
@@ -17,11 +11,7 @@ test.describe('Navigation', () => {
       baseURL: BASE_API_URL,
     })
 
-    const userData = await sandboxCall<ProUserResponse>(
-      requestContext,
-      'GET',
-      `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
-    )
+    const userData = await createRegularOnboardedProUser(requestContext)
     userEmail = userData.user.email
 
     await requestContext.dispose()

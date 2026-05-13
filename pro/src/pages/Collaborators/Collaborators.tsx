@@ -9,7 +9,6 @@ import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { OffererMemberStatus } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -107,151 +106,138 @@ const Collaborators = () => {
   const MAX_COLLABORATORS = 10
 
   return (
-    <>
-      <MainHeading mainHeading="Collaborateurs" />
+    <section>
+      <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
-      {isSelectedOffererValidated && (
-        <section>
-          <h2 className={styles['main-list-title']}>
-            Liste des collaborateurs
-          </h2>
-
-          {members.length > 0 && (
-            <div className={styles['members-container']}>
-              <table
-                className={classNames(styles['members-list'], {
-                  [styles['members-list--withMarginBottom']]:
-                    members.length > MAX_COLLABORATORS,
-                })}
-              >
-                <thead>
-                  <tr className={styles['members-list-tr']}>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Email
-                    </th>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Statut
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map(
-                    ({ email, status }, index) =>
-                      !(
-                        !displayAllMembers && index > MAX_COLLABORATORS - 1
-                      ) && (
-                        <tr key={email} className={styles['members-list-tr']}>
-                          <td
-                            className={classNames(
-                              styles['member-email'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {email}
-                          </td>
-                          <td
-                            className={classNames(
-                              styles['member-status'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {status === OffererMemberStatus.VALIDATED ? (
-                              <Tag
-                                variant={TagVariant.SUCCESS}
-                                label="Validé"
-                              />
-                            ) : (
-                              <Tag
-                                variant={TagVariant.DEFAULT}
-                                label="En attente"
-                              />
-                            )}
-                          </td>
-                        </tr>
-                      )
-                  )}
-                </tbody>
-              </table>
-
-              {members.length > MAX_COLLABORATORS && (
-                <Button
-                  onClick={() => setDisplayAllMembers(!displayAllMembers)}
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={displayAllMembers ? fullUpIcon : fullDownIcon}
-                  label={
-                    displayAllMembers
-                      ? 'Voir moins de collaborateurs'
-                      : 'Voir plus de collaborateurs'
-                  }
-                />
-              )}
-            </div>
-          )}
-
-          <DialogBuilder
-            variant="drawer"
-            title="Ajout de collaborateurs"
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            trigger={
-              <Button
-                variant={ButtonVariant.PRIMARY}
-                onClick={() => {
-                  logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR)
-                }}
-                label="Ajouter un collaborateur"
-              />
-            }
+      {members.length > 0 && (
+        <div className={styles['members-container']}>
+          <table
+            className={classNames(styles['members-list'], {
+              [styles['members-list--withMarginBottom']]:
+                members.length > MAX_COLLABORATORS,
+            })}
           >
-            <form
-              className={styles['invitation-form']}
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div className={styles['invitation-form']}>
-                <p className={styles['description']}>
-                  Vous pouvez inviter des collaborateurs à rejoindre votre
-                  espace. Une invitation leur sera envoyée par email. Vous serez
-                  notifié quand ils auront rejoint l’espace.
-                </p>
+            <thead>
+              <tr className={styles['members-list-tr']}>
+                <th scope="col" className={styles['members-list-th']}>
+                  Email
+                </th>
+                <th scope="col" className={styles['members-list-th']}>
+                  Statut
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(
+                ({ email, status }, index) =>
+                  !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
+                    <tr key={email} className={styles['members-list-tr']}>
+                      <td
+                        className={classNames(
+                          styles['member-email'],
+                          styles['members-list-td']
+                        )}
+                      >
+                        {email}
+                      </td>
+                      <td
+                        className={classNames(
+                          styles['member-status'],
+                          styles['members-list-td']
+                        )}
+                      >
+                        {status === OffererMemberStatus.VALIDATED ? (
+                          <Tag variant={TagVariant.SUCCESS} label="Validé" />
+                        ) : (
+                          <Tag
+                            variant={TagVariant.DEFAULT}
+                            label="En attente"
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  )
+              )}
+            </tbody>
+          </table>
 
-                <FormLayout>
-                  <FormLayout.Row>
-                    <TextInput
-                      label="Adresse email"
-                      type="email"
-                      description="Format : email@exemple.com"
-                      error={errors.email?.message}
-                      required
-                      requiredIndicator="explicit"
-                      {...register('email')}
-                    />
-                  </FormLayout.Row>
-                </FormLayout>
-              </div>
-
-              <DialogBuilder.Footer>
-                <div className={styles['action-buttons']}>
-                  <Dialog.Close asChild>
-                    <Button
-                      variant={ButtonVariant.SECONDARY}
-                      color={ButtonColor.NEUTRAL}
-                      label="Annuler"
-                    />
-                  </Dialog.Close>
-                  <Button
-                    type="submit"
-                    isLoading={isSubmitting}
-                    data-error={errors.email?.message ? 'true' : 'false'}
-                    label="Inviter le collaborateur"
-                  />
-                </div>
-              </DialogBuilder.Footer>
-            </form>
-          </DialogBuilder>
-        </section>
+          {members.length > MAX_COLLABORATORS && (
+            <Button
+              onClick={() => setDisplayAllMembers(!displayAllMembers)}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              icon={displayAllMembers ? fullUpIcon : fullDownIcon}
+              label={
+                displayAllMembers
+                  ? 'Voir moins de collaborateurs'
+                  : 'Voir plus de collaborateurs'
+              }
+            />
+          )}
+        </div>
       )}
-    </>
+
+      <DialogBuilder
+        variant="drawer"
+        title="Ajout de collaborateurs"
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        trigger={
+          <Button
+            variant={ButtonVariant.PRIMARY}
+            onClick={() => {
+              logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR)
+            }}
+            label="Ajouter un collaborateur"
+          />
+        }
+      >
+        <form
+          className={styles['invitation-form']}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className={styles['invitation-form']}>
+            <p className={styles['description']}>
+              Vous pouvez inviter des collaborateurs à rejoindre votre espace.
+              Une invitation leur sera envoyée par email. Vous serez notifié
+              quand ils auront rejoint l’espace.
+            </p>
+
+            <FormLayout>
+              <FormLayout.Row>
+                <TextInput
+                  label="Adresse email"
+                  type="email"
+                  description="Format : email@exemple.com"
+                  error={errors.email?.message}
+                  required
+                  requiredIndicator="explicit"
+                  {...register('email')}
+                />
+              </FormLayout.Row>
+            </FormLayout>
+          </div>
+
+          <DialogBuilder.Footer>
+            <div className={styles['action-buttons']}>
+              <Dialog.Close asChild>
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  label="Annuler"
+                />
+              </Dialog.Close>
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                data-error={errors.email?.message ? 'true' : 'false'}
+                label="Inviter le collaborateur"
+              />
+            </div>
+          </DialogBuilder.Footer>
+        </form>
+      </DialogBuilder>
+    </section>
   )
 }
 

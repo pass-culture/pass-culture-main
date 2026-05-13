@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -24,14 +23,6 @@ const reimbursementsRoutes = [
   },
 ]
 
-const offererNamesValidated = [
-  {
-    ...defaultGetOffererResponseModel,
-    id: 1,
-    name: `Offerer 1`,
-  },
-]
-
 const user = sharedCurrentUserFactory()
 
 function renderReimbursements(options?: RenderWithProvidersOptions) {
@@ -42,8 +33,6 @@ function renderReimbursements(options?: RenderWithProvidersOptions) {
       user: {
         currentUser: user,
         selectedAdminOfferer: defaultGetOffererResponseModel,
-        offererNamesValidated: [defaultGetOffererResponseModel],
-        offererNames: offererNamesValidated,
       },
     },
     ...options,
@@ -73,8 +62,6 @@ describe('Reimbursement page', () => {
             venuesWithNonFreeOffersWithoutBankAccounts: [2],
             hasBankAccountWithPendingCorrections: true,
           },
-          offererNamesValidated: [defaultGetOffererResponseModel],
-          offererNames: offererNamesValidated,
         },
       },
     })
@@ -88,43 +75,5 @@ describe('Reimbursement page', () => {
         })
       ).toBeInTheDocument()
     })
-  })
-
-  it('should render component even if offererNamesValidated is empty', () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [],
-      offerersNamesWithPendingValidation: [],
-    })
-
-    renderReimbursements()
-
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
-  })
-
-  it('should render component on getOffererNames error', () => {
-    vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
-    renderReimbursements()
-
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
-  })
-
-  it('should render non attached banner if offerer is not attached', () => {
-    renderReimbursements({
-      storeOverrides: {
-        user: {
-          currentUser: user,
-          selectedAdminOfferer: defaultGetOffererResponseModel,
-          offererNamesValidated: [],
-          offererNames: offererNamesValidated,
-          offerersNamesWithPendingValidation: offererNamesValidated,
-        },
-      },
-    })
-
-    expect(
-      screen.getByText(
-        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
-      )
-    ).toBeInTheDocument()
   })
 })

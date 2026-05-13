@@ -4,15 +4,13 @@ import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { login } from './helpers/auth'
 import { navigateToAdministrationSpace } from './helpers/navigation'
-import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
+import {
+  BASE_API_URL,
+  createProUserWithFinancialDataAnd3Venues,
+  sandboxCall,
+} from './helpers/sandbox'
 
 interface ProUserWithFinancialDataResponse {
-  user: {
-    email: string
-  }
-}
-
-interface ProUserWithVenuesResponse {
   user: {
     email: string
   }
@@ -71,11 +69,8 @@ test.describe('Financial Management - messages, links to external help page, rei
       const requestContext = await playwrightRequest.newContext({
         baseURL: BASE_API_URL,
       })
-      const userData = await sandboxCall<ProUserWithVenuesResponse>(
-        requestContext,
-        'GET',
-        `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues`
-      )
+      const userData =
+        await createProUserWithFinancialDataAnd3Venues(requestContext)
       await requestContext.dispose()
 
       await login(page, userData.user.email, { isMultiVenue: true })
