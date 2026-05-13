@@ -51,33 +51,33 @@ class _FIELDS:
         return copy.deepcopy(super().__getattribute__(name))
 
     VENUE_ID = Field(
-        example=535,
+        examples=[535],
         description=f"Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**]({GET_OFFERER_VENUES_ANCHOR})",
     )
     DURATION_MINUTES = Field(
         description="Event duration in minutes",
-        example=60,
+        examples=[60],
     )
     ID_AT_PROVIDER = Field(
         description="Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
-        example="Your own id",
+        examples=["Your own id"],
     )
     ID_AT_PROVIDER_WITH_MAX_LENGTH = Field(
         description="Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
-        example="Your own id",
+        examples=["Your own id"],
         max_length=70,
     )
     PERIOD_BEGINNING_DATE = Field(
         description="Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example="2024-03-03T13:00:00+02:00",
+        examples=["2024-03-03T13:00:00+02:00"],
     )
     PERIOD_ENDING_DATE = Field(
         description="Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example="2024-05-10T15:00:00+02:00",
+        examples=["2024-05-10T15:00:00+02:00"],
     )
     IDS_AT_PROVIDER_FILTER = Field(
         description="List of your ids to filter on (max 100)",
-        example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+        examples=["5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443"],
     )
 
     # Pagination Fields
@@ -89,132 +89,134 @@ class _FIELDS:
     )
 
     # Image Fields
-    IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
+    IMAGE_CREDIT = Field(description="Image owner or author", examples=["Jane Doe"])
     IMAGE_FILE = Field(
         description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
     )
-    IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
+    IMAGE_URL = Field(description="Image URL publicly accessible", examples=["https://example.com/image.png"])
 
     # Disability fields
-    AUDIO_DISABILITY_COMPLIANT = Field(description="Is accessible for people with hearing disability", example=True)
+    AUDIO_DISABILITY_COMPLIANT = Field(description="Is accessible for people with hearing disability", examples=[True])
     MENTAL_DISABILITY_COMPLIANT = Field(
-        description="Is accessible for people with mental or cognitive disability", example=True
+        description="Is accessible for people with mental or cognitive disability", examples=[True]
     )
-    MOTOR_DISABILITY_COMPLIANT = Field(description="Is accessible for people with motor disability", example=True)
-    VISUAL_DISABILITY_COMPLIANT = Field(description="Is accessible for people with visual disability", example=True)
+    MOTOR_DISABILITY_COMPLIANT = Field(description="Is accessible for people with motor disability", examples=[True])
+    VISUAL_DISABILITY_COMPLIANT = Field(description="Is accessible for people with visual disability", examples=[True])
     AUDIO_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
-        False, description="Is accessible for people with hearing disability", example=True
+        False, description="Is accessible for people with hearing disability", examples=[True]
     )
     MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
-        False, description="Is accessible for people with mental disability", example=True
+        False, description="Is accessible for people with mental disability", examples=[True]
     )
     MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
-        False, description="Is accessible for people with motor disability", example=True
+        False, description="Is accessible for people with motor disability", examples=[True]
     )
     VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
-        False, description="Is accessible for people with visual disability", example=True
+        False, description="Is accessible for people with visual disability", examples=[True]
     )
 
     # Address fields
     BAN_ID = Field(
         description="Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
-        example="75101_8635_00182",  # Ban id of the French Ministry of Culture
+        examples=["75101_8635_00182"],  # Ban id of the French Ministry of Culture
     )
-    LATITUDE = Field(description="Latitude coordinate", example=48.86696)
-    LONGITUDE = Field(description="Longitude coordinate", example=2.31014)
-    CITY = Field(description="City", example="Paris")
-    POSTAL_CODE = Field(description="Postal Code", example="75001")
-    STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
-    ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
+    LATITUDE = Field(description="Latitude coordinate", examples=[48.86696])
+    LONGITUDE = Field(description="Longitude coordinate", examples=[2.31014])
+    CITY = Field(description="City", examples=["Paris"])
+    POSTAL_CODE = Field(description="Postal Code", examples=["75001"])
+    STREET = Field(description="Street name and number", examples=["182 Rue Saint-Honoré"])
+    ADDRESS_ID = Field(description="Address id in the pass Culture DB", examples=[1])
     # the example is copied inside the description since the
     # default/example location might not be an address (and not appear)
-    ADDRESS_LABEL = Field(description="Name/label of the event venue (eg. Zénith de Paris)", example="Zénith de Paris")
+    ADDRESS_LABEL = Field(
+        description="Name/label of the event venue (eg. Zénith de Paris)", examples=["Zénith de Paris"]
+    )
 
     # Offer fields
-    OFFER_ID = Field(description="Offer id", example=12345)
-    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
-    OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
+    OFFER_ID = Field(description="Offer id", examples=[12345])
+    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, examples=["ACTIVE"])
+    OFFER_NAME = Field(description="Offer title", examples=["Le Petit Prince"])
     OFFER_DESCRIPTION = Field(
-        description="Offer description", example="A great book for kids and old kids.", max_length=1000
+        description="Offer description", examples=["A great book for kids and old kids."], max_length=1000
     )
-    OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
+    OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", examples=["Le Petit Prince"], max_length=90)
     OFFER_DESCRIPTION = Field(
         description="Offer description",
-        example="A great book for kids and old kids.",
+        examples=["A great book for kids and old kids."],
     )
     OFFER_DESCRIPTION_WITH_MAX_LENGTH = Field(
         description="Offer description",
-        example="A great book for kids and old kids.",
+        examples=["A great book for kids and old kids."],
         max_length=10000,
     )
     OFFER_BOOKING_EMAIL = Field(
         description="Recipient email for notifications about bookings, cancellations, etc.",
-        example="contact@yourcompany.com",
+        examples=["contact@yourcompany.com"],
     )
     OFFER_BOOKING_CONTACT = Field(
         description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
-        example="support@yourcompany.com",
+        examples=["support@yourcompany.com"],
     )
     OFFER_PUBLICATION_DATETIME_WITH_DEFAULT = Field(
         description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
         default="now",
     )
     OFFER_PUBLICATION_DATETIME = Field(
         description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     OFFER_BOOKING_ALLOWED_DATETIME = Field(
         description=descriptions.BOOKING_ALLOWED_DATETIME_FIELD_DESCRIPTION,
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
         default=None,
     )
     DEPRECATED_OFFER_PUBLICATION_DATE = Field(
         description="**[deprecated - use `publicationDatetime` instead]** "
         + descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT = Field(
         description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
-        example=True,
+        examples=[True],
         default=False,
     )
     OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED = Field(
         description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
-        example=True,
+        examples=[True],
         default=True,
     )
     OFFER_LOCATION = Field(discriminator="type", description=descriptions.OFFER_LOCATION_DESCRIPTION)
 
     # Products fields
-    EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
+    EANS_FILTER = Field(description="EANs list (max 100)", examples=["3700551782888,9782895761792"])
     EAN = Field(
         description="European Article Number (EAN-13)",
-        example="3700551782888",
+        examples=["3700551782888"],
     )
     EANS_AVAILABLE = Field(
         description="List of EANs that are available for upsert",
-        example=["3700551782888", "9782895761792"],
+        examples=["3700551782888", "9782895761792"],
     )
     EANS_REJECTED = Field(
         description="List of EANs that are not available for upsert, sorted by their rejection reasons",
     )
     EANS_REJECTED_BECAUSE_NOT_FOUND = Field(
         description="List of EANS not present in our database",
-        example=["3700551782888", "9782895761792"],
+        examples=["3700551782888", "9782895761792"],
     )
     EANS_REJECTED_BECAUSE_NOT_COMPLIANT = Field(
         description="List of EANS that do not comply with our CGU (General Terms and Conditions)",
-        example=["3700551782888", "9782895761792"],
+        examples=["3700551782888", "9782895761792"],
     )
     EANS_REJECTED_BECAUSE_CATEGORY_NOT_ALLOWED = Field(
         description="List of EANS that do not belong to an allowed category (only paper books, CDs, and vinyl records are permitted)",
-        example=["3700551782888", "9782895761792"],
+        examples=["3700551782888", "9782895761792"],
     )
 
     # Event fields
-    PRICE_CATEGORY_ID = Field(description="Price category id", example=12)
-    PRICE_CATEGORY_LABEL = Field(description="Price category label", example="Carré or")
+    PRICE_CATEGORY_ID = Field(description="Price category id", examples=[12])
+    PRICE_CATEGORY_LABEL = Field(description="Price category label", examples=["Carré or"])
     PRICE_CATEGORIES = Field(description="Available price categories for this offer stocks")
     PRICE_CATEGORIES_WITH_MAX_ITEMS = Field(
         description="Available price categories for this offer stocks",
@@ -222,19 +224,19 @@ class _FIELDS:
     )
     BEGINNING_DATETIME = Field(
         description="Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     BOOKING_LIMIT_DATETIME = Field(
         description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     EVENT_HAS_TICKET = Field(
         description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
-        example=False,
+        examples=[False],
     )
     EVENT_DURATION = Field(
         description="Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
-        example=60,
+        examples=[60],
     )
     EVENT_STOCKS = Field(
         description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
@@ -248,54 +250,54 @@ class _FIELDS:
     )
     VIDEO_URL = Field(
         description="Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
-        example="https://www.youtube.com/watch?v=0R5PZxOgoz8",
+        examples=["https://www.youtube.com/watch?v=0R5PZxOgoz8"],
     )
 
     # Booking fields
-    BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
+    BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, examples=["CONFIRMED"])
 
     # Stock fields
     STOCK_EDITION = Field(
         description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below).",
     )
 
-    STOCK_ID = Field(description="Stock id", example=45)
+    STOCK_ID = Field(description="Stock id", examples=[45])
     QUANTITY = Field(
         description="Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
-        example=10,
+        examples=[10],
     )
-    PRICE = Field(description="Offer price in euro cents", example=1000)
+    PRICE = Field(description="Offer price in euro cents", examples=[1000])
 
     # Collective offer fields
-    COLLECTIVE_OFFER_ID = Field(description="Collective offer id", example=12345)
-    COLLECTIVE_OFFER_IDS = Field(description="List of collective offer ids", example=[12345, 67890])
+    COLLECTIVE_OFFER_ID = Field(description="Collective offer id", examples=[12345])
+    COLLECTIVE_OFFER_IDS = Field(description="List of collective offer ids", examples=[12345, 67890])
     COLLECTIVE_OFFER_OFFER_STATUS = Field(
-        description=f"Collective offer status - [see this page]({COLLECTIVE_OFFER_STATUS_PAGE})", example="PUBLISHED"
+        description=f"Collective offer status - [see this page]({COLLECTIVE_OFFER_STATUS_PAGE})", examples=["PUBLISHED"]
     )
-    COLLECTIVE_OFFER_NAME = Field(description="Collective offer name", example="Atelier de peinture")
+    COLLECTIVE_OFFER_NAME = Field(description="Collective offer name", examples=["Atelier de peinture"])
     COLLECTIVE_OFFER_DESCRIPTION = Field(
-        description="Collective offer description", example="Atelier de peinture à la gouache pour élèves de 5ème"
+        description="Collective offer description", examples=["Atelier de peinture à la gouache pour élèves de 5ème"]
     )
-    COLLECTIVE_OFFER_FORMATS = Field(description="Educational Formats", example=["Atelier de pratique"])
+    COLLECTIVE_OFFER_FORMATS = Field(description="Educational Formats", examples=["Atelier de pratique"])
     COLLECTIVE_OFFER_BOOKING_EMAILS = Field(
         description="Recipient emails for notifications about bookings, cancellations, etc.",
-        example=["some@email.com", "some.other@email.com"],
+        examples=["some@email.com", "some.other@email.com"],
     )
     COLLECTIVE_OFFER_CONTACT_EMAIL = Field(
-        example="contact@yourcompany.com",
+        examples=["contact@yourcompany.com"],
         description="Email of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_CONTACT_PHONE = Field(
-        example="0123456789",
+        examples=["0123456789"],
         description="Phone of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS = Field(
-        example=[1, 2],
+        examples=[1, 2],
         description=f"Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)]({LIST_EDUCATIONAL_DOMAINS_ANCHOR})**",
     )
     COLLECTIVE_OFFER_STUDENT_LEVELS = Field(
         description=f"Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**]({LIST_STUDENTS_LEVELS_ANCHOR})",
-        example=["GENERAL2", "GENERAL1", "GENERAL0"],
+        examples=["GENERAL2", "GENERAL1", "GENERAL0"],
     )
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
         description=f"Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)]({GET_NATIONAL_PROGRAMS_ANCHOR})**",
@@ -303,28 +305,28 @@ class _FIELDS:
     COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
     COLLECTIVE_OFFER_START_DATETIME = Field(
         description="Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     COLLECTIVE_OFFER_END_DATETIME = Field(
         description="Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME = Field(
         description="Booking limit datetime. It must be anterior to the `start_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_example_datetime_with_tz,
+        examples=[_example_datetime_with_tz],
     )
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(
-        example=100.00, description="Collective offer price (in €)", alias="totalPrice"
+        examples=[100.00], description="Collective offer price (in €)", alias="totalPrice"
     )
-    COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of tickets for your collective offer")
+    COLLECTIVE_OFFER_NB_OF_TICKETS = Field(examples=[10], description="Number of tickets for your collective offer")
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price",
-        example="10 tickets x 10 € = 100 €",
+        examples="10 tickets x 10 € = 100 €",
         alias="educationalPriceDetail",
     )
     # Collective booking
     COLLECTIVE_BOOKING_ID = Field(description="Collective booking id")
-    COLLECTIVE_BOOKING_STATUS = Field(description="Collective booking status", example="PENDING")
+    COLLECTIVE_BOOKING_STATUS = Field(description="Collective booking status", examples=["PENDING"])
     COLLECTIVE_BOOKING_DATE_CREATED = Field(description="When the booking was made")
     COLLECTIVE_BOOKING_CONFIRMATION_DATE = Field(description="When the booking was confirmed")
     COLLECTIVE_BOOKING_REIMBURSED_DATA = Field(description="When the booking was reimbursed")
@@ -333,111 +335,111 @@ class _FIELDS:
     # Educational institution fields
     EDUCATIONAL_INSTITUTION_ID = Field(
         description=f"Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**",
-        example=None,
+        examples=[None],
     )
     EDUCATIONAL_INSTITUTION_UAI = Field(
         description=f'Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**',
-        example="0010008D",
+        examples=["0010008D"],
     )
     EDUCATIONAL_INSTITUTION_NAME = Field(
         description="Educational institution name",
-        example="Lycée Pontus de Tyard",
+        examples=["Lycée Pontus de Tyard"],
     )
     EDUCATIONAL_INSTITUTION_TYPE = Field(
         description="Educational institution type",
-        example="LYCEE GENERAL",
+        examples=["LYCEE GENERAL"],
     )
     EDUCATIONAL_INSTITUTION_CITY = Field(
         description="City where the educational institution is located",
-        example="Chalon-sur-Saône",
+        examples=["Chalon-sur-Saône"],
     )
     EDUCATIONAL_INSTITUTION_POSTAL_CODE = Field(
         description="Educational institution postal code",
-        example="71100",
+        examples=["71100"],
     )
     # Educational domain fields
-    EDUCATIONAL_DOMAIN_ID = Field(description="Educational domain id", example=123456)
-    EDUCATIONAL_DOMAIN_NAME = Field(description="Educational domain name", example="Cinéma, audiovisuel")
+    EDUCATIONAL_DOMAIN_ID = Field(description="Educational domain id", examples=[123456])
+    EDUCATIONAL_DOMAIN_NAME = Field(description="Educational domain name", examples=["Cinéma, audiovisuel"])
     # National program fields
-    NATIONAL_PROGRAM_ID = Field(description="National program id", example=1223456)
-    NATIONAL_PROGRAM_NAME = Field(description="National program name", example="Collège au cinéma")
+    NATIONAL_PROGRAM_ID = Field(description="National program id", examples=[1223456])
+    NATIONAL_PROGRAM_NAME = Field(description="National program name", examples=["Collège au cinéma"])
     # Student level fields
-    STUDENT_LEVEL_ID = Field(description="Student level id", example="COLLEGE6")
-    STUDENT_LEVEL_NAME = Field(description="Student level name", example="Collège - 6e")
+    STUDENT_LEVEL_ID = Field(description="Student level id", examples=["COLLEGE6"])
+    STUDENT_LEVEL_NAME = Field(description="Student level name", examples=["Collège - 6e"])
 
     # Provider fields
-    PROVIDER_ID = Field(description="Provider id", example=123456)
-    PROVIDER_NAME = Field(description="Provider name", example="Ultimate ticketing solution")
+    PROVIDER_ID = Field(description="Provider id", examples=[123456])
+    PROVIDER_NAME = Field(description="Provider name", examples=["Ultimate ticketing solution"])
     PROVIDER_LOGO_URL = Field(
-        description="Provider logo url", example="https://ultimate-ticketing-solution.com/logo.png"
+        description="Provider logo url", examples=["https://ultimate-ticketing-solution.com/logo.png"]
     )
     PROVIDER_NOTIFICATION_URL = Field(
         description="Url on which booking notifications on offers you created are sent",
-        example="https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+        examples=["https://ultimate-ticketing-solution.com/pass-culture-endpoint"],
     )
     PROVIDER_BOOKING_URL = Field(
         description="Url on which tickets requests for events you created are sent",
-        example="https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+        examples=["https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint"],
     )
     PROVIDER_CANCEL_URL = Field(
         description="Url on which tickets cancellation requests for events you created are sent",
-        example="https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+        examples=["https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint"],
     )
 
     # Venue fields
-    VENUE_ACTIVITY_DOMAIN = Field(description="Venue activity domain", example="RECORD_STORE")
+    VENUE_ACTIVITY_DOMAIN = Field(description="Venue activity domain", examples=["RECORD_STORE"])
     VENUE_SIRET_COMMENT = Field(description="Applicable if siret is null and venue is physical")
     VENUE_SIRET = Field(
         description="Venue siret. `null` when the venue is digital or when the `siretComment` field is not `null`.",
-        example="85331845900049",
+        examples=["85331845900049"],
     )
     VENUE_CREATED_DATETIME = Field(description="When the venue was created")
     VENUE_LOCATION = Field(
         description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
         discriminator="type",
     )
-    VENUE_LEGAL_NAME = Field(description="Venue legal name", example="SAS pass Culture")
+    VENUE_LEGAL_NAME = Field(description="Venue legal name", examples=["SAS pass Culture"])
     VENUE_PUBLIC_NAME = Field(
-        description="Venue public name. If `null`, `legalName` is used instead.", example="pass Culture"
+        description="Venue public name. If `null`, `legalName` is used instead.", examples=["pass Culture"]
     )
     VENUE_NOTIFICATION_URL = Field(
         description="Url on which notifications for this venues will be sent. If not set, our system will use the notification url defined at provider level.",
-        example="https://mysolution.com/pass-culture-endpoint",
+        examples=["https://mysolution.com/pass-culture-endpoint"],
     )
     VENUE_BOOKING_URL = Field(
         description="Url on which requests for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue. If not set, our system will use the booking url defined at provider level.",
-        example="https://my-ticketing-solution.com/pass-culture-booking-endpoint",
+        examples=["https://my-ticketing-solution.com/pass-culture-booking-endpoint"],
     )
     VENUE_CANCEL_URL = Field(
         description="Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
-        example="https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
+        examples=["https://my-ticketing-solution.com/pass-culture-cancellation-endpoint"],
     )
     ALLOWED_ON_ADAGE = Field(
         description="Can the offerer create collective offers?",
-        example=True,
+        examples=[True],
     )
-    COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", example="75")
+    COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", examples=["75"])
 
     COLLECTIVE_OFFER_LOCATION = Field(description=descriptions.COLLECTIVE_OFFER_LOCATION_DESCRIPTION, title="ADDRESS")
     COLLECTIVE_OFFER_LOCATION_TYPE = Field(
         description="Location type",
-        example="SCHOOL",
+        examples=["SCHOOL"],
     )
     COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL = Field(
         description="Address label",
-        example="Zénith Paris",
+        examples=["Zénith Paris"],
     )
     COLLECTIVE_OFFER_LOCATION_ADDRESS_ID = Field(
         description="Address id in the pass Culture DB",
-        example=1,
+        examples=[1],
     )
     COLLECTIVE_OFFER_LOCATION_COMMENT = Field(
         description="Comment on the location",
-        example="Lieu à définir avec l'organisateur",
+        examples=["Lieu à définir avec l'organisateur"],
     )
     COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS = Field(
         description="Whether the offer is located at the address of the venue",
-        example=True,
+        examples=[True],
     )
 
 
