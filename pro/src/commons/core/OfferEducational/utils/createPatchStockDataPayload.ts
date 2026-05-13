@@ -1,4 +1,5 @@
 import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
+import type { CollectiveStockEditionBodyModel as CollectiveStockEditionBodyModelV2 } from '@/apiClient/v1/new'
 import { isEqual } from '@/commons/utils/isEqual'
 
 import type { OfferEducationalStockFormValues } from '../types'
@@ -108,8 +109,8 @@ export const createPatchStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departmentCode: string,
   initialValues: OfferEducationalStockFormValues
-): CollectiveStockEditionBodyModel => {
-  let changedValues: CollectiveStockEditionBodyModel = {}
+): CollectiveStockEditionBodyModelV2 => {
+  let changedValues: CollectiveStockEditionBodyModelV2 = {}
 
   if (valuesIsOfferEducationalStockFormValuesForSerializer(values)) {
     ;(

@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -52,7 +52,9 @@ export const CollectiveOfferStockCreation = ({
       ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
       : null,
     ([, offerTemplateIdParam]) => {
-      return api.getCollectiveOfferTemplate(offerTemplateIdParam)
+      return apiNew.getCollectiveOfferTemplate({
+        path: { offer_id: offerTemplateIdParam },
+      })
     }
   )
 
@@ -61,7 +63,10 @@ export const CollectiveOfferStockCreation = ({
       requestId
         ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
         : null,
-    ([, id]) => api.getCollectiveOfferRequest(Number(id))
+    ([, id]) =>
+      apiNew.getCollectiveOfferRequest({
+        path: { request_id: Number(id) },
+      })
   )
 
   assertOrFrontendError(
@@ -88,17 +93,17 @@ export const CollectiveOfferStockCreation = ({
           offer.venue.departementCode ?? '',
           initialValues
         )
-        response = await api.editCollectiveStock(
-          offer.collectiveStock.id,
-          patchPayload
-        )
+        response = await apiNew.editCollectiveStock({
+          path: { collective_stock_id: offer.collectiveStock.id },
+          body: patchPayload,
+        })
       } else {
         const stockPayload = createStockDataPayload(
           values,
           offer.venue.departementCode ?? '',
           offer.id
         )
-        response = await api.createCollectiveStock(stockPayload)
+        response = await apiNew.createCollectiveStock({ body: stockPayload })
       }
 
       await mutate<GetCollectiveOfferResponseModel>(
