@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useSWR, { type SWRResponse } from 'swr'
-import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import type {
@@ -68,10 +67,12 @@ function renderOfferHighlightForm({
   offerId,
   highlightRequests = [],
   onSuccess = () => {},
+  submitLabel,
 }: {
   offerId: number
   highlightRequests?: Array<ShortHighlightResponseModel>
   onSuccess?: () => void
+  submitLabel?: string
 }) {
   return renderWithProviders(
     <DialogBuilder defaultOpen title="test">
@@ -79,6 +80,7 @@ function renderOfferHighlightForm({
         offerId={offerId}
         onSuccess={onSuccess}
         highlightRequests={highlightRequests}
+        submitLabel={submitLabel}
       />
     </DialogBuilder>,
     {
@@ -274,6 +276,36 @@ describe('OfferHighlightForm', () => {
         'Une erreur est survenue lors de la sélection des temps forts'
       )
     })
+  })
+
+  it('should call onSuccess', async () => {
+    const onSuccess = vi.fn()
+    renderOfferHighlightForm({
+      offerId: 1,
+      onSuccess,
+    })
+
+    const checkbox = await screen.findByText(mockedHighlights[0].name)
+    await userEvent.click(checkbox)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Valider la sélection' })
+    )
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should display the submit label when provided', () => {
+    renderOfferHighlightForm({
+      offerId: 1,
+      submitLabel: 'any-label',
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'any-label' })
+    ).toBeInTheDocument()
   })
 
   it('should disable the submit button during submission', async () => {

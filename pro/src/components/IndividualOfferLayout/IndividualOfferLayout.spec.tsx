@@ -4,12 +4,12 @@ import { addDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
-import * as HeadlineOfferContext from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -31,10 +31,6 @@ import {
   type IndividualOfferLayoutProps,
 } from './IndividualOfferLayout'
 
-vi.mock('./components/OfferHighlightCard/OfferHighlightCard', () => ({
-  OfferHighlightCard: vi.fn(() => <div>Mocked OfferHighlightCard</div>),
-}))
-
 vi.mock('react-router', async () => ({
   ...(await vi.importActual<typeof import('react-router')>('react-router')),
   Navigate: vi.fn(),
@@ -42,10 +38,12 @@ vi.mock('react-router', async () => ({
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
 }))
-
-const mockUpsertHeadlineOffer = vi.fn()
-const mockRemoveHeadlineOffer = vi.fn()
-
+vi.mock(
+  '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility',
+  () => ({
+    getOfferEnhancementCardsVisibility: vi.fn(),
+  })
+)
 const renderIndividualOfferLayout: RenderComponentFunction<
   IndividualOfferLayoutProps,
   IndividualOfferContextValues
@@ -107,6 +105,11 @@ describe('IndividualOfferLayout', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
+    vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
+      shouldDisplayRecommendationCard: true,
+      shouldDisplayHighlightCard: true,
+      shouldDisplayHeadlineCard: true,
+    })
   })
 
   describe('when mode is CREATION', () => {
@@ -391,6 +394,14 @@ describe('IndividualOfferLayout', () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     })
 
+    it('should call getOfferEnhancementCardsVisibility with the offer', () => {
+      const offer = getIndividualOfferFactory({ id: 99 })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(getOfferEnhancementCardsVisibility).toHaveBeenCalledWith(offer)
+    })
+
     it('should not allow access to publication dates edition when offer is synchronized with a provider', () => {
       const props = {
         offer: {
@@ -437,72 +448,9 @@ describe('IndividualOfferLayout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display highlight banner if the offer is not an event', () => {
-      const offer = getIndividualOfferFactory({
-        status: OfferStatus.ACTIVE,
-        isEvent: false,
-      })
-
-      renderIndividualOfferLayout({
-        props: { offer },
-      })
-
-      expect(
-        screen.queryByRole('button', { name: 'Choisir un temps fort' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not display highlight banner if the offer is rejected', () => {
-      const offer = getIndividualOfferFactory({
-        status: OfferStatus.REJECTED,
-        isEvent: true,
-      })
-
-      renderIndividualOfferLayout({
-        props: { offer },
-      })
-
-      expect(
-        screen.queryByRole('button', { name: 'Choisir un temps fort' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not display highlight banner if the offer is pending', () => {
-      const offer = getIndividualOfferFactory({
-        status: OfferStatus.PENDING,
-        isEvent: true,
-      })
-
-      renderIndividualOfferLayout({
-        props: { offer },
-      })
-
-      expect(
-        screen.queryByRole('button', { name: 'Choisir un temps fort' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not display highlight banner if the offer is draft', () => {
-      const offer = getIndividualOfferFactory({
-        status: OfferStatus.DRAFT,
-        isEvent: true,
-      })
-
-      renderIndividualOfferLayout({
-        props: { offer },
-      })
-
-      expect(
-        screen.queryByRole('button', { name: 'Choisir un temps fort' })
-      ).not.toBeInTheDocument()
-    })
-
     describe('when WIP_OFFER_RECOMMENDATION_PRO flag is active', () => {
-      it('should display the highlight card instead of the banner', async () => {
-        const offer = getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: true,
-        })
+      it('should display the enhancement cards', async () => {
+        const offer = getIndividualOfferFactory()
 
         renderIndividualOfferLayout({
           props: { offer },
@@ -511,84 +459,54 @@ describe('IndividualOfferLayout', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText('Mocked OfferHighlightCard')
+            screen.getByRole('button', { name: 'Ajouter une recommandation' })
+          ).toBeInTheDocument()
+
+          expect(
+            screen.queryByRole('button', {
+              name: 'Relier l’offre à un temps fort',
+            })
+          ).toBeInTheDocument()
+          expect(
+            screen.getByRole('button', { name: 'Mettre l’offre à la une' })
           ).toBeInTheDocument()
         })
+      })
+      it('should not display the enhancement cards', () => {
+        const offer = getIndividualOfferFactory()
+
+        vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
+          shouldDisplayRecommendationCard: false,
+          shouldDisplayHighlightCard: false,
+          shouldDisplayHeadlineCard: false,
+        })
+
+        renderIndividualOfferLayout({
+          props: { offer },
+          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
+        })
+
+        expect(
+          screen.queryByRole('button', { name: 'Ajouter une recommandation' })
+        ).not.toBeInTheDocument()
         expect(
           screen.queryByRole('button', { name: 'Choisir un temps fort' })
         ).not.toBeInTheDocument()
-      })
-
-      it('should display the recommendation card', async () => {
-        const offer = getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: true,
-        })
-
-        renderIndividualOfferLayout({
-          props: { offer },
-          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
-        })
-        await waitFor(() => {
-          expect(
-            screen.getByText(
-              'Ajoutez une recommandation pour promouvoir votre offre'
-            )
-          ).toBeInTheDocument()
-        })
         expect(
-          screen.getByRole('button', { name: 'Ajouter une recommandation' })
-        ).toBeInTheDocument()
-      })
-
-      it('should display the headline card', async () => {
-        vi.spyOn(
-          HeadlineOfferContext,
-          'useHeadlineOfferContext'
-        ).mockReturnValue({
-          headlineOffer: null,
-          upsertHeadlineOffer: mockUpsertHeadlineOffer,
-          removeHeadlineOffer: mockRemoveHeadlineOffer,
-          isHeadlineOfferAllowedForOfferer: true,
-        } as any)
-
-        const offer = getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: true,
-        })
-
-        renderIndividualOfferLayout({
-          props: { offer },
-          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
-        })
-        await waitFor(() => {
-          expect(
-            screen.getByText(
-              'Ne laissez pas votre offre passer inaperçue : passez-la à la une'
-            )
-          ).toBeInTheDocument()
-        })
-        expect(
-          screen.getByRole('button', { name: 'Mettre l’offre à la une' })
-        ).toBeInTheDocument()
+          screen.queryByRole('button', { name: 'Mettre l’offre à la une' })
+        ).not.toBeInTheDocument()
       })
     })
 
     describe('when WIP_OFFER_RECOMMENDATION_PRO flag is inactive', () => {
       it('should display the highlight banner', () => {
-        const offer = getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: true,
-        })
+        const offer = getIndividualOfferFactory()
 
         renderIndividualOfferLayout({
           props: { offer },
           options: { features: [] },
         })
 
-        expect(
-          screen.queryByText('Mocked OfferHighlightCard')
-        ).not.toBeInTheDocument()
         expect(
           screen.getByRole('button', { name: 'Choisir un temps fort' })
         ).toBeInTheDocument()

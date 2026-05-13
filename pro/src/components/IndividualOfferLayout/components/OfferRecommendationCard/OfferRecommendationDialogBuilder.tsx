@@ -11,6 +11,8 @@ type OfferRecommendationDialogBuilderProps = {
   offerId: number
   proAdvice: ProAdviceModel | null
   children: ReactNode
+  onSubmit?: () => void
+  submitLabel?: string
 }
 
 export function OfferRecommendationDialogBuilder({
@@ -19,6 +21,8 @@ export function OfferRecommendationDialogBuilder({
   offerId,
   children,
   proAdvice,
+  onSubmit,
+  submitLabel,
 }: Readonly<OfferRecommendationDialogBuilderProps>) {
   return (
     <DialogBuilder
@@ -31,7 +35,11 @@ export function OfferRecommendationDialogBuilder({
       <OfferRecommendationForm
         offerId={offerId}
         proAdvice={proAdvice}
-        onClose={() => onOpenChange(false)}
+        onSuccess={() => {
+          onOpenChange(false)
+          onSubmit?.()
+        }}
+        submitLabel={submitLabel}
       />
     </DialogBuilder>
   )

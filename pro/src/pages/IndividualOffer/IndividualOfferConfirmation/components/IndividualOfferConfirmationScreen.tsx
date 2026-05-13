@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router'
+
 import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
@@ -7,8 +9,13 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
+import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
+import { OfferRecommendationCard } from '@/components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationCard'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -25,10 +32,44 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
+  const navigate = useNavigate()
+
+  const isOfferRecommendationEnabled = useActiveFeature(
+    'WIP_OFFER_RECOMMENDATION_PRO'
+  )
+
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
     new Date() < new Date(offer.publicationDate)
   const isPendingOffer = offer.status === OfferStatus.PENDING
+
+  const offerReadOnlyUrl = getIndividualOfferUrl({
+    offerId: offer.id,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    mode: OFFER_WIZARD_MODE.READ_ONLY,
+  })
+
+  const offerCreationUrl = getIndividualOfferUrl({
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    mode: OFFER_WIZARD_MODE.CREATION,
+    isOnboarding: false,
+  })
+
+  const goToOfferPage = () => {
+    navigate(offerReadOnlyUrl)
+  }
+
+  const {
+    shouldDisplayRecommendationCard,
+    shouldDisplayHighlightCard,
+    shouldDisplayHeadlineCard,
+  } = getOfferEnhancementCardsVisibility(offer)
+
+  const shouldDisplayCardsSection =
+    isOfferRecommendationEnabled &&
+    (shouldDisplayRecommendationCard ||
+      shouldDisplayHighlightCard ||
+      shouldDisplayHeadlineCard)
 
   return (
     <div className={styles['confirmation-container']}>
@@ -73,11 +114,7 @@ export const IndividualOfferConfirmationScreen = ({
       <div className={styles['confirmation-actions']}>
         <Button
           as="a"
-          to={getIndividualOfferUrl({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-            mode: OFFER_WIZARD_MODE.CREATION,
-            isOnboarding: false,
-          })}
+          to={offerCreationUrl}
           isExternal
           variant={ButtonVariant.SECONDARY}
           label="Créer une nouvelle offre"
@@ -85,6 +122,37 @@ export const IndividualOfferConfirmationScreen = ({
 
         <Button as="a" to="/offres" label="Voir la liste des offres" />
       </div>
+
+      {shouldDisplayCardsSection && (
+        <section className={styles['enhancement-section']}>
+          <h2 className={styles['enhancement-section-title']}>
+            Allez plus loin et optimisez votre offre :
+          </h2>
+          <div className={styles['cards-container']}>
+            {shouldDisplayRecommendationCard && (
+              <OfferRecommendationCard
+                offerId={offer.id}
+                onSubmit={goToOfferPage}
+                submitLabel="Enregistrer et accéder à l’offre"
+              />
+            )}
+            {shouldDisplayHighlightCard && (
+              <OfferHighlightCard
+                offerId={offer.id}
+                highlightRequests={offer.highlightRequests}
+                onSubmit={goToOfferPage}
+                submitLabel="Enregistrer et accéder à l’offre"
+              />
+            )}
+            {shouldDisplayHeadlineCard && (
+              <OfferHeadlineCard
+                offerId={offer.id}
+                hasThumb={!!offer.thumbUrl}
+              />
+            )}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

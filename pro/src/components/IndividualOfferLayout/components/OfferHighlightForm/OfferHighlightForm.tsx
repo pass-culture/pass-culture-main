@@ -27,12 +27,14 @@ interface OfferHighlightFormProps {
   offerId: number
   onSuccess: () => void
   highlightRequests: Array<ShortHighlightResponseModel>
+  submitLabel?: string
 }
 
 export function OfferHighlightForm({
   offerId,
   onSuccess,
   highlightRequests,
+  submitLabel,
 }: Readonly<OfferHighlightFormProps>): JSX.Element {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
@@ -165,7 +167,7 @@ export function OfferHighlightForm({
             <Button
               type="submit"
               isLoading={isSubmitting}
-              label="Valider la sélection"
+              label={submitLabel ?? 'Valider la sélection'}
             />
           </div>
         </DialogBuilder.Footer>

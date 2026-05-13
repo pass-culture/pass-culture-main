@@ -12,8 +12,8 @@
   min-width: 100%;
 
   @media (min-width: size.$laptop) {
-    min-width: rem.torem(346px);
-    max-width: rem.torem(346px);
+    min-width: var(--card-width, #{rem.torem(346px)});
+    max-width: var(--card-width, #{rem.torem(346px)});
   }
 
   &-edit {
@@ -45,7 +45,7 @@
     }
   }
 
-    &-subtitle {
+  &-subtitle {
     @include fonts.body-s;
 
     color: var(--color-text-subtle);

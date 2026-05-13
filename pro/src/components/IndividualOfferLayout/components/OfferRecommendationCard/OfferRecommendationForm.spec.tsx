@@ -35,18 +35,21 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
 function renderOfferRecommendationForm({
   offerId,
   proAdvice = null,
-  onClose = () => {},
+  onSuccess = () => {},
+  submitLabel,
 }: {
   offerId: number
   proAdvice?: ProAdviceModel | null
-  onClose?: () => void
+  onSuccess?: () => void
+  submitLabel?: string
 }) {
   return renderWithProviders(
     <DialogBuilder defaultOpen title="test">
       <OfferRecommendationForm
         offerId={offerId}
-        onClose={onClose}
+        onSuccess={onSuccess}
         proAdvice={proAdvice}
+        submitLabel={submitLabel}
       />
     </DialogBuilder>,
     {
@@ -173,5 +176,35 @@ describe('OfferRecommendationForm', () => {
         screen.getByText('La recommandation est obligatoire')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should call onSuccess', async () => {
+    const onSuccess = vi.fn()
+    vi.mocked(apiNew.createOfferProAdvice).mockResolvedValueOnce({} as any)
+
+    renderOfferRecommendationForm({
+      offerId: 1,
+      onSuccess,
+    })
+
+    await userEvent.type(
+      screen.getByLabelText(/Recommandation/i),
+      'Super offre'
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer la recommandation' })
+    )
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should display the submit label when provided', () => {
+    renderOfferRecommendationForm({ offerId: 1, submitLabel: 'any-label' })
+
+    expect(
+      screen.getByRole('button', { name: 'any-label' })
+    ).toBeInTheDocument()
   })
 })

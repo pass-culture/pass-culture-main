@@ -11,6 +11,8 @@ type OfferHighlightDialogBuilderProps = {
   offerId: number
   highlightRequests: Array<ShortHighlightResponseModel>
   children: ReactNode
+  onSubmit?: () => void
+  submitLabel?: string
 }
 
 export function OfferHighlightDialogBuilder({
@@ -19,6 +21,8 @@ export function OfferHighlightDialogBuilder({
   offerId,
   children,
   highlightRequests,
+  onSubmit,
+  submitLabel,
 }: Readonly<OfferHighlightDialogBuilderProps>) {
   return (
     <DialogBuilder
@@ -31,7 +35,11 @@ export function OfferHighlightDialogBuilder({
       <OfferHighlightForm
         offerId={offerId}
         highlightRequests={highlightRequests}
-        onSuccess={() => onOpenChange(false)}
+        onSuccess={() => {
+          onOpenChange(false)
+          onSubmit?.()
+        }}
+        submitLabel={submitLabel}
       />
     </DialogBuilder>
   )

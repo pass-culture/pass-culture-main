@@ -21,10 +21,14 @@ import { OfferRecommendationDialogBuilder } from './OfferRecommendationDialogBui
 
 type OfferRecommendationCardProps = {
   offerId: number
+  onSubmit?: () => void
+  submitLabel?: string
 }
 
 export const OfferRecommendationCard = ({
   offerId,
+  onSubmit,
+  submitLabel,
 }: OfferRecommendationCardProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
@@ -72,6 +76,8 @@ export const OfferRecommendationCard = ({
           offerId={offerId}
           isOpen={isOpen}
           proAdvice={proAdvice ?? null}
+          onSubmit={onSubmit}
+          submitLabel={submitLabel}
         >
           <Button
             variant={
