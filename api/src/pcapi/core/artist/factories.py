@@ -51,3 +51,15 @@ class ArtistOfferLinkFactory(BaseFactory):
         model = models.ArtistOfferLink
 
     artist_type = models.ArtistType.PERFORMER
+
+
+class ArtistSimilarArtistFactory(BaseFactory):
+    class Meta:
+        model = models.ArtistSimilarArtist
+        exclude = ("source_artist", "target_artist")
+
+    source_artist = factory.SubFactory(ArtistFactory)
+    target_artist = factory.SubFactory(ArtistFactory)
+    artist_id = factory.LazyAttribute(lambda o: o.source_artist.id)
+    similar_artist_id = factory.LazyAttribute(lambda o: o.target_artist.id)
+    similarity_rank = factory.Sequence(lambda n: n + 1)

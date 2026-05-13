@@ -162,6 +162,33 @@ class Artist(Model):
         return None
 
 
+class ArtistSimilarArtist(Model):
+    """
+    Precomputed similar artists for a given artist (source: data science pipeline / BigQuery import).
+    Lower similarity_rank means higher similarity.
+    """
+
+    __tablename__ = "artist_similar_artist"
+
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
+    artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    similar_artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False
+    )
+    similarity_rank: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint("artist_id", "similar_artist_id", name="uq_artist_similar_artist_pair"),
+        sa.UniqueConstraint("artist_id", "similarity_rank", name="uq_artist_similar_artist_rank"),
+        sa.CheckConstraint(
+            "artist_id <> similar_artist_id",
+            name="check_artist_similar_artist_not_self",
+        ),
+    )
+
+
 class ArtistAlias(PcObject, Model):
     """
     The data in this table is used by the data team

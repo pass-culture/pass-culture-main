@@ -41,3 +41,35 @@ def get_filtered_artists_for_search(search_value: str) -> list[models.Artist]:
         .limit(5)
         .all()
     )
+
+
+def get_similar_artists_for_native(source_artist_id: str) -> list[models.Artist]:
+    """Returns the top similar artists for the native app, in DS-defined order.
+
+    Excludes the source artist, blacklisted artists, and artists without an eligible
+    offer. Returns an empty list if the source artist is missing or blacklisted.
+    """
+    # Alias the source artist reference so the inner EXISTS uses a distinct alias from
+    # the outer SELECT on `artist`, avoiding any ambiguity in the generated SQL.
+    source_artist = sa.orm.aliased(models.Artist, name="source_artist")
+    source_artist_is_active = sa.exists().where(
+        source_artist.id == source_artist_id,
+        sa.not_(source_artist.is_blacklisted),
+    )
+
+    return (
+        db.session.query(models.Artist)
+        .join(
+            models.ArtistSimilarArtist,
+            models.ArtistSimilarArtist.similar_artist_id == models.Artist.id,
+        )
+        .filter(
+            models.ArtistSimilarArtist.artist_id == source_artist_id,
+            models.Artist.id != source_artist_id,
+            get_artist_search_eligibility_subquery(),
+            source_artist_is_active,
+        )
+        .order_by(models.ArtistSimilarArtist.similarity_rank.asc())
+        .limit(settings.NATIVE_SIMILAR_ARTISTS_MAX_COUNT)
+        .all()
+    )
