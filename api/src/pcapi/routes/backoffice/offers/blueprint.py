@@ -310,7 +310,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "subquery_join": "stock",
         "custom_filter_all_operators": sa.and_(
             offers_models.Stock._bookable,
-            offers_models.Offer._released,
+            offers_models.Offer.isPublished,
         ),
     },
     "MEDIATION": {
@@ -556,7 +556,7 @@ def _get_offers_by_ids(
             (
                 # Same as Offer.isReleased which is not an hybrid property
                 sa.and_(
-                    offers_models.Offer._released,
+                    offers_models.Offer.isPublished,
                     offerers_models.Offerer.isActive,
                     offerers_models.Offerer.isValidated,
                 ),
