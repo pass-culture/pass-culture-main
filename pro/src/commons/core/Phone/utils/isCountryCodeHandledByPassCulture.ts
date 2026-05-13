@@ -18,6 +18,6 @@ import {
 export const isCountryCodeHandledByPassCulture = (
   countryCode: PlusString
 ): countryCode is PassCultureHandledCountryCode => {
-  // @ts-expect-error: We know that `indicative` may not be in the array, that's the point of this test …
+  // @ts-expect-error: We know that `countryCode` may not be in the array, that's the point of this test …
   return PC_HANDLED_PHONE_COUNTRY_CODES.includes(countryCode)
 }
