@@ -5,7 +5,6 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1/new'
-import { apiCall } from '@/commons/api/apiCall'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
@@ -79,18 +78,14 @@ export const useCollectiveOfferImageUpload = (
         }
 
         const payload = isTemplate
-          ? await apiCall(
-              apiNew.attachOfferTemplateImage({
-                path: { offer_id: offerId },
-                body: params,
-              })
-            )
-          : await apiCall(
-              apiNew.attachOfferImage({
-                path: { offer_id: offerId },
-                body: params,
-              })
-            )
+          ? await apiNew.attachOfferTemplateImage({
+              path: { offer_id: offerId },
+              body: params,
+            })
+          : await apiNew.attachOfferImage({
+              path: { offer_id: offerId },
+              body: params,
+            })
         setImageOffer({
           url: payload.imageUrl,
           credit: imageToUpload.credit,

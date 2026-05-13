@@ -8,7 +8,6 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1/new'
-import { apiCall } from '@/commons/api/apiCall'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -58,16 +57,12 @@ export const useCollectiveOfferFromParams = (
       : null,
     ([, offerIdParams]) =>
       isTemplate
-        ? apiCall(
-            apiNew.getCollectiveOfferTemplate({
-              path: { offer_id: offerIdParams },
-            })
-          )
-        : apiCall(
-            apiNew.getCollectiveOffer({
-              path: { offer_id: offerIdParams },
-            })
-          )
+        ? apiNew.getCollectiveOfferTemplate({
+            path: { offer_id: offerIdParams },
+          })
+        : apiNew.getCollectiveOffer({
+            path: { offer_id: offerIdParams },
+          })
   )
 
   if (offerIdFromParams === undefined) {
