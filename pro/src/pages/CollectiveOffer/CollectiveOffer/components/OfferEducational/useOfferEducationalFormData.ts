@@ -8,7 +8,6 @@ import type {
   NationalProgramResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
-import { apiCall } from '@/commons/api/apiCall'
 import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -55,15 +54,13 @@ export const useOfferEducationalFormData = (
   const { data: venues, isLoading: loadingVenues } = useSWR(
     [GET_VENUES_QUERY_KEY, targetOffererId],
     ([, offererIdParam]) =>
-      apiCall(
-        apiNew.getVenues({
-          query: {
-            validated: null,
-            activeOfferersOnly: true,
-            offererId: offererIdParam,
-          },
-        })
-      ),
+      apiNew.getVenues({
+        query: {
+          validated: null,
+          activeOfferersOnly: true,
+          offererId: offererIdParam,
+        },
+      }),
     { fallbackData: { venues: [] } }
   )
 

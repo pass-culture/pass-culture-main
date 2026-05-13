@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+import { mutate, useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
@@ -12,7 +12,6 @@ import type {
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
-import { apiCall } from '@/commons/api/apiCall'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -112,40 +111,32 @@ export const OfferEducational = ({
         if (offer === undefined) {
           const payload = createCollectiveOfferTemplatePayload(offerValues)
 
-          response = await apiCall(
-            apiNew.createCollectiveOfferTemplate({
-              body: payload,
-            })
-          )
+          response = await apiNew.createCollectiveOfferTemplate({
+            body: payload,
+          })
         } else {
           const payload = createPatchOfferTemplatePayload(
             offerValues,
             initialValues
           )
-          response = await apiCall(
-            apiNew.editCollectiveOfferTemplate({
-              path: { offer_id: offer.id },
-              body: payload,
-            })
-          )
+          response = await apiNew.editCollectiveOfferTemplate({
+            path: { offer_id: offer.id },
+            body: payload,
+          })
         }
       } else {
         if (offer === undefined) {
           const payload = createCollectiveOfferPayload(offerValues)
 
-          response = await apiCall(
-            apiNew.createCollectiveOffer({
-              body: payload,
-            })
-          )
+          response = await apiNew.createCollectiveOffer({
+            body: payload,
+          })
         } else {
           const payload = createPatchOfferPayload(offerValues, initialValues)
-          response = await apiCall(
-            apiNew.editCollectiveOffer({
-              path: { offer_id: offer.id },
-              body: payload,
-            })
-          )
+          response = await apiNew.editCollectiveOffer({
+            path: { offer_id: offer.id },
+            body: payload,
+          })
         }
       }
 
