@@ -14,7 +14,7 @@ import type {
 import { checkCoords } from '@/commons/utils/coords'
 import { toDateStrippedOfTimezone } from '@/commons/utils/date'
 import { emailSchema } from '@/commons/utils/isValidEmail'
-import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
+import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 

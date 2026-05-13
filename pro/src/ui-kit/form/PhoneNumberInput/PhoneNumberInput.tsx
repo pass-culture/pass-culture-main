@@ -9,16 +9,16 @@ import {
   useState,
 } from 'react'
 
-import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
-import type { RequiredIndicator } from '@/design-system/common/types'
-
-import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
-import { isCountryCodeHandledByPassCulture } from './commons/utils/isCountryCodeHandledByPassCulture'
 import {
   type PassCultureHandledCountryCode,
   PC_HANDLED_PHONE_COUNTRY_CODES,
   PHONE_EXAMPLE_MAP,
-} from './constants'
+} from '@/commons/core/Phone/constants'
+import { isCountryCodeHandledByPassCulture } from '@/commons/core/Phone/utils/isCountryCodeHandledByPassCulture'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import type { RequiredIndicator } from '@/design-system/common/types'
+
+import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import styles from './PhoneNumberInput.module.scss'
 
 export type CountryCodeSelectOption = { value: PassCultureHandledCountryCode }

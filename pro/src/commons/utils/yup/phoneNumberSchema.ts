@@ -3,8 +3,11 @@ import parsePhoneNumberFromString, {
 } from 'libphonenumber-js/max'
 import * as yup from 'yup'
 
-import { PHONE_EXAMPLE_MAP, type PlusString } from '../constants'
-import { isCountryCodeHandledByPassCulture } from './utils/isCountryCodeHandledByPassCulture'
+import {
+  PHONE_EXAMPLE_MAP,
+  type PlusString,
+} from '@/commons/core/Phone/constants'
+import { isCountryCodeHandledByPassCulture } from '@/commons/core/Phone/utils/isCountryCodeHandledByPassCulture'
 
 const validateAndParseFrenchPhoneNumber = (
   phoneNumber: string

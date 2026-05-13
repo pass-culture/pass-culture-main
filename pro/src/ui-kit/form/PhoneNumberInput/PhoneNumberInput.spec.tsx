@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { PHONE_EXAMPLE_MAP } from './constants'
+import { PHONE_EXAMPLE_MAP } from '@/commons/core/Phone/constants'
+
 import {
   countryCodeSelectOptions,
   PhoneNumberInput,

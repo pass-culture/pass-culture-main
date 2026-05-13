@@ -5,7 +5,7 @@ import * as yup from 'yup'
 
 
 import { PhoneNumberInput } from './PhoneNumberInput'
-import { phoneNumberSchema } from './commons/phoneNumberSchema'
+import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 
 const schema = yup.object().shape({

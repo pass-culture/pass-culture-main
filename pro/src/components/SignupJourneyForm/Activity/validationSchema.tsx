@@ -5,8 +5,8 @@ import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNot
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { getActivities } from '@/commons/mappings/mappings'
 import { objectKeys } from '@/commons/utils/object'
+import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
-import { phoneNumberSchema } from '@/ui-kit/form/PhoneNumberInput/commons/phoneNumberSchema'
 
 export const validationSchema = (
   notOpenToPublic: boolean
