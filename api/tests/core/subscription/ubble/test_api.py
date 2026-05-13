@@ -73,7 +73,7 @@ class UbbleWorkflowV2Test:
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
 
         ubble_request = requests_mock.last_request.json()
-        assert ubble_request["webhook_url"] == "http://localhost/webhooks/ubble/v2/application_status"
+        assert ubble_request["webhook_url"] == f"{settings.API_URL}/webhooks/ubble/v2/application_status"
 
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
@@ -130,7 +130,7 @@ class UbbleWorkflowV2Test:
         assert create_identification_request.json()["applicant_id"] == "aplt_qwerty123"
         assert (
             create_identification_request.json()["webhook_url"]
-            == "http://localhost/webhooks/ubble/v2/application_status"
+            == f"{settings.API_URL}/webhooks/ubble/v2/application_status"
         )
         assert (
             attempt_identification_request.url
