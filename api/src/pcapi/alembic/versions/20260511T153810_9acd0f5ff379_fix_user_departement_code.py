@@ -17,12 +17,12 @@ def upgrade() -> None:
     # Test on staging: 78.541s
     op.execute("SET SESSION statement_timeout='600s'")
     op.execute(
-        """UPDATE "user" set "departementCode" = public.postal_code_to_department_code("postalCode") WHERE "departementCode" = '20';"""
+        """UPDATE "user" set "departementCode" = public.postal_code_to_department_code("postalCode") WHERE "postalCode" like '20%';"""
     )
     op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
 
 
 def downgrade() -> None:
     op.execute("SET SESSION statement_timeout='600s'")
-    op.execute("""UPDATE "user" set "departementCode" = '20' WHERE "departementCode" IN ('2A', '2B');""")
+    op.execute("""UPDATE "user" set "departementCode" = '20' WHERE "postalCode" like '20%';""")
     op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
