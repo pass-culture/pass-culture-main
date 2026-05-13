@@ -445,6 +445,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   description: 'desc',
   externalAccessibilityData: null,
   externalAccessibilityId: null,
+  isOnboarded: false,
   isOpenToPublic: false,
   isPermanent: false,
   publicName: 'Venue',

@@ -3547,6 +3547,10 @@ export type GetVenueResponseModel = {
      */
     isCaledonian: boolean;
     /**
+     * Isonboarded
+     */
+    isOnboarded: boolean;
+    /**
      * Isopentopublic
      */
     isOpenToPublic: boolean;

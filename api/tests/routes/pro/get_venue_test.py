@@ -27,16 +27,21 @@ class Returns200Test:
     num_queries += 1  # select venue, venue_bank_account_link, bank_acount, offerer
     num_queries += 1  # select venue_pricing_point_link
     num_queries += 1  # check user has rignts on venue
-    num_queries += 1  # select google_places_info
     num_queries += 1  # select accessibility_provider
     num_queries += 1  # select offer
     num_queries += 1  # venue.hasActiveIndividualOffer
     num_queries += 1  # venue.hasPartnerPage
     num_queries += 1  # venue.canDisplayHighlights
     num_queries += 1  # venue.hasNonDraftOffers
-    num_queries += 2  # venue_has_non_free_offers (individual and collective)
 
-    num_queries_no_places_info = num_queries - 1
+    # venue_has_non_free_offers short-circuits the second query via an `or` condition
+    # when the venue has a non-free individual offer, generating (in this case) a single query instead of two
+    num_queries_for_venue_with_non_free_individual_offer = num_queries + 1
+    num_queries_for_venue_with_only_free_individual_offers = num_queries + 2
+
+    # get_offerer_and_extradata (offerer + managedVenues + venueProviders + collectiveDmsApplications)
+    num_queries_for_venue_with_non_free_individual_offer += 4
+    num_queries_for_venue_with_only_free_individual_offers += 4
 
     def when_user_has_rights_on_managing_offerer(self, client):
         now = date_utils.get_naive_utc_now()
@@ -117,7 +122,11 @@ class Returns200Test:
         educational_factories.CollectiveDmsApplicationFactory(
             venue=venue, lastChangeDate=dmsapplication.lastChangeDate - datetime.timedelta(days=10)
         )
-        offers_factories.EventStockFactory(offer__venue=venue)
+        offers_factories.EventStockFactory(
+            offer__venue=venue,
+            # See OfferFactory._create -> "publicationDatetime" TODO.
+            offer__publicationDatetime=datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=5),
+        )
 
         expected_serialized_venue = {
             "activity": "BOOKSTORE",
@@ -236,6 +245,7 @@ class Returns200Test:
             "isCaledonian": False,
             "bankAccountStatus": "valid",
             "hasNonFreeOffers": True,
+            "isOnboarded": True,
             "isValidated": True,
             "allowedOnAdage": True,
             "hasPartnerPage": True,
@@ -245,8 +255,9 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = self.num_queries
-        with testing.assert_num_queries(num_queries):
+        # extra selectinload for BankAccount.venueLinks
+        num_queries_with_bank_account_link = self.num_queries_for_venue_with_non_free_individual_offer + 1
+        with testing.assert_num_queries(num_queries_with_bank_account_link):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -267,7 +278,7 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -295,7 +306,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -319,7 +330,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -334,7 +345,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -350,7 +361,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -367,7 +378,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -389,7 +400,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -422,7 +433,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -448,7 +459,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -477,7 +488,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -499,7 +510,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_no_places_info):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -511,7 +522,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -530,7 +541,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -546,7 +557,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -562,7 +573,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -579,7 +590,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -626,7 +637,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -666,7 +677,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
