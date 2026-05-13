@@ -29,8 +29,8 @@ def create_show_cds(
     screen_id: int = 50,
     media_id: int = 52,
     mediaoptions_ids=(),
-) -> cds_serializers.ShowCDS:
-    return cds_serializers.ShowCDS(
+) -> cds_serializers.Show:
+    return cds_serializers.Show(
         id=id_,
         is_cancelled=is_cancelled,
         is_deleted=is_deleted,
@@ -40,13 +40,13 @@ def create_show_cds(
         internet_remaining_place=internet_remaining_place,
         showtime=showtime,
         shows_tariff_pos_type_collection=[
-            cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=show_tariff_id))
+            cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=show_tariff_id))
             for show_tariff_id in shows_tariff_pos_type_ids
         ],
-        screen=cds_serializers.IdObjectCDS(id=screen_id),
-        media=cds_serializers.IdObjectCDS(id=media_id),
+        screen=cds_serializers.IdObject(id=screen_id),
+        media=cds_serializers.IdObject(id=media_id),
         shows_mediaoptions_collection=[
-            cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=media_option_id))
+            cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=media_option_id))
             for media_option_id in mediaoptions_ids
         ],
     )
@@ -57,8 +57,8 @@ def create_screen_cds(
     seatmap_front_to_back: bool = True,
     seatmap_left_to_right: bool = True,
     seatmap_skip_missing_seats: bool = False,
-) -> cds_serializers.ScreenCDS:
-    return cds_serializers.ScreenCDS(
+) -> cds_serializers.Screen:
+    return cds_serializers.Screen(
         id=id_,
         seatmap_front_to_back=seatmap_front_to_back,
         seatmap_left_to_right=seatmap_left_to_right,
@@ -375,7 +375,7 @@ class CineOfficeGetScreenTest:
 class CineOfficeGetAvailableSingleSeatTest:
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_hardcoded_seatmap", return_value=[])
     def test_should_return_seat_available(self, mocked_get_hardcoded_seatmap, requests_mock):
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -419,7 +419,7 @@ class CineOfficeGetAvailableSingleSeatTest:
 
         mocked_get_hardcoded_seatmap.return_value = mocked_hardcoded_seatmap
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -460,7 +460,7 @@ class CineOfficeGetAvailableSingleSeatTest:
             [0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1],
         ]
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -491,7 +491,7 @@ class CineOfficeGetAvailableSingleSeatTest:
             [3, 3, 3, 3, 0, 0, 3, 3],
         ]
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=False,
             seatmaplefttoright=False,
@@ -522,7 +522,7 @@ class CineOfficeGetAvailableSingleSeatTest:
             [3, 3, 3, 3, 0, 3],
         ]
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -561,7 +561,7 @@ class CineOfficeGetAvailableSingleSeatTest:
         ]
         # fmt: on
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=False,
@@ -587,7 +587,7 @@ class CineOfficeGetAvailableDuoSeatTest:
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_cinema_infos")
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_seatmap")
     def test_should_return_duo_seat_if_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
-        seatmap = cds_serializers.SeatmapCDS(
+        seatmap = cds_serializers.Seatmap(
             [
                 [1, 1, 1, 1, 0, 1],
                 [1, 1, 1, 3, 0, 1],
@@ -598,7 +598,7 @@ class CineOfficeGetAvailableDuoSeatTest:
         )
 
         cinema = cds_serializers.CinemaCDS(id="1", is_internet_sale_gauge_active=True)
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -621,7 +621,7 @@ class CineOfficeGetAvailableDuoSeatTest:
     def test_should_return_duo_seat_if_available_when_seatmap_is_hardcoded(
         self, mocked_get_seatmap, mocked_get_hardcoded_seatmap
     ):
-        seatmap = cds_serializers.SeatmapCDS(
+        seatmap = cds_serializers.Seatmap(
             [
                 [1, 1, 1, 1, 0, 1],
                 [1, 1, 1, 3, 0, 1],
@@ -631,7 +631,7 @@ class CineOfficeGetAvailableDuoSeatTest:
             ["P_17", "P_15", "P_13", "P_11", "P_9", "P_7"],
             ["M_17", "M_15", "M_13", "M_11", "M_9", "M_7"],
         ]
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -658,7 +658,7 @@ class CineOfficeGetAvailableDuoSeatTest:
             [3, 3, 3, 3, 0, 3],
         ]
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -680,7 +680,7 @@ class CineOfficeGetAvailableDuoSeatTest:
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_cinema_infos")
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_seatmap")
     def test_should_return_two_separate_seats_if_no_duo_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
-        seatmap = cds_serializers.SeatmapCDS(
+        seatmap = cds_serializers.Seatmap(
             [
                 [1, 3, 1, 3, 0, 1],
                 [3, 3, 3, 3, 0, 3],
@@ -690,7 +690,7 @@ class CineOfficeGetAvailableDuoSeatTest:
             ]
         )
 
-        screen = cds_serializers.ScreenCDS(
+        screen = cds_serializers.Screen(
             id=1,
             seatmapfronttoback=True,
             seatmaplefttoright=True,
@@ -788,7 +788,7 @@ class CineOfficeCancelBookingTest:
 @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
 class CineOfficeGetVoucherForShowTest:
     def test_should_return_none_when_show_does_not_have_pass_culture_tariff(self, requests_mock):
-        show = cds_serializers.ShowCDS(
+        show = cds_serializers.Show(
             id=1,
             is_cancelled=False,
             is_deleted=False,
@@ -797,11 +797,11 @@ class CineOfficeGetVoucherForShowTest:
             remaining_place=88,
             internet_remaining_place=20,
             showtime=date_utils.get_naive_utc_now(),
-            shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
-            screen=cds_serializers.IdObjectCDS(id=1),
-            media=cds_serializers.IdObjectCDS(id=52),
+            shows_tariff_pos_type_collection=[cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=5))],
+            screen=cds_serializers.IdObject(id=1),
+            media=cds_serializers.IdObject(id=52),
             shows_mediaoptions_collection=[
-                cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12))
             ],
         )
 
@@ -822,7 +822,7 @@ class CineOfficeGetVoucherForShowTest:
         assert not voucher_type
 
     def test_should_return_psculture_voucher_with_the_lower_price(self, requests_mock):
-        show = cds_serializers.ShowCDS(
+        show = cds_serializers.Show(
             id=1,
             is_cancelled=False,
             is_deleted=False,
@@ -832,13 +832,13 @@ class CineOfficeGetVoucherForShowTest:
             internet_remaining_place=20,
             showtime=date_utils.get_naive_utc_now(),
             shows_tariff_pos_type_collection=[
-                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
-                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=3)),
+                cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=2)),
             ],
-            screen=cds_serializers.IdObjectCDS(id=1),
-            media=cds_serializers.IdObjectCDS(id=52),
+            screen=cds_serializers.IdObject(id=1),
+            media=cds_serializers.IdObject(id=52),
             shows_mediaoptions_collection=[
-                cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12))
             ],
         )
 
@@ -884,18 +884,18 @@ class CineOfficeBookTicketTest:
             id=12, internal_code="VCH", is_active=True
         )
         mocked_get_pc_voucher_types.return_value = [
-            cds_serializers.VoucherTypeCDS(
+            cds_serializers.VoucherType(
                 id=3,
                 code="PSCULTURE",
-                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+                tariff=cds_serializers.Tariff(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
 
         mocked_get_available_seat.return_value = [
-            cds_serializers.SeatCDS(
+            cds_serializers.Seat(
                 (0, 0),
                 create_screen_cds(),
-                seat_map=cds_serializers.SeatmapCDS([[1, 1, 1], [1, 1, 1], [1, 1, 1]]),
+                seat_map=cds_serializers.Seatmap([[1, 1, 1], [1, 1, 1], [1, 1, 1]]),
                 hardcoded_seatmap=[],
             ),
         ]
@@ -991,10 +991,10 @@ class CineOfficeBookTicketTest:
             id=12, internal_code="VCH", is_active=True
         )
         mocked_get_pc_voucher_types.return_value = [
-            cds_serializers.VoucherTypeCDS(
+            cds_serializers.VoucherType(
                 id=3,
                 code="PSCULTURE",
-                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+                tariff=cds_serializers.Tariff(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
 
@@ -1039,16 +1039,16 @@ class CineOfficeBookTicketTest:
             id=12, internal_code="VCH", is_active=True
         )
         mocked_get_pc_voucher_types.return_value = [
-            cds_serializers.VoucherTypeCDS(
+            cds_serializers.VoucherType(
                 id=3,
                 code="PSCULTURE",
-                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+                tariff=cds_serializers.Tariff(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
-        mocked_seatmap = cds_serializers.SeatmapCDS([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+        mocked_seatmap = cds_serializers.Seatmap([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
         mocked_get_available_duo_seat.return_value = [
-            cds_serializers.SeatCDS((0, 0), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),
-            cds_serializers.SeatCDS((0, 1), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),
+            cds_serializers.Seat((0, 0), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),
+            cds_serializers.Seat((0, 1), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),
         ]
 
         mocked_get_show.return_value = create_show_cds(
@@ -1169,10 +1169,10 @@ class CineOfficeBookTicketTest:
             id=12, internal_code="VCH", is_active=True
         )
         mocked_get_pc_voucher_types.return_value = [
-            cds_serializers.VoucherTypeCDS(
+            cds_serializers.VoucherType(
                 id=3,
                 code="PSCULTURE",
-                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+                tariff=cds_serializers.Tariff(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
 

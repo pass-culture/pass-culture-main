@@ -118,7 +118,7 @@ class CDSExtractTransformLoadProcessTest:
 
         assert extract_result == {
             "movies": [
-                cds_serializers.MediaCDS(
+                cds_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -127,7 +127,7 @@ class CDSExtractTransformLoadProcessTest:
                     visanumber="123",
                     allocineid=None,
                 ),
-                cds_serializers.MediaCDS(
+                cds_serializers.Media(
                     id=2,
                     title="Test movie #2",
                     duration=5400,
@@ -136,7 +136,7 @@ class CDSExtractTransformLoadProcessTest:
                     visanumber="456",
                     allocineid=None,
                 ),
-                cds_serializers.MediaCDS(
+                cds_serializers.Media(
                     id=3,
                     title="Test movie #3",
                     duration=6600,
@@ -152,20 +152,20 @@ class CDSExtractTransformLoadProcessTest:
                 14: "3D",
             },
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cds_serializers.VoucherType(
                     id=2,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
+                    tariff=cds_serializers.Tariff(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
                 ),
-                cds_serializers.VoucherTypeCDS(
+                cds_serializers.VoucherType(
                     id=3,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=97, price=6, active=True, labeltariff="Tarif PC"),
+                    tariff=cds_serializers.Tariff(id=97, price=6, active=True, labeltariff="Tarif PC"),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cds_serializers.Show(
                     id=1,
                     is_cancelled=False,
                     is_deleted=False,
@@ -177,17 +177,17 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 28, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96)),
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=96)),
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=3)),
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cds_serializers.IdObject(id=10),
+                    media=cds_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12))
                     ],
                 ),
-                cds_serializers.ShowCDS(
+                cds_serializers.Show(
                     id=2,
                     is_cancelled=False,
                     is_deleted=False,
@@ -199,16 +199,16 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 29, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96))
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=96))
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cds_serializers.IdObject(id=10),
+                    media=cds_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12)),
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=14)),
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12)),
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=14)),
                     ],
                 ),
-                cds_serializers.ShowCDS(
+                cds_serializers.Show(
                     id=3,
                     is_cancelled=False,
                     is_deleted=False,
@@ -220,12 +220,12 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 30, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=96))
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=96))
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=20),
-                    media=cds_serializers.IdObjectCDS(id=2),
+                    screen=cds_serializers.IdObject(id=20),
+                    media=cds_serializers.IdObject(id=2),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=13))
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=13))
                     ],
                 ),
             ],
@@ -301,7 +301,7 @@ class CDSExtractTransformLoadProcessTest:
         etl_process = CDSExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
-                cds_serializers.MediaCDS(
+                cds_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -313,15 +313,15 @@ class CDSExtractTransformLoadProcessTest:
             ],
             "media_options": {},
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cds_serializers.VoucherType(
                     id=2,
                     code="FULL_PRICE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Plein tarif"),
+                    tariff=cds_serializers.Tariff(id=96, price=5, active=True, labeltariff="Plein tarif"),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cds_serializers.Show(
                     id=53,
                     is_cancelled=False,
                     is_deleted=False,
@@ -334,12 +334,12 @@ class CDSExtractTransformLoadProcessTest:
                     ),
                     shows_tariff_pos_type_collection=[
                         # only full price tariff
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=1),
+                    screen=cds_serializers.IdObject(id=10),
+                    media=cds_serializers.IdObject(id=1),
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12))
                     ],
                 ),
             ],
@@ -388,7 +388,7 @@ class CDSExtractTransformLoadProcessTest:
         etl_process = CDSExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
-                cds_serializers.MediaCDS(
+                cds_serializers.Media(
                     id=1,
                     title="Test movie #1",
                     duration=7200,
@@ -400,15 +400,15 @@ class CDSExtractTransformLoadProcessTest:
             ],
             "media_options": {},
             "voucher_types": [
-                cds_serializers.VoucherTypeCDS(
+                cds_serializers.VoucherType(
                     id=2,
                     code="PSCULTURE",
-                    tariff=cds_serializers.TariffCDS(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
+                    tariff=cds_serializers.Tariff(id=96, price=5, active=True, labeltariff="Tarif pass Culture"),
                 ),
             ],
             "is_internet_sale_gauge_active": False,
             "shows": [
-                cds_serializers.ShowCDS(
+                cds_serializers.Show(
                     id=56,
                     is_cancelled=False,
                     is_deleted=False,
@@ -420,12 +420,12 @@ class CDSExtractTransformLoadProcessTest:
                         2022, 3, 28, 12, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
                     ),
                     shows_tariff_pos_type_collection=[
-                        cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+                        cds_serializers.ShowTariff(tariff=cds_serializers.IdObject(id=2)),
                     ],
-                    screen=cds_serializers.IdObjectCDS(id=10),
-                    media=cds_serializers.IdObjectCDS(id=2),  # not present in movie
+                    screen=cds_serializers.IdObject(id=10),
+                    media=cds_serializers.IdObject(id=2),  # not present in movie
                     shows_mediaoptions_collection=[
-                        cds_serializers.ShowsMediaoptionsCDS(media_options_id=cds_serializers.IdObjectCDS(id=12))
+                        cds_serializers.ShowsMediaOptions(media_options_id=cds_serializers.IdObject(id=12))
                     ],
                 ),
             ],

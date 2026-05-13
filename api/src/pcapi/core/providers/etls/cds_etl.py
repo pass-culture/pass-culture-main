@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class CineDigitalServiceExtractResult(typing.TypedDict):
-    movies: list[cds_serializers.MediaCDS]
+    movies: list[cds_serializers.Media]
     media_options: dict[int, str]
-    shows: list[cds_serializers.ShowCDS]
-    voucher_types: list[cds_serializers.VoucherTypeCDS]
+    shows: list[cds_serializers.Show]
+    voucher_types: list[cds_serializers.VoucherType]
     is_internet_sale_gauge_active: bool
 
 

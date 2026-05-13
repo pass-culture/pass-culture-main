@@ -7,41 +7,41 @@ from pydantic import Field
 import pcapi.core.offers.models as offers_models
 
 
-class CDSBaseModel(pydantic.BaseModel):
+class CineOfficeBaseModel(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(validate_by_name=True)
 
 
-class IdObjectCDS(CDSBaseModel):
+class IdObject(CineOfficeBaseModel):
     id: int
 
 
-class ShowTariffCDS(CDSBaseModel):
-    tariff: IdObjectCDS = Field(alias="tariffid")
+class ShowTariff(CineOfficeBaseModel):
+    tariff: IdObject = Field(alias="tariffid")
 
 
-class ShowsMediaoptionsCDS(CDSBaseModel):
-    media_options_id: IdObjectCDS = Field(alias="mediaoptionsid")
+class ShowsMediaOptions(CineOfficeBaseModel):
+    media_options_id: IdObject = Field(alias="mediaoptionsid")
 
 
-class CinemaParameterCDS(CDSBaseModel):
+class CinemaParameter(CineOfficeBaseModel):
     id: int
     key: str
     value: str | None = None
 
 
-class CinemaCDS(CDSBaseModel):
+class CinemaCDS(CineOfficeBaseModel):
     id: str
     is_internet_sale_gauge_active: bool = Field(alias="internetsalegaugeactive")
-    cinema_parameters: list[CinemaParameterCDS] = Field(alias="cinemaParameters", default_factory=list)
+    cinema_parameters: list[CinemaParameter] = Field(alias="cinemaParameters", default_factory=list)
 
 
-class MediaOptionCDS(CDSBaseModel):
+class MediaOptionCDS(CineOfficeBaseModel):
     id: int
     ticketlabel: str | None = None
     label: str
 
 
-class ShowCDS(CDSBaseModel):
+class Show(CineOfficeBaseModel):
     id: int
     is_cancelled: bool = Field(alias="canceled")
     is_deleted: bool = Field(alias="deleted")
@@ -50,10 +50,10 @@ class ShowCDS(CDSBaseModel):
     remaining_place: int = Field(alias="remainingplace")
     internet_remaining_place: int = Field(alias="internetremainingplace")
     showtime: datetime.datetime
-    shows_tariff_pos_type_collection: list[ShowTariffCDS] = Field(alias="showsTariffPostypeCollection")
-    screen: IdObjectCDS = Field(alias="screenid")
-    media: IdObjectCDS = Field(alias="mediaid")
-    shows_mediaoptions_collection: list[ShowsMediaoptionsCDS] = Field(alias="showsMediaoptionsCollection")
+    shows_tariff_pos_type_collection: list[ShowTariff] = Field(alias="showsTariffPostypeCollection")
+    screen: IdObject = Field(alias="screenid")
+    media: IdObject = Field(alias="mediaid")
+    shows_mediaoptions_collection: list[ShowsMediaOptions] = Field(alias="showsMediaoptionsCollection")
 
     @pydantic.field_validator("is_empty_seatmap")
     def string_with_no_digit_to_true(cls, value: str | bool) -> bool:
@@ -69,7 +69,7 @@ class ShowCDS(CDSBaseModel):
         return False
 
 
-class MediaCDS(CDSBaseModel):
+class Media(CineOfficeBaseModel):
     id: int
     title: str
     duration: int | None = None  # CDS api returns duration in seconds
@@ -90,33 +90,33 @@ class MediaCDS(CDSBaseModel):
         )
 
 
-class PaymentTypeCDS(CDSBaseModel):
+class PaymentTypeCDS(CineOfficeBaseModel):
     id: int
     internal_code: str = Field(alias="internalcode")
     is_active: bool = Field(alias="active")
 
 
-class TariffCDS(CDSBaseModel):
+class Tariff(CineOfficeBaseModel):
     id: int
     price: float
     is_active: bool = Field(alias="active")
     label: str = Field(alias="labeltariff")
 
 
-class VoucherTypeCDS(CDSBaseModel):
+class VoucherType(CineOfficeBaseModel):
     id: int
     code: str | None = None
-    tariff: TariffCDS | None = Field(alias="tariffid", default=None)
+    tariff: Tariff | None = Field(alias="tariffid", default=None)
 
 
-class ScreenCDS(CDSBaseModel):
+class Screen(CineOfficeBaseModel):
     id: int
     seatmap_front_to_back: bool = Field(alias="seatmapfronttoback")
     seatmap_left_to_right: bool = Field(alias="seatmaplefttoright")
     seatmap_skip_missing_seats: bool = Field(alias="seatmapskipmissingseats")
 
 
-class SeatmapCDS(pydantic.RootModel, CDSBaseModel):
+class Seatmap(pydantic.RootModel, CineOfficeBaseModel):
     root: list[list[int]]
 
     @property
@@ -132,16 +132,16 @@ class SeatmapCDS(pydantic.RootModel, CDSBaseModel):
         return len(self.map[0]) if len(self.map[0]) > 0 else 0
 
 
-class CancelBookingCDS(CDSBaseModel):
+class CancelBooking(CineOfficeBaseModel):
     barcodes: list[int]
     paiement_type_id: int = Field(alias="paiementtypeid")
 
 
-class CancelBookingsErrorsCDS(pydantic.RootModel, CDSBaseModel):
+class CancelBookingsErrors(pydantic.RootModel, CineOfficeBaseModel):
     root: dict[str, str]
 
 
-class TicketSaleCDS(CDSBaseModel):
+class TicketSale(CineOfficeBaseModel):
     id: int
     cinema_id: str = Field(alias="cinemaid")
     operation_date: str = Field(alias="operationdate")
@@ -149,44 +149,44 @@ class TicketSaleCDS(CDSBaseModel):
     seat_col: int | None = Field(alias="seatcol", default=None)
     seat_row: int | None = Field(alias="seatrow", default=None)
     seat_number: str | None = Field(alias="seatnumber", default=None)
-    tariff: IdObjectCDS = Field(alias="tariffid")
+    tariff: IdObject = Field(alias="tariffid")
     voucher_type: str = Field(alias="vouchertype")
-    show: IdObjectCDS = Field(alias="showid")
+    show: IdObject = Field(alias="showid")
     disabled_person: bool = Field(alias="disabledperson")
 
 
-class TransactionPayementCDS(CDSBaseModel):
+class TransactionPayement(CineOfficeBaseModel):
     id: int
     amount: float
-    payement_type: IdObjectCDS = Field(alias="paiementtypeid")
-    voucher_type: IdObjectCDS = Field(alias="vouchertypeid")
+    payement_type: IdObject = Field(alias="paiementtypeid")
+    voucher_type: IdObject = Field(alias="vouchertypeid")
 
 
-class CreateTransactionBodyCDS(CDSBaseModel):
+class CreateTransactionBody(CineOfficeBaseModel):
     cinema_id: str = Field(alias="cinemaid")
     transaction_date: str = Field(alias="transactiondate")
     is_cancelled: bool = Field(alias="canceled")
-    ticket_sale_collection: list[TicketSaleCDS] = Field(alias="ticketsaleCollection")
-    payement_collection: list[TransactionPayementCDS] = Field(alias="paiementCollection")
+    ticket_sale_collection: list[TicketSale] = Field(alias="ticketsaleCollection")
+    payement_collection: list[TransactionPayement] = Field(alias="paiementCollection")
 
 
-class TicketResponseCDS(CDSBaseModel):
+class TicketResponse(CineOfficeBaseModel):
     barcode: str
     seat_number: str | None = Field(alias="seatnumber", default=None)
 
 
-class CreateTransactionResponseCDS(CDSBaseModel):
+class CreateTransactionResponse(CineOfficeBaseModel):
     id: int
     invoice_id: str = Field(alias="invoiceid")
-    tickets: list[TicketResponseCDS]
+    tickets: list[TicketResponse]
 
 
-class SeatCDS:
+class Seat:
     def __init__(
         self,
         seat_location_indices: tuple[int, int],
-        screen_infos: ScreenCDS,
-        seat_map: SeatmapCDS,
+        screen_infos: Screen,
+        seat_map: Seatmap,
         hardcoded_seatmap: list[list[str | typing.Literal[0]]],
     ):
         self.seatRow = seat_location_indices[0]

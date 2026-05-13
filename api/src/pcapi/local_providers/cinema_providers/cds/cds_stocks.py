@@ -16,8 +16,8 @@ import pcapi.utils.date as utils_date
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.clients.cds_serializers import MediaCDS
-from pcapi.core.providers.clients.cds_serializers import ShowCDS
+from pcapi.core.providers.clients.cds_serializers import Media
+from pcapi.core.providers.clients.cds_serializers import Show
 from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
@@ -60,7 +60,7 @@ class CDSStocks(LocalProvider):
             cinema_api_token=self.apiToken,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
-        self.movies: Iterator[MediaCDS] = iter(self.client_cds.get_venue_movies())
+        self.movies: Iterator[Media] = iter(self.client_cds.get_venue_movies())
         self.media_options = self.client_cds.get_media_options()
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
@@ -194,7 +194,7 @@ class CDSStocks(LocalProvider):
                 % (showtime_uuid, self.movie_information.allocineid, self.venue.id)
             )
 
-        show: ShowCDS = showtime["show_information"]
+        show: Show = showtime["show_information"]
         local_tz = utils_date.get_department_timezone(self.venue.offererAddress.address.departmentCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
 
@@ -298,7 +298,7 @@ class CDSStocks(LocalProvider):
 
         return shows_with_pass_culture_tariff
 
-    def get_or_create_movie_product(self, movie: MediaCDS) -> offers_models.Product | None:
+    def get_or_create_movie_product(self, movie: Media) -> offers_models.Product | None:
         assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider)
@@ -331,9 +331,9 @@ def _build_movie_uuid(movie_information_id: int, venue: Venue) -> str:
     return f"{movie_information_id}%{venue.id}%CDS"
 
 
-def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
+def _build_showtime_uuid(showtime_details: Show) -> str:
     return str(showtime_details.id)
 
 
-def _build_stock_uuid(movie_information_id: int, venue: Venue, showtime_details: ShowCDS) -> str:
+def _build_stock_uuid(movie_information_id: int, venue: Venue, showtime_details: Show) -> str:
     return f"{_build_movie_uuid(movie_information_id, venue)}#{_build_showtime_uuid(showtime_details)}"
