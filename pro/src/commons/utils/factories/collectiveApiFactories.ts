@@ -2,7 +2,6 @@
 
 import { add, addDays } from 'date-fns'
 
-import { EacFormat } from '@/apiClient/adage'
 import {
   CollectiveBookingStatus,
   CollectiveLocationType,
@@ -11,8 +10,10 @@ import {
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
+  DisplayableActivity,
   type DMSApplicationForEAC,
   DMSApplicationstatus,
+  EacFormat,
   type EducationalInstitutionResponseModel,
   type EducationalRedactorResponseModel,
   type GetCollectiveOfferBookingResponseModel,
@@ -24,8 +25,7 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type GetVenueResponseModel,
   StudentLevels,
-} from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 
 import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 
