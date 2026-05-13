@@ -3,10 +3,10 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import type {
+  GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
-} from '@/apiClient/v1'
-import type { GetVenueManagingOffererResponseModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'

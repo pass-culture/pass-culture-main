@@ -1,10 +1,10 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
   GetVenueResponseModel,
   PostVenueProviderBody,
   ProviderResponse,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   isAllocineProvider,
   isCinemaProvider,
@@ -35,7 +35,10 @@ export const VenueProviderForm = ({
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      await api.createVenueProvider(venue.id, payload)
+      await apiNew.createVenueProvider({
+        path: { venue_id: Number(venue.id) },
+        body: payload,
+      })
 
       snackBar.success('La synchronisation a bien été initiée.')
       await afterSubmit()

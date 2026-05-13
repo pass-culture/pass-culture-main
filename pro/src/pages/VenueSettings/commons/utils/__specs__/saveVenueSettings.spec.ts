@@ -1,14 +1,13 @@
+import { apiNew } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { saveVenueSettings } from '../saveVenueSettings'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     editVenue: vi.fn(),
   },
 }))
-
-import { api } from '@/apiClient/api'
 
 import type {
   VenueSettingsFormContext,
@@ -59,22 +58,25 @@ describe('saveVenueSettings', () => {
   it('should patch venue settings', async () => {
     await saveVenueSettings(formValues, formContext, { venue })
 
-    expect(api.editVenue).toHaveBeenCalledWith(venue.id, {
-      banId: '12345',
-      bookingEmail: 'contact@lieuexemple.com',
-      city: 'Ville Exemple',
-      comment: '',
-      inseeCode: '75111',
-      isManualEdition: false,
-      latitude: 48.8566,
-      longitude: 2.3522,
-      name: '',
-      postalCode: '75001',
-      publicName: '',
-      siret: '12345678901234',
-      street: '123 Rue Principale',
-      withdrawalDetails:
-        "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+    expect(apiNew.editVenue).toHaveBeenCalledWith({
+      path: { venue_id: venue.id },
+      body: {
+        banId: '12345',
+        bookingEmail: 'contact@lieuexemple.com',
+        city: 'Ville Exemple',
+        comment: '',
+        inseeCode: '75111',
+        isManualEdition: false,
+        latitude: 48.8566,
+        longitude: 2.3522,
+        name: '',
+        postalCode: '75001',
+        publicName: '',
+        siret: '12345678901234',
+        street: '123 Rue Principale',
+        withdrawalDetails:
+          "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
+      },
     })
   })
 })

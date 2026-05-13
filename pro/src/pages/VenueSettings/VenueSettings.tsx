@@ -1,7 +1,8 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
@@ -18,14 +19,16 @@ const VenueSettings = (): JSX.Element | null => {
   const offerer = useAppSelector(ensureSelectedPartnerVenue).managingOfferer
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, String(venueId)],
-    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+    [GET_VENUE_QUERY_KEY, venueId],
+    ([, venueIdParam]) =>
+      apiNew.getVenue({ path: { venue_id: Number(venueIdParam) } })
   )
   const venue = venueQuery.data
 
   const venueProvidersQuery = useSWR(
-    [GET_VENUE_PROVIDERS_QUERY_KEY, Number(venueId)],
-    ([, venueIdParam]) => api.listVenueProviders(venueIdParam)
+    [GET_VENUE_PROVIDERS_QUERY_KEY, venueId],
+    ([, venueIdParam]) =>
+      apiNew.listVenueProviders({ path: { venue_id: Number(venueIdParam) } })
   )
   const venueProviders = venueProvidersQuery.data?.venueProviders
 
@@ -37,7 +40,8 @@ const VenueSettings = (): JSX.Element | null => {
     !venueProviders
 
   return (
-    <BasicLayout mainHeading="Paramètres généraux">
+    <BasicLayout>
+      <MainHeading mainHeading="Paramètres généraux" />
       {isNotReady ? (
         <Spinner />
       ) : (

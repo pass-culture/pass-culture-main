@@ -1,8 +1,11 @@
 import { useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel, ProviderResponse } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type {
+  GetVenueResponseModel,
+  ProviderResponse,
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_PROVIDERS_QUERY_KEY,
@@ -36,7 +39,8 @@ export const AddVenueProviderButton = ({
 
   const providersQuery = useSWR(
     [GET_PROVIDERS_QUERY_KEY, venue.id],
-    ([, venueIdParam]) => api.getProvidersByVenue(venueIdParam)
+    ([, venueIdParam]) =>
+      apiNew.getProvidersByVenue({ path: { venue_id: venueIdParam } })
   )
   const providers = providersQuery.data
 

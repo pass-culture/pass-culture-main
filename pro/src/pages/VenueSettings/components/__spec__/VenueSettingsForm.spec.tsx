@@ -3,8 +3,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -136,7 +136,7 @@ describe('VenueSettingsForm', () => {
       },
     ])
 
-    vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
+    vi.spyOn(apiNew, 'getProvidersByVenue').mockResolvedValue([
       {
         name: 'Ciné Office',
         id: 12,
