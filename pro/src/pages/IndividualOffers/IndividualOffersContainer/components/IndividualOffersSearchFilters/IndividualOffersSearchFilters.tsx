@@ -16,7 +16,7 @@ interface IndividualOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<IndividualOffersFilters>>
   disableAllFilters: boolean
   resetFilters: () => void
-  offererAddresses: SelectOption<number>[]
+  venueAddresses: SelectOption<number>[]
   categories?: SelectOption[]
   searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
@@ -44,7 +44,7 @@ export const IndividualOffersSearchFilters = ({
   setSelectedFilters,
   resetFilters,
   disableAllFilters,
-  offererAddresses,
+  venueAddresses,
   categories,
   searchButtonRef,
 }: Readonly<IndividualOffersSearchFiltersProps>) => {
@@ -101,10 +101,10 @@ export const IndividualOffersSearchFilters = ({
           name="offererAddressId"
           emptyOptionLabel="Toutes"
           isNumber
-          options={offererAddresses}
+          options={venueAddresses}
           value={selectedFilters.offererAddressId}
           onChange={(value) => updateSearchFilters({ offererAddressId: value })}
-          disabled={offererAddresses.length === 0 || disableAllFilters}
+          disabled={venueAddresses.length === 0 || disableAllFilters}
           className={styles['select-filter']}
         />
 

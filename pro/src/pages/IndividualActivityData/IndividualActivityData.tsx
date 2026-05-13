@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { formatAndOrderAddresses } from '@/commons/format/venuesService'
-import { useVenueAddresses } from '@/commons/hooks/swr/useVenueAddresses'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
@@ -39,11 +36,6 @@ const IndividualActivityData = () => {
   useEffect(() => {
     resetPreFilters()
   }, [resetPreFilters, selectedAdminOfferer.id])
-
-  const venueAddressQuery = useVenueAddresses(
-    GetVenueAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
-  )
-  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
 
   const resetPreFiltersAndLog = () => {
     resetPreFilters()
@@ -89,10 +81,9 @@ const IndividualActivityData = () => {
         hasPreFilters={hasPreFilters}
         hasResult={false}
         isAdministrationSpace
-        isLocalLoading={venueAddressQuery.isLoading}
+        isLocalLoading={false}
         isRefreshRequired={isRefreshRequired}
         isTableLoading={false}
-        offererAddresses={offererAddresses}
         resetPreFilters={resetPreFiltersAndLog}
         selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}

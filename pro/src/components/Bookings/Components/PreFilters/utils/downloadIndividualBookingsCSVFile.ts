@@ -1,4 +1,5 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { getBookingsCsvData } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'
@@ -8,24 +9,33 @@ export const downloadIndividualBookingsCSVFile = async (
   filters: PreFiltersParams & { page?: number },
   offererId: number
 ) => {
-  const bookingsCsvText = await api.getBookingsCsv(
+  const query: getBookingsCsvData['query'] = {
     offererId,
-    filters.page,
-    null,
-    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
+    page: filters.page ?? 1,
+    offerId: null,
+    eventDate:
+      filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
       isDateValid(filters.offerEventDate)
-      ? filters.offerEventDate
-      : null,
-    filters.bookingStatusFilter,
-    isDateValid(filters.bookingBeginningDate)
+        ? filters.offerEventDate
+        : null,
+    bookingStatusFilter: filters.bookingStatusFilter,
+    bookingPeriodBeginningDate: isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
-    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null,
-    filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId
-      ? Number(filters.offererAddressId)
-      : null
-  )
+    bookingPeriodEndingDate: isDateValid(filters.bookingEndingDate)
+      ? filters.bookingEndingDate
+      : null,
+    offererAddressId:
+      filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId
+        ? Number(filters.offererAddressId)
+        : null,
+  }
+
+  const bookingsCsvText = (await apiNew.getBookingsCsv({ query })) as string
+  const bookingsCsvBlob = new Blob([bookingsCsvText], {
+    type: 'text/csv;charset=utf-8;',
+  })
 
   const date = new Date().toISOString()
-  downloadFile(bookingsCsvText, `reservations_pass_culture-${date}.csv`)
+  downloadFile(bookingsCsvBlob, `reservations_pass_culture-${date}.csv`)
 }

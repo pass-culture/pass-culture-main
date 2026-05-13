@@ -5,11 +5,10 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateResponseModel,
-  type GetOffererAddressResponseModel,
   type GetVenueAddressResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -17,7 +16,6 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -26,15 +24,6 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
-
-const offererAddress: GetOffererAddressResponseModel[] = [
-  offererAddressFactory({
-    label: 'Label',
-  }),
-  offererAddressFactory({
-    city: 'New York',
-  }),
-]
 
 const venueAddress: GetVenueAddressResponseModel[] = [
   venueAddressFactory(1, {
@@ -86,8 +75,7 @@ describe('TemplateCollectiveOffers', () => {
       ...defaultGetOffererResponseModel,
       name: 'Mon offerer',
     })
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   afterEach(() => {

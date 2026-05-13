@@ -1,4 +1,5 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { getBookingsExcelData } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'
@@ -8,23 +9,30 @@ export const downloadIndividualBookingsXLSFile = async (
   filters: PreFiltersParams & { page?: number },
   offererId: number
 ) => {
-  const bookingsXLSText = await api.getBookingsExcel(
+  const query: getBookingsExcelData['query'] = {
     offererId,
-    filters.page,
-    null,
-    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
+    page: filters.page,
+    offerId: null,
+    eventDate:
+      filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
       isDateValid(filters.offerEventDate)
-      ? filters.offerEventDate
-      : null,
-    filters.bookingStatusFilter,
-    isDateValid(filters.bookingBeginningDate)
+        ? filters.offerEventDate
+        : null,
+    bookingStatusFilter: filters.bookingStatusFilter,
+    bookingPeriodBeginningDate: isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
-    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null,
-    filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId
-      ? Number(filters.offererAddressId)
-      : null
-  )
+    bookingPeriodEndingDate: isDateValid(filters.bookingEndingDate)
+      ? filters.bookingEndingDate
+      : null,
+    offererAddressId:
+      filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId
+        ? Number(filters.offererAddressId)
+        : null,
+  }
+
+  const bookingsXLSText = (await apiNew.getBookingsExcel({ query })) as Blob
+
   const date = new Date().toISOString()
   downloadFile(bookingsXLSText, `reservations_pass_culture-${date}.xlsx`)
 }

@@ -50,7 +50,7 @@ export const CollectiveOffersSearchFilters = ({
   const venueAddressQuery = useVenueAddresses(
     GetVenueAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
   )
-  const offererAddresses = formatAndOrderAddresses(venueAddressQuery.data)
+  const venueAddresses = formatAndOrderAddresses(venueAddressQuery.data ?? [])
 
   const locationOptions = [
     {
@@ -61,7 +61,7 @@ export const CollectiveOffersSearchFilters = ({
       value: CollectiveLocationType.SCHOOL,
       label: 'En établissement scolaire',
     },
-    ...offererAddresses.map((address) => ({
+    ...venueAddresses.map((address) => ({
       ...address,
       value: address.value,
     })),

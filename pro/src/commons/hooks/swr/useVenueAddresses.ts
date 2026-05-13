@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetVenueAddressesWithOffersOption } from '@/apiClient/v1/new'
 import { GET_VENUE_ADDRESS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 import { useAppSelector } from '../useAppSelector'
@@ -16,7 +16,12 @@ export const useVenueAddresses = (
   return useSWR(
     [GET_VENUE_ADDRESS_QUERY_KEY, selectedPartnerVenue?.id, venueOption],
     ([, venueIdParam]) =>
-      venueIdParam ? api.getVenueAddresses(venueIdParam, venueOption) : [],
+      venueIdParam
+        ? apiNew.getVenueAddresses({
+            path: { venue_id: venueIdParam },
+            query: { withOffersOption: venueOption },
+          })
+        : [],
     { fallbackData: [] }
   )
 }
