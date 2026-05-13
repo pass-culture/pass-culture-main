@@ -34,6 +34,21 @@ export interface ProUserData {
   }
 }
 
+export interface ProUserAlreadyOnboarded {
+  user: {
+    email: string
+  }
+  siren: string
+  venueName: string
+}
+
+export interface ProUserDataWithNonAttachedOfferer {
+  user: {
+    email: string
+  }
+  nonAttachedSiret: string
+}
+
 export interface ProUserWithActiveCollectiveOfferResponse {
   user: {
     email: string
@@ -83,11 +98,21 @@ export async function createRegularProUser(
 
 export async function createRegularOnboardedProUser(
   request: APIRequestContext
-): Promise<ProUserData> {
-  return await sandboxCall<ProUserData>(
+): Promise<ProUserAlreadyOnboarded> {
+  return await sandboxCall<ProUserAlreadyOnboarded>(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
+  )
+}
+
+export async function createRegularOnboardedProUserWithNonAttachedOfferer(
+  request: APIRequestContext
+): Promise<ProUserDataWithNonAttachedOfferer> {
+  return await sandboxCall<ProUserDataWithNonAttachedOfferer>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded_with_non_attached_offerer`
   )
 }
 
@@ -276,5 +301,23 @@ export async function createEacCompleteLt30d(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_eac_complete_lt_30d`
+  )
+}
+
+export interface ProUserWithFinancialDataAnd3Venues {
+  user: {
+    email: string
+  }
+  siren: string
+  venueName: string
+}
+
+export async function createProUserWithFinancialDataAnd3Venues(
+  request: APIRequestContext
+): Promise<ProUserWithFinancialDataAnd3Venues> {
+  return await sandboxCall<ProUserWithFinancialDataAnd3Venues>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_financial_data_and_3_venues`
   )
 }

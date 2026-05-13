@@ -87,6 +87,27 @@ def create_regular_pro_user_already_onboarded() -> dict:
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
 
 
+def create_regular_pro_user_already_onboarded_with_non_attached_offerer() -> dict:
+    pro_user = users_factories.ProFactory.create()
+    offerer = offerers_factories.OffererFactory.create(name="Offerer rattaché")
+    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
+    nonAttachedOfferer = offerers_factories.OffererFactory.create(name="Offerer non rattaché")
+    venue = offerers_factories.VenueFactory.create(
+        name="Mon Lieu", managingOfferer=offerer, isPermanent=True, adageId="1337"
+    )  # Adding an adageId will make this user onboarded
+    nonAttachedVenue = offerers_factories.VenueFactory.create(
+        name="Mon Lieu non rattaché", managingOfferer=nonAttachedOfferer, isPermanent=True
+    )
+    offerers_factories.VenueLabelFactory.create(label="Musée de France")
+
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "siren": offerer.siren,
+        "venueName": venue.name,
+        "nonAttachedSiret": nonAttachedVenue.siret,
+    }
+
+
 def create_pro_user_with_bookings() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()

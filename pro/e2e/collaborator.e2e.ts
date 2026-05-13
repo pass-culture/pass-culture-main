@@ -5,13 +5,11 @@ import { checkAccessibility } from './helpers/accessibility'
 import { expectSuccessSnackbar } from './helpers/assertions'
 import { login } from './helpers/auth'
 import { navigateToAdministrationSpace } from './helpers/navigation'
-import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
-
-interface ProUserResponse {
-  user: {
-    email: string
-  }
-}
+import {
+  BASE_API_URL,
+  createRegularOnboardedProUser,
+  sandboxCall,
+} from './helpers/sandbox'
 
 interface EmailResponse {
   To: string
@@ -28,11 +26,7 @@ test.describe('Collaborator list feature', () => {
       baseURL: BASE_API_URL,
     })
 
-    const userData = await sandboxCall<ProUserResponse>(
-      requestContext,
-      'GET',
-      `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
-    )
+    const userData = await createRegularOnboardedProUser(requestContext)
 
     const clearResponse = await requestContext.fetch(
       `${BASE_API_URL}/sandboxes/clear_email_list`,
@@ -48,6 +42,10 @@ test.describe('Collaborator list feature', () => {
     await navigateToAdministrationSpace(page)
     await page.getByRole('link', { name: 'Collaborateurs' }).click()
     await expect(page).toHaveURL(/\/administration\/collaborateurs$/)
+
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Collaborateurs' })
+    ).toBeVisible()
 
     await checkAccessibility(page)
 

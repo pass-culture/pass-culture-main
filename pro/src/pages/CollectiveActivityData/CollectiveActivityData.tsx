@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
@@ -54,7 +53,6 @@ const CollectiveActivityData = () => {
 
   return (
     <>
-      <MainHeading mainHeading="Données d'activité : collectif" />
       <h2 className={styles['subtitle']}>
         Téléchargement des offres réservables
       </h2>

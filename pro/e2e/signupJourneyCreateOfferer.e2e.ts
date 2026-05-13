@@ -10,6 +10,7 @@ import {
   createNewProUserAndOfferer,
   createNewProUserAndOffererWithVenue,
 } from './helpers/sandbox'
+import { joinExistingVenueSpace } from './helpers/switchVenue'
 
 const newVenueName = 'First Venue'
 
@@ -323,28 +324,7 @@ test.describe('Signup journey with known offerer...', () => {
       await page.goto('/')
       await expect(page.getByTestId('spinner')).toHaveCount(0)
 
-      await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
-      await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
-
-      const venuesSiretPromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/venues/siret/') && response.status() === 200
-      )
-      await page.getByText('Continuer').click()
-      await venuesSiretPromise
-
-      await page.getByText('Rejoindre cet espace').click()
-
-      const postOfferersPromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/offerers') &&
-          response.request().method() === 'POST' &&
-          response.status() === 201
-      )
-      await page.getByTestId('confirm-dialog-button-confirm').click()
-      await postOfferersPromise
-
-      await page.getByText('Accéder à votre espace').click()
+      await joinExistingVenueSpace(page, mySiret)
 
       await expect(page).toHaveURL('/rattachement-en-cours')
       await expect(

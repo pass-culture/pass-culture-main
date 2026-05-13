@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import type { RouteObject } from 'react-router'
 
+import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -90,6 +91,25 @@ describe('AdministrationLayout', () => {
         user: {
           offererNamesValidated: [],
           offererNames: offererNamesValidated,
+          selectedAdminOfferer: offererNamesValidated[0],
+        },
+      },
+    })
+
+    expect(
+      screen.getByText(
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
+  })
+  it('should not render outlet content on getOffererNames error', () => {
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
+    renderAdministrationLayout(2, {
+      storeOverrides: {
+        user: {
+          offererNamesValidated: [],
+          offererNames: [],
+          selectedAdminOfferer: offererNamesValidated[0],
         },
       },
     })

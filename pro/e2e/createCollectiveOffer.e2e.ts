@@ -17,7 +17,6 @@ import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
-import { navigateToHubAndPickVenue } from './helpers/navigateToHubAndPickVenue'
 import {
   isGetCollectiveOffersBookableResponse,
   isGetCollectiveOffersTemplateResponse,
@@ -25,6 +24,7 @@ import {
   isGetInstitutionalRedactorsResponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
+import { navigateToHubAndPickVenue } from './helpers/switchVenue'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
 const venueName = 'Mon Lieu A'

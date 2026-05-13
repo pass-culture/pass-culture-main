@@ -4,7 +4,7 @@ import { EMPTY_OPTION_VALUE } from '../src/components/TypedSelect/constants'
 import { expect, test } from './fixtures/searchIndividualOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectIndividualOffersOrBookingsAreFound } from './helpers/assertions'
-import { navigateToHubAndPickVenue } from './helpers/navigateToHubAndPickVenue'
+import { navigateToHubAndPickVenue } from './helpers/switchVenue'
 
 test.describe('Search individual offers', () => {
   test.beforeEach(
