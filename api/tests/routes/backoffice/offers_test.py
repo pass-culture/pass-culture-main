@@ -17,6 +17,8 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.cultural_outreach import factories as cultural_outreach_factories
+from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.external.compliance import serialization
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -198,6 +200,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) de l'évènement"] == ""
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
         assert rows[0]["Partenaire technique"] == "Music Provider"
+        assert rows[0]["Action de médiation"] == ""
         assert rows[0]["Tarif"] == "10,10 € - 15,00 €"
         assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
 
@@ -1648,6 +1651,44 @@ class ListOffersTest(GetEndpointHelper):
         expected = f'''style="background-image: url('{mediation.thumbUrl}')"'''
         assert expected.encode() in response.data
 
+    @pytest.mark.parametrize(
+        "filtered_status,expected_offer_index,expected_status",
+        [
+            (cultural_outreach_models.CulturalOutreachStatus.PENDING, 0, "En attente"),
+            (cultural_outreach_models.CulturalOutreachStatus.QUALIFIED, 1, "Qualifiée"),
+            (cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED, 2, "Disqualifiée"),
+        ],
+    )
+    def test_list_offers_with_cultural_outreach(
+        self, authenticated_client, filtered_status, expected_offer_index, expected_status
+    ):
+        offers = [
+            cultural_outreach_factories.ClaimedCulturalOutreachFactory(
+                status=cultural_outreach_models.CulturalOutreachStatus.PENDING
+            ).offer,
+            cultural_outreach_factories.ClaimedCulturalOutreachFactory(
+                status=cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+            ).offer,
+            cultural_outreach_factories.ClaimedCulturalOutreachFactory(
+                status=cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+            ).offer,
+            offers_factories.OfferFactory(),
+        ]
+
+        query_args = {
+            "search-0-search_field": "CULTURAL_OUTREACH",
+            "search-0-operator": "IN",
+            "search-0-cultural_outreach": filtered_status.name,
+        }
+        with assert_num_queries(self.expected_num_queries_with_results):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offers[expected_offer_index].id)
+        assert rows[0]["Action de médiation"] == expected_status
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"
@@ -1707,7 +1748,7 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -1739,6 +1780,7 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_edit.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
 
@@ -2334,7 +2376,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2363,6 +2405,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_validate)
@@ -2418,7 +2461,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2447,6 +2490,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_validate)
@@ -2523,7 +2567,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2552,6 +2596,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_reject.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
         assert offer_to_reject.isActive is False
@@ -3861,7 +3906,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -3890,6 +3935,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_activate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_activate)
@@ -3954,7 +4000,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
-        assert len(cells) == 26
+        assert len(cells) == 27
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -3983,6 +4029,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_deactivate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Qualification de l'action de médiation
         assert cells[next(i)] == "-"  # Pertinence
 
         db.session.refresh(offer_to_deactivate)

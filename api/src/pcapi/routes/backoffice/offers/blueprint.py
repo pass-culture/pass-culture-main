@@ -29,6 +29,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.external.compliance.api import search_offers
 from pcapi.core.external.compliance.serialization import SearchOffersRequest
 from pcapi.core.finance import api as finance_api
@@ -270,6 +271,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "column": highlights_models.HighlightRequest.highlightId,
         "inner_join": "highlight_request",
     },
+    "CULTURAL_OUTREACH": {
+        "field": "cultural_outreach",
+        "column": cultural_outreach_models.CulturalOutreach.status,
+        "inner_join": "cultural_outreach",
+    },
     "PROVIDER": {
         "field": "provider",
         "column": offers_models.Offer.lastProviderId,
@@ -381,6 +387,15 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             "args": (
                 highlights_models.HighlightRequest,
                 highlights_models.HighlightRequest.offerId == offers_models.Offer.id,
+            ),
+        },
+    ],
+    "cultural_outreach": [
+        {
+            "name": "cultural_outreach",
+            "args": (
+                cultural_outreach_models.CulturalOutreach,
+                cultural_outreach_models.CulturalOutreach.offerId == offers_models.Offer.id,
             ),
         },
     ],
@@ -768,6 +783,9 @@ def _get_offers_by_ids(
             sa_orm.joinedload(offers_models.Offer.product).load_only(
                 offers_models.Product.ean,
                 offers_models.Product.extraData,
+            ),
+            sa_orm.joinedload(offers_models.Offer.culturalOutreach).load_only(
+                offers_models.CulturalOutreach.status,
             ),
         )
     )
