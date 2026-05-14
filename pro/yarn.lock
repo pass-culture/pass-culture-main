@@ -1627,18 +1627,25 @@
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/builder-vite@10.3.5":
-  version "10.3.5"
-  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-10.3.5.tgz#809640ef935742cf6298307b85e50f5a9bc5013f"
-  integrity sha512-i4KwCOKbhtlbQIbhm53+Kk7bMnxa0cwTn1pxmtA/x5wm1Qu7FrrBQV0V0DNjkUqzcSKo1CjspASJV/HlY0zYlw==
+"@storybook/builder-vite@10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-10.3.6.tgz#c5010f0a89d49dcd37cf3eec3285399363190491"
+  integrity sha512-gpvR/sE4BcrFtmQZ+Ker7zD23oQzoVeqD9nF6cK6yzY+Q0svJXyX2EPmFG4y+EwygD5/vNzDpP84gGMut8VRwg==
   dependencies:
-    "@storybook/csf-plugin" "10.3.5"
+    "@storybook/csf-plugin" "10.3.6"
     ts-dedent "^2.0.0"
 
 "@storybook/csf-plugin@10.3.5":
   version "10.3.5"
   resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-10.3.5.tgz#f28adbbd389bf03193022e5a7684aa971a6241a0"
   integrity sha512-qlEzNKxOjq86pvrbuMwiGD/bylnsXk1dg7ve0j77YFjEEchqtl7qTlrXvFdNaLA89GhW6D/EV6eOCu/eobPDgw==
+  dependencies:
+    unplugin "^2.3.5"
+
+"@storybook/csf-plugin@10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-10.3.6.tgz#4c97354c34b28e0572349e5c3ba9060cf2cd023a"
+  integrity sha512-9kBf7VRdRqTSIYo+rPtVn5yjYYyK8kP2QhEYx3oiXvfwy4RexmbJnhk/tXa/lNiTqukA1TqaWQ2+5MqF4fu6YQ==
   dependencies:
     unplugin "^2.3.5"
 
@@ -1657,28 +1664,33 @@
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-10.3.5.tgz#8f9a9238a96813c1b5343ecd3bfbd3cf61815977"
   integrity sha512-Gw8R7XZm0zSUH0XAuxlQJhmizsLzyD6x00KOlP6l7oW9eQHXGfxg3seNDG3WrSAcW07iP1/P422kuiriQlOv7g==
 
-"@storybook/react-vite@10.3.5":
-  version "10.3.5"
-  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-10.3.5.tgz#3c0867880ab1e97f758a9756714f02841c132fa0"
-  integrity sha512-UB5sJHeh26bfd8sNMx2YPGYRYmErIdTRaLOT28m4bykQIa1l9IgVktsYg/geW7KsJU0lXd3oTbnUjLD+enpi3w==
+"@storybook/react-dom-shim@10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-10.3.6.tgz#38b872bf7713750ab965858c20663a29192a18f5"
+  integrity sha512-/Tu1gPu+Fw+zOnAGmxRmOD30FX3a04LxcTAKflEtdpmtIMVR5bA3qpjy+f5YhoyDCecbXyKmL1OeIU2FIIZHqQ==
+
+"@storybook/react-vite@10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-10.3.6.tgz#eb814c6906c30f56066edbda479cc41372f38a08"
+  integrity sha512-tySQRc+8q7V2NkylQMNJjDV8zXy6tkxb8oDqw/DIhHhI9Xn77MTKVZ8Cihbo5NMm7HYTB6xDKr6wqdSMgdufYQ==
   dependencies:
     "@joshwooding/vite-plugin-react-docgen-typescript" "^0.7.0"
     "@rollup/pluginutils" "^5.0.2"
-    "@storybook/builder-vite" "10.3.5"
-    "@storybook/react" "10.3.5"
+    "@storybook/builder-vite" "10.3.6"
+    "@storybook/react" "10.3.6"
     empathic "^2.0.0"
     magic-string "^0.30.0"
     react-docgen "^8.0.0"
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@10.3.5":
-  version "10.3.5"
-  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-10.3.5.tgz#eabb28f015b0597fb21b29751e0c368aa27f6b5f"
-  integrity sha512-tpLTLaVGoA6fLK3ReyGzZUricq7lyPaV2hLPpj5wqdXLV/LpRtAHClUpNoPDYSBjlnSjL81hMZijbkGC3mA+gw==
+"@storybook/react@10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-10.3.6.tgz#b96b2afd56c864ca773e497331eaf75f7e0493e0"
+  integrity sha512-oZQZ6xayWe5IdHmFUTL0TL8rX/gpNNh9gWhT2vzW5eeUvlkVG/RBKdsja6Ndrk2s1D9vcnwiI6r6CNXy3IEEmg==
   dependencies:
     "@storybook/global" "^5.0.0"
-    "@storybook/react-dom-shim" "10.3.5"
+    "@storybook/react-dom-shim" "10.3.6"
     react-docgen "^8.0.2"
     react-docgen-typescript "^2.2.2"
 
@@ -4303,23 +4315,7 @@ react-docgen-typescript@^2.2.2:
   resolved "https://registry.yarnpkg.com/react-docgen-typescript/-/react-docgen-typescript-2.2.2.tgz#4611055e569edc071204aadb20e1c93e1ab1659c"
   integrity sha512-tvg2ZtOpOi6QDwsb3GZhOjDkkX0h8Z2gipvTg6OVMUyoYoURhEiRNePT8NZItTVCDh39JJHnLdfCOkzoLbFnTg==
 
-react-docgen@^8.0.0:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/react-docgen/-/react-docgen-8.0.1.tgz#45fb50048d49d63c9ae73b3286b88e9aa64e6cf9"
-  integrity sha512-kQKsqPLplY3Hx4jGnM3jpQcG3FQDt7ySz32uTHt3C9HAe45kNXG+3o16Eqn3Fw1GtMfHoN3b4J/z2e6cZJCmqQ==
-  dependencies:
-    "@babel/core" "^7.28.0"
-    "@babel/traverse" "^7.28.0"
-    "@babel/types" "^7.28.2"
-    "@types/babel__core" "^7.20.5"
-    "@types/babel__traverse" "^7.20.7"
-    "@types/doctrine" "^0.0.9"
-    "@types/resolve" "^1.20.2"
-    doctrine "^3.0.0"
-    resolve "^1.22.1"
-    strip-indent "^4.0.0"
-
-react-docgen@^8.0.2:
+react-docgen@^8.0.0, react-docgen@^8.0.2:
   version "8.0.3"
   resolved "https://registry.yarnpkg.com/react-docgen/-/react-docgen-8.0.3.tgz#164e5b29f8115f23d69b09966ec835d92bcdc075"
   integrity sha512-aEZ9qP+/M+58x2qgfSFEWH1BxLyHe5+qkLNJOZQb5iGS017jpbRnoKhNRrXPeA6RfBrZO5wZrT9DMC1UqE1f1w==
