@@ -227,12 +227,12 @@
   resolved "https://registry.yarnpkg.com/@asamuzakjp/nwsapi/-/nwsapi-2.3.9.tgz#ad5549322dfe9d153d4b4dd6f7ff2ae234b06e24"
   integrity sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==
 
-"@axe-core/playwright@4.11.2":
-  version "4.11.2"
-  resolved "https://registry.yarnpkg.com/@axe-core/playwright/-/playwright-4.11.2.tgz#d2d8f7ac056ecd50b56040d3651dc508f609bd7c"
-  integrity sha512-iP6hfNl9G0j/SEUSo8M7D80RbcDo9KRAAfDP4IT5OHB+Wm6zUHIrm8Y51BKI+Oyqduvipf9u1hcRy57zCBKzWQ==
+"@axe-core/playwright@4.11.3":
+  version "4.11.3"
+  resolved "https://registry.yarnpkg.com/@axe-core/playwright/-/playwright-4.11.3.tgz#cefcb8e25c90598b20c09745982ae9db0d483fff"
+  integrity sha512-h/kfksv4F0cVIDlKpT4700OehdRgpvuVskuQ2nb7/JmtWUXpe9ftHAPtwyXGvVSsa6SJ64A9ER7Zrzc/sIvC4w==
   dependencies:
-    axe-core "~4.11.3"
+    axe-core "~4.11.4"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.27.1":
   version "7.27.1"
@@ -2248,7 +2248,7 @@ attr-accept@^2.2.4:
   resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-2.2.5.tgz#d7061d958e6d4f97bf8665c68b75851a0713ab5e"
   integrity sha512-0bDNnY/u6pPwHDMoF0FieU354oBi0a8rD9FcsLwzcGWbc8KS8KPIi7y+s13OlVY+gMWc/9xEMUgNE6Qm8ZllYQ==
 
-axe-core@4.11.4, axe-core@^4.2.0, axe-core@^4.4.2, axe-core@~4.11.3:
+axe-core@4.11.4, axe-core@^4.2.0, axe-core@^4.4.2, axe-core@~4.11.4:
   version "4.11.4"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.4.tgz#5b535e381ff1e61ffdd615e5483d16186d3b46a5"
   integrity sha512-KunSNx+TVpkAw/6ULfhnx+HWRecjqZGTOyquAoWHYLRSdK1tB5Ihce1ZW+UY3fj33bYAFWPu7W/GRSmmrCGuxA==
