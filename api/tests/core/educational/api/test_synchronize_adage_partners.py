@@ -296,3 +296,50 @@ class SynchronizeAdagePartnersTest:
         assert venue_5.adageInscriptionDate is None
         assert len(venue_5.action_history) == 0
         assert venue_5.managingOfferer.allowedOnAdage is False
+
+    def test_synchronize_partners_adage_id_moved(self):
+        adage_id = 1
+        venue_1 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=True, adageId=adage_id)
+
+        # we receive a partner with the same adageId but a different venueId
+        venue_2 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False, adageId=None)
+        partner_1 = AdageCulturalPartner(
+            **BASE_DATA, id=adage_id, actif=1, synchroPass=1, venueId=venue_2.id, siret=venue_2.siret
+        )
+
+        partners = [partner_1]
+        with (
+            patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail,
+            patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock_get_adage_offerer,
+        ):
+            mock_get_adage_offerer.return_value = []
+            adage.synchronize_adage_partners(partners, apply=True)
+            db.session.commit()
+
+        # venue with no adageId obtains one after synchronization
+        assert venue_2.adageId == str(adage_id)
+        assert venue_2.adageInscriptionDate is not None
+        [history] = venue_2.action_history
+        assert history.extraData["modified_info"]["adageId"] == {"new_info": str(adage_id), "old_info": None}
+        assert venue_2.managingOfferer.allowedOnAdage is True
+
+        # previous venue is deactivated
+        assert venue_1.adageId is None
+        assert venue_1.adageInscriptionDate is None
+        [history] = venue_1.action_history
+        assert history.extraData["modified_info"]["adageId"] == {"new_info": None, "old_info": str(adage_id)}
+        assert venue_1.managingOfferer.allowedOnAdage is False
+
+        # get_adage_offerer -> one call per inactive partner
+        assert mock_get_adage_offerer.call_count == 1
+        assert {call.kwargs["siren"] for call in mock_get_adage_offerer.call_args_list} == {
+            venue_1.managingOfferer.siren
+        }
+
+        # send_eac_offerer_activation_email -> one call for the activated venue
+        [call] = mock_activation_mail.call_args_list
+        called_venue = call.args[0].id
+        called_emails = call.args[1]
+
+        assert called_emails == list(get_emails_by_venue(venue_2))
+        assert called_venue == venue_2.id
