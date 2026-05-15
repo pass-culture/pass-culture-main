@@ -100,7 +100,6 @@ export type { ExternalAccessibilityDataModelV2 } from './models/ExternalAccessib
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
-export { GenderEnum } from './models/GenderEnum';
 export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetBookingsProQueryModel } from './models/GetBookingsProQueryModel';
