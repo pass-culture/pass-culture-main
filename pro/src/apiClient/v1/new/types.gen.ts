@@ -1759,14 +1759,6 @@ export type FinanceBankAccountResponseModel = {
 };
 
 /**
- * GenderEnum
- */
-export enum GenderEnum {
-    M_ = 'M.',
-    MME = 'Mme'
-}
-
-/**
  * GetActiveEANOfferResponseModel
  */
 export type GetActiveEANOfferResponseModel = {
@@ -5692,7 +5684,6 @@ export type SharedCurrentUserResponseModel = {
      * City
      */
     city?: string | null;
-    civility?: GenderEnum | null;
     /**
      * Datecreated
      */
@@ -5788,7 +5779,6 @@ export type SharedLoginUserResponseModel = {
      * City
      */
     city?: string | null;
-    civility?: GenderEnum | null;
     /**
      * Datecreated
      */
