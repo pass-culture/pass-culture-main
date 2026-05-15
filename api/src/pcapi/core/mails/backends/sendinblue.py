@@ -16,6 +16,9 @@ from pcapi.utils.requests import ExternalAPIException
 from .base import BaseBackend
 
 
+INVALID_EMAIL_ADDRESS_MESSAGE = "Invalid email address"
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -97,6 +100,9 @@ class SendinblueBackend(BaseBackend):
             self.client.contacts.delete_contact(contact_email, identifier_type="email_id")
 
         except BrevoApiError as exception:
+            if exception.status_code == 400 and exception.body.get("message") == INVALID_EMAIL_ADDRESS_MESSAGE:
+                # Invalid email never exists in Brevo, so consider that deletion is OK
+                return None
             if exception.status_code and exception.status_code >= 500:
                 raise ExternalAPIException(is_retryable=True) from exception
             if not exception.status_code or exception.status_code != 404:
@@ -120,6 +126,8 @@ class SendinblueBackend(BaseBackend):
 
         except BrevoApiError as exception:
             if exception.status_code:
+                if exception.status_code == 400 and exception.body.get("message") == INVALID_EMAIL_ADDRESS_MESSAGE:
+                    return None
                 if exception.status_code == 404:
                     return None
                 if exception.status_code >= 500:
@@ -145,6 +153,8 @@ class SendinblueBackend(BaseBackend):
 
         except BrevoApiError as exception:
             if exception.status_code:
+                if exception.status_code == 400 and exception.body.get("message") == INVALID_EMAIL_ADDRESS_MESSAGE:
+                    return {}
                 if exception.status_code == 404:
                     return {}
                 if exception.status_code >= 500:
