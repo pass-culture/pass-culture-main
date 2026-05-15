@@ -270,6 +270,12 @@ def empty_string_if_null(data: typing.Any | None) -> str:
     return str(data)
 
 
+def placeholder_if_null(data: typing.Any | None, is_feminine: bool = False) -> str:
+    if data is None:
+        return Markup('<span class="text-body-secondary">Non renseigné{e}</span>').format(e="e" if is_feminine else "")
+    return str(data)
+
+
 def format_date(
     data: datetime.date | datetime.datetime | None,
     strformat: str = "%d/%m/%Y",
@@ -2244,6 +2250,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["any"] = any
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
+    app.jinja_env.filters["placeholder_if_null"] = placeholder_if_null
     app.jinja_env.filters["format_action_type"] = format_action_type
     app.jinja_env.filters["format_activity"] = format_activity
     app.jinja_env.filters["format_amount"] = format_amount

@@ -217,11 +217,13 @@
       {% endif %}
     {% endcall %}
     {% if show_personal_info %}
-      {% if user.birth_date %}
-        {% call description_detail_vertical("Date de naissance") %}
+      {% call description_detail_vertical("Date de naissance") %}
+        {% if user.birth_date %}
           {{ user.birth_date | format_date }}&nbsp;({{ user.age }} ans)
-        {% endcall %}
-      {% endif %}
+        {% else %}
+          {{ none | placeholder_if_null(true) }}
+        {% endif %}
+      {% endcall %}
       {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
         {% call description_detail_vertical("Date de naissance déclarée à l'inscription") %}
           {{ user.dateOfBirth | format_date }}
@@ -232,16 +234,12 @@
       {{ user.id }}&nbsp;{{ clipboard.copy_to_clipboard(user.id, "Copier l'ID de l'utilisateur") }}
     {% endcall %}
     {% if show_personal_info %}
-      {% if user.idPieceNumber %}
-        {% call description_detail_vertical("Numéro de pièce d'identité") %}
-          {{ user.idPieceNumber }}&nbsp;{{ clipboard.copy_to_clipboard(user.idPieceNumber, "Copier le numéro de pièce d'identité") }}
-        {% endcall %}
-      {% endif %}
-      {% if user.birthPlace %}
-        {% call description_detail_vertical("Lieu de naissance") %}
-          {{ user.birthPlace }}
-        {% endcall %}
-      {% endif %}
+      {% call description_detail_vertical("Numéro de pièce d'identité") %}
+        {{ user.idPieceNumber | placeholder_if_null }}&nbsp;{{ clipboard.copy_to_clipboard(user.idPieceNumber, "Copier le numéro de pièce d'identité") }}
+      {% endcall %}
+      {% call description_detail_vertical("Lieu de naissance") %}
+        {{ user.birthPlace | placeholder_if_null }}
+      {% endcall %}
       {% if user.address %}
         {% call description_detail_vertical("Adresse") %}
           {{ user.address }}, {{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}
@@ -250,12 +248,14 @@
         {% call description_detail_vertical("Ville") %}
           {{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}
         {% endcall %}
-      {% endif %}
-      {% if user.phoneNumber %}
-        {% call description_detail_vertical("Téléphone") %}
-          {{ user.phoneNumber }}&nbsp;{{ clipboard.copy_to_clipboard(user.phoneNumber, "Copier le numéro de téléphone") }}
+      {% else %}
+        {% call description_detail_vertical("Adresse") %}
+          {{ none | placeholder_if_null(true) }}
         {% endcall %}
       {% endif %}
+      {% call description_detail_vertical("Téléphone") %}
+        {{ user.phoneNumber | placeholder_if_null }}&nbsp;{{ clipboard.copy_to_clipboard(user.phoneNumber, "Copier le numéro de téléphone") }}
+      {% endcall %}
     {% endif %}
     {% if duplicate_user_id %}
       {% call description_detail_vertical("Doublon du compte") %}
