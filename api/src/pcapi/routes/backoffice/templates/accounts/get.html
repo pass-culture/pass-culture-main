@@ -174,7 +174,7 @@
 {% endblock details_container %}
 {% block side_column %}
   {% if credit %}
-    <div class="bg-primary-subtle p-3 rounded">
+    <div class="bg-secondary-emphasis p-3 rounded">
       <div>
         <span class="fs-2 fw-bolder text-nowrap pe-2">{{ credit.all.remaining | format_amount(target=user) }}</span><span class="text-nowrap d-inline-block">restant{{ credit.all.remaining | pluralize }} sur {{ credit.all.initial | format_amount(target=user) }}</span>
       </div>
