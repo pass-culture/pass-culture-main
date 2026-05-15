@@ -18,7 +18,6 @@ describe('useActiveStep', () => {
       hash: '',
       state: null,
       key: 's',
-      unstable_mask: undefined,
     })
     const { result } = renderHook(() => useActiveStep())
     expect(result.current).toEqual('')
@@ -31,7 +30,6 @@ describe('useActiveStep', () => {
       hash: '',
       state: null,
       key: 's',
-      unstable_mask: undefined,
     })
     const { result } = renderHook(() => useActiveStep())
     expect(result.current).toEqual('informations')
@@ -44,7 +42,6 @@ describe('useActiveStep', () => {
       hash: '',
       state: null,
       key: 's',
-      unstable_mask: undefined,
     })
     const { result } = renderHook(() => useActiveStep(['informations']))
     expect(result.current).toEqual('informations')

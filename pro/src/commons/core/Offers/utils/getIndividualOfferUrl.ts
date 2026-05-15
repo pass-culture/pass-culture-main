@@ -96,5 +96,5 @@ export const getIndividualOfferUrl = ({
       step,
       isOnboarding,
     }),
-    { offerId }
+    { offerId: offerId?.toString() }
   )
