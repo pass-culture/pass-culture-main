@@ -1,16 +1,15 @@
-// react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
-
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
+import { Button } from '@/design-system/Button/Button'
 
-import { EmailChangeValidationScreen } from './components/EmailChangeValidation/EmailChangeValidation'
+import styles from './EmailChangeValidation.module.scss'
 
-const EmailChangeValidation = () => {
+export const EmailChangeValidation = () => {
   const [isSuccess, setIsSuccess] = useState<boolean | undefined>(undefined)
   const location = useLocation()
 
@@ -19,7 +18,7 @@ const EmailChangeValidation = () => {
       const { token } = parse(location.search)
 
       try {
-        await api.patchValidateEmail({ token: token })
+        await apiNew.patchValidateEmail({ body: { token: token } })
         setIsSuccess(true)
         await logout(false)
       } catch {
@@ -39,7 +38,32 @@ const EmailChangeValidation = () => {
     <LoggedOutLayout
       mainHeading={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
     >
-      <EmailChangeValidationScreen isSuccess={isSuccess} />
+      {isSuccess && (
+        <>
+          <p className={styles['subtitle']}>
+            Merci d’avoir confirmé votre changement d’adresse email.
+          </p>
+          <Button
+            onClick={() => {
+              // redirection using this to handle store reload
+              globalThis.location.href = '/connexion'
+            }}
+            label="Se connecter"
+          />
+        </>
+      )}
+      {!isSuccess && (
+        <>
+          <p className={styles['subtitle']}>
+            Votre adresse email n’a pas été modifiée car le lien reçu par mail
+            expire 24 heures après sa réception.
+          </p>
+          <p className={styles['subtitle']}>
+            Connectez-vous avec votre ancienne adresse email.
+          </p>
+          <Button as="a" to="/" label="Se connecter" />
+        </>
+      )}
     </LoggedOutLayout>
   )
 }
