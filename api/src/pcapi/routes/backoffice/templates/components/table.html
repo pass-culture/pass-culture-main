@@ -1,6 +1,6 @@
-{% macro sortable_column(is_active=True, comparator="string", default_sort="down" ) %}
+{% macro sortable_column(is_active=True, comparator="string", default_sort="down", class="") %}
   {% if is_active %}
-    <th class="col pc-sortable-column"
+    <th class="col pc-sortable-column {{ class }}"
         data-pc-sort-table-order="{{ default_sort }}"
         data-pc-sort-table-comparator="{{ comparator }}"
         data-bs-toggle="tooltip"
