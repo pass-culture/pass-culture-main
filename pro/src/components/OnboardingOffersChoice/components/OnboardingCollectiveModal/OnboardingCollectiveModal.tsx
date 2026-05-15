@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -46,7 +46,9 @@ export const OnboardingCollectiveModal = ({
     try {
       setErrorMessage(null)
       setIsLoading(true)
-      const eligibility = await api.getOffererEligibility(currentOffererId)
+      const eligibility = await apiNew.getOffererEligibility({
+        path: { offerer_id: currentOffererId },
+      })
       if (eligibility.isOnboarded) {
         dispatch(updateUserAccess('full'))
         return navigate('/accueil')

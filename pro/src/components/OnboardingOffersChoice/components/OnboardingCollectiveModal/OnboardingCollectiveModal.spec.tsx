@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -21,7 +21,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getOffererEligibility: vi.fn(),
   },
 }))
@@ -79,13 +79,13 @@ describe('<OnboardingCollectiveModal />', () => {
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
       )
 
-      expect(api.getOffererEligibility).toHaveBeenCalledOnce()
+      expect(apiNew.getOffererEligibility).toHaveBeenCalledOnce()
     })
 
     it('should redirect to the homepage if user is onboarded', async () => {
       const mockNavigate = vi.fn()
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-      vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
+      vi.spyOn(apiNew, 'getOffererEligibility').mockResolvedValue({
         offererId: 1,
         hasAdageId: false,
         hasDsApplication: false,
@@ -102,7 +102,7 @@ describe('<OnboardingCollectiveModal />', () => {
     })
 
     it('should show an error message if user is not onboarded', async () => {
-      vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
+      vi.spyOn(apiNew, 'getOffererEligibility').mockResolvedValue({
         offererId: 1,
         hasAdageId: false,
         hasDsApplication: false,
@@ -123,7 +123,7 @@ describe('<OnboardingCollectiveModal />', () => {
     })
 
     it('should show an error message if server responded with an error', async () => {
-      vi.spyOn(api, 'getOffererEligibility').mockRejectedValue({})
+      vi.spyOn(apiNew, 'getOffererEligibility').mockRejectedValue({})
 
       renderOnboardingCollectiveModal()
 
