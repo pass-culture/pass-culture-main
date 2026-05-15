@@ -4,6 +4,7 @@ import decimal
 import logging
 import os
 import pathlib
+from contextlib import contextmanager
 from unittest.mock import patch
 
 import pytest
@@ -11,8 +12,10 @@ import sqlalchemy as sa
 import time_machine
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.search.testing as search_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.entreprise import models as sirene_models
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import factories as criteria_factories
@@ -28,7 +31,9 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Venue
@@ -4039,3 +4044,115 @@ class GetUserPendingAndValidatedOffererTest:
 
         res = offerers_api.get_user_pending_and_validated_offerers(user)
         assert res == offerers_api.PendingAndValidatedOfferers(pending=[pending_offerer], validated=[validated_offerer])
+
+
+@contextmanager
+def assert_no_active_offers_no_indexed_offers_no_syncs(venue):
+    search.reindex_offer_ids([o.id for o in venue.offers])
+
+    yield
+
+    db.session.refresh(venue)
+
+    assert all([not o.publicationDatetime for o in venue.offers])
+
+    # offers should have been unindexed
+    assert not search_testing.search_store["offers"]
+
+    # not eligible for search -> won't be indexed
+    assert all([not o.is_eligible_for_search for o in venue.offers])
+
+    assert not venue.cinemaProviderPivot
+    assert not venue.allocinePivot
+
+
+class FetchVenueActiveOffersBatchTest:
+    def test_fetch_expected_active_offers(self):
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
+        offer = offers_factories.OfferFactory(publicationDatetime=yesterday)
+        offers_factories.OfferFactory(venue=offer.venue, publicationDatetime=None)
+
+        res = list(offerers_api.fetch_venue_active_offers_batch(offer.venue, batch_size=10))
+
+        assert len(res) == 1
+        assert set(o.id for o in res[0]) == {offer.id}
+
+    def test_does_not_loop_infinitely_if_offers_are_not_deactivated_between_batches(self):
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
+        offer = offers_factories.OfferFactory(publicationDatetime=yesterday)
+
+        res = list(offerers_api.fetch_venue_active_offers_batch(offer.venue, batch_size=1))
+
+        assert len(res) == 1
+        assert {o.id for o in res[0]} == {offer.id}
+
+
+class DeactivateVenueOffersTest:
+    def test_venue_without_offers_nor_syncs(self):
+        venue = factories.VenueFactory()
+
+        with assert_no_active_offers_no_indexed_offers_no_syncs(venue):
+            offerers_api.deactivate_venue_offers(venue)
+            assert venue.state == models.VenueState.CLOSED
+            self.assert_new_venue_history_entry(venue.id)
+
+    def test_venue_with_only_non_synced_deactivated_offers(self):
+        venue = factories.VenueFactory()
+        offers_factories.OfferFactory.create_batch(3, publicationDatetime=None, venue=venue)
+
+        with assert_no_active_offers_no_indexed_offers_no_syncs(venue):
+            offerers_api.deactivate_venue_offers(venue)
+            assert venue.state == models.VenueState.CLOSED
+            self.assert_new_venue_history_entry(venue.id)
+
+    def test_venue_with_active_and_synced_offers(self, caplog):
+        venue = factories.VenueFactory()
+        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
+        now = datetime.datetime.now(datetime.UTC)
+
+        offers_factories.StockFactory(offer__venue=venue, offer__publicationDatetime=now)
+        offers_factories.StockFactory(
+            offer__venue=venue, offer__lastProviderId=boost_pivot.providerId, offer__publicationDatetime=now
+        )
+
+        with assert_no_active_offers_no_indexed_offers_no_syncs(venue):
+            offerers_api.deactivate_venue_offers(venue)
+            assert venue.state == models.VenueState.CLOSED
+            self.assert_new_venue_history_entry(venue.id)
+
+    def test_works_with_more_than_one_batch(self):
+        venue = factories.VenueFactory()
+        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
+        now = datetime.datetime.now(datetime.UTC)
+
+        offers_factories.StockFactory.create_batch(2, offer__venue=venue, offer__publicationDatetime=now)
+        offers_factories.StockFactory.create_batch(
+            2, offer__venue=venue, offer__lastProviderId=boost_pivot.providerId, offer__publicationDatetime=now
+        )
+
+        with assert_no_active_offers_no_indexed_offers_no_syncs(venue):
+            offerers_api.deactivate_venue_offers(venue, batch_size=1)
+            assert venue.state == models.VenueState.CLOSED
+            self.assert_new_venue_history_entry(venue.id)
+
+    def test_offers_backup_data_is_logged(self, caplog):
+        venue = factories.VenueFactory()
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
+        offer = offers_factories.OfferFactory(publicationDatetime=yesterday, venue=venue)
+
+        expected_backup_data = {
+            "offers_backup": {offer.id: {"publicationDatetime": offer.publicationDatetime}},
+            "venue": venue.id,
+        }
+
+        with caplog.at_level("INFO"):
+            offerers_api.deactivate_venue_offers(venue)
+
+            log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
+            record = next(rec for rec in caplog.records if rec.message == log_msg)
+            assert record.extra == expected_backup_data
+            self.assert_new_venue_history_entry(venue.id)
+
+    def assert_new_venue_history_entry(self, venue_id):
+        history = db.session.query(history_models.ActionHistory).filter_by(venueId=venue_id).one()
+        assert history.actionType == history_models.ActionType.VENUE_CLOSED

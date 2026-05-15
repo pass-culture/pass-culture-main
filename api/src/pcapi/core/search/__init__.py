@@ -578,6 +578,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offerers_models.Venue.visualDisabilityCompliant,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.state,
             )
             .options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
@@ -803,7 +804,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
         _reindex_artists_from_offers(offer_ids)
 
 
-def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
+def unindex_offer_ids(offer_ids: abc.Collection[int], reindex_venue: bool = True) -> None:
     backend = _get_backend()
     try:
         backend.unindex_offer_ids(offer_ids)
@@ -812,8 +813,11 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
             raise
         logger.exception("Could not unindex offers", extra={"offers": offer_ids})
 
-    # some offers changes might make some venue ineligible for search
-    _reindex_venues_from_offers(offer_ids)
+    # if called many times using batches of a venue's offers
+    # it might be useless to reindex the venue each time
+    if reindex_venue:
+        # some offers changes might make some venue ineligible for search
+        _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
     if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
         _reindex_artists_from_offers(offer_ids)
