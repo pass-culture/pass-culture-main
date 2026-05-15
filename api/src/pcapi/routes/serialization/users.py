@@ -77,7 +77,6 @@ class SharedLoginUserResponseModel(HttpBodyModel):
     activity: str | None = None
     address: str | None = None
     city: str | None = None
-    civility: users_models.GenderEnum | None = None
     dateCreated: datetime
     dateOfBirth: datetime | None = None
     departementCode: str | None = None
@@ -100,7 +99,6 @@ class SharedCurrentUserResponseModel(HttpBodyModel):
     activity: str | None = None
     address: str | None = None
     city: str | None = None
-    civility: users_models.GenderEnum | None = None
     dateCreated: datetime
     dateOfBirth: datetime | None = None
     departementCode: str | None = None
