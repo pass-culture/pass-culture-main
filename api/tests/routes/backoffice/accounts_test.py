@@ -1133,12 +1133,12 @@ class GetPublicAccountTest(GetEndpointHelper):
             (
                 users_factories.BeneficiaryFactory,
                 "137,50 €restants sur 150,00 €",
-                "Dont 100,00 € en offres numériques",
+                "Dont 87,50 € en offres numériques",
             ),
             (
                 users_factories.CaledonianBeneficiaryFactory,
                 "137,50 € (16 410 CFP)restants sur 150,00 € (17 900 CFP)",
-                "Dont 100,00 € (11 935 CFP) en offres numériques",
+                "Dont 87,50 € (10 440 CFP) en offres numériques",
             ),
         ],
     )

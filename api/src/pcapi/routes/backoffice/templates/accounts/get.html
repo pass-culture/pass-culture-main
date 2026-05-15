@@ -193,7 +193,7 @@
              aria-valuemax="100"></div>
       </div>
       {% if credit.digital %}
-        <div class="fs-7">Dont {{ credit.digital.initial | format_amount(target=user) }} en offres numériques</div>
+        <div class="fs-7">Dont {{ credit.digital.remaining | format_amount(target=user) }} en offres numériques</div>
       {% endif %}
     </div>
   {% endif %}
