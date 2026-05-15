@@ -1,0 +1,8 @@
+.progress {
+  height: .5rem !important;
+  border: 1px solid $primary;
+
+  & > .progress-bar {
+    border-radius: $progress-border-radius;
+  }
+}
