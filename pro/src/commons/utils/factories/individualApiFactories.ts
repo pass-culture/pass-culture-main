@@ -28,6 +28,7 @@ import {
 } from '@/apiClient/v1'
 import {
   DisplayableActivity,
+  type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
 } from '@/apiClient/v1/new'
@@ -407,6 +408,26 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
+  {
+    activity: DisplayableActivity.OTHER,
+    lastCollectiveDmsApplication: null,
+    hasAdageId: false,
+    hasCreatedOffer: false,
+    isVirtual: false,
+    name: 'Nom de la structure',
+    publicName: 'Nom public de la structure',
+    id: 1,
+    hasVenueProviders: false,
+    isPermanent: true,
+    bannerUrl: null,
+    bannerMeta: null,
+    hasPartnerPage: true,
+    siret: null,
+    bookingEmail: null,
+    withdrawalDetails: null,
+  }
+
+export const defaultGetOffererVenueResponseModelNew: GetOffererVenueResponseModelNew =
   {
     activity: DisplayableActivity.OTHER,
     lastCollectiveDmsApplication: null,
