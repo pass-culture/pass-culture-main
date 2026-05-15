@@ -8,7 +8,6 @@
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
@@ -25,7 +24,8 @@
     "noImplicitThis": true,
     "outDir": "./built",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
+      "*": ["./src/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
