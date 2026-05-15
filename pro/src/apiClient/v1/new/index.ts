@@ -227,7 +227,6 @@ export {
   type FeatureResponseModel,
   type FinanceBankAccountListResponseModel,
   type FinanceBankAccountResponseModel,
-  GenderEnum,
   type GetActiveEANOfferResponseModel,
   type GetBookingResponse,
   type GetBookingsProQueryModel,

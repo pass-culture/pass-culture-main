@@ -2,14 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GenderEnum } from './GenderEnum';
 import type { PhoneValidationStatusType } from './PhoneValidationStatusType';
 import type { UserRole } from './UserRole';
 export type SharedCurrentUserResponseModel = {
   activity?: (string | null);
   address?: (string | null);
   city?: (string | null);
-  civility?: (GenderEnum | null);
   dateCreated: string;
   dateOfBirth?: (string | null);
   departementCode?: (string | null);
