@@ -116,6 +116,7 @@ def create_bunch_of_accounts():
         phoneNumber="+33756273849",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         deposit__dateCreated=pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
+        birthPlace="Paris",
     )
     new_grant_18 = users_factories.BeneficiaryFactory(
         firstName="Vincent",
@@ -123,9 +124,17 @@ def create_bunch_of_accounts():
         email="quatrièmerépu@example.net",
         phoneNumber="+33138479387",
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        birthPlace="Revel",
     )
     pro = users_factories.UserFactory(
-        firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="+33246813579"
+        firstName="Gérard",
+        lastName="Mentor",
+        email="gm@example.com",
+        phoneNumber=None,
+        dateOfBirth=None,
+        address=None,
+        postalCode=None,
+        city=None,
     )
     random = users_factories.UserFactory(
         firstName="Anne", lastName="Algézic", email="aa@example.net", phoneNumber="+33606060606"
@@ -897,12 +906,34 @@ class GetPublicAccountTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["User ID"] == str(user.id)
         assert descriptions["Email"] == user.email
-        assert descriptions["Téléphone"] == user.phoneNumber
 
         if user.dateOfBirth:
             assert descriptions["Date de naissance"] == f"{user.dateOfBirth.strftime('%d/%m/%Y')} ({user.age} ans)"
         else:
-            assert "Date de naissance" not in descriptions
+            assert descriptions["Date de naissance"] == "Non renseignée"
+
+        if user.birthPlace:
+            assert descriptions["Lieu de naissance"] == user.birthPlace
+        else:
+            assert descriptions["Lieu de naissance"] == "Non renseigné"
+
+        if user.idPieceNumber:
+            assert descriptions["Numéro de pièce d'identité"] == user.idPieceNumber
+        else:
+            assert descriptions["Numéro de pièce d'identité"] == "Non renseigné"
+
+        if user.postalCode:
+            assert descriptions["Adresse"] == f"{user.address}, {user.postalCode} {user.city}"
+        elif user.address:
+            assert descriptions["Adresse"] == f"{user.address}, {user.city}"
+        else:
+            assert descriptions["Adresse"] == "Non renseignée"
+
+        if user.phoneNumber:
+            assert descriptions["Téléphone"] == user.phoneNumber
+        else:
+            assert descriptions["Téléphone"] == "Non renseigné"
+
         if user.deposit:
             assert descriptions["Crédité le"] == user.deposit.dateCreated.astimezone(
                 tz=pytz.timezone("Europe/Paris")
@@ -919,10 +950,6 @@ class GetPublicAccountTest(GetEndpointHelper):
         else:
             "Date de dernière connexion" not in descriptions
 
-        if user.postalCode:
-            assert descriptions["Adresse"] == f"{user.address}, {user.postalCode} {user.city}"
-        else:
-            assert descriptions["Adresse"] == f"{user.address}, {user.city}"
         assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
