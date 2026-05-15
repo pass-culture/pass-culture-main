@@ -1,31 +1,31 @@
 import {
   CollectiveOfferAllowedAction,
-  type CollectiveOfferResponseModel as CollectiveOfferResponseModelV1,
+  type CollectiveOfferResponseModel as CollectiveOfferResponseModelOld,
   CollectiveOfferTemplateAllowedAction,
-  type CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelV1,
-  type GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelV1,
-  type GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelV1,
+  type CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelOld,
+  type GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelOld,
+  type GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelOld,
 } from '@/apiClient/v1'
 import type {
-  CollectiveOfferResponseModel as CollectiveOfferResponseModelV2,
-  CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelV2,
-  GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelV2,
-  GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelV2,
+  CollectiveOfferResponseModel as CollectiveOfferResponseModelNew,
+  CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelNew,
+  GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelNew,
+  GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelNew,
 } from '@/apiClient/v1/new'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 
 type CollectiveOfferResponseModel =
-  | CollectiveOfferResponseModelV1
-  | CollectiveOfferResponseModelV2
+  | CollectiveOfferResponseModelOld
+  | CollectiveOfferResponseModelNew
 type CollectiveOfferTemplateResponseModel =
-  | CollectiveOfferTemplateResponseModelV1
-  | CollectiveOfferTemplateResponseModelV2
+  | CollectiveOfferTemplateResponseModelOld
+  | CollectiveOfferTemplateResponseModelNew
 type GetCollectiveOfferResponseModel =
-  | GetCollectiveOfferResponseModelV1
-  | GetCollectiveOfferResponseModelV2
+  | GetCollectiveOfferResponseModelOld
+  | GetCollectiveOfferResponseModelNew
 type GetCollectiveOfferTemplateResponseModel =
-  | GetCollectiveOfferTemplateResponseModelV1
-  | GetCollectiveOfferTemplateResponseModelV2
+  | GetCollectiveOfferTemplateResponseModelOld
+  | GetCollectiveOfferTemplateResponseModelNew
 
 export function isActionAllowedOnCollectiveOffer(
   offer:
