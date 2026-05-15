@@ -4,10 +4,10 @@ import {
   within,
 } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1/new'
 import {
-  defaultGetOffererVenueResponseModel,
+  defaultGetOffererVenueResponseModelNew,
   listOffersOfferFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -34,7 +34,7 @@ const renderOnboardingOfferIndividual = (
             isOnboarded: false,
             managedVenues: [
               {
-                ...defaultGetOffererVenueResponseModel,
+                ...defaultGetOffererVenueResponseModelNew,
                 isPermanent: true,
                 id: 1337,
               },
@@ -47,7 +47,7 @@ const renderOnboardingOfferIndividual = (
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     listOffers: vi.fn(),
     getOfferer: vi.fn(),
   },
@@ -55,7 +55,7 @@ vi.mock('@/apiClient/api', () => ({
 
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'listOffers').mockResolvedValue([])
+    vi.spyOn(apiNew, 'listOffers').mockResolvedValue([])
   })
 
   it('should propose how to create the 1st offer', async () => {
@@ -97,7 +97,7 @@ describe('<OnboardingOfferIndividual />', () => {
   })
 
   it('should display drafts if there is any', async () => {
-    vi.spyOn(api, 'listOffers').mockResolvedValue([
+    vi.spyOn(apiNew, 'listOffers').mockResolvedValue([
       listOffersOfferFactory({
         id: 1,
         name: 'Foo',
@@ -124,7 +124,7 @@ describe('<OnboardingOfferIndividual />', () => {
   })
 
   it(`should not display over ${MAX_DRAFT_TO_DISPLAY} draft offers`, async () => {
-    vi.spyOn(api, 'listOffers').mockResolvedValue([
+    vi.spyOn(apiNew, 'listOffers').mockResolvedValue([
       ...Array(MAX_DRAFT_TO_DISPLAY + 1)
         .fill(true)
         .map(() =>
