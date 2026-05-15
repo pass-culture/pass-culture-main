@@ -60,7 +60,6 @@ const defaultUseLocationValue = {
   key: '',
   pathname: '/offres',
   search: '',
-  unstable_mask: undefined,
 }
 
 const mockLogEvent = vi.fn()

@@ -294,7 +294,7 @@ describe('IndividualOfferSummaryScreen', () => {
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode: OFFER_WIZARD_MODE.CREATION,
       }),
-      { offerId: 1 }
+      { offerId: '1' }
     )
 
     const draftOfferBase = {
@@ -652,7 +652,7 @@ describe('IndividualOfferSummaryScreen', () => {
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}`,
-        { offerId: 1 }
+        { offerId: '1' }
       )
 
       const contextValues = { offer: draftOfferBase }

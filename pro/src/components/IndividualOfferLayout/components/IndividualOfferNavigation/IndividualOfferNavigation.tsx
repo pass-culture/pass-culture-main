@@ -58,7 +58,7 @@ export const IndividualOfferNavigation = () => {
             isOnboarding,
           }),
           {
-            offerId: offer.id,
+            offerId: offer.id.toString(),
           }
         )
       }

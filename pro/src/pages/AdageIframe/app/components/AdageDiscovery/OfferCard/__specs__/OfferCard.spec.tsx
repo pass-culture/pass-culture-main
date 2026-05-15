@@ -64,7 +64,6 @@ const defaultUseLocationValue = {
   key: '',
   pathname: '/adage-iframe/decouverte/offre/10',
   search: '',
-  unstable_mask: undefined,
 }
 
 describe('OfferCard component', () => {

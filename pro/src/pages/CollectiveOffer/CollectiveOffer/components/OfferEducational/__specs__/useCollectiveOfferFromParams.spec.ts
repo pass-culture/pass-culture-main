@@ -57,7 +57,6 @@ describe('useCollectiveOfferFromParams', () => {
       hash: '',
       key: '',
       search: '',
-      unstable_mask: undefined,
     })
 
     const offer = getCollectiveOfferFactory()

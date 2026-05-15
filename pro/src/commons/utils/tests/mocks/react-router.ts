@@ -8,6 +8,5 @@ export const makeUseLocationReturn = (
   hash: '',
   state: null,
   key: 's',
-  unstable_mask: undefined,
   ...overrides,
 })
