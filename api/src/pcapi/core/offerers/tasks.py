@@ -105,3 +105,13 @@ def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
     venue = db.session.query(offerers_models.Venue).filter_by(id=payload.venue_id).one_or_none()
     if venue:
         offerers_api.match_acceslibre(venue)
+
+
+class VenueIdPayload(BaseModelV2):
+    id: int
+
+
+@celery_async_task(name="tasks.offerers.default.deactivate_venue_offers_task", model=VenueIdPayload)
+def deactivate_venue_offers_task(payload: VenueIdPayload) -> None:
+    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.id).one()
+    offerers_api.deactivate_venue_offers(venue)

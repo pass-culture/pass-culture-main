@@ -961,6 +961,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         ).scalar()
 
+    @property
+    def is_closed(self) -> bool:
+        return self.state == VenueState.CLOSED if self.state else False
+
 
 class GooglePlacesInfo(PcObject, Model):
     __tablename__ = "google_places_info"

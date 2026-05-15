@@ -218,3 +218,11 @@ def clean_offerer_invitations(apply: bool = False) -> None:
     else:
         db.session.rollback()
         logger.info("clean_offerer_invitations was a dry-run -- rollback")
+
+
+@blueprint.cli.command("deactivate_venue_offers")
+@click.option("--venue-id", type=int, required=True, help="venue id")
+@click.option("--apply", is_flag=True)
+def deactivate_venue_offers_command(venue_id: int, apply: bool = False) -> None:
+    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).one()
+    offerers_api.deactivate_venue_offers(venue)

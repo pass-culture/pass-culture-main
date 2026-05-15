@@ -1693,6 +1693,7 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.managingOffererId,
                     offerers_models.Venue.siret,
+                    offerers_models.Venue.state,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
                     sa_orm.load_only(

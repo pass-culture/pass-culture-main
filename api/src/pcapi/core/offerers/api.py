@@ -18,12 +18,12 @@ import schwifty
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from sqlalchemy import update
 
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.finance.models as finance_models
-import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offers.models as offers_models
@@ -58,6 +58,7 @@ from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
+from pcapi.core.history import api as history_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -82,6 +83,7 @@ from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.chunks import get_chunks
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
@@ -545,6 +547,8 @@ def create_venue(
 
 
 def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
+    from pcapi.core.providers import api as providers_api  # avoid circular import
+
     venue_has_bookings = db.session.query(
         db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue_id).exists()
     ).scalar()
@@ -633,35 +637,7 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
 
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
-    pivot = (
-        db.session.query(providers_models.CinemaProviderPivot)
-        .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
-        .one_or_none()
-    )
-    if pivot:
-        if pivot.CDSCinemaDetails:
-            db.session.query(providers_models.CDSCinemaDetails).filter(
-                providers_models.CDSCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.BoostCinemaDetails:
-            db.session.query(providers_models.BoostCinemaDetails).filter(
-                providers_models.BoostCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.CGRCinemaDetails:
-            db.session.query(providers_models.CGRCinemaDetails).filter(
-                providers_models.CGRCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.EMSCinemaDetails:
-            db.session.query(providers_models.EMSCinemaDetails).filter(
-                providers_models.EMSCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        db.session.query(providers_models.CinemaProviderPivot).filter(
-            providers_models.CinemaProviderPivot.venueId == venue_id
-        ).delete(synchronize_session=False)
-
-    db.session.query(providers_models.AllocinePivot).filter(
-        providers_models.CinemaProviderPivot.venueId == venue_id
-    ).delete(synchronize_session=False)
+    providers_api.delete_venue_pivots(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
     # venue to delete. We should NOT delete rows where the
@@ -3473,3 +3449,80 @@ def get_user_pending_and_validated_offerers(
     validated = query.filter(offerers_models.UserOfferer.isValidated).all()
 
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
+
+
+def fetch_venue_active_offers_batch(
+    venue: models.Venue, batch_size: int
+) -> typing.Generator[list[offers_models.Offer], None, None]:
+    """Fetch a venue's current active offers by batches
+
+    Fetched offers should be deactivated before next batch. If a batch
+    contains only already seen offers, no more offers will be yielded
+    to avoid an infinite loop.
+    """
+    fetched_offer_ids: set[int] = set()
+
+    query = (
+        db.session.query(offers_models.Offer)
+        .filter(
+            offers_models.Offer.venueId == venue.id,
+            offers_models.Offer.publicationDatetime != None,
+        )
+        .limit(batch_size)
+    )
+
+    while True:
+        offers = query.all()
+        if not offers:
+            break
+
+        offer_ids = {o.id for o in offers}
+        if offer_ids <= fetched_offer_ids:
+            log_msg = "fetch_offers_batch: offers already yielded, infinite loop detected. stop."
+            log_extra = {"venue": venue.id, "offers": offer_ids}
+            logger.error(log_msg, extra=log_extra)
+            break
+
+        yield offers
+        fetched_offer_ids |= offer_ids
+
+
+def deactivate_venue_offers(venue: models.Venue, batch_size: int = 2_500) -> None:
+    """Deactivate, unindex offers and deactivate any related synchronization
+
+    And since this should be the last venue's closing step, the venue
+    state is updated and finalized to CLOSED.
+
+    All updates are committed.
+    """
+    from pcapi.core.providers import api as providers_api  # avoid circular import
+
+    for offers in fetch_venue_active_offers_batch(venue, batch_size=batch_size):
+        offer_ids = {o.id for o in offers}
+        backup_data = {o.id: {"publicationDatetime": o.publicationDatetime} for o in offers}
+
+        updates = [{"id": offer_id, "publicationDatetime": None} for offer_id in offer_ids]
+        db.session.execute(update(offers_models.Offer), updates)
+
+        db.session.commit()
+
+        search.unindex_offer_ids(offer_ids, reindex_venue=False)
+
+        for offers_chunk in get_chunks(offers, 200):
+            offer_ids_chunk = {o.id for o in offers_chunk}
+            backup_data_chunk = {oid: data for oid, data in backup_data.items() if oid in offer_ids_chunk}
+
+            log_extra = {"venue": venue.id, "offers_backup": backup_data_chunk}
+            log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
+            logger.info(log_msg, extra=log_extra)
+
+    providers_api.delete_venue_pivots(venue.id)
+    db.session.commit()
+
+    logger.info("closing venue: pivots deleted", extra={"venue": venue.id})
+
+    venue.state = models.VenueState.CLOSED
+    history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=None, venue=venue)
+    db.session.commit()
+
+    logger.info("closing venue: closed", extra={"venue": venue.id})
