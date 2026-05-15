@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/models/OfferStatus'
+import { apiNew } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
@@ -28,7 +28,9 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
     () => {
-      return api.listOffers(null, selectedOfferer?.id, OfferStatus.DRAFT)
+      return apiNew.listOffers({
+        query: { offererId: selectedOfferer?.id, status: OfferStatus.DRAFT },
+      })
     },
     { fallbackData: [] }
   )
