@@ -59,7 +59,6 @@ class Returns200Test:
             "activity": None,
             "address": None,
             "city": None,
-            "civility": "M.",
             "dateCreated": format_into_utc_date(user.dateCreated),
             "dateOfBirth": format_into_utc_date(user.dateOfBirth),
             "departementCode": None,
