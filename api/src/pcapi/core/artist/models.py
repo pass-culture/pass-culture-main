@@ -40,7 +40,7 @@ class ArtistOfferLink(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship(
-        "Offer", foreign_keys=[offer_id], back_populates="artistOfferLinks"
+        "Offer", foreign_keys=[offer_id], back_populates="artistOfferLinks", viewonly=True
     )
     artist_type: sa_orm.Mapped[ArtistType] = sa_orm.mapped_column(
         MagicEnum(ArtistType, use_values=True), nullable=False
@@ -49,7 +49,7 @@ class ArtistOfferLink(PcObject, Model):
     artist_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=True, index=True
     )
-    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id])
+    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id], viewonly=True)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -131,6 +131,7 @@ class Artist(Model):
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", back_populates="artists", secondary=ArtistProductLink.__table__
     )
+    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship("Offer", secondary=ArtistOfferLink.__table__)
     pro_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)

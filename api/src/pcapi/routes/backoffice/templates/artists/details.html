@@ -1,9 +1,14 @@
+{% set use_new_tab_ui = true %}
 {% extends "layouts/details.html" %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% import "components/links.html" as links with context %}
 {% from "components/description.html" import description_detail_vertical %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tab with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper with context %}
 {% block title %}{{ artist.name }}{% endblock %}
 {% block header_extra %}{{ artist.is_blacklisted | format_artist_visibility_status }}{% endblock %}
 {% block action_buttons %}
@@ -28,14 +33,15 @@
   {% endif %}
 {% endblock action_buttons %}
 {% block extra_title_bar %}
-  {% call content_navbar("artist-details") %}
-    {{ content_navbar_element('info', 'Détails') }}
-    {{ content_navbar_element('products', 'Produits associés') }}
+  {% call build_details_tabs_wrapper() %}
+    {{ build_details_tab('info', "Détails de l'artiste", active_tab == "info") }}
+    {{ build_details_tab('products', 'Produits associés', active_tab == "products") }}
+    {{ build_details_tab('offers', 'Offres associées', active_tab == "offers") }}
   {% endcall %}
 {% endblock extra_title_bar %}
 {% block details_container %}
-  {% call details_content_wrapper("artist-details") %}
-    {% call nav_section("info", "Détails de l'artiste") %}
+  {% call build_details_tabs_content_wrapper() %}
+    {% call build_details_tab_content("info", active_tab == "info") %}
       <div class="d-flex gap-4">
         <div class="flex-grow-1">
           <h5>
@@ -104,7 +110,7 @@
         </div>
       </div>
     {% endcall %}
-    {% call nav_section("products", "Produits associés") %}
+    {% call build_details_tab_content("products", active_tab == "products") %}
       <table class="table table-borderless table-hover">
         <thead class="table-light">
           <tr class="table-secondary fs-7">
@@ -112,7 +118,7 @@
             <th>ID Produit</th>
             <th>Nom du produit</th>
             <th>Catégorie</th>
-            <th>Sous-Catégorie</th>
+            <th>Sous-catégorie</th>
           </tr>
         </thead>
         <tbody>
@@ -141,6 +147,28 @@
               <td>{{ product.name }}</td>
               <td>{{ product.subcategoryId | format_offer_category }}</td>
               <td>{{ product.subcategoryId | format_offer_subcategory }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endcall %}
+    {% call build_details_tab_content("offers", active_tab == "offers") %}
+      <table class="table table-borderless table-hover">
+        <thead class="table-light">
+          <tr class="table-secondary fs-7">
+            <th>ID Offre</th>
+            <th>Nom de l'offre</th>
+            <th>Catégorie</th>
+            <th>Sous-catégorie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for offer in artist.offers %}
+            <tr id="offer-row-{{ offer.id }}">
+              <td>{{ links.build_offer_details_link(offer) }}</td>
+              <td>{{ offer.name }}</td>
+              <td>{{ offer.subcategoryId | format_offer_category }}</td>
+              <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -194,7 +222,7 @@
     {% endfor %}
   {% endif %}
   {% if allowed_actions[action.LINK_PRODUCT] %}
-    {{ build_dynamic_modal(url_for('backoffice_web.artist.associate_product_form', artist_id=artist.id) , "associate-product-modal-" + artist.id) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.artist.get_associate_product_form', artist_id=artist.id) , "associate-product-modal-" + artist.id) }}
   {% endif %}
   {% if allowed_actions[action.MERGE] %}
     {{ build_dynamic_modal(url_for('backoffice_web.artist.get_merge_artist_form', artist_id=artist.id) ,"merge-artist-modal-" + artist.id) }}
