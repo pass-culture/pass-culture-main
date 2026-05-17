@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
-import type AvatarEditor from 'react-avatar-editor'
+import { useEffect, useState } from 'react'
+import { useAvatarEditor } from 'react-avatar-editor'
 
 type CroppedRect = { x: number; y: number; width: number; height: number }
 
@@ -99,7 +99,7 @@ export const ModalImageUpsertOrEdit = ({
       ? coordonateToPosition(initalYCropPercent, initalHeightCropPercent)
       : defaultPositions.y
 
-  const editorRef = useRef<AvatarEditor>(null)
+  const avatarEditor = useAvatarEditor()
   const snackBar = useSnackBar()
   const [isLoadingImage, setIsLoadingImage] = useState(
     !!previouslyUploadedImageUrl
@@ -218,11 +218,13 @@ export const ModalImageUpsertOrEdit = ({
   }
 
   const onImagePainted = () => {
-    if (editorRef.current) {
-      const canvas = editorRef.current.getImage()
-      setPreviewImageUrl(canvas.toDataURL())
-      setIsPaintingImage(false)
+    const canvas = avatarEditor.getImage()
+    if (!canvas) {
+      return
     }
+
+    setPreviewImageUrl(canvas.toDataURL())
+    setIsPaintingImage(false)
   }
 
   const onImageError = () => {
@@ -236,19 +238,25 @@ export const ModalImageUpsertOrEdit = ({
       | undefined
   ) => {
     try {
-      if (editorRef.current) {
-        const canvas = editorRef.current.getImage()
-        setPreviewImageUrl(canvas.toDataURL())
+      const canvas = avatarEditor.getImage()
+      if (!canvas) {
+        return
+      }
 
-        const croppingRect = editorRef.current.getCroppingRect()
-        setEditorInitialPosition({
-          x: coordonateToPosition(croppingRect.x, croppingRect.width),
-          y: coordonateToPosition(croppingRect.y, croppingRect.height),
-        })
+      setPreviewImageUrl(canvas.toDataURL())
 
-        if (callback) {
-          callback(credit, canvas.toDataURL(), croppingRect)
-        }
+      const croppingRect = avatarEditor.getCroppingRect()
+      if (!croppingRect) {
+        return
+      }
+
+      setEditorInitialPosition({
+        x: coordonateToPosition(croppingRect.x, croppingRect.width),
+        y: coordonateToPosition(croppingRect.y, croppingRect.height),
+      })
+
+      if (callback) {
+        callback(credit, canvas.toDataURL(), croppingRect)
       }
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
@@ -295,7 +303,7 @@ export const ModalImageUpsertOrEdit = ({
               >
                 <div className={style['modal-image-crop-editor']}>
                   <ImageEditor
-                    ref={editorRef}
+                    ref={avatarEditor.ref}
                     {...imageEditorConfig}
                     image={image}
                     initialPosition={editorInitialPosition}

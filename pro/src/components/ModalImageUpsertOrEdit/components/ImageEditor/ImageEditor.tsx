@@ -1,5 +1,8 @@
 import { forwardRef, useCallback, useEffect, useId, useState } from 'react'
-import AvatarEditor, { type Position } from 'react-avatar-editor'
+import AvatarEditor, {
+  type AvatarEditorRef,
+  type Position,
+} from 'react-avatar-editor'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { Slider } from '@/ui-kit/form/Slider/Slider'
@@ -43,7 +46,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   onImageError?: () => void
 }
 
-export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
+export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
   (
     {
       image,
