@@ -9,6 +9,7 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
+import { EXTRA_DATA_FORM_FIELDS } from './constants'
 import type { DetailsFormValues } from './types'
 
 export const serializeDurationMinutes = (
@@ -120,24 +121,45 @@ export function serializeDetailsPostData(
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues
+  formValues: DetailsFormValues,
+  readOnlyFields: string[] = []
 ): PatchOfferBodyModel {
   assertOrFrontendError(
     formValues.accessibility,
     '`formValues.accessibility` is undefined'
   )
 
+  const isReadOnly = (field: string) => readOnlyFields.includes(field)
+
+  const shouldIncludeExtraData = EXTRA_DATA_FORM_FIELDS.some(
+    (f) => !isReadOnly(f)
+  )
+
   return trimStringsInObject({
-    name: formValues.name,
-    subcategoryId: formValues.subcategoryId,
-    description: formValues.description,
-    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
-    hasCulturalOutreachClaim: formValues.hasCulturalOutreachClaim,
-    audioDisabilityCompliant: formValues.accessibility.audio,
-    mentalDisabilityCompliant: formValues.accessibility.mental,
-    motorDisabilityCompliant: formValues.accessibility.motor,
-    visualDisabilityCompliant: formValues.accessibility.visual,
-    artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
+    ...(!isReadOnly('name') && { name: formValues.name }),
+    ...(!isReadOnly('subcategoryId') && {
+      subcategoryId: formValues.subcategoryId,
+    }),
+    ...(!isReadOnly('description') && { description: formValues.description }),
+    ...(!isReadOnly('durationMinutes') && {
+      durationMinutes: serializeDurationMinutes(
+        formValues.durationMinutes ?? ''
+      ),
+    }),
+    ...(shouldIncludeExtraData && {
+      extraData: serializeExtraData(formValues),
+    }),
+    ...(!isReadOnly('hasCulturalOutreachClaim') && {
+      hasCulturalOutreachClaim: formValues.hasCulturalOutreachClaim,
+    }),
+    ...(!isReadOnly('accessibility') && {
+      audioDisabilityCompliant: formValues.accessibility.audio,
+      mentalDisabilityCompliant: formValues.accessibility.mental,
+      motorDisabilityCompliant: formValues.accessibility.motor,
+      visualDisabilityCompliant: formValues.accessibility.visual,
+    }),
+    ...(!isReadOnly('artistOfferLinks') && {
+      artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
+    }),
   })
 }
