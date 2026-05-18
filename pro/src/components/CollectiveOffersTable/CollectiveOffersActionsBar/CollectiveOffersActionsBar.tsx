@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -73,9 +73,11 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
   const collectiveOfferTemplateIds = selectedOffers.map((offer) => offer.id)
 
   if (collectiveOfferTemplateIds.length > 0) {
-    await api.patchCollectiveOffersTemplateActiveStatus({
-      ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-      isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
+    await apiNew.patchCollectiveOffersTemplateActiveStatus({
+      body: {
+        ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
+        isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
+      },
     })
   }
 }
@@ -203,9 +205,11 @@ export function CollectiveOffersActionsBar<
     }
 
     if (offersWithCanPublishAction.length > 0) {
-      await api.patchCollectiveOffersTemplateActiveStatus({
-        ids: offersWithCanPublishAction.map((offer) => Number(offer.id)),
-        isActive: true,
+      await apiNew.patchCollectiveOffersTemplateActiveStatus({
+        body: {
+          ids: offersWithCanPublishAction.map((offer) => Number(offer.id)),
+          isActive: true,
+        },
       })
     }
 
@@ -231,13 +235,15 @@ export function CollectiveOffersActionsBar<
     }
 
     if (collectiveOfferTemplateIds.length > 0) {
-      await api.patchCollectiveOffersTemplateArchive({
-        ids: [...collectiveOfferTemplateIds],
+      await apiNew.patchCollectiveOffersTemplateArchive({
+        body: { ids: [...collectiveOfferTemplateIds] },
       })
     }
 
     if (collectiveOfferIds.length > 0) {
-      await api.patchCollectiveOffersArchive({ ids: [...collectiveOfferIds] })
+      await apiNew.patchCollectiveOffersArchive({
+        body: { ids: [...collectiveOfferIds] },
+      })
     }
   }
 

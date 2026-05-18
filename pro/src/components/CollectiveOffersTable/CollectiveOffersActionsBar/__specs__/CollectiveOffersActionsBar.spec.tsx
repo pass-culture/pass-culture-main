@@ -1,17 +1,17 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferStockResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -49,15 +49,6 @@ const renderActionsBar = (
     }
   )
 }
-
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    patchCollectiveOffersActiveStatus: vi.fn(),
-    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
-    patchCollectiveOffersTemplateArchive: vi.fn(),
-    patchCollectiveOffersArchive: vi.fn(),
-  },
-}))
 
 const mockMutate = vi.fn()
 
@@ -97,7 +88,12 @@ describe('ActionsBar', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'patchCollectiveOffersArchive').mockResolvedValue()
+    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockResolvedValue()
+    vi.spyOn(
+      apiNew,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockResolvedValue()
+    vi.spyOn(apiNew, 'patchCollectiveOffersTemplateArchive').mockResolvedValue()
   })
 
   it('should have publish, hide, archive, cancel CTAs offers are template', () => {
@@ -181,10 +177,9 @@ describe('ActionsBar', () => {
       }
     )
     expect(
-      api.patchCollectiveOffersTemplateActiveStatus
+      apiNew.patchCollectiveOffersTemplateActiveStatus
     ).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: false,
+      body: { ids: [1, 2], isActive: false },
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
 
@@ -202,7 +197,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Archiver" button when some offers are selected', async () => {
-    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
+    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
     renderActionsBar({
       ...props,
       selectedOffers: [
@@ -247,10 +242,9 @@ describe('ActionsBar', () => {
     await userEvent.click(confirmDeactivateButton)
 
     expect(
-      api.patchCollectiveOffersTemplateActiveStatus
+      apiNew.patchCollectiveOffersTemplateActiveStatus
     ).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-      isActive: false,
+      body: { ids: [1, 2], isActive: false },
     })
   })
 
@@ -323,8 +317,8 @@ describe('ActionsBar', () => {
     const confirmArchivingButton = screen.getByText('Archiver les offres')
     await userEvent.click(confirmArchivingButton)
 
-    expect(api.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
-      ids: [1, 2],
+    expect(apiNew.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
+      body: { ids: [1, 2] },
     })
 
     expect(
@@ -415,9 +409,9 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
-      1
-    )
+    expect(
+      apiNew.patchCollectiveOffersTemplateActiveStatus
+    ).toHaveBeenCalledTimes(1)
 
     expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
   })
@@ -441,5 +435,36 @@ describe('ActionsBar', () => {
         'Seules les offres vitrines au statut en pause peuvent être publiées.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should archive template offers using patchCollectiveOffersTemplateArchive when offers are template', async () => {
+    renderActionsBar({
+      ...props,
+      areTemplateOffers: true,
+      selectedOffers: [
+        collectiveOfferTemplateFactory({
+          id: 10,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+        }),
+        collectiveOfferTemplateFactory({
+          id: 20,
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+        }),
+      ],
+    })
+
+    await userEvent.click(screen.getByText('Archiver'))
+    const confirmArchivingButton = screen.getByText('Archiver les offres')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(
+      apiNew.patchCollectiveOffersTemplateArchive
+    ).toHaveBeenLastCalledWith({
+      body: { ids: [10, 20] },
+    })
+    expect(apiNew.patchCollectiveOffersArchive).not.toHaveBeenCalled()
+    expect(screen.getByText('2 offres ont bien été archivées')).toBeVisible()
   })
 })

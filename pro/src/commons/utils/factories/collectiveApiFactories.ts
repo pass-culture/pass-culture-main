@@ -11,6 +11,7 @@ import {
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
+  DisplayableActivity,
   type DMSApplicationForEAC,
   DMSApplicationstatus,
   type EducationalInstitutionResponseModel,
@@ -24,8 +25,7 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type GetVenueResponseModel,
   StudentLevels,
-} from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 
 import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 
