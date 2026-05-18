@@ -45,6 +45,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
           query: {
             invoicesReferences: [reference],
           },
+          parseAs: 'blob',
         })) as Blob,
         'remboursements_pass_culture.csv'
       )
