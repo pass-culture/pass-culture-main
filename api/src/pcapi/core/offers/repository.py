@@ -29,6 +29,7 @@ from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import custom_keys
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
@@ -85,7 +86,7 @@ def get_capped_offers_for_filters(
     user_id: int,
     offers_limit: int,
     offerer_id: int | None = None,
-    status: str | None = None,
+    status: offer_mixin.OfferStatus | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords_or_ean: str | None = None,
@@ -182,7 +183,7 @@ def _get_offer_home_score(offer: models.Offer, date_limit: datetime.datetime) ->
     # Event under review > Thing under review > Event sold out > Thing sold out > Event (by date) > Thing
 
     if offer.isEvent:
-        if offer.validation == models.OfferValidationStatus.PENDING:
+        if offer.validation == offer_mixin.OfferValidationStatus.PENDING:
             return (1, None)
         if offer.status == offer_mixin.OfferStatus.SOLD_OUT:
             return (3, None)
@@ -196,7 +197,7 @@ def _get_offer_home_score(offer: models.Offer, date_limit: datetime.datetime) ->
         first_date = stocks[0].beginningDatetime if stocks else datetime.datetime.max
         return (5, first_date)
     else:
-        if offer.validation == models.OfferValidationStatus.PENDING:
+        if offer.validation == offer_mixin.OfferValidationStatus.PENDING:
             return (2, None)
         if offer.status == offer_mixin.OfferStatus.SOLD_OUT:
             return (4, None)
@@ -470,7 +471,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(
             models.Offer.id.in_(offer_ids),
-            models.Offer.validation == models.OfferValidationStatus.APPROVED,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
         )
     )
 
@@ -666,7 +667,7 @@ def get_offers_by_filters(
     *,
     user_id: int,
     offerer_id: int | None = None,
-    status: str | None = None,
+    status: offer_mixin.OfferStatus | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     offerer_address_id: int | None = None,
@@ -698,13 +699,16 @@ def get_offers_by_filters(
 
     if offerer_address_id is not None:
         query = query.filter(models.Offer.offererAddressId == offerer_address_id)
+
     if creation_mode is not None:
         query = _filter_by_creation_mode(query, creation_mode)
+
     if category_id is not None:
         requested_subcategories = [
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
+
     if name_keywords_or_ean is not None:
         if string_utils.is_ean_valid(name_keywords_or_ean):
             query = query.filter(models.Offer.ean == name_keywords_or_ean)
@@ -713,8 +717,13 @@ def get_offers_by_filters(
             if len(name_keywords_or_ean) > 3:
                 search = "%{}%".format(name_keywords_or_ean)
             query = query.filter(models.Offer.name.ilike(search))
+
     if status is not None:
-        query = _filter_by_status(query, status)
+        if FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER.is_active():
+            status_filters = models.Offer.get_status_filters(status=status)
+            query = query.filter(*status_filters)
+        else:
+            query = _filter_by_status(query, status)
 
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa_orm.aliased(models.Offer)
@@ -793,8 +802,73 @@ def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.
     return query
 
 
-def _filter_by_status(query: sa_orm.Query, status: str) -> sa_orm.Query:
-    return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
+# TODO: remove
+def _get_offer_status_filters(
+    status: offer_mixin.OfferStatus,
+) -> tuple[sa.ColumnElement[bool] | sa.BinaryExpression[bool], ...]:
+    now = date_utils.get_naive_utc_now()
+
+    match status:
+        case offer_mixin.OfferStatus.DRAFT:
+            return (models.Offer.validation == offer_mixin.OfferValidationStatus.DRAFT,)
+
+        case offer_mixin.OfferStatus.PENDING:
+            return (models.Offer.validation == offer_mixin.OfferValidationStatus.PENDING,)
+
+        case offer_mixin.OfferStatus.REJECTED:
+            return (models.Offer.validation == offer_mixin.OfferValidationStatus.REJECTED,)
+
+        case offer_mixin.OfferStatus.INACTIVE:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.Offer.publicationDatetime.is_(None),
+            )
+
+        case offer_mixin.OfferStatus.SCHEDULED:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                now < models.Offer.publicationDatetime,
+            )
+
+        case offer_mixin.OfferStatus.PUBLISHED:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.Offer.publicationDatetime <= now,
+                now < models.Offer.bookingAllowedDatetime,
+            )
+
+        case offer_mixin.OfferStatus.EXPIRED:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.Offer.publicationDatetime <= now,
+                sa.or_(models.Offer.bookingAllowedDatetime.is_(None), models.Offer.bookingAllowedDatetime <= now),
+                models.Offer.hasBookingLimitDatetimesPassed.is_(True),
+            )
+
+        case offer_mixin.OfferStatus.SOLD_OUT:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.Offer.publicationDatetime <= now,
+                sa.or_(models.Offer.bookingAllowedDatetime.is_(None), models.Offer.bookingAllowedDatetime <= now),
+                sa.not_(models.Offer.hasBookingLimitDatetimesPassed),
+                models.Offer.isSoldOut.is_(True),
+            )
+
+        case offer_mixin.OfferStatus.ACTIVE:
+            return (
+                models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                models.Offer.publicationDatetime <= now,
+                sa.or_(models.Offer.bookingAllowedDatetime.is_(None), models.Offer.bookingAllowedDatetime <= now),
+                sa.not_(models.Offer.hasBookingLimitDatetimesPassed),
+                sa.not_(models.Offer.isSoldOut),
+            )
+
+        case _:
+            raise ValueError("Unexpected offer status")
+
+
+def _filter_by_status(query: sa_orm.Query, status: offer_mixin.OfferStatus) -> sa_orm.Query:
+    return query.filter(models.Offer.status == status.name)
 
 
 def venue_already_has_validated_offer(venue_id: int) -> bool:
@@ -802,7 +876,7 @@ def venue_already_has_validated_offer(venue_id: int) -> bool:
         db.session.query(models.Offer.id)
         .filter(
             models.Offer.venueId == venue_id,
-            models.Offer.validation == models.OfferValidationStatus.APPROVED,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
         )
         .first()
         is not None

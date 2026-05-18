@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { OfferStatus } from './OfferStatus';
 export type PatchAllOffersActiveStatusBodyModel = {
   categoryId?: string | null;
   creationMode?: string | null;
@@ -11,7 +12,7 @@ export type PatchAllOffersActiveStatusBodyModel = {
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
-  status?: string | null;
+  status?: OfferStatus | null;
   venueId?: number | null;
 };
 
