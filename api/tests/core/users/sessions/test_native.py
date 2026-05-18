@@ -210,7 +210,7 @@ class DeleteJwtTest:
 
         assert db.session.query(users_models.NativeUserSession).count() == 2
 
-        _native.delete_jwt()
+        _native.SessionManager.discard_session()
 
         assert db.session.query(users_models.NativeUserSession).count() == 1
         assert db.session.query(users_models.NativeUserSession.id).scalar() == user_2_session.id
