@@ -10,7 +10,8 @@ $step-border-width: 1px;
     top: 3.4rem;
     left: 0;
     right: 0;
-    height: .2rem;
+    height: .2rem !important;
+    border-width: 0;
     background: repeating-linear-gradient(
       90deg,
       $secondary,
