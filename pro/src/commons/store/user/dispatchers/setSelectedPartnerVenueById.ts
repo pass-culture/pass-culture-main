@@ -1,13 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {
   LOCAL_STORAGE_KEY,
@@ -25,10 +23,11 @@ import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 
 export const setSelectedPartnerVenueById = createAsyncThunk<
   {
-    selectedPartnerVenue: GetVenueResponseModel | null
+    selectedPartnerVenue: GetVenueResponseModel
   },
   {
     nextSelectedPartnerVenueId: number
+    // We want to keep that prop mandatory to make related UX rules explicit
     shouldAlignSelectedAdminOfferer: boolean
   },
   AppThunkApiConfig
@@ -119,14 +118,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         'Une erreur est survenue lors du changement de la structure.'
       )
 
-      if (isErrorAPIError(err) || err instanceof FrontendError) {
-        logout()
-      }
-
-      return {
-        selectedPartnerVenue: null,
-        newUserAccess: null,
-      }
+      return await logout()
     }
   }
 )

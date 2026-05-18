@@ -2,7 +2,11 @@ import { handleError } from '@/commons/errors/handleError'
 import { API_URL } from '@/commons/utils/config'
 import { localStorageManager } from '@/commons/utils/localStorageManager'
 
-export const logout = async (redirect = true) => {
+export async function logout(): Promise<never>
+export async function logout(redirect: true): Promise<never>
+export async function logout(redirect: false): Promise<undefined>
+
+export async function logout(redirect = true) {
   localStorageManager.clear()
 
   try {
