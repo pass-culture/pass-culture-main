@@ -4745,10 +4745,7 @@ export type PatchAllOffersActiveStatusBodyModel = {
      * Periodendingdate
      */
     periodEndingDate?: string;
-    /**
-     * Status
-     */
-    status?: string;
+    status?: OfferStatus;
     /**
      * Venueid
      */
