@@ -304,6 +304,7 @@ describe('reimbursementsWithFilters', () => {
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
     expect(apiNew.getReimbursementsCsvV2).toHaveBeenCalledWith({
+      parseAs: 'blob',
       query: {
         invoicesReferences: ['J123456789'],
       },
@@ -406,6 +407,7 @@ describe('reimbursementsWithFilters', () => {
 
     expect(apiNew.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
     expect(apiNew.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, {
+      parseAs: 'blob',
       query: {
         invoicesReferences: ['J123456789', 'J666666666', 'J987654321'],
       },

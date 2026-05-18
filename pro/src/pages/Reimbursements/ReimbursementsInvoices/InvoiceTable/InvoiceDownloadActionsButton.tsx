@@ -39,6 +39,7 @@ export const InvoiceDownloadActionsButton = ({
           query: {
             invoicesReferences: references,
           },
+          parseAs: 'blob',
         })) as Blob,
         'remboursements_pass_culture.csv'
       )
