@@ -15,6 +15,7 @@ import {
   PHONE_EXAMPLE_MAP,
 } from '@/commons/core/Phone/constants'
 import { isCountryCodeHandledByPassCulture } from '@/commons/core/Phone/utils/isCountryCodeHandledByPassCulture'
+import { stripPhoneSeparators } from '@/commons/utils/stripPhoneSeparators'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import type { RequiredIndicator } from '@/design-system/common/types'
 
@@ -112,6 +113,10 @@ export const PhoneNumberInput = forwardRef<
     }, [value, setCountryCodeAndPhoneNumberFrom])
 
     // When <CountryCodeSelect> changes, combine countryCode and phoneNumber and notify the change up
+    // Combine countryCode and phoneNumber, emitting empty string when phoneNumber is empty
+    const getCombinedValue = (code: string, number: string) =>
+      number ? code + stripPhoneSeparators(number) : ''
+
     const handleCountryCodeChange = (
       e: React.ChangeEvent<HTMLSelectElement>
     ) => {
@@ -121,7 +126,11 @@ export const PhoneNumberInput = forwardRef<
         // fire an event object based on the original event, but with the combined value
         onChange({
           ...e,
-          target: { ...e.target, value: newCountryCode + phoneNumber, name },
+          target: {
+            ...e.target,
+            value: getCombinedValue(newCountryCode, phoneNumber),
+            name,
+          },
         })
       }
     }
@@ -134,7 +143,11 @@ export const PhoneNumberInput = forwardRef<
         // fire an event object based on the original event, but with the combined value
         onChange({
           ...e,
-          target: { ...e.target, value: countryCode + newPhoneNumber, name },
+          target: {
+            ...e.target,
+            value: getCombinedValue(countryCode, newPhoneNumber),
+            name,
+          },
         })
       }
     }
@@ -147,7 +160,11 @@ export const PhoneNumberInput = forwardRef<
         // fire an event object based on the original event, but with the combined value
         onBlur({
           ...e,
-          target: { ...e.target, value: countryCode + phoneNumber, name },
+          target: {
+            ...e.target,
+            value: getCombinedValue(countryCode, phoneNumber),
+            name,
+          },
         })
       }
     }
@@ -158,8 +175,12 @@ export const PhoneNumberInput = forwardRef<
       const element = document.createElement('input')
 
       Object.defineProperty(element, 'value', {
-        get: () => countryCode + phoneNumber,
+        get: () => getCombinedValue(countryCode, phoneNumber),
         set: (newValue) => {
+          if (!newValue) {
+            return
+          }
+
           setCountryCodeAndPhoneNumberFrom(newValue)
         },
       })
