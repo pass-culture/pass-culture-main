@@ -24,6 +24,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     reason: BookingCancellationReasons | None,
     rejected_by_fraud_action: bool = False,
 ) -> None:
+    """TODO (tcoudray-pass, 18/05/26) Remove this function (see https://passculture.atlassian.net/browse/PC-41900)"""
     if reason is None:
         logger.error(
             "Booking cancellation email sending failed because no reason was given",
