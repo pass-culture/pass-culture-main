@@ -8,6 +8,7 @@ import {
   type PlusString,
 } from '@/commons/core/Phone/constants'
 import { isCountryCodeHandledByPassCulture } from '@/commons/core/Phone/utils/isCountryCodeHandledByPassCulture'
+import { stripPhoneSeparators } from '@/commons/utils/stripPhoneSeparators'
 
 const validateAndParseFrenchPhoneNumber = (
   phoneNumber: string
@@ -47,36 +48,26 @@ const validateAndParseFrenchPhoneNumber = (
  * phoneNumberSchema().required('Phone is required') // required phone number
  */
 export const phoneNumberSchema = () => {
-  return (
-    yup
-      .string()
-      // Transform values that contains ONLY the countryCode to an empty string ("+33" -> "")
-      // because the <PhoneNumberInput> component will always give a value with at least the countryCode,
-      // even when the text field is empty
-      .transform(
-        (value: string | null | undefined) =>
-          isCountryCodeHandledByPassCulture(value as PlusString)
-            ? ''
-            : value?.replaceAll(/(\s|\.|-)/g, '') // Normalize without spaces, caret or dots
-      )
-      .test('isPhoneValid', function isPhoneValidWithErrorMessage(this: yup.TestContext, value:
-        | string
-        | null
-        | undefined): boolean {
-        if (!value) {
-          return true
-        }
-        try {
-          validateAndParseFrenchPhoneNumber(value)
-          return true
-        } catch (error) {
-          throw this.createError({
-            message:
-              error instanceof Error
-                ? error.message
-                : 'Veuillez renseigner un numéro de téléphone valide',
-          })
-        }
-      })
-  )
+  return yup
+    .string()
+    .transform(stripPhoneSeparators)
+    .test('isPhoneValid', function isPhoneValidWithErrorMessage(this: yup.TestContext, value:
+      | string
+      | null
+      | undefined): boolean {
+      if (!value) {
+        return true
+      }
+      try {
+        validateAndParseFrenchPhoneNumber(value)
+        return true
+      } catch (error) {
+        throw this.createError({
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Veuillez renseigner un numéro de téléphone valide',
+        })
+      }
+    })
 }
