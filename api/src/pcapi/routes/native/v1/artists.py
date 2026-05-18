@@ -2,6 +2,7 @@ import logging
 
 from flask import abort
 
+from pcapi.core.artist import repository as artist_repository
 from pcapi.core.artist.models import Artist
 from pcapi.models import db
 from pcapi.serialization.decorator import spectree_serialize
@@ -27,4 +28,16 @@ def get_artist(artist_id: str) -> serializers.ArtistResponse:
         description_credit="© Contenu généré par IA \u2728" if artist.biography else None,
         description_source=artist.wikipedia_url if artist.biography else None,
         image=artist.thumbUrl,
+    )
+
+
+@blueprint.native_route("/artists/<string:artist_id>/similar", methods=["GET"])
+@spectree_serialize(response_model=serializers.SimilarArtistsResponse, api=blueprint.api)
+def get_similar_artists(artist_id: str) -> serializers.SimilarArtistsResponse:
+    similar_artists = artist_repository.get_similar_artists_for_native(artist_id)
+    return serializers.SimilarArtistsResponse(
+        artists=[
+            serializers.SimilarArtistItem(id=artist.id, name=artist.name, image=artist.thumbUrl)
+            for artist in similar_artists
+        ]
     )
