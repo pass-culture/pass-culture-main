@@ -118,6 +118,14 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
     db.session.flush()
 
     ### STEP 3: fetch the Venues that are active on Adage side and add them to eac
+    existing_venues_with_adage_id_query = (
+        db.session.query(offerers_models.Venue.id, offerers_models.Venue.adageId)
+        .filter(offerers_models.Venue.adageId.is_not(None))
+        .execution_options(include_deleted=True)
+        .tuples()
+    )
+    existing_venue_id_by_adage_id = {adage_id: venue_id for venue_id, adage_id in existing_venues_with_adage_id_query}
+
     active_venues = (
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id.in_(active_venue_ids))
@@ -133,6 +141,21 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
     new_adage_id_by_venue_id: dict[int, str] = {}
     offerer_sirens_with_active_venue: set[str] = set()
     for venue in active_venues:
+        # check if another venue already has this adage_id
+        # as an adage partner cannot be synced with 2 venues, we deactivate the previous venue
+        new_adage_id = adage_id_by_venue_id[venue.id]
+        existing_venue_id = existing_venue_id_by_adage_id.get(new_adage_id)
+        if existing_venue_id and existing_venue_id != venue.id:
+            existing_venue = (
+                db.session.query(offerers_models.Venue)
+                .filter(offerers_models.Venue.id == existing_venue_id)
+                .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+                .execution_options(include_deleted=True)
+                .one()
+            )
+            _remove_venue_adage_id(existing_venue)
+            offerer_sirens_with_inactive_venue.add(existing_venue.managingOfferer.siren)
+
         # update the external user in case of previous adageId being None
         # this is because we track if the user has an adageId, not the value of the adageId
         if apply and not venue.adageId:
@@ -144,7 +167,6 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
             if venue.managingOfferer.isValidated:
                 send_eac_offerer_activation_email(venue, list(emails))
 
-        new_adage_id = adage_id_by_venue_id[venue.id]
         if venue.adageId != new_adage_id:
             new_adage_id_by_venue_id[venue.id] = new_adage_id
             _add_venue_adage_id(venue, new_adage_id)

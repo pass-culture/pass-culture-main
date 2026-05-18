@@ -62,6 +62,7 @@ def test_post_educational_partners_venue_now_has_adage_id(mocked_beamer, mocked_
     num_queries = (
         0
         + 1  # Fetch venue that are closed on Adage
+        + 1  # Fetch existing venues with an adageId
         + 1  # Fetch venues that are known on Adage and not closed
         + 1  # Get the emails associated to the venue
         + 1  # Update venue with new adageId/date

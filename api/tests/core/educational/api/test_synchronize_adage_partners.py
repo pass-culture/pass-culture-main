@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -58,14 +59,20 @@ class SynchronizeAdagePartnersTest:
 
         # venue has an adageId and is marked as inactive by the synchronization
         adage_id_4 = 4
-        venue_4 = offerers_factories.VenueFactory(adageId=adage_id_4, managingOfferer__allowedOnAdage=True)
+        venue_4_inscription = datetime.datetime(year=2025, month=1, day=1)
+        venue_4 = offerers_factories.VenueFactory(
+            adageId=adage_id_4, adageInscriptionDate=venue_4_inscription, managingOfferer__allowedOnAdage=True
+        )
         partner_4 = AdageCulturalPartner(
             **BASE_DATA, id=adage_id_4, actif=0, synchroPass=1, venueId=venue_4.id, siret=venue_4.siret
         )
 
         # venue has an adageId and synchroPass is false
         adage_id_5 = 5
-        venue_5 = offerers_factories.VenueFactory(adageId=adage_id_5, managingOfferer__allowedOnAdage=True)
+        venue_5_inscription = datetime.datetime(year=2025, month=2, day=1)
+        venue_5 = offerers_factories.VenueFactory(
+            adageId=adage_id_5, adageInscriptionDate=venue_5_inscription, managingOfferer__allowedOnAdage=True
+        )
         partner_5 = AdageCulturalPartner(
             **BASE_DATA, id=adage_id_5, actif=1, synchroPass=0, venueId=venue_5.id, siret=venue_5.siret
         )
@@ -103,7 +110,7 @@ class SynchronizeAdagePartnersTest:
         assert venue_1.adageId == str(adage_id_1)
         assert venue_1.adageInscriptionDate is not None
         [history] = venue_1.action_history
-        assert history.extraData["modified_info"]["adageId"] == {"new_info": str(adage_id_1), "old_info": None}
+        assert history.extraData["modified_info"] == {"adageId": {"new_info": str(adage_id_1), "old_info": None}}
         assert venue_1.managingOfferer.allowedOnAdage is True
 
         # venue has no adageId, synchronization can add one but synchroPass is false
@@ -122,14 +129,26 @@ class SynchronizeAdagePartnersTest:
         assert venue_4.adageId is None
         assert venue_4.adageInscriptionDate is None
         [history] = venue_4.action_history
-        assert history.extraData["modified_info"]["adageId"] == {"new_info": None, "old_info": str(adage_id_4)}
+        assert history.extraData["modified_info"] == {
+            "adageId": {"new_info": None, "old_info": str(adage_id_4)},
+            "adageInscriptionDate": {
+                "new_info": None,
+                "old_info": venue_4_inscription.isoformat(),
+            },
+        }
         assert venue_4.managingOfferer.allowedOnAdage is False
 
         # venue has an adageId and synchroPass is false
         assert venue_5.adageId is None
         assert venue_5.adageInscriptionDate is None
         [history] = venue_5.action_history
-        assert history.extraData["modified_info"]["adageId"] == {"new_info": None, "old_info": str(adage_id_5)}
+        assert history.extraData["modified_info"] == {
+            "adageId": {"new_info": None, "old_info": str(adage_id_5)},
+            "adageInscriptionDate": {
+                "new_info": None,
+                "old_info": venue_5_inscription.isoformat(),
+            },
+        }
         assert venue_5.managingOfferer.allowedOnAdage is False
 
         # venue has an adageId and is unchanged
@@ -296,3 +315,59 @@ class SynchronizeAdagePartnersTest:
         assert venue_5.adageInscriptionDate is None
         assert len(venue_5.action_history) == 0
         assert venue_5.managingOfferer.allowedOnAdage is False
+
+    def test_synchronize_partners_adage_id_moved(self):
+        adage_id = 1
+        inscription_date = datetime.datetime(year=2025, month=1, day=1)
+        venue_1 = offerers_factories.VenueFactory(
+            managingOfferer__allowedOnAdage=True, adageId=adage_id, adageInscriptionDate=inscription_date
+        )
+
+        # we receive a partner with the same adageId but a different venueId
+        venue_2 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False, adageId=None)
+        partner_1 = AdageCulturalPartner(
+            **BASE_DATA, id=adage_id, actif=1, synchroPass=1, venueId=venue_2.id, siret=venue_2.siret
+        )
+
+        partners = [partner_1]
+        with (
+            patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail,
+            patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock_get_adage_offerer,
+        ):
+            mock_get_adage_offerer.return_value = []
+            adage.synchronize_adage_partners(partners, apply=True)
+            db.session.commit()
+
+        # venue with no adageId obtains one after synchronization
+        assert venue_2.adageId == str(adage_id)
+        assert venue_2.adageInscriptionDate is not None
+        [history] = venue_2.action_history
+        assert history.extraData["modified_info"] == {"adageId": {"new_info": str(adage_id), "old_info": None}}
+        assert venue_2.managingOfferer.allowedOnAdage is True
+
+        # previous venue is deactivated
+        assert venue_1.adageId is None
+        assert venue_1.adageInscriptionDate is None
+        [history] = venue_1.action_history
+        assert history.extraData["modified_info"] == {
+            "adageId": {"new_info": None, "old_info": str(adage_id)},
+            "adageInscriptionDate": {
+                "new_info": None,
+                "old_info": inscription_date.isoformat(),
+            },
+        }
+        assert venue_1.managingOfferer.allowedOnAdage is False
+
+        # get_adage_offerer -> one call per inactive partner
+        assert mock_get_adage_offerer.call_count == 1
+        assert {call.kwargs["siren"] for call in mock_get_adage_offerer.call_args_list} == {
+            venue_1.managingOfferer.siren
+        }
+
+        # send_eac_offerer_activation_email -> one call for the activated venue
+        [call] = mock_activation_mail.call_args_list
+        called_venue = call.args[0].id
+        called_emails = call.args[1]
+
+        assert called_emails == list(get_emails_by_venue(venue_2))
+        assert called_venue == venue_2.id
