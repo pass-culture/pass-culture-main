@@ -58,7 +58,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
         user_id=current_user.id,
         offers_limit=offers_constants.OFFERS_RECAP_LIMIT,
         offerer_id=query.offerer_id,
-        status=query.status.value if query.status else None,
+        status=query.status,
         venue_id=query.venue_id,
         category_id=query.categoryId,
         name_keywords_or_ean=query.name_or_ean,

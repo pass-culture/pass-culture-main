@@ -680,7 +680,7 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 offers_limit=5,
-                status="ACTIVE",
+                status=offer_mixin.OfferStatus.ACTIVE,
             )
 
             # then
@@ -716,7 +716,7 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 offers_limit=5,
-                status="INACTIVE",
+                status=offer_mixin.OfferStatus.INACTIVE,
             )
 
             # then
@@ -750,9 +750,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id,
-                offers_limit=10,
-                status="SOLD_OUT",
+                user_id=self.pro.id, offers_limit=10, status=offer_mixin.OfferStatus.SOLD_OUT
             )
 
             # then
@@ -785,9 +783,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id,
-                offers_limit=10,
-                status="SOLD_OUT",
+                user_id=self.pro.id, offers_limit=10, status=offer_mixin.OfferStatus.SOLD_OUT
             )
 
             # then
@@ -804,9 +800,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id,
-                offers_limit=5,
-                status="SOLD_OUT",
+                user_id=self.pro.id, offers_limit=5, status=offer_mixin.OfferStatus.SOLD_OUT
             )
 
             # then
@@ -822,9 +816,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id,
-                offers_limit=5,
-                status="SOLD_OUT",
+                user_id=self.pro.id, offers_limit=5, status=offer_mixin.OfferStatus.SOLD_OUT
             )
 
             # then
@@ -840,9 +832,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = repository.get_capped_offers_for_filters(
-                user_id=self.pro.id,
-                offers_limit=5,
-                status="SOLD_OUT",
+                user_id=self.pro.id, offers_limit=5, status=offer_mixin.OfferStatus.SOLD_OUT
             )
 
             # then
@@ -858,7 +848,7 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 offers_limit=5,
-                status="EXPIRED",
+                status=offer_mixin.OfferStatus.EXPIRED,
             )
 
             # then
@@ -902,7 +892,9 @@ class GetCappedOffersForFiltersTest:
             offerers_factories.UserOffererFactory(user=pro_user, offerer=pending_offer.venue.managingOfferer)
 
             # when
-            offers = repository.get_capped_offers_for_filters(user_id=pro_user.id, offers_limit=5, status="PENDING")
+            offers = repository.get_capped_offers_for_filters(
+                user_id=pro_user.id, offers_limit=5, status=offer_mixin.OfferStatus.PENDING
+            )
 
             # then
             assert len(offers) == 1
@@ -928,7 +920,9 @@ class GetCappedOffersForFiltersTest:
             offerers_factories.UserOffererFactory(user=pro_user, offerer=rejected_offer.venue.managingOfferer)
 
             # when
-            offers = repository.get_capped_offers_for_filters(user_id=pro_user.id, offers_limit=5, status="REJECTED")
+            offers = repository.get_capped_offers_for_filters(
+                user_id=pro_user.id, offers_limit=5, status=offer_mixin.OfferStatus.REJECTED
+            )
 
             # then
             assert len(offers) == 1
@@ -946,7 +940,7 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 offers_limit=5,
-                status="SOLD_OUT",
+                status=offer_mixin.OfferStatus.SOLD_OUT,
                 venue_id=self.other_venue.id,
             )
 
@@ -977,7 +971,7 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 offers_limit=5,
-                status="ACTIVE",
+                status=offer_mixin.OfferStatus.ACTIVE,
                 period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").date(),
                 period_ending_date=utc_datetime_to_department_timezone(in_six_days_ending, "75").date(),
             )
@@ -990,6 +984,10 @@ class GetCappedOffersForFiltersTest:
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert len(offers) == 1
+
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_STATUS_FILTER=True)
+    class StatusFiltersWithFFTest(StatusFiltersTest):
+        pass
 
 
 @pytest.mark.usefixtures("db_session")

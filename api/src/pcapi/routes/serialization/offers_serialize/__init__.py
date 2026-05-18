@@ -167,7 +167,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     name_or_ean: str | None = Field(alias="nameOrIsbn")
     category_id: str | None
     creation_mode: str | None
-    status: str | None
+    status: OfferStatus | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
     offerer_address_id: int | None

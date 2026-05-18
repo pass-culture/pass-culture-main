@@ -1281,6 +1281,8 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @hybrid_property
     def status(self) -> OfferStatus:
+        """⚠️ This function must be kept in sync with the get_status_filters method below"""
+
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
 
@@ -1327,6 +1329,68 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         ]
 
         return sa.case(*cases, else_=OfferStatus.ACTIVE.name)
+
+    @classmethod
+    def get_status_filters(cls, status: OfferStatus) -> tuple[sa.ColumnElement[bool] | sa.BinaryExpression[bool], ...]:
+        """⚠️ This function must be kept in sync with the status property above"""
+
+        match status:
+            case OfferStatus.DRAFT:
+                return (cls.validation == OfferValidationStatus.DRAFT,)
+
+            case OfferStatus.PENDING:
+                return (cls.validation == OfferValidationStatus.PENDING,)
+
+            case OfferStatus.REJECTED:
+                return (cls.validation == OfferValidationStatus.REJECTED,)
+
+            case OfferStatus.INACTIVE:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    cls.publicationDatetime.is_(None),
+                )
+
+            case OfferStatus.SCHEDULED:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    sa.func.now() < cls.publicationDatetime,
+                )
+
+            case OfferStatus.PUBLISHED:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    cls.publicationDatetime <= sa.func.now(),
+                    sa.func.now() < cls.bookingAllowedDatetime,
+                )
+
+            case OfferStatus.EXPIRED:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    cls.publicationDatetime <= sa.func.now(),
+                    sa.or_(cls.bookingAllowedDatetime.is_(None), cls.bookingAllowedDatetime <= sa.func.now()),
+                    cls.hasBookingLimitDatetimesPassed.is_(True),
+                )
+
+            case OfferStatus.SOLD_OUT:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    cls.publicationDatetime <= sa.func.now(),
+                    sa.or_(cls.bookingAllowedDatetime.is_(None), cls.bookingAllowedDatetime <= sa.func.now()),
+                    sa.not_(cls.hasBookingLimitDatetimesPassed),
+                    cls.isSoldOut.is_(True),
+                )
+
+            case OfferStatus.ACTIVE:
+                return (
+                    cls.validation == OfferValidationStatus.APPROVED,
+                    cls.publicationDatetime <= sa.func.now(),
+                    sa.or_(cls.bookingAllowedDatetime.is_(None), cls.bookingAllowedDatetime <= sa.func.now()),
+                    sa.not_(cls.hasBookingLimitDatetimesPassed),
+                    sa.not_(cls.isSoldOut),
+                )
+
+            case _:
+                raise ValueError("Unexpected offer status")
 
     @property
     def publicationDate(self) -> datetime.datetime | None:
