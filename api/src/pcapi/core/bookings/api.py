@@ -701,16 +701,17 @@ def _cancel_external_booking(booking: models.Booking, stock: offers_models.Stock
     offer = stock.offer
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
 
-    # FIXME: `offer.lastProvider.hasTicketingService` is legacy to support old public API
-    if offer.lastProvider and (
-        offer.isEventLinkedToTicketingService or offer.lastProvider.hasTicketingService
-    ):  # Linked to ticketing service
-        venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
-            offer.venueId, offer.lastProvider.id
-        )
-        external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
-    else:  # cinema provider
-        external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
+    # Cinema ticket
+    if offer.isFromCinemaProvider:
+        return external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
+
+    # Event with ticketing service ticket
+    assert offer.lastProvider  # to make mypy happy
+    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+        offer.venueId, offer.lastProvider.id
+    )
+
+    return external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
 
 
 def _cancel_bookings_from_stock(
