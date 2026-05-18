@@ -205,11 +205,12 @@ describe('<IndividualOfferPriceTableScreen />', () => {
     })
   })
 
-  it('should display the duo checkbox if the offer subcatefory can be duo', async () => {
+  it('should display the duo checkbox if the offer subcatefory can be duo and is not synchronized', async () => {
     renderPriceTableScreen({
       props: {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
+          lastProvider: null,
         }),
       },
     })
@@ -221,5 +222,24 @@ describe('<IndividualOfferPriceTableScreen />', () => {
     expect(
       screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
     ).toBeInTheDocument()
+  })
+
+  it('should disable the duo checkbox if the offer is synchronized', async () => {
+    renderPriceTableScreen({
+      props: {
+        offer: getIndividualOfferFactory({
+          subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
+          lastProvider: { name: 'Provider' },
+        }),
+      },
+    })
+
+    expect(
+      await screen.findByRole('heading', { name: LABELS.section })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
+    ).toBeDisabled()
   })
 })
