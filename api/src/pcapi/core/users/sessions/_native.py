@@ -63,7 +63,15 @@ class SessionManager(_common.AbstractSessionManager):
 
     @staticmethod
     def discard_session(app: flask.ctx.AppContext | None = None, user: users_models.User | None = None) -> None:
-        return None
+        db.session.query(users_models.NativeUserSession).filter(
+            users_models.NativeUserSession.accessToken == flask.g.jwt.data.jti,
+        ).delete(synchronize_session=False)
+        flask.session.clear()
+
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     @staticmethod
     def request_loader(request: flask.Request) -> users_models.User | None:
@@ -205,10 +213,4 @@ def _register_tokens(access_token: str, refresh_token: str, device_id: str) -> N
 def delete_expired_jwt() -> None:
     db.session.query(users_models.NativeUserSession).filter(
         users_models.NativeUserSession.expirationDatetime < date_utils.get_naive_utc_now()
-    ).delete(synchronize_session=False)
-
-
-def delete_jwt() -> None:
-    db.session.query(users_models.NativeUserSession).filter(
-        users_models.NativeUserSession.accessToken == flask.g.jwt.data.jti,
     ).delete(synchronize_session=False)
