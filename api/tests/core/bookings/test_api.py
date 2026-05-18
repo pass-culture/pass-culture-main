@@ -1135,16 +1135,17 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-    @patch("pcapi.core.bookings.api._cancel_external_booking")
-    def test_cancel_booking(self, mocked_cancel_external_booking):
-        stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
+    @patch("pcapi.core.external_bookings.api.cancel_tickets")
+    def test_cancel_booking(self, mocked_cancel_tickets):
+        provider = providers_factories.PublicApiProviderFactory()
+        stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com", offer__lastProvider=provider)
         booking = bookings_factories.BookingFactory.create_batch(20, stock=stock)[0]
-        bookings_factories.ExternalBookingFactory(booking=booking)
+        bookings_factories.ExternalBookingFactory(booking=booking, barcode="HELLO!")
         user = booking.user
         with assert_no_duplicated_queries():
             api.cancel_booking_by_beneficiary(user, booking)
 
-        mocked_cancel_external_booking.assert_called_once_with(booking, stock)
+        mocked_cancel_tickets.assert_called_once_with(["HELLO!"], provider=provider, stock=stock)
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 

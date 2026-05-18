@@ -669,7 +669,10 @@ def _execute_cancel_booking(
                         booking=booking,
                     )
                 if not one_side_cancellation and booking.isExternal:
-                    _cancel_external_booking(booking, stock)
+                    provider = booking.stock.offer.lastProvider
+                    assert provider  # to make mypy happy
+                    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+                    external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
             except (
                 exceptions.BookingIsAlreadyUsed,
                 exceptions.BookingIsAlreadyCancelled,
@@ -721,23 +724,6 @@ def _execute_cancel_booking(
                     )
                 raise
     return True
-
-
-def _cancel_external_booking(booking: models.Booking, stock: offers_models.Stock) -> None:
-    offer = stock.offer
-    barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-
-    # Cinema ticket
-    if offer.isFromCinemaProvider:
-        return external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
-
-    # Event with ticketing service ticket
-    assert offer.lastProvider  # to make mypy happy
-    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
-        offer.venueId, offer.lastProvider.id
-    )
-
-    return external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
 
 
 def _cancel_bookings_from_stock(
