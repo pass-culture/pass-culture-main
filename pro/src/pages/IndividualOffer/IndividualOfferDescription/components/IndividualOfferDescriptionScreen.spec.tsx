@@ -568,7 +568,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
       name: 'My super offer',
-      subcategoryId: 'physicalBis',
       visualDisabilityCompliant: true,
     })
   })
