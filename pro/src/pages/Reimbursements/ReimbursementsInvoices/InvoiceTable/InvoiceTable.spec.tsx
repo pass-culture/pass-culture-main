@@ -135,6 +135,7 @@ describe('InvoiceTable', () => {
       },
     })
     expect(getReimbursementsCsvV2Mock).toHaveBeenCalledWith({
+      parseAs: 'blob',
       query: {
         invoicesReferences: ['INV-001', 'INV-002'],
       },
