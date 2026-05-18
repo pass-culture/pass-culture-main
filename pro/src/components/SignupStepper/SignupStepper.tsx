@@ -1,41 +1,41 @@
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'
 
-import { REGISTRATION_STEP_IDS } from './constants'
-import styles from './RegistrationStepper.module.scss'
+import { SIGNUP_STEP_IDS } from './constants'
+import styles from './SignupStepper.module.scss'
 
-export const RegistrationStepper = () => {
+export const SignupStepper = () => {
   const activeStep = useActiveStep()
 
   const steps: Step[] = [
     {
-      id: REGISTRATION_STEP_IDS.SIGNUP,
+      id: SIGNUP_STEP_IDS.ACCOUNT_CREATION,
       label: 'Votre compte',
     },
     {
-      id: REGISTRATION_STEP_IDS.STRUCTURE,
+      id: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
       label: 'Votre structure',
     },
     {
-      id: REGISTRATION_STEP_IDS.ACTIVITY,
+      id: SIGNUP_STEP_IDS.ACTIVITY,
       label: 'Votre activité',
     },
     {
-      id: REGISTRATION_STEP_IDS.VALIDATION,
+      id: SIGNUP_STEP_IDS.VALIDATION,
       label: 'Validation',
     },
   ]
 
   const activeStepIndex = steps.findIndex(
-    ({ id }) => id === (activeStep as REGISTRATION_STEP_IDS)
+    ({ id }) => id === (activeStep as SIGNUP_STEP_IDS)
   )
 
-  const registrationSteps = steps.map((step, index) => ({
+  const signupSteps = steps.map((step, index) => ({
     ...step,
     disabled: index > activeStepIndex,
   }))
 
-  const stepsIds = registrationSteps.map((step) => step.id)
+  const stepsIds = signupSteps.map((step) => step.id)
 
   if (!stepsIds.includes(activeStep)) {
     return null
@@ -44,7 +44,7 @@ export const RegistrationStepper = () => {
   return (
     <Stepper
       activeStep={activeStep}
-      steps={registrationSteps}
+      steps={signupSteps}
       className={styles['signup-stepper']}
     />
   )

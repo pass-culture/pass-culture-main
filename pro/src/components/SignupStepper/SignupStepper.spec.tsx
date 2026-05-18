@@ -3,23 +3,23 @@ import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { RegistrationStepper } from './RegistrationStepper'
+import { SignupStepper } from './SignupStepper'
 
-const renderRegistrationStepper = (pathname: string) => {
-  return renderWithProviders(<RegistrationStepper />, {
+const renderSignupStepper = (pathname: string) => {
+  return renderWithProviders(<SignupStepper />, {
     initialRouterEntries: [pathname],
   })
 }
 
-describe('<RegistrationStepper />', () => {
+describe('<SignupStepper />', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderRegistrationStepper('/prefix/creation')
+    const { container } = renderSignupStepper('/prefix/creation')
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render 4 steps with correct labels', () => {
-    renderRegistrationStepper('/prefix/creation')
+    renderSignupStepper('/prefix/account-creation')
 
     expect(screen.getByText('Votre compte')).toBeInTheDocument()
     expect(screen.getByText('Votre structure')).toBeInTheDocument()
@@ -28,7 +28,7 @@ describe('<RegistrationStepper />', () => {
   })
 
   it('should return null when active step is not in the list', () => {
-    const { container } = renderRegistrationStepper('/prefix/unknown')
+    const { container } = renderSignupStepper('/prefix/unknown')
 
     expect(container).toBeEmptyDOMElement()
   })

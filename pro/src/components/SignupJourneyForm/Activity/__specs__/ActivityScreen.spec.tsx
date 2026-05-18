@@ -24,13 +24,12 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import type { LOCAL_STORAGE_KEY as LocalStorageKeyType } from '@/commons/utils/localStorageManager'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
-import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { Activity } from '../Activity'
 
@@ -230,8 +229,8 @@ describe('screens:SignupJourney::Activity', () => {
         Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
         {
           from: location.pathname,
-          to: REGISTRATION_STEP_IDS.VALIDATION,
-          used: SignupJourneyAction.ActionBar,
+          to: SIGNUP_STEP_IDS.VALIDATION,
+          used: 'Continuer',
         }
       )
 
@@ -241,8 +240,8 @@ describe('screens:SignupJourney::Activity', () => {
         Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
         {
           from: location.pathname,
-          to: REGISTRATION_STEP_IDS.STRUCTURE,
-          used: SignupJourneyAction.ActionBar,
+          to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
+          used: 'Retour',
         }
       )
     })

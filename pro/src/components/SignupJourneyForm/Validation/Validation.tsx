@@ -36,13 +36,13 @@ import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { humanizeSiret } from '@/commons/utils/siren'
-import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
-import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
+import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -239,7 +239,7 @@ export const Validation = (): JSX.Element | undefined => {
     >
       {isSignupSimulationEnabled && (
         <>
-          <RegistrationStepper />
+          <SignupStepper />
           <h1 className={styles['title']}>Vérifiez vos informations</h1>
         </>
       )}
@@ -257,8 +257,12 @@ export const Validation = (): JSX.Element | undefined => {
               to="/inscription/structure/identification"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  to: REGISTRATION_STEP_IDS.STRUCTURE,
-                  used: SignupJourneyAction.UpdateFromValidation,
+                  to: isSignupSimulationEnabled
+                    ? SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION
+                    : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+                  used: isSignupSimulationEnabled
+                    ? 'Modifier'
+                    : SignupJourneyAction.UpdateFromValidation,
                 })
               }}
               variant={ButtonVariant.SECONDARY}
@@ -280,8 +284,12 @@ export const Validation = (): JSX.Element | undefined => {
               to="/inscription/structure/activite"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  to: REGISTRATION_STEP_IDS.ACTIVITY,
-                  used: SignupJourneyAction.UpdateFromValidation,
+                  to: isSignupSimulationEnabled
+                    ? SIGNUP_STEP_IDS.ACTIVITY
+                    : SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
+                  used: isSignupSimulationEnabled
+                    ? 'Modifier'
+                    : SignupJourneyAction.UpdateFromValidation,
                 })
               }}
               variant={ButtonVariant.SECONDARY}
@@ -306,8 +314,8 @@ export const Validation = (): JSX.Element | undefined => {
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                   from: location.pathname,
-                  to: REGISTRATION_STEP_IDS.ACTIVITY,
-                  used: SignupJourneyAction.ActionBar,
+                  to: SIGNUP_STEP_IDS.ACTIVITY,
+                  used: 'Retour',
                 })
                 handlePreviousStep()
               }}
@@ -316,14 +324,7 @@ export const Validation = (): JSX.Element | undefined => {
             <Button
               type="button"
               label="Valider et créer ma structure"
-              onClick={() => {
-                logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-                  from: location.pathname,
-                  to: REGISTRATION_STEP_IDS.COMPLETED,
-                  used: SignupJourneyAction.ActionBar,
-                })
-                onSubmit()
-              }}
+              onClick={onSubmit}
               disabled={loading}
             />
           </div>

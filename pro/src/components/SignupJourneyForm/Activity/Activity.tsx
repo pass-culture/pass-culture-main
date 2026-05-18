@@ -23,12 +23,11 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
-import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
+import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import {
@@ -174,7 +173,7 @@ export const Activity = () => {
     >
       {isSignupSimulationEnabled && (
         <>
-          <RegistrationStepper />
+          <SignupStepper />
           <MainHeading
             mainHeading="Votre activité"
             className={styles['main-heading']}
@@ -212,8 +211,8 @@ export const Activity = () => {
                   onClick={() => {
                     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                       from: location.pathname,
-                      to: REGISTRATION_STEP_IDS.STRUCTURE,
-                      used: SignupJourneyAction.ActionBar,
+                      to: SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION,
+                      used: 'Retour',
                     })
                     handlePreviousStep()
                   }}
@@ -225,8 +224,8 @@ export const Activity = () => {
                   onClick={() => {
                     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                       from: location.pathname,
-                      to: REGISTRATION_STEP_IDS.VALIDATION,
-                      used: SignupJourneyAction.ActionBar,
+                      to: SIGNUP_STEP_IDS.VALIDATION,
+                      used: 'Continuer',
                     })
                   }}
                   disabled={methods.formState.isSubmitting}
