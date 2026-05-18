@@ -18,7 +18,6 @@ export default defineConfig({
   output: {
     path: 'src/apiClient/adage/new/',
     clean: true,
-    postProcess: ['biome:format'],
   },
   plugins: [
     {
@@ -35,7 +34,7 @@ export default defineConfig({
     },
     {
       name: '@hey-api/client-fetch',
-      runtimeConfigPath: '../../clientConfigAdage',
+      runtimeConfigPath: './src/apiClient/clientConfigAdage',
       throwOnError: true,
     },
   ],
