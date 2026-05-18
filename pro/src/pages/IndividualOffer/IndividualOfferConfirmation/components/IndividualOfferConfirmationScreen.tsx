@@ -1,3 +1,4 @@
+import { QRCodeSVG } from 'qrcode.react'
 import { useNavigate } from 'react-router'
 
 import {
@@ -11,6 +12,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
@@ -43,6 +45,8 @@ export const IndividualOfferConfirmationScreen = ({
     new Date() < new Date(offer.publicationDate)
   const isPendingOffer = offer.status === OfferStatus.PENDING
 
+  const offerAppUrl = `${WEBAPP_URL}/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_campaign=product`
+
   const offerReadOnlyUrl = getIndividualOfferUrl({
     offerId: offer.id,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
@@ -72,63 +76,77 @@ export const IndividualOfferConfirmationScreen = ({
       shouldDisplayHeadlineCard)
 
   return (
-    <div className={styles['confirmation-container']}>
+    <div className={styles['container']}>
       {isPendingOffer ? (
-        <h1 className={styles['confirmation-title']}>
+        <h1 className={styles['title']}>
           Offre en cours de validation{' '}
-          <span className={styles['confirmation-title-icon']}>
+          <span className={styles['title-icon']}>
             <SvgIcon src={fullWaitIcon} alt="" width="38" />
           </span>
         </h1>
       ) : (
-        <h1 className={styles['confirmation-title']}>
+        <h1 className={styles['title']}>
           Votre offre a été publiée avec succès{' '}
-          <span className={styles['confirmation-title-icon']}>
+          <span className={styles['title-icon']}>
             <SvgIcon src={strokePartyIcon} alt="" width="38" />
           </span>
         </h1>
       )}
-      <div>
-        {isPendingOffer && (
-          <p className={styles['confirmation-details']}>
-            Nous vérifions actuellement l’éligibilité de votre offre.{' '}
-            <b>Cette vérification pourra prendre jusqu’à 72h.</b>
-            <br />
-            <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
-            <br />
-            Vous recevrez un email de confirmation une fois votre offre validée.
-          </p>
-        )}
-      </div>
-      {!isPublishedInTheFuture && (
-        <div className={styles['display-in-app-link']}>
-          <DisplayOfferInAppLink
-            id={offer.id}
-            icon={fullLinkIcon}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.BRAND}
-            label="Visualiser l’offre dans l’application"
-          />
-        </div>
+      {isPendingOffer && (
+        <p className={styles['pending-details']}>
+          Nous vérifions actuellement l’éligibilité de votre offre.{' '}
+          <b>Cette vérification pourra prendre jusqu’à 72h.</b>
+          <br />
+          <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
+          <br />
+          Vous recevrez un email de confirmation une fois votre offre validée.
+        </p>
       )}
-      <div className={styles['confirmation-actions']}>
-        <Button
-          as="a"
-          to={offerCreationUrl}
-          isExternal
-          variant={ButtonVariant.SECONDARY}
-          label="Créer une nouvelle offre"
-        />
+      <div className={styles['preview']}>
+        {!isPublishedInTheFuture && !isPendingOffer && (
+          <div className={styles['preview-qr-block']}>
+            <QRCodeSVG
+              value={offerAppUrl}
+              size={108}
+              className={styles['preview-qr']}
+              aria-hidden
+            />
+            <div className={styles['preview-content']}>
+              <p className={styles['preview-content-title']}>
+                Visualisez votre offre sur l’application
+              </p>
+              <p className={styles['preview-content-subtitle']}>
+                Scannez le QR code ou cliquez ci-dessous
+              </p>
+              <DisplayOfferInAppLink
+                id={offer.id}
+                icon={fullLinkIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Visualiser sur le web"
+              />
+            </div>
+          </div>
+        )}
+        <div className={styles['preview-actions']}>
+          <Button
+            as="a"
+            to={offerCreationUrl}
+            isExternal
+            variant={ButtonVariant.SECONDARY}
+            label="Créer une nouvelle offre"
+          />
 
-        <Button as="a" to="/offres" label="Voir la liste des offres" />
+          <Button as="a" to="/offres" label="Accéder à la liste des offres" />
+        </div>
       </div>
 
       {shouldDisplayCardsSection && (
-        <section className={styles['enhancement-section']}>
-          <h2 className={styles['enhancement-section-title']}>
+        <section className={styles['enhancement']}>
+          <h2 className={styles['enhancement-title']}>
             Allez plus loin et optimisez votre offre :
           </h2>
-          <div className={styles['cards-container']}>
+          <div className={styles['enhancement-cards']}>
             {shouldDisplayRecommendationCard && (
               <OfferRecommendationCard
                 offerId={offer.id}
