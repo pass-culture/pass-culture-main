@@ -52,10 +52,6 @@ def _filter_homologation_tags(tags: list[offerers_models.OffererTag]) -> list[of
     return [tag for tag in tags if "homologation" in [cat.name for cat in tag.categories]]
 
 
-def _redirect_after_offerer_validation_action() -> response_utils.BackofficeResponse:
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.validation.list_offerers_to_validate"))
-
-
 def _render_offerers_to_validate(offerers_id: list[int]) -> response_utils.BackofficeResponse:
     items = validation_repository.list_offerers_to_be_validated(offerers_id=offerers_id)
     return render_template(
@@ -239,9 +235,11 @@ def validate_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_offerers_to_validate([offerer_id])
-        return _redirect_after_offerer_validation_action()
+        return request_utils.htmx_or_redirect(
+            follow_referer=True,
+            url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+            renderer=partial(_render_offerers_to_validate, [offerer_id]),
+        )
 
     try:
         offerers_api.validate_offerer(
@@ -250,14 +248,18 @@ def validate_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_offerers_to_validate([offerer_id])
-        return _redirect_after_offerer_validation_action()
+        return request_utils.htmx_or_redirect(
+            follow_referer=True,
+            url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+            renderer=partial(_render_offerers_to_validate, [offerer_id]),
+        )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été validée").format(name=offerer.name), "success")
-    if request_utils.is_request_from_htmx():
-        return _render_offerers_to_validate([offerer_id])
-    return _redirect_after_offerer_validation_action()
+    return request_utils.htmx_or_redirect(
+        follow_referer=True,
+        url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+        renderer=partial(_render_offerers_to_validate, [offerer_id]),
+    )
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
@@ -299,9 +301,11 @@ def reject_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_offerers_to_validate([offerer_id])
-        return _redirect_after_offerer_validation_action()
+        return request_utils.htmx_or_redirect(
+            follow_referer=True,
+            url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+            renderer=partial(_render_offerers_to_validate, [offerer_id]),
+        )
 
     try:
         offerers_api.reject_offerer(
@@ -313,14 +317,18 @@ def reject_offerer(offerer_id: int) -> response_utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyRejectedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_offerers_to_validate([offerer_id])
-        return _redirect_after_offerer_validation_action()
+        return request_utils.htmx_or_redirect(
+            follow_referer=True,
+            url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+            renderer=partial(_render_offerers_to_validate, [offerer_id]),
+        )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
-    if request_utils.is_request_from_htmx():
-        return _render_offerers_to_validate([offerer_id])
-    return _redirect_after_offerer_validation_action()
+    return request_utils.htmx_or_redirect(
+        follow_referer=True,
+        url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+        renderer=partial(_render_offerers_to_validate, [offerer_id]),
+    )
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
@@ -373,9 +381,11 @@ def set_offerer_pending(offerer_id: int) -> response_utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(response_utils.build_form_error_msg(form), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_offerers_to_validate([offerer_id])
-        return _redirect_after_offerer_validation_action()
+        return request_utils.htmx_or_redirect(
+            follow_referer=True,
+            url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+            renderer=partial(_render_offerers_to_validate, [offerer_id]),
+        )
 
     # Don't pass directly form.tags.data to set_offerer_pending() because this would remove non-homologation tags
     saved_homologation_tags = set(_filter_homologation_tags(offerer.tags))
@@ -387,9 +397,11 @@ def set_offerer_pending(offerer_id: int) -> response_utils.BackofficeResponse:
     )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
-    if request_utils.is_request_from_htmx():
-        return _render_offerers_to_validate([offerer_id])
-    return _redirect_after_offerer_validation_action()
+    return request_utils.htmx_or_redirect(
+        follow_referer=True,
+        url=url_for("backoffice_web.validation.list_offerers_to_validate"),
+        renderer=partial(_render_offerers_to_validate, [offerer_id]),
+    )
 
 
 def _offerer_batch_action(
@@ -481,7 +493,9 @@ def get_batch_offerer_pending_form() -> response_utils.BackofficeResponse:
         if not form.validate():
             mark_transaction_as_invalid()
             flash(response_utils.build_form_error_msg(form), "warning")
-            return _redirect_after_offerer_validation_action()
+            return request_utils.safe_redirect_back(
+                request, url_for("backoffice_web.validation.list_offerers_to_validate")
+            )
 
         offerers = (
             db.session.query(offerers_models.Offerer)

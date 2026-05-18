@@ -1,4 +1,5 @@
 import enum
+import functools
 import logging
 import re
 import typing
@@ -665,9 +666,10 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> response_uti
 @access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_collective_offer(collective_offer_id: int) -> response_utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, [collective_offer_id])
-    if request_utils.is_request_from_htmx():
-        return _render_collective_offers([collective_offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.collective_offer.list_collective_offers"),
+        renderer=functools.partial(_render_collective_offers, [collective_offer_id]),
+    )
 
 
 def _batch_validate_or_reject_collective_offers(
@@ -827,10 +829,8 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
     form = forms.RejectCollectiveOfferForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
-        if request_utils.is_request_from_htmx():
-            return _render_collective_offers()
-        return request_utils.safe_redirect_back(
-            request, url_for("backoffice_web.collective_offer.list_collective_offers")
+        return request_utils.htmx_or_redirect(
+            url=url_for("backoffice_web.collective_offer.list_collective_offers"), renderer=_render_collective_offers
         )
 
     _batch_validate_or_reject_collective_offers(
@@ -838,9 +838,11 @@ def reject_collective_offer(collective_offer_id: int) -> response_utils.Backoffi
         [collective_offer_id],
         educational_models.CollectiveOfferRejectionReason(form.reason.data),
     )
-    if request_utils.is_request_from_htmx():
-        return _render_collective_offers([collective_offer_id])
-    return request_utils.safe_redirect_back(request, url_for("backoffice_web.collective_offer.list_collective_offers"))
+
+    return request_utils.htmx_or_redirect(
+        url=url_for("backoffice_web.collective_offer.list_collective_offers"),
+        renderer=functools.partial(_render_collective_offers, [collective_offer_id]),
+    )
 
 
 @blueprint.route("/batch/validate", methods=["GET"])
