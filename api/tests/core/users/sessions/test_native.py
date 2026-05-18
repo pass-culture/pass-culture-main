@@ -12,6 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.sessions import _native
 from pcapi.core.users.sessions import create_user_jwt_tokens
+from pcapi.core.users.sessions import disconnect_native_user_sessions
 from pcapi.core.users.sessions import refresh_user_jwt_tokens
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization import common_models
@@ -210,7 +211,36 @@ class DeleteJwtTest:
 
         assert db.session.query(users_models.NativeUserSession).count() == 2
 
-        _native.delete_jwt()
+        _native.SessionManager.discard_session()
 
         assert db.session.query(users_models.NativeUserSession).count() == 1
         assert db.session.query(users_models.NativeUserSession.id).scalar() == user_2_session.id
+
+
+class DisconnectNativeUserSessionsTest:
+    def test_disconnect_all_for_user(self):
+        user = users_factories.BaseUserFactory()
+        users_factories.NativeUserSessionFactory(user=user)
+        users_factories.NativeUserSessionFactory(user=user)
+        dummy_user = users_factories.BaseUserFactory()
+        users_factories.NativeUserSessionFactory(user=dummy_user)
+        users_factories.NativeUserSessionFactory(user=dummy_user)
+
+        disconnect_native_user_sessions(user_id=user.id)
+
+        assert (
+            db.session.query(users_models.NativeUserSession)
+            .filter(users_models.NativeUserSession.userId == user.id)
+            .count()
+            == 0
+        )
+        assert db.session.query(users_models.NativeUserSession).count() == 2
+
+    def test_user_does_not_exists(self):
+        dummy_user = users_factories.BaseUserFactory()
+        users_factories.NativeUserSessionFactory(user=dummy_user)
+        users_factories.NativeUserSessionFactory(user=dummy_user)
+
+        disconnect_native_user_sessions(user_id=0)
+
+        assert db.session.query(users_models.NativeUserSession).count() == 2

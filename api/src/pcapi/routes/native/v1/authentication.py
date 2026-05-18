@@ -2,6 +2,7 @@ import logging
 
 from flask import request
 from flask_login import current_user
+from flask_login import logout_user
 from sqlalchemy import exc as sa_exc
 
 import pcapi.core.token as token_utils
@@ -19,7 +20,6 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.core.users.sessions import refresh_user_jwt_tokens
-from pcapi.core.users.sessions._native import delete_jwt
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -94,7 +94,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     api=blueprint.api,
 )
 def signout() -> None:
-    delete_jwt()
+    logout_user()
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
