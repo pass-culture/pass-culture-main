@@ -672,7 +672,34 @@ def _execute_cancel_booking(
                     provider = booking.stock.offer.lastProvider
                     assert provider  # to make mypy happy
                     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-                    external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
+                    try:
+                        external_bookings_api.cancel_tickets(barcodes, provider=provider, stock=stock)
+                        logger.info(
+                            "Tickets successfully cancelled on provider side",
+                            extra={
+                                "user_id": booking.userId,
+                                "booking_id": booking.id,
+                                "offer_id": booking.stock.offerId,
+                                "provider_id": provider.id,
+                                "venue_id": booking.stock.offer.venueId,
+                            },
+                            technical_message_id="providers.external.cancellation",
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "Unable to cancel tickets on provider side",
+                            extra={
+                                "user_id": booking.userId,
+                                "booking_id": booking.id,
+                                "offer_id": booking.stock.offerId,
+                                "provider_id": provider.id,
+                                "venue_id": booking.stock.offer.venueId,
+                                "exception_class": exc.__class__.__name__,
+                                "exception_message": str(exc),
+                            },
+                            technical_message_id="providers.external.cancellation",
+                        )
+                        raise
             except (
                 exceptions.BookingIsAlreadyUsed,
                 exceptions.BookingIsAlreadyCancelled,
