@@ -214,6 +214,7 @@ class SuspendAccountTest:
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.NativeUserSessionFactory(user=user)
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(
@@ -237,6 +238,7 @@ class SuspendAccountTest:
         assert cancellable_booking.status is BookingStatus.CANCELLED
         assert confirmed_booking.status is BookingStatus.CONFIRMED
         assert used_booking.status is BookingStatus.USED
+        assert db.session.query(users_models.NativeUserSession).count() == 0
 
         history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
         assert len(history) == 1
