@@ -493,6 +493,14 @@ def book_offer(
 
 
 def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
+    """
+    What it does :
+        - Call _execute_cancel_booking
+        - (DB) Update booking stock if the stock was already cancelled on provider side
+        - (Log) Log booking cancellation with technical id
+        - (Async task) Notify provider (if offer linked to a provider)
+        - (Async task) Index offer on Algolia
+    """
     try:
         _execute_cancel_booking(
             booking=booking,
@@ -540,7 +548,16 @@ def _cancel_booking(
     one_side_cancellation: bool = False,
     author_id: int | None = None,
 ) -> bool:
-    """Cancel booking and update a user's credit information on Batch"""
+    """
+    TODO (tcoudray-pass, 13/5/25) Refactor this function, what it does:
+        - Call _execute_cancel_booking
+        - (DB) Update booking stock if the stock was already cancelled on provider side
+        - (Log) Log booking cancellation with technical id
+        - (Async task) Update user's credit information on Batch
+        - (Async task) Notify provider (if offer linked to a provider)
+        - (Async task) Update pro information on Brevo
+        - (Async task) Index offer on Algolia
+    """
     try:
         if not _execute_cancel_booking(
             booking=booking,
@@ -618,6 +635,15 @@ def _execute_cancel_booking(
     one_side_cancellation: bool = False,
     author_id: int | None = None,
 ) -> bool:
+    """
+    TODO (tcoudray-pass, 13/5/25) Refactor this function: It does not follow our pattern
+    What it does:
+        - (DB) Update booking object
+        - (External Call) Make call to ticketing service if booking.isExternal
+        - (DB) Add finance event
+        - (DB) Update stock quantity
+        - (Check) Check stock quantity is valid
+    """
     with transaction():
         with db.session.no_autoflush:
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
@@ -751,6 +777,13 @@ def _cancel_bookings_from_stock(
 
 
 def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booking) -> None:
+    """
+    What it does :
+        - (Check) Check user is beneficiary -> TODO: (tcoudray-pass, 18/05/26) remove since it is useless (https://passculture.atlassian.net/browse/PC-41896)
+        - (Check) Check user can cancel booking -> TODO: (tcoudray-pass, 18/05/26) Remplacer par check_booking_can_be_cancelled (https://passculture.atlassian.net/browse/PC-41897)
+        - Call _cancel_booking
+        - (Async task) Send email to offerer
+    """
     if not user.is_beneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
@@ -759,6 +792,13 @@ def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booki
 
 
 def cancel_booking_by_offerer(booking: models.Booking) -> None:
+    """
+    What it does :
+        - (Check) Check booking can be cancelled
+        - Call _cancel_booking
+        - (Async task) Send email to offerer
+        - (Async task) Send email to beneficiary
+    """
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
@@ -793,6 +833,14 @@ def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[mode
 
 
 def cancel_booking_for_fraud(booking: models.Booking, reason: users_constants.SuspensionReason) -> None:
+    """
+    What it does :
+        - (Check) Check booking can be cancelled
+        - Call _cancel_booking
+        - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
+        of the fraud reason
+        - (Async task) Send email to offerer (and beneficiary)
+    """
     validation.check_booking_can_be_cancelled(booking)
     cancelled = _cancel_booking(
         booking,
@@ -809,6 +857,14 @@ def cancel_booking_for_fraud(booking: models.Booking, reason: users_constants.Su
 
 
 def cancel_booking_on_user_requested_account_suspension(booking: models.Booking) -> None:
+    """
+    What it does :
+        - (Check) Check booking can be cancelled
+        - Call _cancel_booking
+        - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
+        of that it was a user-requested account suspension
+        - (Async task) Send email to offerer and beneficiary
+    """
     validation.check_booking_can_be_cancelled(booking)
     cancelled = _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY)
     if not cancelled:
@@ -821,6 +877,15 @@ def cancel_booking_on_user_requested_account_suspension(booking: models.Booking)
 
 
 def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | None = None) -> None:
+    """
+    What it does :
+        - (Check) Check booking can be cancelled
+        - Call _cancel_booking
+        - (DB) Cancel booking uniterally if external cancellatio has failed
+        - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
+        of that it was a cancellation caused by offerer closing
+        - (Async task) Send email to offerer and beneficiary -> TODO (tcoudray-pass, 18/05/26) : Remove because it wont trigger any mailing (https://passculture.atlassian.net/browse/PC-41898)
+    """
     validation.check_booking_can_be_cancelled(booking)
     try:
         cancelled = _cancel_booking(booking, models.BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id)
