@@ -76,7 +76,8 @@ QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
     )
 )
 
-CUSTODIAN_NOT_FOUND_FIXTURE = {
+# 404 response
+APPLICATION_NOT_FOUND_FIXTURE = {
     "errors": [
         {
             "code": "37003",
@@ -84,6 +85,30 @@ CUSTODIAN_NOT_FOUND_FIXTURE = {
             "meta": {"provider": "CNAV"},
             "source": None,
             "title": "Dossier allocataire absent CNAV",
+        }
+    ]
+}
+
+# 422 response
+PERSON_NOT_FOUND_FIXTURE = {
+    "errors": [
+        {
+            "code": "00355",
+            "title": "Impossible d'identifier l'allocataire",
+            "detail": "Les paramètres fournis ne permettent pas d'identifier un allocataire.",
+            "meta": {},
+        }
+    ]
+}
+
+# 502 response
+DATA_PROVIDER_ERROR = {
+    "errors": [
+        {
+            "code": "36000",
+            "title": "Erreur interne du fournisseur de données",
+            "detail": "La réponse retournée par le fournisseur de données est invalide et a été identifié comme étant une erreur interne. Si le problème persiste, consultez la page de status ou contactez nous sur le support.",
+            "meta": {"provider": "Sécurité sociale"},
         }
     ]
 }

@@ -609,7 +609,7 @@ class AccountTest:
                 subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
             ),
             (
-                subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND,
+                subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
                 subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
             ),
         ],
