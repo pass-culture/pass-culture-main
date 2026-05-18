@@ -396,36 +396,22 @@ def get_venue_headline_offer(
     return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(venue_headline_offer)
 
 
-@private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])
+@private_api.route("/offerers/<int:offerer_id>/synchronize-onboarding", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
-    response_model=offerers_serialize.OffererEligibilityResponseModel,
     api=blueprint.pro_private_schema,
-    on_success_status=200,
+    on_success_status=204,
 )
-def get_offerer_eligibility(
-    offerer_id: int,
-) -> offerers_serialize.OffererEligibilityResponseModel:
+def synchronize_offerer_onboarding(offerer_id: int) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     try:
-        is_allowed_on_adage = api.is_allowed_on_adage(offerer_id)
-        if is_allowed_on_adage:
-            return offerers_serialize.OffererEligibilityResponseModel(
-                offerer_id=offerer_id,
-                has_adage_id=False,
-                has_ds_application=None,
-                is_onboarded=True,
-            )
-        has_adage_id = api.synchronize_from_adage_and_check_registration(offerer_id)
+        if api.is_allowed_on_adage(offerer_id):
+            return
+        has_adage_id: bool | None = api.synchronize_from_adage_and_check_registration(offerer_id)
         if has_adage_id:
-            return offerers_serialize.OffererEligibilityResponseModel(
-                offerer_id=offerer_id,
-                has_adage_id=has_adage_id,
-                has_ds_application=None,
-                is_onboarded=True,
-            )
+            return
     except (educational_exceptions.AdageException, requests.exceptions.RequestException) as exception:
         has_adage_id = None
         logger.error(
@@ -437,7 +423,7 @@ def get_offerer_eligibility(
         )
 
     try:
-        has_ds_application = api.synchronize_from_ds_and_check_application(offerer_id)
+        has_ds_application: bool | None = api.synchronize_from_ds_and_check_application(offerer_id)
     except Exception as exception:
         has_ds_application = None
         logger.error(
@@ -450,10 +436,3 @@ def get_offerer_eligibility(
 
     if has_adage_id is None and has_ds_application is None:
         raise ApiErrors(errors={"eligibility": ["Le statut de la structure n'a pas pu être vérifié"]}, status_code=400)
-
-    return offerers_serialize.OffererEligibilityResponseModel(
-        offerer_id=offerer_id,
-        has_adage_id=has_adage_id,
-        has_ds_application=has_ds_application,
-        is_onboarded=is_allowed_on_adage or has_adage_id or has_ds_application,
-    )

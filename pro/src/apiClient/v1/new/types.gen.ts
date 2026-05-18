@@ -4684,28 +4684,6 @@ export enum OfferStatus {
 }
 
 /**
- * OffererEligibilityResponseModel
- */
-export type OffererEligibilityResponseModel = {
-    /**
-     * Hasadageid
-     */
-    hasAdageId: boolean | null;
-    /**
-     * Hasdsapplication
-     */
-    hasDsApplication: boolean | null;
-    /**
-     * Isonboarded
-     */
-    isOnboarded: boolean | null;
-    /**
-     * Offererid
-     */
-    offererId: number;
-};
-
-/**
  * OffererMemberStatus
  */
 export enum OffererMemberStatus {
@@ -8826,37 +8804,6 @@ export type patchOfferersByOffererIdBankAccountsByBankAccountIdResponses = {
 
 export type patchOfferersByOffererIdBankAccountsByBankAccountIdResponse = patchOfferersByOffererIdBankAccountsByBankAccountIdResponses[keyof patchOfferersByOffererIdBankAccountsByBankAccountIdResponses];
 
-export type getOfferersByOffererIdEligibilityData = {
-    body?: never;
-    path: {
-        offerer_id: number;
-    };
-    query?: never;
-    url: '/offerers/{offerer_id}/eligibility';
-};
-
-export type getOfferersByOffererIdEligibilityErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getOfferersByOffererIdEligibilityError = getOfferersByOffererIdEligibilityErrors[keyof getOfferersByOffererIdEligibilityErrors];
-
-export type getOfferersByOffererIdEligibilityResponses = {
-    /**
-     * OK
-     */
-    200: OffererEligibilityResponseModel;
-};
-
-export type getOfferersByOffererIdEligibilityResponse = getOfferersByOffererIdEligibilityResponses[keyof getOfferersByOffererIdEligibilityResponses];
-
 export type postOfferersByOffererIdInviteData = {
     body: InviteMemberQueryModel;
     path: {
@@ -8982,6 +8929,37 @@ export type getOfferersByOffererIdOffererAddressesResponses = {
 };
 
 export type getOfferersByOffererIdOffererAddressesResponse = getOfferersByOffererIdOffererAddressesResponses[keyof getOfferersByOffererIdOffererAddressesResponses];
+
+export type postOfferersByOffererIdSynchronizeOnboardingData = {
+    body?: never;
+    path: {
+        offerer_id: number;
+    };
+    query?: never;
+    url: '/offerers/{offerer_id}/synchronize-onboarding';
+};
+
+export type postOfferersByOffererIdSynchronizeOnboardingErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postOfferersByOffererIdSynchronizeOnboardingError = postOfferersByOffererIdSynchronizeOnboardingErrors[keyof postOfferersByOffererIdSynchronizeOnboardingErrors];
+
+export type postOfferersByOffererIdSynchronizeOnboardingResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type postOfferersByOffererIdSynchronizeOnboardingResponse = postOfferersByOffererIdSynchronizeOnboardingResponses[keyof postOfferersByOffererIdSynchronizeOnboardingResponses];
 
 export type getOfferersByOffererIdV2StatsData = {
     body?: never;

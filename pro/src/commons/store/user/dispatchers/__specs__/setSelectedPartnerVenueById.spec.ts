@@ -403,4 +403,131 @@ describe('setSelectedPartnerVenueById', () => {
 
     expect(setSelectedAdminOffererByIdSpy).not.toHaveBeenCalled()
   })
+
+  describe('shouldRefresh', () => {
+    it('should bypass the same-venue early-return and refetch venue + offerer when shouldRefresh is true', async () => {
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: 201,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({
+            id: 200,
+          }),
+          isOnboarded: true,
+        })
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        isOnboarded: true,
+      })
+
+      const store = configureTestStore(storeDataBase)
+
+      await store
+        .dispatch(
+          setSelectedPartnerVenueById({
+            nextSelectedPartnerVenueId: 201,
+            shouldAlignSelectedAdminOfferer: false,
+            shouldRefresh: true,
+          })
+        )
+        .unwrap()
+
+      expect(api.getVenue).toHaveBeenCalledExactlyOnceWith(201)
+      expect(api.getOfferer).toHaveBeenCalledExactlyOnceWith(200)
+
+      const state = store.getState()
+      expect(state.user.access).toBe('full')
+      expect(state.user.selectedPartnerVenue?.id).toBe(201)
+      expect(state.user.selectedPartnerVenue?.isOnboarded).toBe(true)
+    })
+
+    it('should realign the selected admin offerer when shouldRefresh is true and the refreshed venue belongs to the currently selected admin offerer', async () => {
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: 201,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({
+            id: 200,
+          }),
+        })
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        isOnboarded: true,
+      })
+      const setSelectedAdminOffererByIdSpy = vi.spyOn(
+        setSelectedAdminOffererByIdModule,
+        'setSelectedAdminOffererById'
+      )
+
+      const store = configureTestStore({
+        ...storeDataBase,
+        user: {
+          ...storeDataBase.user!,
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
+            id: 200,
+          },
+        },
+      })
+
+      await store
+        .dispatch(
+          setSelectedPartnerVenueById({
+            nextSelectedPartnerVenueId: 201,
+            shouldAlignSelectedAdminOfferer: false,
+            shouldRefresh: true,
+          })
+        )
+        .unwrap()
+
+      expect(setSelectedAdminOffererByIdSpy).toHaveBeenCalledExactlyOnceWith(
+        200
+      )
+    })
+
+    it('should not realign the selected admin offerer when shouldRefresh is true but the refreshed venue belongs to a different offerer than the selected admin offerer', async () => {
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: 201,
+          managingOfferer: makeGetVenueManagingOffererResponseModel({
+            id: 200,
+          }),
+        })
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 200,
+        isOnboarded: true,
+      })
+      const setSelectedAdminOffererByIdSpy = vi.spyOn(
+        setSelectedAdminOffererByIdModule,
+        'setSelectedAdminOffererById'
+      )
+
+      const store = configureTestStore({
+        ...storeDataBase,
+        user: {
+          ...storeDataBase.user!,
+          selectedAdminOfferer: {
+            ...defaultGetOffererResponseModel,
+            id: 100,
+          },
+        },
+      })
+
+      await store
+        .dispatch(
+          setSelectedPartnerVenueById({
+            nextSelectedPartnerVenueId: 201,
+            shouldAlignSelectedAdminOfferer: false,
+            shouldRefresh: true,
+          })
+        )
+        .unwrap()
+
+      expect(setSelectedAdminOffererByIdSpy).not.toHaveBeenCalled()
+    })
+  })
 })

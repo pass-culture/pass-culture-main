@@ -29,12 +29,17 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
     nextSelectedPartnerVenueId: number
     // We want to keep that prop mandatory to make related UX rules explicit
     shouldAlignSelectedAdminOfferer: boolean
+    shouldRefresh?: boolean
   },
   AppThunkApiConfig
 >(
   'user/setSelectedPartnerVenueById',
   async (
-    { nextSelectedPartnerVenueId, shouldAlignSelectedAdminOfferer },
+    {
+      nextSelectedPartnerVenueId,
+      shouldAlignSelectedAdminOfferer,
+      shouldRefresh,
+    },
     { dispatch, getState }
   ) => {
     try {
@@ -43,7 +48,10 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       const offererNames = state.user.offererNames
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedPartnerVenue = state.user.selectedPartnerVenue
-      if (nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id) {
+      if (
+        !shouldRefresh &&
+        nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id
+      ) {
         return {
           selectedPartnerVenue: previousSelectedPartnerVenue,
           newUserAccess: state.user.access,
@@ -88,7 +96,14 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         dispatch(updateUserAccess(nextUserAccess))
       }
 
-      if (shouldAlignSelectedAdminOfferer) {
+      if (
+        shouldAlignSelectedAdminOfferer ||
+        // When we explicitely refresh a previously selected partner venue,
+        // we also want to refresh its corresponding selected admin offerer IF they were aligned
+        (shouldRefresh &&
+          nextSelectedPartnerVenue.managingOfferer.id ===
+            state.user.selectedAdminOfferer?.id)
+      ) {
         await dispatch(
           setSelectedAdminOffererById(
             nextSelectedPartnerVenue.managingOfferer.id

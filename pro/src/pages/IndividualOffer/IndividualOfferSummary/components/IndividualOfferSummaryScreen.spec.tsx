@@ -565,13 +565,10 @@ describe('IndividualOfferSummaryScreen', () => {
         ).toBeInTheDocument()
       })
       expect(
-        screen.getByRole('link', {
-          name: 'Ajouter un compte bancaire',
+        screen.getByRole('button', {
+          name: /Vous allez être redirigé vers la page d'administration de vos informations bancaires/,
         })
-      ).toHaveAttribute(
-        'href',
-        `/administration/remboursements/informations-bancaires?structure=${expectedOffererId}`
-      )
+      ).toBeInTheDocument()
     })
 
     it('should not display redirect modal when the partner venue already has a bank account', async () => {

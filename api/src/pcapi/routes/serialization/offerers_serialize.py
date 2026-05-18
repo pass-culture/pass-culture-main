@@ -394,13 +394,6 @@ class GetOffererAddressesQueryModel(HttpQueryParamsModel):
     with_offers_option: offerers_schemas.GetOffererAddressesWithOffersOption | None = None
 
 
-class OffererEligibilityResponseModel(HttpBodyModel):
-    offerer_id: int
-    has_adage_id: bool | None
-    has_ds_application: bool | None
-    is_onboarded: bool | None
-
-
 class TopOffersByConsultationModel(HttpBodyModel):
     offerId: str
     totalViewsLast30Days: int
