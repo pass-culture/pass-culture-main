@@ -1,3 +1,4 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
@@ -59,4 +60,8 @@
       content: "”";
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

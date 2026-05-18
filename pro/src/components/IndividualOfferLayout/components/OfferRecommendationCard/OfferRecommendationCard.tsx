@@ -69,6 +69,9 @@ export const OfferRecommendationCard = ({
       {hasRecommendation && (
         <p className={styles['recommendation-card-recommendation']}>
           {truncateAtWord(proAdvice.content, 60)}
+          <span className={styles['visually-hidden']}>
+            {'pour tout afficher, cliquez sur modifier'}
+          </span>
         </p>
       )}
       <div>
