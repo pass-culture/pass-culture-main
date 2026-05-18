@@ -14,6 +14,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -132,7 +133,9 @@ export const IndividualOfferPriceTableScreen = ({
                   {...form.register('isDuo')}
                   checked={Boolean(form.watch('isDuo'))}
                   disabled={
-                    isOfferDisabled(offer) || hasPublishedOfferWithSameEan
+                    isOfferDisabled(offer) ||
+                    hasPublishedOfferWithSameEan ||
+                    isOfferSynchronized(offer)
                   }
                 />
               </FormLayout.Section>
