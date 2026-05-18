@@ -214,3 +214,11 @@ def delete_expired_jwt() -> None:
     db.session.query(users_models.NativeUserSession).filter(
         users_models.NativeUserSession.expirationDatetime < date_utils.get_naive_utc_now()
     ).delete(synchronize_session=False)
+
+
+def disconnect_native_user_sessions(user_id: int) -> int:
+    return (
+        db.session.query(users_models.NativeUserSession)
+        .filter(users_models.NativeUserSession.userId == user_id)
+        .delete(synchronize_session=False)
+    )

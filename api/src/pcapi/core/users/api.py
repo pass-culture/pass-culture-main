@@ -397,6 +397,7 @@ def suspend_account(
         )
 
         sessions.disconnect_user_session(user_id=user.id)
+        sessions.disconnect_native_user_sessions(user_id=user.id)
 
         if user.backoffice_profile:
             user.backoffice_profile.roles = []
