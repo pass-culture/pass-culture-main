@@ -1106,7 +1106,7 @@ def get_batch_edit_offer_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_edit_offer"),
+        dst=url_for("backoffice_web.offer.batch_edit_offer", origin=request.args.get("origin"), nbResults=len(offers)),
         div_id="batch-edit-offer-modal",
         title="Édition des offres",
         button_text="Enregistrer les modifications",
