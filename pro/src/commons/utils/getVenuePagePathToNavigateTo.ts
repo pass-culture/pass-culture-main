@@ -1,10 +1,12 @@
 export const getVenuePagePathToNavigateTo = (
   subPath: '' | '/edition' | '/parametres' = ''
 ) => {
+  const cleanPathname = location.pathname.replace(/\/(edition|parametres)$/, '')
+
   const pathName =
-    location.pathname.includes('page-partenaire') ||
-    location.pathname.includes('page-collective')
-      ? location.pathname
+    cleanPathname.includes('page-partenaire') ||
+    cleanPathname.includes('page-collective')
+      ? cleanPathname
       : '/partenaire/page-individuelle'
 
   return `${pathName}${subPath}`
