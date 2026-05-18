@@ -133,6 +133,9 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS = (
         "Activer le backend de tâches asynchrones Celery pour la vérification automatique des entités juridiques"
     )
+    WIP_ASYNCHRONOUS_CELERY_BATCH = (
+        "Activer le backend de tâches asynchrones Celery pour la synchro et les notifs Batch"
+    )
     WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
         "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
     )
@@ -208,6 +211,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,

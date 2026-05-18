@@ -12,6 +12,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import commands as bookings_commands
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as notifications_testing
 from pcapi.core.external.batch import transactional_notifications
@@ -171,6 +172,29 @@ class SendTodayEventsNotificationsTest:
 
         user_ids = {user_id for data in notifications_testing.requests for user_id in data["user_ids"]}
         assert user_ids == {user1.id, user2.id}
+
+
+@pytest.mark.usefixtures("db_session")
+class NotifyUsersBookingsNotRetrievedTest:
+    @pytest.mark.settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
+    def test_notify_users_bookings_not_retrieved(self) -> None:
+        user = users_factories.BeneficiaryGrant18Factory()
+        stock = offers_factories.ThingStockFactory()
+        creation_date = date_utils.get_naive_utc_now() - BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
+
+        # booking that will expire in three days
+        booking = bookings_factories.BookingFactory(user=user, stock=stock, dateCreated=creation_date)
+
+        transactional_notifications.notify_users_bookings_not_retrieved()
+        assert len(notifications_testing.requests) == 1
+
+        data = notifications_testing.requests[0]
+        assert data["user_ids"] == [booking.userId]
+        assert data["message"]["title"] == "Tu n'as pas récupéré ta réservation"
+        assert (
+            data["message"]["body"]
+            == f'Vite, il ne te reste plus que 3 jours pour récupérer "{booking.stock.offer.name}"'
+        )
 
 
 @pytest.mark.usefixtures("db_session")
