@@ -1,5 +1,6 @@
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
+import { truncateAtWord } from '@/commons/utils/string'
 import { Markdown } from '@/components/Markdown/Markdown'
 
 import style from './OfferAppPreview.module.scss'
@@ -14,13 +15,6 @@ export const OfferAppPreview = ({
   offer,
 }: OfferAppPreviewProps): JSX.Element => {
   const image = getIndividualOfferImage(offer)
-
-  const cropPreviewText = (text: string, maxLength = 300): string => {
-    if (text.trim().length > maxLength) {
-      return `${text.slice(0, maxLength)}...`
-    }
-    return text
-  }
 
   return (
     <div className={style['offer-preview-container']}>
@@ -39,7 +33,7 @@ export const OfferAppPreview = ({
       <div className={style['offer-data-container']}>
         {offer.name && (
           <div className={style['offer-title']}>
-            {cropPreviewText(offer.name, 90)}
+            {truncateAtWord(offer.name, 90)}
           </div>
         )}
 
@@ -64,7 +58,7 @@ export const OfferAppPreview = ({
             address={offer.location}
             withdrawalDetails={
               offer.withdrawalDetails
-                ? cropPreviewText(offer.withdrawalDetails)
+                ? truncateAtWord(offer.withdrawalDetails, 300)
                 : undefined
             }
           />

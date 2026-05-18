@@ -1,5 +1,7 @@
 import DOMPurify from 'dompurify'
 
+import { truncateAtWord } from '@/commons/utils/string'
+
 import styles from './Markdown.module.scss'
 
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
@@ -18,17 +20,6 @@ function markdownToHtml(markdown: string) {
   return markdown.replace(EMAIL_REGEXP, (email) => {
     return `<a href="mailto:${email}">${email}</a>`
   })
-}
-
-const cropText = (
-  text: string,
-  maxLength: number,
-  croppedTextEnding: string = '...'
-): string => {
-  if (text.trim().length > maxLength) {
-    return `${text.slice(0, maxLength)}${croppedTextEnding}`
-  }
-  return text
 }
 
 export const Markdown = ({
@@ -58,7 +49,7 @@ export const Markdown = ({
         __html:
           maxLength === undefined
             ? html
-            : cropText(html, maxLength, croppedTextEnding),
+            : truncateAtWord(html, maxLength, croppedTextEnding),
       }}
     />
   )

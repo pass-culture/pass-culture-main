@@ -70,6 +70,32 @@ describe('OfferRecommendationCard', () => {
         screen.getByRole('button', { name: 'Modifier' })
       ).toBeInTheDocument()
     })
+
+    it('should truncate recommendation content longer than 68 characters at a word boundary', async () => {
+      const longContent =
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+
+      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+        proAdvice: {
+          content: longContent,
+          author: 'Jean-Mi',
+          updatedAt: '',
+        },
+      })
+
+      renderOfferRecommendationCard()
+
+      await waitFor(() => {
+        expect(screen.getByText('Votre recommandation :')).toBeInTheDocument()
+      })
+
+      expect(screen.queryByText(longContent)).not.toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed...'
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   it('should open the modal when clicking the creation button', async () => {

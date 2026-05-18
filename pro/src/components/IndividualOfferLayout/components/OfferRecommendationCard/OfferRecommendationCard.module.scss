@@ -46,10 +46,8 @@
 
     font-style: italic;
     margin: 0;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    hyphens: auto;
+    overflow-wrap: break-word;
     border-left: rem.torem(3px) var(--color-border-decorative04) solid;
     padding-left: var(--size-spacing-s);
 
