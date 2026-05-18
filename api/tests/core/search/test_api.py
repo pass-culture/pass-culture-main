@@ -15,6 +15,8 @@ from pcapi.core.artist import models as artists_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.factories import create_collective_offer_template_by_status
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search import redis_queues
@@ -668,3 +670,23 @@ def test_booking_count_for_movies():
         search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"].get("last30DaysBookings")
         == 1
     )
+
+
+def test_reindex_collective_offer_template_ids():
+    offer_by_status = {
+        status: create_collective_offer_template_by_status(status)
+        for status in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES
+    }
+    ids = [offer.id for offer in offer_by_status.values()]
+
+    num_queries = 1  # select offers
+    num_queries += 1  # selectinload domains
+    with assert_num_queries(num_queries):
+        search._reindex_collective_offer_template_ids(backend=search._get_backend(), collective_offer_template_ids=ids)
+
+    # only published and ended offers satisfy CollectiveOfferTemplate.is_eligible_for_search
+    indexed_offers = search_testing.search_store[settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME]
+    assert indexed_offers.keys() == {
+        f"T-{offer_by_status[educational_models.CollectiveOfferDisplayedStatus.PUBLISHED].id}",
+        f"T-{offer_by_status[educational_models.CollectiveOfferDisplayedStatus.ENDED].id}",
+    }
