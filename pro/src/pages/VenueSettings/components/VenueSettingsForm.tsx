@@ -69,16 +69,12 @@ export const VenueSettingsForm = ({
   return (
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
-      {!venue.isVirtual && (
-        <OffersSynchronization venueProviders={venueProviders} venue={venue} />
-      )}
+      <OffersSynchronization venueProviders={venueProviders} venue={venue} />
       <FormLayout fullWidthActions>
         <FormLayout.Section title="Informations administratives">
-          {!venue.isVirtual && (
-            <FormLayout.Row>
-              <SiretOrCommentFields formContext={formContext} />
-            </FormLayout.Row>
-          )}
+          <FormLayout.Row>
+            <SiretOrCommentFields formContext={formContext} />
+          </FormLayout.Row>
 
           <FormLayout.Row mdSpaceAfter>
             <TextInput
@@ -89,41 +85,35 @@ export const VenueSettingsForm = ({
             />
           </FormLayout.Row>
 
-          {!venue.isVirtual && (
-            <>
-              <FormLayout.Row mdSpaceAfter>
-                <TextInput
-                  {...register('publicName')}
-                  label="Nom public"
-                  description="À remplir si différent de la raison sociale. En le
-                    remplissant, c’est ce dernier qui sera visible du public."
-                />
-              </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              {...register('publicName')}
+              label="Nom public"
+              description="À remplir si différent de la raison sociale. En le
+                remplissant, c’est ce dernier qui sera visible du public."
+            />
+          </FormLayout.Row>
 
-              <AddressFields
-                addressRegister={register('addressAutocomplete')}
-                disabled={disabled}
-                onAddressChosen={onAddressSelect}
-                error={errors.addressAutocomplete?.message}
-                renderManual={() => <AddressManual />}
-                manual={manuallySetAddress}
-                onManualChange={toggleManuallySetAddress}
-              />
-            </>
-          )}
+          <AddressFields
+            addressRegister={register('addressAutocomplete')}
+            disabled={disabled}
+            onAddressChosen={onAddressSelect}
+            error={errors.addressAutocomplete?.message}
+            renderManual={() => <AddressManual />}
+            manual={manuallySetAddress}
+            onManualChange={toggleManuallySetAddress}
+          />
         </FormLayout.Section>
 
-        {!venue.isVirtual && <WithdrawalDetails />}
+        <WithdrawalDetails />
 
         <FormLayout.Section title="Notifications de réservations">
           <FormLayout.Row
             sideComponent={
-              venue.isVirtual ? null : (
-                <TipsBanner>
-                  Cette adresse s’appliquera par défaut à toutes vos offres,
-                  vous pourrez la modifier à l’échelle de chaque offre.
-                </TipsBanner>
-              )
+              <TipsBanner>
+                Cette adresse s’appliquera par défaut à toutes vos offres, vous
+                pourrez la modifier à l’échelle de chaque offre.
+              </TipsBanner>
             }
           >
             <TextInput
@@ -131,7 +121,6 @@ export const VenueSettingsForm = ({
               label="Adresse email"
               type="email"
               description="Format : email@exemple.com"
-              disabled={venue.isVirtual}
               error={errors.bookingEmail?.message}
             />
           </FormLayout.Row>

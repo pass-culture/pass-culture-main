@@ -12,7 +12,6 @@ describe('VenueSettingsValidationSchema', () => {
     isCaledonian: false,
     withSiret: true,
     siren: '123456789',
-    isVenueVirtual: false,
   }
 
   const baseFormValues: VenueSettingsFormValues = {
@@ -54,7 +53,6 @@ describe('VenueSettingsValidationSchema', () => {
       },
       context: {
         ...baseContext,
-        isVenueVirtual: false,
       },
       expectedErrors: [
         'Veuillez sélectionner une adresse parmi les suggestions',
@@ -65,24 +63,10 @@ describe('VenueSettingsValidationSchema', () => {
       formValues: {
         ...baseFormValues,
         addressAutocomplete: '',
-        manuallySetAddress: false,
-      },
-      context: {
-        ...baseContext,
-        isVenueVirtual: true,
-      },
-      expectedErrors: [],
-    },
-    {
-      description: 'valid - addressAutocomplete',
-      formValues: {
-        ...baseFormValues,
-        addressAutocomplete: '',
         manuallySetAddress: true,
       },
       context: {
         ...baseContext,
-        isVenueVirtual: false,
       },
       expectedErrors: [],
     },

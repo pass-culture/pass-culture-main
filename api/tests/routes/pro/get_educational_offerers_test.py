@@ -42,7 +42,6 @@ class GetEducationalOfferersTest:
                             "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
                             "city": venue_offerer_1.offererAddress.address.city,
                             "id": venue_offerer_1.id,
-                            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
                             "mentalDisabilityCompliant": venue_offerer_1.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_1.motorDisabilityCompliant,
                             "publicName": venue_offerer_1.publicName,
@@ -65,7 +64,6 @@ class GetEducationalOfferersTest:
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.offererAddress.address.city,
                             "id": venue_offerer_2.id,
-                            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
                             "publicName": venue_offerer_2.publicName,

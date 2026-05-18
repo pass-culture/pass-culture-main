@@ -166,7 +166,6 @@ class Returns200Test:
             "externalAccessibilityId": "accessibility-slug",
             "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
-            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             "managingOfferer": {
                 "id": venue.managingOfferer.id,
                 "isValidated": venue.managingOfferer.isValidated,

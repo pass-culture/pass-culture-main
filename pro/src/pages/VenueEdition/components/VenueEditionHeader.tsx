@@ -81,11 +81,7 @@ export const VenueEditionHeader = ({
           <div className={styles['venue-type']}>
             {venue.activity && getActivityLabel(venue.activity)}
           </div>
-          <h2 className={styles['venue-name']}>
-            {venue.isVirtual
-              ? `${venue.managingOfferer.name} (Offre numérique)`
-              : venue.publicName}
-          </h2>
+          <h2 className={styles['venue-name']}>{venue.publicName}</h2>
         </div>
 
         <div className={styles['venue-details-links']}>

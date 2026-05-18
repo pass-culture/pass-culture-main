@@ -59,7 +59,6 @@ const defaultFormValues: VenueSettingsFormValues = {
 const defaultFormContext: VenueSettingsFormContext = {
   isCaledonian: false,
   withSiret: true,
-  isVenueVirtual: false,
   siren: '12345678901234',
 }
 

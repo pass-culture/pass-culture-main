@@ -11,7 +11,7 @@ export const venueSettingsValidationSchema = yup
     manuallySetAddress: yup.boolean().nullable(),
     addressAutocomplete: yup
       .string()
-      .when(['$isVenueVirtual', 'manuallySetAddress'], (vals, schema) => {
+      .when(['manuallySetAddress'], (vals, schema) => {
         const [isVenueVirtual, manuallySetAddress] = vals as [boolean, boolean]
         if (!isVenueVirtual && !manuallySetAddress) {
           return schema.required(

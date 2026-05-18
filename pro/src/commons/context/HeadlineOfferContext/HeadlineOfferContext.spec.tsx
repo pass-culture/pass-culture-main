@@ -127,7 +127,6 @@ describe('HeadlineOfferContext', () => {
       venues: [
         makeVenueListItem({
           id: MOCK_DATA.headlineOffer.venueId,
-          isVirtual: false,
           isPermanent: true,
         }),
       ],
