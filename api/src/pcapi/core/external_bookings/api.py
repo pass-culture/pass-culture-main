@@ -51,7 +51,7 @@ EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SEC
 def cancel_tickets(barcodes: list[str], *, provider: providers_models.Provider, stock: offers_models.Stock) -> None:
     # Cinema ticket
     if provider.isCinemaProvider:
-        return cancel_booking(stock.offer.venueId, barcodes)
+        return cancel_cinema_ticket(stock.offer.venueId, barcodes)
 
     # Event with ticketing service ticket
     venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(stock.offer.venueId, provider.id)
@@ -65,7 +65,7 @@ def cancel_tickets(barcodes: list[str], *, provider: providers_models.Provider, 
     )
 
 
-def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
+def cancel_cinema_ticket(venue_id: int, barcodes: list[str]) -> None:
     client = _instantiate_cinema_api_client(venue_id)
     client.cancel_booking(barcodes)
 
