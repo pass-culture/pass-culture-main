@@ -25,6 +25,12 @@ import { IndividualOfferConfirmation } from './IndividualOfferConfirmation'
 
 window.open = vi.fn()
 
+vi.mock('qrcode.react', () => ({
+  QRCodeSVG: vi.fn(({ value }: { value: string }) => (
+    <div data-testid="qr-code" data-value={value} />
+  )),
+}))
+
 vi.mock('@/commons/utils/config', async () => {
   return {
     ...(await vi.importActual('@/commons/utils/config')),
@@ -109,54 +115,73 @@ describe('IndividualOfferConfirmation', () => {
   it('should display a pending message when offer is pending for validation', () => {
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    expect(
-      screen.getByRole('link', {
-        name: /Visualiser l’offre dans l’application/,
-      })
-    ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
-    expect(
-      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
-    expect(
-      screen.getByRole('link', { name: 'Voir la liste des offres' })
-    ).toHaveAttribute('href', `/offres`)
-  })
 
-  it('should display a pending message when offer is scheduled and pending for validation', () => {
-    offer.publicationDate = new Date(Date.now() + 3600).toISOString()
-    offer.status = OfferStatus.PENDING
-    renderOffer(contextOverride)
     expect(
-      screen.queryByText('Visualiser l’offre dans l’application', {
-        selector: 'a',
-      })
-    ).not.toBeInTheDocument()
+      screen.getByRole('heading', { name: /Offre en cours de validation/ })
+    ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
-    expect(
-      screen.getByRole('link', { name: 'Voir la liste des offres' })
-    ).toHaveAttribute('href', `/offres`)
+      screen.getByText(/Cette vérification pourra prendre jusqu’à 72h/)
+    ).toBeInTheDocument()
   })
 
   it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride)
+
     expect(
-      screen.getByRole('link', {
-        name: /Visualiser l’offre dans l’application/,
+      screen.getByRole('heading', {
+        name: /Votre offre a été publiée avec succès/,
       })
-    ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
-    expect(
-      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
+    ).toBeInTheDocument()
   })
 
-  it('should redirect to offer creation first step', () => {
-    renderOffer(contextOverride)
+  describe('preview section', () => {
+    it('should show the QR code block for an active offer', () => {
+      renderOffer(contextOverride)
 
-    expect(
-      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
+      expect(screen.getByTestId('qr-code')).toBeInTheDocument()
+      expect(
+        screen.getByText('Visualisez votre offre sur l’application')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Scannez le QR code ou cliquez ci-dessous')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Visualiser sur le web' })
+      ).toBeInTheDocument()
+    })
+
+    it('should hide the QR code block when the offer is scheduled in the future', () => {
+      offer.publicationDate = new Date(Date.now() + 3600 * 1000).toISOString()
+      renderOffer(contextOverride)
+
+      expect(screen.queryByTestId('qr-code')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Visualisez votre offre sur l’application')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Scannez le QR code ou cliquez ci-dessous')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should encode the offer URL with UTM params in the QR code', () => {
+      renderOffer(contextOverride)
+
+      expect(screen.getByTestId('qr-code')).toHaveAttribute(
+        'data-value',
+        `https://localhost/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_campaign=product`
+      )
+    })
+
+    it('should display the preview action links', () => {
+      renderOffer(contextOverride)
+
+      expect(
+        screen.getByRole('link', { name: 'Créer une nouvelle offre' })
+      ).toHaveAttribute('href', '/offre/individuelle/creation/description')
+      expect(
+        screen.getByRole('link', { name: 'Accéder à la liste des offres' })
+      ).toHaveAttribute('href', '/offres')
+    })
   })
 
   describe('enhancement cards section', () => {
