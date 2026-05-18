@@ -48,7 +48,7 @@ export const CumulatedViews = ({
   totalViewsLast30Days,
   showTitle = true,
 }: CumulatedViewsProps) => {
-  const sortedDailyViews = dailyViews.toSorted(
+  const sortedDailyViews = [...dailyViews].sort(
     (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
   )
 
