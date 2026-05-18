@@ -1521,8 +1521,8 @@ class CancelBookingTest:
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 0
 
-    @patch("pcapi.core.bookings.api._cancel_external_booking")
-    def test_unexpected_offer_provider(self, mocked_cancel_external_booking, client):
+    @patch("pcapi.core.external_bookings.api.cancel_tickets")
+    def test_unexpected_offer_provider(self, mocked_cancel_tickets, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
@@ -1540,7 +1540,7 @@ class CancelBookingTest:
         stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%4444#111/datetime")
         booking = booking_factories.BookingFactory(user=user, stock=stock)
         booking_factories.ExternalBookingFactory(booking=booking)
-        mocked_cancel_external_booking.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
+        mocked_cancel_tickets.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
 
         client = client.with_token(user)
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
@@ -1548,8 +1548,8 @@ class CancelBookingTest:
         assert response.status_code == 400
         assert response.json["external_booking"] == "L'annulation de réservation a échoué."
 
-    @patch("pcapi.core.bookings.api._cancel_external_booking")
-    def test_inactive_provider(self, mocked_cancel_external_booking, client):
+    @patch("pcapi.core.external_bookings.api.cancel_tickets")
+    def test_inactive_provider(self, mocked_cancel_tickets, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         cds_provider = providers_api.get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
@@ -1568,7 +1568,7 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory(user=user, stock=stock)
         booking_factories.ExternalBookingFactory(booking=booking)
 
-        mocked_cancel_external_booking.side_effect = InactiveProvider(
+        mocked_cancel_tickets.side_effect = InactiveProvider(
             f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
         )
 
