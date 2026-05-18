@@ -26,49 +26,49 @@ def create_offers_with_artists() -> None:
     )
 
     for venue in venue_list:
-        book_offer = offers_factories.OfferFactory(
+        book_offer = offers_factories.OfferFactory.create(
             venue=venue,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             name="Un chouette livre avec artiste 🦉",
         )
         offers_factories.StockFactory(offer=book_offer)
 
-        theater_offer = offers_factories.OfferFactory(
+        theater_offer = offers_factories.OfferFactory.create(
             venue=venue, subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, name="Une pièce sympa avec artiste 🪙"
         )
         offers_factories.StockFactory(offer=theater_offer)
 
         # Book offer, just 1 artist link, linked to an Artist()
-        author_artist = artist_factories.ArtistFactory()
+        author_artist = artist_factories.ArtistFactory.create()
         artist_factories.ArtistOfferLinkFactory(
-            artist=author_artist,
-            offer=book_offer,
+            artist_id=author_artist.id,
+            offer_id=book_offer.id,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
 
         # Theater offer, several links: 1 author link to an Artist()
         # + 1 stage director not linked to an Artist
         # + 2 performers, 1 linked to an Artist, 1 not linked
-        artist_factories.ArtistOfferLinkFactory(
-            artist=author_artist,
-            offer=theater_offer,
+        artist_factories.ArtistOfferLinkFactory.create(
+            artist_id=author_artist.id,
+            offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
-        stage_director_artist = artist_factories.ArtistFactory()
-        artist_factories.ArtistOfferLinkFactory(
-            artist=stage_director_artist,
-            offer=theater_offer,
+        stage_director_artist = artist_factories.ArtistFactory.create()
+        artist_factories.ArtistOfferLinkFactory.create(
+            artist_id=stage_director_artist.id,
+            offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.STAGE_DIRECTOR,
         )
-        performer_artist = artist_factories.ArtistFactory()
-        artist_factories.ArtistOfferLinkFactory(
-            artist=performer_artist,
-            offer=theater_offer,
+        performer_artist = artist_factories.ArtistFactory.create()
+        artist_factories.ArtistOfferLinkFactory.create(
+            artist_id=performer_artist.id,
+            offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.PERFORMER,
         )
-        artist_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory.create(
             custom_name="Michelle Vedette",
-            offer=theater_offer,
+            offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.PERFORMER,
         )
 

@@ -6,6 +6,7 @@ from flask import url_for
 
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.search.models import IndexationReason
@@ -31,19 +32,24 @@ class GetArtistDetailsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Expected queries:
-    # 2. Session + user
-    # 3. Artist with joinedload on products
+    # 1. Session + user
+    # 2. Artist with joinedload on products
+    # 3. selectinload on offers
     # 4. selectinload on aliases
-    expected_num_queries = 3
+    expected_num_queries = 4
 
     def test_get_artist_details_success(self, authenticated_client):
-        product1 = offers_factories.ProductFactory.create()
+        product1 = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offer = offers_factories.ThingOfferFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         artist = artist_factories.ArtistFactory.create(
             description="A famous artist.",
             biography="Born in a small town.",
             wikidata_id="Q12345",
             wikipedia_url="https://fr.wikipedia.org/wiki/Artist",
             products=[product1],
+        )
+        artist_factories.ArtistOfferLinkFactory(
+            artist_type=artist_models.ArtistType.PERFORMER, artist_id=artist.id, offer_id=offer.id
         )
         artist_factories.ArtistAliasFactory.create(artist=artist, artist_alias_name="Alias 1")
 
@@ -58,6 +64,20 @@ class GetArtistDetailsTest(GetEndpointHelper):
         assert "Born in a small town." in descriptions["Biographie Contenu généré par IA à partir de Wikipédia"]
         assert "Q12345" in descriptions["ID Wikidata"]
         assert "https://fr.wikipedia.org/wiki/Artist" in descriptions["URL Wikipédia"]
+
+        products = html_parser.extract_table_rows(response.data, parent_class="products-tab-pane")
+        assert len(products) == 1
+        assert products[0]["ID Produit"] == str(product1.id)
+        assert products[0]["Nom du produit"] == product1.name
+        assert products[0]["Catégorie"] == "Livre"
+        assert products[0]["Sous-catégorie"] == "Livre papier"
+
+        offers = html_parser.extract_table_rows(response.data, parent_class="offers-tab-pane")
+        assert len(offers) == 1
+        assert offers[0]["ID Offre"] == str(offer.id)
+        assert offers[0]["Nom de l'offre"] == offer.name
+        assert offers[0]["Catégorie"] == "Films, vidéos"
+        assert offers[0]["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
 
 
 class EditArtistButtonTest(button_helpers.ButtonHelper):
@@ -244,7 +264,7 @@ class LinkProductButtonTest(button_helpers.ButtonHelper):
 
 
 class GetAssociateProductFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.artist.associate_product_form"
+    endpoint = "backoffice_web.artist.get_associate_product_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 

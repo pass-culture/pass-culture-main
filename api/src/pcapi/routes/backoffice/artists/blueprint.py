@@ -302,6 +302,13 @@ def get_artist_details(artist_id: str) -> response_utils.BackofficeResponse:
                     offers_models.Product.subcategoryId,
                 )
             ),
+            sa_orm.selectinload(artist_models.Artist.offers).options(
+                sa_orm.load_only(
+                    offers_models.Offer.id,
+                    offers_models.Offer.name,
+                    offers_models.Offer.subcategoryId,
+                )
+            ),
             sa_orm.selectinload(artist_models.Artist.aliases).options(
                 sa_orm.load_only(artist_models.ArtistAlias.artist_alias_name)
             ),
@@ -316,6 +323,7 @@ def get_artist_details(artist_id: str) -> response_utils.BackofficeResponse:
         artist=artist,
         allowed_actions=_get_artist_details_actions(),
         action=ArtistDetailsActionType,
+        active_tab=request.args.get("active_tab", "info"),
     )
 
 
@@ -486,7 +494,7 @@ def post_unlink_product(artist_id: str, product_id: int) -> response_utils.Backo
 
 @artists_blueprint.route("/<string:artist_id>/associate-product", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
-def associate_product_form(artist_id: str) -> response_utils.BackofficeResponse:
+def get_associate_product_form(artist_id: str) -> response_utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
         raise NotFound()
@@ -536,7 +544,7 @@ def associate_product(artist_id: str) -> response_utils.BackofficeResponse:
             f"Aucun produit trouvé avec l'identifiant {id_value} ({id_type.value}). Veuillez vérifier l'identifiant et réessayer.",
             "warning",
         )
-        return redirect(url_for("backoffice_web.artist.associate_product_form", artist_id=artist_id))
+        return redirect(url_for("backoffice_web.artist.get_associate_product_form", artist_id=artist_id))
 
     confirm_form = forms.ConfirmAssociationForm()
     confirm_form.product_id.data = found_product.id
@@ -582,7 +590,9 @@ def confirm_association(artist_id: str) -> response_utils.BackofficeResponse:
     else:
         flash(response_utils.build_form_error_msg(confirm_form), "warning")
 
-    return redirect(url_for("backoffice_web.artist.get_artist_details", artist_id=artist_id), 303)
+    return redirect(
+        url_for("backoffice_web.artist.get_artist_details", artist_id=artist_id, active_tab="products"), 303
+    )
 
 
 @artists_blueprint.route("/<string:artist_id>/merge-form", methods=["GET"])
