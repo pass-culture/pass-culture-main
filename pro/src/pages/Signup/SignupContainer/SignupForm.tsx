@@ -7,8 +7,8 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
-import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -34,7 +34,7 @@ export const SignupForm = (): JSX.Element => {
     <>
       {isSignupSimulationEnabled && (
         <>
-          <RegistrationStepper />
+          <SignupStepper />
           <MainHeading
             mainHeading="Créez votre compte"
             className={styles['main-heading']}

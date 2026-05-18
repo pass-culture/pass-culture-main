@@ -24,13 +24,13 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
-import { RegistrationStepper } from '@/components/RegistrationStepper/RegistrationStepper'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
+import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -41,7 +41,6 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -201,7 +200,7 @@ export const OffererAuthentication = (): JSX.Element => {
     >
       {isSignupSimulationEnabled && (
         <>
-          <RegistrationStepper />
+          <SignupStepper />
           <MainHeading
             mainHeading="Votre structure"
             className={styles['main-heading']}
@@ -268,6 +267,13 @@ export const OffererAuthentication = (): JSX.Element => {
                   iconPosition={IconPositionEnum.LEFT}
                   icon={fullEditIcon}
                   label="Modifier le SIRET"
+                  onClick={() => {
+                    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+                      from: location.pathname,
+                      to: SIGNUP_STEP_IDS.STRUCTURE_SEARCH,
+                      used: 'Modifier le SIRET',
+                    })
+                  }}
                 />
               </div>
               <DescriptionList lines={venueLines} />
@@ -282,8 +288,8 @@ export const OffererAuthentication = (): JSX.Element => {
                   onClick={() => {
                     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                       from: location.pathname,
-                      to: REGISTRATION_STEP_IDS.ACTIVITY,
-                      used: SignupJourneyAction.ActionBar,
+                      to: SIGNUP_STEP_IDS.ACTIVITY,
+                      used: 'Continuer',
                     })
                   }}
                   disabled={methods.formState.isSubmitting}

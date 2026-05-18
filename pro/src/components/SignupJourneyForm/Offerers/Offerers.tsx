@@ -26,9 +26,9 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { REGISTRATION_STEP_IDS } from '@/components/RegistrationStepper/constants'
 import { generateVenueDataLines } from '@/components/SignupJourneyForm/Offerers/utils'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -236,8 +236,8 @@ export const Offerers = (): JSX.Element => {
               setOfferer(null)
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
-                to: REGISTRATION_STEP_IDS.SIRET,
-                used: SignupJourneyAction.ActionBar,
+                to: SIGNUP_STEP_IDS.STRUCTURE_SEARCH,
+                used: 'Retour',
               })
             }}
             to="/inscription/structure/recherche"

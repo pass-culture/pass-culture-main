@@ -1,3 +1,6 @@
+/**
+ * @deprecated Once `WIP_PRE_SIGNUP_SIMULATION` is switched on, use `SIGNUP_STEP_IDS` instead !
+ */
 export enum SIGNUP_JOURNEY_STEP_IDS {
   OFFERER = 'structure',
   OFFERERS = 'structures',

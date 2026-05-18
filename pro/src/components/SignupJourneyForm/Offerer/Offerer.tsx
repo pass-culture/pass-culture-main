@@ -36,6 +36,7 @@ import {
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -101,10 +102,15 @@ export const Offerer = (): JSX.Element => {
 
   const navigateToNextStep = useCallback(
     (hasVenueWithSiret: boolean): { to: string; path: string } => {
+      const ATTACHEMENT = isSignupSimulationEnabled
+        ? SIGNUP_STEP_IDS.STRUCTURE_ATTACHEMENT
+        : SIGNUP_JOURNEY_STEP_IDS.OFFERERS
+      const IDENTIFICATION = isSignupSimulationEnabled
+        ? SIGNUP_STEP_IDS.STRUCTURE_IDENTIFICATION
+        : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION
+
       const redirection = {
-        to: hasVenueWithSiret
-          ? SIGNUP_JOURNEY_STEP_IDS.OFFERERS
-          : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        to: hasVenueWithSiret ? ATTACHEMENT : IDENTIFICATION,
         path: hasVenueWithSiret
           ? '/inscription/structure/rattachement'
           : '/inscription/structure/identification',
@@ -113,7 +119,7 @@ export const Offerer = (): JSX.Element => {
 
       return redirection
     },
-    [navigate]
+    [navigate, isSignupSimulationEnabled]
   )
 
   useEffect(() => {
@@ -251,7 +257,9 @@ export const Offerer = (): JSX.Element => {
 
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         to,
-        used: SignupJourneyAction.ActionBar,
+        used: isSignupSimulationEnabled
+          ? 'Continuer'
+          : SignupJourneyAction.ActionBar,
       })
     } catch (error) {
       snackBar.error(
