@@ -72,6 +72,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "Private API.validate_user",  # → response.status_code = 404 (PATCH)
     "Public API.apple_app_site_association",  # → response.status_code = 200
     "Public API.asset_links",  # → response.status_code = 200
+    "Public API.check_structure",  # → response.status_code = 404
     "Public API.get_offers_by_tag",  # → response.status_code = 200
     "Public API.health_api",  # → response.status_code = 200
     "Public API.health_database",  # → response.status_code = 200

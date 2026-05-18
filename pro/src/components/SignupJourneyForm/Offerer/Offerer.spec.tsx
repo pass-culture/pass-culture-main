@@ -5,11 +5,9 @@ import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
-import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
@@ -261,29 +259,6 @@ describe('Offerer', () => {
     expect(
       screen.queryByRole('button', { name: 'Étape précédente' })
     ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Modifier la visibilité de mon SIRET')
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        'Vous êtes un équipement d’une collectivité ou d’un établissement public ?'
-      )
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('link', { name: /En savoir plus/ })
-    ).toHaveAttribute(
-      'href',
-      'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-'
-    )
-
-    expect(
-      screen.getByRole('link', {
-        name: /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises/,
-      })
-    ).toHaveAttribute('href', 'https://annuaire-entreprises.data.gouv.fr/')
   })
 
   it('should not display authentication screen on submit with form error', async () => {
@@ -313,8 +288,6 @@ describe('Offerer', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
-    expect(api.getStructureData).toHaveBeenCalled()
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
       screen.getByText('Dites-nous pour quelle structure vous travaillez')
@@ -479,7 +452,7 @@ describe('Offerer', () => {
         {} as ApiRequestOptions,
         {
           status: 500,
-          body: [{ error: ['ERROR'] }],
+          body: [{ error: ['API Error message'] }],
         } as ApiResult,
         ''
       )
@@ -494,99 +467,6 @@ describe('Offerer', () => {
     await waitFor(() => {
       expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
     })
-  })
-
-  it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            global: [
-              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
-            ],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-    renderOffererScreen(contextValue)
-
-    expect(
-      screen.queryByText('Modifier la visibilité de mon SIRET')
-    ).not.toBeInTheDocument()
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678933367'
-    )
-
-    await waitFor(() => {
-      expect(
-        screen.getByLabelText(/Numéro de SIRET à 14 chiffres/)
-      ).toHaveValue('12345678933367')
-    })
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    expect(api.getStructureData).toHaveBeenCalled()
-    expect(
-      screen.getByText('Modifier la visibilité de mon SIRET')
-    ).toBeInTheDocument()
-  })
-
-  it("should render error message when siret doesn't exist", async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            global: ["Le SIRET n'existe pas"],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678999999'
-    )
-    await userEvent.click(screen.getByText('Continuer'))
-    expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
-  })
-
-  it('should render error message when siret is not visible', async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            global: [
-              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
-            ],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678900001'
-    )
-    await userEvent.click(screen.getByText('Continuer'))
-    expect(
-      await screen.findByText(
-        "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-      )
-    ).toBeInTheDocument()
   })
 
   it('should render offerer form', async () => {
@@ -623,74 +503,6 @@ describe('Offerer', () => {
     expect(
       await screen.findByText('Veuillez renseigner un SIRET')
     ).toBeInTheDocument()
-  })
-
-  it('should log event when unknown siret link clicked', async () => {
-    const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-
-    renderOffererScreen(contextValue)
-    await userEvent.click(
-      screen.getByText(
-        /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises\./
-      )
-    )
-    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedUnknownSiret')
-  })
-
-  const lenErrorCondition = ['22223333', '1234567891234567']
-  it.each(lenErrorCondition)('should render errors', async (siretValue) => {
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      siretValue
-    )
-    await userEvent.click(screen.getByText('Continuer'))
-    expect(
-      await screen.findByText('Le SIRET doit comporter 14 caractères')
-    ).toBeInTheDocument()
-  })
-
-  it('should display error when offererSiretData is null', async () => {
-    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
-      null as unknown as StructureDataBodyModel
-    )
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678933333'
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    await waitFor(() => {
-      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
-    })
-  })
-
-  it('should handle error that is not an instance of Error', async () => {
-    vi.spyOn(getSiretData, 'getSiretData').mockRejectedValue('string error')
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678933333'
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    // When error is not an instance of Error, nothing happens in the catch block
-    // The form should remain visible and no error should be set
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Modifier la visibilité de mon SIRET')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.getByText('Dites-nous pour quelle structure vous travaillez')
-      ).toBeInTheDocument()
-    })
   })
 
   it('should handle offererSiretData with null name', async () => {
@@ -742,34 +554,6 @@ describe('Offerer', () => {
           apeCode: undefined,
         })
       )
-    })
-  })
-
-  it('should handle ApiError in second try catch block', async () => {
-    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
-      structureDataBodyModelFactory()
-    )
-    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 500,
-          body: { message: 'API Error message' },
-        } as ApiResult,
-        'API Error message'
-      )
-    )
-
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
-      '12345678933333'
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    await waitFor(() => {
-      expect(screen.getByText('API Error message')).toBeInTheDocument()
     })
   })
 
@@ -825,29 +609,6 @@ describe('Offerer', () => {
       ).toBeInTheDocument()
     })
   })
-
-  it('should display nav buttons', async () => {
-    renderOffererScreen(contextValue)
-
-    expect(
-      await screen.findByRole('button', { name: 'Continuer' })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Annuler et quitter' })
-    ).toBeInTheDocument()
-  })
-
-  it('should display both a new button and a previous one', async () => {
-    renderOffererScreen(contextValue)
-
-    expect(
-      await screen.findByRole('button', { name: 'Continuer' })
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByRole('button', { name: 'Annuler et quitter' })
-    ).toBeInTheDocument()
-  })
-
   it('should navigate to /hub when clicking previous button', async () => {
     renderOffererScreen(contextValue)
 

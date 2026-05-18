@@ -32,8 +32,31 @@ const getSiretDataRequest = async (
     throw new Error(error)
   }
   try {
-    const response = await api.getStructureData(siret)
-    return response
+    return await api.getStructureData(siret)
+  } catch (e) {
+    let message = 'Impossible de vérifier le SIRET saisi.'
+    if (isErrorAPIError(e) && e.status === 400) {
+      message = e.body
+      /* istanbul ignore next: DEBT, TO FIX */
+      if (e.body.global) {
+        message = e.body.global[0]
+      }
+    }
+    throw new Error(message)
+  }
+}
+
+const checkSiretRequest = async (humanSiret: string) => {
+  if (humanSiret === '') {
+    throw new Error('SIRET vide')
+  }
+  const siret = unhumanizeSiret(humanSiret || '')
+  const error = validateSiret(siret)
+  if (error) {
+    throw new Error(error)
+  }
+  try {
+    await api.checkStructure(siret)
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
@@ -49,3 +72,5 @@ const getSiretDataRequest = async (
 
 // TODO (igabriele, 2026-01-20): Over-engineered custom memoization.
 export const getSiretData = memoize(getSiretDataRequest)
+
+export const checkSiret = memoize(checkSiretRequest)

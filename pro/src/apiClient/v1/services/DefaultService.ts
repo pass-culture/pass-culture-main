@@ -2292,6 +2292,27 @@ export class DefaultService {
     });
   }
   /**
+   * check_structure <GET>
+   * @param searchInput
+   * @returns void
+   * @throws ApiError
+   */
+  public checkStructure(
+    searchInput: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/structure/check/{search_input}',
+      path: {
+        'search_input': searchInput,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
    * get_structure_data <GET>
    * @param searchInput
    * @returns StructureDataBodyModel OK

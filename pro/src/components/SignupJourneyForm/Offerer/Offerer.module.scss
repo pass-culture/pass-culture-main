@@ -2,8 +2,6 @@
 
 .subtitle {
   @include fonts.title3;
-}
 
-.input-siret {
-  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-xxl);
 }

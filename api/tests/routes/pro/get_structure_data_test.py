@@ -9,6 +9,7 @@ from pcapi.core.testing import assert_num_queries
 
 
 GET_STRUCTURE_DATA_URL = "/structure/search/"
+GET_CHECK_STRUCTURE_URL = "/structure/check/"
 DIFFUSIBLE_SIRET = "12345678900001"
 PARTIALLY_DIFFUSIBLE_SIRET = "92345678900001"
 INACTIVE_SIRET = "12349978900001"
@@ -73,23 +74,39 @@ class Returns200Test:
         assert found_structure.get("name") is None
         assert found_structure.get("location") is None
 
+    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
+    @pytest.mark.parametrize("route_path", [DIFFUSIBLE_SIRET, PARTIALLY_DIFFUSIBLE_SIRET])
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.TestingBackend")
+    def test_check_structure_by_siret(self, client, route_path):
+        response = client.get(f"{GET_CHECK_STRUCTURE_URL}{route_path}")
+        assert response.status_code == 204
 
+    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
+    @patch("pcapi.connectors.api_adresse.find_ban_address", side_effect=api_adresse.AdresseException())
+    @pytest.mark.parametrize("route_path", [DIFFUSIBLE_SIRET, PARTIALLY_DIFFUSIBLE_SIRET])
+    def test_check_structure_by_siret_with_no_address(self, _find_ban_address_mock, client, route_path):
+        response = client.get(f"{GET_CHECK_STRUCTURE_URL}{route_path}")
+        assert response.status_code == 204
+
+
+@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
+@pytest.mark.parametrize("route_url", [GET_STRUCTURE_DATA_URL, GET_CHECK_STRUCTURE_URL])
 class Returns400Test:
-    def test_search_structure_by_invalid_siret(self, client):
+    def test_search_structure_by_invalid_siret(self, client, route_url):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
 
-        response = client.get(f"{GET_STRUCTURE_DATA_URL}{INVALID_SIRET}")
+        response = client.get(f"{route_url}{INVALID_SIRET}")
 
         assert response.status_code == 400
         message = "Le format de ce SIREN ou SIRET est incorrect."
         assert response.json == {"global": [message]}
 
-    def test_search_inactive_siret(self, client):
+    def test_search_inactive_siret(self, client, route_url):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
 
-        response = client.get(f"{GET_STRUCTURE_DATA_URL}{INACTIVE_SIRET}")
+        response = client.get(f"{route_url}{INACTIVE_SIRET}")
 
         assert response.status_code == 400
         message = "Ce SIRET n'est pas actif."
@@ -99,11 +116,11 @@ class Returns400Test:
         "pcapi.connectors.entreprise.api.get_siret_open_data",
         side_effect=sirene_exceptions.UnknownEntityException(),
     )
-    def test_search_unknown_siret(self, _get_siret_open_data_mock, client):
+    def test_search_unknown_siret(self, _get_siret_open_data_mock, client, route_url):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
 
-        response = client.get(f"{GET_STRUCTURE_DATA_URL}{DIFFUSIBLE_SIRET}")
+        response = client.get(f"{route_url}{DIFFUSIBLE_SIRET}")
 
         assert response.status_code == 400
         message = "Le SIREN n’existe pas."
@@ -118,14 +135,25 @@ class Returns401Test:
         assert response.status_code == 401
 
 
+class Returns404Test:
+    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=False)
+    def test_disabled_ff(self, client):
+        with assert_num_queries(0):
+            response = client.get(f"{GET_CHECK_STRUCTURE_URL}{DIFFUSIBLE_SIRET}")
+
+        assert response.status_code == 404
+
+
+@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
+@pytest.mark.parametrize("route_url", [GET_STRUCTURE_DATA_URL, GET_CHECK_STRUCTURE_URL])
 class Returns500Test:
     @patch("pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.ApiUnavailable())
-    def test_unavailable_data_source(self, _get_siret_open_data_mock, client):
+    def test_unavailable_data_source(self, _get_siret_open_data_mock, client, route_url):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
 
         with assert_num_queries(1):
-            response = client.get(f"{GET_STRUCTURE_DATA_URL}{DIFFUSIBLE_SIRET}")
+            response = client.get(f"{route_url}{DIFFUSIBLE_SIRET}")
 
         assert response.status_code == 500
         message = (

@@ -8,11 +8,14 @@ from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
+from ...models import feature
 from . import blueprint
 
 
@@ -53,3 +56,25 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
         location=address,
         isDiffusible=data.diffusible,
     )
+
+
+@public_api.route("/structure/check/<search_input>", methods=["GET"])
+@atomic()
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def check_structure(search_input: str) -> None:
+    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
+        raise resource_not_found_error()
+    if not api_entreprise.is_valid_siret(search_input):
+        raise sirene_exceptions.InvalidFormatException()
+    try:
+        offerers_api.find_structure_data(search_input)
+    except offerers_exceptions.InactiveSirenException:
+        raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
+    except sirene_exceptions.NonPublicDataException:
+        raise ApiErrors(
+            errors={"global": ["Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public."]}
+        )
