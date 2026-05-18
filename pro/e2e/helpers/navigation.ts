@@ -60,5 +60,5 @@ export async function joinExistingVenueSpace(page: Page, siret: string) {
   await page.getByTestId('confirm-dialog-button-confirm').click()
   await postOfferersPromise
 
-  await page.getByText('Accéder à votre espace').click()
+  await page.getByText('Accéder à mon espace').click()
 }
