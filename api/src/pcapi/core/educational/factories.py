@@ -109,7 +109,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
                     offerer_id=venue.managingOffererId,
                     venue_id=venue.id,
                     address_id=venue.offererAddress.addressId,
-                    label=venue.publicName,
+                    label=None,
                 )
         return super()._create(model_class, *args, **kwargs)
 

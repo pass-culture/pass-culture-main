@@ -244,7 +244,7 @@ class Returns200Test:
 
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == oa.addressId
-        assert offer.offererAddress.label == offer.venue.publicName
+        assert offer.offererAddress.label == None
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -344,7 +344,7 @@ class Returns200Test:
         assert offer.venueId == other_venue.id
         assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
         assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.label == other_venue.publicName
+        assert offer.offererAddress.label == None
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

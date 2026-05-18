@@ -8,7 +8,7 @@ def get_venue_currency(venue: offerers_models.Venue) -> CurrencyEnum:
 
 
 def is_venue_address(offer_location: offerers_models.OffererAddress, venue: offerers_models.Venue) -> bool:
-    # TODO bdalbianco labelOA: delete label is none
+    # TODO bdalbianco labelOA: delete label is none when PC-40128 is done
     if offer_location.addressId == venue.offererAddress.addressId and (
         offer_location.label is None or offer_location.label == venue.publicName
     ):

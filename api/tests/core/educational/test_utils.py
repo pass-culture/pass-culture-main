@@ -92,7 +92,7 @@ class GetCollectiveOfferFullAddressTest:
         offer = factories.CollectiveOfferOnAddressVenueLocationFactory(venue__publicName="Nice venue")
         result = utils.get_collective_offer_full_address(offer)
 
-        assert result == f"Nice venue - {offer.offererAddress.address.fullAddress}"
+        assert result == offer.offererAddress.address.fullAddress
 
     def test_address_other(self):
         offer = factories.CollectiveOfferOnOtherAddressLocationFactory(offererAddress__label="Nice location")

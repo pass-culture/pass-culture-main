@@ -45,7 +45,7 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
             "COLLECTIVE_CANCELLATION_REASON": booking.cancellationReason.value,
             "BOOKING_ID": booking.id,
             "COLLECTIVE_OFFER_ID": booking.collectiveStock.collectiveOfferId,
-            "COLLECTIVE_OFFER_ADDRESS": f"{venue.publicName} - {booking.collectiveStock.collectiveOffer.offererAddress.address.fullAddress}",
+            "COLLECTIVE_OFFER_ADDRESS": booking.collectiveStock.collectiveOffer.offererAddress.address.fullAddress,
         }
 
     @time_machine.travel("2024-11-26 18:29:20")

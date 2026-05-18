@@ -288,7 +288,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
             offerer_id=venue.managingOffererId,
             venue_id=venue.id,
             address_id=venue.offererAddress.addressId,
-            label=venue.publicName,
+            label=None,
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
