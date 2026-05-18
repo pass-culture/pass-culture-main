@@ -14,14 +14,18 @@
         </div>
       {% endif %}
     </td>
-    <td>{{ links.build_artist_details_link(artist) }}</td>
+    <td data-pc-sort-table-value="{{ artist.name }}">{{ links.build_artist_details_link(artist) }}</td>
     <td>
       {% call badges.badges_container() %}
         {{ artist.is_blacklisted | format_artist_visibility_status }}
       {% endcall %}
     </td>
-    <td class="text-center">{{ row.products_count }}</td>
-    <td class="text-center">{{ row.aliases_count }}</td>
-    <td>{{ artist.date_created | format_date if artist.date_created else '-' }}</td>
+    <td class="text-center"
+        data-pc-sort-table-value="{{ row.products_count }}">{{ row.products_count }}</td>
+    <td class="text-center"
+        data-pc-sort-table-value="{{ row.aliases_count }}">{{ row.aliases_count }}</td>
+    <td data-pc-sort-table-value="{% if artist.date_created %}{{ artist.date_created.timestamp() }}{% endif %}">
+      {{ artist.date_created | format_date if artist.date_created else '-' }}
+    </td>
   </tr>
 {% endfor %}

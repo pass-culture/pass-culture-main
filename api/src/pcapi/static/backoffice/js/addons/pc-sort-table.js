@@ -39,7 +39,11 @@ addonList.push(
     }
 
     #orderLines = (index, comparator) => {
-      if (comparator == "float"){
+      if (comparator === "int") {
+        return ($a, $b) => {
+          return parseInt(this.#getValue($a, index)) - parseInt(this.#getValue($b, index));
+        };
+      } else if (comparator === "float"){
         return ($a, $b) => {
           return parseFloat(this.#getValue($a, index)) - parseFloat(this.#getValue($b, index))
         }
