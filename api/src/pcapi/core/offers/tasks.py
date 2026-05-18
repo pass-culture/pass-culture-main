@@ -21,7 +21,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models import offer_mixin
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
@@ -47,7 +47,7 @@ class UpdateAllOffersActiveStatusPayload(BaseModelV2):
     name_or_ean: str | None
     category_id: str | None
     creation_mode: str | None
-    status: str | None
+    status: offer_mixin.OfferStatus | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
     offerer_address_id: int | None
@@ -198,7 +198,7 @@ def _create_offer_from_product(
     offer.publicationDatetime = _ensure_timezone_exists(publicationDatetime)
     offer.bookingAllowedDatetime = _ensure_timezone_exists(bookingAllowedDatetime)
     offer.lastValidationDate = utils_date.get_naive_utc_now()
-    offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationType = offer_mixin.OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
     db.session.add(offer)

@@ -149,6 +149,9 @@ class FeatureToggle(enum.Enum):
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
+    WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
+        "Génère les filtres en fonction du statut pour la liste des offres du portail pro"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
