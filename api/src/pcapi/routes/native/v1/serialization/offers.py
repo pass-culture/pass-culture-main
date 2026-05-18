@@ -1,5 +1,6 @@
 import logging
 import textwrap
+import typing
 from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
@@ -537,9 +538,12 @@ class RawScreening:
     beginning_datetime: datetime
     distance: float
     features: list[str]
+    is_sold_out: bool
     label: str
+    offer_id: int
     price: float
     postal_code: str
+    provider_class: str
     stock_id: int
     street: str
     thumb_url: str
@@ -570,32 +574,38 @@ class MovieScreeningsRequest(HttpQueryParamsModel):
 class Screening(HttpBodyModel):
     beginning_datetime: datetime
     features: list[str]
+    is_sold_out: bool
     price: float
     stock_id: int
 
     @classmethod
     def from_raw_screening(cls, screening: RawScreening) -> "Screening":
         return cls(
-            stock_id=screening.stock_id,
-            price=screening.price,
-            features=screening.features,
             beginning_datetime=screening.beginning_datetime,
+            features=screening.features,
+            is_sold_out=screening.is_sold_out,
+            price=screening.price,
+            stock_id=screening.stock_id,
         )
 
     @classmethod
     def from_stock(cls, stock: models.Stock) -> "Screening":
+        assert stock.beginningDatetime is not None
         return cls(
-            stock_id=stock.id,
-            price=stock.price,
-            features=stock.features,
             beginning_datetime=stock.beginningDatetime,
+            features=stock.features,
+            is_sold_out=stock.isSoldOut,
+            price=float(stock.price),
+            stock_id=stock.id,
         )
 
 
 class VenueScreenings(HttpBodyModel):
     address: str
     distance: float
+    is_booking_disabled: bool
     label: str
+    offer_id: int
     thumb_url: str | None
     venue_id: int
     day_screenings: list[Screening]
@@ -603,10 +613,16 @@ class VenueScreenings(HttpBodyModel):
 
     @classmethod
     def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
+        is_booking_disabled = (
+            screening.provider_class in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF
+            and provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[screening.provider_class].is_active()
+        )
         return cls(
             address=f"{screening.street}, {screening.postal_code} {screening.city}",
             distance=screening.distance,
+            is_booking_disabled=is_booking_disabled,
             label=screening.label,
+            offer_id=screening.offer_id,
             thumb_url=screening.thumb_url,
             venue_id=screening.venue_id,
             day_screenings=[],
@@ -620,7 +636,7 @@ class MovieCalendarResponse(HttpBodyModel):
     @classmethod
     def from_raw_screenings(
         cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
-    ) -> "MovieCalendarResponse":
+    ) -> typing.Self:
         calendar = {}
         for day_delta in range((end_date - start_date).days + 1):
             day = (start_date + timedelta(days=day_delta)).date()
@@ -655,6 +671,127 @@ class MovieCalendarResponse(HttpBodyModel):
         return cls(calendar=calendar)
 
 
+@dataclass
+class RawScreeningForUser(RawScreening):
+    user_has_already_booked_offer: bool
+    user_has_enough_credit: bool
+
+
+class ScreeningForUser(HttpBodyModel):
+    beginning_datetime: datetime
+    features: list[str]
+    is_sold_out: bool
+    price: float
+    stock_id: int
+    user_has_enough_credit: bool = True
+
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreeningForUser) -> typing.Self:
+        return cls(
+            beginning_datetime=screening.beginning_datetime,
+            features=screening.features,
+            is_sold_out=screening.is_sold_out,
+            price=screening.price,
+            stock_id=screening.stock_id,
+            user_has_enough_credit=screening.user_has_enough_credit,
+        )
+
+    @classmethod
+    def from_stock(cls, stock: models.Stock) -> typing.Self:
+        assert stock.beginningDatetime is not None
+        return cls(
+            beginning_datetime=stock.beginningDatetime,
+            features=stock.features,
+            is_sold_out=stock.isSoldOut,
+            price=float(stock.price),
+            stock_id=stock.id,
+        )
+
+
+class VenueScreeningsForUser(HttpBodyModel):
+    address: str
+    distance: float
+    is_booking_disabled: bool
+    user_has_already_booked_offer: bool
+    label: str
+    offer_id: int
+    thumb_url: str | None
+    venue_id: int
+    day_screenings: list[ScreeningForUser]
+    next_screening: ScreeningForUser | None
+
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreeningForUser) -> typing.Self:
+        is_booking_disabled = (
+            screening.provider_class in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF
+            and provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[screening.provider_class].is_active()
+        )
+        return cls(
+            address=f"{screening.street}, {screening.postal_code} {screening.city}",
+            distance=screening.distance,
+            is_booking_disabled=is_booking_disabled,
+            label=screening.label,
+            offer_id=screening.offer_id,
+            thumb_url=screening.thumb_url,
+            user_has_already_booked_offer=screening.user_has_already_booked_offer,
+            venue_id=screening.venue_id,
+            day_screenings=[],
+            next_screening=None,
+        )
+
+
+class MovieCalendarForUserResponse(HttpBodyModel):
+    calendar: dict[date, list[VenueScreeningsForUser]]
+    user_has_completed_subscription: bool
+    user_is_allowed_to_book: bool
+
+    @classmethod
+    def from_raw_screenings(
+        cls,
+        raw_screenings: list[RawScreeningForUser],
+        start_date: datetime,
+        end_date: datetime,
+        user_has_completed_subscription: bool,
+        user_is_allowed_to_book: bool,
+    ) -> typing.Self:
+        calendar = {}
+        for day_delta in range((end_date - start_date).days + 1):
+            day = (start_date + timedelta(days=day_delta)).date()
+            venues: dict[int, VenueScreeningsForUser] = {}
+            for raw_screening in raw_screenings:
+                venue_id = raw_screening.venue_id
+                if venue_id not in venues:
+                    venues[venue_id] = VenueScreeningsForUser.from_raw_screening(raw_screening)
+
+                venue = venues[venue_id]
+                screening = ScreeningForUser.from_raw_screening(raw_screening)
+                if screening.beginning_datetime.date() == day:
+                    venue.day_screenings.append(screening)
+
+                if not venue.next_screening:
+                    venue.next_screening = screening
+                    continue
+
+                current_delta_from_day = (venue.next_screening.beginning_datetime.date() - day).days
+                new_delta_from_day = (screening.beginning_datetime.date() - day).days
+                if abs(new_delta_from_day) < abs(current_delta_from_day):
+                    venue.next_screening = screening
+
+            sorted_screenings = sorted(
+                venues.values(), key=lambda venue: (len(venue.day_screenings) == 0, venue.distance)
+            )
+            for venue in venues.values():
+                venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+
+            calendar[day] = sorted_screenings
+
+        return cls(
+            calendar=calendar,
+            user_has_completed_subscription=user_has_completed_subscription,
+            user_is_allowed_to_book=user_is_allowed_to_book,
+        )
+
+
 class VenueMovieScreeningsRequest(HttpBodyModel):
     from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
     to_datetime: datetime = pydantic_v2.Field(
@@ -667,6 +804,7 @@ class VenueMovieScreeningsRequest(HttpBodyModel):
 class MovieScreenings(HttpBodyModel):
     duration: int | None
     genres: list[str]
+    is_booking_disabled: bool
     last_30_days_bookings: int
     movie_name: str
     offer_id: int
@@ -687,9 +825,15 @@ class MovieScreenings(HttpBodyModel):
         if offer.product and offer.product.last_30_days_booking:
             last_30_days_bookings = offer.product.last_30_days_booking
 
+        is_booking_disabled = bool(
+            offer.lastProvider
+            and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF
+            and provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[offer.lastProvider.localClass].is_active()
+        )
         return cls(
             duration=offer.durationMinutes,
             genres=genres,
+            is_booking_disabled=is_booking_disabled,
             last_30_days_bookings=last_30_days_bookings,
             movie_name=offer.name,
             offer_id=offer.id,
