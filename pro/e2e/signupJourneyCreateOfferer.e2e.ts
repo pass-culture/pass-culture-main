@@ -3,6 +3,7 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 import { checkAccessibility } from './helpers/accessibility'
 import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { doLogin } from './helpers/auth'
+import { joinExistingVenueSpace } from './helpers/navigation'
 import {
   BASE_API_URL,
   createNewProUser,
@@ -10,7 +11,6 @@ import {
   createNewProUserAndOfferer,
   createNewProUserAndOffererWithVenue,
 } from './helpers/sandbox'
-import { joinExistingVenueSpace } from './helpers/switchVenue'
 
 const newVenueName = 'First Venue'
 

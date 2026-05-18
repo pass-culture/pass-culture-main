@@ -31,20 +31,19 @@ test.describe('Non attached venue', () => {
       page
         .getByRole('combobox', { name: 'Entité juridique' })
         .locator('option:checked')
-    ).toHaveText('Offerer non rattaché')
-
+    ).toHaveText('Offerer rattaché')
     await expect(
       page.getByText(
-        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
+        "Les remboursements s'effectuent toutes les 2 à 3 semaines"
       )
     ).toBeVisible()
 
     await page
       .getByRole('combobox', { name: 'Entité juridique' })
-      .selectOption({ label: 'Offerer rattaché' })
+      .selectOption({ label: 'Offerer non rattaché' })
     await expect(
       page.getByText(
-        "Les remboursements s'effectuent toutes les 2 à 3 semaines"
+        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeVisible()
   })

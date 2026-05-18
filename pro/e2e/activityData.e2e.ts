@@ -1,6 +1,8 @@
 import { expect, test } from './fixtures/activityData'
-import { navigateToAdministrationSpace } from './helpers/navigation'
-import { navigateToHubAndPickVenue } from './helpers/switchVenue'
+import {
+  navigateToAdministrationSpace,
+  navigateToHubAndPickVenue,
+} from './helpers/navigation'
 
 test.describe('Activity Data', () => {
   test('Individual - I should be able to download bookings in CSV and Excel format', async ({

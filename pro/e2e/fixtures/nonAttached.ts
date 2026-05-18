@@ -9,10 +9,9 @@ import {
 import { doLogin } from '../helpers/auth'
 import {
   BASE_API_URL,
-  createRegularOnboardedProUserWithNonAttachedOfferer,
+  createRegularProUserWithBothAttachedAndNonAttachedOfferers,
   type ProUserDataWithNonAttachedOfferer,
 } from '../helpers/sandbox'
-import { joinExistingVenueSpace } from '../helpers/switchVenue'
 
 interface NonAttachedSession {
   data: ProUserDataWithNonAttachedOfferer
@@ -42,14 +41,14 @@ export const test = base.extend<{
     })
 
     const userData =
-      await createRegularOnboardedProUserWithNonAttachedOfferer(requestContext)
+      await createRegularProUserWithBothAttachedAndNonAttachedOfferers(
+        requestContext
+      )
     await requestContext.dispose()
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
     await doLogin(tempPage, userData.user.email)
-
-    await joinExistingVenueSpace(tempPage, userData.nonAttachedSiret)
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,

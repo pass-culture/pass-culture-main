@@ -1,7 +1,7 @@
 import { type APIRequestContext, expect, request, test } from '@playwright/test'
 
-import { loginAndNavigate } from '../helpers/auth'
-import { BASE_API_URL, createProUserWithVirtualOffer } from '../helpers/sandbox'
+import { loginAndNavigate } from './helpers/auth'
+import { BASE_API_URL, createProUserWithVirtualOffer } from './helpers/sandbox'
 
 test.describe('Individual Offer Creation and Edition', () => {
   let requestContext: APIRequestContext
