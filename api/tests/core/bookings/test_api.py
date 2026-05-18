@@ -1447,7 +1447,10 @@ class CancelByBeneficiaryTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer_solo = offers_factories.EventOfferFactory(
-            name="Séance ciné solo", subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_provider.venue
+            name="Séance ciné solo",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venue=venue_provider.venue,
+            lastProvider=cds_provider,
         )
         stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
         booking = bookings_factories.BookingFactory(stock=stock_solo, user=beneficiary)
@@ -1461,12 +1464,12 @@ class CancelByBeneficiaryTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
         offer = offers_factories.EventOfferFactory(
             name="Film",
             venue=venue_provider.venue,
             subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProviderId=cinema_provider_pivot.provider.id,
+            lastProvider=ems_provider,
         )
         stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
         booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
