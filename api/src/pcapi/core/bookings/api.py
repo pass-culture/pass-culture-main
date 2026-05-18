@@ -1452,7 +1452,7 @@ def cancel_unstored_external_bookings() -> None:
                 external_bookings_api.cancel_event_ticket(provider, stock, [barcode], False, venue_provider)
             else:
                 venue_id = int(external_booking_info["venue_id"])
-                external_bookings_api.cancel_booking(venue_id, [barcode])
+                external_bookings_api.cancel_cinema_ticket(venue_id, [barcode])
 
 
 def cancel_ems_external_bookings() -> None:

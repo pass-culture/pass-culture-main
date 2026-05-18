@@ -1438,12 +1438,12 @@ class CancelByBeneficiaryTest:
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert booking.stock.remainingQuantity == "unlimited"
 
-    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_cinema_ticket")
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_cds_cancel_external_booking(self, mocked_cancel_booking):
+    def test_cds_cancel_external_booking(self, mocked_cancel_cinema_ticket):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
-        mocked_cancel_booking.return_value = None
+        mocked_cancel_cinema_ticket.return_value = None
 
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -1458,7 +1458,7 @@ class CancelByBeneficiaryTest:
         ExternalBookingFactory(booking=booking)
         api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
 
-        mocked_cancel_booking.assert_called()
+        mocked_cancel_cinema_ticket.assert_called()
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_ems_cancel_external_booking(self, requests_mock):
@@ -2447,9 +2447,9 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 1
 
-    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_cinema_ticket")
     def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(
-        self, mocked_cancel_external_booking, app, requests_mock
+        self, mocked_cancel_cinema_ticket, app, requests_mock
     ):
         now = date_utils.get_naive_utc_now()
         provider = providers_factories.ProviderFactory(
@@ -2512,7 +2512,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
         cancel_unstored_external_bookings()
 
-        mocked_cancel_external_booking.assert_called_once_with(14, ["CCC-123456789"])
+        mocked_cancel_cinema_ticket.assert_called_once_with(14, ["CCC-123456789"])
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 2
         assert stock.quantity == 26
