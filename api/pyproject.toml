@@ -95,9 +95,11 @@ dev = [
   "debugpy ==1.8.20",
   "djlint ==1.36.4",
   "fakeredis ==2.35.1",
+  "ipdb==0.13.13",
   "jsbeautifier ==1.15.4",                  # djlint requires 1.15.1 which is broken
   "mypy==2.1.0",
   "pgcli ==4.3.0",
+  "psycopg[binary]==3.3.4",
   "pytest ==9.0.3",
   "pytest-dotenv ==0.5.2",
   "pytest-flask ==1.3.0",
