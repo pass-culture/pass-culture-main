@@ -87,11 +87,14 @@ def create_regular_pro_user_already_onboarded() -> dict:
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
 
 
-def create_regular_pro_user_already_onboarded_with_non_attached_offerer() -> dict:
+def create_regular_pro_user_with_both_attached_and_non_attached_offerer() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create(name="Offerer rattaché")
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     nonAttachedOfferer = offerers_factories.OffererFactory.create(name="Offerer non rattaché")
+    offerers_factories.UserOffererFactory.create(
+        user=pro_user, offerer=nonAttachedOfferer, validationStatus=ValidationStatus.NEW
+    )
     venue = offerers_factories.VenueFactory.create(
         name="Mon Lieu", managingOfferer=offerer, isPermanent=True, adageId="1337"
     )  # Adding an adageId will make this user onboarded
@@ -154,19 +157,6 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
         offer__venue=venue,
         offer__url="http://www.example.com",
     )
-    return {"user": get_pro_user_helper(pro_user)}
-
-
-def create_pro_user_with_1_onboarded_and_1_unonboarded_offerers() -> dict:
-    pro_user = users_factories.ProFactory.create()
-    onboarded_offerer = offerers_factories.OffererFactory.create(name="Onboarded Offerer", allowedOnAdage=True)
-    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=onboarded_offerer)
-    offerers_factories.VenueFactory.create(name="Onboarded Offerer Structure", managingOfferer=onboarded_offerer)
-
-    unonboarded_offerer = offerers_factories.OffererFactory.create(name="Unonboarded Offerer", allowedOnAdage=False)
-    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=unonboarded_offerer)
-    offerers_factories.VenueFactory.create(name="Unonboarded Offerer Structure", managingOfferer=unonboarded_offerer)
-
     return {"user": get_pro_user_helper(pro_user)}
 
 
@@ -741,6 +731,7 @@ def create_pro_user_with_non_validated_offerer() -> dict:
         offerer__siren="848009452",
         offerer__validationStatus=ValidationStatus.NEW,
         offerer__allowedOnAdage=False,
+        validationStatus=ValidationStatus.NEW,
     )
     venue = offerers_factories.VenueFactory.create(
         managingOfferer=user_offerer.offerer,

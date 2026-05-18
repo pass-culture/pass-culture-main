@@ -7,8 +7,8 @@ import {
 } from '@playwright/test'
 
 import { login } from '../helpers/auth'
+import { navigateToHubAndPickVenue } from '../helpers/navigation'
 import { BASE_API_URL, sandboxCall } from '../helpers/sandbox'
-import { navigateToHubAndPickVenue } from '../helpers/switchVenue'
 
 export interface ProUserWithCollectiveTemplateOffersResponse {
   user: {

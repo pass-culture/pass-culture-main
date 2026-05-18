@@ -2,11 +2,11 @@ import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { doLogin } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
+import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
   BASE_API_URL,
   createProUserWithFinancialDataAnd3Venues,
 } from './helpers/sandbox'
-import { navigateToHubAndPickVenue } from './helpers/switchVenue'
 
 test.describe('Hub', () => {
   test('I should be able to switch from one venue to another', async ({

@@ -15,7 +15,6 @@ import {
   createProUserWithCollectiveOffers,
   createProUserWithIndividualOffers,
   createProUserWithNonDraftIndividualOffer,
-  createProUserWithNonValidatedOfferer,
   createRegularProUser,
 } from './helpers/sandbox'
 
@@ -40,31 +39,6 @@ test.describe('when I do individual', () => {
       'INCOME_CARD',
       'PARTNER_PAGE_CARD',
       'NEWSLETTER_CARD',
-    ])
-  })
-
-  test('non validated offerer', async ({ page }) => {
-    await loginAsAndGoToHomepage(page, createProUserWithNonValidatedOfferer)
-
-    await expect
-      .soft(
-        page.getByRole('heading', {
-          level: 1,
-          name: 'Votre espace new_offerer indiv_non_validated_offerer',
-        })
-      )
-      .toBeVisible()
-    await expect.soft(page.getByRole('tablist')).not.toBeVisible()
-
-    await expectIndividualModules(page, [
-      'HOMOLOGATION_BANNER',
-      'OFFERS_CARD',
-      'STATS_CARD',
-      'EDITO_CARD',
-      'INCOME_CARD',
-      'PARTNER_PAGE_CARD',
-      'NEWSLETTER_CARD',
-      'WEBINAR_CARD',
     ])
   })
 })

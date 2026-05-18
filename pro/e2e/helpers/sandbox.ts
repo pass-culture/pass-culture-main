@@ -76,6 +76,14 @@ export interface DeskBookingsData {
   tokenOther: string
 }
 
+export interface ProUserWithFinancialDataAnd3Venues {
+  user: {
+    email: string
+  }
+  siren: string
+  venueName: string
+}
+
 export async function createProUserWithBookings(
   request: APIRequestContext
 ): Promise<DeskBookingsData> {
@@ -106,13 +114,13 @@ export async function createRegularOnboardedProUser(
   )
 }
 
-export async function createRegularOnboardedProUserWithNonAttachedOfferer(
+export async function createRegularProUserWithBothAttachedAndNonAttachedOfferers(
   request: APIRequestContext
 ): Promise<ProUserDataWithNonAttachedOfferer> {
   return await sandboxCall<ProUserDataWithNonAttachedOfferer>(
     request,
     'GET',
-    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded_with_non_attached_offerer`
+    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_with_both_attached_and_non_attached_offerer`
   )
 }
 
@@ -302,14 +310,6 @@ export async function createEacCompleteLt30d(
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_eac_complete_lt_30d`
   )
-}
-
-export interface ProUserWithFinancialDataAnd3Venues {
-  user: {
-    email: string
-  }
-  siren: string
-  venueName: string
 }
 
 export async function createProUserWithFinancialDataAnd3Venues(
