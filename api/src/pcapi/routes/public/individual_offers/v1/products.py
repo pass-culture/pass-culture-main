@@ -314,6 +314,7 @@ def _serialize_products_from_body(
             "booking_limit_datetime": product.stock.booking_limit_datetime,
             "publication_datetime": product.publication_datetime,
             "booking_allowed_datetime": product.booking_allowed_datetime,
+            "external_ticket_office_url": product.external_ticket_office_url,
         }
     return stock_details
 
@@ -586,6 +587,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         bookingContact=get_field(offer, updates, "bookingContact"),
         bookingEmail=get_field(offer, updates, "bookingEmail"),
         description=get_field(offer, updates, "description"),
+        externalTicketOfficeUrl=get_field(offer, updates, "externalTicketOfficeUrl"),
         extraData=(
             serialization.deserialize_extra_data(
                 body.category_related_fields, extra_data, venue_id=venue.id if venue else None

@@ -3146,6 +3146,16 @@
                         "title": "Eventduration",
                         "type": "integer"
                     },
+                    "externalTicketOfficeUrl": {
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "example": "https://example.com",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Externalticketofficeurl",
+                        "type": "string"
+                    },
                     "idAtProvider": {
                         "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
                         "example": "Your own id",
@@ -6958,6 +6968,16 @@
                         "title": "Ean",
                         "type": "string"
                     },
+                    "externalTicketOfficeUrl": {
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "example": "https://example.com",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Externalticketofficeurl",
+                        "type": "string"
+                    },
                     "publicationDatetime": {
                         "anyOf": [
                             {
@@ -7363,6 +7383,16 @@
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
+                    },
+                    "externalTicketOfficeUrl": {
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "example": "https://example.com",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Externalticketofficeurl",
+                        "type": "string"
                     },
                     "idAtProvider": {
                         "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",

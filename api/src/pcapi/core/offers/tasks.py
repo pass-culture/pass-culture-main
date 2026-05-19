@@ -181,6 +181,7 @@ def _create_offer_from_product(
     offererAddress: offerers_models.OffererAddress,
     publicationDatetime: datetime.datetime | None,
     bookingAllowedDatetime: datetime.datetime | None,
+    externalTicketOfficeUrl: str | None,
 ) -> offers_models.Offer:
     offer = offers_api.build_new_offer_from_product(
         venue,
@@ -200,6 +201,7 @@ def _create_offer_from_product(
     offer.lastValidationDate = utils_date.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
+    offer.externalTicketOfficeUrl = externalTicketOfficeUrl
 
     db.session.add(offer)
     db.session.flush()
@@ -299,6 +301,7 @@ def _update_offer_and_related_stock(
             or (offer.publicationDatetime and offer.publicationDatetime > now)
         )
         or (offer.bookingAllowedDatetime != stock_data["booking_allowed_datetime"])
+        or (offer.externalTicketOfficeUrl != stock_data["external_ticket_office_url"])
     )
 
     if should_update_offer:
@@ -306,6 +309,7 @@ def _update_offer_and_related_stock(
         offer.offererAddress = offerer_address
         offer.publicationDatetime = stock_data["publication_datetime"]
         offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
+        offer.externalTicketOfficeUrl = stock_data["external_ticket_office_url"]
 
     # Part 2 - Stock create or update
     current_stock = next((stock for stock in offer.activeStocks), None)
@@ -412,6 +416,7 @@ def _create_or_update_ean_offers(
                         offererAddress=offerer_address,
                         publicationDatetime=stock_data["publication_datetime"],
                         bookingAllowedDatetime=stock_data["booking_allowed_datetime"],
+                        externalTicketOfficeUrl=stock_data["external_ticket_office_url"],
                     )
                     created_offers.append(created_offer)
 

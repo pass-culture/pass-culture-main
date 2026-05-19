@@ -13,6 +13,12 @@ You will have two dates at your disposal :
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
   :::
 
+## May 2026
+- The `externalTicketOfficeUrl` field has been added to the following endpoints:
+  - [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct)
+  - [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
+  - [**Batch Upsert Product Offers by EAN**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)
+
 ## February 2026
 
 - In the [**Get Educational Institutions endpoint**](/rest-api#tag/Collective-Offer-Attributes/operation/ListEducationalInstitutions), the maximum (and default) value for the `limit` query parameter is now 50.

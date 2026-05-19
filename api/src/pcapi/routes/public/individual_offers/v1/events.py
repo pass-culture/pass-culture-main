@@ -312,6 +312,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
                 bookingEmail=get_field(offer, updates, "bookingEmail"),
                 description=get_field(offer, updates, "description"),
                 durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
+                externalTicketOfficeUrl=get_field(offer, updates, "externalTicketOfficeUrl"),
                 ean=get_field(offer, updates, "ean"),
                 extraData=(
                     serialization.deserialize_extra_data(

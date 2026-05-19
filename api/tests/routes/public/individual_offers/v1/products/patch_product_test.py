@@ -477,6 +477,19 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
             ),
             # additional properties not allowed
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
+            # errors on externalTicketOfficeUrl
+            (
+                {"externalTicketOfficeUrl": "https:bloup.com"},
+                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
+            ),
+            (
+                {"externalTicketOfficeUrl": 5},
+                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
+            ),
+            (
+                {"externalTicketOfficeUrl": ""},
+                {"externalTicketOfficeUrl": ["ensure this value has at least 1 characters"]},
+            ),
         ],
     )
     def test_incorrect_payload_should_return_400(self, payload, expected_response_json):
@@ -610,3 +623,17 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
 
         assert offer.offererAddress.addressId == address.id
+
+    def test_update_external_ticket_office_url(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        assert offer.externalTicketOfficeUrl is None
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={"offerId": offer.id, "externalTicketOfficeUrl": "https://bloup.com"},
+        )
+        assert response.status_code == 200, response.json
+
+        assert offer.externalTicketOfficeUrl == "https://bloup.com"

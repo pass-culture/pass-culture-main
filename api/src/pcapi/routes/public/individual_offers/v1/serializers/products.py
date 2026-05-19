@@ -86,6 +86,7 @@ class ProductOfferByEanCreation(routes_serialization.ConfiguredBaseModel):
         fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
     )
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
+    external_ticket_office_url: pydantic_v1.HttpUrl | None = v1_serialization.EXTERNAL_TICKET_OFFICE_URL_FIELD
 
     _validate_publicationDatetime = serialization_utils.validate_timezoned_datetime(
         "publication_datetime",
