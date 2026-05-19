@@ -1,6 +1,7 @@
 import { type LoaderFunctionArgs, redirect } from 'react-router'
 
 import { getUserDefaultPath } from '../../app/AppRouter/utils/getUserDefaultPath'
+import { rootStore } from '../store/store'
 import { getCurrentUserPermissions } from './getCurrentUserPermissions'
 import type { UserPermissions } from './types'
 
@@ -9,7 +10,7 @@ export const withUserPermissions = (
   loader?: (args: LoaderFunctionArgs) => unknown
 ) => {
   return (args: LoaderFunctionArgs) => {
-    const userPermissions = getCurrentUserPermissions()
+    const userPermissions = getCurrentUserPermissions(rootStore.getState().user)
     if (!requireUserPermissions(userPermissions)) {
       throw redirect(getUserDefaultPath())
     }

@@ -1,15 +1,22 @@
-import { rootStore } from '@/commons/store/store'
-
+import type { UserSliceState } from '../store/user/reducer'
 import type { UserPermissions } from './types'
 
-export const getCurrentUserPermissions = (): UserPermissions => {
+/**
+ * /!\ If you need to get the current user permissions within React lifecyle (components),
+ * DO NOT use this function directly. Use the `useCurrentUserPermissions` hook instead
+ * to ensure the permissions are refreshed on every user state update.
+ */
+export const getCurrentUserPermissions = (
+  userSliceState: UserSliceState
+): UserPermissions => {
   const {
     currentUser,
+    offerersNamesWithPendingValidation,
     selectedAdminOfferer,
     selectedPartnerVenue,
     venues,
     venuesWithPendingValidation,
-  } = rootStore.getState().user
+  } = userSliceState
 
   if (!currentUser) {
     return {
@@ -17,6 +24,7 @@ export const getCurrentUserPermissions = (): UserPermissions => {
       hasVenues: false,
       isAuthenticated: false,
       isOnboarded: false,
+      isSelectedAdminOffererAssociated: false,
       isSelectedPartnerVenueAssociated: false,
       hasSelectedAdminOfferer: false,
     }
@@ -24,6 +32,11 @@ export const getCurrentUserPermissions = (): UserPermissions => {
 
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
+  const isSelectedAdminOffererAssociated =
+    hasSelectedAdminOfferer &&
+    !offerersNamesWithPendingValidation?.some(
+      (offerer) => offerer.id === selectedAdminOfferer.id
+    )
   const isSelectedPartnerVenueAssociated =
     hasSelectedPartnerVenue &&
     !venuesWithPendingValidation?.some(
@@ -36,6 +49,7 @@ export const getCurrentUserPermissions = (): UserPermissions => {
     hasVenues: !!venues?.length,
     isAuthenticated: true,
     isOnboarded: !!selectedPartnerVenue?.isOnboarded,
+    isSelectedAdminOffererAssociated,
     isSelectedPartnerVenueAssociated,
   }
 }

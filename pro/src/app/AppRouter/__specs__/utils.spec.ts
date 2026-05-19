@@ -17,12 +17,13 @@ import {
 const makeUserPermissions = (
   overrides: Partial<UserPermissions> = {}
 ): UserPermissions => ({
-  isAuthenticated: false,
+  hasSelectedAdminOfferer: false,
   hasSelectedPartnerVenue: false,
   hasVenues: false,
+  isAuthenticated: false,
   isOnboarded: false,
+  isSelectedAdminOffererAssociated: false,
   isSelectedPartnerVenueAssociated: false,
-  hasSelectedAdminOfferer: false,
   ...overrides,
 })
 

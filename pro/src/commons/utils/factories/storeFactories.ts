@@ -1,5 +1,21 @@
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
+import type { UserSliceState } from '../../store/user/reducer'
+
+export const makeUserSliceState = (
+  overrides: Partial<UserSliceState> = {}
+): UserSliceState => ({
+  currentUser: null,
+  offererNames: null,
+  offererNamesValidated: null,
+  offerersNamesWithPendingValidation: null,
+  selectedAdminOfferer: null,
+  selectedPartnerVenue: null,
+  venues: null,
+  venuesWithPendingValidation: null,
+  ...overrides,
+})
+
 export const sharedCurrentUserFactory = (
   customSharedCurrentUser: Partial<SharedCurrentUserResponseModel> = {}
 ): SharedCurrentUserResponseModel => ({

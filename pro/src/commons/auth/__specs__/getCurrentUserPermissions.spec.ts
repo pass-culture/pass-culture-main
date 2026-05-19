@@ -1,7 +1,8 @@
-import * as storeModule from '@/commons/store/store'
-import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  makeUserSliceState,
+  sharedCurrentUserFactory,
+} from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
@@ -12,21 +13,16 @@ import { getCurrentUserPermissions } from '../getCurrentUserPermissions'
 describe('getCurrentUserPermissions', () => {
   describe('when user is not authenticated', () => {
     it('should return all permissions as false', () => {
-      const store = configureTestStore({
-        user: {
-          currentUser: null,
-          selectedAdminOfferer: null,
-          selectedPartnerVenue: null,
-          venues: null,
-          venuesWithPendingValidation: null,
-        },
+      const userSliceState = makeUserSliceState({
+        currentUser: null,
+        selectedPartnerVenue: null,
+        venues: null,
+        venuesWithPendingValidation: null,
       })
-      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-      const result = getCurrentUserPermissions()
+      const result = getCurrentUserPermissions(userSliceState)
 
-      expect(result).toEqual({
-        hasSelectedAdminOfferer: false,
+      expect(result).toMatchObject({
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: false,
@@ -40,21 +36,16 @@ describe('getCurrentUserPermissions', () => {
     const fakeCurrentUser = sharedCurrentUserFactory()
 
     it('should return isAuthenticated as true', () => {
-      const store = configureTestStore({
-        user: {
-          currentUser: fakeCurrentUser,
-          selectedAdminOfferer: null,
-          selectedPartnerVenue: null,
-          venues: null,
-          venuesWithPendingValidation: null,
-        },
+      const userSliceState = makeUserSliceState({
+        currentUser: fakeCurrentUser,
+        selectedPartnerVenue: null,
+        venues: null,
+        venuesWithPendingValidation: null,
       })
-      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-      const result = getCurrentUserPermissions()
+      const result = getCurrentUserPermissions(userSliceState)
 
-      expect(result).toEqual({
-        hasSelectedAdminOfferer: false,
+      expect(result).toMatchObject({
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: true,
@@ -65,21 +56,16 @@ describe('getCurrentUserPermissions', () => {
 
     describe('without venues', () => {
       it('should return hasVenues as false', () => {
-        const store = configureTestStore({
-          user: {
-            currentUser: fakeCurrentUser,
-            selectedAdminOfferer: null,
-            selectedPartnerVenue: null,
-            venues: null,
-            venuesWithPendingValidation: null,
-          },
+        const userSliceState = makeUserSliceState({
+          currentUser: fakeCurrentUser,
+          selectedPartnerVenue: null,
+          venues: null,
+          venuesWithPendingValidation: null,
         })
-        vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-        const result = getCurrentUserPermissions()
+        const result = getCurrentUserPermissions(userSliceState)
 
-        expect(result).toEqual({
-          hasSelectedAdminOfferer: false,
+        expect(result).toMatchObject({
           hasSelectedPartnerVenue: false,
           hasVenues: false,
           isAuthenticated: true,
@@ -94,21 +80,16 @@ describe('getCurrentUserPermissions', () => {
       const fakeVenues = [fakeVenue]
 
       it('should return hasVenues as true', () => {
-        const store = configureTestStore({
-          user: {
-            currentUser: fakeCurrentUser,
-            selectedAdminOfferer: null,
-            selectedPartnerVenue: null,
-            venues: fakeVenues,
-            venuesWithPendingValidation: null,
-          },
+        const userSliceState = makeUserSliceState({
+          currentUser: fakeCurrentUser,
+          selectedPartnerVenue: null,
+          venues: fakeVenues,
+          venuesWithPendingValidation: null,
         })
-        vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-        const result = getCurrentUserPermissions()
+        const result = getCurrentUserPermissions(userSliceState)
 
-        expect(result).toEqual({
-          hasSelectedAdminOfferer: false,
+        expect(result).toMatchObject({
           hasSelectedPartnerVenue: false,
           hasVenues: true,
           isAuthenticated: true,
@@ -117,23 +98,21 @@ describe('getCurrentUserPermissions', () => {
         })
       })
 
+      // =======================================================================
+      // Partner Space Permissions
+
       describe('without selected partner venue', () => {
         it('should return hasSelectedPartnerVenue as false', () => {
-          const store = configureTestStore({
-            user: {
-              currentUser: fakeCurrentUser,
-              selectedAdminOfferer: null,
-              selectedPartnerVenue: null,
-              venues: fakeVenues,
-              venuesWithPendingValidation: null,
-            },
+          const userSliceState = makeUserSliceState({
+            currentUser: fakeCurrentUser,
+            selectedPartnerVenue: null,
+            venues: fakeVenues,
+            venuesWithPendingValidation: null,
           })
-          vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-          const result = getCurrentUserPermissions()
+          const result = getCurrentUserPermissions(userSliceState)
 
-          expect(result).toEqual({
-            hasSelectedAdminOfferer: false,
+          expect(result).toMatchObject({
             hasSelectedPartnerVenue: false,
             hasVenues: true,
             isAuthenticated: true,
@@ -143,26 +122,21 @@ describe('getCurrentUserPermissions', () => {
         })
       })
 
-      describe('with selected venue', () => {
+      describe('with selected partner venue', () => {
         it('should return hasSelectedPartnerVenue as true', () => {
-          const store = configureTestStore({
-            user: {
-              currentUser: fakeCurrentUser,
-              selectedAdminOfferer: null,
-              selectedPartnerVenue: makeGetVenueResponseModel({
-                id: fakeVenue.id,
-                isOnboarded: false,
-              }),
-              venues: fakeVenues,
-              venuesWithPendingValidation: null,
-            },
+          const userSliceState = makeUserSliceState({
+            currentUser: fakeCurrentUser,
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: fakeVenue.id,
+              isOnboarded: false,
+            }),
+            venues: fakeVenues,
+            venuesWithPendingValidation: null,
           })
-          vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-          const result = getCurrentUserPermissions()
+          const result = getCurrentUserPermissions(userSliceState)
 
-          expect(result).toEqual({
-            hasSelectedAdminOfferer: false,
+          expect(result).toMatchObject({
             hasSelectedPartnerVenue: true,
             hasVenues: true,
             isAuthenticated: true,
@@ -173,24 +147,19 @@ describe('getCurrentUserPermissions', () => {
 
         describe('when venue is not onboarded', () => {
           it('should return isOnboarded as false', () => {
-            const store = configureTestStore({
-              user: {
-                currentUser: fakeCurrentUser,
-                selectedAdminOfferer: null,
-                selectedPartnerVenue: makeGetVenueResponseModel({
-                  id: fakeVenue.id,
-                  isOnboarded: false,
-                }),
-                venues: fakeVenues,
-                venuesWithPendingValidation: null,
-              },
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: false,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: null,
             })
-            vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-            const result = getCurrentUserPermissions()
+            const result = getCurrentUserPermissions(userSliceState)
 
-            expect(result).toEqual({
-              hasSelectedAdminOfferer: false,
+            expect(result).toMatchObject({
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
@@ -200,26 +169,21 @@ describe('getCurrentUserPermissions', () => {
           })
         })
 
-        describe('when selected venue is part of venues with pending validation', () => {
+        describe('when selected partner venue is part of venues with pending validation', () => {
           it('should return isSelectedPartnerVenueAssociated as false', () => {
-            const store = configureTestStore({
-              user: {
-                currentUser: fakeCurrentUser,
-                selectedAdminOfferer: null,
-                selectedPartnerVenue: makeGetVenueResponseModel({
-                  id: fakeVenue.id,
-                  isOnboarded: false,
-                }),
-                venues: fakeVenues,
-                venuesWithPendingValidation: fakeVenues,
-              },
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: false,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: fakeVenues,
             })
-            vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-            const result = getCurrentUserPermissions()
+            const result = getCurrentUserPermissions(userSliceState)
 
-            expect(result).toEqual({
-              hasSelectedAdminOfferer: false,
+            expect(result).toMatchObject({
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
@@ -229,26 +193,21 @@ describe('getCurrentUserPermissions', () => {
           })
         })
 
-        describe('when selected venue is both onboarded and not part of venues with pending validation', () => {
+        describe('when selected partner venue is both onboarded and not part of venues with pending validation', () => {
           it('should return all venue-related permissions as true', () => {
-            const store = configureTestStore({
-              user: {
-                currentUser: fakeCurrentUser,
-                selectedAdminOfferer: null,
-                selectedPartnerVenue: makeGetVenueResponseModel({
-                  id: fakeVenue.id,
-                  isOnboarded: true,
-                }),
-                venues: fakeVenues,
-                venuesWithPendingValidation: null,
-              },
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: true,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: null,
             })
-            vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-            const result = getCurrentUserPermissions()
+            const result = getCurrentUserPermissions(userSliceState)
 
-            expect(result).toEqual({
-              hasSelectedAdminOfferer: false,
+            expect(result).toMatchObject({
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
@@ -259,30 +218,91 @@ describe('getCurrentUserPermissions', () => {
         })
       })
 
+      // =======================================================================
+      // Administration Space Permissions
+
+      describe('without selected admin offerer', () => {
+        it('should return hasSelectedAdminOfferer as false', () => {
+          const userSliceState = makeUserSliceState({
+            currentUser: fakeCurrentUser,
+            offerersNamesWithPendingValidation: null,
+            selectedAdminOfferer: null,
+            venues: fakeVenues,
+          })
+
+          const result = getCurrentUserPermissions(userSliceState)
+
+          expect(result).toMatchObject({
+            hasSelectedAdminOfferer: false,
+            hasVenues: true,
+            isAuthenticated: true,
+            isOnboarded: false,
+            isSelectedAdminOffererAssociated: false,
+          })
+        })
+      })
+
       describe('with selected admin offerer', () => {
         const fakeAdminOfferer = defaultGetOffererResponseModel
 
         it('should return hasSelectedAdminOfferer as true', () => {
-          const store = configureTestStore({
-            user: {
-              currentUser: fakeCurrentUser,
-              selectedAdminOfferer: fakeAdminOfferer,
-              selectedPartnerVenue: null,
-              venues: fakeVenues,
-              venuesWithPendingValidation: null,
-            },
+          const userSliceState = makeUserSliceState({
+            currentUser: fakeCurrentUser,
+            offerersNamesWithPendingValidation: null,
+            selectedAdminOfferer: fakeAdminOfferer,
+            venues: fakeVenues,
           })
-          vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
 
-          const result = getCurrentUserPermissions()
+          const result = getCurrentUserPermissions(userSliceState)
 
-          expect(result).toEqual({
+          expect(result).toMatchObject({
             hasSelectedAdminOfferer: true,
-            hasSelectedPartnerVenue: false,
             hasVenues: true,
             isAuthenticated: true,
             isOnboarded: false,
-            isSelectedPartnerVenueAssociated: false,
+            isSelectedAdminOffererAssociated: true,
+          })
+        })
+
+        describe('when selected admin offerer is part of offerer names with pending validation', () => {
+          it('should return isSelectedAdminOffererAssociated as false', () => {
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              offerersNamesWithPendingValidation: [fakeAdminOfferer],
+              selectedAdminOfferer: fakeAdminOfferer,
+              venues: fakeVenues,
+            })
+
+            const result = getCurrentUserPermissions(userSliceState)
+
+            expect(result).toMatchObject({
+              hasSelectedAdminOfferer: true,
+              hasVenues: true,
+              isAuthenticated: true,
+              isOnboarded: false,
+              isSelectedAdminOffererAssociated: false,
+            })
+          })
+        })
+
+        describe('when selected admin offerer is not part of offerer names with pending validation', () => {
+          it('should return isSelectedAdminOffererAssociated as true', () => {
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              offerersNamesWithPendingValidation: null,
+              selectedAdminOfferer: fakeAdminOfferer,
+              venues: fakeVenues,
+            })
+
+            const result = getCurrentUserPermissions(userSliceState)
+
+            expect(result).toMatchObject({
+              hasSelectedAdminOfferer: true,
+              hasVenues: true,
+              isAuthenticated: true,
+              isOnboarded: false,
+              isSelectedAdminOffererAssociated: true,
+            })
           })
         })
       })

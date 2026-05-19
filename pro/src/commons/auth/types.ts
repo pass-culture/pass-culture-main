@@ -4,5 +4,6 @@ export interface UserPermissions {
   hasVenues: boolean
   isAuthenticated: boolean
   isOnboarded: boolean
+  isSelectedAdminOffererAssociated: boolean
   isSelectedPartnerVenueAssociated: boolean
 }

@@ -8,8 +8,8 @@ import type {
   VenueListItemLiteResponseModel,
 } from '@/apiClient/v1/new'
 
-type UserState = {
-  currentUser: null | SharedCurrentUserResponseModel
+export interface UserSliceState {
+  currentUser: SharedCurrentUserResponseModel | null
   selectedAdminOfferer: GetOffererResponseModel | null
   selectedPartnerVenue: GetVenueResponseModel | null
   venues: VenueListItemLiteResponseModel[] | null
@@ -20,7 +20,7 @@ type UserState = {
   offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
-const initialState: UserState = {
+const initialState: UserSliceState = {
   currentUser: null,
   selectedAdminOfferer: null,
   selectedPartnerVenue: null,
@@ -53,20 +53,23 @@ const userSlice = createSlice({
     },
 
     setSelectedAdminOfferer(
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<GetOffererResponseModel | null>
     ) {
       state.selectedAdminOfferer = action.payload
     },
 
     setSelectedPartnerVenue(
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<GetVenueResponseModel | null>
     ) {
       state.selectedPartnerVenue = action.payload
     },
 
-    setVenues(state: UserState, action: PayloadAction<UpdateVenuesPayload>) {
+    setVenues(
+      state: UserSliceState,
+      action: PayloadAction<UpdateVenuesPayload>
+    ) {
       state.venues =
         action.payload.venues?.concat(
           action.payload.venuesWithPendingValidation ?? []
@@ -76,7 +79,7 @@ const userSlice = createSlice({
     },
 
     updateOffererNames: (
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<UpdateOffererNamesPayload>
     ) => {
       state.offererNames =
