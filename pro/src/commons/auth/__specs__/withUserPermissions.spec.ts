@@ -31,7 +31,6 @@ const setupStore = (options: {
 }) => {
   const store = configureTestStore({
     user: {
-      access: null,
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
       selectedPartnerVenue: options.hasVenueSelected

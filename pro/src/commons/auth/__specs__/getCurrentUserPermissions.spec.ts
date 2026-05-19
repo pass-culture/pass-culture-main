@@ -11,7 +11,6 @@ describe('getCurrentUserPermissions', () => {
     it('should return all permissions as false', () => {
       const store = configureTestStore({
         user: {
-          access: null,
           currentUser: null,
           selectedAdminOfferer: null,
           selectedPartnerVenue: null,
@@ -37,7 +36,6 @@ describe('getCurrentUserPermissions', () => {
     it('should return isAuthenticated as true', () => {
       const store = configureTestStore({
         user: {
-          access: null,
           currentUser: sharedCurrentUserFactory(),
           selectedAdminOfferer: null,
           selectedPartnerVenue: null,
@@ -62,7 +60,6 @@ describe('getCurrentUserPermissions', () => {
       it('should return hasSelectedPartnerVenue as false', () => {
         const store = configureTestStore({
           user: {
-            access: null,
             currentUser: sharedCurrentUserFactory(),
             selectedAdminOfferer: null,
             selectedPartnerVenue: null,
@@ -88,7 +85,6 @@ describe('getCurrentUserPermissions', () => {
       it('should return hasSelectedAdminOfferer as true', () => {
         const store = configureTestStore({
           user: {
-            access: null,
             currentUser: sharedCurrentUserFactory(),
             selectedAdminOfferer: {
               ...defaultGetOffererResponseModel,
@@ -117,10 +113,12 @@ describe('getCurrentUserPermissions', () => {
       it('should return hasSelectedPartnerVenue as true', () => {
         const store = configureTestStore({
           user: {
-            access: null,
             currentUser: sharedCurrentUserFactory(),
             selectedAdminOfferer: null,
-            selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 1,
+              isOnboarded: false,
+            }),
             venues: null,
             venuesWithPendingValidation: null,
           },
@@ -142,7 +140,6 @@ describe('getCurrentUserPermissions', () => {
         it('should return isOnboarded as false', () => {
           const store = configureTestStore({
             user: {
-              access: null,
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
               selectedPartnerVenue: makeGetVenueResponseModel({
@@ -167,16 +164,20 @@ describe('getCurrentUserPermissions', () => {
         })
       })
 
-      describe('when access is unattached', () => {
+      describe('when selected venue is part of venues with pending validation', () => {
         it('should return isSelectedPartnerVenueAssociated as false', () => {
+          const selectedPartnerVenueId = 1
+
           const store = configureTestStore({
             user: {
-              access: 'unattached',
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
-              selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: selectedPartnerVenueId,
+                isOnboarded: false,
+              }),
               venues: null,
-              venuesWithPendingValidation: null,
+              venuesWithPendingValidation: [{ id: selectedPartnerVenueId }],
             },
           })
           vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -197,7 +198,6 @@ describe('getCurrentUserPermissions', () => {
         it('should return all permissions as true', () => {
           const store = configureTestStore({
             user: {
-              access: 'full',
               currentUser: sharedCurrentUserFactory(),
               selectedAdminOfferer: null,
               selectedPartnerVenue: makeGetVenueResponseModel({

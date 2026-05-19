@@ -34,7 +34,6 @@ vi.mock('@/commons/errors/handleError', () => ({
 describe('setSelectedPartnerVenueById', () => {
   const storeDataBase: Partial<RootState> = {
     user: {
-      access: null,
       currentUser: null,
       selectedAdminOfferer: null,
       selectedPartnerVenue: makeGetVenueResponseModel({
@@ -105,7 +104,7 @@ describe('setSelectedPartnerVenueById', () => {
     )
   })
 
-  it('should compute nextSelectedPartnerVenue, fetch its offerer, update user access and persist it', async () => {
+  it('should compute nextSelectedPartnerVenue, fetch its offerer, and persist it', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
     )
@@ -130,7 +129,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
-    expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
@@ -138,40 +136,7 @@ describe('setSelectedPartnerVenueById', () => {
     )
   })
 
-  it('should set access to no-onboarding when offerer is not onboarded', async () => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
-      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
-    )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: false,
-    })
-
-    const store = configureTestStore(storeDataBase)
-
-    await store
-      .dispatch(
-        setSelectedPartnerVenueById({
-          nextSelectedPartnerVenueId: 101,
-          shouldAlignSelectedAdminOfferer: false,
-        })
-      )
-      .unwrap()
-
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
-
-    const state = store.getState()
-    expect(state.user.access).toBe('no-onboarding')
-    expect(state.user.selectedPartnerVenue?.id).toBe(101)
-
-    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
-      '101'
-    )
-  })
-
-  it('should not call getVenue, getOfferer, and set access to unattached when offerer is not attached', async () => {
+  it('should not call getVenue and getOfferer when offerer is not attached', async () => {
     const store = configureTestStore(storeDataBase)
 
     await store
@@ -187,7 +152,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(api.getOfferer).toHaveBeenCalledTimes(0)
 
     const state = store.getState()
-    expect(state.user.access).toBe('unattached')
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
     expect(state.user.selectedPartnerVenue?.managingOfferer?.id).toBe(300)
 
@@ -246,7 +210,6 @@ describe('setSelectedPartnerVenueById', () => {
 
     const store = configureTestStore({
       user: {
-        access: null,
         currentUser: null,
         selectedAdminOfferer: null,
         selectedPartnerVenue: makeGetVenueResponseModel({
@@ -437,7 +400,6 @@ describe('setSelectedPartnerVenueById', () => {
       expect(api.getOfferer).toHaveBeenCalledExactlyOnceWith(200)
 
       const state = store.getState()
-      expect(state.user.access).toBe('full')
       expect(state.user.selectedPartnerVenue?.id).toBe(201)
       expect(state.user.selectedPartnerVenue?.isOnboarded).toBe(true)
     })

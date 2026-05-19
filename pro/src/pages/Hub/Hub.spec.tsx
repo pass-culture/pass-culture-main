@@ -36,7 +36,6 @@ const renderHub: RenderComponentFunction<
   return renderWithProviders(<Hub />, {
     storeOverrides: {
       user: {
-        access: 'full',
         currentUser: sharedCurrentUserFactory(),
         selectedPartnerVenue: null,
         venues,

@@ -13,18 +13,16 @@ import {
 } from '@/commons/utils/localStorageManager'
 
 import type { AppThunkApiConfig } from '../../store'
-import {
-  setSelectedPartnerVenue,
-  type UserAccess,
-  updateUserAccess,
-} from '../reducer'
+import { setSelectedPartnerVenue } from '../reducer'
 import { logout } from './logout'
 import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 
+type SetSelectedPartnerVenueByIdReturn = {
+  selectedPartnerVenue: GetVenueResponseModel
+}
+
 export const setSelectedPartnerVenueById = createAsyncThunk<
-  {
-    selectedPartnerVenue: GetVenueResponseModel
-  },
+  SetSelectedPartnerVenueByIdReturn,
   {
     nextSelectedPartnerVenueId: number
     // We want to keep that prop mandatory to make related UX rules explicit
@@ -41,7 +39,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       shouldRefresh,
     },
     { dispatch, getState }
-  ) => {
+  ): Promise<SetSelectedPartnerVenueByIdReturn> => {
     try {
       const state = getState()
 
@@ -54,7 +52,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       ) {
         return {
           selectedPartnerVenue: previousSelectedPartnerVenue,
-          newUserAccess: state.user.access,
         }
       }
 
@@ -62,7 +59,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         state.user.venuesWithPendingValidation?.map((v) => v.id)
       let nextSelectedPartnerVenue: GetVenueResponseModel
       let nextSelectedOfferer: GetOffererResponseModel | undefined
-      let nextUserAccess: UserAccess
       if (
         venuesWithPendingValidationIds?.length &&
         venuesWithPendingValidationIds.includes(nextSelectedPartnerVenueId)
@@ -77,10 +73,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedOfferer = {
           id: venue?.managingOffererId,
         } as GetOffererResponseModel
-
-        // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
-        nextUserAccess = 'unattached'
-        dispatch(updateUserAccess(nextUserAccess))
       } else {
         nextSelectedPartnerVenue = await api.getVenue(
           nextSelectedPartnerVenueId
@@ -88,12 +80,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedOfferer = await api.getOfferer(
           nextSelectedPartnerVenue.managingOfferer.id
         )
-
-        // TODO (igabriele, 2026-02-04): Delete those 2 statements once `WIP_SWITCH_VENUE` FF is enabled and removed.
-        nextUserAccess = nextSelectedOfferer.isOnboarded
-          ? 'full'
-          : 'no-onboarding'
-        dispatch(updateUserAccess(nextUserAccess))
       }
 
       if (
@@ -125,7 +111,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       dispatch(setSelectedPartnerVenue(nextSelectedPartnerVenue))
       return {
         selectedPartnerVenue: nextSelectedPartnerVenue,
-        newUserAccess: nextUserAccess,
       }
     } catch (err) {
       handleError(

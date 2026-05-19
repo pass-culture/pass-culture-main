@@ -50,7 +50,6 @@ const renderDialog = (
   return renderWithProviders(<RedirectToBankAccountDialog {...props} />, {
     storeOverrides: {
       user: {
-        access: null,
         currentUser: sharedCurrentUserFactory(),
         offererNames: [
           getOffererNameFactory({
