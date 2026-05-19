@@ -144,7 +144,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Résa duo"] == "Oui"
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Montant"] == "30,40 €"
-        assert rows[0]["Statut"] == "Validée"
+        assert rows[0]["Statut"] == "• Validée"
         assert rows[0]["Crédit actif"] == "Oui"
         assert rows[0]["Fraude"] == ""
         assert rows[0]["Auteur de la validation"] == "Backoffice"

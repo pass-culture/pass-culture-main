@@ -586,7 +586,7 @@ class ListArtistsTest(GetEndpointHelper):
 
         assert artist_to_find.id in row["ID"]
         assert row["Nom"] == "Daniel Balavoine"
-        assert row["Statut"] == "Visible"
+        assert row["Statut"] == "• Visible"
         assert row["Produits associés"] == "1"
         assert row["Alias"] == "3"
 

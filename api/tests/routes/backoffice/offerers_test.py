@@ -123,8 +123,8 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Entité juridique" in badges
-        assert "Validée" in badges
-        assert "Suspendue" not in badges
+        assert "• Validée" in badges
+        assert "• Suspendue" not in badges
 
     def test_offerer_detail_contains_venue_bank_information_stats(
         self,
@@ -323,7 +323,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Entité juridique Fermée " in response_text
+        assert "Entité juridique • Fermée " in response_text
 
     def test_get_offerer_with_fraudulent_booking(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -1355,28 +1355,28 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert len(rows) == 4
 
         assert rows[0]["ID"] == str(uo1.user.id)
-        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Statut"] == "• Validé"
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
         assert rows[0]["Sessions actives"] == "2"
         assert rows[0]["Invitation"] == ""
 
         assert rows[1]["ID"] == str(uo2.user.id)
-        assert rows[1]["Statut"] == "Validé"
+        assert rows[1]["Statut"] == "• Validé"
         assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
         assert rows[1]["Sessions actives"] == "1"
         assert rows[1]["Invitation"] == ""
 
         assert rows[2]["ID"] == str(uo3.user.id)
-        assert rows[2]["Statut"] == "Nouveau"
+        assert rows[2]["Statut"] == "• Nouveau"
         assert rows[2]["Prénom / Nom"] == uo3.user.full_name
         assert rows[2]["Email"] == uo3.user.email
         assert rows[2]["Sessions actives"] == "0"
         assert rows[2]["Invitation"] == ""
 
         assert rows[3]["ID"] == str(uo4.user.id)
-        assert rows[3]["Statut"] == "Validé Suspendu"
+        assert rows[3]["Statut"] == "• Validé • Suspendu"
         assert rows[3]["Prénom / Nom"] == uo4.user.full_name
         assert rows[3]["Email"] == uo4.user.email
         assert rows[3]["Sessions actives"] == "0"
@@ -1425,13 +1425,13 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["ID"] == str(uo1.user.id)
-        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Statut"] == "• Validé"
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
         assert rows[0]["Invitation"] == ""
 
         assert rows[1]["ID"] == ""
-        assert rows[1]["Statut"] == "Invité"
+        assert rows[1]["Statut"] == "• Invité"
         assert rows[1]["Prénom / Nom"] == ""
         assert rows[1]["Email"] == guest.email
         assert rows[1]["Invitation"].startswith("Invité le ")
@@ -1463,20 +1463,20 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert len(rows) == 3
 
         assert rows[0]["ID"] == str(uo1.user.id)
-        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Statut"] == "• Validé"
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
         assert rows[0]["Invitation"] == ""
 
         assert rows[1]["ID"] == str(uo2.user.id)
-        assert rows[1]["Statut"] == "Validé"
+        assert rows[1]["Statut"] == "• Validé"
         assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
         assert rows[1]["Invitation"].startswith("Invité le ")
         assert rows[1]["Invitation"].endswith("par " + guest1.user.full_name)
 
         assert rows[2]["ID"] == ""
-        assert rows[2]["Statut"] == "Invité"
+        assert rows[2]["Statut"] == "• Invité"
         assert rows[2]["Prénom / Nom"] == ""
         assert rows[2]["Email"] == guest2.email
         assert rows[2]["Invitation"].startswith("Invité le ")
@@ -1499,7 +1499,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID"] == ""
-        assert rows[0]["Statut"] == "Invité"
+        assert rows[0]["Statut"] == "• Invité"
         assert rows[0]["Prénom / Nom"] == ""
         assert rows[0]["Email"] == guest2.email
         assert rows[0]["Invitation"].startswith("Invité le ")
@@ -1522,7 +1522,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID"] == str(user.id)
-        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Statut"] == "• Validé"
         assert rows[0]["Prénom / Nom"] == user.full_name
         assert rows[0]["Email"] == user.email
 
@@ -1842,19 +1842,19 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(bank_with_no_history.id)
         assert rows[0]["Intitulé du compte bancaire"] == bank_with_no_history.label
-        assert rows[0]["Statut du dossier DN CB"] == "Accepté"
+        assert rows[0]["Statut du dossier DN CB"] == "• Accepté"
         assert rows[0]["Date de dernière mise à jour"] == ""
 
         assert rows[1]["ID"] == str(bank2.id)
         assert rows[1]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[1]["Statut du dossier DN CB"] == "En instruction"
+        assert rows[1]["Statut du dossier DN CB"] == "• En instruction"
         assert rows[1]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
         )
 
         assert rows[2]["ID"] == str(bank1.id)
         assert rows[2]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[2]["Statut du dossier DN CB"] == "Accepté"
+        assert rows[2]["Statut du dossier DN CB"] == "• Accepté"
         assert rows[2]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=3)).strftime("%d/%m/%Y à")
         )
@@ -2009,7 +2009,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert len(rows) == 1
             assert rows[0]["ID"] == str(offerer.id)
             assert rows[0]["Nom"] == offerer.name
-            assert rows[0]["État"] == "Nouvelle"
+            assert rows[0]["État"] == "• Nouvelle"
             assert tag.label in rows[0]["Tags"]
             assert other_category_tag.label in rows[0]["Tags"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
@@ -2036,7 +2036,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
             assert rows[0]["Nom"] == user_offerer.offerer.name
-            assert rows[0]["État"] == "Nouvelle"
+            assert rows[0]["État"] == "• Nouvelle"
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
 
@@ -2635,7 +2635,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert (
             "Un dossier de coordonnées bancaires est en cours sur Démarche Numérique pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
-            f"Dossier n°{bank_account.dsApplicationId} : En instruction" in content
+            f"Dossier n°{bank_account.dsApplicationId} : • En instruction" in content
         )
 
     def test_get_form_with_several_bank_accounts(self, legit_user, authenticated_client):
@@ -3188,7 +3188,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
-        assert rows[0]["État"] == "Nouveau"
+        assert rows[0]["État"] == "• Nouveau"
         assert rows[0]["Tags Entité juridique"] == offerer_tags[1].label
         assert rows[0]["Date de la demande"] == "03/11/2022"
         assert rows[0]["Nom Entité juridique"] == owner_user_offerer.offerer.name
@@ -3215,7 +3215,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
-        assert rows[0]["État"] == "Nouveau"
+        assert rows[0]["État"] == "• Nouveau"
         assert rows[0]["Tags Entité juridique"] == offerer_tags[2].label
         assert rows[0]["Date de la demande"] == "25/11/2022"
         assert rows[0]["Nom Entité juridique"] == owner_user_offerer.offerer.name
@@ -3880,8 +3880,8 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert (
             "2 dossiers de coordonnées bancaires sont en cours sur Démarche Numérique pour ces entités juridiques, leur traitement n'est pas automatique, ne les oublions pas : "
-            f"Dossier n°{bank_account_1.dsApplicationId} : En construction"
-            f"Dossier n°{bank_account_2.dsApplicationId} : À corriger"
+            f"Dossier n°{bank_account_1.dsApplicationId} : • En construction"
+            f"Dossier n°{bank_account_2.dsApplicationId} : • À corriger"
             "Un dossier ADAGE est en cours sur Démarche Numérique pour ces entités juridiques, son traitement n'est pas automatique, ne l'oublions pas : "
             f"Dossier n°{collective_application.application} : En construction" in content
         )

@@ -75,13 +75,13 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
         assert rows[0]["ID"] == str(total_booking_incident.incident.id)
-        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Statut de l'incident"] == "• Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Montant total"] == "10,10 € (1 205 CFP)"
         assert rows[0]["Ticket Zendesk"] == "2"
         assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
-        assert rows[1]["Statut de l'incident"] == "Créé"
+        assert rows[1]["Statut de l'incident"] == "• Créé"
         assert rows[1]["Type d'incident"] == "Trop Perçu"
         assert rows[1]["Nature"] == "Partiel"
         assert rows[1]["Montant total"] == "10,02 €"
@@ -111,7 +111,7 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == incident_id
-        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Statut de l'incident"] == "• Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
@@ -140,7 +140,7 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incident.id)
-        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Statut de l'incident"] == "• Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
@@ -195,7 +195,7 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incident.id)
-        assert rows[0]["Statut de l'incident"] == "Terminé"
+        assert rows[0]["Statut de l'incident"] == "• Terminé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Collective"
@@ -248,7 +248,7 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incident.id)
-        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Statut de l'incident"] == "• Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
@@ -391,7 +391,7 @@ class ListIncidentsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incident.id)
-        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Statut de l'incident"] == "• Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
@@ -509,7 +509,7 @@ class CancelIncidentTest(PostEndpointHelper):
         )
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Annulé" in badges
+        assert "• Annulé" in badges
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CANCELLED
@@ -1393,7 +1393,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
 
         header = html_parser.get_tag(response.data, class_="incident-header")
         badges = html_parser.extract_badges(header)
-        assert badges == ["Créé", "Total"]
+        assert badges == ["• Créé", "Total"]
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
@@ -1515,7 +1515,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract_badges(response.data)
-        assert badges == ["Créé", "Total", "Annulée", "Ancien Pass 18"]  # incident badges + booking badges
+        assert badges == ["• Créé", "Total", "• Annulée", "Ancien Pass 18"]  # incident badges + booking badges
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content

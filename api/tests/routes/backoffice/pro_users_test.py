@@ -414,14 +414,14 @@ class GetProUserOfferersTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["ID de l'entité juridique"] == str(offerer_1.id)
-        assert rows[0]["Statut du rattachement"] == "Validé"
-        assert rows[0]["Statut entité juridique"] == "Validée"
+        assert rows[0]["Statut du rattachement"] == "• Validé"
+        assert rows[0]["Statut entité juridique"] == "• Validée"
         assert rows[0]["Nom"] == offerer_1.name
         assert rows[0]["SIREN"] == offerer_1.siren
 
         assert rows[1]["ID de l'entité juridique"] == str(offerer_2.id)
-        assert rows[1]["Statut du rattachement"] == "Nouveau"
-        assert rows[1]["Statut entité juridique"] == "Validée"
+        assert rows[1]["Statut du rattachement"] == "• Nouveau"
+        assert rows[1]["Statut entité juridique"] == "• Validée"
         assert rows[1]["Nom"] == offerer_2.name
         assert rows[1]["SIREN"] == offerer_2.siren
 
@@ -438,8 +438,8 @@ class GetProUserOfferersTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID de l'entité juridique"] == str(nc_offerer.id)
-        assert rows[0]["Statut du rattachement"] == "Validé"
-        assert rows[0]["Statut entité juridique"] == "Validée"
+        assert rows[0]["Statut du rattachement"] == "• Validé"
+        assert rows[0]["Statut entité juridique"] == "• Validée"
         assert rows[0]["Nom"] == nc_offerer.name
         assert rows[0]["SIREN / RID7"] == nc_offerer.rid7
 
@@ -464,8 +464,8 @@ class GetProUserOfferersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data, parent_class="user_offerers-tab-pane")
         assert len(rows) == 2
 
-        assert rows[0]["Statut entité juridique"] == "Validée"
-        assert rows[1]["Statut entité juridique"] == "En attente"
+        assert rows[0]["Statut entité juridique"] == "• Validée"
+        assert rows[1]["Statut entité juridique"] == "• En attente"
 
 
 class ValidateProEmailTest(PostEndpointHelper):

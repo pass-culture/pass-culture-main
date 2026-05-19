@@ -299,7 +299,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Enseignant"] == "Louis Le Pieux"
         assert row["Nom de l'offre"] == collective_bookings[2].collectiveStock.collectiveOffer.name
         assert row["Montant"] == "567,80 €"
-        assert row["Statut"] == "Annulée"
+        assert row["Statut"] == "• Annulée"
         assert row["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à ")
         )

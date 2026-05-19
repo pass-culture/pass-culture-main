@@ -118,7 +118,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert len(rows) == 5
 
         assert rows[0]["Dossier"] == str(unknown_user_request.dsApplicationId)
-        assert rows[0]["État"] == "En construction"
+        assert rows[0]["État"] == "• En construction"
         assert rows[0]["Date de dernière MàJ"] == format_date_time(unknown_user_request.dateLastStatusUpdate)
         assert rows[0]["Date des derniers messages"] == ""
         assert (
@@ -130,7 +130,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[0]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[1]["Dossier"] == str(first_name_update_request.dsApplicationId)
-        assert rows[1]["État"] == "En instruction"
+        assert rows[1]["État"] == "• En instruction"
         assert rows[1]["Date de dernière MàJ"] == format_date_time(first_name_update_request.dateLastStatusUpdate)
         assert (
             rows[1]["Date des derniers messages"]
@@ -148,7 +148,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[1]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[2]["Dossier"] == str(last_name_and_email_update_request.dsApplicationId)
-        assert rows[2]["État"] == "En instruction"
+        assert rows[2]["État"] == "• En instruction"
         assert rows[2]["Date de dernière MàJ"] == format_date_time(
             last_name_and_email_update_request.dateLastStatusUpdate
         )
@@ -171,7 +171,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[2]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[3]["Dossier"] == str(phone_number_request.dsApplicationId)
-        assert rows[3]["État"] == "En instruction"
+        assert rows[3]["État"] == "• En instruction"
         assert rows[3]["Date de dernière MàJ"] == format_date_time(phone_number_request.dateLastStatusUpdate)
         assert (
             rows[3]["Date des derniers messages"]
@@ -189,7 +189,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[3]["Instructeur"] == "Instructeur du Backoffice"
 
         assert rows[4]["Dossier"] == str(accepted_user_request.dsApplicationId)
-        assert rows[4]["État"] == "Accepté"
+        assert rows[4]["État"] == "• Accepté"
         assert rows[4]["Date de dernière MàJ"] == format_date_time(accepted_user_request.dateLastStatusUpdate)
         assert rows[4]["Date des derniers messages"] == ""
         assert (
@@ -236,7 +236,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["État"] == "En construction En attente de correction"
+        assert rows[0]["État"] == "• En construction En attente de correction"
         assert (
             rows[0]["Modification"]
             == f"Saisie incomplèteEmail en doublon Email : {update_request.oldEmail} → {update_request.newEmail} Téléphone : {update_request.user.phoneNumber} →"

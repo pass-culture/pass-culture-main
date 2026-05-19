@@ -67,7 +67,7 @@
            data-bs-toggle="tooltip"
            data-bs-placement="top"
            data-bs-title="{{ incident.status | format_finance_incident_status }}">
-          {{ incident.status | format_finance_incident_status_badge(text=incident.kind | format_finance_incident_type_str) }}
+          {{ incident.status | format_finance_incident_status_badge(text=incident.kind | format_finance_incident_type_str, bullet=False) }}
         </a>
       {% endfor %}
     </td>

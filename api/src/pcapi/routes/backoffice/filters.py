@@ -761,19 +761,23 @@ def format_booking_status(
         bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
         educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
     ):
-        return format_badge("En cours de remboursement", "success") if with_badge else "En cours de remboursement"
+        return (
+            format_badge("En cours de remboursement", "success", bullet=True)
+            if with_badge
+            else "En cours de remboursement"
+        )
     if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return format_badge("Remboursée", "success") if with_badge else "Remboursée"
+        return format_badge("Remboursée", "success", bullet=True) if with_badge else "Remboursée"
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
         educational_models.CollectiveBookingStatus.CANCELLED,
     ):
-        return format_badge("Annulée", "danger") if with_badge else "Annulée"
+        return format_badge("Annulée", "danger", bullet=True) if with_badge else "Annulée"
     if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
-        return format_badge("Validée", "success") if with_badge else "Validée"
+        return format_badge("Validée", "success", bullet=True) if with_badge else "Validée"
     if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
         return "Confirmée"
     if (
@@ -820,9 +824,12 @@ def format_withdrawal_type(withdrawal_type: offers_models.WithdrawalTypeEnum | N
             return withdrawal_type.value
 
 
-def format_badge(text: str, category: str = "primary", icon: str | None = None) -> str:
+def format_badge(text: str, category: str = "primary", icon: str | None = None, bullet: bool = False) -> str:
+    if bullet:
+        text = f"\u2022\u00a0{text}"  # bullet(•) + no-break space + text
     # Category: primary, secondary, success, danger, warning and info
     span_class = f"badge text-{category} bg-{category}-subtle"
+
     if icon:
         return Markup(
             '<span class="{span_class} d-inline-flex gap-1"><i class="bi bi-{icon}"></i>{text}</span>'
@@ -831,16 +838,15 @@ def format_badge(text: str, category: str = "primary", icon: str | None = None) 
 
 
 def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
-    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match status:
         case offer_mixin.OfferValidationStatus.DRAFT:
-            return format_badge(f"{prefix}Nouvelle", "info") if with_badge else "Nouvelle"
+            return format_badge("Nouvelle", "info", bullet=True) if with_badge else "Nouvelle"
         case offer_mixin.OfferValidationStatus.PENDING:
-            return format_badge(f"{prefix}En attente", "warning") if with_badge else "En attente"
+            return format_badge("En attente", "warning", bullet=True) if with_badge else "En attente"
         case offer_mixin.OfferValidationStatus.APPROVED:
-            return format_badge(f"{prefix}Validée", "success") if with_badge else "Validée"
+            return format_badge("Validée", "success", bullet=True) if with_badge else "Validée"
         case offer_mixin.OfferValidationStatus.REJECTED:
-            return format_badge(f"{prefix}Rejetée", "danger") if with_badge else "Rejetée"
+            return format_badge("Rejetée", "danger", bullet=True) if with_badge else "Rejetée"
         case _:
             return status.value
 
@@ -848,19 +854,20 @@ def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, wi
 def format_product_cgu_compatibility_status(
     cgu_compatibility: offers_models.GcuCompatibilityType, provider_name: str | None, with_badge: bool = False
 ) -> str:
-    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match cgu_compatibility:
         case offers_models.GcuCompatibilityType.COMPATIBLE:
-            return format_badge(f"{prefix}Compatible", "success") if with_badge else "Compatible"
+            return format_badge("Compatible", "success", bullet=True) if with_badge else "Compatible"
         case offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
             return (
-                format_badge(f"{prefix}Incompatible (Fraude & Conformité)", "danger")
+                format_badge("Incompatible (Fraude & Conformité)", "danger", bullet=True)
                 if with_badge
                 else "Incompatible (Fraude & Conformité)"
             )
         case offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
             return (
-                format_badge(f"{prefix}Incompatible (Provider)", "danger") if with_badge else "Incompatible (Provider)"
+                format_badge("Incompatible (Provider)", "danger", bullet=True)
+                if with_badge
+                else "Incompatible (Provider)"
             )
         case _:
             return cgu_compatibility.value
@@ -873,7 +880,7 @@ def format_artist_visibility_status(is_blacklisted: bool) -> str:
     else:
         text = "Visible"
         category = "success"
-    return format_badge(text=text, category=category)
+    return format_badge(text=text, category=category, bullet=True)
 
 
 def format_offer_status(status: offer_mixin.OfferStatus) -> str:
@@ -1030,20 +1037,20 @@ def format_dms_application_status_badge(
 
     match status:
         case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
-            return format_badge("Accepté", "success")
+            return format_badge("Accepté", "success", bullet=True)
         case GraphQLApplicationStates.on_going | finance_models.BankAccountApplicationStatus.ON_GOING:
-            return format_badge("En instruction", "secondary")
+            return format_badge("En instruction", "secondary", bullet=True)
         case GraphQLApplicationStates.draft | finance_models.BankAccountApplicationStatus.DRAFT:
-            return format_badge("En construction", "info")
+            return format_badge("En construction", "info", bullet=True)
         case GraphQLApplicationStates.refused | finance_models.BankAccountApplicationStatus.REFUSED:
-            return format_badge("Refusé", "danger")
+            return format_badge("Refusé", "danger", bullet=True)
         case (
             GraphQLApplicationStates.without_continuation
             | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
         ):
-            return format_badge("Classé sans suite", "primary")
+            return format_badge("Classé sans suite", "primary", bullet=True)
         case finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS:
-            return format_badge("À corriger", "warning")
+            return format_badge("À corriger", "warning", bullet=True)
         case _:
             return status.value
 
@@ -1236,33 +1243,33 @@ def format_confidence_level(confidence_level: offerers_models.OffererConfidenceL
 
 def format_offerer_status_badge(offerer: offerers_models.Offerer) -> str:
     if offerer.isNew:
-        return format_badge("Nouvelle", "info")
+        return format_badge("Nouvelle", "info", bullet=True)
     if offerer.isPending:
-        return format_badge("En attente", "warning")
+        return format_badge("En attente", "warning", bullet=True)
     if offerer.isValidated:
-        return format_badge("Validée", "success")
+        return format_badge("Validée", "success", bullet=True)
     if offerer.isRejected:
-        return format_badge("Rejetée", "danger")
+        return format_badge("Rejetée", "danger", bullet=True)
     if offerer.isDeleted:
-        return format_badge("Supprimée", "danger")
+        return format_badge("Supprimée", "danger", bullet=True)
     if offerer.isClosed:
-        return format_badge("Fermée", "danger")
+        return format_badge("Fermée", "danger", bullet=True)
     return ""
 
 
 def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) -> str:
     if user_offerer.isNew:
-        return format_badge("Nouveau", "info")
+        return format_badge("Nouveau", "info", bullet=True)
     if user_offerer.isPending:
-        return format_badge("En attente", "warning")
+        return format_badge("En attente", "warning", bullet=True)
     if user_offerer.isValidated:
-        return format_badge("Validé", "success")
+        return format_badge("Validé", "success", bullet=True)
     if user_offerer.isRejected:
-        return format_badge("Rejeté", "danger")
+        return format_badge("Rejeté", "danger", bullet=True)
     if user_offerer.isDeleted:
-        return format_badge("Supprimé", "danger")
+        return format_badge("Supprimé", "danger", bullet=True)
     if user_offerer.isClosed:
-        return format_badge("Fermé", "danger")
+        return format_badge("Fermé", "danger", bullet=True)
     return ""
 
 
@@ -1921,17 +1928,17 @@ def format_finance_incident_nature_badge(is_partial: bool) -> str:
 
 
 def format_finance_incident_status_badge(
-    incident_status: finance_models.IncidentStatus, text: str | None = None
+    incident_status: finance_models.IncidentStatus, text: str | None = None, bullet: bool = True
 ) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
-            return format_badge(text or "Créé", "secondary")
+            return format_badge(text or "Créé", "secondary", bullet=bullet)
         case finance_models.IncidentStatus.CANCELLED:
-            return format_badge(text or "Annulé", "danger")
+            return format_badge(text or "Annulé", "danger", bullet=bullet)
         case finance_models.IncidentStatus.VALIDATED:
-            return format_badge(text or "Validé", "success")
+            return format_badge(text or "Validé", "success", bullet=bullet)
         case finance_models.IncidentStatus.INVOICED:
-            return format_badge(text or "Terminé", "success")
+            return format_badge(text or "Terminé", "success", bullet=bullet)
 
 
 def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
