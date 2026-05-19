@@ -7,6 +7,13 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SurveySatisfaction } from '../SurveySatisfaction'
 
+vi.mock('@/commons/utils/config', async () => {
+  return {
+    ...(await vi.importActual('@/commons/utils/config')),
+    VITE_ADAGE_SURVEY_SATISFACTION_URL: 'http://example.com',
+  }
+})
+
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     saveRedactorPreferences: vi.fn(),
@@ -19,6 +26,8 @@ describe('SurveySatisfaction', () => {
     queryId: '123',
   }
   it('should close survey satisfaction', async () => {
+    const user = userEvent.setup()
+
     renderWithProviders(<SurveySatisfaction {...defaultProps} />)
 
     screen.getByText('Enquête de satisfaction')
@@ -27,7 +36,7 @@ describe('SurveySatisfaction', () => {
       name: 'J’ai déjà répondu',
     })
 
-    await userEvent.click(closeButton)
+    await user.click(closeButton)
 
     await waitFor(() => {
       expect(
@@ -37,6 +46,8 @@ describe('SurveySatisfaction', () => {
   })
 
   it('should fail close survey satisfaction', async () => {
+    const user = userEvent.setup()
+
     const snackBarError = vi.fn()
 
     const snackBarsImport = (await vi.importActual(
@@ -59,19 +70,21 @@ describe('SurveySatisfaction', () => {
       name: 'J’ai déjà répondu',
     })
 
-    await userEvent.click(closeButton)
+    await user.click(closeButton)
 
     await waitFor(() => expect(snackBarError).toHaveBeenCalledTimes(1))
   })
 
   it('should log info when opening sastisfaction survey', async () => {
+    const user = userEvent.setup()
+
     renderWithProviders(<SurveySatisfaction {...defaultProps} />)
 
     const openButton = screen.getByRole('link', {
       name: /Je donne mon avis/,
     })
 
-    await userEvent.click(openButton)
+    await user.click(openButton)
 
     expect(apiAdage.logOpenSatisfactionSurvey).toHaveBeenCalledWith({
       iframeFrom: '/',

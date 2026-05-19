@@ -1,12 +1,14 @@
 import { createRef, useRef } from 'react'
 
-import { AdagePlaylistType } from '@/apiClient/adage'
+import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
+import { useAdageUser } from '../../hooks/useAdageUser'
+import { SurveySatisfaction } from '../SurveySatisfaction/SurveySatisfaction'
 import styles from './AdageDiscovery.module.scss'
 import { AdageDiscoveryBanner } from './AdageDiscoveryBanner/AdageDiscoveryBanner'
 import { Carousel } from './Carousel/Carousel'
@@ -27,6 +29,7 @@ import type { PlaylistTracker } from './types'
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)
   const params = new URLSearchParams(location.search)
+  const { adageUser } = useAdageUser()
 
   const footerSuggestion = createRef<HTMLDivElement>()
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
@@ -35,6 +38,10 @@ export const AdageDiscovery = () => {
   const adageAuthToken = params.get('token')
 
   const discoveryRef = useRef<HTMLDivElement>(null)
+
+  const showSurveySatisfaction =
+    !adageUser.preferences?.feedback_form_closed &&
+    adageUser.role !== AdageFrontRoles.READONLY
 
   if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
     apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
@@ -96,6 +103,11 @@ export const AdageDiscovery = () => {
             observableRef={discoveryRef}
           />
         </div>
+        {showSurveySatisfaction && (
+          <div className={styles['survey-container']}>
+            <SurveySatisfaction />
+          </div>
+        )}
         <div>
           <Carousel
             title={

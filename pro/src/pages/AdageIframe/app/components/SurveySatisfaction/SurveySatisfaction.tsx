@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { VITE_ADAGE_SURVEY_SATISFACTION_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
@@ -13,9 +14,7 @@ interface SurveySatisfactionProps {
   queryId?: string
 }
 
-export const SurveySatisfaction = ({
-  queryId,
-}: SurveySatisfactionProps): JSX.Element => {
+export const SurveySatisfaction = ({ queryId }: SurveySatisfactionProps) => {
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
     useState(false)
 
@@ -35,11 +34,15 @@ export const SurveySatisfaction = ({
   const logOpenSatisfactionSurvey = () => {
     apiAdage.logOpenSatisfactionSurvey({
       iframeFrom: location.pathname,
-      queryId: queryId,
+      queryId,
     })
   }
 
-  return !shouldHideSurveySatisfaction ? (
+  if (shouldHideSurveySatisfaction) {
+    return null
+  }
+
+  return (
     <div className={styles['survey-satisfaction']}>
       <div className={styles['survey-satisfaction-infos']}>
         <div className={styles['survey-satisfaction-infos-head']}>
@@ -57,9 +60,11 @@ export const SurveySatisfaction = ({
           </button>
         </div>
         <div className={styles['survey-description']}>
-          Le pass Culture souhaite recueillir votre avis sur cette page web :
-          Les offres pass Culture.
-          <br /> Cela ne vous prendra que 2 minutes.
+          <p>
+            Le pass Culture souhaite recueillir votre avis sur leur onglet dans
+            ADAGE.
+          </p>
+          <p>Cela ne vous prendra que 5 minutes.</p>
         </div>
 
         <div className={styles['survey-actions']}>
@@ -72,7 +77,7 @@ export const SurveySatisfaction = ({
           <Button
             as="a"
             variant={ButtonVariant.PRIMARY}
-            to="https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW"
+            to={VITE_ADAGE_SURVEY_SATISFACTION_URL}
             isExternal
             opensInNewTab
             onClick={logOpenSatisfactionSurvey}
@@ -81,7 +86,5 @@ export const SurveySatisfaction = ({
         </div>
       </div>
     </div>
-  ) : (
-    <div />
   )
 }
