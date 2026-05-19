@@ -19,6 +19,7 @@ const makeUserPermissions = (
 ): UserPermissions => ({
   isAuthenticated: false,
   hasSelectedPartnerVenue: false,
+  hasVenues: false,
   isOnboarded: false,
   isSelectedPartnerVenueAssociated: false,
   hasSelectedAdminOfferer: false,

@@ -7,12 +7,14 @@ export const getCurrentUserPermissions = (): UserPermissions => {
     currentUser,
     selectedAdminOfferer,
     selectedPartnerVenue,
+    venues,
     venuesWithPendingValidation,
   } = rootStore.getState().user
 
   if (!currentUser) {
     return {
       hasSelectedPartnerVenue: false,
+      hasVenues: false,
       isAuthenticated: false,
       isOnboarded: false,
       isSelectedPartnerVenueAssociated: false,
@@ -29,10 +31,11 @@ export const getCurrentUserPermissions = (): UserPermissions => {
     )
 
   return {
-    hasSelectedPartnerVenue: hasSelectedPartnerVenue,
+    hasSelectedAdminOfferer,
+    hasSelectedPartnerVenue,
+    hasVenues: !!venues?.length,
     isAuthenticated: true,
     isOnboarded: !!selectedPartnerVenue?.isOnboarded,
     isSelectedPartnerVenueAssociated,
-    hasSelectedAdminOfferer,
   }
 }
