@@ -140,9 +140,6 @@ def cancel_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée."})
     except bookings_exceptions.CannotCancelConfirmedBooking:
         raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": "La date limite d'annulation est dépassée."})
-    except RuntimeError:
-        logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", current_user.id)
-        raise ApiErrors()
     except UnexpectedCinemaProvider:
         raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
     except InactiveProvider:

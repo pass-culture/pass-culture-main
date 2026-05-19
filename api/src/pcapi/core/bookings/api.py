@@ -779,13 +779,10 @@ def _cancel_bookings_from_stock(
 def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booking) -> None:
     """
     What it does :
-        - (Check) Check user is beneficiary -> TODO: (tcoudray-pass, 18/05/26) remove since it is useless (https://passculture.atlassian.net/browse/PC-41896)
         - (Check) Check user can cancel booking -> TODO: (tcoudray-pass, 18/05/26) Remplacer par check_booking_can_be_cancelled (https://passculture.atlassian.net/browse/PC-41897)
         - Call _cancel_booking
         - (Async task) Send email to offerer
     """
-    if not user.is_beneficiary:
-        raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
