@@ -75,13 +75,6 @@
     </button>
   {% endif %}
 {% endblock action_buttons %}
-{% block extra_title_bar %}
-  {% call content_navbar("offer-details") %}
-    {{ content_navbar_element('info', 'Détails') }}
-    {{ content_navbar_element('stocks', 'Stocks') }}
-    {{ content_navbar_element('bookings', 'Réservations') }}
-  {% endcall %}
-{% endblock extra_title_bar %}
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
     <!-- INFO -->
