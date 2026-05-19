@@ -1,5 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import { AdageFrontRoles } from '@/apiClient/adage/new'
 import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
@@ -14,6 +16,7 @@ vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOffersForMyInstitution: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),
+    saveRedactorPreferences: vi.fn(),
   },
 }))
 
@@ -52,7 +55,7 @@ describe('OffersInstitutionList', () => {
 
     expect(
       screen.getByText('Vous n’avez pas d’offre à préréserver')
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should display list of offers for my institution', async () => {
@@ -65,7 +68,7 @@ describe('OffersInstitutionList', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.getByText(defaultCollectiveOffer.name)).toBeInTheDocument()
+    expect(screen.getByText(defaultCollectiveOffer.name)).toBeVisible()
   })
 
   it('should show an offer card', async () => {
@@ -79,7 +82,7 @@ describe('OffersInstitutionList', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
       screen.getByRole('link', { name: defaultCollectiveOffer.name })
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   describe('budget banner', () => {
@@ -94,12 +97,12 @@ describe('OffersInstitutionList', () => {
 
       expect(
         screen.getByText('Informations sur les crédits 2026')
-      ).toBeInTheDocument()
+      ).toBeVisible()
       expect(
         screen.getByText(
           /Les crédits pass Culture de votre établissement pour la deuxième période de l'année scolaire 2025-2026 ne sont pas encore disponibles. Vous ne pouvez donc pas réserver d'actions payantes. Les réservations d'actions gratuites et les prises de contact avec des partenaires culturels sont toujours possibles./
         )
-      ).toBeInTheDocument()
+      ).toBeVisible()
     })
 
     it('should not display budget exhaustion banner when institution has budget to spend', async () => {
@@ -114,6 +117,37 @@ describe('OffersInstitutionList', () => {
       expect(
         screen.queryByText('Informations sur les crédits 2026')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('survey satisfaction', () => {
+    it('should display survey satisfaction', async () => {
+      renderOffersForMyInstitution(defaultAdageUser)
+
+      const surveySatisfaction = await screen.findByText(
+        'Enquête de satisfaction'
+      )
+      expect(surveySatisfaction).toBeVisible()
+    })
+
+    it('should not display survey satisfaction if user role readonly', () => {
+      renderOffersForMyInstitution({
+        ...defaultAdageUser,
+        role: AdageFrontRoles.READONLY,
+      })
+
+      const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+      expect(surveySatisfaction).not.toBeInTheDocument()
+    })
+
+    it('should not display survey satisfaction', () => {
+      renderOffersForMyInstitution({
+        ...defaultAdageUser,
+        preferences: { feedback_form_closed: true },
+      })
+
+      const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+      expect(surveySatisfaction).not.toBeInTheDocument()
     })
   })
 })
