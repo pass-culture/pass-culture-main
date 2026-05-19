@@ -221,7 +221,7 @@
         {% if user.birth_date %}
           {{ user.birth_date | format_date }}&nbsp;({{ user.age }} ans)
         {% else %}
-          {{ none | placeholder_if_null(true) }}
+          {{ none | placeholder_if_empty(true) }}
         {% endif %}
       {% endcall %}
       {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
@@ -235,10 +235,10 @@
     {% endcall %}
     {% if show_personal_info %}
       {% call description_detail_vertical("Numéro de pièce d'identité") %}
-        {{ user.idPieceNumber | placeholder_if_null }}&nbsp;{{ clipboard.copy_to_clipboard(user.idPieceNumber, "Copier le numéro de pièce d'identité") }}
+        {{ user.idPieceNumber | placeholder_if_empty }}&nbsp;{{ clipboard.copy_to_clipboard(user.idPieceNumber, "Copier le numéro de pièce d'identité") }}
       {% endcall %}
       {% call description_detail_vertical("Lieu de naissance") %}
-        {{ user.birthPlace | placeholder_if_null }}
+        {{ user.birthPlace | placeholder_if_empty }}
       {% endcall %}
       {% if user.address %}
         {% call description_detail_vertical("Adresse") %}
@@ -250,11 +250,11 @@
         {% endcall %}
       {% else %}
         {% call description_detail_vertical("Adresse") %}
-          {{ none | placeholder_if_null(true) }}
+          {{ none | placeholder_if_empty(true) }}
         {% endcall %}
       {% endif %}
       {% call description_detail_vertical("Téléphone") %}
-        {{ user.phoneNumber | placeholder_if_null }}&nbsp;{{ clipboard.copy_to_clipboard(user.phoneNumber, "Copier le numéro de téléphone") }}
+        {{ user.phoneNumber | placeholder_if_empty }}&nbsp;{{ clipboard.copy_to_clipboard(user.phoneNumber, "Copier le numéro de téléphone") }}
       {% endcall %}
     {% endif %}
     {% if duplicate_user_id %}

@@ -218,14 +218,22 @@
     {% endcall %}
     {% set formats_label = collective_offer.formats | length | pluralize("Format", "Formats") %}
     {% call description_detail_vertical(formats_label) %}
-      {{ collective_offer.formats | format_collective_offer_formats }}
+      {{ collective_offer.formats | format_collective_offer_formats | placeholder_if_empty }}
     {% endcall %}
     {% set domains_label = collective_offer.domains | length | pluralize("Domaine artistique", "Domaines artistiques") %}
     {% call description_detail_vertical(domains_label) %}
-      {% for domain in collective_offer.domains %}<div>{{ domain.name }}</div>{% endfor %}
+      {% if collective_offer.domains %}
+        {% for domain in collective_offer.domains %}<div>{{ domain.name }}</div>{% endfor %}
+      {% else %}
+        {{ "" | placeholder_if_empty }}
+      {% endif %}
     {% endcall %}
     {% call description_detail_vertical("Dispositif national") %}
-      {% if collective_offer.nationalProgram %}{{ collective_offer.nationalProgram.name }}{% endif %}
+      {% if collective_offer.nationalProgram %}
+        {{ collective_offer.nationalProgram.name }}
+      {% else %}
+        {{ ""  | placeholder_if_empty }}
+      {% endif %}
     {% endcall %}
     <hr />
     {% call description_detail_vertical("Entité juridique") %}
