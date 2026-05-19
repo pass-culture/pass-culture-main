@@ -8,11 +8,10 @@ import {
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import {
-  AdageFrontRoles,
-  type CollectiveOfferResponseModel,
-  type CollectiveOfferTemplateResponseModel,
-  type VenueResponse,
+import type {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  VenueResponse,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -38,7 +37,6 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import fullGoTopIcon from '@/icons/full-go-top.svg'
 import fullGridIcon from '@/icons/full-grid.svg'
 import fullListIcon from '@/icons/full-list.svg'
-import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
 import { ShadowTipsHelpIcon } from '@/ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -46,7 +44,6 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
-import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import {
   type ToggleButton,
   ToggleButtonGroup,
@@ -96,12 +93,6 @@ export const Offers = ({
     (submitCount ?? 0) > 0 && currentDate >= highlightTargetDate
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
-
-  const { adageUser } = useAdageUser()
-
-  const showSurveySatisfaction =
-    !adageUser.preferences?.feedback_form_closed &&
-    adageUser.role !== AdageFrontRoles.READONLY
 
   const hitsIds = hits.map((hit) => Number(hit.objectID.replace('T-', '')))
   const { data, isLoading } = useSWR(
@@ -300,11 +291,6 @@ export const Offers = ({
                   />
                 )
               )}
-              {adageViewType === 'list' &&
-                index === 1 &&
-                showSurveySatisfaction && (
-                  <SurveySatisfaction queryId={results.queryID} />
-                )}
             </li>
           ))}
         </ul>
