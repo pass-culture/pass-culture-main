@@ -948,10 +948,13 @@ def _format_collective_offer_history(
         progress = (len(raw_history.past) - 1) / (len(raw_history.past) + len(raw_history.future) - 1) * 100
     for past_step in raw_history.past:
         step = {"datetime": past_step.datetime, "tooltip": "", **_get_step_update(past_step.status)}
-        if past_step.status == educational_models.CollectiveOfferDisplayedStatus.CANCELLED and booking:
-            step["tooltip"] = template_filters.format_booking_cancellation(
-                booking.cancellationReason, booking.cancellationUser
-            )
+        if past_step.status == educational_models.CollectiveOfferDisplayedStatus.CANCELLED:
+            if booking:
+                step["tooltip"] = template_filters.format_booking_cancellation(
+                    booking.cancellationReason, booking.cancellationUser
+                )
+            else:
+                step["tooltip"] = "Expirée"
         steps.append(step)
     for future_step in raw_history.future:
         steps.append(
