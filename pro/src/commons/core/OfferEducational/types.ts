@@ -9,10 +9,6 @@ import type {
   StudentLevels,
 } from '@/apiClient/v1/new'
 import type {
-  GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelV2,
-  GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelV2,
-} from '@/apiClient/v1/new'
-import type {
   AccessibilityFormValues,
   FlatAddressFormValues,
 } from '@/commons/core/shared/types'
@@ -91,18 +87,14 @@ export type OfferEducationalStockFormValues = {
 
 export const isCollectiveOffer = (
   value: unknown
-): value is
-  | GetCollectiveOfferResponseModel
-  | GetCollectiveOfferResponseModelV2 =>
+): value is GetCollectiveOfferResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   (hasProperty(value, 'isTemplate') && value.isTemplate === false) ||
   (hasProperty(value, 'isShowcase') && value.isShowcase === false)
 
 export const isCollectiveOfferTemplate = (
   value: unknown
-): value is
-  | GetCollectiveOfferTemplateResponseModel
-  | GetCollectiveOfferTemplateResponseModelV2 =>
+): value is GetCollectiveOfferTemplateResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   (hasProperty(value, 'isTemplate') && value.isTemplate === true) ||
   (hasProperty(value, 'isShowcase') && value.isShowcase === true)
