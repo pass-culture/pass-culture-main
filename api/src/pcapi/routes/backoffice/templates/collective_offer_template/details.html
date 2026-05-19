@@ -21,14 +21,6 @@
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-template-modal-" + collective_offer_template.id|string) }}
   {% endif %}
 {% endblock action_buttons %}
-{% block extra_title_bar %}
-  {% call content_navbar("offer-details") %}
-    {{ content_navbar_element('details', 'Détails') }}
-    {{ content_navbar_element('info', 'Informations pratiques') }}
-    {{ content_navbar_element('publics', 'Public concerné') }}
-    {{ content_navbar_element('contact', 'Contact du partenaire culturel') }}
-  {% endcall %}
-{% endblock extra_title_bar %}
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
     <!-- DETAILS -->
