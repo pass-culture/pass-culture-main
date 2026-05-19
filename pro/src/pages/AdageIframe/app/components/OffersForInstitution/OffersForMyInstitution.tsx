@@ -15,12 +15,17 @@ import { useAdageUser } from '../../hooks/useAdageUser'
 import { AdageBudgetInformationBanner } from '../AdageBudgetInformationBanner/AdageBudgetInformationBanner'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
+import { SurveySatisfaction } from '../SurveySatisfaction/SurveySatisfaction'
 import styles from './OffersForMyInstitution.module.scss'
 
 export const OffersForMyInstitution = () => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
   const { adageUser } = useAdageUser()
+
+  const showSurveySatisfaction =
+    !adageUser.preferences?.feedback_form_closed &&
+    adageUser.role !== AdageFrontRoles.READONLY
 
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
@@ -49,8 +54,13 @@ export const OffersForMyInstitution = () => {
   return (
     <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
+      {showSurveySatisfaction && (
+        <div className={styles['banner-container']}>
+          <SurveySatisfaction />
+        </div>
+      )}
       {!budget && (
-        <div className={styles['budget-banner-container']}>
+        <div className={styles['banner-container']}>
           <AdageBudgetInformationBanner />
         </div>
       )}
