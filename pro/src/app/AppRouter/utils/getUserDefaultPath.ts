@@ -17,7 +17,7 @@ export const getUserDefaultPath = () => {
     case !userPermissions.isSelectedPartnerVenueAssociated:
       return '/rattachement-en-cours'
 
-    case !userPermissions.isOnboarded:
+    case !userPermissions.isSelectedPartnerVenueOnboarded:
       return '/onboarding'
 
     default:

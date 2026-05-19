@@ -7,8 +7,8 @@ export const makeUserPermissions = (
   hasSelectedPartnerVenue: false,
   hasVenues: false,
   isAuthenticated: false,
-  isOnboarded: false,
   isSelectedAdminOffererAssociated: false,
   isSelectedPartnerVenueAssociated: false,
+  isSelectedPartnerVenueOnboarded: false,
   ...overrides,
 })

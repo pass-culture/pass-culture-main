@@ -26,8 +26,8 @@ describe('getCurrentUserPermissions', () => {
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: false,
-        isOnboarded: false,
         isSelectedPartnerVenueAssociated: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
     })
   })
@@ -49,8 +49,8 @@ describe('getCurrentUserPermissions', () => {
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: true,
-        isOnboarded: false,
         isSelectedPartnerVenueAssociated: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
     })
 
@@ -69,8 +69,8 @@ describe('getCurrentUserPermissions', () => {
           hasSelectedPartnerVenue: false,
           hasVenues: false,
           isAuthenticated: true,
-          isOnboarded: false,
           isSelectedPartnerVenueAssociated: false,
+          isSelectedPartnerVenueOnboarded: false,
         })
       })
     })
@@ -93,8 +93,8 @@ describe('getCurrentUserPermissions', () => {
           hasSelectedPartnerVenue: false,
           hasVenues: true,
           isAuthenticated: true,
-          isOnboarded: false,
           isSelectedPartnerVenueAssociated: false,
+          isSelectedPartnerVenueOnboarded: false,
         })
       })
 
@@ -116,8 +116,8 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: false,
             hasVenues: true,
             isAuthenticated: true,
-            isOnboarded: false,
             isSelectedPartnerVenueAssociated: false,
+            isSelectedPartnerVenueOnboarded: false,
           })
         })
       })
@@ -140,13 +140,13 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: true,
             hasVenues: true,
             isAuthenticated: true,
-            isOnboarded: false,
             isSelectedPartnerVenueAssociated: true,
+            isSelectedPartnerVenueOnboarded: false,
           })
         })
 
         describe('when venue is not onboarded', () => {
-          it('should return isOnboarded as false', () => {
+          it('should return isSelectedPartnerVenueOnboarded as false', () => {
             const userSliceState = makeUserSliceState({
               currentUser: fakeCurrentUser,
               selectedPartnerVenue: makeGetVenueResponseModel({
@@ -163,8 +163,8 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
-              isOnboarded: false,
               isSelectedPartnerVenueAssociated: true,
+              isSelectedPartnerVenueOnboarded: false,
             })
           })
         })
@@ -187,8 +187,8 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
-              isOnboarded: false,
               isSelectedPartnerVenueAssociated: false,
+              isSelectedPartnerVenueOnboarded: false,
             })
           })
         })
@@ -211,8 +211,8 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
-              isOnboarded: true,
               isSelectedPartnerVenueAssociated: true,
+              isSelectedPartnerVenueOnboarded: true,
             })
           })
         })
@@ -236,8 +236,8 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedAdminOfferer: false,
             hasVenues: true,
             isAuthenticated: true,
-            isOnboarded: false,
             isSelectedAdminOffererAssociated: false,
+            isSelectedPartnerVenueOnboarded: false,
           })
         })
       })
@@ -259,8 +259,8 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedAdminOfferer: true,
             hasVenues: true,
             isAuthenticated: true,
-            isOnboarded: false,
             isSelectedAdminOffererAssociated: true,
+            isSelectedPartnerVenueOnboarded: false,
           })
         })
 
@@ -279,8 +279,8 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedAdminOfferer: true,
               hasVenues: true,
               isAuthenticated: true,
-              isOnboarded: false,
               isSelectedAdminOffererAssociated: false,
+              isSelectedPartnerVenueOnboarded: false,
             })
           })
         })
@@ -300,8 +300,8 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedAdminOfferer: true,
               hasVenues: true,
               isAuthenticated: true,
-              isOnboarded: false,
               isSelectedAdminOffererAssociated: true,
+              isSelectedPartnerVenueOnboarded: false,
             })
           })
         })

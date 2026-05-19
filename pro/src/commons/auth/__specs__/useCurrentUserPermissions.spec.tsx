@@ -52,7 +52,7 @@ describe('useCurrentUserPermissions', () => {
     )
 
     expect(result.current.hasSelectedPartnerVenue).toBe(true)
-    expect(result.current.isOnboarded).toBe(false)
+    expect(result.current.isSelectedPartnerVenueOnboarded).toBe(false)
 
     act(() => {
       store.dispatch(
@@ -61,7 +61,7 @@ describe('useCurrentUserPermissions', () => {
     })
 
     expect(result.current.hasSelectedPartnerVenue).toBe(true)
-    expect(result.current.isOnboarded).toBe(true)
+    expect(result.current.isSelectedPartnerVenueOnboarded).toBe(true)
   })
 
   it('should return a stable reference between renders when the user slice state is unchanged', () => {

@@ -10,7 +10,7 @@ export const mustBeUnauthenticated = (userPermissions: UserPermissions) =>
   !userPermissions.isAuthenticated
 
 export const mustBeOnboardedOrSkipped = (userPermissions: UserPermissions) =>
-  userPermissions.isOnboarded ||
+  userPermissions.isSelectedPartnerVenueOnboarded ||
   document.cookie.includes(COOKIES.DID_SKIP_ONBOARDING)
 
 export const mustBeOnboardedWithSelectedPartnerVenue = (
@@ -31,7 +31,9 @@ export const mustHaveSelectedAdminOfferer = (
 
 export const mustNotBeOnboardedWithSelectedPartnerVenue = (
   userPermissions: UserPermissions
-) => userPermissions.isAuthenticated && !userPermissions.isOnboarded
+) =>
+  userPermissions.isAuthenticated &&
+  !userPermissions.isSelectedPartnerVenueOnboarded
 
 export const isNewHomepageEnabled = () => {
   const state = rootStore.getState()

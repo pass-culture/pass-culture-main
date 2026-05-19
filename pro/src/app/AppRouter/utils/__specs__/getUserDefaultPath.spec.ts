@@ -67,7 +67,7 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/hub')
   })
 
-  it('should return /rattachement-en-cours when user has selected + non-associated venue', () => {
+  it('should return /rattachement-en-cours when user has selected + no venue associated', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,

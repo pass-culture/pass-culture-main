@@ -21,12 +21,12 @@ export const getCurrentUserPermissions = (
   if (!currentUser) {
     return {
       hasSelectedPartnerVenue: false,
+      hasSelectedAdminOfferer: false,
       hasVenues: false,
       isAuthenticated: false,
-      isOnboarded: false,
       isSelectedAdminOffererAssociated: false,
       isSelectedPartnerVenueAssociated: false,
-      hasSelectedAdminOfferer: false,
+      isSelectedPartnerVenueOnboarded: false,
     }
   }
 
@@ -48,8 +48,8 @@ export const getCurrentUserPermissions = (
     hasSelectedPartnerVenue,
     hasVenues: !!venues?.length,
     isAuthenticated: true,
-    isOnboarded: !!selectedPartnerVenue?.isOnboarded,
     isSelectedAdminOffererAssociated,
     isSelectedPartnerVenueAssociated,
+    isSelectedPartnerVenueOnboarded: !!selectedPartnerVenue?.isOnboarded,
   }
 }
