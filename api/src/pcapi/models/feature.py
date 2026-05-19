@@ -152,6 +152,7 @@ class FeatureToggle(enum.Enum):
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
+    WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS = "Active la nouvelle logique de détail du prix d'une offre réservable"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -216,6 +217,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
+    FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,

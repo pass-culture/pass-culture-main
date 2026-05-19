@@ -9,7 +9,10 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
 
-ADAGE_FEATURES = (FeatureToggle.ENABLE_MARSEILLE,)
+ADAGE_FEATURES = (
+    FeatureToggle.ENABLE_MARSEILLE,
+    FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
+)
 
 
 @blueprint.adage_iframe.route("/features", methods=["GET"])
