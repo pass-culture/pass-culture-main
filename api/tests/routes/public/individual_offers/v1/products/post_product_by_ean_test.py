@@ -307,6 +307,61 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
         assert offer_1.bookingAllowedDatetime == expected_booking_allowed_datetime
 
+    @pytest.mark.parametrize(
+        "input_product_stock_dict,expected_url",
+        [
+            (  # no `externalTicketOfficeUrl` should default to None
+                {"ean": "1234567890123", "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+            (  # `externalTicketOfficeUrl=None`
+                {"ean": "1234567890123", "externalTicketOfficeUrl": None, "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+            (  # set `externalTicketOfficeUrl`
+                {
+                    "ean": "1234567890123",
+                    "externalTicketOfficeUrl": "https://bloup.com",
+                    "stock": {"price": 1234, "quantity": 3},
+                },
+                "https://bloup.com",
+            ),
+            (  # unset `externalTicketOfficeUrl`
+                {"ean": "2461567890123", "externalTicketOfficeUrl": None, "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+        ],
+    )
+    def test_external_ticket_office_url_behavior(self, input_product_stock_dict, expected_url):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="1234567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        product_with_existing_offer = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="2461567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        offers_factories.ThingOfferFactory(
+            product=product_with_existing_offer,
+            ean=product_with_existing_offer.ean,
+            venue=venue,
+            lastProvider=venue_provider.provider,
+            externalTicketOfficeUrl="https://bloup.com",
+        )
+
+        payload = {"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]}
+        response = self.make_request(plain_api_key, json_body=payload)
+
+        assert response.status_code == 204, response.json
+
+        offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
+        assert offer_1.externalTicketOfficeUrl == expected_url
+
     def test_update_stock_quantity_with_previous_bookings(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ThingProductFactory(

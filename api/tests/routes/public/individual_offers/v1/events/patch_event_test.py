@@ -486,6 +486,18 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             ]
         }
 
+    def test_update_external_ticket_office_url(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+        assert offer.externalTicketOfficeUrl is None
+
+        json_data = {"externalTicketOfficeUrl": "https://bloup.com"}
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200, response.json
+
+        assert offer.externalTicketOfficeUrl == "https://bloup.com"
+
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",
         [
@@ -572,6 +584,19 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             (
                 {"categoryRelatedFields": {"category": "CONCERT", "musicType": None}},
                 {"categoryRelatedFields": ["If musicType is set, it cannot be NULL"]},
+            ),
+            # errors on externalTicketOfficeUrl
+            (
+                {"externalTicketOfficeUrl": "https:bloup.com"},
+                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
+            ),
+            (
+                {"externalTicketOfficeUrl": 5},
+                {"externalTicketOfficeUrl": ["invalid or missing URL scheme"]},
+            ),
+            (
+                {"externalTicketOfficeUrl": ""},
+                {"externalTicketOfficeUrl": ["ensure this value has at least 1 characters"]},
             ),
         ],
     )

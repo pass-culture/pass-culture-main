@@ -498,6 +498,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
+    external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH

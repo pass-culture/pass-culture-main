@@ -93,6 +93,7 @@ class UpdateOfferAndRelatedStockTest:
             "booking_limit_datetime": stock.bookingLimitDatetime,
             "publication_datetime": stock.offer.publicationDatetime,
             "booking_allowed_datetime": stock.offer.bookingAllowedDatetime,
+            "external_ticket_office_url": stock.offer.externalTicketOfficeUrl,
         }
         base_dict.update(**partial_dict)
 
@@ -194,6 +195,7 @@ class UpdateOfferAndRelatedStockTest:
                 "booking_limit_datetime": None,
                 "publication_datetime": offer.publicationDatetime,
                 "booking_allowed_datetime": offer.bookingAllowedDatetime,
+                "external_ticket_office_url": offer.externalTicketOfficeUrl,
             },
             provider=provider_1,
             offerer_address=offer.offererAddress,
@@ -204,6 +206,29 @@ class UpdateOfferAndRelatedStockTest:
         assert stock.price == decimal.Decimal("5.50")
         assert stock.bookingLimitDatetime == None
         assert stock.quantity == 10
+
+    @pytest.mark.parametrize(
+        "initial_url,input_url,final_url",
+        [
+            (None, None, None),
+            (None, "https://bloup.com", "https://bloup.com"),
+            ("https://bloup.com", None, None),
+            ("https://bloup.com", "https://blip.com", "https://blip.com"),
+        ],
+    )
+    def test_should_update_offer_external_ticket_office_url(self, initial_url, input_url, final_url):
+        provider_1 = providers_factories.PublicApiProviderFactory()
+        stock = factories.ThingStockFactory(
+            offer__lastProvider=provider_1,
+            offer__externalTicketOfficeUrl=initial_url,
+        )
+        _, updated_offer = tasks._update_offer_and_related_stock(
+            stock.offer,
+            self._get_serialized_stock_dict(stock, {"external_ticket_office_url": input_url}),
+            provider=provider_1,
+            offerer_address=stock.offer.offererAddress,
+        )
+        assert updated_offer.externalTicketOfficeUrl == final_url
 
     def test_should_update_stock_price(self):
         provider_1 = providers_factories.PublicApiProviderFactory()

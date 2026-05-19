@@ -141,6 +141,7 @@ class SerializedProductsStock(typing.TypedDict):
     booking_limit_datetime: datetime.datetime | None
     publication_datetime: datetime.datetime | None
     booking_allowed_datetime: datetime.datetime | None
+    external_ticket_office_url: HttpUrl | None
 
 
 class CreateOrUpdateEANOffersRequest(BaseModel):
