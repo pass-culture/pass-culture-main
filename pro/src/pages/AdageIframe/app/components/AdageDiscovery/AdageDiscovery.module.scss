@@ -10,3 +10,7 @@
 .playlist-carousel-title {
   @include fonts.title2;
 }
+
+.survey-container {
+  margin: var(--size-spacing-xl);
+}

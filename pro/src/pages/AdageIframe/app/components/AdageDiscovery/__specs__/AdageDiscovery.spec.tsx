@@ -172,4 +172,38 @@ describe('AdageDiscovery', () => {
       expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
     })
   })
+
+  describe('survey satisfaction', () => {
+    it('should display survey satisfaction', async () => {
+      renderAdageDiscovery(user)
+
+      const surveySatisfaction = await screen.findByText(
+        'Enquête de satisfaction'
+      )
+      expect(surveySatisfaction).toBeInTheDocument()
+    })
+
+    it('should not display survey satisfaction if user role readonly', async () => {
+      renderAdageDiscovery({
+        ...user,
+        role: AdageFrontRoles.READONLY,
+      })
+      await waitFor(() => {
+        const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+        expect(surveySatisfaction).not.toBeInTheDocument()
+      })
+    })
+
+    it('should not display survey satisfaction', async () => {
+      renderAdageDiscovery({
+        ...user,
+        preferences: { feedback_form_closed: true },
+      })
+
+      await waitFor(() => {
+        const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+        expect(surveySatisfaction).not.toBeInTheDocument()
+      })
+    })
+  })
 })
