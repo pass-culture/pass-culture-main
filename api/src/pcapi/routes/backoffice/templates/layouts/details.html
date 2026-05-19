@@ -57,8 +57,8 @@
   </div>
 {% endmacro %}
 {% macro nav_section(section_name, title) %}
-  <div>
-    <h4 class="pt-3 pb-2{{ ' focus' if (active_tab == section_name) else ''}}"
+  <div class="pt-4">
+    <h4 class="{{ ' focus' if (active_tab == section_name) else ''}}"
         id="{{ section_name }}-section">{{ title }}</h4>
     {{ caller() }}
   </div>
