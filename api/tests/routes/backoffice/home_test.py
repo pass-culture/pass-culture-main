@@ -5,6 +5,7 @@ from flask import flash
 from flask import url_for
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.cultural_outreach import factories as cultural_outreach_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -103,6 +104,7 @@ class HomePageTest:
             "4 offres collectives vitrine en attente CONSULTER",
             "0 dossier DN non affecté CONSULTER",
             "0 dossier DN suivi CONSULTER",
+            "0 offre individuelle avec action de médiation à qualifier CONSULTER",
         ]
         # No card for "entité juridique en attente de conformité" because tag "conformité" does not exist
 
@@ -129,6 +131,7 @@ class HomePageTest:
             "1 entité juridique en attente de conformité CONSULTER",
             "0 dossier DN non affecté CONSULTER",
             "0 dossier DN suivi CONSULTER",
+            "0 offre individuelle avec action de médiation à qualifier CONSULTER",
         ]
 
     def test_view_home_page_with_user_account_update_requests_stats(self, legit_user, authenticated_client):
@@ -146,6 +149,7 @@ class HomePageTest:
             "0 offre collective vitrine en attente CONSULTER",
             "2 dossiers DN non affectés CONSULTER",
             "1 dossier DN suivi CONSULTER",
+            "0 offre individuelle avec action de médiation à qualifier CONSULTER",
         ]
 
     def test_view_home_page_without_user_account_update_requests_stats(self, legit_user, authenticated_client):
@@ -161,6 +165,23 @@ class HomePageTest:
             "0 offre individuelle en attente CONSULTER",
             "0 offre collective en attente CONSULTER",
             "0 offre collective vitrine en attente CONSULTER",
+            "0 offre individuelle avec action de médiation à qualifier CONSULTER",
+        ]
+
+    def test_view_home_page_with_pending_claimed_cultural_outreach_stats(self, authenticated_client):
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory.create_batch(5)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.home"))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert cards_text == [
+            "0 offre individuelle en attente CONSULTER",
+            "0 offre collective en attente CONSULTER",
+            "0 offre collective vitrine en attente CONSULTER",
+            "0 dossier DN non affecté CONSULTER",
+            "0 dossier DN suivi CONSULTER",
+            "5 offres individuelles avec actions de médiation à qualifier CONSULTER",
         ]
 
 
