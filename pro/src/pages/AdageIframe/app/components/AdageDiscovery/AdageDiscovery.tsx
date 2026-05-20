@@ -1,4 +1,4 @@
-import { createRef, useRef } from 'react'
+import { createRef, useRef, useState } from 'react'
 
 import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -39,9 +39,11 @@ export const AdageDiscovery = () => {
 
   const discoveryRef = useRef<HTMLDivElement>(null)
 
-  const showSurveySatisfaction =
-    !adageUser.preferences?.feedback_form_closed &&
-    adageUser.role !== AdageFrontRoles.READONLY
+  const [shouldShowSurveySatisfaction, setShouldShowSurveySatisfaction] =
+    useState(
+      !adageUser.preferences?.feedback_form_closed &&
+        adageUser.role !== AdageFrontRoles.READONLY
+    )
 
   if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
     apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
@@ -103,9 +105,11 @@ export const AdageDiscovery = () => {
             observableRef={discoveryRef}
           />
         </div>
-        {showSurveySatisfaction && (
+        {shouldShowSurveySatisfaction && (
           <div className={styles['survey-container']}>
-            <SurveySatisfaction />
+            <SurveySatisfaction
+              onClose={() => setShouldShowSurveySatisfaction(false)}
+            />
           </div>
         )}
         <div>

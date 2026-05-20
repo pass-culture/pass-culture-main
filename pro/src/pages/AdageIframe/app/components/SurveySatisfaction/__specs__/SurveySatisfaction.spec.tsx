@@ -21,9 +21,11 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+const mockOnclose = vi.fn()
 describe('SurveySatisfaction', () => {
   const defaultProps = {
     queryId: '123',
+    onClose: mockOnclose,
   }
   it('should close survey satisfaction', async () => {
     const user = userEvent.setup()
@@ -42,6 +44,22 @@ describe('SurveySatisfaction', () => {
       expect(
         screen.queryByText('Enquête de satisfaction')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should call close callback on close survey', async () => {
+    const user = userEvent.setup()
+
+    renderWithProviders(<SurveySatisfaction {...defaultProps} />)
+    screen.getByText('Enquête de satisfaction')
+    const closeButton = screen.getByRole('button', {
+      name: 'J’ai déjà répondu',
+    })
+
+    await user.click(closeButton)
+
+    await waitFor(() => {
+      expect(mockOnclose).toHaveBeenCalledOnce()
     })
   })
 

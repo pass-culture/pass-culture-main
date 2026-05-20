@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import useSWR from 'swr'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -27,6 +28,9 @@ export const OffersForMyInstitution = () => {
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
 
+  const [shouldShowSurveySatisfaction, setShouldShowSurveySatisfaction] =
+    useState(showSurveySatisfaction)
+
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
     () => apiAdage.getCollectiveOffersForMyInstitution(),
@@ -54,9 +58,11 @@ export const OffersForMyInstitution = () => {
   return (
     <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
-      {showSurveySatisfaction && (
+      {shouldShowSurveySatisfaction && (
         <div className={styles['banner-container']}>
-          <SurveySatisfaction />
+          <SurveySatisfaction
+            onClose={() => setShouldShowSurveySatisfaction(false)}
+          />
         </div>
       )}
       {!budget && (
