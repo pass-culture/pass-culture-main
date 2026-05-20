@@ -54,8 +54,8 @@ from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
-from pcapi.utils.repository import atomic
 from pcapi.utils.requests import ExternalAPIException
+from pcapi.utils.transaction_manager import atomic
 
 
 if typing.TYPE_CHECKING:

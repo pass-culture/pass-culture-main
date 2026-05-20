@@ -24,7 +24,7 @@ from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
-from pcapi.utils.repository import atomic
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 
