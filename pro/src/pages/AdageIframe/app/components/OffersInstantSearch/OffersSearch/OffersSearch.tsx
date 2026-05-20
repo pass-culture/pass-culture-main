@@ -143,19 +143,28 @@ export const OffersSearch = ({
     })
   }
 
+  const lastLoggedFiltersRef = useRef<string | null>(null)
+
   const logFiltersOnSearch = useCallback(
     async (nbHits: number, queryId?: string) => {
       /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
       if (form.formState.submitCount > 0 || adageQueryFromSelector !== null) {
+        const filterValues = serializeFiltersForData(
+          form.watch(),
+          adageQueryFromSelector,
+          domainsOptions
+        )
+        const serializedFilters = JSON.stringify(filterValues)
+        if (serializedFilters === lastLoggedFiltersRef.current) {
+          return
+        }
+        lastLoggedFiltersRef.current = serializedFilters
+
         await logTrackingFilter({
           iframeFrom: location.pathname,
           resultNumber: nbHits,
           queryId: queryId ?? null,
-          filterValues: serializeFiltersForData(
-            form.watch(),
-            adageQueryFromSelector,
-            domainsOptions
-          ),
+          filterValues,
         })
       }
     },
