@@ -85,5 +85,21 @@
                 url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], last_instructor=current_user.id) ) }}
       </div>
     {% endif %}
+    {% if has_permission("MANAGE_CULTURAL_OUTREACH") %}
+      <div class="row row-cols-4 g-3 py-4">
+        {% set offers_params = {
+          "search-0-search_field": "VALIDATION",
+          "search-0-operator": "IN",
+          "search-0-validation": "APPROVED",
+          "search-1-search_field": "CULTURAL_OUTREACH",
+          "search-1-operator": "IN",
+          "search-1-cultural_outreach": "PENDING"
+        } %}
+        {{ stats_card(pending_claimed_cultural_outreach_count,
+                "offre individuelle avec action de médiation à qualifier",
+                "offres individuelles avec actions de médiation à qualifier",
+                url_for("backoffice_web.offer.list_offers", **offers_params) ) }}
+      </div>
+    {% endif %}
   </div>
 {% endblock page %}

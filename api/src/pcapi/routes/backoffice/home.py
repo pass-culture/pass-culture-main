@@ -7,6 +7,7 @@ from flask import request
 from flask_login import current_user
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -119,6 +120,21 @@ def _get_user_account_update_requests_stats() -> list[sa.sql.elements.Label]:
     return [pending_unassigned_update_requests_count_subquery, pending_self_update_requests_count_subquery]
 
 
+def _get_claimed_cultural_outreach_stats() -> list[sa.sql.elements.Label]:
+    pending_claimed_cultural_outreach_subquery = (
+        sa.select(sa.func.count(cultural_outreach_models.CulturalOutreach.id))
+        .select_from(cultural_outreach_models.CulturalOutreach)
+        .join(offers_models.Offer)
+        .filter(
+            offers_models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            cultural_outreach_models.CulturalOutreach.status == cultural_outreach_models.CulturalOutreachStatus.PENDING,
+        )
+        .scalar_subquery()
+        .label("pending_claimed_cultural_outreach_count")
+    )
+    return [pending_claimed_cultural_outreach_subquery]
+
+
 @blueprint.backoffice_web.route("/", methods=["GET"])
 def home() -> response_utils.BackofficeResponse:
     if not current_user or current_user.is_anonymous:
@@ -142,6 +158,9 @@ def home() -> response_utils.BackofficeResponse:
         and current_user.backoffice_profile.dsInstructorId
     ):
         subqueries += _get_user_account_update_requests_stats()
+
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH):
+        subqueries += _get_claimed_cultural_outreach_stats()
 
     if subqueries:
         stats = db.session.execute(sa.select(*subqueries)).one()
