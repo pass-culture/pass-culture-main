@@ -51,12 +51,7 @@ describe('ModalHighlight', () => {
     // communicationDate minus 5 days
     expect(screen.getByText('27/01/2025')).toBeInTheDocument()
 
-    expect(
-      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-      await axe(container, {
-        rules: { 'color-contrast': { enabled: false } },
-      })
-    ).toHaveNoViolations()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should log info to data', async () => {

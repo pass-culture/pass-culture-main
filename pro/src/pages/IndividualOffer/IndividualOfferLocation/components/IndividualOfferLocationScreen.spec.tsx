@@ -149,12 +149,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           await screen.findByRole('heading', { name: LABELS.titles.main })
         ).toBeInTheDocument()
 
-        expect(
-          //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-          await axe(container, {
-            rules: { 'color-contrast': { enabled: false } },
-          })
-        ).toHaveNoViolations()
+        expect(await axe(container)).toHaveNoViolations()
       })
 
       it('should submit the venue address payload when a venue address is selected', async () => {
@@ -212,12 +207,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           await screen.findByRole('heading', { name: LABELS.titles.main })
         ).toBeInTheDocument()
 
-        expect(
-          //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-          await axe(container, {
-            rules: { 'color-contrast': { enabled: false } },
-          })
-        ).toHaveNoViolations()
+        expect(await axe(container)).toHaveNoViolations()
       })
 
       describe('should open the update warning dialog before saving when address changed and offer has pending bookings', () => {
@@ -351,12 +341,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           await screen.findByRole('heading', { name: LABELS.titles.main })
         ).toBeInTheDocument()
 
-        expect(
-          //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-          await axe(container, {
-            rules: { 'color-contrast': { enabled: false } },
-          })
-        ).toHaveNoViolations()
+        expect(await axe(container)).toHaveNoViolations()
       })
 
       it('should render without error even when url is null', async () => {
@@ -390,12 +375,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           await screen.findByRole('heading', { name: LABELS.titles.main })
         ).toBeInTheDocument()
 
-        expect(
-          //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-          await axe(container, {
-            rules: { 'color-contrast': { enabled: false } },
-          })
-        ).toHaveNoViolations()
+        expect(await axe(container)).toHaveNoViolations()
       })
 
       it('should show only the URL field', async () => {
