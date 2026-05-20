@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
-import type AvatarEditor from 'react-avatar-editor'
+import type { AvatarEditorRef } from 'react-avatar-editor'
 
 type CroppedRect = { x: number; y: number; width: number; height: number }
 
@@ -99,7 +99,7 @@ export const ModalImageUpsertOrEdit = ({
       ? coordonateToPosition(initalYCropPercent, initalHeightCropPercent)
       : defaultPositions.y
 
-  const editorRef = useRef<AvatarEditor>(null)
+  const editorRef = useRef<AvatarEditorRef>(null)
   const snackBar = useSnackBar()
   const [isLoadingImage, setIsLoadingImage] = useState(
     !!previouslyUploadedImageUrl

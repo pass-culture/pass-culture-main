@@ -1,5 +1,8 @@
 import { forwardRef, useCallback, useEffect, useId, useState } from 'react'
-import AvatarEditor, { type Position } from 'react-avatar-editor'
+import AvatarEditor, {
+  type AvatarEditorRef,
+  type Position,
+} from 'react-avatar-editor'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { Slider } from '@/ui-kit/form/Slider/Slider'
@@ -43,7 +46,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   onImageError?: () => void
 }
 
-export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
+export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
   (
     {
       image,
@@ -139,7 +142,14 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     }
 
     return (
-      <div className={style['image-editor']}>
+      <div
+        className={style['image-editor']}
+        ref={(el) =>
+          el
+            ?.querySelector('canvas')
+            ?.setAttribute('aria-label', "Editeur d'image")
+        }
+      >
         <AvatarEditor
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
@@ -163,7 +173,6 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
               responsiveCropBorderHeight,
             ] as unknown as number
           }
-          aria-label="Editeur d'image"
         />
         <label className={style['image-editor-label']} htmlFor="scale">
           Zoom
