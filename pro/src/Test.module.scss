@@ -1,0 +1,32 @@
+.used-orphan-class {
+  background-color: green;
+}
+
+.unused-orphan-class {
+  background-color: red;
+}
+
+.partially-used-parent-class {
+  &--used-child-class {
+    background-color: green;
+  }
+
+  &--unused-child-class {
+    background-color: red;
+  }
+
+  /* check-unused-css-disable-next-line */
+  &--unused-child-class--ignored {
+    background-color: red;
+  }
+
+  &--partially-used-child-class {
+    &--used-grandchild-class {
+      background-color: green;
+    }
+
+    &--unused-grandchild-class {
+      background-color: red;
+    }
+  }
+}
