@@ -461,6 +461,8 @@ class OfferDetailsActionType(enum.StrEnum):
     TAG_WEIGHT = enum.auto()
     RESYNC = enum.auto()
     EDIT_VENUE = enum.auto()
+    QUALIFY_CULTURAL_OUTREACH = enum.auto()
+    DISQUALIFY_CULTURAL_OUTREACH = enum.auto()
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
@@ -1268,6 +1270,187 @@ def validate_offer(offer_id: int) -> response_utils.BackofficeResponse:
     return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
 
 
+@list_offers_blueprint.route("/<int:offer_id>/qualify", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def get_qualify_cultural_outreach_form(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.DynamicForm(request_utils.get_query_params())
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
+        form=form,
+        dst=url_for("backoffice_web.offer.qualify_cultural_outreach", offer_id=offer.id),
+        div_id=f"qualify-cultural-outreach-modal-{offer.id}",
+        title=f"Qualification de l'action de médiation pour l'offre: {offer.name}",
+        button_text="Qualifier",
+        ajax_submit=not form.redirect.data,
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/qualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def qualify_cultural_outreach(offer_id: int) -> response_utils.BackofficeResponse:
+    _batch_qualify_cultural_outreach([offer_id])
+    flash("L'action de médiation à été qualifiée", "success")
+
+    if request_utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+
+
+@list_offers_blueprint.route("/batch/qualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def get_batch_qualify_cultural_outreach_form() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
+        form=form,
+        dst=url_for("backoffice_web.offer.batch_qualify_cultural_outreach"),
+        div_id="batch-qualify-cultural-outreach-modal",
+        title="Voulez-vous qualifier les actions de médiation des offres sélectionnées ?",
+        button_text="Qualifier",
+    )
+
+
+@list_offers_blueprint.route("/batch-qualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def batch_qualify_cultural_outreach() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, code=400)
+
+    _batch_qualify_cultural_outreach(form.object_ids_list)
+    flash("Les actions de médiation ont été qualifiées", "success")
+    return _render_offer_rows(form.object_ids_list)
+
+
+def _batch_qualify_cultural_outreach(offer_ids: list[int]) -> None:
+    """
+    This method will qualify cultural outreach as following
+    - if the offer has a claimed cultural outreach, it will update the CulturalOutreachStatus to QUALIFIED
+    - if the offer has no claimed cultural outreach yet, it will create a cultural outreach for
+    this offer, with a None as claimedDatetime and a CulturalOutreachStatus set to QUALIFIED
+    """
+    offers = (
+        db.session.query(offers_models.Offer)
+        .options(sa_orm.joinedload(offers_models.Offer.culturalOutreach))
+        .filter(offers_models.Offer.id.in_(offer_ids))
+        .all()
+    )
+
+    new_outreaches = []
+
+    for offer in offers:
+        if offer.culturalOutreach is not None:
+            offer.culturalOutreach.status = cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+        else:
+            new_outreach = cultural_outreach_models.CulturalOutreach(
+                offerId=offer.id,
+                claimedDatetime=None,
+                status=cultural_outreach_models.CulturalOutreachStatus.QUALIFIED,
+            )
+            new_outreaches.append(new_outreach)
+
+    if new_outreaches:
+        db.session.add_all(new_outreaches)
+
+    db.session.flush()
+
+
+@list_offers_blueprint.route("/<int:offer_id>/disqualify", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def get_disqualify_cultural_outreach_form(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.DynamicForm(request_utils.get_query_params())
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
+        form=form,
+        dst=url_for("backoffice_web.offer.disqualify_cultural_outreach", offer_id=offer.id),
+        div_id=f"disqualify-cultural-outreach-modal-{offer.id}",
+        title=f"Disqualification de l'action de médiation pour l'offre: {offer.name}",
+        button_text="Disqualifier",
+        ajax_submit=not form.redirect.data,
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/disqualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def disqualify_cultural_outreach(offer_id: int) -> response_utils.BackofficeResponse:
+    update = _batch_disqualify_cultural_outreach([offer_id])
+    if update:
+        flash("L'action de médiation à été disqualifiée", "success")
+    else:
+        flash("Aucune action n'a été effectuée", "warning")
+
+    if request_utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
+    return request_utils.safe_redirect_back(request, url_for("backoffice_web.offer.list_offers"))
+
+
+@list_offers_blueprint.route("/batch/disqualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def get_batch_disqualify_cultural_outreach_form() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
+        form=form,
+        dst=url_for("backoffice_web.offer.batch_disqualify_cultural_outreach"),
+        div_id="batch-disqualify-cultural-outreach-modal",
+        title="Voulez-vous disqualifier les actions de médiation des offres sélectionnées ?",
+        button_text="Disqualifier",
+    )
+
+
+@list_offers_blueprint.route("/batch-disqualify", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH)
+def batch_disqualify_cultural_outreach() -> response_utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, code=400)
+
+    update = _batch_disqualify_cultural_outreach(form.object_ids_list)
+    if update:
+        flash("Les actions de médiation ont été disqualifiées", "success")
+    else:
+        flash("Aucune action n'a été effectuée", "warning")
+
+    return _render_offer_rows(form.object_ids_list)
+
+
+def _batch_disqualify_cultural_outreach(offer_ids: list[int]) -> bool:
+    """
+    This method will disqualify cultural outreach as following
+    - if the offer(s) has a claimed cultural outreach, it will update the CulturalOutreachStatus to DISQUALIFIED
+    - if the offer(s) has no claimed cultural outreach, it will do nothing
+    - returns False if no update have been made
+    """
+    count = (
+        db.session.query(cultural_outreach_models.CulturalOutreach)
+        .filter(cultural_outreach_models.CulturalOutreach.offerId.in_(offer_ids))
+        .update(
+            {"status": cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED},
+            synchronize_session=False,
+        )
+    )
+    db.session.flush()
+    return bool(count)
+
+
 @list_offers_blueprint.route("/<int:offer_id>/pending", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_pending_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
@@ -1518,6 +1701,9 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> De
         offer_details_actions.add_action(OfferDetailsActionType.TAG_WEIGHT)
     if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.RESYNC)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_CULTURAL_OUTREACH):
+        offer_details_actions.add_action(OfferDetailsActionType.QUALIFY_CULTURAL_OUTREACH)
+        offer_details_actions.add_action(OfferDetailsActionType.DISQUALIFY_CULTURAL_OUTREACH)
 
     #################################################################################################
     # Caution !!! EDIT_VENUE action is added in get_offer_details to avoid duplicated stock queries #

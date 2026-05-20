@@ -478,6 +478,10 @@
   {% if allowed_actions.actions.VALIDATE in allowed_actions %}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
+  {% if allowed_actions.actions.QUALIFY_CULTURAL_OUTREACH in allowed_actions %}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_qualify_cultural_outreach_form', offer_id=offer.id) , "qualify-cultural-outreach-modal-" + offer.id|string, ajax_submit = False) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_disqualify_cultural_outreach_form', offer_id=offer.id) , "qualify-cultural-outreach-modal-" + offer.id|string, ajax_submit = False) }}
+  {% endif %}
   {% if allowed_actions.actions.PENDING in allowed_actions %}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_pending_offer_form', offer_id=offer.id) , "pending-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
