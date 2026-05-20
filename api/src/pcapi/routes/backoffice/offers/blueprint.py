@@ -20,6 +20,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import insert
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
@@ -1338,29 +1339,22 @@ def _batch_qualify_cultural_outreach(offer_ids: list[int]) -> None:
     - if the offer has no claimed cultural outreach yet, it will create a cultural outreach for
     this offer, with a None as claimedDatetime and a CulturalOutreachStatus set to QUALIFIED
     """
-    offers = (
-        db.session.query(offers_models.Offer)
-        .options(sa_orm.joinedload(offers_models.Offer.culturalOutreach))
-        .filter(offers_models.Offer.id.in_(offer_ids))
-        .all()
+    values_to_update = [
+        {
+            "offerId": offer_id,
+            "claimedDatetime": None,
+            "status": cultural_outreach_models.CulturalOutreachStatus.QUALIFIED,
+        }
+        for offer_id in offer_ids
+    ]
+    stmt = insert(cultural_outreach_models.CulturalOutreach).values(values_to_update)
+
+    upsert_stmt = stmt.on_conflict_do_update(
+        index_elements=["offerId"],  # if offer already has a cultural outreach
+        set_={"status": stmt.excluded.status},  # fallback to the excluded row's status (always QUALIFIED here)
     )
 
-    new_outreaches = []
-
-    for offer in offers:
-        if offer.culturalOutreach is not None:
-            offer.culturalOutreach.status = cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
-        else:
-            new_outreach = cultural_outreach_models.CulturalOutreach(
-                offerId=offer.id,
-                claimedDatetime=None,
-                status=cultural_outreach_models.CulturalOutreachStatus.QUALIFIED,
-            )
-            new_outreaches.append(new_outreach)
-
-    if new_outreaches:
-        db.session.add_all(new_outreaches)
-
+    db.session.execute(upsert_stmt)
     db.session.flush()
 
 

@@ -2543,9 +2543,7 @@ class BatchQualifyCulturalOutreachTest(PostEndpointHelper):
         parameter_ids = ",".join(str(offer.id) for offer in offers)
 
         expected_queries = 1  # user + session
-        expected_queries += 1  # select offer & cultural outreach
-        expected_queries += 1  # update cultural outreach
-        expected_queries += 1  # insert cultural outreach (for the "unclaimed_offer")
+        expected_queries += 1  # upsert cultural outreach
         expected_queries += 1  # select offerer
         expected_queries += 1  # select offerer_address
         expected_queries += 1  # select venue
