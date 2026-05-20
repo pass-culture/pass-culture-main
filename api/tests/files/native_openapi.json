@@ -7424,6 +7424,15 @@
                         "default": null,
                         "title": "Longitude"
                     },
+                    "retrievalModel": {
+                        "default": "coreservation",
+                        "enum": [
+                            "coreservation",
+                            "graph"
+                        ],
+                        "title": "Retrievalmodel",
+                        "type": "string"
+                    },
                     "searchGroupNames": {
                         "anyOf": [
                             {
@@ -11802,6 +11811,21 @@
                             ],
                             "default": null,
                             "title": "Searchgroupnames"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "retrievalModel",
+                        "required": false,
+                        "schema": {
+                            "default": "coreservation",
+                            "enum": [
+                                "coreservation",
+                                "graph"
+                            ],
+                            "title": "Retrievalmodel",
+                            "type": "string"
                         }
                     }
                 ],
