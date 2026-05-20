@@ -16,7 +16,7 @@ from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.gcp import GCPData
 from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
 from pcapi.models import db
-from pcapi.utils.repository import atomic
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
