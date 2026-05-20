@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import Field
 from pydantic import field_validator
 
@@ -10,6 +12,7 @@ class SimilarOffersRequestQuery(HttpBodyModel):
     categories: list[str] | None = None
     subcategories: list[str] | None = None
     search_group_names: list[str] | None = None
+    retrieval_model: Literal["coreservation", "graph"] = "coreservation"
 
     @field_validator("categories", "subcategories", "search_group_names", mode="before")
     def validate_categories(cls, v: list[str] | str | None) -> list[str] | None:

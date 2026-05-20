@@ -59,6 +59,47 @@ class SimilarOffersTest:
             assert response.status_code == 200
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
         assert query["longitude"] == "12.23"
+        assert query["retrieval_model"] == "coreservation"
+
+    def test_coreservation_explicit_matches_default(self, client):
+        default_response = client.get("/native/v1/recommendation/similar_offers/2")
+        explicit_response = client.get(
+            "/native/v1/recommendation/similar_offers/2",
+            params={"retrievalModel": "coreservation"},
+        )
+
+        assert default_response.status_code == 200
+        assert explicit_response.status_code == 200
+        assert explicit_response.json["results"] == default_response.json["results"]
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_retrieval_model_defaults_to_coreservation(self, requests_mock, client):
+        mocked = requests_mock.get("https://example.com/recommendation/similar_offers/2")
+
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/similar_offers/2")
+            assert response.status_code == 200
+        query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
+        assert query["retrieval_model"] == "coreservation"
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_retrieval_model_graph_is_forwarded(self, requests_mock, client):
+        mocked = requests_mock.get("https://example.com/recommendation/similar_offers/2")
+
+        with testing.assert_num_queries(0):
+            response = client.get(
+                "/native/v1/recommendation/similar_offers/2",
+                params={"retrievalModel": "graph"},
+            )
+            assert response.status_code == 200
+        query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
+        assert query["retrieval_model"] == "graph"
 
     @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
@@ -73,7 +114,11 @@ class SimilarOffersTest:
             assert response.status_code == 200
         query = urllib.parse.parse_qsl(mocked.last_request.query)
 
-        assert query == [("categories", "TEST_CATEGORY"), ("categories", "TEST_CATEGORY2")]
+        assert query == [
+            ("categories", "TEST_CATEGORY"),
+            ("categories", "TEST_CATEGORY2"),
+            ("retrieval_model", "coreservation"),
+        ]
 
     @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
