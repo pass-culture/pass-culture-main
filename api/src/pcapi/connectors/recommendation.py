@@ -38,6 +38,12 @@ def get_similar_offers(offer_id: int, user: users_models.User | None = None, par
     return backend.get_similar_offers(offer_id, user, params)
 
 
+def get_similar_artists(artist_id: str, params: dict | None = None) -> bytes:
+    backend = _get_backend()
+    params = params or {}
+    return backend.get_similar_artists(artist_id, params)
+
+
 def get_playlist(user: users_models.User, params: dict | None = None, body: dict | None = None) -> bytes:
     backend = _get_backend()
     params = params or {}
@@ -47,6 +53,9 @@ def get_playlist(user: users_models.User, params: dict | None = None, body: dict
 
 class BaseBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
+        raise NotImplementedError()
+
+    def get_similar_artists(self, artist_id: str, params: dict) -> bytes:
         raise NotImplementedError()
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
@@ -62,6 +71,16 @@ class TestingBackend:
                 "reco_origin": "unknown",
                 "model_origin": "default",
                 "call_id": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
+            },
+        }
+        return bytes(json.dumps(response), encoding="utf-8")
+
+    def get_similar_artists(self, artist_id: str, params: dict) -> bytes:
+        response = {
+            "similar_artists": [],
+            "params": {
+                "artist_id": artist_id,
+                "call_id": "00000000-0000-0000-0000-000000000000",
             },
         }
         return bytes(json.dumps(response), encoding="utf-8")
@@ -112,6 +131,10 @@ class HttpBackend:
         # the Recommendation API, but let's be defensive.
         params.pop("user_id", None)
         params["userId"] = str(user.id) if user else None
+        return self._request("get", path, params=params)
+
+    def get_similar_artists(self, artist_id: str, params: dict) -> bytes:
+        path = f"/similar_artists/{artist_id}"
         return self._request("get", path, params=params)
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:

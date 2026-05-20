@@ -41,3 +41,15 @@ def get_filtered_artists_for_search(search_value: str) -> list[models.Artist]:
         .limit(5)
         .all()
     )
+
+
+def get_artists_by_ids(artist_ids: list[str]) -> list[models.Artist]:
+    """Fetch eligible artists by IDs, preserving no particular order (caller is responsible for ordering)."""
+    return (
+        db.session.query(models.Artist)
+        .filter(
+            models.Artist.id.in_(artist_ids),
+            get_artist_search_eligibility_subquery(),
+        )
+        .all()
+    )
