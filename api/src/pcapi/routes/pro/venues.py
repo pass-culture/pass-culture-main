@@ -367,12 +367,12 @@ def get_venue_addresses(
 
 
 def _build_venue_response(venue: Venue) -> venue_serialize.GetVenueResponseModel:
-    offerer_with_extradata = offerers_repository.get_offerer_and_extradata(venue.managingOffererId)
-    if not offerer_with_extradata:
+    is_offerer_onboarded = offerers_repository.get_offerer_is_onboarded(venue.managingOffererId)
+    if is_offerer_onboarded is None:
         raise resource_not_found_error()
 
     return venue_serialize.GetVenueResponseModel.build(
         venue,
         has_non_free_offers=offerers_repository.venue_has_non_free_offers(venue.id),
-        is_onboarded=offerer_with_extradata.isOnboarded,
+        is_onboarded=is_offerer_onboarded,
     )

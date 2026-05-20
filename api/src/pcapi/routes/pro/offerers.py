@@ -423,7 +423,7 @@ def synchronize_offerer_onboarding(offerer_id: int) -> None:
         )
 
     try:
-        has_ds_application: bool | None = api.synchronize_from_ds_and_check_application(offerer_id)
+        has_ds_application = api.synchronize_from_ds_and_check_application(offerer_id)
     except Exception as exception:
         has_ds_application = None
         logger.error(

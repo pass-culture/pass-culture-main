@@ -218,10 +218,7 @@ class OfferFactory(BaseFactory[models.Offer]):
             and kwargs.get("validation") != models.OfferValidationStatus.DRAFT
             and "publicationDatetime" not in kwargs
         ):
-            # TODO (igabriele, 2026-05-18): `datetime.datetime.now(datetime.UTC)` instead of `datetime.datetime.now()`?
-            # `datetime.datetime.now()` returns a naive timestamp which makes "5 min ago" a future date
-            # for positive time offsets, effectively making the offer unpublished when run in said... France.
-            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+            kwargs["publicationDatetime"] = datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=5)
 
         if kwargs.get("validation") != models.OfferValidationStatus.DRAFT and "finalizationDatetime" not in kwargs:
             kwargs["finalizationDatetime"] = datetime.datetime.now()
