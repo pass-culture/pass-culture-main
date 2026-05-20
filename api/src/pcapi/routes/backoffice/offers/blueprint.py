@@ -56,6 +56,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
@@ -953,39 +954,6 @@ def list_llm_offers() -> response_utils.BackofficeResponse:
     )
 
 
-@list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
-@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def get_edit_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
-    offer = (
-        db.session.query(offers_models.Offer)
-        .filter_by(id=offer_id)
-        .options(
-            sa_orm.joinedload(offers_models.Offer.criteria).load_only(
-                criteria_models.Criterion.id, criteria_models.Criterion.name
-            )
-        )
-        .one_or_none()
-    )
-    if not offer:
-        raise NotFound()
-
-    form = forms.EditOfferForm(request_utils.get_query_params())
-    form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
-    if offer.rankingWeight:
-        form.rankingWeight.data = offer.rankingWeight
-
-    return render_template(
-        "components/dynamic/modal_form.html",
-        target_id=f"#offer-row-{offer_id}",
-        form=form,
-        dst=url_for("backoffice_web.offer.edit_offer", offer_id=offer.id),
-        div_id=f"edit-offer-modal-{offer.id}",
-        title=f"Édition de l'offre {offer.name}",
-        button_text="Enregistrer les modifications",
-        ajax_submit=not form.redirect.data,
-    )
-
-
 @list_offers_blueprint.route("/batch/validate", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> response_utils.BackofficeResponse:
@@ -1106,7 +1074,7 @@ def get_batch_edit_offer_form() -> response_utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         target_id="#offers-table",
         form=form,
-        dst=url_for("backoffice_web.offer.batch_edit_offer", origin=request.args.get("origin"), nbResults=len(offers)),
+        dst=url_for("backoffice_web.offer.batch_edit_offer", origin=request.args.get("origin")),
         div_id="batch-edit-offer-modal",
         title="Édition des offres",
         button_text="Enregistrer les modifications",
@@ -1152,6 +1120,15 @@ def batch_edit_offer() -> response_utils.BackofficeResponse:
 
     db.session.flush()
 
+    logs_utils.log_backoffice_tracking_data(
+        event_name="TagOffer",
+        extra_data={
+            "searchMode": request.args.get("origin"),
+            "authorId": current_user.id,
+            "nbResults": len(offers),
+        },
+    )
+
     on_commit(
         functools.partial(
             search.async_index_offer_ids,
@@ -1162,6 +1139,39 @@ def batch_edit_offer() -> response_utils.BackofficeResponse:
 
     flash("Les offres ont été modifiées", "success")
     return _render_offer_rows(form.object_ids_list)
+
+
+@list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def get_edit_offer_form(offer_id: int) -> response_utils.BackofficeResponse:
+    offer = (
+        db.session.query(offers_models.Offer)
+        .filter_by(id=offer_id)
+        .options(
+            sa_orm.joinedload(offers_models.Offer.criteria).load_only(
+                criteria_models.Criterion.id, criteria_models.Criterion.name
+            )
+        )
+        .one_or_none()
+    )
+    if not offer:
+        raise NotFound()
+
+    form = forms.EditOfferForm(request_utils.get_query_params())
+    form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
+    if offer.rankingWeight:
+        form.rankingWeight.data = offer.rankingWeight
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
+        form=form,
+        dst=url_for("backoffice_web.offer.edit_offer", offer_id=offer.id, origin=request.args.get("origin")),
+        div_id=f"edit-offer-modal-{offer.id}",
+        title=f"Édition de l'offre {offer.name}",
+        button_text="Enregistrer les modifications",
+        ajax_submit=not form.redirect.data,
+    )
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
@@ -1193,6 +1203,15 @@ def edit_offer(offer_id: int) -> response_utils.BackofficeResponse:
     on_commit(functools.partial(search.reindex_offer_ids, [offer.id]))
 
     flash("L'offre a été modifiée", "success")
+
+    logs_utils.log_backoffice_tracking_data(
+        event_name="TagOffer",
+        extra_data={
+            "searchMode": request.args.get("origin"),
+            "authorId": current_user.id,
+            "nbResults": 1,
+        },
+    )
 
     if request_utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
