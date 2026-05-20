@@ -663,6 +663,9 @@ def _execute_cancel_booking(
                     cancel_even_if_reimbursed=cancel_even_if_reimbursed,
                     author_id=author_id,
                 )
+                db.session.add(booking)
+                db.session.flush()
+
                 if cancel_related_finance_event and finance_api.cancel_latest_event(booking):
                     finance_api.add_event(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
