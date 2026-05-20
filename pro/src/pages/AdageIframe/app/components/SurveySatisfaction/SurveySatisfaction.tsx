@@ -11,10 +11,14 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './SurveySatisfaction.module.scss'
 
 interface SurveySatisfactionProps {
+  onClose: () => void
   queryId?: string
 }
 
-export const SurveySatisfaction = ({ queryId }: SurveySatisfactionProps) => {
+export const SurveySatisfaction = ({
+  onClose,
+  queryId,
+}: SurveySatisfactionProps) => {
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
     useState(false)
 
@@ -26,6 +30,7 @@ export const SurveySatisfaction = ({ queryId }: SurveySatisfactionProps) => {
         feedback_form_closed: true,
       })
       setShouldHideSurveySatisfaction(true)
+      onClose()
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
     }

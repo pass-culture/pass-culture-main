@@ -149,5 +149,23 @@ describe('OffersInstitutionList', () => {
       const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
       expect(surveySatisfaction).not.toBeInTheDocument()
     })
+
+    it('should hide survey satisfaction when closed', async () => {
+      const user = userEvent.setup()
+
+      renderOffersForMyInstitution(defaultAdageUser)
+
+      await screen.findByText('Enquête de satisfaction')
+
+      const closeButton = screen.getByRole('button', {
+        name: 'J’ai déjà répondu',
+      })
+
+      await user.click(closeButton)
+
+      expect(
+        screen.queryByText('Enquête de satisfaction')
+      ).not.toBeInTheDocument()
+    })
   })
 })

@@ -29,6 +29,7 @@ vi.mock('@/apiClient/api', () => ({
     logConsultPlaylistElement: vi.fn(),
     logHasSeenWholePlaylist: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),
+    saveRedactorPreferences: vi.fn(),
   },
   api: {
     listEducationalDomains: vi.fn(),
@@ -49,7 +50,7 @@ const renderAdageDiscovery = (user: AuthenticatedResponse) => {
 
 describe('AdageDiscovery', () => {
   const snackBarError = vi.fn()
-  const user = {
+  const adageUser = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',
@@ -73,7 +74,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should render adage discovery', async () => {
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
@@ -83,7 +84,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should render artistic domains playlist', async () => {
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     expect(
       await screen.findByRole('link', {
@@ -98,7 +99,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should not call tracker when footer suggestion is not visible', async () => {
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
@@ -110,7 +111,7 @@ describe('AdageDiscovery', () => {
       () => [true]
     )
 
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
@@ -118,7 +119,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should call tracker for domains playlist element', async () => {
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -140,7 +141,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should trigger a log when the last element of a playlist is seen', async () => {
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     // log for each playlist
     vi.spyOn(useIsElementVisible, 'useIsElementVisible')
@@ -166,7 +167,7 @@ describe('AdageDiscovery', () => {
       new Error('API Error')
     )
 
-    renderAdageDiscovery(user)
+    renderAdageDiscovery(adageUser)
 
     await waitFor(() => {
       expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
@@ -175,19 +176,20 @@ describe('AdageDiscovery', () => {
 
   describe('survey satisfaction', () => {
     it('should display survey satisfaction', async () => {
-      renderAdageDiscovery(user)
+      renderAdageDiscovery(adageUser)
 
       const surveySatisfaction = await screen.findByText(
         'Enquête de satisfaction'
       )
-      expect(surveySatisfaction).toBeInTheDocument()
+      expect(surveySatisfaction).toBeVisible()
     })
 
     it('should not display survey satisfaction if user role readonly', async () => {
       renderAdageDiscovery({
-        ...user,
+        ...adageUser,
         role: AdageFrontRoles.READONLY,
       })
+
       await waitFor(() => {
         const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
         expect(surveySatisfaction).not.toBeInTheDocument()
@@ -196,14 +198,31 @@ describe('AdageDiscovery', () => {
 
     it('should not display survey satisfaction', async () => {
       renderAdageDiscovery({
-        ...user,
+        ...adageUser,
         preferences: { feedback_form_closed: true },
       })
-
       await waitFor(() => {
         const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
         expect(surveySatisfaction).not.toBeInTheDocument()
       })
+    })
+
+    it('should hide survey satisfaction when closed', async () => {
+      const user = userEvent.setup()
+
+      renderAdageDiscovery(adageUser)
+
+      screen.getByText('Enquête de satisfaction')
+
+      const closeButton = screen.getByRole('button', {
+        name: 'J’ai déjà répondu',
+      })
+
+      await user.click(closeButton)
+
+      expect(
+        screen.queryByText('Enquête de satisfaction')
+      ).not.toBeInTheDocument()
     })
   })
 })
