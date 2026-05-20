@@ -872,3 +872,152 @@ class VenueMovieCalendarTest:
         calendar = response.json["calendar"]
         assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+
+
+class VenueMovieCalendarForUserTest:
+    def test_get_venue_movie_calendar(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar == {
+            today.isoformat(): [
+                {
+                    "duration": 116,
+                    "genres": [],
+                    "last30DaysBookings": 0,
+                    "movieName": stock.offer.name,
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "dayScreenings": [
+                        {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "bookability": "BOOKABLE",
+                            "features": [],
+                            "price": 10.1,
+                            "stockId": stock.id,
+                        }
+                    ],
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookability": "BOOKABLE",
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                }
+            ],
+            tomorrow.isoformat(): [
+                {
+                    "duration": 116,
+                    "genres": [],
+                    "last30DaysBookings": 0,
+                    "movieName": stock.offer.name,
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "dayScreenings": [],
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookability": "BOOKABLE",
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                }
+            ],
+        }
+
+    def test_sold_out_screening(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            quantity=0, offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposits
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        print(calendar)
+        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
+        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
+
+    @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
+    def test_disabled_booking(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        disabled_provider = get_provider_by_local_class("BoostStocks")
+        stock = offers_factories.EventStockFactory(
+            offer__lastProvider=disabled_provider,
+            offer__product=product,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposits
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+
+    def test_when_user_cannot_book(self, client):
+        user = users_factories.UserFactory(age=100)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        disabled_provider = get_provider_by_local_class("BoostStocks")
+        stock = offers_factories.EventStockFactory(
+            offer__lastProvider=disabled_provider,
+            offer__product=product,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposits
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
+        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "USER_CANNOT_BOOK"

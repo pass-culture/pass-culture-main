@@ -13118,6 +13118,81 @@
                 "tags": []
             }
         },
+        "/native/v1/venue/{venue_id}/movie/calendar/me": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_venue_{venue_id}_movie_calendar_me",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "venue_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "from",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "From",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "to",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "To",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueMovieCalendarResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_movie_screenings_by_venue_for_user <GET>",
+                "tags": []
+            }
+        },
         "/native/v2/bookings": {
             "get": {
                 "description": "",
