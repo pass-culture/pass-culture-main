@@ -1735,7 +1735,7 @@ class EditOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_edit.id)  # ID
@@ -2363,7 +2363,7 @@ class ValidateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2410,6 +2410,324 @@ class ValidateOfferTest(PostEndpointHelper):
         assert offer_to_validate.validation == offers_models.OfferValidationStatus.APPROVED
 
 
+class GetQualifyCulturalOutreachFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.qualify_cultural_outreach"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_get_qualify_cultural_outreach_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(2):  # session + tested_query
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class QualifyCulturalOutreachTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.qualify_cultural_outreach"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_qualify_claimed_cultural_outreach(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.PENDING
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+
+    def test_qualify_claimed_cultural_outreach_using_htmx(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
+        assert len(cells) == 27
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+        )
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer.id)  # ID
+        assert cells[next(i)] == offer.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "-"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == ""  # Dernière validation
+        assert cells[next(i)] == offer.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "Qualifiée"  # Qualification de l'action de médiation
+        assert cells[next(i)] == "-"  # Pertinence
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+
+    def test_qualify_cultural_outreach_already_qualified(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(
+            offer=offer, status=cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+        )
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+
+    def test_qualify_unclaimed_cultural_outreach(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        assert offer.culturalOutreach is None
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach is not None
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+
+
+class BatchQualifyCulturalOutreachTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.batch_qualify_cultural_outreach"
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_batch_qualify_cultural_outreach(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3)
+        for offer in offers:
+            cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        unclaimed_offer = offers_factories.OfferFactory()
+
+        disqualied_offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(
+            offer=disqualied_offer, status=cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+        )
+
+        offers.extend([unclaimed_offer, disqualied_offer])
+
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        expected_queries = 1  # user + session
+        expected_queries += 1  # select offer & cultural outreach
+        expected_queries += 1  # update cultural outreach
+        expected_queries += 1  # insert cultural outreach (for the "unclaimed_offer")
+        expected_queries += 1  # select offerer
+        expected_queries += 1  # select offerer_address
+        expected_queries += 1  # select venue
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=expected_queries
+        )
+
+        assert response.status_code == 200
+
+        for offer in offers:
+            db.session.refresh(offer)
+
+            # ensure rows are rendered
+            html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer.id}")
+
+            assert offer.culturalOutreach.status == cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+
+
+class GetDisqualifyCulturalOutreachFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.disqualify_cultural_outreach"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_get_qualify_cultural_outreach_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(2):  # session + tested_query
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class DisqualifyCulturalOutreachTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.disqualify_cultural_outreach"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_disqualify_claimed_cultural_outreach(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.PENDING
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+
+    def test_disqualify_claimed_cultural_outreach_using_htmx(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer.id}")
+        assert len(cells) == 27
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
+        )
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer.id)  # ID
+        assert cells[next(i)] == offer.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "-"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == ""  # Dernière validation
+        assert cells[next(i)] == offer.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "Disqualifiée"  # Disqualification de l'action de médiation
+        assert cells[next(i)] == "-"  # Pertinence
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+
+    def test_disqualify_cultural_outreach_already_disqualified(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(
+            offer=offer, status=cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+        )
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+
+    def test_disqualify_cultural_outreach_that_has_been_qualified(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(
+            offer=offer, status=cultural_outreach_models.CulturalOutreachStatus.QUALIFIED
+        )
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach.status is cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+
+    def test_disqualify_unclaimed_cultural_outreach(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        assert offer.culturalOutreach is None
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers")
+        assert response.location == expected_url
+
+        db.session.refresh(offer)
+        assert offer.culturalOutreach is None
+
+
+class BatchDisqualifyCulturalOutreachTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.batch_disqualify_cultural_outreach"
+    needed_permission = perm_models.Permissions.MANAGE_CULTURAL_OUTREACH
+
+    def test_batch_disqualify_cultural_outreach(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3)
+        for offer in offers:
+            cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        disqualied_offer = offers_factories.OfferFactory()
+        cultural_outreach_factories.CulturalOutreachFactory(
+            offer=disqualied_offer, status=cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+        )
+
+        offers.append(disqualied_offer)
+
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        expected_queries = 1  # user + session
+        expected_queries += 1  # update cultural outreach
+        expected_queries += 1  # select offerer
+        expected_queries += 1  # select offerer_address
+        expected_queries += 1  # select venue
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=expected_queries
+        )
+
+        assert response.status_code == 200
+
+        for offer in offers:
+            db.session.refresh(offer)
+
+            # ensure rows are rendered
+            html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer.id}")
+
+            assert offer.culturalOutreach.status == cultural_outreach_models.CulturalOutreachStatus.DISQUALIFIED
+
+
 class PendingOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.pending_offer"
     endpoint_kwargs = {"offer_id": 1}
@@ -2448,7 +2766,7 @@ class PendingOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2554,7 +2872,7 @@ class RejectOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_reject.id)  # ID
@@ -3893,7 +4211,7 @@ class ActivateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Mettre en pause Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_activate.id)  # ID
@@ -3987,7 +4305,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Annuler la validation Rejeter l'offre Publier l'offre Qualifier l'action de médiation Disqualifier l'action de médiation Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_deactivate.id)  # ID

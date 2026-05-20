@@ -56,6 +56,20 @@
               </li>
             {% endif %}
           {% endif %}
+          {% if has_permission("MANAGE_CULTURAL_OUTREACH") %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#qualify-cultural-outreach-modal-{{ offer.id }}">Qualifier l'action de médiation</a>
+            </li>
+          {% endif %}
+          {% if has_permission("MANAGE_CULTURAL_OUTREACH") %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#disqualify-cultural-outreach-modal-{{ offer.id }}">Disqualifier l'action de médiation</a>
+            </li>
+          {% endif %}
           {% if has_permission("MANAGE_OFFERS") %}
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
