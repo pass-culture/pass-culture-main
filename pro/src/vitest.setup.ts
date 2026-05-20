@@ -1,12 +1,23 @@
 import 'regenerator-runtime/runtime'
+import axeCore from 'axe-core'
 import { expect, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
+import type { JSDOM } from 'jsdom'
 import * as matchers from 'vitest-axe/matchers'
 import failOnConsole from 'vitest-fail-on-console'
 import createFetchMock from 'vitest-fetch-mock'
 import 'vitest-canvas-mock'
 
 expect.extend(matchers)
+
+// jsdom cannot compute color contrast (no real layout/paint),
+// so axe-core's `color-contrast` rule queries pseudo-element styles and always fails on transparent backgrounds.
+// This disables it globally (rather than per-test).
+// https://github.com/NickColley/jest-axe/issues/147#issuecomment-1300192415
+axeCore.configure({
+  rules: [{ id: 'color-contrast', enabled: false }],
+})
+
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 fetchMock.mockResponse((req) => {
@@ -57,3 +68,21 @@ vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
 // Fail on console errors and warnings
 // https://github.com/thomasbrodusch/vitest-fail-on-console#readme
 failOnConsole()
+
+// jsdom logs `Not implemented: navigation to another Document` whenever a test triggers a real navigation.
+// These are inherent jsdom limitations (https://github.com/jsdom/jsdom/issues/2112), not actionable test issues,
+// so we strip them at the virtualConsole level rather than hiding `console.error` downstream.
+const { virtualConsole } = (globalThis as unknown as { jsdom: JSDOM }).jsdom
+const previousListeners = virtualConsole.listeners('jsdomError')
+virtualConsole.removeAllListeners('jsdomError')
+virtualConsole.on('jsdomError', (error) => {
+  if (
+    error.message?.startsWith('Not implemented: navigation to another Document')
+  ) {
+    return
+  }
+
+  for (const listener of previousListeners) {
+    listener(error)
+  }
+})

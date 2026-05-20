@@ -38,12 +38,7 @@ describe('PriceInput', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderPriceInput({})
 
-    expect(
-      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-      await axe(container, {
-        rules: { 'color-contrast': { enabled: false } },
-      })
-    ).toHaveNoViolations()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display always display an input', () => {

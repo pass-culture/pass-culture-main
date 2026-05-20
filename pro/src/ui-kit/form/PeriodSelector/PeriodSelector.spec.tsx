@@ -21,12 +21,7 @@ describe('PeriodSelector', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderPeriodSelector()
 
-    expect(
-      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
-      await axe(container, {
-        rules: { 'color-contrast': { enabled: false } },
-      })
-    ).toHaveNoViolations()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should call on onBeginningDateChange and onEndingDateChange', async () => {
