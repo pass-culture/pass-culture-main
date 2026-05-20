@@ -4263,10 +4263,10 @@ rc9@^3.0.1:
     defu "^6.1.6"
     destr "^2.0.5"
 
-react-avatar-editor@14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-14.0.0.tgz#d5b3ca075c332632875dcce2c6d83769ad646172"
-  integrity sha512-NaQM3oo4u0a1/Njjutc2FjwKX35vQV+t6S8hovsbAlMpBN1ntIwP/g+Yr9eDIIfaNtRXL0AqboTnPmRxhD/i8A==
+react-avatar-editor@15.1.0:
+  version "15.1.0"
+  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-15.1.0.tgz#f7d00cf6983b07cd9cd7c874e0ec5558e7cfbfba"
+  integrity sha512-Zto7u9l6Wd5LPPtjeFJ+7uwoT4bs01OSgkN2kxD18lWl8IiZ0GY3nWCbKPx4qIU7Au1vENsMJm19rfVWHHayaQ==
 
 react-chartjs-2@5.3.1:
   version "5.3.1"

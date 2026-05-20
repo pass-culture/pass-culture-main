@@ -41,11 +41,11 @@ async function handleImageUpload(
   await expect(page.getByTestId('image-preview')).toBeVisible()
   await expect(page.getByTestId('image-preview')).toHaveJSProperty(
     'naturalWidth',
-    470
+    471
   )
   await expect(page.getByTestId('image-preview')).toHaveJSProperty(
     'naturalHeight',
-    705
+    706
   )
 
   await checkAccessibility()
