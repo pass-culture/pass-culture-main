@@ -942,16 +942,16 @@ wheels = [
 
 [[package]]
 name = "flask-jwt-extended"
-version = "4.7.3"
+version = "4.7.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "flask" },
     { name = "pyjwt" },
     { name = "werkzeug" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3b/91/3684749c4b4eeb129769c7276a294be4713360d9c8ded9740a379f8b57c1/flask_jwt_extended-4.7.3.tar.gz", hash = "sha256:a8318a3d983d1f360724b901889f1947ffee418e2a3950b48e99c70923b6615e", size = 34564, upload-time = "2026-05-08T16:41:44.09Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/bf/75189cf38cd391dddeb097001be3bc9ec24a8cae5a5a3698cd0a3fcaa182/flask_jwt_extended-4.7.4.tar.gz", hash = "sha256:78fd0f460317facf3a0084a6457ffaf2f1dda9eefbd576f94cea35b0eadd5531", size = 34672, upload-time = "2026-05-13T15:23:17.664Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/dd/c8fc4f1db0a7201983be96fcf2e82b0272e9292d33e84b527fe0e0bbd334/flask_jwt_extended-4.7.3-py2.py3-none-any.whl", hash = "sha256:905ac807b52b5409bc9244dbcca434968c13ca6f9d91bffe7d4cb71e0e6231cb", size = 22698, upload-time = "2026-05-08T16:41:42.843Z" },
+    { url = "https://files.pythonhosted.org/packages/76/38/547a19f8ed0460e8c67c5b9e56ad72002fb06a1862fb786ef071ff03b9df/flask_jwt_extended-4.7.4-py2.py3-none-any.whl", hash = "sha256:daad1981117f4972d63c363d013f290de307aad781a935921b603b714817393c", size = 22699, upload-time = "2026-05-13T15:23:16.503Z" },
 ]
 
 [[package]]
@@ -2057,7 +2057,7 @@ requires-dist = [
     { name = "factory-boy", specifier = "==3.3.3" },
     { name = "flask", specifier = "==3.1.3" },
     { name = "flask-cors", specifier = "==6.0.2" },
-    { name = "flask-jwt-extended", specifier = "==4.7.3" },
+    { name = "flask-jwt-extended", specifier = "==4.7.4" },
     { name = "flask-login", specifier = "==0.6.3" },
     { name = "flask-shell-ipython", specifier = "==0.5.3" },
     { name = "flask-sqlalchemy", specifier = "==3.1.1" },
