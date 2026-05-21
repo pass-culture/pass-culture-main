@@ -76,7 +76,6 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
-from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
@@ -277,8 +276,7 @@ def create_offer(
         validation=models.OfferValidationStatus.DRAFT,
         publicationDatetime=None,
     )
-    repository.add_to_session(offer)
-
+    db.session.add(offer)
     db.session.flush()
 
     if artist_offer_links is not None:
@@ -515,7 +513,7 @@ def update_offer(
 
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
-    repository.add_to_session(offer)
+    db.session.add(offer)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
@@ -818,7 +816,9 @@ def create_stock(
     # offers can be created without stock in API, so we fill the lastValidationPrice at the first stock creation
     if offer.lastValidationPrice is None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         offer.lastValidationPrice = price
-    repository.add_to_session(created_stock, *created_activation_codes, offer)
+    db.session.add(offer)
+    db.session.add_all(created_activation_codes)
+    db.session.add(created_stock)
     db.session.flush()
 
     on_commit(
@@ -942,7 +942,7 @@ def edit_stock(
     if "beginningDatetime" in modifications:
         finance_api.update_finance_event_pricing_date(stock)
 
-    repository.add_to_session(stock)
+    db.session.add(stock)
     on_commit(
         partial(
             search.async_index_offer_ids,

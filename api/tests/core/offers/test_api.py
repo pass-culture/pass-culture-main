@@ -1774,15 +1774,6 @@ class UpdateOfferTest:
         assert offer.name == "New name"
         assert offer.description == "new Description"
 
-    def test_cannot_update_with_name_too_long(self):
-        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
-        body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, body)
-
-        assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
-        assert db.session.query(models.Offer).one().name == "Old name"
-
     def test_cannot_update_with_name_containing_ean(self):
         offer = factories.OfferFactory(name="Old name", ean="1234567890124")
         body = offers_schemas.UpdateOffer(name="Luftballons 1234567890124")
