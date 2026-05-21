@@ -79,11 +79,6 @@ vi.mock('./components/EditoCard/EditoCard', () => ({
   ),
 }))
 
-vi.mock('@/app/AppRouter/utils', async () => ({
-  ...(await vi.importActual('@/app/AppRouter/utils')),
-  isNewHomepageEnabled: () => true,
-}))
-
 const newHomepageRoutes = [
   {
     path: '/',
@@ -110,7 +105,6 @@ const renderNewHomepage = (
   })
   const { storeOverrides, ...restOptions } = options ?? {}
   return renderWithProviders(null, {
-    features: ['WIP_ENABLE_NEW_PRO_HOME'],
     routes: newHomepageRoutes,
     initialRouterEntries: ['/accueil'],
     user,

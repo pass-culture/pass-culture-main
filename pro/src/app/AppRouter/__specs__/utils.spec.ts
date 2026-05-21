@@ -1,11 +1,7 @@
-import type { FeatureResponseModel } from '@/apiClient/v1'
 import type { UserPermissions } from '@/commons/auth/types'
-import * as storeModule from '@/commons/store/store'
-import { configureTestStore } from '@/commons/store/testUtils'
 import { COOKIES } from '@/commons/utils/localStorageManager'
 
 import {
-  isNewHomepageEnabled,
   mustBeAuthenticated,
   mustBeOnboardedOrSkipped,
   mustBeOnboardedWithSelectedPartnerVenue,
@@ -192,28 +188,6 @@ describe('utils', () => {
       })
 
       expect(mustHaveSelectedAdminOfferer(permissions)).toBe(false)
-    })
-  })
-
-  describe('hasNewHomepage', () => {
-    it.each([
-      [false, undefined],
-      [true, ['WIP_ENABLE_NEW_PRO_HOME']],
-    ])('should return %s with features=%j', (expectedRes, features) => {
-      const store = configureTestStore({
-        features: {
-          list: (features ?? []).map(
-            (feature, index): FeatureResponseModel => ({
-              id: index,
-              isActive: true,
-              name: feature,
-            })
-          ),
-          lastLoaded: 0,
-        },
-      })
-      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
-      expect(isNewHomepageEnabled()).toBe(expectedRes)
     })
   })
 })
