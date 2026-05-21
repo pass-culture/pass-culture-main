@@ -54,7 +54,8 @@ import argparse
 import logging
 
 from pcapi.models import db
-
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 logger = logging.getLogger(__name__)
 
@@ -71,14 +72,13 @@ if __name__ == "__main__":
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
 
-    main()
-
-    if args.apply:
-        logger.info("Finished")
-        db.session.commit()
-    else:
-        logger.info("Finished dry run, rollback")
-        db.session.rollback()
+    with atomic():
+        main()
+        if args.apply:
+            logger.info("Finished")
+        else:
+            mark_transaction_as_invalid()
+            logger.info("Finished dry run, rollback")
 """
 
 
