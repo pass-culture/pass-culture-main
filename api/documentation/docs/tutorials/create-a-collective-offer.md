@@ -31,7 +31,7 @@ Then log with this account [**on the pro interface in the integration test envir
 
 To be able to create a collective offer for a venue, you need to give access to this venue to your provider.
 
-Go to the venue settings page (the URL of this settings page has the following pattern `https://pro.intergration.passculture.pro/partenaire/page-individuelle/parametres`), and add your provider in `Gestion des synchronisations` section using the `Selectionner un logiciel` button. You provider has now access to the venue.
+Go to the venue settings page (the URL of this settings page has the following pattern `https://pro.intergration.passculture.pro/parametres`), and add your provider in `Gestion des synchronisations` section using the `Selectionner un logiciel` button. You provider has now access to the venue.
 
 ## Phase 2: Build your integration
 

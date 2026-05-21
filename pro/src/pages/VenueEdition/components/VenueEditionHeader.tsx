@@ -8,7 +8,6 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { WEBAPP_URL } from '@/commons/utils/config'
-import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
@@ -19,7 +18,6 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import fullParametersIcon from '@/icons/full-parameters.svg'
 
 import styles from './VenueEditionHeader.module.scss'
 
@@ -89,15 +87,6 @@ export const VenueEditionHeader = ({
         </div>
 
         <div className={styles['venue-details-links']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            size={ButtonSize.SMALL}
-            icon={fullParametersIcon}
-            to={getVenuePagePathToNavigateTo('/parametres')}
-            label="Paramètres généraux"
-          />
           {venue.isPermanent && context === 'partnerPage' && (
             <Button
               as="a"

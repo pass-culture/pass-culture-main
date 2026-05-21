@@ -66,7 +66,7 @@ def build_pc_pro_venue_path(venue: offerers_models.Venue) -> str:
 
 
 def build_pc_pro_venue_parameters_path(venue: offerers_models.Venue) -> str:
-    return f"/partenaire/page-individuelle/parametres?venue={venue.id}"
+    return f"/parametres?venue={venue.id}"
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:

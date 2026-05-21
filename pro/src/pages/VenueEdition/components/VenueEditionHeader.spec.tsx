@@ -227,24 +227,6 @@ describe('VenueEditionHeader', () => {
     expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
   })
 
-  it('should display a "Paramètres généraux" link', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-      },
-    })
-
-    const link = screen.getByRole('link', {
-      name: 'Paramètres généraux',
-    })
-
-    expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute(
-      'href',
-      `/partenaire/page-individuelle/parametres`
-    )
-  })
-
   it('should call delete endpoint and mutate venue when deleting image', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'deleteVenueBanner').mockResolvedValueOnce()

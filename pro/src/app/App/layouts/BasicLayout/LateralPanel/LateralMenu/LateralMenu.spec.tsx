@@ -107,4 +107,20 @@ describe('LateralMenu', () => {
       screen.getByRole('link', { name: /Page sur l’application/ })
     ).toBeInTheDocument()
   })
+
+  it('should show parameters page when tab is selected', () => {
+    renderSideNavLinks({
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            hasPartnerPage: true,
+          }),
+        },
+      },
+    })
+    const parametersTab = screen.getByRole('link', { name: 'Paramètres' })
+    expect(parametersTab).toBeInTheDocument()
+    expect(parametersTab).toHaveAttribute('href', '/parametres')
+  })
 })

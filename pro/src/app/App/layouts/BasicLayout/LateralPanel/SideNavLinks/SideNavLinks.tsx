@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router'
 
 import {
   LAPTOP_MEDIA_QUERY,
@@ -38,39 +39,43 @@ export const SideNavLinks = ({
   const footerItems = navItems.filter((i) => i.group === 'footer')
 
   const isMobileScreen = useMediaQuery(LAPTOP_MEDIA_QUERY)
-  const [sectionStatus, setSectionStatus] = useState<Record<string, boolean>>(
-    {}
-  )
+  const location = useLocation()
 
-  const isSectionActive = (item: NavItem) => {
-    if (item.type !== 'section') {
-      return false
+  const sections = mainItems.filter((i) => i.type === 'section')
+  const firstSectionKey = sections[0]?.key ?? null
+
+  // BasicLayout remounts on every navigation so we use pathName to keep the right section open
+  const getSectionFromRoute = (): string | null => {
+    const sectionMatchingCurrentRoute = sections.find((section) =>
+      section.children?.some((child) => child.to === location.pathname)
+    )
+
+    if (sectionMatchingCurrentRoute) {
+      sessionStorage.setItem(
+        'sideNavOpenSection',
+        sectionMatchingCurrentRoute.key
+      )
+      return sectionMatchingCurrentRoute.key
     }
 
-    const userDefinedState = sectionStatus[item.key]
-
-    if (userDefinedState !== undefined) {
-      return userDefinedState
+    const lastOpenSection = sessionStorage.getItem('sideNavOpenSection')
+    if (lastOpenSection) {
+      return lastOpenSection
     }
-
-    return !isMobileScreen
+    return firstSectionKey
   }
 
+  const [openSection, setOpenSection] = useState<string | null>(
+    isAdminSpace ? firstSectionKey : getSectionFromRoute
+  )
+
+  const isSectionActive = (item: NavItem) =>
+    item.type === 'section' && openSection === item.key
+
   const handleExpandSection = (sectionKey: string) => {
-    setSectionStatus((prev) => {
-      const currentIsActive = prev[sectionKey] ?? !isMobileScreen
-
-      const nextValue = !currentIsActive
-
-      if (isMobileScreen) {
-        return nextValue ? { [sectionKey]: true } : {}
-      }
-
-      return {
-        ...prev,
-        [sectionKey]: nextValue,
-      }
-    })
+    const next = openSection === sectionKey ? null : sectionKey
+    if (next) sessionStorage.setItem('sideNavOpenSection', next)
+    setOpenSection(next)
   }
 
   return (

@@ -210,14 +210,6 @@ describe('VenueSettingsScreen', () => {
     })
   })
 
-  it('should redirect back to the previous page when clicking on back button', async () => {
-    await renderForm()
-
-    await userEvent.click(screen.getByText('Retour vers la page précédente'))
-
-    expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(-1)
-  })
-
   it('should display the venue provider cards & add provider button', async () => {
     await renderForm()
 

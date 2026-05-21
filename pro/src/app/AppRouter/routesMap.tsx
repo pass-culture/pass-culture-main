@@ -152,41 +152,9 @@ export const routes: CustomRouteTree = [
     ],
   },
   {
-    lazy: () => import('@/pages/VenueEdition/VenueEdition'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/partenaire/page-individuelle',
-    handle: {
-      title: 'Page sur l’application',
-    },
-    children: [
-      {
-        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
-        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-        path: '*',
-        title: 'Gérer ma page sur l’application',
-      },
-    ],
-  },
-  {
-    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/partenaire/page-partenaire/parametres',
-    handle: {
-      title: 'Paramètres généraux',
-    },
-  },
-  {
-    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/partenaire/page-collective/parametres',
-    handle: {
-      title: 'Paramètres généraux',
-    },
-  },
-  {
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     loader: withUserPermissions(mustHaveSelectedPartnerVenue),
-    path: '/partenaire/page-individuelle/parametres',
+    path: '/parametres',
     handle: {
       title: 'Paramètres généraux',
     },
