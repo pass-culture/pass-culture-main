@@ -236,6 +236,12 @@
                     {% endif %}
                   </p>
                 {% endif %}
+                {% if venue.volunteeringUrl %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Page JeVeuxAider.gouv.fr :</span>
+                    {{ links.build_safe_redirect_link(venue.volunteeringUrl | format_website) }}
+                  </p>
+                {% endif %}
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <div class="mb-0">
                     <span class="fw-bold">Validation des offres :</span>

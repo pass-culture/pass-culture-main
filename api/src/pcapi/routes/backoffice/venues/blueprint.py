@@ -277,6 +277,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVe
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number if venue.contact else None,
             "acceslibre_url": venue.external_accessibility_url,
+            "volunteering_url": venue.volunteeringUrl,
             "is_permanent": venue.isPermanent,
         }
         # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)

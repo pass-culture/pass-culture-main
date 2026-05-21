@@ -380,6 +380,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
         assert "Page Acceslibre" not in response_text
+        assert "Page JeVeuxAider.gouv.fr" not in response_text
         assert "Validation des offres : Suivre les règles" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -598,6 +599,19 @@ class GetVenueTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert f"Page Acceslibre : {acceslibre_url}" in response_text
+
+    def test_get_venue_with_volunteering_url(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(
+            contact=None, volunteeringUrl="https://www.jeveuxaider.gouv.fr/organisations/oulala"
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Page JeVeuxAider.gouv.fr : https://www.jeveuxaider.gouv.fr/organisations/oulala" in response_text
 
     class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
@@ -847,6 +861,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "longitude": venue.offererAddress.address.longitude,
             "latitude": venue.offererAddress.address.latitude,
             "is_permanent": venue.isPermanent,
+            "volunteering_url": venue.volunteeringUrl,
         }
 
     @pytest.mark.parametrize(
@@ -898,6 +913,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "latitude": "48.869311",
             "longitude": "2.325463",
             "acceslibre_url": None,
+            "volunteering_url": "https://www.jeveuxaider.gouv.fr/organisations/structure-name",
         }
 
         # coordinates values are Decimals rounded to five digits in database
@@ -929,6 +945,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.offererAddress == offerer_address
         assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
         assert offerer_address.venue == venue
+        assert venue.volunteeringUrl == "https://www.jeveuxaider.gouv.fr/organisations/structure-name"
 
         # should not have been updated or erased
         assert venue.contact.email == contact_email
@@ -945,6 +962,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.address.id
+        assert update_snapshot["volunteeringUrl"]["new_info"] == venue.volunteeringUrl
 
         # Check the acces libre update action
         # The following assert is a reminder that acceslibre_url must be None to get the updated acceslibre_url
@@ -1806,6 +1824,29 @@ class UpdateVenueTest(PostEndpointHelper):
         )
         db.session.refresh(venue)
         assert venue.siret
+
+    @pytest.mark.parametrize("volunteering_url", ["", " "])
+    def test_update_venue_remove_volunteering_url(self, authenticated_client, volunteering_url):
+        venue = offerers_factories.VenueFactory(
+            volunteeringUrl="https://www.jeveuxaider.gouv.fr/organisations/structure-name"
+        )
+
+        data = self._get_current_data(venue)
+        data["volunteering_url"] = volunteering_url
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.volunteeringUrl == None
+
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+
+        assert (
+            update_snapshot["volunteeringUrl"]["old_info"]
+            == "https://www.jeveuxaider.gouv.fr/organisations/structure-name"
+        )
+        assert update_snapshot["volunteeringUrl"]["new_info"] == None
 
     @pytest.mark.parametrize("siret", ["1234567891234", "123456789123456", "123456789ABCDE", "11122233300001"])
     def test_update_venue_invalid_siret(self, authenticated_client, offerer, siret):
