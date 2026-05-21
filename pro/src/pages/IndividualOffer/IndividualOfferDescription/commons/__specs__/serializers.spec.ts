@@ -381,6 +381,39 @@ describe('serializeDetailsPatchData', () => {
       ],
     })
   })
+
+  it('should omit readonly fields', () => {
+    const readOnlyFields = [
+      'venueId',
+      'categoryId',
+      'subcategoryId',
+      'gtl_id',
+      'showType',
+      'showSubType',
+      'speaker',
+      'author',
+      'artistOfferLinks',
+      'visa',
+      'stageDirector',
+      'performer',
+      'ean',
+      'durationMinutes',
+      'subcategoryConditionalFields',
+      'productId',
+    ]
+
+    const result = serializeDetailsPatchData(formValuesBase, readOnlyFields)
+
+    expect(result).toStrictEqual({
+      name: 'Festival de la Musique',
+      description: 'Ancien festival annuel musical',
+      hasCulturalOutreachClaim: false,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
+    })
+  })
 })
 
 describe('serializeDurationMinutes', () => {

@@ -135,7 +135,10 @@ export const IndividualOfferDescriptionScreen = () => {
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
+          api.patchOffer(
+            initialOfferId,
+            serializeDetailsPatchData(formValues, readOnlyFields)
+          ),
           { revalidate: false }
         )
       }
