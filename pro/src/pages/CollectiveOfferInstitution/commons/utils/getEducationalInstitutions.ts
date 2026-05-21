@@ -1,5 +1,5 @@
-import { api } from '@/apiClient/api'
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1/new'
 
 export const getEducationalInstitutions = async (): Promise<
   EducationalInstitutionResponseModel[]
@@ -10,10 +10,9 @@ export const getEducationalInstitutions = async (): Promise<
 
   do {
     currentPage += 1
-    const institutions = await api.getEducationalInstitutions(
-      undefined,
-      currentPage
-    )
+    const institutions = await apiNew.getEducationalInstitutions({
+      query: { page: currentPage },
+    })
     currentPage = institutions.page
     totalPages = institutions.pages
     allInstitutions = [
