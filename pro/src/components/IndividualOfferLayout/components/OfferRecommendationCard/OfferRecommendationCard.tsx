@@ -6,6 +6,7 @@ import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
+import { truncateAtWord } from '@/commons/utils/string'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -67,7 +68,10 @@ export const OfferRecommendationCard = ({
       </div>
       {hasRecommendation && (
         <p className={styles['recommendation-card-recommendation']}>
-          {proAdvice.content}
+          {truncateAtWord(proAdvice.content, 60)}
+          <span className={styles['visually-hidden']}>
+            {'pour tout afficher, cliquez sur modifier'}
+          </span>
         </p>
       )}
       <div>
