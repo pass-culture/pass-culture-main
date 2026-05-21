@@ -6,7 +6,6 @@ import {
   loginAsAndGoToHomepage,
 } from './fixtures/newHomepage'
 import { doLogin } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
   createEacCompleteLt30d,
@@ -169,9 +168,6 @@ test.describe('when I have no offers and no collective access', () => {
       baseURL: BASE_API_URL,
     })
     const userData = await createRegularProUser(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
-    ])
     await requestContext.dispose()
 
     await page.context().addCookies([

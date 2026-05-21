@@ -7,7 +7,6 @@ import {
 } from '@playwright/test'
 
 import { login } from '../helpers/auth'
-import { setFeatureFlags } from '../helpers/features'
 import { BASE_API_URL } from '../helpers/sandbox'
 
 export async function loginAsAndGoToHomepage(
@@ -21,14 +20,11 @@ export async function loginAsAndGoToHomepage(
     baseURL: BASE_API_URL,
   })
   const userData = await sandboxSpecificCall(requestContext)
-  await setFeatureFlags(requestContext, [
-    { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
-  ])
+
   await requestContext.dispose()
 
   await login(page, userData.user.email, {
     isMultiVenue: !!venueToSelect,
-    withNewProHome: true,
   })
 
   if (venueToSelect) {

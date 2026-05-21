@@ -1,7 +1,6 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
 import { doLogin } from './helpers/auth'
-import { setFeatureFlags } from './helpers/features'
 import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
   BASE_API_URL,
@@ -18,9 +17,7 @@ test.describe('Hub', () => {
 
     const userData =
       await createProUserWithFinancialDataAnd3Venues(requestContext)
-    await setFeatureFlags(requestContext, [
-      { name: 'WIP_ENABLE_NEW_PRO_HOME', isActive: true },
-    ])
+
     await requestContext.dispose()
 
     await doLogin(page, userData.user.email)
