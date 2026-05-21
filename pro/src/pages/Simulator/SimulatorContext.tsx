@@ -3,14 +3,26 @@ import { createContext, useContext, useMemo, useState } from 'react'
 
 import { noop } from '@/commons/utils/noop'
 
+import type { SimulatorTargetCustomerFormValues } from './SimulatorTarget/validationSchema'
+
+export type TargetCustomerObject =
+  SimulatorTargetCustomerFormValues['targetCustomer']
+
 interface SimulatorContextValues {
   siret: string | undefined
   setSiret: (siret: string) => void
+  targetCustomer: TargetCustomerObject | null
+  setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
 }
 
-export const SimulatorContext = createContext<SimulatorContextValues>({
+const SimulatorContext = createContext<SimulatorContextValues>({
   siret: undefined,
   setSiret: () => noop,
+  targetCustomer: {
+    individual: undefined,
+    educational: undefined,
+  },
+  setTargetCustomer: () => noop,
 })
 
 export const useSimulatorContext = () => {
@@ -26,12 +38,19 @@ export function SimulatorContextProvider({
 }: Readonly<SimulatorContextProviderProps>) {
   const [siret, setSiret] = useState<string>()
 
+  const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
+    individual: undefined,
+    educational: undefined,
+  })
+
   const contextValue = useMemo(
     () => ({
       siret,
       setSiret,
+      targetCustomer,
+      setTargetCustomer,
     }),
-    [siret]
+    [siret, targetCustomer]
   )
 
   return (
