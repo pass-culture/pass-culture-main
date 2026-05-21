@@ -3388,10 +3388,10 @@ instantsearch-ui-components@0.26.1:
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-instantsearch.js@4.96.2:
-  version "4.96.2"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.96.2.tgz#4fa1bd6bc84240f7159ec1d0f0bc74f9e5541755"
-  integrity sha512-MlJu3FQ8mCjTSdJHZicugkZVmNUdtJQ82C0AwY+798e/KgPCztXHyYdhWSxRDkWYYlVgMfAQqLIyUFXzIsnz5Q==
+instantsearch.js@4.97.0:
+  version "4.97.0"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.97.0.tgz#0f957744c0323d3d9594c0a669b675f76af12441"
+  integrity sha512-+HVczmXa5TdvnaYj37Pe5nSaSSmYffwl8RUciEpQQYCTxwv9MU7R866A5vL+JMAS9GhQAa4ZUgZeTk7PMaTjZw==
   dependencies:
     "@algolia/events" "^4.0.1"
     "@swc/helpers" "0.5.18"
@@ -4310,27 +4310,27 @@ react-inspector@9.0.0:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-9.0.0.tgz#9c942f5c4a5b9eec890a7f564d465340ae46c4b5"
   integrity sha512-w/VJucSeHxlwRa2nfM2k7YhpT1r5EtlDOClSR+L7DyQP91QMdfFEDXDs9bPYN4kzP7umFtom7L0b2GGjph4Kow==
 
-react-instantsearch-core@7.32.2:
-  version "7.32.2"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.32.2.tgz#128d2b3580ff75b00f99be4390c5cfdd879eba43"
-  integrity sha512-/PMkWmE+yaabNmwHIzdTVhv/+dhtKuJ++Mg2uVv/3LUbSr2mjGp/fkH/iKyWtpm2reKGeM5wEuS8u2lv3iopFA==
+react-instantsearch-core@7.32.3:
+  version "7.32.3"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.32.3.tgz#6909619d1ad7885d3f0b07039080c2098521b4b7"
+  integrity sha512-J+SbvmJD5ptQDYeVoKPciAWNxK6Nukjlksolo/EacsD7CA6yJRmzg4/us3drE27EsK0vuLtmEe1BKmFAxvA9fQ==
   dependencies:
     "@swc/helpers" "0.5.18"
     algoliasearch-helper "3.29.1"
-    instantsearch.js "4.96.2"
+    instantsearch.js "4.97.0"
     use-sync-external-store "^1.0.0"
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-react-instantsearch@7.32.2:
-  version "7.32.2"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.32.2.tgz#e68e7475607c6bb91d87b56d7e09b58c10d82ddb"
-  integrity sha512-ahIYteqgQU0ej7P7fJbnI/Pw2fKvbVnmdI2HSxnCnVwr00NFTTN2jBPVZkqw+2MkROT/3jLdMOM+mXU1YM3qgA==
+react-instantsearch@7.32.3:
+  version "7.32.3"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.32.3.tgz#b408ca1be97a5dd4997d3bb7a278b9610c15c52e"
+  integrity sha512-/kRimDSx4E0WuG7bcbx8KGWsBc/70WbeFPPauqYKR5iLUtNeOfCIyrEtP9iL2wRvgIss9EAPDQ7LFZm9lrONdw==
   dependencies:
     "@swc/helpers" "0.5.18"
     instantsearch-ui-components "0.26.1"
-    instantsearch.js "4.96.2"
-    react-instantsearch-core "7.32.2"
+    instantsearch.js "4.97.0"
+    react-instantsearch-core "7.32.3"
 
 react-is@^16.13.1:
   version "16.13.1"
