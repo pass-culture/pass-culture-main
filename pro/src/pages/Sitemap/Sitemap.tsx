@@ -129,7 +129,7 @@ export const Sitemap = () => {
     },
     {
       title: 'Paramètres généraux',
-      path: `/partenaire/page-individuelle/parametres`,
+      path: `/parametres`,
       children: [],
     },
     {

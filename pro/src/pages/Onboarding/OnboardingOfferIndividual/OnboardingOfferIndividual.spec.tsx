@@ -81,7 +81,7 @@ describe('<OnboardingOfferIndividual />', () => {
 
     expect(
       await screen.findByRole('link', { name: /Automatiquement/ })
-    ).toHaveAttribute('href', '/partenaire/page-individuelle/parametres')
+    ).toHaveAttribute('href', '/parametres')
   })
 
   it('should not display drafts if listOffers returns an empty array', async () => {

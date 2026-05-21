@@ -25,6 +25,7 @@ import {
 } from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
+import fullParametersIcon from '@/icons/full-parameters.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeHomeIcon from '@/icons/stroke-home.svg'
@@ -139,6 +140,14 @@ const generateNavItems = (
       icon: strokeTeacherIcon,
       key: 'collective',
       children: collectifChildren,
+    },
+    {
+      type: 'link',
+      group: 'main',
+      title: 'Paramètres',
+      to: '/parametres',
+      icon: fullParametersIcon,
+      key: 'settings',
     },
   ]
 

@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
 
 import type {
   GetVenueManagingOffererResponseModel,
@@ -8,9 +7,6 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1/new'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullBackIcon from '@/icons/full-back.svg'
 import { toFormValues } from '@/pages/VenueSettings/commons/utils/toFormValues'
 
 import { useSaveVenueSettings } from '../commons/hooks/useSaveVenueSettings'
@@ -20,7 +16,6 @@ import type {
 } from '../commons/types'
 import { venueSettingsValidationSchema } from '../commons/validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
-import styles from './VenueSettingsScreen.module.scss'
 
 export interface VenueSettingsScreenProps {
   offerer: GetVenueManagingOffererResponseModel
@@ -33,8 +28,6 @@ export const VenueSettingsScreen = ({
   venueProviders,
   venue,
 }: VenueSettingsScreenProps): JSX.Element => {
-  const navigate = useNavigate()
-
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
     isVenueVirtual: venue.isVirtual ?? false,
@@ -60,16 +53,6 @@ export const VenueSettingsScreen = ({
 
   return (
     <>
-      <div className={styles['back-button']}>
-        <Button
-          variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.BRAND}
-          icon={fullBackIcon}
-          onClick={() => navigate(-1)}
-          label="Retour vers la page précédente"
-        />
-      </div>
-
       <MandatoryInfo />
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>

@@ -1,13 +1,9 @@
-export const getVenuePagePathToNavigateTo = (
-  subPath: '' | '/edition' | '/parametres' = ''
-) => {
-  const cleanPathname = location.pathname.replace(/\/(edition|parametres)$/, '')
+export const getVenuePagePathToNavigateTo = (subPath: '' | '/edition' = '') => {
+  const cleanPathname = location.pathname.replace(/\/(edition)$/, '')
 
-  const pathName =
-    cleanPathname.includes('page-partenaire') ||
-    cleanPathname.includes('page-collective')
-      ? cleanPathname
-      : '/partenaire/page-individuelle'
+  const pathName = /page-(partenaire|collective)/.test(cleanPathname)
+    ? cleanPathname
+    : '/partenaire/page-partenaire'
 
   return `${pathName}${subPath}`
 }

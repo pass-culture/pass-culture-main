@@ -1,8 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-
-import * as mediaQueryHook from '@/commons/hooks/useMediaQuery'
 
 import { type NavItem, SideNavLinks } from './SideNavLinks'
 
@@ -43,6 +41,13 @@ vi.mock('./components/HelpDropdownNavItem', () => ({
       Help - {isMobileScreen ? 'mobile' : 'desktop'}
     </div>
   ),
+}))
+
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useLocation: () => ({
+    pathname: '/offres',
+  }),
 }))
 
 const navItems: NavItem[] = [
@@ -100,23 +105,24 @@ describe('SideNavLinks', () => {
 
   it('should toggle active section correctly', async () => {
     const user = userEvent.setup()
-
-    // On force explicitement MOBILE (donc état initial = CLOSED)
-    vi.mocked(mediaQueryHook.useMediaQuery).mockReturnValue(true)
+    sessionStorage.clear()
 
     render(<SideNavLinks navItems={navItems} />)
 
     const toggleBtn1 = screen.getByTestId('toggle-1')
+    const toggleBtn2 = screen.getByTestId('toggle-2')
 
-    // Vérification initiale
+    // La première section est ouverte par défaut
+    expect(toggleBtn1).toHaveTextContent('OPEN')
+    expect(toggleBtn2).toHaveTextContent('CLOSED')
+
+    // Ouvrir la section 2 ferme la section 1
+    await user.click(toggleBtn2)
+    expect(toggleBtn2).toHaveTextContent('OPEN')
     expect(toggleBtn1).toHaveTextContent('CLOSED')
 
-    // Clic
-    await user.click(toggleBtn1)
-
-    // Attente du changement
-    await waitFor(() => {
-      expect(toggleBtn1).toHaveTextContent('OPEN')
-    })
+    // Cliquer à nouveau sur la section 2 la ferme
+    await user.click(toggleBtn2)
+    expect(toggleBtn2).toHaveTextContent('CLOSED')
   })
 })

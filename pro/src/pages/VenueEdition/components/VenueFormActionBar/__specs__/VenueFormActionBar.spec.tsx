@@ -45,7 +45,7 @@ describe('VenueFormActionBar', () => {
 
     expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
       'href',
-      `/partenaire/page-individuelle`
+      `/partenaire/page-partenaire`
     )
   })
 })

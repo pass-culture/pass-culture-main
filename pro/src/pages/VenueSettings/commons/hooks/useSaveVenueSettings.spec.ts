@@ -148,7 +148,7 @@ describe('useSaveVenueSettings', () => {
     expect(saveVenueSettings).toHaveBeenCalled()
     // SWR mutate not asserted (real SWR not mocked)
     expect(useNavigateMock).toHaveBeenCalledWith(
-      expect.stringMatching(`/partenaire/page-individuelle`)
+      expect.stringMatching(`/partenaire/page-partenaire`)
     )
     expect(snackBarSuccess).toHaveBeenCalled()
     expect(logEvent).toHaveBeenCalled()

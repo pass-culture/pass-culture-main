@@ -53,7 +53,7 @@ describe('PartnerPage', () => {
 
     expect(
       screen.getByRole('link', { name: 'Paramètres généraux' })
-    ).toHaveAttribute('href', '/partenaire/page-individuelle/parametres')
+    ).toHaveAttribute('href', '/parametres')
   })
 
   it('should display image upload and log CLICKED_ADD_IMAGE on click when no image', async () => {

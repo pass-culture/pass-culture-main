@@ -88,7 +88,7 @@ describe('Sitemap', () => {
       { name: 'Collaborateurs', href: '/administration/collaborateurs' },
       {
         name: 'Paramètres généraux',
-        href: `/partenaire/page-individuelle/parametres`,
+        href: `/parametres`,
       },
       { name: 'Profil', href: '/profil' },
     ]
