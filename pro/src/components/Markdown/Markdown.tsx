@@ -44,6 +44,7 @@ export const Markdown = ({
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
   })
+  // Second call to DOMPurify.sanitize(): essential for protecting against XSS attacks
   const html = DOMPurify.sanitize(markdownToHtml(sanitizedInput), {
     ALLOWED_TAGS: ['a', 'strong', 'em'],
     ALLOWED_ATTR: ['href', 'rel', 'target', 'class'],

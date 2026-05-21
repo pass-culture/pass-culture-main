@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { Markdown } from '../Markdown'
 
@@ -101,5 +101,12 @@ describe('Markdown', () => {
     expect(componentWithCustomCroppedEnding.container.innerHTML).toContain(
       '<span class="markdown" data-testid="markdown-content">Lorem ipsum dolor sit amet, consectetur adipiscing Afficher plus...</span>'
     )
+  })
+
+  it('should not be vulnerable to url attribute injection', () => {
+    renderMarkdown('www.example.com/"onmouseover=alert(document.domain)')
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute('href', 'https://www.example.com/')
+    expect(link).not.toHaveAttribute('onmouseover')
   })
 })
