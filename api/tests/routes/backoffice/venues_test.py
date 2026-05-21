@@ -379,6 +379,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Type de lieu" not in response_text
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
+        assert "Page Acceslibre" not in response_text
         assert "Validation des offres : Suivre les règles" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -580,6 +581,23 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert ' data-has-reset="true" ' in str(response.data)
+
+    def test_get_venue_with_acceslibre_url(self, authenticated_client):
+        acceslibre_url = "https://acceslibre.beta.gouv.fr/api/erps/la-traversée/"
+        venue = offerers_factories.VenueFactory(
+            contact=None,
+            accessibilityProvider=offerers_factories.AccessibilityProviderFactory(
+                externalAccessibilityUrl=acceslibre_url
+            ),
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Page Acceslibre : {acceslibre_url}" in response_text
 
     class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
@@ -929,7 +947,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.address.id
 
         # Check the acces libre update action
-        # The folloing assert is a reminder that acceslibre_url must be None to get the updated acceslibre_url
+        # The following assert is a reminder that acceslibre_url must be None to get the updated acceslibre_url
         # from the associated backend. It is updated in a async task which is executed during the tests though
         # probably not asynchronously but ends up with unpredictable results.
         # Slug could be either mon-lieu-chez-acceslibre or whatever the original slug was.

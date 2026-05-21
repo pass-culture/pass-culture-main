@@ -241,7 +241,8 @@ def get_venue(venue_id: int) -> sa.engine.Row:
                 providers_models.Provider.isActive,
             ),
             sa_orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
-                offerers_models.AccessibilityProvider.externalAccessibilityId
+                offerers_models.AccessibilityProvider.externalAccessibilityId,
+                offerers_models.AccessibilityProvider.externalAccessibilityUrl,
             ),
             sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
