@@ -1053,6 +1053,13 @@ class Returns400Test:
             (
                 {},
                 {
+                    "name": "Le nom d'une histoire qui est quand même sacrément longue, ce qui est pratique si on lit trop vite, mais ce qui est dommage si on n'a qu'un seul oeil, parce qu'on lit deux fois plus lentement, c'est bien connu"
+                },
+                {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]},
+            ),
+            (
+                {},
+                {
                     "publicationDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
                     "bookingAllowedDatetime": (datetime.datetime.now() + datetime.timedelta(days=2)).isoformat(),
                 },
