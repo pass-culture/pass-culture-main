@@ -1,4 +1,5 @@
 import typing
+from urllib.parse import urlparse
 
 import sqlalchemy.orm as sa_orm
 import wtforms
@@ -7,6 +8,7 @@ from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.geography import constants as geography_constants
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -87,6 +89,10 @@ class EditVenueForm(utils.PCForm):
         "URL chez acceslibre",
         validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
     )
+    volunteering_url = fields.PCOptStringField(
+        "URL chez JeVeuxAider.gouv.fr",
+        validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
+    )
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
         # save venue in order to validate the siret field
@@ -162,6 +168,20 @@ class EditVenueForm(utils.PCForm):
             )
 
         return acceslibre_url
+
+    def validate_volunteering_url(self, volunteering_url: fields.PCOptStringField) -> fields.PCOptStringField | None:
+        if not volunteering_url.data:
+            return None
+        parsed = urlparse(str(volunteering_url.data))
+        if parsed.netloc.replace("www.", "") != offerers_constants.JE_VEUX_AIDER_GOUV_BASE_URL:
+            raise validators.ValidationError("Veuillez renseigner une URL provenant de la plateforme jeveuxaider.gouv")
+
+        if not parsed.path.startswith("/organisations"):
+            raise validators.ValidationError(
+                "Veuillez renseigner l’URL de votre page organisation. Ex : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+            )
+
+        return volunteering_url
 
 
 class FraudForm(FlaskForm):

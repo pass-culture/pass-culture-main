@@ -1556,6 +1556,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Remboursements gelés"
         case "deposit.expirationDate":
             return "Date d'expiration du crédit"
+        case "volunteeringUrl":
+            return "URL chez JeVeuxAider.gouv.fr"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
