@@ -527,9 +527,31 @@ class PutCinemaSessions(serialization.HttpBodyModel):
     ]
 
     def get_addresses_ids(self) -> set[int]:
-        address_ids = set()
+        addresses_ids = set()
         for offer in self.offers:
             if offer.address:
-                address_ids.add(offer.address.id)
+                addresses_ids.add(offer.address.id)
 
-        return address_ids
+        return addresses_ids
+
+    def get_film_ids_split_by_id_origin(self) -> tuple[set[str], set[str]]:
+        allocine_ids = set()
+        visas = set()
+
+        for offer in self.offers:
+            id_type, id_value = offer.film_id.split(":")
+            if id_type == "allocine_id":
+                allocine_ids.add(id_value)
+            else:
+                visas.add(id_value)
+
+        return allocine_ids, visas
+
+    def get_offers_addresses(self) -> list[CinemaOfferAddress]:
+        offer_addresses: list[CinemaOfferAddress] = []
+
+        for offer in self.offers:
+            if offer.address:
+                offer_addresses.append(offer.address)
+
+        return offer_addresses

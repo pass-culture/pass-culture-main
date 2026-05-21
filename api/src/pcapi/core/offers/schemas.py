@@ -34,7 +34,7 @@ class CreateOffer(BaseModel):
     description: str | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
-    ean: str | None
+    ean: str | None = None
     extra_data: typing.Any = None
     has_cultural_outreach_claim: bool | None = None
     id_at_provider: str | None = None
