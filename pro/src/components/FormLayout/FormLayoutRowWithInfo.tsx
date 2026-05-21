@@ -8,6 +8,7 @@ interface FormLayoutRowWithInfoProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   inline?: boolean
+  lgSpaceAfter?: boolean
   mdSpaceAfter?: boolean
   smSpaceAfter?: boolean
   sideComponent: JSX.Element | null
@@ -18,6 +19,7 @@ export const RowWithInfo = ({
   children,
   className,
   inline,
+  lgSpaceAfter,
   mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
@@ -26,6 +28,7 @@ export const RowWithInfo = ({
   return (
     <Row
       className={cn(className, style['form-layout-row-info'])}
+      lgSpaceAfter={lgSpaceAfter}
       mdSpaceAfter={mdSpaceAfter}
       smSpaceAfter={smSpaceAfter}
       testId={testId}

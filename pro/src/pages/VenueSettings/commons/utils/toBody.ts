@@ -11,29 +11,37 @@ export const toBody = (
   formValues: VenueSettingsFormValues,
   formContext: VenueSettingsFormContext
 ): EditVenueBodyModel => {
-  const payload: EditVenueBodyModel = {
-    banId: formValues.banId,
-    bookingEmail: formValues.bookingEmail,
-    city: removeQuotes(formValues.city),
-    comment: formValues.comment,
-    latitude: Number(formValues.latitude),
-    longitude: Number(formValues.longitude),
-    name: formValues.name,
-    postalCode: formValues.postalCode,
-    inseeCode: formValues.inseeCode,
-    publicName: formValues.publicName,
-    street: removeQuotes(formValues.street?.trim() ?? ''),
-    siret: formContext.isCaledonian
+  const payload: EditVenueBodyModel = {}
+
+  if ('name' in formValues) {
+    payload.banId = formValues.banId
+    payload.city = removeQuotes(formValues.city)
+    payload.comment = formValues.comment
+    payload.latitude = Number(formValues.latitude)
+    payload.longitude = Number(formValues.longitude)
+    payload.name = formValues.name
+    payload.postalCode = formValues.postalCode
+    payload.inseeCode = formValues.inseeCode
+    payload.publicName = formValues.publicName
+    payload.street = removeQuotes(formValues.street?.trim() ?? '')
+    payload.siret = formContext.isCaledonian
       ? unhumanizeRidet(formValues.siret, true, true)
-      : unhumanizeSiret(formValues.siret),
-    withdrawalDetails: formValues.withdrawalDetails,
-    isManualEdition: formValues.manuallySetAddress,
+      : unhumanizeSiret(formValues.siret)
+    payload.isManualEdition = formValues.manuallySetAddress
+
+    if (!formContext.withSiret) {
+      delete payload.siret
+    } else {
+      payload.comment = ''
+    }
   }
 
-  if (!formContext.withSiret) {
-    delete payload.siret
-  } else {
-    payload.comment = ''
+  if ('bookingEmail' in formValues) {
+    payload.bookingEmail = formValues.bookingEmail
+  }
+
+  if ('withdrawalDetails' in formValues) {
+    payload.withdrawalDetails = formValues.withdrawalDetails
   }
 
   return payload

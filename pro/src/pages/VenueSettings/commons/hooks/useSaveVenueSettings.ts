@@ -1,12 +1,11 @@
 import type { UseFormReturn } from 'react-hook-form'
-import { useNavigate } from 'react-router'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 
 import type {
   VenueSettingsFormContext,
@@ -21,18 +20,19 @@ export const useSaveVenueSettings = ({
   form: UseFormReturn<VenueSettingsFormValues>
   venue: GetVenueResponseModel
 }) => {
-  const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+  const { syncVenueWithData } = useSyncVenueCache()
 
   const saveAndContinue = async (
     formValues: VenueSettingsFormValues,
     formContext: VenueSettingsFormContext
   ) => {
     try {
-      await saveVenueSettings(formValues, formContext, { venue })
-
-      navigate(getVenuePagePathToNavigateTo())
+      const updatedVenue = await saveVenueSettings(formValues, formContext, {
+        venue,
+      })
+      await syncVenueWithData(venue.id, updatedVenue)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         saved: true,

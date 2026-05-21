@@ -7,7 +7,7 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import type { VenueSettingsFormValues } from '../../commons/types'
-import styles from '../VenueSettingsScreen.module.scss'
+import styles from '../../VenueSettings.module.scss'
 
 export const WithdrawalDetails = () => {
   const methods = useFormContext<VenueSettingsFormValues>()

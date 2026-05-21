@@ -705,7 +705,7 @@ describe('VenueEditionFormScreen', () => {
         expect(screen.queryByText('Contact')).not.toBeInTheDocument()
         expect(
           screen.queryByText(
-            'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
+            'Cette adresse s’applique par défaut à toutes vos offres, vous pouvez la modifier à l’échelle de chaque offre.'
           )
         ).not.toBeInTheDocument()
       })
