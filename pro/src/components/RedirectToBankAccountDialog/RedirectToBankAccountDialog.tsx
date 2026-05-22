@@ -14,13 +14,11 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
-  offererId: number
   isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
-  offererId,
   isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
   const navigate = useNavigate()
@@ -45,9 +43,7 @@ export const RedirectToBankAccountDialog = ({
     if (isOnboarding) {
       await updateSelectedPartnerVenue()
     }
-    navigate(
-      `/administration/remboursements/informations-bancaires?structure=${offererId}`
-    )
+    navigate('/administration/remboursements/informations-bancaires')
   }
 
   const cancel = async () => {

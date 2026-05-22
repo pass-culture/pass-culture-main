@@ -43,7 +43,6 @@ const renderDialog = (
 ) => {
   const props: RedirectToBankAccountDialogProps = {
     cancelRedirectUrl: CANCEL_REDIRECT_URL,
-    offererId: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
     isDialogOpen: true,
     ...customProps,
   }
@@ -142,7 +141,7 @@ describe('<RedirectToBankAccountDialog />', () => {
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
-          `/administration/remboursements/informations-bancaires?structure=${SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID}`
+          '/administration/remboursements/informations-bancaires'
         )
       })
       expect(api.getVenue).toHaveBeenCalledExactlyOnceWith(
@@ -160,7 +159,7 @@ describe('<RedirectToBankAccountDialog />', () => {
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith(
-          `/administration/remboursements/informations-bancaires?structure=${SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID}`
+          '/administration/remboursements/informations-bancaires'
         )
       })
       expect(api.getVenue).not.toHaveBeenCalled()
