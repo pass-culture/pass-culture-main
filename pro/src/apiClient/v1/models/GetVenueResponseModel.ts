@@ -47,6 +47,7 @@ export type GetVenueResponseModel = {
   hasPartnerPage: boolean;
   id: number;
   isCaledonian: boolean;
+  isOnboarded: boolean;
   isOpenToPublic: boolean;
   isPermanent: (boolean | null);
   isValidated: boolean;

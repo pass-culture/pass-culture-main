@@ -157,7 +157,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
       {offerer?.id && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={confirmationUrl}
-          offererId={offerer.id}
           isDialogOpen={displayRedirectDialog}
         />
       )}

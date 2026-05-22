@@ -1,13 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {
   LOCAL_STORAGE_KEY,
@@ -25,17 +23,23 @@ import { setSelectedAdminOffererById } from './setSelectedAdminOffererById'
 
 export const setSelectedPartnerVenueById = createAsyncThunk<
   {
-    selectedPartnerVenue: GetVenueResponseModel | null
+    selectedPartnerVenue: GetVenueResponseModel
   },
   {
     nextSelectedPartnerVenueId: number
+    // We want to keep that prop mandatory to make related UX rules explicit
     shouldAlignSelectedAdminOfferer: boolean
+    shouldRefresh?: boolean
   },
   AppThunkApiConfig
 >(
   'user/setSelectedPartnerVenueById',
   async (
-    { nextSelectedPartnerVenueId, shouldAlignSelectedAdminOfferer },
+    {
+      nextSelectedPartnerVenueId,
+      shouldAlignSelectedAdminOfferer,
+      shouldRefresh,
+    },
     { dispatch, getState }
   ) => {
     try {
@@ -44,7 +48,10 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       const offererNames = state.user.offererNames
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedPartnerVenue = state.user.selectedPartnerVenue
-      if (nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id) {
+      if (
+        !shouldRefresh &&
+        nextSelectedPartnerVenueId === previousSelectedPartnerVenue?.id
+      ) {
         return {
           selectedPartnerVenue: previousSelectedPartnerVenue,
           newUserAccess: state.user.access,
@@ -89,7 +96,14 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         dispatch(updateUserAccess(nextUserAccess))
       }
 
-      if (shouldAlignSelectedAdminOfferer) {
+      if (
+        shouldAlignSelectedAdminOfferer ||
+        // When we explicitely refresh a previously selected partner venue,
+        // we also want to refresh its corresponding selected admin offerer IF they were aligned
+        (shouldRefresh &&
+          nextSelectedPartnerVenue.managingOfferer.id ===
+            state.user.selectedAdminOfferer?.id)
+      ) {
         await dispatch(
           setSelectedAdminOffererById(
             nextSelectedPartnerVenue.managingOfferer.id
@@ -119,14 +133,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         'Une erreur est survenue lors du changement de la structure.'
       )
 
-      if (isErrorAPIError(err) || err instanceof FrontendError) {
-        logout()
-      }
-
-      return {
-        selectedPartnerVenue: null,
-        newUserAccess: null,
-      }
+      return await logout()
     }
   }
 )

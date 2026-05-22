@@ -84,8 +84,7 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    has_non_free_offers = offerers_repository.venue_has_non_free_offers(venue.id)
-    return venue_serialize.GetVenueResponseModel.build(venue, has_non_free_offers)
+    return _build_venue_response(venue)
 
 
 @private_api.route("/venues", methods=["GET"])
@@ -220,8 +219,7 @@ def edit_venue(venue_id: int, body: venue_serialize.EditVenueBodyModel) -> venue
         )
         on_commit(partial(offers_tasks.update_all_venue_offers_email_task.delay, email_payload.model_dump()))
 
-    has_non_free_offers = offerers_repository.venue_has_non_free_offers(venue.id)
-    return venue_serialize.GetVenueResponseModel.build(venue, has_non_free_offers)
+    return _build_venue_response(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/collective-data", methods=["PATCH"])
@@ -238,8 +236,7 @@ def edit_venue_collective_data(
     update_venue_attrs = body.dict(exclude_unset=True)
     venue = offerers_api.update_venue_collective_data(venue, **update_venue_attrs)
 
-    has_non_free_offers = offerers_repository.venue_has_non_free_offers(venue.id)
-    return venue_serialize.GetVenueResponseModel.build(venue, has_non_free_offers)
+    return _build_venue_response(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/pricing-point", methods=["POST"])
@@ -285,8 +282,7 @@ def upsert_venue_banner(venue_id: int) -> venue_serialize.GetVenueResponseModel:
         crop_params=venue_banner.crop_params,
     )
 
-    has_non_free_offers = offerers_repository.venue_has_non_free_offers(venue.id)
-    return venue_serialize.GetVenueResponseModel.build(venue, has_non_free_offers)
+    return _build_venue_response(venue)
 
 
 @private_api.route("/venues/<int:venue_id>/banner", methods=["DELETE"])
@@ -368,3 +364,15 @@ def get_venue_addresses(
     ]
 
     return venue_serialize.GetVenueAddressesResponseModel(venue_addresses)
+
+
+def _build_venue_response(venue: Venue) -> venue_serialize.GetVenueResponseModel:
+    is_offerer_onboarded = offerers_repository.get_offerer_is_onboarded(venue.managingOffererId)
+    if is_offerer_onboarded is None:
+        raise resource_not_found_error()
+
+    return venue_serialize.GetVenueResponseModel.build(
+        venue,
+        has_non_free_offers=offerers_repository.venue_has_non_free_offers(venue.id),
+        is_onboarded=is_offerer_onboarded,
+    )

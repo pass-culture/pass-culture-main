@@ -205,7 +205,6 @@ export type { NationalProgramResponseModel } from './models/NationalProgramRespo
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
-export type { OffererEligibilityResponseModel } from './models/OffererEligibilityResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OfferHomeResponseModel } from './models/OfferHomeResponseModel';
 export type { OfferImage } from './models/OfferImage';

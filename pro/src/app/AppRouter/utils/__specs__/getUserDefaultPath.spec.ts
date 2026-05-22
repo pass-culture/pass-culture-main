@@ -12,6 +12,7 @@ import { getUserDefaultPath } from '../getUserDefaultPath'
 const setupStore = (options: {
   access?: UserAccess | null
   hasUser?: boolean
+  hasVenueOnboarded?: boolean
   hasVenueSelected?: boolean
   hasVenue?: boolean
 }) => {
@@ -21,7 +22,10 @@ const setupStore = (options: {
       currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
       selectedPartnerVenue: options.hasVenueSelected
-        ? makeGetVenueResponseModel({ id: 1 })
+        ? makeGetVenueResponseModel({
+            id: 1,
+            isOnboarded: !!options.hasVenueOnboarded,
+          })
         : null,
       venues: options.hasVenue
         ? [
@@ -57,7 +61,7 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/hub')
   })
 
-  it('should return /rattachement-en-cours when selected venue is unattached', () => {
+  it('should return /rattachement-en-cours when user has selected venue and "unattached" access', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
@@ -68,23 +72,23 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/rattachement-en-cours')
   })
 
-  it('should return /onboarding when user is not onboarded', () => {
+  it('should return /onboarding when user has selected + non-onboarded venue', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
+      hasVenueOnboarded: false,
       hasVenueSelected: true,
-      access: 'no-onboarding',
     })
 
     expect(getUserDefaultPath()).toBe('/onboarding')
   })
 
-  it('should return /accueil when user has full access', () => {
+  it('should return /accueil when user has selected + onboarded venue and non-"unattached" access', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
+      hasVenueOnboarded: true,
       hasVenueSelected: true,
-      access: 'full',
     })
 
     expect(getUserDefaultPath()).toBe('/accueil')

@@ -95,11 +95,11 @@ export function isGetCollectiveOffersTemplateResponse(response: Response) {
   )
 }
 
-export function isGetEligibilityResponse(response: Response) {
+export function isSynchronizeOffererOnboardingResponse(response: Response) {
   return (
-    /\/offerers\/\d\/eligibility/.test(response.url()) &&
-    response.request().method() === 'GET' &&
-    response.status() === 200
+    /\/offerers\/\d+\/synchronize-onboarding$/.test(response.url()) &&
+    response.request().method() === 'POST' &&
+    response.status() === 204
   )
 }
 

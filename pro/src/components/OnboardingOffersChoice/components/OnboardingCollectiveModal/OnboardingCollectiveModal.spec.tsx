@@ -4,16 +4,25 @@ import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import * as getUserDefaultPathModule from '@/app/AppRouter/utils/getUserDefaultPath'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
+import {
+  defaultGetOffererResponseModel,
+  getOffererNameFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
+
+const SELECTED_VENUE_ID = 10
+const SELECTED_OFFERER_ID = 1
 
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
@@ -22,7 +31,11 @@ vi.mock('react-router', async () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getOffererEligibility: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenue: vi.fn(),
+  },
+  apiNew: {
+    synchronizeOffererOnboarding: vi.fn(),
   },
 }))
 
@@ -32,21 +45,51 @@ const renderOnboardingCollectiveModal = (
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: {
+        access: null,
         currentUser: sharedCurrentUserFactory(),
-        offererNamesValidated: [],
-        selectedPartnerVenue: { managingOfferer: { id: 1 } },
+        offererNames: [getOffererNameFactory({ id: SELECTED_OFFERER_ID })],
+        offererNamesValidated: [
+          getOffererNameFactory({ id: SELECTED_OFFERER_ID }),
+        ],
+        offerersNamesWithPendingValidation: [],
+        selectedAdminOfferer: null,
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: SELECTED_VENUE_ID,
+          managingOffererId: SELECTED_OFFERER_ID,
+        }),
+        venues: [],
+        venuesWithPendingValidation: [],
       },
     },
     user: sharedCurrentUserFactory(),
     ...options,
   })
 }
+
 const mockLogEvent = vi.fn()
+
 describe('<OnboardingCollectiveModal />', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    // Default mocks so the synchronization + venue refresh succeed by default.
+    // Individual tests override `isOnboarded` to exercise specific branches.
+    vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockResolvedValue(
+      undefined as never
+    )
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: SELECTED_VENUE_ID,
+        managingOffererId: SELECTED_OFFERER_ID,
+        isOnboarded: false,
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: SELECTED_OFFERER_ID,
+      isOnboarded: false,
+    })
   })
 
   it('should render correctly', async () => {
@@ -72,25 +115,33 @@ describe('<OnboardingCollectiveModal />', () => {
   })
 
   describe('API calls', () => {
-    it('should request the API when clicking on "J’ai déposé un dossier"', async () => {
+    it('should trigger the synchronization endpoint when clicking on "J’ai déposé un dossier"', async () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
       )
 
-      expect(api.getOffererEligibility).toHaveBeenCalledOnce()
+      expect(
+        apiNew.synchronizeOffererOnboarding
+      ).toHaveBeenCalledExactlyOnceWith({
+        path: { offerer_id: SELECTED_OFFERER_ID },
+      })
     })
 
-    it('should redirect to the homepage if user is onboarded', async () => {
+    it('should redirect to the user default path if the venue refresh reports the offerer as onboarded', async () => {
       const mockNavigate = vi.fn()
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-      vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
-        offererId: 1,
-        hasAdageId: false,
-        hasDsApplication: false,
-        isOnboarded: true,
-      })
+      vi.spyOn(getUserDefaultPathModule, 'getUserDefaultPath').mockReturnValue(
+        '/accueil'
+      )
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
+        makeGetVenueResponseModel({
+          id: SELECTED_VENUE_ID,
+          managingOffererId: SELECTED_OFFERER_ID,
+          isOnboarded: true,
+        })
+      )
 
       renderOnboardingCollectiveModal()
 
@@ -98,17 +149,10 @@ describe('<OnboardingCollectiveModal />', () => {
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
       )
 
-      expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+      expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/accueil')
     })
 
-    it('should show an error message if user is not onboarded', async () => {
-      vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
-        offererId: 1,
-        hasAdageId: false,
-        hasDsApplication: false,
-        isOnboarded: false,
-      })
-
+    it('should show a specific error message if the venue refresh still reports the offerer as not onboarded', async () => {
       renderOnboardingCollectiveModal()
 
       await userEvent.click(
@@ -122,8 +166,8 @@ describe('<OnboardingCollectiveModal />', () => {
       ).toBeInTheDocument()
     })
 
-    it('should show an error message if server responded with an error', async () => {
-      vi.spyOn(api, 'getOffererEligibility').mockRejectedValue({})
+    it('should show a generic error message if the synchronization endpoint fails', async () => {
+      vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockRejectedValue({})
 
       renderOnboardingCollectiveModal()
 

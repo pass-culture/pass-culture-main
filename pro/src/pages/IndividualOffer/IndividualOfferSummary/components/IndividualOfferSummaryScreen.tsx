@@ -222,7 +222,6 @@ export const IndividualOfferSummaryScreen = ({
 
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
-          offererId={offer.venue.managingOfferer.id}
           isDialogOpen={displayRedirectDialog}
         />
       </form>

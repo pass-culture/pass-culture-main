@@ -1,12 +1,12 @@
 import { expect, test } from './fixtures/didacticOnboarding'
 import {
   isGetCategoriesResponse,
-  isGetEligibilityResponse,
   isGetOfferResponse,
   isGetOffersResponse,
   isPatchOffersResponse,
   isPatchStocksResponse,
   isPublishOfferResponse,
+  isSynchronizeOffererOnboardingResponse,
 } from './helpers/requests'
 
 test.describe('Didactic Onboarding feature', () => {
@@ -80,22 +80,6 @@ test.describe('Didactic Onboarding feature', () => {
   test('I should be able to onboard me by submitting an Adage referencing file if I have an Adage ID', async ({
     authenticatedPage: page,
   }) => {
-    await page.route(/\/offerers\/(\d+)\/eligibility/, (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          offererId: route
-            .request()
-            .url()
-            .match(/\/offerers\/(\d+)\//)![1],
-          hasAdageId: true,
-          hasDsApplication: null,
-          isOnboarded: true,
-        }),
-      })
-    })
-
     await page.getByLabel('Commencer la création d’offre sur ADAGE').click()
     await expect(
       page.getByRole('heading', { level: 1, name: 'Quelles sont les étapes ?' })
@@ -110,8 +94,26 @@ test.describe('Didactic Onboarding feature', () => {
       'href',
       'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage'
     )
+
+    await page.route(/\/offerers\/\d+\/synchronize-onboarding$/, (route) =>
+      route.fulfill({ status: 204 })
+    )
+    // At that point, the venue that was not onboarded is now mocked as being onboarded
+    await page.route(/\/venues\/\d+$/, async (route) => {
+      if (route.request().method() !== 'GET') {
+        return route.continue()
+      }
+      const response = await route.fetch()
+      const venue = await response.json()
+
+      await route.fulfill({
+        response,
+        json: { ...venue, isOnboarded: true },
+      })
+    })
+
     await Promise.all([
-      page.waitForResponse(isGetEligibilityResponse),
+      page.waitForResponse(isSynchronizeOffererOnboardingResponse),
       page.getByRole('button', { name: /J’ai déposé un dossier/ }).click(),
     ])
 

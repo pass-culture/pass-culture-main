@@ -3,7 +3,9 @@ import { useLocation, useNavigate } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { updateUserAccess } from '@/commons/store/user/reducer'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { setSelectedPartnerVenueById } from '@/commons/store/user/dispatchers/setSelectedPartnerVenueById'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -12,13 +14,11 @@ import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
-  offererId: number
   isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
-  offererId,
   isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
   const navigate = useNavigate()
@@ -26,6 +26,33 @@ export const RedirectToBankAccountDialog = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const dispatch = useAppDispatch()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const updateSelectedPartnerVenue = async () => {
+    await dispatch(
+      setSelectedPartnerVenueById({
+        nextSelectedPartnerVenueId: selectedPartnerVenue.id,
+        shouldAlignSelectedAdminOfferer: true,
+        shouldRefresh: true,
+      })
+    ).unwrap()
+  }
+
+  const confirm = async () => {
+    logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON)
+    if (isOnboarding) {
+      await updateSelectedPartnerVenue()
+    }
+    navigate('/administration/remboursements/informations-bancaires')
+  }
+
+  const cancel = async () => {
+    logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL)
+    if (isOnboarding) {
+      await updateSelectedPartnerVenue()
+    }
+    navigate(cancelRedirectUrl)
+  }
 
   return (
     <ConfirmDialog
@@ -33,26 +60,13 @@ export const RedirectToBankAccountDialog = ({
       icon={strokePartyIcon}
       overrideConfirm={
         <Button
-          as="a"
-          to={`/administration/remboursements/informations-bancaires?structure=${offererId}`}
           variant={ButtonVariant.PRIMARY}
-          onClick={() => {
-            logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON)
-            if (isOnboarding) {
-              dispatch(updateUserAccess('full'))
-            }
-          }}
+          onClick={confirm}
           label={'Ajouter un compte bancaire'}
+          aria-label="Vous allez être redirigé vers la page d'administration de vos informations bancaires"
         />
       }
-      onCancel={() => {
-        logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL)
-        if (isOnboarding) {
-          dispatch(updateUserAccess('full'))
-        }
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate(cancelRedirectUrl)
-      }}
+      onCancel={cancel}
       cancelText="Plus tard"
       cancelIcon={fullWaitIcon}
       open={isDialogOpen}

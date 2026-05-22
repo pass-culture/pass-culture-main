@@ -688,42 +688,6 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         .exists()
     )
 
-    has_non_draft_offers = (
-        sa.select(1)
-        .select_from(offers_models.Offer)
-        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
-        .where(
-            sa.and_(
-                offers_models.Offer.venueId == models.Venue.id,
-                offers_models.Offer.validation != offer_mixin.OfferValidationStatus.DRAFT,
-            )
-        )
-        .correlate(models.Offerer)
-        .exists()
-    )
-
-    has_adage_id = (
-        sa.select(1)
-        .select_from(models.Venue)
-        .where(sa.and_(models.Venue.managingOffererId == models.Offerer.id, sa.not_(models.Venue.adageId.is_(None))))
-        .correlate(models.Offerer)
-        .exists()
-    )
-
-    has_collective_application = (
-        sa.select(1)
-        .select_from(models.Venue)
-        .join(
-            educational_models.CollectiveDmsApplication,
-            models.Venue.siret == educational_models.CollectiveDmsApplication.siret,
-        )
-        .where(
-            models.Venue.managingOffererId == models.Offerer.id,
-        )
-        .correlate(models.Offerer)
-        .exists()
-    )
-
     has_partner_page = (
         sa.select(1)
         .select_from(offers_models.Offer)
@@ -760,9 +724,7 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
-            sa.or_(
-                models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
-            ).label("isOnboarded"),
+            _build_offerer_is_onboarded_expression().label("isOnboarded"),
             has_partner_page.label("hasPartnerPage"),
             can_display_highlights.label("canDisplayHighlights"),
         )
@@ -786,6 +748,13 @@ def get_offerer_and_extradata(offerer_id: int) -> Row | None:
         )
         .one_or_none()
     )
+
+
+def get_offerer_is_onboarded(offerer_id: int) -> bool | None:
+    """
+    Return an offerer onboarding status, or None if not found.
+    """
+    return db.session.query(_build_offerer_is_onboarded_expression()).filter(models.Offerer.id == offerer_id).scalar()
 
 
 def get_offerer_with_bank_accounts(offerer_id: int) -> models.Offerer | None:
@@ -1437,3 +1406,48 @@ def convert_date_period_to_datetime_period_for_timezones(
     timezones = get_pro_user_timezones(pro_user_id)
 
     return {timezone: date_utils.convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}
+
+
+def _build_offerer_is_onboarded_expression() -> sa.ColumnElement[bool]:
+    """
+    Return the SA expression defining whether an Offerer is onboarded or not.
+    """
+    has_non_draft_offers = (
+        sa.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .where(
+            sa.and_(
+                offers_models.Offer.venueId == models.Venue.id,
+                offers_models.Offer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_adage_id = (
+        sa.select(1)
+        .select_from(models.Venue)
+        .where(sa.and_(models.Venue.managingOffererId == models.Offerer.id, sa.not_(models.Venue.adageId.is_(None))))
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_collective_application = (
+        sa.select(1)
+        .select_from(models.Venue)
+        .join(
+            educational_models.CollectiveDmsApplication,
+            models.Venue.siret == educational_models.CollectiveDmsApplication.siret,
+        )
+        .where(
+            models.Venue.managingOffererId == models.Offerer.id,
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    return sa.or_(
+        models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
+    )

@@ -218,7 +218,7 @@ class OfferFactory(BaseFactory[models.Offer]):
             and kwargs.get("validation") != models.OfferValidationStatus.DRAFT
             and "publicationDatetime" not in kwargs
         ):
-            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+            kwargs["publicationDatetime"] = datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=5)
 
         if kwargs.get("validation") != models.OfferValidationStatus.DRAFT and "finalizationDatetime" not in kwargs:
             kwargs["finalizationDatetime"] = datetime.datetime.now()

@@ -338,6 +338,34 @@ class VenueHasNonFreeOffersTest:
         assert repository.venue_has_non_free_offers(venue.id)
 
 
+class GetOffererIsOnboardedTest:
+    def test_unknown_offerer_returns_none(self):
+        assert repository.get_offerer_is_onboarded(-1) is None
+
+    @pytest.mark.parametrize(
+        "allowed_on_adage,adage_id,with_dms_application,offer_validation,expected_is_onboarded",
+        [
+            pytest.param(False, None, False, None, False, id="no_signal"),
+            pytest.param(True, None, False, None, True, id="allowed_on_adage"),
+            pytest.param(False, "some-adage-id", False, None, True, id="venue_with_adage_id"),
+            pytest.param(False, None, True, None, True, id="venue_with_dms_application"),
+            pytest.param(False, None, False, offers_models.OfferValidationStatus.APPROVED, True, id="non_draft_offer"),
+            pytest.param(False, None, False, offers_models.OfferValidationStatus.DRAFT, False, id="only_draft_offer"),
+        ],
+    )
+    def test_returns_expected_status(
+        self, allowed_on_adage, adage_id, with_dms_application, offer_validation, expected_is_onboarded
+    ):
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=allowed_on_adage)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
+        if with_dms_application:
+            educational_factories.CollectiveDmsApplicationFactory(venue=venue)
+        if offer_validation is not None:
+            offers_factories.OfferFactory(venue=venue, validation=offer_validation)
+
+        assert repository.get_offerer_is_onboarded(offerer.id) is expected_is_onboarded
+
+
 def test_sould_return_user_offerer_timezones():
     pro_user = users_factories.ProFactory()
     user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
