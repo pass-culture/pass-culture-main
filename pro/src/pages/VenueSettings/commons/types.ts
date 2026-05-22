@@ -1,7 +1,13 @@
 import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 
+export type VenueSettingsFormContext = {
+  isCaledonian: boolean
+  isVenueVirtual: boolean
+  siren: string | null
+  withSiret: boolean
+}
+
 export interface VenueSettingsFormValues extends FlatAddressFormValues {
-  bookingEmail: string
   comment: string
   name: string
   publicName: string
@@ -9,11 +15,5 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   venueSiret: number | ''
   withdrawalDetails: string
   manuallySetAddress?: boolean
-}
-
-export type VenueSettingsFormContext = {
-  isCaledonian: boolean
-  isVenueVirtual: boolean
-  siren: string | null
-  withSiret: boolean
+  bookingEmail?: string
 }

@@ -3,7 +3,6 @@
 
 .action-bar {
   display: flex;
-  flex-wrap: wrap-reverse;
   grid-template-columns: 1fr;
   gap: var(--size-spacing-l);
   max-width: rem.torem(486px);

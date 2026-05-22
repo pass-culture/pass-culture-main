@@ -152,7 +152,7 @@ test.describe('Didactic Onboarding feature', () => {
     await expect(
       page.getByRole('heading', {
         level: 2,
-        name: 'Gestion des synchronisations',
+        name: 'Informations administratives',
       })
     ).toBeVisible()
   })

@@ -11,6 +11,7 @@ import { parse } from '@/commons/utils/query-string'
 
 import { administrationRouteGroup } from './routes/administrationRouteGroup'
 import { partnerRouteGroup } from './routes/partnerRouteGroup'
+import { settingsRouteGroup } from './routes/settingsRouteGroup'
 import { routesEcoDesign } from './subroutesEcoDesignMap'
 import {
   routesIndividualOfferWizard,
@@ -23,7 +24,6 @@ import {
   mustBeAuthenticated,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
-  mustHaveSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
 
@@ -44,6 +44,7 @@ export const routes: CustomRouteTree = [
   },
   administrationRouteGroup,
   partnerRouteGroup,
+  settingsRouteGroup,
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -150,14 +151,6 @@ export const routes: CustomRouteTree = [
         title: 'Gérer ma page sur ADAGE',
       },
     ],
-  },
-  {
-    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
-    loader: withUserPermissions(mustHaveSelectedPartnerVenue),
-    path: '/parametres',
-    handle: {
-      title: 'Paramètres généraux',
-    },
   },
   {
     lazy: () => import('@/pages/CollectiveOffer/CollectiveOfferType/OfferType'),
