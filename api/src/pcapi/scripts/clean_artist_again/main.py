@@ -4,7 +4,7 @@ Job console documentation here: https://www.notion.so/passcultureapp/Documentati
 You can start the job from the infra repository with github cli :
 
 gh workflow run on_dispatch_pcapi_console_job.yaml \
-  -f ENVIRONMENT_SHORT_NAME=tst \
+  -f ENVIRONMENT_SHORT_NAME=stg \
   -f RESOURCES="512Mi/.5" \
   -f BRANCH_NAME=ogeber/pc-41603-rattrapage-artistes-encore \
   -f NAMESPACE=clean_artist_again \
@@ -21,19 +21,17 @@ import typing
 import unicodedata
 
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
+from sqlalchemy.orm import joinedload
 
 from pcapi.core.artist import models as artist_models
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
 
 BATCH_SIZE = 1000
 OFFER_ID_HEADER = "offer_id"
-CUSTOM_NAME_HEADER = "custom_name"
-ARTIST_ID_HEADER = "artist_id"
 ARTIST_TYPE_HEADER = "artist_type"
 
 
@@ -54,97 +52,123 @@ def slugify_name(name: str) -> str:
     return "".join(c for c in normalized if unicodedata.category(c) != "Mn").lower().strip()
 
 
-def process_batch(batch_rows: tuple, commit: bool) -> None:
-    artist_ids_to_fetch = set()
-    rows_to_process = []
-
-    for row in batch_rows:
-        offer_id = int(row.get(OFFER_ID_HEADER))
-        artist_id = str(row.get(ARTIST_ID_HEADER)) if row.get(ARTIST_ID_HEADER) else None
-        artist_type = row.get(ARTIST_TYPE_HEADER)
-
-        if artist_id:
-            rows_to_process.append({"offer_id": offer_id, "artist_id": artist_id, "artist_type": artist_type})
-            artist_ids_to_fetch.add(artist_id)
-
-    if not rows_to_process:
-        return
-
-    # Récupération des artist_name depuis la table Artist
-    stmt = sa.select(artist_models.Artist.id, artist_models.Artist.name).where(
-        artist_models.Artist.id.in_(artist_ids_to_fetch)
-    )
-    artist_names_mapping = {str(r.id): r.name for r in db.session.execute(stmt).all()}
-
-    # Offres mises à jour, pour supprimer les doublons ensuite
+def _update_artist_offer_links(rows_to_process: dict, offers_mapping: dict, links_mapping: dict) -> set:
     modified_offers = set()
 
-    # 1/2 : Remplacer les ArtistOfferLink ayant un artist_id par le artist.name dans le custom_name
-    for item in rows_to_process:
-        offer_id = item["offer_id"]
-        artist_id = item["artist_id"]
-        artist_type = item["artist_type"]
+    for o_id, a_type in rows_to_process.keys():
+        offer = offers_mapping.get(o_id)
+        extra_data = offer.extraData if offer else None
+        name_to_keep = extra_data.get(a_type) if extra_data else None
 
-        resolved_name = artist_names_mapping.get(artist_id)
-        if not resolved_name:
-            logger.warning(f"Nom introuvable pour l'artiste {artist_id} (offre {offer_id})")
+        if not name_to_keep:
             continue
 
-        try:
-            with atomic():
-                update_stmt = (
-                    sa.update(artist_models.ArtistOfferLink)
-                    .filter_by(offer_id=offer_id, artist_id=artist_id, artist_type=artist_type)
-                    .values(artist_id=None, custom_name=resolved_name)
-                )
-                db.session.execute(update_stmt)
-                modified_offers.add(offer_id)
+        existing_links = [link for link in links_mapping.get(o_id, []) if link.artist_type.value == a_type]
 
-        except sa_exc.IntegrityError:
-            # On a déjà un ArtistOfferLink avec ce tuple (offer_id, custom_name, artist_type) sans artist_id
-            logger.info(f"Doublon détecté : suppression du lien pour l'offre {offer_id}, artiste {artist_id}")
-            delete_stmt = sa.delete(artist_models.ArtistOfferLink).filter_by(
-                offer_id=offer_id, artist_id=artist_id, artist_type=artist_type
+        if not existing_links:
+            continue
+
+        existing_link_to_keep = next(
+            (link for link in existing_links if link.artist_id is None and link.custom_name == name_to_keep), None
+        )
+
+        if existing_link_to_keep:
+            duplicates = [link for link in existing_links if link.id != existing_link_to_keep.id]
+        else:
+            existing_link_to_update = existing_links[0]
+            duplicates = existing_links[1:]
+
+            update_stmt = (
+                sa.update(artist_models.ArtistOfferLink)
+                .where(artist_models.ArtistOfferLink.id == existing_link_to_update.id)
+                .values(custom_name=name_to_keep, artist_id=None)
+            )
+            db.session.execute(update_stmt)
+
+        modified_offers.add(o_id)
+
+        for duplicate in duplicates:
+            delete_stmt = sa.delete(artist_models.ArtistOfferLink).where(
+                artist_models.ArtistOfferLink.id == duplicate.id
             )
             db.session.execute(delete_stmt)
+            logger.info(f"Offre {o_id} ({a_type}) : Suppression du lien doublon ID {duplicate.id}")
+
+    return modified_offers
+
+
+def _clean_duplicates(modified_offers: set) -> None:
+    cleanup_stmt = sa.select(
+        artist_models.ArtistOfferLink.id,
+        artist_models.ArtistOfferLink.offer_id,
+        artist_models.ArtistOfferLink.artist_type,
+        artist_models.ArtistOfferLink.custom_name,
+    ).where(
+        artist_models.ArtistOfferLink.offer_id.in_(list(modified_offers)),
+        artist_models.ArtistOfferLink.artist_id.is_(None),
+    )
+
+    existing_links = db.session.execute(cleanup_stmt).all()
+
+    # Si on a le même tuple (offer_id, artist_type, slug_name) -> On ne garde que la première ligne
+    seen_combinations = {}
+    links_ids_to_delete = []
+
+    for link in existing_links:
+        slug = slugify_name(link.custom_name)
+        key = (link.offer_id, link.artist_type, slug)
+
+        if key in seen_combinations:
+            # le tuple (offer_id, artist_type, slug_name) à déjà été vu : on marque cet ArtistOfferLink pour être supprimé
+            links_ids_to_delete.append(link.id)
+            logger.info(
+                f"Doublon détecté pour l'ArtistOfferLink {link.id}) sur l'offre {link.offer_id} avec le nom {link.custom_name}."
+            )
+        else:
+            seen_combinations[key] = link.id
+
+    if links_ids_to_delete:
+        delete_duplicates_stmt = sa.delete(artist_models.ArtistOfferLink).where(
+            artist_models.ArtistOfferLink.id.in_(links_ids_to_delete)
+        )
+        db.session.execute(delete_duplicates_stmt)
+        logger.info(f"{len(links_ids_to_delete)} liens en doublon supprimés de la table ArtistOfferLink.")
+
+
+def process_batch(batch_rows: tuple, commit: bool) -> None:
+    offer_ids_to_fetch = []
+    rows = []
+
+    for row in batch_rows:
+        o_id = int(row.get(OFFER_ID_HEADER))
+        a_type = row.get(ARTIST_TYPE_HEADER)
+        offer_ids_to_fetch.append(o_id)
+        rows.append({"offer_id": o_id, "artist_type": a_type})
+
+    rows_to_process = {(r["offer_id"], r["artist_type"]): r for r in rows}
+    offer_stmt = (
+        sa.select(offers_models.Offer)
+        .where(offers_models.Offer.id.in_(list(offer_ids_to_fetch)))
+        .options(joinedload(offers_models.Offer.product))
+    )
+    offers_mapping = {offer.id: offer for offer in db.session.scalars(offer_stmt).all()}
+
+    links_stmt = sa.select(artist_models.ArtistOfferLink).where(
+        artist_models.ArtistOfferLink.offer_id.in_(list(offer_ids_to_fetch))
+    )
+
+    links_mapping: dict[int, list] = dict()
+    for link in db.session.scalars(links_stmt).all():
+        if link.offer_id not in links_mapping:
+            links_mapping[link.offer_id] = []
+        links_mapping[link.offer_id].append(link)
+
+    # 1/2 : Remplacer les ArtistOfferLink ayant un custom_name uniquement par la bonne valeur dans les extraData
+    modified_offers = _update_artist_offer_links(rows_to_process, offers_mapping, links_mapping)
 
     # 2/2 on supprime les doublons (cf ticket JIRA)
     if modified_offers:
-        cleanup_stmt = sa.select(
-            artist_models.ArtistOfferLink.id,
-            artist_models.ArtistOfferLink.offer_id,
-            artist_models.ArtistOfferLink.artist_type,
-            artist_models.ArtistOfferLink.custom_name,
-        ).where(
-            artist_models.ArtistOfferLink.offer_id.in_(list(modified_offers)),
-            artist_models.ArtistOfferLink.artist_id.is_(None),
-        )
-
-        existing_links = db.session.execute(cleanup_stmt).all()
-
-        # Si on a le même tuple (offer_id, artist_type, slug_name) -> On ne garde que la première ligne
-        seen_combinations = {}
-        links_ids_to_delete = []
-
-        for link in existing_links:
-            slug = slugify_name(link.custom_name)
-            key = (link.offer_id, link.artist_type, slug)
-
-            if key in seen_combinations:
-                # le tuple (offer_id, artist_type, slug_name) à déjà été vu : on marque cet ArtistOfferLink pour être supprimé
-                links_ids_to_delete.append(link.id)
-                logger.info(
-                    f"Doublon détecté pour l'ArtistOfferLink {link.id}) sur l'offre {link.offer_id} avec le nom {link.custom_name}."
-                )
-            else:
-                seen_combinations[key] = link.id
-
-        if links_ids_to_delete:
-            delete_duplicates_stmt = sa.delete(artist_models.ArtistOfferLink).where(
-                artist_models.ArtistOfferLink.id.in_(links_ids_to_delete)
-            )
-            db.session.execute(delete_duplicates_stmt)
-            logger.info(f"{len(links_ids_to_delete)} liens en doublon supprimés de la table ArtistOfferLink.")
+        _clean_duplicates(modified_offers)
 
     if commit:
         db.session.commit()
