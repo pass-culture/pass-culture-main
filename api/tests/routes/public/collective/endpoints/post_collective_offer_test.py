@@ -183,6 +183,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             payload["bookingLimitDatetime"]
         ).replace(tzinfo=None)
         assert offer.collectiveStock.price == decimal.Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.servicePrice == decimal.Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
         json = response.json

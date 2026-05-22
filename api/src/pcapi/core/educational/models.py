@@ -1233,11 +1233,18 @@ class CollectiveStock(PcObject, models.Model):
         "CollectiveBooking", foreign_keys="CollectiveBooking.collectiveStockId", back_populates="collectiveStock"
     )
 
+    # price is the total offer price, servicePrice is the price without the additional fees (transport, accommodation ...)
     price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2),
         sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
         index=True,
         nullable=False,
+    )
+    # TODO(jcicurel-pass, 2026-05-22): set servicePrice nullable=False when the column is filled and the APIs are updated + add the constraint
+    servicePrice: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
+        sa.Numeric(10, 2),
+        # sa.CheckConstraint("servicePrice >= 0", name="check_service_price_is_not_negative"),
+        nullable=True,
     )
 
     bookingLimitDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)

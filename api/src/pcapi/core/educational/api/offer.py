@@ -441,6 +441,8 @@ def create_collective_offer_public(
         endDatetime=end_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
+        # for now we set servicePrice=price, until we receive servicePrice
+        servicePrice=body.total_price,
         numberOfTickets=body.number_of_tickets,
         priceDetail=body.price_detail,
     )
@@ -550,6 +552,10 @@ def edit_collective_offer_public(
             # long term, the priceDetail field will be removed
             if key == "priceDetail":
                 offer.additionalDetails = value
+
+            # for now we set servicePrice=price, until we receive servicePrice
+            if key == "price":
+                offer.collectiveStock.servicePrice = value
 
         elif key in offer_fields:
             setattr(offer, key, value)
@@ -765,6 +771,7 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
             endDatetime=original_offer.collectiveStock.endDatetime,
             collectiveOffer=offer,
             price=original_offer.collectiveStock.price,
+            servicePrice=original_offer.collectiveStock.servicePrice,
             bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
             numberOfTickets=original_offer.collectiveStock.numberOfTickets,
             numberOfTeachers=original_offer.collectiveStock.numberOfTeachers,

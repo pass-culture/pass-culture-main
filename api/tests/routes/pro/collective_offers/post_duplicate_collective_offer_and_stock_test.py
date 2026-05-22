@@ -88,6 +88,7 @@ class Returns200Test:
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.additionalDetails == "My details"
         assert duplicate.collectiveStock.numberOfTeachers == 5
+        assert duplicate.collectiveStock.servicePrice == 100
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,

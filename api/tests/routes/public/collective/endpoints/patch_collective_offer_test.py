@@ -160,6 +160,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
         assert offer.collectiveStock.price == Decimal(payload["totalPrice"])
+        assert offer.collectiveStock.servicePrice == Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
 
     @pytest.mark.parametrize("field", NON_REQUIRED_NON_NULLABLE_FIELDS)
