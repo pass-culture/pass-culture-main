@@ -144,9 +144,7 @@ test.describe('Pre signup pages', () => {
 
     await mockSiretCheck(page)
 
-    await page
-      .getByLabel(/Numéro de SIRET à 14 chiffres/)
-      .fill('11111111111111')
+    await page.getByLabel(/Numéro de SIRET/).fill('11111111111111')
 
     await page.getByRole('button', { name: 'Continuer' }).click()
 
