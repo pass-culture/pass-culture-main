@@ -149,7 +149,7 @@ class ProfileCompletionContentFactory(factory.Factory):
 
 class ApiParticulierPersonFactory(factory.Factory):
     class Meta:
-        model = bonus_schemas.Person
+        model = bonus_schemas.BonusCreditPerson
 
     last_name = factory.Faker("last_name")
     first_names = factory.Faker("random_elements", elements=["Jérôme", "Charles", "Bernard"])
@@ -180,6 +180,13 @@ class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
 
 
+class DisabilityBonusCreditContentFactory(factory.Factory):
+    class Meta:
+        model = bonus_schemas.DisabilityBonusCreditContent
+
+    person = factory.SubFactory(ApiParticulierPersonFactory)
+
+
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, type[factory.Factory] | None] = {
     subscription_models.FraudCheckType.DMS: DMSContentFactory,
     subscription_models.FraudCheckType.UBBLE: UbbleContentFactory,
@@ -187,6 +194,8 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, typ
     subscription_models.FraudCheckType.HONOR_STATEMENT: None,
     subscription_models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
     subscription_models.FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContentFactory,
+    subscription_models.FraudCheckType.AAH_BONUS_CREDIT: DisabilityBonusCreditContentFactory,
+    subscription_models.FraudCheckType.AEEH_BONUS_CREDIT: DisabilityBonusCreditContentFactory,
 }
 
 
