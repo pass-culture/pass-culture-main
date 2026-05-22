@@ -5,9 +5,9 @@ import {
 } from 'playwright-core'
 
 import { checkAccessibility } from './helpers/accessibility'
-import { mockSiretCheck } from './helpers/apiEntreprise'
 import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL } from './helpers/sandbox'
+import { mockSiretCheck } from './helpers/structureCheck'
 
 async function carouselNavigation(page: Page) {
   await page.goto('/inscription')
