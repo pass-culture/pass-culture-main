@@ -109,7 +109,7 @@ test.describe('Create individual offers new flow', () => {
 
     await titles[0].clear()
     await titles[0].fill('Carré Or')
-    await prices[0].fill('100')
+    await prices[0].fill('99,99')
 
     await titles[1].fill('Fosse Debout')
     await prices[1].fill('10')
@@ -181,7 +181,7 @@ test.describe('Create individual offers new flow', () => {
       .getByTestId(/wrapper-quantityPerPriceCategories/)
       .last()
       .getByLabel(/Tarif/)
-      .selectOption('100,00\xa0€ - Carré Or')
+      .selectOption('99,99\xa0€ - Carré Or')
 
     await page
       .getByLabel('Nombre de jours avant le début de l’évènement')
