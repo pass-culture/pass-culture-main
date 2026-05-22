@@ -1,13 +1,17 @@
 import type { LoaderFunctionArgs } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import * as handleUnexpectedErrorModule from '@/commons/errors/handleUnexpectedError'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { makeApiError } from '@/commons/utils/factories/errorFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
-import { validateSignupActivation } from '../validateSignupActivation'
+import {
+  __resetConsumedTokenCallsForTests,
+  validateSignupActivation,
+} from '../validateSignupActivation'
 
 vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
@@ -47,7 +51,7 @@ const createMockLoaderArgs = (
 
 describe('validateSignupActivation', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    __resetConsumedTokenCallsForTests()
   })
 
   it('should redirect to /connexion when token is missing', async () => {
@@ -92,6 +96,9 @@ describe('validateSignupActivation', () => {
   })
 
   it('should show error snackbar and redirect to /connexion when API returns an error', async () => {
+    const handleUnexpectedErrorSpy = vi
+      .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
+      .mockImplementation(vi.fn())
     const store = setupStore()
     vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       makeApiError({ body: { global: 'Token expired' } })
@@ -115,14 +122,19 @@ describe('validateSignupActivation', () => {
         }),
       })
     )
+    expect(handleUnexpectedErrorSpy).not.toHaveBeenCalled()
   })
 
   it('should redirect to /connexion without snackbar when a non-API error is thrown', async () => {
+    const handleUnexpectedErrorSpy = vi
+      .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
+      .mockImplementation(vi.fn())
     const store = setupStore()
     vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       new Error('Network error')
     )
     vi.spyOn(store, 'dispatch')
+
     const args = createMockLoaderArgs('some-token')
 
     await expect(validateSignupActivation(args)).rejects.toEqual({
@@ -133,5 +145,41 @@ describe('validateSignupActivation', () => {
     expect(api.validateUser).toHaveBeenCalledWith('some-token')
     expect(api.getProfile).not.toHaveBeenCalled()
     expect(store.dispatch).not.toHaveBeenCalled()
+    expect(handleUnexpectedErrorSpy).toHaveBeenCalledExactlyOnceWith(
+      new Error('Network error'),
+      { isSilent: true }
+    )
+  })
+
+  it('should call the backend only once when invoked twice with the same token (StrictMode safeguard)', async () => {
+    const handleUnexpectedErrorSpy = vi
+      .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
+      .mockImplementation(vi.fn())
+    const store = setupStore()
+    const mockUser = sharedCurrentUserFactory()
+    vi.spyOn(api, 'validateUser').mockResolvedValue(undefined)
+    vi.spyOn(api, 'getProfile').mockResolvedValue(mockUser)
+    vi.spyOn(store, 'dispatch').mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue(undefined),
+    } as unknown as ReturnType<typeof store.dispatch>)
+    const args = createMockLoaderArgs('reused-token')
+
+    const [firstCall, secondCall] = [
+      validateSignupActivation(args),
+      validateSignupActivation(args),
+    ]
+
+    await expect(firstCall).rejects.toEqual({
+      type: 'redirect',
+      path: '/connexion',
+    })
+    await expect(secondCall).rejects.toEqual({
+      type: 'redirect',
+      path: '/connexion',
+    })
+
+    expect(api.validateUser).toHaveBeenCalledTimes(1)
+    expect(api.getProfile).toHaveBeenCalledTimes(1)
+    expect(handleUnexpectedErrorSpy).not.toHaveBeenCalled()
   })
 })

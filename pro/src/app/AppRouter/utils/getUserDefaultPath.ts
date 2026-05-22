@@ -2,7 +2,8 @@ import { getCurrentUserPermissions } from '@/commons/auth/getCurrentUserPermissi
 import { rootStore } from '@/commons/store/store'
 
 export const getUserDefaultPath = () => {
-  const userPermissions = getCurrentUserPermissions(rootStore.getState().user)
+  const state = rootStore.getState()
+  const userPermissions = getCurrentUserPermissions(state.user)
 
   switch (true) {
     case !userPermissions.isAuthenticated:

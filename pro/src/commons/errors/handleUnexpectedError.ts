@@ -4,7 +4,6 @@ import { rootStore } from 'commons/store/store'
 
 import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
-import type { FrontendError } from './FrontendError'
 import type { FrontendErrorOptions } from './types'
 
 const DEFAULT_OPTIONS: FrontendErrorOptions = {
@@ -22,7 +21,7 @@ const DEFAULT_OPTIONS: FrontendErrorOptions = {
  * Can be used anywhere, inluding outside of the React components/hooks.
  */
 export function handleUnexpectedError(
-  error: FrontendError,
+  error: unknown,
   options: FrontendErrorOptions = {}
 ): void {
   const { context, isSilent, userMessage } = {

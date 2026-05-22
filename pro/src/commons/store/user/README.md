@@ -1,7 +1,5 @@
 ## Initialisation d'un utilisateur
 
-Voici le nouveau flux d'initialisation d'un utilisateur sous le FF `WIP_SWITCH_VENUE`.
-
 > [!CAUTION]
 > Le cas des structures non-rattachées n'est pour l'instant pas traité.
 > La solution la plus simple serait de retourner une propriété `isAllowed` sur la liste légère des structures.
