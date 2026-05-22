@@ -153,6 +153,9 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.imageCredit == "a great artist"
         assert offer.nationalProgramId == national_program.id
 
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert offer.additionalDetails == payload["educationalPriceDetail"]
+
         assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"])
         assert offer.collectiveStock.endDatetime == datetime.fromisoformat(payload["endDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])

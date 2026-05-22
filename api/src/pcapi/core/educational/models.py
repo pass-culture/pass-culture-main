@@ -494,6 +494,8 @@ class CollectiveOffer(
     )
     description: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, server_default="", default="")
 
+    additionalDetails: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
     durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(

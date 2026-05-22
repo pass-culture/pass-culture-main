@@ -54,6 +54,9 @@ class Return200Test:
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
 
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert offer.additionalDetails == "Détail du prix"
+
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offe_with_start_end_datetime(self, client):
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -87,6 +90,9 @@ class Return200Test:
         assert offer.validation == OfferValidationStatus.DRAFT
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
         assert created_stock.endDatetime == datetime.datetime(2022, 1, 18, 18, 0, 0)
+
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert offer.additionalDetails == "Détail du prix"
 
 
 class Return404Test:

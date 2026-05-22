@@ -42,7 +42,6 @@ class Returns200Test:
                 child.unlink()
 
     def test_duplicate_collective_offer_image(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -61,7 +60,6 @@ class Returns200Test:
         with mock.patch("pcapi.core.educational.api.offer.get_image_from_url", return_value=image_oiseau_bytes):
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
-        # Then
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert response.status_code == 201
         assert response.json["imageCredit"] == offer.imageCredit
@@ -79,6 +77,7 @@ class Returns200Test:
             institution=institution,
             nationalProgram=national_program,
             domains=[domain],
+            additionalDetails="My details",
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -87,6 +86,7 @@ class Returns200Test:
 
         assert response.status_code == 201
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert duplicate.additionalDetails == "My details"
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
@@ -132,13 +132,13 @@ class Returns200Test:
                 "educationalPriceDetail": offer.collectiveStock.priceDetail,
             },
             "institution": {
-                "id": duplicate.institution.id,
-                "name": duplicate.institution.name,
-                "institutionType": duplicate.institution.institutionType,
-                "postalCode": duplicate.institution.postalCode,
-                "city": duplicate.institution.city,
-                "phoneNumber": duplicate.institution.phoneNumber,
-                "institutionId": duplicate.institution.institutionId,
+                "id": institution.id,
+                "name": institution.name,
+                "institutionType": institution.institutionType,
+                "postalCode": institution.postalCode,
+                "city": institution.city,
+                "phoneNumber": institution.phoneNumber,
+                "institutionId": institution.institutionId,
             },
             "templateId": None,
             "booking": None,
@@ -215,17 +215,12 @@ class Returns200Test:
         assert response.json == {"validation": ["Cette action n'est pas autorisée sur cette offre"]}
 
     def test_duplicate_collective_offer_offerer_not_validated(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory(
-            validationStatus=validation_status_mixin.ValidationStatus.REJECTED,
-        )
+        offerer = offerers_factories.OffererFactory(validationStatus=validation_status_mixin.ValidationStatus.REJECTED)
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        # When
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
@@ -233,7 +228,6 @@ class Returns200Test:
         assert response.json == {"offerer": ["la structure n'est pas autorisée à dupliquer l'offre"]}
 
     def test_duplicate_collective_offer_image_not_found(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -254,7 +248,6 @@ class Returns200Test:
         ):
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
-        # Then
         assert response.status_code == 404
 
     def test_duplicate_collective_offer_validation_information(self, client):
