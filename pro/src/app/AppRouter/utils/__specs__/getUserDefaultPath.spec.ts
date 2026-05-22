@@ -1,6 +1,5 @@
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
-import type { UserAccess } from '@/commons/store/user/reducer'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -9,34 +8,37 @@ import {
 
 import { getUserDefaultPath } from '../getUserDefaultPath'
 
-const setupStore = (options: {
-  access?: UserAccess | null
+const setupStore = ({
+  hasUser = false,
+  hasVenueAssiociated = false,
+  hasVenueOnboarded = false,
+  hasVenueSelected = false,
+  hasVenue = false,
+}: {
   hasUser?: boolean
+  hasVenueAssiociated?: boolean
   hasVenueOnboarded?: boolean
   hasVenueSelected?: boolean
   hasVenue?: boolean
 }) => {
+  const fakeVenue = makeVenueListItemLiteResponseModel({
+    id: 101,
+    managingOffererId: 100,
+    name: 'Digital Venue A1',
+  })
   const store = configureTestStore({
     user: {
-      access: options.access ?? null,
-      currentUser: options.hasUser ? sharedCurrentUserFactory() : null,
+      currentUser: hasUser ? sharedCurrentUserFactory() : null,
       selectedAdminOfferer: null,
-      selectedPartnerVenue: options.hasVenueSelected
+      selectedPartnerVenue: hasVenueSelected
         ? makeGetVenueResponseModel({
-            id: 1,
-            isOnboarded: !!options.hasVenueOnboarded,
+            id: fakeVenue.id,
+            isOnboarded: hasVenueOnboarded,
           })
         : null,
-      venues: options.hasVenue
-        ? [
-            makeVenueListItemLiteResponseModel({
-              id: 3,
-              managingOffererId: 1,
-              name: 'Digital Venue A1',
-            }),
-          ]
-        : null,
-      venuesWithPendingValidation: null,
+      venues: hasVenue ? [fakeVenue] : null,
+      venuesWithPendingValidation:
+        hasVenue && !hasVenueAssiociated ? [fakeVenue] : null,
     },
   })
   vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
@@ -56,17 +58,21 @@ describe('getUserDefaultPath', () => {
   })
 
   it('should return /hub when user has venues but no venue selected', () => {
-    setupStore({ hasUser: true, hasVenue: true, hasVenueSelected: false })
+    setupStore({
+      hasUser: true,
+      hasVenue: true,
+      hasVenueSelected: false,
+    })
 
     expect(getUserDefaultPath()).toBe('/hub')
   })
 
-  it('should return /rattachement-en-cours when user has selected venue and "unattached" access', () => {
+  it('should return /rattachement-en-cours when user has selected + no venue associated', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
+      hasVenueAssiociated: false,
       hasVenueSelected: true,
-      access: 'unattached',
     })
 
     expect(getUserDefaultPath()).toBe('/rattachement-en-cours')
@@ -76,6 +82,7 @@ describe('getUserDefaultPath', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
+      hasVenueAssiociated: true,
       hasVenueOnboarded: false,
       hasVenueSelected: true,
     })
@@ -83,10 +90,11 @@ describe('getUserDefaultPath', () => {
     expect(getUserDefaultPath()).toBe('/onboarding')
   })
 
-  it('should return /accueil when user has selected + onboarded venue and non-"unattached" access', () => {
+  it('should return /accueil when user has selected + onboarded + associated venue', () => {
     setupStore({
       hasUser: true,
       hasVenue: true,
+      hasVenueAssiociated: true,
       hasVenueOnboarded: true,
       hasVenueSelected: true,
     })

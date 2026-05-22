@@ -17,11 +17,13 @@ import {
 const makeUserPermissions = (
   overrides: Partial<UserPermissions> = {}
 ): UserPermissions => ({
-  isAuthenticated: false,
-  hasSelectedPartnerVenue: false,
-  isOnboarded: false,
-  isSelectedPartnerVenueAssociated: false,
   hasSelectedAdminOfferer: false,
+  hasSelectedPartnerVenue: false,
+  hasVenues: false,
+  isAuthenticated: false,
+  isSelectedAdminOffererAssociated: false,
+  isSelectedPartnerVenueAssociated: false,
+  isSelectedPartnerVenueOnboarded: false,
   ...overrides,
 })
 
@@ -61,7 +63,7 @@ describe('utils', () => {
     it('should return true when user is onboarded whatever the sessions storage value is', () => {
       mockCookie('')
       const permissions = makeUserPermissions({
-        isOnboarded: true,
+        isSelectedPartnerVenueOnboarded: true,
       })
       expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
 
@@ -72,7 +74,7 @@ describe('utils', () => {
     it('should return false when user is not onboarded with no cookie', () => {
       mockCookie('')
       const permissions = makeUserPermissions({
-        isOnboarded: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
 
       expect(mustBeOnboardedOrSkipped(permissions)).toBe(false)
@@ -81,7 +83,7 @@ describe('utils', () => {
     it('should return true when user is not onboarded with the cookie set', () => {
       mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
       const permissions = makeUserPermissions({
-        isOnboarded: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
 
       expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
@@ -92,7 +94,7 @@ describe('utils', () => {
     it('should return true when user is authenticated, onboarded, and has associated venue', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isOnboarded: true,
+        isSelectedPartnerVenueOnboarded: true,
         isSelectedPartnerVenueAssociated: true,
       })
 
@@ -102,7 +104,7 @@ describe('utils', () => {
     it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
-        isOnboarded: true,
+        isSelectedPartnerVenueOnboarded: true,
         isSelectedPartnerVenueAssociated: true,
       })
 
@@ -113,7 +115,7 @@ describe('utils', () => {
       mockCookie('')
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isOnboarded: false,
+        isSelectedPartnerVenueOnboarded: false,
         isSelectedPartnerVenueAssociated: true,
       })
 
@@ -123,7 +125,7 @@ describe('utils', () => {
     it('should return false when venue is not associated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isOnboarded: true,
+        isSelectedPartnerVenueOnboarded: true,
         isSelectedPartnerVenueAssociated: false,
       })
 
@@ -135,7 +137,7 @@ describe('utils', () => {
     it('should return true when user is authenticated but not onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isOnboarded: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
 
       expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(true)
@@ -144,7 +146,7 @@ describe('utils', () => {
     it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
-        isOnboarded: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
 
       expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(
@@ -155,7 +157,7 @@ describe('utils', () => {
     it('should return false when user is onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
-        isOnboarded: true,
+        isSelectedPartnerVenueOnboarded: true,
       })
 
       expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(

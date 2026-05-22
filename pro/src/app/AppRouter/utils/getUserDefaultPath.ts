@@ -2,16 +2,13 @@ import { getCurrentUserPermissions } from '@/commons/auth/getCurrentUserPermissi
 import { rootStore } from '@/commons/store/store'
 
 export const getUserDefaultPath = () => {
-  const state = rootStore.getState()
-
-  const userPermissions = getCurrentUserPermissions()
-  const hasVenues = state.user.venues && state.user.venues.length > 0
+  const userPermissions = getCurrentUserPermissions(rootStore.getState().user)
 
   switch (true) {
     case !userPermissions.isAuthenticated:
       return '/connexion'
 
-    case !hasVenues:
+    case !userPermissions.hasVenues:
       return '/inscription/structure/recherche'
 
     case !userPermissions.hasSelectedPartnerVenue:
@@ -20,7 +17,7 @@ export const getUserDefaultPath = () => {
     case !userPermissions.isSelectedPartnerVenueAssociated:
       return '/rattachement-en-cours'
 
-    case !userPermissions.isOnboarded:
+    case !userPermissions.isSelectedPartnerVenueOnboarded:
       return '/onboarding'
 
     default:

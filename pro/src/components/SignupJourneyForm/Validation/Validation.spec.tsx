@@ -574,13 +574,7 @@ describe('ValidationScreen', () => {
       })
 
       it('should navigate to user default path after creation', async () => {
-        renderValidationScreen(contextValue, {
-          storeOverrides: {
-            user: {
-              access: 'full',
-            },
-          },
-        })
+        renderValidationScreen(contextValue)
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         await waitFor(() => {
           expect(initializeUserMock).toHaveBeenCalled()

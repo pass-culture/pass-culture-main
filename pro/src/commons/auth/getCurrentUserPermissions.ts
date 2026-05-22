@@ -1,32 +1,55 @@
-import { rootStore } from '@/commons/store/store'
-
+import type { UserSliceState } from '../store/user/reducer'
 import type { UserPermissions } from './types'
 
-export const getCurrentUserPermissions = (): UserPermissions => {
-  const { access, currentUser, selectedAdminOfferer, selectedPartnerVenue } =
-    rootStore.getState().user
+/**
+ * /!\ If you need to get the current user permissions within React lifecyle (components),
+ * DO NOT use this function directly. Use the `useCurrentUserPermissions` hook instead
+ * to ensure the permissions are refreshed on every user state update.
+ */
+export const getCurrentUserPermissions = (
+  userSliceState: UserSliceState
+): UserPermissions => {
+  const {
+    currentUser,
+    offerersNamesWithPendingValidation,
+    selectedAdminOfferer,
+    selectedPartnerVenue,
+    venues,
+    venuesWithPendingValidation,
+  } = userSliceState
 
   if (!currentUser) {
     return {
       hasSelectedPartnerVenue: false,
-      isAuthenticated: false,
-      isOnboarded: false,
-      isSelectedPartnerVenueAssociated: false,
       hasSelectedAdminOfferer: false,
+      hasVenues: false,
+      isAuthenticated: false,
+      isSelectedAdminOffererAssociated: false,
+      isSelectedPartnerVenueAssociated: false,
+      isSelectedPartnerVenueOnboarded: false,
     }
   }
 
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
-  // TODO (igabriele, 2026-02-04): Replace `access !== 'unattached'` with `selectedPartnerVenue.isAssociated` as soon as the prop is available (WIP_SWITCH_VENUE FF).
+  const isSelectedAdminOffererAssociated =
+    hasSelectedAdminOfferer &&
+    !offerersNamesWithPendingValidation?.some(
+      (offerer) => offerer.id === selectedAdminOfferer.id
+    )
   const isSelectedPartnerVenueAssociated =
-    hasSelectedPartnerVenue && access !== 'unattached'
+    hasSelectedPartnerVenue &&
+    !venuesWithPendingValidation?.some(
+      (venue) => venue.id === selectedPartnerVenue.id
+    )
 
   return {
-    hasSelectedPartnerVenue: hasSelectedPartnerVenue,
-    isAuthenticated: true,
-    isOnboarded: !!selectedPartnerVenue?.isOnboarded,
-    isSelectedPartnerVenueAssociated,
     hasSelectedAdminOfferer,
+    hasSelectedPartnerVenue,
+    hasVenues: !!venues?.length,
+    isAuthenticated: true,
+    isSelectedAdminOffererAssociated,
+    isSelectedPartnerVenueAssociated,
+    isSelectedPartnerVenueOnboarded: !!selectedPartnerVenue?.isOnboarded,
   }
 }

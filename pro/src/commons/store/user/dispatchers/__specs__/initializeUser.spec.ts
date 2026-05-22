@@ -77,7 +77,6 @@ describe('initializeUser', () => {
     await store.dispatch(initializeUser({ user })).unwrap()
 
     const state = store.getState()
-    expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
     expect(state.user.selectedAdminOfferer?.id).toBe(100)
 
@@ -119,7 +118,6 @@ describe('initializeUser', () => {
     await store.dispatch(initializeUser({ user })).unwrap()
 
     const state = store.getState()
-    expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
   })
 
@@ -156,7 +154,6 @@ describe('initializeUser', () => {
     expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
-    expect(state.user.access).toBeNull()
     expect(state.user.selectedPartnerVenue).toBeNull()
   })
 
@@ -182,9 +179,6 @@ describe('initializeUser', () => {
     await store.dispatch(initializeUser({ user })).unwrap()
 
     expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-    const state = store.getState()
-    expect(state.user.access).toBeNull()
   })
 
   it('should return early without selection when no offerers and no venues', async () => {
@@ -209,7 +203,6 @@ describe('initializeUser', () => {
     expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
-    expect(state.user.access).toBeNull()
     expect(state.user.selectedAdminOfferer).toBeNull()
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
@@ -351,7 +344,6 @@ describe('initializeUser', () => {
     await store.dispatch(initializeUser({ user })).unwrap()
 
     const state = store.getState()
-    expect(state.user.access).toBeNull()
     expect(state.user.selectedPartnerVenue).toBeNull()
   })
 
@@ -394,7 +386,6 @@ describe('initializeUser', () => {
     await store.dispatch(initializeUser({ user })).unwrap()
 
     const state = store.getState()
-    expect(state.user.access).toBe('full')
     expect(state.user.selectedPartnerVenue?.id).toBe(201)
   })
 
@@ -502,7 +493,6 @@ describe('error handling', () => {
     expect(logoutSpy).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
-    expect(state.user.access).toBeNull()
     expect(state.user.currentUser).toBeNull()
     expect(state.user.selectedAdminOfferer).toBeNull()
     expect(state.user.offererNamesValidated).toBeNull()

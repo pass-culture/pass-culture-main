@@ -8,12 +8,8 @@ import type {
   VenueListItemLiteResponseModel,
 } from '@/apiClient/v1/new'
 
-export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
-
-type UserState = {
-  currentUser: null | SharedCurrentUserResponseModel
-  // TODO (igabriele, 2025-02-04): Delete this prop once `WIP_SWITCH_VENUE` FF is enabled and removed.
-  access: null | UserAccess
+export interface UserSliceState {
+  currentUser: SharedCurrentUserResponseModel | null
   selectedAdminOfferer: GetOffererResponseModel | null
   selectedPartnerVenue: GetVenueResponseModel | null
   venues: VenueListItemLiteResponseModel[] | null
@@ -24,9 +20,8 @@ type UserState = {
   offerersNamesWithPendingValidation: GetOffererNameResponseModel[] | null
 }
 
-const initialState: UserState = {
+const initialState: UserSliceState = {
   currentUser: null,
-  access: null,
   selectedAdminOfferer: null,
   selectedPartnerVenue: null,
   venues: null,
@@ -57,25 +52,24 @@ const userSlice = createSlice({
       state.currentUser = action.payload
     },
 
-    updateUserAccess: (state, action: PayloadAction<null | UserAccess>) => {
-      state.access = action.payload
-    },
-
     setSelectedAdminOfferer(
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<GetOffererResponseModel | null>
     ) {
       state.selectedAdminOfferer = action.payload
     },
 
     setSelectedPartnerVenue(
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<GetVenueResponseModel | null>
     ) {
       state.selectedPartnerVenue = action.payload
     },
 
-    setVenues(state: UserState, action: PayloadAction<UpdateVenuesPayload>) {
+    setVenues(
+      state: UserSliceState,
+      action: PayloadAction<UpdateVenuesPayload>
+    ) {
       state.venues =
         action.payload.venues?.concat(
           action.payload.venuesWithPendingValidation ?? []
@@ -85,7 +79,7 @@ const userSlice = createSlice({
     },
 
     updateOffererNames: (
-      state: UserState,
+      state: UserSliceState,
       action: PayloadAction<UpdateOffererNamesPayload>
     ) => {
       state.offererNames =
@@ -103,7 +97,6 @@ export const userReducer = userSlice.reducer
 
 export const {
   updateUser,
-  updateUserAccess,
   setSelectedAdminOfferer,
   setSelectedPartnerVenue,
   setVenues,

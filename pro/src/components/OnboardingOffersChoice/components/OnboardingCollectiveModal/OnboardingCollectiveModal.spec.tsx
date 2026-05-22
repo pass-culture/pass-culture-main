@@ -45,7 +45,6 @@ const renderOnboardingCollectiveModal = (
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: {
-        access: null,
         currentUser: sharedCurrentUserFactory(),
         offererNames: [getOffererNameFactory({ id: SELECTED_OFFERER_ID })],
         offererNamesValidated: [

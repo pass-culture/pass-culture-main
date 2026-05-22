@@ -513,7 +513,8 @@ export const routes: CustomRouteTree = [
       ),
     loader: withUserPermissions(
       (userPermissions) =>
-        userPermissions.isAuthenticated && !userPermissions.isOnboarded
+        userPermissions.isAuthenticated &&
+        !userPermissions.isSelectedPartnerVenueOnboarded
     ),
     path: '/onboarding/individuel',
     handle: {
