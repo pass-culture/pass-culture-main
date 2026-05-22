@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import type { StructureDataBodyModel } from '@/apiClient/v1'
@@ -9,6 +9,7 @@ import {
   checkSiret,
   getSiretData,
 } from '@/commons/core/Venue/utils/getSiretData'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -43,13 +44,16 @@ export const SiretInputForm = ({
   onSiretChecked,
 }: SiretInputProps): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const isSignupSimulationEnabled = useActiveFeature(
+    'WIP_PRE_SIGNUP_SIMULATION'
+  )
 
   const snackBar = useSnackBar()
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const hookForm = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: initialValues,
+    values: initialValues,
     mode: 'onBlur',
   })
 
@@ -98,6 +102,19 @@ export const SiretInputForm = ({
     }
   }
 
+  const unHumanizeSiretOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (
+        watch('siret').length === 0 ||
+        e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
+        e.target.value.length === 14
+      ) {
+        setValue('siret', unhumanizeSiret(e.target.value))
+      }
+    },
+    [watch, setValue]
+  )
+
   return (
     <FormLayout>
       <form onSubmit={handleSubmit(onSubmit)} data-testid="signup-offerer-form">
@@ -105,19 +122,14 @@ export const SiretInputForm = ({
           <FormLayout.Row mdSpaceAfter>
             <TextInput
               {...register('siret')}
-              label="Numéro de SIRET à 14 chiffres"
+              label={`Numéro de SIRET${isSignupSimulationEnabled ? '' : ' à 14 chiffres'}`}
               type="text"
               required
+              requiredIndicator={
+                isSignupSimulationEnabled ? 'explicit' : 'symbol'
+              }
               error={errors.siret?.message}
-              onChange={(e) => {
-                if (
-                  watch('siret').length === 0 ||
-                  e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
-                  e.target.value.length === 14
-                ) {
-                  setValue('siret', unhumanizeSiret(e.target.value))
-                }
-              }}
+              onChange={unHumanizeSiretOnChange}
             />
           </FormLayout.Row>
           <FormLayout.Row>

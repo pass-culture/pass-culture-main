@@ -20,6 +20,7 @@
 .subheading-description {
   @include fonts.body-xs;
 
+  margin-bottom: var(--size-spacing-xxl);
   color: var(--color-text-subtle);
 }
 

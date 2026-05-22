@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -5,6 +6,7 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type Offerer as OffererType,
@@ -32,6 +34,7 @@ import {
   SiretInputForm,
   type SiretInputFormValues,
 } from '@/components/SiretInputForm/SiretInputForm'
+import { Button } from '@/design-system/Button/Button'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -212,20 +215,43 @@ export const Offerer = (): JSX.Element => {
     }
   }
 
-  const submitElement = (isSubmitting: boolean) => (
-    <ActionBar
-      isDisabled={isSubmitting}
-      onClickPrevious={() => navigate('/hub')}
-      nextStepTitle="Continuer"
-      previousStepTitle="Annuler et quitter"
-    />
-  )
+  const submitElement = (isSubmitting: boolean) =>
+    isSignupSimulationEnabled ? (
+      <div className={styles['next-actions']}>
+        <Button type="submit" label="Continuer" disabled={isSubmitting} />
+      </div>
+    ) : (
+      <ActionBar
+        isDisabled={isSubmitting}
+        onClickPrevious={() => navigate('/hub')}
+        nextStepTitle="Continuer"
+        previousStepTitle="Annuler et quitter"
+      />
+    )
 
   return (
-    <div>
-      <h2 className={styles['subtitle']}>
-        Dites-nous pour quelle structure vous travaillez
-      </h2>
+    <div
+      className={cn({
+        [styles['offerer-container']]: isSignupSimulationEnabled,
+      })}
+    >
+      {isSignupSimulationEnabled ? (
+        <>
+          <MainHeading
+            mainHeading="Votre numéro SIRET"
+            className={styles['main-heading']}
+          />
+          <p className={styles['subheading-description']}>
+            Le SIRET est un identifiant à 14 chiffres attribué à chaque
+            structure. Vous le trouverez sur vos documents administratifs (avis
+            de situation SIRENE, factures, contrats).
+          </p>
+        </>
+      ) : (
+        <h2 className={styles['subtitle']}>
+          Dites-nous pour quelle structure vous travaillez
+        </h2>
+      )}
       <SiretInputForm
         submitElement={submitElement}
         initialValues={initialValues}

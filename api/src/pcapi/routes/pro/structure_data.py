@@ -73,7 +73,3 @@ def check_structure(search_input: str) -> None:
         offerers_api.find_structure_data(search_input)
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
-    except sirene_exceptions.NonPublicDataException:
-        raise ApiErrors(
-            errors={"global": ["Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public."]}
-        )
