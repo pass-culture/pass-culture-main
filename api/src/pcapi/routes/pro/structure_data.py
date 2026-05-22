@@ -7,15 +7,14 @@ from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
-from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
-from ...models import feature
 from . import blueprint
 
 
@@ -70,6 +69,16 @@ def check_structure(search_input: str) -> None:
     if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
     try:
-        offerers_api.find_structure_data(search_input)
+        data = offerers_api.find_structure_data(search_input)
+        logger.info(
+            "Searching for structure in signup simulation",
+            extra={
+                "siret": data.siret,
+                "is_diffusible": data.diffusible,
+                "legal_category": data.legal_category_code,
+                "ape_code": data.ape_code,
+            },
+            technical_message_id="structure_check",
+        )
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
