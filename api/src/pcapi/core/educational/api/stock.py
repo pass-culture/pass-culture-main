@@ -44,12 +44,15 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     if booking_limit_datetime is None:
         booking_limit_datetime = start
 
+    price = decimal.Decimal(total_price)
     collective_stock = models.CollectiveStock(
         collectiveOffer=collective_offer,
         startDatetime=start,
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
-        price=decimal.Decimal(total_price),
+        # for now we set servicePrice=price, until we receive servicePrice
+        price=price,
+        servicePrice=price,
         numberOfTickets=number_of_tickets,
         numberOfTeachers=0,
         priceDetail=educational_price_detail,
@@ -130,6 +133,9 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
 
     price = updatable_fields["price"]
     if price is not None:
+        # for now we set servicePrice=price, until we receive servicePrice
+        updatable_fields["servicePrice"] = price
+
         if price > stock.price:
             validation.check_collective_offer_action_is_allowed(
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
