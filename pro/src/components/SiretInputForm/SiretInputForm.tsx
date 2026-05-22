@@ -66,38 +66,39 @@ export const SiretInputForm = ({
     formState: { errors, isSubmitting },
   } = hookForm
 
-  const onSubmit = async (formValues: SiretInputFormValues): Promise<void> => {
+  const onSubmit = async (formValues: SiretInputFormValues) => {
     const shouldSubmit =
       checkShouldSubmit === undefined || checkShouldSubmit?.(formValues)
 
-    if (shouldSubmit) {
-      try {
-        if (handleSiretData) {
-          // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
+    if (!shouldSubmit) {
+      return
+    }
 
-          const offererSiretData = await getSiretData(
-            unhumanizeSiret(formValues.siret)
-          )
+    try {
+      if (handleSiretData) {
+        // If we're here, it means the siret we've just submitted is different from the one already stored in localStorage
 
-          if (!offererSiretData) {
-            snackBar.error('Une erreur est survenue')
-            return
-          }
+        const offererSiretData = await getSiretData(
+          unhumanizeSiret(formValues.siret)
+        )
 
-          handleSiretData(formValues, offererSiretData)
-        } else if (onSiretChecked) {
-          await checkSiret(unhumanizeSiret(formValues.siret))
-          onSiretChecked?.(formValues)
+        if (!offererSiretData) {
+          snackBar.error('Une erreur est survenue')
+          return
         }
-      } catch (error) {
-        if (error instanceof Error) {
-          setShowInvisibleBanner(
-            error.message ===
-              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-          )
-          setError('siret', { message: error.message })
-        }
-        return
+
+        handleSiretData(formValues, offererSiretData)
+      } else if (onSiretChecked) {
+        await checkSiret(unhumanizeSiret(formValues.siret))
+        onSiretChecked?.(formValues)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setShowInvisibleBanner(
+          error.message ===
+            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+        )
+        setError('siret', { message: error.message })
       }
     }
   }

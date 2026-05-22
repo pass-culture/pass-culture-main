@@ -10,13 +10,14 @@ import { SimulatorSiret } from './SimulatorSiret'
 const setSiretMock = vi.fn()
 const contextValue = {
   siret: undefined,
-  setSiretAndSave: setSiretMock,
+  setSiret: setSiretMock,
 }
 const renderSimulatorSiret = () => {
   return renderWithProviders(
     <SimulatorContext.Provider value={contextValue}>
       <SimulatorSiret />
-    </SimulatorContext.Provider>
+    </SimulatorContext.Provider>,
+    { features: ['WIP_PRE_SIGNUP_SIMULATION'] }
   )
 }
 
@@ -35,7 +36,7 @@ describe('<SimulatorSiret />', () => {
     renderSimulatorSiret()
 
     await userEvent.type(
-      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      screen.getByLabelText(/Numéro de SIRET/),
       '11111111111111'
     )
 
