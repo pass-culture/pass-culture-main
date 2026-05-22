@@ -166,7 +166,8 @@ test.describe('Pre signup pages', () => {
 
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Continuer' }).click()
+    await page.getByText('Les jeunes via l’application pass Culture').click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
 
     await expect(
       page.getByRole('heading', {

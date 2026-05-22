@@ -10,10 +10,7 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
-import {
-  type TargetCustomerObject,
-  useSimulatorContext,
-} from '../SimulatorContext'
+import { useSimulatorContext } from '../SimulatorContext'
 import {
   saveTargetCustomerToStorage,
   tryRestoreTargetCustomerFromStorage,
@@ -31,24 +28,18 @@ const defaultFormValues = {
   },
 }
 
-const serializeTargetCustomer = (
-  targetCustomer: TargetCustomerObject
-): typeof defaultFormValues => {
-  return {
-    targetCustomer: {
-      individual: targetCustomer.individual ?? false,
-      educational: targetCustomer.educational ?? false,
-    },
-  }
-}
-
 export const SimulatorTarget = (): JSX.Element => {
   const navigate = useNavigate()
   const { targetCustomer, setTargetCustomer } = useSimulatorContext()
 
   const { formState, reset, watch, setValue, trigger, handleSubmit } = useForm({
     defaultValues: targetCustomer
-      ? serializeTargetCustomer(targetCustomer)
+      ? {
+          targetCustomer: {
+            individual: targetCustomer.individual ?? false,
+            educational: targetCustomer.educational ?? false,
+          },
+        }
       : defaultFormValues,
     resolver: yupResolver(validationSchema),
   })

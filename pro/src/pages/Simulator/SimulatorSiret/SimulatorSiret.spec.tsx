@@ -11,6 +11,11 @@ const setSiretMock = vi.fn()
 const contextValue = {
   siret: undefined,
   setSiret: setSiretMock,
+  targetCustomer: {
+    individual: undefined,
+    educational: undefined,
+  },
+  setTargetCustomer: vi.fn(),
 }
 const renderSimulatorSiret = () => {
   return renderWithProviders(

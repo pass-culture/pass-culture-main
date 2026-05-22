@@ -15,7 +15,7 @@ interface SimulatorContextValues {
   setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
 }
 
-const SimulatorContext = createContext<SimulatorContextValues>({
+export const SimulatorContext = createContext<SimulatorContextValues>({
   siret: undefined,
   setSiret: () => noop,
   targetCustomer: {
@@ -43,7 +43,7 @@ export function SimulatorContextProvider({
     educational: undefined,
   })
 
-  const contextValue = useMemo(
+  const contextValues = useMemo(
     () => ({
       siret,
       setSiret,
@@ -54,7 +54,7 @@ export function SimulatorContextProvider({
   )
 
   return (
-    <SimulatorContext.Provider value={contextValue}>
+    <SimulatorContext.Provider value={contextValues}>
       {children}
     </SimulatorContext.Provider>
   )
