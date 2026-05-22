@@ -62,6 +62,8 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
 
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
+    # TODO(jcicurel-pass, 2026-05-22) once collective_stock.priceDetail is not used, set a non-none value for additionalDetails
+    additionalDetails = None
     venue = factory.SubFactory(offerers_factories.VenueFactory)
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False

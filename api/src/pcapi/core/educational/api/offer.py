@@ -410,6 +410,9 @@ def create_collective_offer_public(
         venue=venue,
         name=body.name,
         description=body.description,
+        # when we receive priceDetail, also write to offer additionalDetails
+        # long term, the priceDetail field will be removed
+        additionalDetails=body.price_detail,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
         domains=educational_domains,
@@ -534,14 +537,23 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalInstitutionIsNotActive()
 
             offer.institution = institution
+
         elif key == "bookingLimitDatetime" and value is None:
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
                 "startDatetime", offer.collectiveStock.startDatetime
             )
+
         elif key in stock_fields:
             setattr(offer.collectiveStock, key, value)
+
+            # when we receive priceDetail, also write to offer additionalDetails
+            # long term, the priceDetail field will be removed
+            if key == "priceDetail":
+                offer.additionalDetails = value
+
         elif key in offer_fields:
             setattr(offer, key, value)
+
         else:
             raise ValueError(f"unknown field {key}")
 
@@ -721,6 +733,7 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
         name=original_offer.name,
         bookingEmails=original_offer.bookingEmails,
         description=original_offer.description,
+        additionalDetails=original_offer.additionalDetails,
         durationMinutes=original_offer.durationMinutes,
         students=original_offer.students,
         contactEmail=original_offer.contactEmail,

@@ -54,6 +54,12 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         priceDetail=educational_price_detail,
     )
     db.session.add(collective_stock)
+
+    # when we receive priceDetail, also write to offer additionalDetails
+    # long term, the priceDetail field will be removed
+    if not collective_offer.additionalDetails and educational_price_detail:
+        collective_offer.additionalDetails = educational_price_detail
+
     db.session.flush()
 
     # we need to refresh the stock to get the correct datetime with a naive datetime
@@ -149,7 +155,11 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     for attribute, new_value in updatable_fields.items():
         if new_value is not None and getattr(stock, attribute) != new_value:
             setattr(stock, attribute, new_value)
-    db.session.add(stock)
+
+            # when we receive priceDetail, also write to offer additionalDetails
+            # long term, the priceDetail field will be removed
+            if attribute == "priceDetail":
+                stock.collectiveOffer.additionalDetails = new_value
 
     api_shared.update_collective_stock_booking(
         stock=stock,

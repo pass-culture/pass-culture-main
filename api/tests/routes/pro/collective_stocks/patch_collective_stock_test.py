@@ -28,8 +28,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
-        # Given
-        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+        educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
 
@@ -45,7 +44,6 @@ class Return200Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
             "endDatetime": "2022-01-17T22:00:00Z",
@@ -58,7 +56,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == datetime(2022, 1, 17, 22)
@@ -66,6 +63,9 @@ class Return200Test:
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.priceDetail == "Nouvelle description du prix"
+
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert edited_stock.collectiveOffer.additionalDetails == "Nouvelle description du prix"
 
         assert response.json == {
             "startDatetime": "2022-01-17T22:00:00Z",
@@ -79,8 +79,7 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_start_datetime_same_day(self, client):
-        # Given
-        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+        educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
         stock = educational_factories.CollectiveStockFactory(
@@ -95,7 +94,6 @@ class Return200Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2021-12-18T00:00:00Z",
             "endDatetime": "2021-12-18T00:00:00Z",
@@ -104,7 +102,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == datetime(2021, 12, 18, 00)
@@ -122,7 +119,7 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
-        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+        educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
         stock = educational_factories.CollectiveStockFactory(
@@ -158,7 +155,6 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_with_pending_booking(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -172,7 +168,6 @@ class Return200Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -182,7 +177,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 200
         edited_stock = db.session.get(CollectiveStock, stock.id)
         edited_booking = db.session.get(CollectiveBooking, booking.id)
@@ -203,8 +197,6 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
-        # patch_offer_test
-
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -218,19 +210,16 @@ class Return200Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {}
 
         client.with_session_auth("user@example.com")
         client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert len(adage_api_testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_update_booking_educational_year(self, client):
-        # Given
         educational_year_2021_2022 = educational_factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
@@ -253,7 +242,6 @@ class Return200Test:
             user__email="user@example.com", offerer=collective_stock.collectiveOffer.venue.managingOfferer
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2023-01-17T22:00:00Z",
             "endDatetime": "2023-01-17T22:00:00Z",
@@ -262,7 +250,6 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         client.patch(f"/collective/stocks/{collective_stock.id}", json=stock_edition_payload)
 
-        # Then
         edited_collective_booking = db.session.get(CollectiveBooking, collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
@@ -323,7 +310,6 @@ class Return404Test:
             user__email="user@example.com",
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": 1500,
@@ -332,7 +318,6 @@ class Return404Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
@@ -351,7 +336,6 @@ class Return404Test:
 class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -363,7 +347,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
             "numberOfTickets": -10,
@@ -372,14 +355,12 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.numberOfTickets == 32
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -391,7 +372,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
             "totalPrice": -10,
@@ -400,14 +380,12 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.price == 1200
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -419,7 +397,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2021-12-20T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T22:00:00Z",
@@ -428,21 +405,18 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "numberOfTickets": None,
         }
@@ -450,20 +424,17 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être nul."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "totalPrice": None,
         }
@@ -471,7 +442,6 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix ne peut pas être nul."]}
 
@@ -507,7 +477,6 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -520,7 +489,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "educationalPriceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
         }
@@ -528,13 +496,11 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -547,7 +513,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "1970-12-01T00:00:00Z",
             "bookingLimitDatetime": "1970-01-31T20:00:00Z",
@@ -556,13 +521,11 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"startDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
-        # Given
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
         stock = educational_factories.CollectiveStockFactory(
@@ -577,7 +540,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "startDatetime": "2021-12-20T22:00:00Z",
             "endDatetime": "2021-12-19T22:00:00Z",
@@ -586,7 +548,6 @@ class Return400Test:
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        # Then
         assert response.status_code == 400
         edited_stock = db.session.get(CollectiveStock, stock.id)
         assert edited_stock.startDatetime == startDatetime
@@ -594,7 +555,6 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_endDatetime_in_different_educational_year(self, client):
-        # Given
         educational_factories.EducationalYearFactory(
             beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
         )
@@ -617,7 +577,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "endDatetime": "2022-12-19T22:00:00Z",
         }
@@ -638,7 +597,6 @@ class Return400Test:
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
-            # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
 
@@ -648,7 +606,6 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_with_no_educational_year(self, client):
-        # Given
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
 
@@ -664,7 +621,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "endDatetime": "2022-12-19T22:00:00Z",
         }
@@ -685,7 +641,6 @@ class Return400Test:
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
-            # Then
             assert response.status_code == 400
             assert response.json == {"code": "START_EDUCATIONAL_YEAR_MISSING"}
             edited_stock = db.session.get(CollectiveStock, stock.id)
@@ -694,7 +649,6 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_endDatetime_with_no_educational_year(self, client):
-        # Given
         educational_factories.EducationalYearFactory(
             beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
         )
@@ -713,7 +667,6 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        # When
         stock_edition_payload = {
             "endDatetime": "2022-12-19T22:00:00Z",
         }
@@ -735,7 +688,6 @@ class Return400Test:
 
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
-            # Then
             assert response.status_code == 400
             assert response.json == {"code": "END_EDUCATIONAL_YEAR_MISSING"}
             edited_stock = db.session.get(CollectiveStock, stock.id)

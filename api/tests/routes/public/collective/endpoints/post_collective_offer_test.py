@@ -171,6 +171,9 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.formats == [EacFormat.CONCERT]
 
+        # check double-writing stock.priceDetail -> offer.additionalDetails
+        assert offer.additionalDetails == payload["educationalPriceDetail"]
+
         # stock data
         assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
             tzinfo=None
