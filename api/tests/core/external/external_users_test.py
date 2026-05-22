@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
+from flask import current_app
 
 from pcapi.core.achievements.factories import AchievementFactory
 from pcapi.core.achievements.models import AchievementEnum
@@ -19,6 +20,7 @@ from pcapi.core.external.attributes.api import get_user_bookings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
@@ -112,6 +114,18 @@ def test_update_external_pro_user():
     assert len(batch_testing.requests) == 0
     assert len(brevo_testing.brevo_requests) == 1
     assert brevo_testing.brevo_requests[0].get("use_pro_subaccount") is True
+
+
+@pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
+def test_update_external_pro_user_with_ff(clear_redis):
+    user = ProFactory()
+    assert user.email  # preload the user to avoid duplicated queries
+
+    with assert_no_duplicated_queries():
+        update_external_user(user)
+
+    assert len(batch_testing.requests) == 0
+    assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {user.email}
 
 
 def test_get_user_attributes_beneficiary_with_v1_deposit():

@@ -15,6 +15,7 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 from factory.faker import faker
+from flask import current_app
 
 import pcapi.core.artist.factories as artist_factories
 import pcapi.core.artist.models as artist_models
@@ -43,6 +44,7 @@ from pcapi.core import search
 from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
@@ -1405,6 +1407,47 @@ class CreateOfferTest:
         assert offer_update_record.message == "Offer has been created"
 
         assert mail_third_party_record.message == "update_brevo_pro_attributes_task"
+
+    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
+    def test_create_offer_from_scratch_with_ff(self, caplog, clear_redis):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        with caplog.at_level(logging.INFO):
+            offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert not offer.product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData == {}
+        assert offer.metaData is None
+        assert not offer.bookingEmail
+        assert db.session.query(models.Offer).count() == 1
+        assert offer.offererAddress == offerer_address
+        assert offer.offererAddress != venue.offererAddress
+
+        # Test tracking
+        offer_update_record = caplog.records[0]
+        assert offer_update_record.technical_message_id == "offer.created"
+        assert offer_update_record.message == "Offer has been created"
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {venue.bookingEmail}
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()

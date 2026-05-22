@@ -8,6 +8,7 @@ import fakeredis
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
+from flask import current_app
 
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.dms.schemas as dms_schemas
@@ -21,6 +22,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
@@ -253,6 +255,50 @@ class SuspendAccountTest:
         # delete suspended user contact
         assert brevo_testing.brevo_requests[1]["email"] == user.email
         assert brevo_testing.brevo_requests[1]["action"] == "delete"
+
+    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
+    def test_suspend_beneficiary_with_ff(self, clear_redis):
+        user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.NativeUserSessionFactory(user=user)
+        cancellable_booking = bookings_factories.BookingFactory(user=user)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
+        )
+        used_booking = bookings_factories.UsedBookingFactory(user=user)
+        author = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
+        comment = "Dossier n°12345"
+        old_password_hash = user.password
+
+        users_api.suspend_account(user, reason=reason, actor=author, comment=comment, is_backoffice_action=True)
+
+        db.session.refresh(user)
+
+        assert not user.isActive
+        assert user.password == old_password_hash
+        assert user.suspension_reason == reason
+        assert _datetime_within_last_5sec(user.suspension_date)
+
+        assert cancellable_booking.status is BookingStatus.CANCELLED
+        assert confirmed_booking.status is BookingStatus.CONFIRMED
+        assert used_booking.status is BookingStatus.USED
+        assert db.session.query(users_models.NativeUserSession).count() == 0
+
+        history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
+        assert len(history) == 1
+        _assert_user_action_history_as_expected(
+            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
+        )
+
+        assert len(brevo_testing.brevo_requests) == 1
+        # delete suspended user contact
+        assert brevo_testing.brevo_requests[0]["email"] == user.email
+        assert brevo_testing.brevo_requests[0]["action"] == "delete"
+        # update venue attributes after booking is canceled
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            cancellable_booking.venue.bookingEmail
+        }
 
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
