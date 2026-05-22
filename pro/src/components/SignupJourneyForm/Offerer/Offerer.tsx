@@ -30,6 +30,7 @@ import {
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { SIGNUP_STEP_IDS } from '@/components/SignupStepper/constants'
+import { SignupStepper } from '@/components/SignupStepper/SignupStepper'
 import {
   SiretInputForm,
   type SiretInputFormValues,
@@ -237,6 +238,7 @@ export const Offerer = (): JSX.Element => {
     >
       {isSignupSimulationEnabled ? (
         <>
+          <SignupStepper />
           <MainHeading
             mainHeading="Votre numéro SIRET"
             className={styles['main-heading']}
