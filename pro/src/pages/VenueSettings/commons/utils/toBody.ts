@@ -1,6 +1,7 @@
-import type { EditVenueBodyModel } from '@/apiClient/v1'
+import type { ActivityOpenToPublic, EditVenueBodyModel } from '@/apiClient/v1'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
+import { normalizeActivity } from '@/pages/VenueEdition/commons/serializers'
 
 import type {
   VenueSettingsFormContext,
@@ -43,6 +44,19 @@ export const toBody = (
   if ('withdrawalDetails' in formValues) {
     payload.withdrawalDetails = formValues.withdrawalDetails
   }
+
+  payload.isOpenToPublic = formValues.isOpenToPublic
+    ? formValues.isOpenToPublic === 'true'
+    : undefined
+
+  const normalizedActivity = normalizeActivity(formValues.activity)
+  payload.activity =
+    normalizedActivity === null
+      ? null
+      : (normalizedActivity as ActivityOpenToPublic)
+
+  payload.culturalDomains = formValues.culturalDomains
+  payload.description = formValues.description
 
   return payload
 }

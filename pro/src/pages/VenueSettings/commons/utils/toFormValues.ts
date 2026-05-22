@@ -13,25 +13,29 @@ export const toFormValues = ({
     : ''
 
   return {
-    street: venue.location?.street || '',
-    postalCode: venue.location?.postalCode || '',
-    inseeCode: venue.location?.inseeCode || null,
-    city: venue.location?.city || '',
+    street: venue.location?.street ?? '',
+    postalCode: venue.location?.postalCode ?? '',
+    inseeCode: venue.location?.inseeCode ?? null,
+    city: venue.location?.city ?? '',
     addressAutocomplete: `${autoCompleteStreet}${venue.location?.postalCode} ${venue.location?.city}`,
     'search-addressAutocomplete': `${autoCompleteStreet}${venue.location?.postalCode} ${venue.location?.city}`,
     coords: `${venue.location?.latitude}, ${venue.location?.longitude}`,
-    latitude: String(venue.location?.latitude) || '',
-    longitude: String(venue.location?.longitude) || '',
-    banId: venue.location?.banId || null,
+    latitude: String(venue.location?.latitude ?? ''),
+    longitude: String(venue.location?.longitude ?? ''),
+    banId: venue.location?.banId ?? null,
     manuallySetAddress: venue.location?.isManualEdition,
-    comment: venue.comment || '',
-    bookingEmail: venue.bookingEmail || '',
+    comment: venue.comment ?? '',
+    bookingEmail: venue.bookingEmail ?? '',
     name: venue.name,
-    venueSiret: venue.pricingPoint?.id || '',
+    venueSiret: venue.pricingPoint?.id ?? '',
     publicName: venue.publicName,
     siret: venue.isCaledonian
-      ? unhumanizeRidet(venue.siret || '', false, false)
-      : humanizeSiret(venue.siret || ''),
-    withdrawalDetails: venue.withdrawalDetails || '',
+      ? unhumanizeRidet(venue.siret ?? '', false, false)
+      : humanizeSiret(venue.siret ?? ''),
+    withdrawalDetails: venue.withdrawalDetails ?? '',
+    isOpenToPublic: venue.isOpenToPublic.toString(),
+    activity: venue.activity as VenueSettingsFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayableActivity`, but not in `ActivityOpenToPublic`
+    culturalDomains: venue.collectiveDomains.map((domain) => domain.name),
+    description: venue.description ?? '',
   }
 }

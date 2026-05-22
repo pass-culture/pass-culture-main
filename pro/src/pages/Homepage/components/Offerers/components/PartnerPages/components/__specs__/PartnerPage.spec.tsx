@@ -45,15 +45,16 @@ describe('PartnerPage', () => {
     expect(screen.getByTestId('venue-address')).toBeInTheDocument()
   })
 
-  it('should link "Paramètres généraux" to the venue settings page', () => {
+  it('should link "Paramètres" to the venue settings page', () => {
     renderPartnerPage({
       id: 42,
       managingOfferer: { ...defaultGetVenue.managingOfferer, id: 7 },
     })
 
-    expect(
-      screen.getByRole('link', { name: 'Paramètres généraux' })
-    ).toHaveAttribute('href', '/parametres')
+    expect(screen.getByRole('link', { name: 'Paramètres' })).toHaveAttribute(
+      'href',
+      '/parametres'
+    )
   })
 
   it('should display image upload and log CLICKED_ADD_IMAGE on click when no image', async () => {

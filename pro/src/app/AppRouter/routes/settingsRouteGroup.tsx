@@ -10,7 +10,7 @@ export const settingsRouteGroup: CustomRouteGroup = {
   path: '/parametres',
   loader: withUserPermissions(mustHaveSelectedPartnerVenue),
   handle: {
-    title: 'Paramètres généraux',
+    title: 'Paramètres',
   },
   Component: VenueSettings,
   children: [

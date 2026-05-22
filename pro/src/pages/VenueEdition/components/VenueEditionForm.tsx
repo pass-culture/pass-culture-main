@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -8,16 +7,13 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivities } from '@/commons/mappings/mappings'
-import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { objectKeys } from '@/commons/utils/object'
-import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
@@ -31,10 +27,8 @@ import {
   ButtonVariant,
 } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
+import { ActivityDetails } from '@/pages/VenueEdition/components/ActivityDetails/ActivityDetails'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { Select } from '@/ui-kit/form/Select/Select'
-import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
@@ -57,9 +51,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
-    useEducationalDomains()
-
   const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
 
   const methods = useForm<VenueEditionFormValues>({
@@ -67,22 +58,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     resolver: yupResolver(getValidationSchema()),
     mode: 'onBlur',
   })
-
-  const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
-    return educationalDomains.length === 0 ||
-      !methods.formState.defaultValues ||
-      !methods.formState.defaultValues?.culturalDomains
-      ? undefined
-      : educationalDomains
-          .filter((apiDomain) =>
-            methods.formState.defaultValues?.culturalDomains?.find(
-              (domain) => apiDomain.name === domain
-            )
-          )
-          .map((domain) => {
-            return { id: String(domain.id), label: domain.name }
-          })
-  }, [educationalDomains, methods.formState.defaultValues])
 
   const resetOpeningHoursAndAccessibility = () => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
@@ -152,10 +127,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const onOpenToPublicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
 
-    methods.setValue('isOpenToPublic', isOpenToPublicValue)
+    methods.setValue('isOpenToPublic', isOpenToPublicValue, {
+      shouldDirty: true,
+    })
 
     if (isOpenToPublicValue === 'false') {
       resetOpeningHoursAndAccessibility()
@@ -236,7 +213,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
                 <OpenToPublicToggle
-                  onChange={onOpenToPublicChange}
+                  onChange={toggleOpenToPublic}
                   radioDescriptions={{
                     yes: 'Votre adresse postale sera visible',
                   }}
@@ -270,7 +247,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                       >
                         <Banner
                           title="Modification dans Paramètres"
-                          description="L'adresse de votre structure se modifie dans la page Paramètres généraux."
+                          description="L'adresse de votre structure se modifie dans la page Paramètres."
                         />
                       </div>
                     </FormLayout.Row>
@@ -293,81 +270,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               )}
             </FormLayout.SubSection>
 
-            <FormLayout.SubSection title="À propos de votre activité">
-              <FormLayout.Row key={methods.watch('activity')} mdSpaceAfter>
-                <Select
-                  {...methods.register('activity')}
-                  options={[
-                    ...(methods.watch('activity') === null // TODO: make `activity` not nullable after migrating all the venues with VenueTypeCode and no matching activity
-                      ? [
-                          {
-                            value: '',
-                            label: 'Sélectionnez votre activité principale',
-                          },
-                        ]
-                      : []),
-                    ...buildSelectOptions(
-                      getActivities(
-                        methods.watch('isOpenToPublic') === 'true'
-                          ? 'OPEN_TO_PUBLIC'
-                          : 'NOT_OPEN_TO_PUBLIC'
-                      )
-                    ),
-                  ]}
-                  label="Activité principale"
-                  disabled={venue.isVirtual}
-                  error={methods.formState.errors.activity?.message}
-                  required
-                />
-              </FormLayout.Row>
-              {!isLoadingEducationalDomains && (
-                <FormLayout.Row mdSpaceAfter>
-                  <MultiSelect
-                    name="culturalDomains"
-                    options={educationalDomains.map((educationalDomain) => ({
-                      id: String(educationalDomain.id),
-                      label: educationalDomain.name,
-                    }))}
-                    defaultOptions={defaultCulturalDomain}
-                    error={methods.formState.errors.culturalDomains?.message}
-                    label="Domaine(s) d’activité"
-                    required={methods.watch('isOpenToPublic') === 'false'}
-                    onSelectedOptionsChanged={(selectedOptions) => {
-                      methods.setValue(
-                        'culturalDomains',
-                        selectedOptions.map((opt) => opt.label)
-                      )
-                    }}
-                    buttonLabel={
-                      (methods.watch('culturalDomains') ?? []).length > 0
-                        ? pluralizeFr(
-                            (methods.watch('culturalDomains') ?? []).length,
-                            'domaine sélectionné',
-                            'domaines sélectionnés'
-                          )
-                        : 'Sélectionnez un ou plusieurs domaines d’activité'
-                    }
-                  />
-                </FormLayout.Row>
-              )}
-
-              <FormLayout.Row>
-                {!venue.isVirtual && (
-                  <p className={styles['description-helper']}>
-                    Vous pouvez décrire les différentes actions que vous menez,
-                    votre histoire ou préciser des informations sur votre
-                    activité.
-                  </p>
-                )}
-                <TextArea
-                  label="Description"
-                  description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                  maxLength={1000}
-                  {...methods.register('description')}
-                  error={methods.formState.errors.description?.message}
-                />
-              </FormLayout.Row>
-            </FormLayout.SubSection>
+            <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
 
             <FormLayout.SubSection
               title="Informations de contact"

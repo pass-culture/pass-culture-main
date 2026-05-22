@@ -16,10 +16,11 @@ test.describe('Settings page', () => {
     await doLogin(page, userData.user.email)
     await navigateToHubAndPickVenue(page, userData.venueName)
 
-    await page.getByRole('link', { name: 'Paramètres généraux' }).click()
+    const navBar = page.getByRole('navigation', { name: 'Menu principal' })
+    await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(
-      page.getByRole('heading', { level: 1, name: 'Paramètres généraux' })
+      page.getByRole('heading', { level: 1, name: 'Paramètres' })
     ).toBeVisible()
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -51,7 +52,8 @@ test.describe('Settings page', () => {
     await doLogin(page, userData.user.email)
     await navigateToHubAndPickVenue(page, userData.venueName)
 
-    await page.getByRole('link', { name: 'Paramètres généraux' }).click()
+    const navBar = page.getByRole('navigation', { name: 'Menu principal' })
+    await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -77,7 +79,8 @@ test.describe('Settings page', () => {
     await doLogin(page, userData.user.email)
     await navigateToHubAndPickVenue(page, userData.venueName)
 
-    await page.getByRole('link', { name: 'Paramètres généraux' }).click()
+    const navBar = page.getByRole('navigation', { name: 'Menu principal' })
+    await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 
@@ -112,7 +115,8 @@ test.describe('Settings page', () => {
     await doLogin(page, userData.user.email)
     await navigateToHubAndPickVenue(page, userData.venueName)
 
-    await page.getByRole('link', { name: 'Paramètres généraux' }).click()
+    const navBar = page.getByRole('navigation', { name: 'Menu principal' })
+    await navBar.getByRole('link', { name: 'Paramètres' }).click()
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
     await expect(page.getByTestId('spinner')).toHaveCount(0)
 

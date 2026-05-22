@@ -145,7 +145,7 @@ test.describe('Didactic Onboarding feature', () => {
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: 'Paramètres généraux',
+        name: 'Paramètres',
       })
     ).toBeVisible()
 

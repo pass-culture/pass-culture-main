@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -143,7 +144,7 @@ describe('GeneralInformation', () => {
   })
 
   describe('when the venue is virtual', () => {
-    it('should not render SIRET, address or withdrawal fields', async () => {
+    it('should not render SIRET or withdrawal fields', async () => {
       renderGeneralInformation({ id: 1, isVirtual: true })
 
       await waitFor(() => {
@@ -151,7 +152,6 @@ describe('GeneralInformation', () => {
           screen.queryByLabelText(/SIRET de la structure/)
         ).not.toBeInTheDocument()
         expect(screen.queryByLabelText('Nom public')).not.toBeInTheDocument()
-        expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
         expect(
           screen.queryByText('Informations de retrait de vos offres')
         ).not.toBeInTheDocument()
@@ -198,6 +198,85 @@ describe('GeneralInformation', () => {
           screen.queryByText('Barème de remboursement')
         ).not.toBeInTheDocument()
       })
+    })
+  })
+  describe('open to public toggle', () => {
+    it('should display a mandatory toggle to define isOpenToPublic', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      const toggle = screen.getByRole('group', {
+        name: 'Accueillez-vous du public dans votre structure ?',
+      })
+
+      await waitFor(() => {
+        expect(toggle).toBeInTheDocument()
+      })
+    })
+
+    it('closed to public - should not show address section', () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
+    })
+
+    it('open to public - should show address section', () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: true })
+
+      expect(screen.getByTestId('address-fields')).toBeInTheDocument()
+    })
+
+    it('switching to "Non" should show address section when activity is valid for NOT_OPEN_TO_PUBLIC', async () => {
+      renderGeneralInformation({
+        id: 1,
+        isOpenToPublic: true,
+        activity: DisplayableActivity.FESTIVAL,
+      })
+
+      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+
+      expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
+      const activitySelect = screen.getByRole('combobox', {
+        name: /Activité principale/,
+      })
+      expect(activitySelect).toHaveValue('FESTIVAL')
+    })
+
+    it('switching to "Non" should reset activity when it is not valid for NOT_OPEN_TO_PUBLIC', async () => {
+      renderGeneralInformation({
+        id: 1,
+        isOpenToPublic: true,
+        activity: DisplayableActivity.CULTURAL_CENTRE,
+      })
+
+      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+
+      const activitySelect = screen.getByRole('combobox', {
+        name: /Activité principale/,
+      })
+      expect(activitySelect).toHaveValue('')
+    })
+
+    it('switching to "Non" with no initial activity should not cause errors', async () => {
+      renderGeneralInformation({
+        id: 1,
+        isOpenToPublic: true,
+        activity: null,
+      })
+
+      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+
+      const activitySelect = screen.getByRole('combobox', {
+        name: /Activité principale/,
+      })
+      expect(activitySelect).toHaveValue('')
+    })
+
+    it('switching to "Oui" should show address section', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      await userEvent.click(await screen.findByRole('radio', { name: 'Oui' }))
+
+      expect(screen.getByTestId('address-fields')).toBeInTheDocument()
     })
   })
 })

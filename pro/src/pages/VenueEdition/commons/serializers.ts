@@ -54,8 +54,8 @@ function buildEditVenuePayload(
       ? formValues.isOpenToPublic === 'true'
       : undefined,
     activity:
-      normalizedActivity === undefined || normalizedActivity === null
-        ? (normalizedActivity ?? undefined)
+      normalizedActivity === null
+        ? null
         : (normalizedActivity as ActivityOpenToPublic),
     culturalDomains: formValues.culturalDomains,
     volunteeringUrl:
@@ -65,14 +65,14 @@ function buildEditVenuePayload(
   }
 }
 
-function normalizeActivity(
+export function normalizeActivity(
   activity: VenueEditionFormValues['activity']
 ): ActivityOpenToPublicType | ActivityNotOpenToPublicType | null | undefined {
   if ((activity as string | null) === 'GAMES_CENTRE') {
     return null
   }
 
-  return activity ?? undefined
+  return activity
 }
 
 function serializeOpeningHours(

@@ -31,6 +31,11 @@ describe('toBody', () => {
       publicName: 'Adresse de la venue',
       siret: '418 166 096 00069',
       withdrawalDetails: 'Details for withdraw',
+      isOpenToPublic: 'true',
+      activity:
+        'OPEN_TO_PUBLIC_ACTIVITY' as VenueSettingsFormValues['activity'],
+      culturalDomains: ['Domaine 1', 'Domaine 2'],
+      description: 'This is a venue description',
     }
 
     formContext = {
@@ -38,13 +43,20 @@ describe('toBody', () => {
       siren: '418166096',
       isVenueVirtual: false,
       withSiret: true,
+      isOpenToPublic: 'true',
+      activity:
+        'OPEN_TO_PUBLIC_ACTIVITY' as VenueSettingsFormValues['activity'],
     }
 
     payload = {
+      activity: 'OPEN_TO_PUBLIC_ACTIVITY' as EditVenueBodyModel['activity'],
       banId: '35288_7283_00001',
       bookingEmail: 'me@example.com',
       city: 'Paris',
       comment: '',
+      culturalDomains: ['Domaine 1', 'Domaine 2'],
+      description: 'This is a venue description',
+      isOpenToPublic: true,
       latitude: 48.85332,
       longitude: 2.348979,
       name: 'Lieu de test',

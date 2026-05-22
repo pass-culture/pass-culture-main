@@ -54,6 +54,7 @@ const defaultFormValues: VenueSettingsFormValues = {
   inseeCode: '75111',
   'search-addressAutocomplete': '123 Rue Principale, Ville Exemple',
   street: '123 Rue Principale',
+  isOpenToPublic: 'true',
 }
 
 const defaultFormContext: VenueSettingsFormContext = {
@@ -61,6 +62,7 @@ const defaultFormContext: VenueSettingsFormContext = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '12345678901234',
+  isOpenToPublic: 'true',
 }
 
 const renderUseSaveVenueSettings = (params: {

@@ -74,7 +74,7 @@ export const PartnerPage = () => {
             size={ButtonSize.SMALL}
             icon={fullParametersIcon}
             to={`/parametres`}
-            label="Paramètres généraux"
+            label="Paramètres"
           />
         </div>
       </div>
