@@ -3,7 +3,7 @@ Wrapper around the API Particulier connector that allows configuration of their
 reponse through config BeneficiaryFraudChecks.
 
 The API Particulier staging dataset is documented at
-https://github.com/etalab/siade_staging_data/tree/develop/payloads/api_particulier_v3_cnav_quotient_familial_with_civility
+https://github.com/datagouv/apistration/tree/develop/mocks/payloads/
 """
 
 import datetime
@@ -15,7 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
-APPLICATION_NOT_FOUND = bonus_schemas.Person(
+APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     last_name="dupont",
     common_name=None,
     first_names=["alexis"],
@@ -24,7 +24,7 @@ APPLICATION_NOT_FOUND = bonus_schemas.Person(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-PERSON_NOT_FOUND = bonus_schemas.Person(
+PERSON_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     last_name="a_very_very_very_very_very_very_very_very_very_very_ver_very_very_very_very_very_long_name",
     common_name=None,
     first_names=["877khkshkq+"],
@@ -33,7 +33,7 @@ PERSON_NOT_FOUND = bonus_schemas.Person(
     birth_country_cog_code="B&543",
     birth_city_cog_code="AAAAA",
 )
-CUSTODIAN_WITH_CHILDREN = bonus_schemas.Person(
+CUSTODIAN_WITH_CHILDREN = bonus_schemas.BonusCreditPerson(
     last_name="lefebvre",
     common_name=None,
     first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -45,7 +45,7 @@ CUSTODIAN_WITH_CHILDREN = bonus_schemas.Person(
 
 
 def get_and_mock_quotient_familial(
-    custodian: bonus_schemas.Person,
+    custodian: bonus_schemas.BonusCreditPerson,
     at_date: datetime.date,
     user: users_models.User,
 ) -> api_particulier.QuotientFamilialResponse:
@@ -125,8 +125,8 @@ def _build_api_quotient_familial_response(
     )
 
 
-def _build_api_person_response(person: bonus_schemas.QuotientFamilialPerson) -> api_particulier.QuotientFamilialPerson:
-    return api_particulier.QuotientFamilialPerson(
+def _build_api_person_response(person: bonus_schemas.BonusCreditPerson) -> api_particulier.ApiParticulierPerson:
+    return api_particulier.ApiParticulierPerson(
         nom_naissance=person.last_name,
         nom_usage=person.common_name,
         prenoms=" ".join(person.first_names),

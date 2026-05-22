@@ -18,7 +18,7 @@ from tests.core.subscription.bonus import bonus_fixtures
 class StagingQuotientFamilialTest:
     def test_mock_eligible_quotient_familial(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
-        config_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
@@ -28,7 +28,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 children=[
-                    bonus_schemas.QuotientFamilialPerson(
+                    bonus_schemas.BonusCreditPerson(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],
@@ -48,9 +48,12 @@ class StagingQuotientFamilialTest:
 
         bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
 
-        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.OK
-        assert qf_fraud_check.source_data().quotient_familial == config_fraud_check.source_data().quotient_familial
-        assert qf_fraud_check.source_data().children == config_fraud_check.source_data().children
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -58,7 +61,7 @@ class StagingQuotientFamilialTest:
 
     def test_mock_householder_eligible_quotient_familial(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
-        config_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
@@ -68,7 +71,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 householders=[
-                    bonus_schemas.QuotientFamilialPerson(
+                    bonus_schemas.BonusCreditPerson(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],
@@ -88,9 +91,12 @@ class StagingQuotientFamilialTest:
 
         bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
 
-        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.OK
-        assert qf_fraud_check.source_data().quotient_familial == config_fraud_check.source_data().quotient_familial
-        assert qf_fraud_check.source_data().householders == config_fraud_check.source_data().householders
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -138,7 +144,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=999_999_999, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 children=[
-                    bonus_schemas.QuotientFamilialPerson(
+                    bonus_schemas.BonusCreditPerson(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],

@@ -190,5 +190,5 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.BonusCre
         birth_city_cog_code=body.birth_city_cog_code,
         origin="enrolled from /subscription/bonus/quotient_familial endpoint",
     )
-    payload = bonus_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))

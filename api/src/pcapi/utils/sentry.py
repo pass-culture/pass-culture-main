@@ -48,7 +48,11 @@ SCRUBBED_KEYS = (
     "recipient",
 )
 
-SCRUBBED_VALUE_PREFIXES = ("QuotientFamilialBonusCreditContent(",)
+SCRUBBED_VALUE_PREFIXES = (
+    "QuotientFamilialBonusCreditContent(",
+    "DisabilityBonusCreditContent(",
+    "BonusCreditPerson(",
+)
 
 
 class SpecificPath(enum.Enum):
