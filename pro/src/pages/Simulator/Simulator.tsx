@@ -4,7 +4,6 @@ import { FullPageLayout } from '@/app/App/layouts/funnels/FullPageLayout/FullPag
 import { SimulatorContextProvider } from '@/pages/Simulator/SimulatorContext'
 
 import styles from './Simulator.module.scss'
-import { SimulatorContextProvider } from './SimulatorContext'
 
 export const Simulator = (): JSX.Element => {
   const location = useLocation()
