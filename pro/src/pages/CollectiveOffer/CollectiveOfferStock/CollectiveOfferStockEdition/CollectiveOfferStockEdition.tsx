@@ -6,7 +6,6 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
-  isCollectiveOfferTemplate,
   Mode,
   type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
@@ -14,31 +13,24 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
 import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils/extractInitialStockValues'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
-  type MandatoryCollectiveOfferFromParamsProps,
-  withCollectiveOfferFromParams,
+  type CollectiveOfferFromParamsProps,
+  withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
 export const CollectiveOfferStockEdition = ({
   offer,
-  isTemplate,
-}: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
+}: CollectiveOfferFromParamsProps): JSX.Element => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
-
-  assertOrFrontendError(
-    !isCollectiveOfferTemplate(offer),
-    '`offer` shoud not be a (collective offer) template.'
-  )
 
   const initialValues = extractInitialStockValues(offer)
 
@@ -88,7 +80,7 @@ export const CollectiveOfferStockEdition = ({
     <CollectiveOfferLayout
       offer={offer}
       subTitle={offer.name}
-      isTemplate={isTemplate}
+      isTemplate={false}
     >
       <OfferEducationalStock
         initialValues={initialValues}
@@ -102,6 +94,6 @@ export const CollectiveOfferStockEdition = ({
 
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
-export const Component = withCollectiveOfferFromParams(
+export const Component = withOnlyCollectiveOfferFromParams(
   CollectiveOfferStockEdition
 )

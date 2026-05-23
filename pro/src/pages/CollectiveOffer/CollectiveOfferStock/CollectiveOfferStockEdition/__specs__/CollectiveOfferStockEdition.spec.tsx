@@ -13,7 +13,7 @@ import {
 } from '@/commons/utils/factories/userOfferersFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferStockEdition } from '../CollectiveOfferStockEdition'
 
@@ -34,7 +34,7 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
 
 const renderCollectiveStockEdition = (
   path: string,
-  props: MandatoryCollectiveOfferFromParamsProps
+  props: CollectiveOfferFromParamsProps
 ) => {
   renderWithProviders(<CollectiveOfferStockEdition {...props} />, {
     initialRouterEntries: [path],
@@ -63,25 +63,22 @@ describe('CollectiveOfferStockEdition', () => {
     name: 'Ma super structure',
     managedVenues: [venue],
   })
-  const defaultProps = {
-    offer: getCollectiveOfferFactory({
-      venue: {
-        ...venue,
-        managingOfferer: { ...offerer, siren: '123456789' },
-        departementCode: '33',
-        imgUrl: null,
-      },
-      allowedActions: [
-        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-      ],
-    }),
-    isTemplate: false,
-  }
+  const defaultOffer = getCollectiveOfferFactory({
+    venue: {
+      ...venue,
+      managingOfferer: { ...offerer, siren: '123456789' },
+      departementCode: '33',
+      imgUrl: null,
+    },
+    allowedActions: [
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+    ],
+  })
 
   it('should render in EDITION mode when stock is editable', async () => {
     renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
-      ...defaultProps,
+      offer: defaultOffer,
     })
 
     const submitButton = await screen.findByRole('button', {
@@ -92,9 +89,8 @@ describe('CollectiveOfferStockEdition', () => {
 
   it('should render in READ_ONLY mode when stock is not editable', async () => {
     renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
-      ...defaultProps,
       offer: getCollectiveOfferFactory({
-        ...defaultProps.offer,
+        ...defaultOffer,
         allowedActions: [],
       }),
     })
@@ -108,10 +104,9 @@ describe('CollectiveOfferStockEdition', () => {
   it('should call editCollectiveStock and show success on submit', async () => {
     vi.spyOn(apiNew, 'editCollectiveStock').mockResolvedValueOnce({} as any)
 
-    renderCollectiveStockEdition(
-      '/offre/A1/collectif/stocks/edition',
-      defaultProps
-    )
+    renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
+      offer: defaultOffer,
+    })
 
     const submitButton = await screen.findByRole('button', {
       name: /Enregistrer et continuer/,
@@ -128,7 +123,7 @@ describe('CollectiveOfferStockEdition', () => {
       )
     })
     expect(mockNavigate).toHaveBeenCalled()
-    expect(mockSyncVenue).toHaveBeenCalledWith(defaultProps.offer.venue.id)
+    expect(mockSyncVenue).toHaveBeenCalledWith(defaultOffer.venue.id)
   })
 
   it('should display field errors on API error with status 400', async () => {
@@ -137,10 +132,9 @@ describe('CollectiveOfferStockEdition', () => {
     })
     vi.spyOn(apiNew, 'editCollectiveStock').mockRejectedValueOnce(error)
 
-    renderCollectiveStockEdition(
-      '/offre/A1/collectif/stocks/edition',
-      defaultProps
-    )
+    renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
+      offer: defaultOffer,
+    })
 
     const submitButton = await screen.findByRole('button', {
       name: /Enregistrer et continuer/,
@@ -161,10 +155,9 @@ describe('CollectiveOfferStockEdition', () => {
       new ApiError('', 500, 'Internal Server Error', {})
     )
 
-    renderCollectiveStockEdition(
-      '/offre/A1/collectif/stocks/edition',
-      defaultProps
-    )
+    renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
+      offer: defaultOffer,
+    })
 
     const submitButton = await screen.findByRole('button', {
       name: /Enregistrer et continuer/,

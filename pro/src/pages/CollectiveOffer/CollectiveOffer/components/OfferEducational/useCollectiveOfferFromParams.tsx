@@ -12,9 +12,14 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { extractOfferIdAndOfferTypeFromRouteParams } from '@/commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+
+export type CollectiveOfferFromParamsProps = {
+  offer: GetCollectiveOfferResponseModel
+}
 
 export type MandatoryCollectiveOfferFromParamsProps = {
   offer:
@@ -108,6 +113,29 @@ export const withCollectiveOfferFromParams = <T,>(
         offer={additionalProps.offer}
       />
     )
+  }
+
+  return CollectiveOfferWrapperComponent
+}
+export const withOnlyCollectiveOfferFromParams = <T,>(
+  Component: ComponentType<T & CollectiveOfferFromParamsProps>
+) => {
+  const CollectiveOfferWrapperComponent = (props: T) => {
+    const { offerId: offerIdFromParams } = useParams<{
+      offerId: string
+    }>()
+    const { offer } = useCollectiveOfferFromParams(true, offerIdFromParams)
+
+    if (offer === undefined) {
+      return <Spinner />
+    }
+
+    assertOrFrontendError(
+      !isCollectiveOfferTemplate(offer),
+      '`offer` shoud not be a (collective offer) template.'
+    )
+
+    return <Component {...props} offer={offer} />
   }
 
   return CollectiveOfferWrapperComponent
