@@ -1,6 +1,7 @@
 import { isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 
 import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
@@ -36,10 +37,24 @@ function isBookingDateAfterNow(
 }
 
 export const generateValidationSchema = (
-  preventPriceIncrease: boolean,
-  initialPrice: number | null,
-  isReadOnly: boolean
+  offerAllowedActions: CollectiveOfferAllowedAction[],
+  initialPrice: number | null
 ) => {
+  // can edit everything except dates, including price (increase and decrease)
+  const canEditDetails = offerAllowedActions.includes(
+    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+  )
+
+  // can edit price (only decrease), numberOfTickets and priceDetails
+  const canEditDiscount = offerAllowedActions.includes(
+    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+  )
+
+  // can edit dates (start / end / bookingLimit)
+  const canEditDates = offerAllowedActions.includes(
+    CollectiveOfferAllowedAction.CAN_EDIT_DATES
+  )
+
   let totalPriceValidation = yup
     .number()
     .nullable()
@@ -47,7 +62,8 @@ export const generateValidationSchema = (
     .min(0, 'Nombre positif attendu')
     .max(60000, 'Le prix ne doit pas dépasser 60 000€')
     .required('Le prix total TTC est obligatoire')
-  if (preventPriceIncrease && initialPrice) {
+
+  if (canEditDiscount && !canEditDetails && initialPrice) {
     totalPriceValidation = totalPriceValidation.max(
       initialPrice,
       'Vous ne pouvez pas définir un prix plus élevé.'
@@ -59,7 +75,7 @@ export const generateValidationSchema = (
       .string()
       .required('La date de début est obligatoire')
       .when([], {
-        is: () => !preventPriceIncrease,
+        is: () => canEditDates,
         then: (schema) =>
           schema.test(
             'is-after-today',
@@ -71,7 +87,7 @@ export const generateValidationSchema = (
       .string()
       .required('La date de fin est obligatoire')
       .when([], {
-        is: () => !preventPriceIncrease,
+        is: () => canEditDates,
         then: (schema) =>
           schema
             .test(
@@ -95,8 +111,7 @@ export const generateValidationSchema = (
       .required('L’horaire est obligatoire')
       .when('startDatetime', {
         is: (startDatetime: string) =>
-          isSameDay(new Date(startDatetime), new Date()) &&
-          !preventPriceIncrease,
+          isSameDay(new Date(startDatetime), new Date()) && canEditDates,
         then: (schema) =>
           schema.test({
             name: 'is-before-current-time',
@@ -123,7 +138,7 @@ export const generateValidationSchema = (
       .string()
       .required('La date limite de réservation est obligatoire')
       .when([], {
-        is: () => !preventPriceIncrease,
+        is: () => canEditDates,
         then: (schema) =>
           schema
             .test(
@@ -136,7 +151,7 @@ export const generateValidationSchema = (
             .test(
               'is-after-today',
               'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-              (endDate) => isReadOnly || isBookingDateAfterNow(endDate)
+              (endDate) => !canEditDetails || isBookingDateAfterNow(endDate)
             ),
       }),
     priceDetail: yup

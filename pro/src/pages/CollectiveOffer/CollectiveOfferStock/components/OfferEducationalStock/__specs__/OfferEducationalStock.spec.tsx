@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format } from 'date-fns'
 import * as router from 'react-router'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
@@ -45,7 +45,12 @@ describe('OfferEducationalStock', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
   it('should render for offer with a stock', () => {
-    const offer = getCollectiveOfferFactory()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
+    })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
@@ -64,7 +69,7 @@ describe('OfferEducationalStock', () => {
 
     expect(
       screen.getByText('Indiquez le prix et la date de votre offre')
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should render for offer imported with a public api', () => {

@@ -1,13 +1,11 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 
 import { yupResolver } from '@hookform/resolvers/yup'
-import { addDays, isBefore } from 'date-fns'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
-  CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1/new'
@@ -61,16 +59,6 @@ export const OfferEducationalStock = ({
 }: OfferEducationalStockProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const preventPriceIncrease = Boolean(
-    offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
-      (offer.booking?.status === CollectiveBookingStatus.USED &&
-        offer.collectiveStock?.startDatetime &&
-        isBefore(
-          new Date(),
-          addDays(new Date(offer.collectiveStock?.startDatetime), 2)
-        ))
-  )
-
   const canEditDiscount = isActionAllowedOnCollectiveOffer(
     offer,
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
@@ -96,11 +84,7 @@ export const OfferEducationalStock = ({
   const form = useForm({
     defaultValues: initialValues,
     resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
-      generateValidationSchema(
-        preventPriceIncrease,
-        initialValues.totalPrice,
-        mode === Mode.READ_ONLY
-      )
+      generateValidationSchema(offer.allowedActions, initialValues.totalPrice)
     ),
     mode: 'onSubmit',
   })
@@ -154,7 +138,6 @@ export const OfferEducationalStock = ({
                 mode={mode}
                 canEditDiscount={canEditDiscount}
                 canEditDates={canEditDates}
-                preventPriceIncrease={preventPriceIncrease}
               />
 
               <FormLayout.Row>
