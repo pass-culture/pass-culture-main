@@ -27,12 +27,13 @@ export const OfferNameCell = ({ offer }: OfferNameCellProps) => {
         <Thumb url={offer.imageUrl} size="small" />
       </div>
       <div className={styles['title-column-name']}>
-        {isTemplateTable && <Tag label="Offre vitrine" />}
-        {!isTemplateTable ? (
+        {isTemplateTable ? (
+          <Tag label="Offre vitrine" />
+        ) : (
           <span
             className={styles['title-column-offer-id']}
           >{`N°${offer.id}`}</span>
-        ) : null}
+        )}
         <div>{offer.name}</div>
       </div>
     </Link>
