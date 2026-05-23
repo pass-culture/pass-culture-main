@@ -10,11 +10,9 @@ import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
-  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1/new'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import {
-  isCollectiveOffer,
   Mode,
   type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
@@ -43,37 +41,34 @@ import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import { generateValidationSchema } from './validationSchema'
 
-export interface OfferEducationalStockProps<
-  T = GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
-> {
+export interface OfferEducationalStockProps {
   initialValues: OfferEducationalStockFormValues
-  offer: T
-  onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
+  offer: GetCollectiveOfferResponseModel
+  onSubmit: (
+    offer: GetCollectiveOfferResponseModel,
+    values: OfferEducationalStockFormValues
+  ) => Promise<void>
   mode: Mode
   requestId?: string | null
 }
 
-export const OfferEducationalStock = <
-  T extends
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel,
->({
+export const OfferEducationalStock = ({
   initialValues,
   offer,
   onSubmit,
   mode,
   requestId = '',
-}: OfferEducationalStockProps<T>): JSX.Element => {
+}: OfferEducationalStockProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
-  const startDatetime =
-    isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
 
   const preventPriceIncrease = Boolean(
-    isCollectiveOffer(offer) &&
-      (offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
-        (offer.booking?.status === CollectiveBookingStatus.USED &&
-          startDatetime &&
-          isBefore(new Date(), addDays(new Date(startDatetime), 2))))
+    offer.booking?.status === CollectiveBookingStatus.CONFIRMED ||
+      (offer.booking?.status === CollectiveBookingStatus.USED &&
+        offer.collectiveStock?.startDatetime &&
+        isBefore(
+          new Date(),
+          addDays(new Date(offer.collectiveStock?.startDatetime), 2)
+        ))
   )
 
   const canEditDiscount = isActionAllowedOnCollectiveOffer(
@@ -124,7 +119,7 @@ export const OfferEducationalStock = <
           <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
-            {isCollectiveOffer(offer) && offer.isPublicApi && (
+            {offer.isPublicApi && (
               <BannerPublicApi className={styles['banner-space']} />
             )}
             <FormLayout.MandatoryInfo />

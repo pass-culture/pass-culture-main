@@ -13,32 +13,27 @@ import {
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import {
-  isCollectiveOffer,
-  isCollectiveOfferTemplate,
   Mode,
   type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
 import { createStockDataPayload } from '@/commons/core/OfferEducational/utils/createStockDataPayload'
 import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils/extractInitialStockValues'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
-  type MandatoryCollectiveOfferFromParamsProps,
-  withCollectiveOfferFromParams,
+  type CollectiveOfferFromParamsProps,
+  withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
 export const CollectiveOfferStockCreation = ({
   offer,
-  isTemplate,
-}: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
+}: CollectiveOfferFromParamsProps): JSX.Element | null => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const location = useLocation()
@@ -48,7 +43,7 @@ export const CollectiveOfferStockCreation = ({
   const { mutate } = useSWRConfig()
 
   const { data: offerFromTemplate } = useSWR(
-    isCollectiveOffer(offer) && offer.templateId
+    offer.templateId
       ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
       : null,
     ([, offerTemplateIdParam]) => {
@@ -67,11 +62,6 @@ export const CollectiveOfferStockCreation = ({
       apiNew.getCollectiveOfferRequest({
         path: { request_id: Number(id) },
       })
-  )
-
-  assertOrFrontendError(
-    !isCollectiveOfferTemplate(offer),
-    '`offer` shoud not be a (collective offer) template.'
   )
 
   const initialValues = extractInitialStockValues(
@@ -118,18 +108,9 @@ export const CollectiveOfferStockCreation = ({
         { revalidate: false }
       )
 
-      let url = `/offre/${computeURLCollectiveOfferId(
-        offer.id,
-        isTemplate
-      )}/collectif`
-
-      if (!isTemplate) {
-        url = `${url}/etablissement${requestId ? `?requete=${requestId}` : ''}`
-      } else {
-        url = `${url}/creation/recapitulatif`
-      }
+      const nexStepUrl = `/offre/${offer.id}/collectif/etablissement`
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(url)
+      navigate(requestId ? `${nexStepUrl}?requete=${requestId}` : nexStepUrl)
     } catch (e) {
       if (
         hasStatusCodeAndErrorsCode(e) &&
@@ -162,7 +143,7 @@ export const CollectiveOfferStockCreation = ({
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
-      isTemplate={isTemplate}
+      isTemplate={false}
       isCreation={isCreation}
       requestId={requestId}
       offer={offer}
@@ -180,6 +161,6 @@ export const CollectiveOfferStockCreation = ({
 
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
-export const Component = withCollectiveOfferFromParams(
+export const Component = withOnlyCollectiveOfferFromParams(
   CollectiveOfferStockCreation
 )

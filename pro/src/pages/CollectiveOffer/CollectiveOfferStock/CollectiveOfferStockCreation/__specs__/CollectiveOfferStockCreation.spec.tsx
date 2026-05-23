@@ -8,7 +8,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
@@ -22,7 +22,7 @@ vi.mock('@/apiClient/api', () => ({
 
 const renderCollectiveStockCreation = (
   path: string,
-  props: MandatoryCollectiveOfferFromParamsProps
+  props: CollectiveOfferFromParamsProps
 ) => {
   renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
     initialRouterEntries: [path],
@@ -38,15 +38,11 @@ const renderCollectiveStockCreation = (
   })
 }
 
-const defaultProps = {
-  offer: getCollectiveOfferFactory(),
-  isTemplate: false,
-  offerer: undefined,
-}
-
 describe('CollectiveOfferStockCreation', () => {
   it('should render collective offer stock form', async () => {
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', defaultProps)
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', {
+      offer: getCollectiveOfferFactory(),
+    })
 
     expect(
       await screen.findByRole('heading', {
@@ -62,8 +58,7 @@ describe('CollectiveOfferStockCreation', () => {
 
   it('should render collective offer stock form from template', async () => {
     const props = {
-      ...defaultProps,
-      offer: { ...defaultProps.offer, templateId: 12 },
+      offer: { ...getCollectiveOfferFactory(), templateId: 12 },
     }
     const offerTemplate = getCollectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
@@ -84,10 +79,9 @@ describe('CollectiveOfferStockCreation', () => {
     vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
       offerTemplate
     )
-    renderCollectiveStockCreation(
-      '/offre/A1/collectif/stocks?requete=1',
-      defaultProps
-    )
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks?requete=1', {
+      offer: getCollectiveOfferFactory(),
+    })
     await waitFor(() => {
       expect(apiNew.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
     })
