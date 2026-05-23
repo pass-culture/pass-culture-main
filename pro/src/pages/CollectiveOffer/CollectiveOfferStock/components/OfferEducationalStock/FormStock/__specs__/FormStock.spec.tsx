@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import {
   Mode,
   type OfferEducationalStockFormValues,
@@ -16,33 +17,44 @@ import {
 import { Button } from '@/design-system/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
-import { FormStock, type FormStockProps } from '../FormStock'
+import { FormStock } from '../FormStock'
 
 function renderFormStock({
   initialValues,
+  allowedActions,
   onSubmit = vi.fn(),
-  props,
   options,
 }: {
   initialValues: OfferEducationalStockFormValues
+  allowedActions: CollectiveOfferAllowedAction[]
   onSubmit: () => void
-  props: FormStockProps
   options?: RenderWithProvidersOptions
 }) {
-  const preventPriceIncrease = props.preventPriceIncrease
-
   function FormStockWrapper() {
     const form = useForm({
       defaultValues: initialValues,
       resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
-        generateValidationSchema(
-          preventPriceIncrease,
-          initialValues.totalPrice,
-          false
-        )
+        generateValidationSchema(allowedActions, initialValues.totalPrice)
       ),
       mode: 'onTouched',
     })
+
+    const props = {
+      canEditDiscount: allowedActions.includes(
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+      ),
+      canEditDates: allowedActions.includes(
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES
+      ),
+      mode:
+        allowedActions.length === 0
+          ? Mode.READ_ONLY
+          : allowedActions.includes(
+                CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+              )
+            ? Mode.CREATION
+            : Mode.EDITION,
+    }
 
     return (
       <FormProvider {...form}>
@@ -60,15 +72,9 @@ function renderFormStock({
 describe('FormStock', () => {
   let initialValues: OfferEducationalStockFormValues
   const onSubmit = vi.fn()
-  let props: FormStockProps
+  let allowedActions: CollectiveOfferAllowedAction[]
 
   beforeEach(() => {
-    props = {
-      mode: Mode.CREATION,
-      canEditDiscount: false,
-      canEditDates: false,
-      preventPriceIncrease: false,
-    }
     initialValues = {
       startDatetime: '',
       endDatetime: '',
@@ -78,10 +84,19 @@ describe('FormStock', () => {
       bookingLimitDatetime: '',
       priceDetail: '',
     }
+
+    allowedActions = [
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+    ]
   })
 
   it('should display an error when the field is empty', async () => {
-    renderFormStock({ initialValues: initialValues, onSubmit, props })
+    renderFormStock({
+      initialValues,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+      onSubmit,
+    })
 
     const saveButton = screen.getByRole('button', { name: 'Enregistrer' })
 
@@ -103,10 +118,7 @@ describe('FormStock', () => {
   })
 
   it('should clear errors when fields are filled', async () => {
-    props.canEditDates = true
-    props.canEditDiscount = true
-
-    renderFormStock({ initialValues, onSubmit, props })
+    renderFormStock({ initialValues, allowedActions, onSubmit })
 
     const saveButton = screen.getByText('Enregistrer')
 
@@ -167,13 +179,8 @@ describe('FormStock', () => {
         ...initialValues,
         startDatetime: format(new Date(), FORMAT_ISO_DATE_ONLY),
       },
+      allowedActions,
       onSubmit,
-      props: {
-        mode: Mode.EDITION,
-        canEditDiscount: true,
-        canEditDates: true,
-        preventPriceIncrease: false,
-      },
     })
     const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
     const startDatetimeInput = screen.getByLabelText(/Date de début */)
@@ -185,16 +192,7 @@ describe('FormStock', () => {
   })
 
   it('should not disable price and place when offer status is reimbursment', () => {
-    renderFormStock({
-      initialValues: initialValues,
-      onSubmit,
-      props: {
-        mode: Mode.READ_ONLY,
-        canEditDiscount: false,
-        canEditDates: false,
-        preventPriceIncrease: true,
-      },
-    })
+    renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
     const priceInput = screen.getByLabelText(/Prix total TTC/)
     const placeInput = screen.getByLabelText(/Nombre de participants/)
@@ -207,12 +205,7 @@ describe('FormStock', () => {
     renderFormStock({
       initialValues: { ...initialValues, totalPrice: 1000 },
       onSubmit,
-      props: {
-        mode: Mode.READ_ONLY,
-        canEditDiscount: true,
-        canEditDates: false,
-        preventPriceIncrease: true,
-      },
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
     })
 
     const priceInput = screen.getByLabelText(/Prix total TTC/)
@@ -229,16 +222,7 @@ describe('FormStock', () => {
   })
 
   it('should disable start datetime, end datetime and event time inputs when form access is read only', () => {
-    renderFormStock({
-      initialValues: initialValues,
-      onSubmit,
-      props: {
-        mode: Mode.READ_ONLY,
-        canEditDiscount: false,
-        canEditDates: false,
-        preventPriceIncrease: false,
-      },
-    })
+    renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
     const startDatetimeInput = screen.getByLabelText(/Date de début */)
     const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
@@ -250,16 +234,7 @@ describe('FormStock', () => {
   })
 
   it('should disable start datetime, end datetime, price and place and event time inputs when allowed actions CAN_EDIT_DATES and CAN_EDIT_DISCOUNT do not exist', () => {
-    renderFormStock({
-      initialValues: initialValues,
-      onSubmit,
-      props: {
-        mode: Mode.READ_ONLY,
-        canEditDiscount: false,
-        canEditDates: false,
-        preventPriceIncrease: false,
-      },
-    })
+    renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
     const startDatetimeInput = screen.getByLabelText(/Date de début */)
     const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
@@ -275,16 +250,7 @@ describe('FormStock', () => {
   })
 
   it('should not disable price, place number, start datetime, end datetime and event time when allowed actions CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exist', () => {
-    renderFormStock({
-      initialValues: initialValues,
-      onSubmit,
-      props: {
-        mode: Mode.READ_ONLY,
-        canEditDiscount: true,
-        canEditDates: true,
-        preventPriceIncrease: false,
-      },
-    })
+    renderFormStock({ initialValues, onSubmit, allowedActions })
 
     const startDatetimeInput = screen.getByLabelText(/Date de début */)
     const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]

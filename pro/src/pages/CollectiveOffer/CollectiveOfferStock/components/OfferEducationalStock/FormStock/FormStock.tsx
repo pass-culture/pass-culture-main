@@ -23,11 +23,10 @@ import {
 } from '../constants/labels'
 import styles from './FormStock.module.scss'
 
-export interface FormStockProps {
+interface FormStockProps {
   mode: Mode
   canEditDiscount: boolean
   canEditDates: boolean
-  preventPriceIncrease: boolean
 }
 
 export const FormStock = ({

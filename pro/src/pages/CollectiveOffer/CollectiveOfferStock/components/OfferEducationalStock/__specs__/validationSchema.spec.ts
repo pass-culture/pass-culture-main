@@ -1,5 +1,6 @@
 import { addDays, addYears, format, subMinutes } from 'date-fns'
 
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
@@ -18,6 +19,7 @@ describe('validationSchema', () => {
 
   const cases: {
     description: string
+    offerAllowedActions: CollectiveOfferAllowedAction[]
     formValues: Partial<OfferEducationalStockFormValues>
     expectedErrors: string[]
     isReadOnly?: boolean
@@ -25,6 +27,10 @@ describe('validationSchema', () => {
   }[] = [
     {
       description: 'start and end date should be on same school year',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         endDatetime: addYears(values.startDatetime, 2)
@@ -36,6 +42,10 @@ describe('validationSchema', () => {
     {
       description:
         'should allow a start datetime set on 01/09/N and an end datetime set on 31/08/N+1',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         startDatetime: '2050-09-01',
@@ -45,6 +55,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'booking datetime should not be after start datetime',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         bookingLimitDatetime: addDays(values.startDatetime, 1)
@@ -58,6 +72,10 @@ describe('validationSchema', () => {
     {
       description:
         'event time should be after current time when start date is today',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         startDatetime: new Date().toISOString().split('T')[0],
@@ -69,6 +87,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'number of participants should be at least 1',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         numberOfPlaces: 0,
@@ -77,6 +99,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'number of participants should not exceed 3000',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         numberOfPlaces: 3001,
@@ -85,6 +111,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'price should be at least 0',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         totalPrice: -1,
@@ -93,6 +123,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'price should not exceed 60000',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         totalPrice: 60001,
@@ -101,6 +135,10 @@ describe('validationSchema', () => {
     },
     {
       description: 'booking limit date should not be in the past',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       formValues: {
         ...values,
         bookingLimitDatetime: '2024-08-31T13:00:00Z',
@@ -112,50 +150,31 @@ describe('validationSchema', () => {
     {
       description:
         'booking limit date can be in the past if the form is read only',
+      offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
       formValues: {
         ...values,
         bookingLimitDatetime: '2024-08-31T13:00:00Z',
       },
       expectedErrors: [],
-      isReadOnly: true,
     },
     {
       description:
-        'bookingLimitDatetime: la règle ne s’applique pas si preventPriceIncrease=true',
+        'bookingLimitDatetime: la règle ne s’applique pas si CAN_EDIT_DATES=false',
+      offerAllowedActions: [],
       formValues: {
         ...values,
         bookingLimitDatetime: '2000-01-01',
       },
       expectedErrors: [],
-      isReadOnly: false,
-      preventPriceIncrease: true,
-    },
-    {
-      description:
-        'bookingLimitDatetime: la règle s’applique si preventPriceIncrease=false',
-      formValues: {
-        ...values,
-        bookingLimitDatetime: '2000-01-01',
-      },
-      expectedErrors: [
-        'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-      ],
-      isReadOnly: false,
-      preventPriceIncrease: false,
     },
   ]
 
   cases.forEach(
-    ({
-      description,
-      formValues,
-      expectedErrors,
-      isReadOnly = false,
-      preventPriceIncrease = false,
-    }) => {
+    ({ description, offerAllowedActions, formValues, expectedErrors }) => {
       it(`should validate the form for case: ${description}`, async () => {
+        const initialPrice = 0
         const errors = await getYupValidationSchemaErrors(
-          generateValidationSchema(preventPriceIncrease, 0, isReadOnly),
+          generateValidationSchema(offerAllowedActions, initialPrice),
           formValues
         )
         expect(errors).toEqual(expectedErrors)
