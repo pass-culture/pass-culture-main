@@ -84,6 +84,11 @@ list_offers_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 logger = logging.getLogger(__name__)
 
 SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
+    "ACTIVITY": {
+        "field": "activity",
+        "column": offerers_models.Venue.activity,
+        "inner_join": "venue",
+    },
     "ADDRESS": {
         "field": "address",
         "column": offerers_models.OffererAddress.addressId,
@@ -285,11 +290,6 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "venue",
         "facet": "venue.id",
         "column": offers_models.Offer.venueId,
-    },
-    "VENUE_TYPE": {
-        "field": "venue_type",
-        "column": offerers_models.Venue.venueTypeCode,
-        "inner_join": "venue",
     },
     "VALIDATED_OFFERER": {
         "field": "boolean",

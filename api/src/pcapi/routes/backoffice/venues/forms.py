@@ -214,9 +214,9 @@ class GetVenuesListForm(utils.PCForm):
         csrf = False
 
     q = fields.PCOptSearchField("ID ou liste d'ID de partenaire culturel, nom du partenaire culturel")
-    type = fields.PCSelectMultipleField(
-        "Type de partenaire culturel",
-        choices=utils.choices_from_enum(offerers_models.VenueTypeCode),
+    activity = fields.PCSelectMultipleField(
+        "Activité du partenaire culturel",
+        choices=utils.choices_from_enum(offerers_models.Activity, formatter=filters.format_activity),
     )
     venue_label = fields.PCQuerySelectMultipleField(
         "Label",
@@ -274,7 +274,7 @@ class GetVenuesListForm(utils.PCForm):
         return not any(
             (
                 self.q.data,
-                self.type.data,
+                self.activity.data,
                 self.venue_label.data,
                 self.criteria.data,
                 self.offerer.data,

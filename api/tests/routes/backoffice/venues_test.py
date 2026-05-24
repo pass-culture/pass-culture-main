@@ -80,7 +80,7 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
         offerers_factories.VenueFactory(
             id=42,
             name="Le Gros Rintintin",
-            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            activity=offerers_models.Activity.CINEMA,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
             criteria=criteria[:2],
             offererAddress__address__postalCode="82000",
@@ -89,7 +89,7 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
         ),
         offerers_factories.VenueFactory(
             id=43,
-            venueTypeCode=offerers_models.VenueTypeCode.GAMES,
+            activity=offerers_models.Activity.GAMES_CENTRE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
             criteria=criteria[2:],
             offererAddress__address__postalCode="45000",
@@ -116,9 +116,9 @@ class ListVenuesTest(GetEndpointHelper):
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
-    def test_list_venues_by_type(self, authenticated_client, venues):
+    def test_list_venues_by_activity(self, authenticated_client, venues):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, type=offerers_models.VenueTypeCode.MOVIE.name))
+            response = authenticated_client.get(url_for(self.endpoint, activity=offerers_models.Activity.CINEMA.name))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -263,12 +263,12 @@ class ListVenuesTest(GetEndpointHelper):
     )
     def test_list_venues_by_order(self, authenticated_client, row_key, order):
         venues = [
-            offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE),
-            offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE),
+            offerers_factories.VenueFactory(activity=offerers_models.Activity.CINEMA),
+            offerers_factories.VenueFactory(activity=offerers_models.Activity.CINEMA),
         ]
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
-                url_for(self.endpoint, order=order, type=offerers_models.VenueTypeCode.MOVIE.name)
+                url_for(self.endpoint, order=order, activity=offerers_models.Activity.CINEMA.name)
             )
             assert response.status_code == 200
 
@@ -2006,7 +2006,7 @@ class UpdateVenueTest(PostEndpointHelper):
         }
 
     def test_update_venue_delete_accessibility_provider(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
             externalAccessibilityId="mon-slug",
@@ -2034,7 +2034,7 @@ class UpdateVenueTest(PostEndpointHelper):
         }
 
     def test_update_venue_accessibility_provider_id_bad_url(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityUrl="https://good.url")
         data = self._get_current_data(venue)
 
@@ -2046,7 +2046,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.accessibilityProvider.externalAccessibilityUrl == "https://good.url"
 
     def test_update_venue_accessibility_provider_id_empty_slug(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        venue = offerers_factories.VenueFactory(activity=offerers_models.Activity.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/"
         )
@@ -2062,7 +2062,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
     def test_update_venue_should_fail_when_add_accessibility_provider_if_not_open_to_public(self, authenticated_client):
         venue = offerers_factories.VenueFactory(
-            venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA, isOpenToPublic=False
+            activity=offerers_models.Activity.TRAVELLING_CINEMA, isOpenToPublic=False
         )
 
         data = self._get_current_data(venue)
@@ -2283,8 +2283,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
             extraData={
                 "modified_info": {
                     "venueTypeCode": {
-                        "new_info": offerers_models.VenueTypeCode.BOOKSTORE.name,
-                        "old_info": offerers_models.VenueTypeCode.OTHER.name,
+                        "new_info": offerers_models.Activity.BOOKSTORE.name,
+                        "old_info": offerers_models.Activity.OTHER.name,
                     },
                     "withdrawalDetails": {"new_info": "Come here!", "old_info": None},
                     "contact.website": {"new_info": None, "old_info": "https://old.website.com"},
