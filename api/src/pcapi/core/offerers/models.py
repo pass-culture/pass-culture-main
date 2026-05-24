@@ -522,7 +522,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(Activity, use_values=False), nullable=True
+        db_utils.MagicEnum(Activity, use_values=False), nullable=True, index=True
     )
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
