@@ -3,6 +3,7 @@ import logging
 import typing
 from urllib.parse import urlencode
 
+import sqlalchemy as sa
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -14,6 +15,8 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core import token as token_utils
+from pcapi.core.offers import generator as offers_generator
+from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
@@ -24,11 +27,13 @@ from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
@@ -369,3 +374,76 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
         params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
         params["email"] = user.email
     return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+
+
+@dev_blueprint.route("/offer-generator", methods=["POST"])
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def generate_offer() -> response_utils.BackofficeResponse:
+    if not settings.ENABLE_TEST_OFFER_GENERATION:
+        raise NotFound()
+
+    form = forms.OfferGeneratorForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.dev.get_generate_offer_form"), code=303)
+
+    offer = offers_generator.create_offer(
+        offer_name=form.name.data,
+        price=form.price.data,
+        subcategory_id=form.subcategory_id.data,
+    )
+
+    flash("Offre créée avec succès", "success")
+    assert offer is not None  # helps mypy
+    return redirect(url_for("backoffice_web.dev.get_generated_offer", offer_id=offer.id), code=303)
+
+
+@dev_blueprint.route("/offer-generator", methods=["GET"])
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def get_generate_offer_form() -> response_utils.BackofficeResponse:
+    form = forms.OfferGeneratorForm()
+    return render_template(
+        "dev/offers_generator.html",
+        form=form,
+        dst=url_for("backoffice_web.dev.generate_offer"),
+    )
+
+
+@dev_blueprint.route("/offer-generator/<int:offer_id>", methods=["GET"])
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def get_generated_offer(offer_id: int) -> response_utils.BackofficeResponse:
+    form = forms.OfferGeneratorForm()
+    offer = db.session.scalars(sa.select(offers_models.Offer).where(offers_models.Offer.id == offer_id)).one_or_none()
+
+    if offer is None:
+        flash("Offre non trouvée", "warning")
+        return redirect(url_for("backoffice_web.dev.get_generate_offer_form"), code=404)
+
+    return render_template(
+        "dev/offers_generator.html",
+        link_to_app=urls.offer_app_link(offer.id),
+        link_to_local_app=f"{settings.LOCAL_WEBAPP_URL}/offre/{offer_id}" if settings.LOCAL_WEBAPP_URL else None,
+        offer=offer,
+        form=form,
+        dst=url_for("backoffice_web.dev.generate_offer"),
+        deactivate_offer_form=empty_forms.EmptyForm(),
+        deactivate_offer_dst=url_for("backoffice_web.dev.deactivate_offer", offer_id=offer_id),
+    )
+
+
+@dev_blueprint.route("/offer-generator/<int:offer_id>/deactivate", methods=["POST"])
+@access_control.custom_login_required(redirect_to="backoffice_web.home")
+def deactivate_offer(offer_id: int) -> response_utils.BackofficeResponse:
+    if not settings.ENABLE_TEST_OFFER_GENERATION:
+        raise NotFound()
+
+    offer = db.session.scalars(sa.select(offers_models.Offer).where(offers_models.Offer.id == offer_id)).one_or_none()
+
+    if offer is None:
+        raise NotFound()
+
+    offers_generator.deactivate_offer(offer)
+
+    flash("Offre désactivée avec succès", "success")
+    return redirect(url_for("backoffice_web.dev.get_generated_offer", offer_id=offer.id), code=303)

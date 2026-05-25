@@ -17,6 +17,7 @@ pytestmark = [
 
 @pytest.fixture(name="disable_menu_settings")
 def disable_menu_settings_fixture(settings):
+    settings.ENABLE_TEST_OFFER_GENERATION = False
     settings.ENABLE_TEST_USER_GENERATION = False
     settings.ENABLE_BO_COMPONENT_PAGE = False
 
@@ -68,13 +69,17 @@ class MenuTest:
         assert {e.label for e in menu_sections} == {"Dev", "Admin"}
         menu_section = [e for e in menu_sections if e.label == "Dev"][0]
         menu_items = menu_section.items
-        assert len(menu_items) == 3
-        assert {"Générateur d'utilisateurs de test", "Suppression d'utilisateur", "Liste des composants"} == {
-            e.label for e in menu_items
-        }
+        assert len(menu_items) == 4
+        assert {
+            "Générateur d'utilisateurs de test",
+            "Générateur d'offres de test",
+            "Suppression d'utilisateur",
+            "Liste des composants",
+        } == {e.label for e in menu_items}
 
     def test_partial_menu_dev(self, generate_user_with_bo_permissions, settings):
         settings.ENABLE_TEST_USER_GENERATION = True
+        settings.ENABLE_TEST_OFFER_GENERATION = False
         settings.ENABLE_BO_COMPONENT_PAGE = False
 
         user = generate_user_with_bo_permissions([])

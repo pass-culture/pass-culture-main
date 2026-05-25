@@ -1,41 +1,17 @@
 import datetime
-import functools
-import typing
 
-import flask
-from flask import request
-
-from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
-from pcapi.models import api_errors
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.dev import forms as dev_forms
 from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import create_ubble_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
+from pcapi.routes.internal.auth import api_key_required
 from pcapi.utils import transaction_manager
-
-
-API_KEY_HEADER_NAME = "x-api-key"
-
-
-def api_key_required(route_function: typing.Callable) -> typing.Callable:
-    @functools.wraps(route_function)
-    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
-        token = request.headers.get(API_KEY_HEADER_NAME)
-        if not token:
-            raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
-
-        if token != settings.E2E_API_KEY:
-            raise api_errors.ForbiddenError(errors={"auth": "Invalid API key"})
-
-        return route_function(*args, **kwargs)
-
-    return wrapper
 
 
 @private_api.route("/e2e/account", methods=["POST"])

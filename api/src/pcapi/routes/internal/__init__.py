@@ -13,4 +13,5 @@ def install_routes(app: Flask) -> None:
     if settings.ENABLE_TEST_ROUTES:
         from . import e2e
         from . import e2e_account
+        from . import e2e_offer
         from . import testing
