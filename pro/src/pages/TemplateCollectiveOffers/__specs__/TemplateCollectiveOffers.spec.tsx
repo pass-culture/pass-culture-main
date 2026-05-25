@@ -10,7 +10,8 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateResponseModel,
   type GetVenueAddressResponseModel,
-} from '@/apiClient/v1'
+  type ListCollectiveOffersQueryModel,
+} from '@/apiClient/v1/new'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
@@ -60,13 +61,30 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
+const makeQuery = (
+  overrides: Partial<ListCollectiveOffersQueryModel> = {}
+): ListCollectiveOffersQueryModel => ({
+  format: null,
+  locationType: null,
+  name: null,
+  offererAddressId: null,
+  offererId: null,
+  periodBeginningDate: null,
+  periodEndingDate: null,
+  status: null,
+  venueId: 2,
+  ...overrides,
+})
+
 const offersRecap: CollectiveOfferTemplateResponseModel[] = [
   collectiveOfferTemplateFactory(),
 ]
 
 describe('TemplateCollectiveOffers', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offersRecap)
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue(
+      offersRecap
+    )
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
       offerersNamesWithPendingValidation: [],
@@ -92,12 +110,10 @@ describe('TemplateCollectiveOffers', () => {
     ).toBeInTheDocument()
   })
 
-  const venueId = 2
-
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
           offersRecap
         )
         await renderOffers()
@@ -117,17 +133,13 @@ describe('TemplateCollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveOfferTemplates).toHaveBeenNthCalledWith(
+          expect(apiNew.getCollectiveOfferTemplates).toHaveBeenNthCalledWith(
             2,
-            null,
-            null,
-            [CollectiveOfferDisplayedStatus.REJECTED],
-            venueId,
-            null,
-            null,
-            null,
-            null,
-            null
+            {
+              query: makeQuery({
+                status: [CollectiveOfferDisplayedStatus.REJECTED],
+              }),
+            }
           )
         })
       })
@@ -154,17 +166,9 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOfferTemplates).toHaveBeenCalledWith(
-            'Any word',
-            null,
-            null,
-            venueId,
-            null,
-            null,
-            null,
-            null,
-            null
-          )
+          expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledWith({
+            query: makeQuery({ name: 'Any word' }),
+          })
         })
       })
 
@@ -180,17 +184,9 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-            null,
-            null,
-            null,
-            venueId,
-            '2020-12-25',
-            null,
-            null,
-            null,
-            null
-          )
+          expect(apiNew.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
+            query: makeQuery({ periodBeginningDate: '2020-12-25' }),
+          })
         })
       })
 
@@ -206,17 +202,9 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-            null,
-            null,
-            null,
-            venueId,
-            null,
-            '2020-12-27',
-            null,
-            null,
-            null
-          )
+          expect(apiNew.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
+            query: makeQuery({ periodEndingDate: '2020-12-27' }),
+          })
         })
       })
     })
@@ -234,13 +222,15 @@ describe('TemplateCollectiveOffers', () => {
       const offers = Array.from({ length: 11 }, () =>
         collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offers
+      )
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
       await userEvent.click(nextIcon)
 
-      expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
+      expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
@@ -249,7 +239,9 @@ describe('TemplateCollectiveOffers', () => {
       const offers = Array.from({ length: 11 }, () =>
         collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offers
+      )
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: /page suivante/ })
       const previousIcon = screen.getByRole('button', {
@@ -259,7 +251,7 @@ describe('TemplateCollectiveOffers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
+      expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
@@ -270,7 +262,7 @@ describe('TemplateCollectiveOffers', () => {
       )
 
       beforeEach(() => {
-        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(
+        vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue(
           offersRecap
         )
       })
@@ -300,7 +292,7 @@ describe('TemplateCollectiveOffers', () => {
   })
 
   it('should show draft offers', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce([
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce([
       collectiveOfferTemplateFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }),

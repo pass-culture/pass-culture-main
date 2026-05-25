@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -45,21 +44,11 @@ export const TemplateCollectiveOffers = () => {
     isInTemplateOffersPage: true,
   })
 
-  const offersQuery = useSWR<CollectiveOfferTemplateResponseModel[]>(
+  const offersQuery = useSWR(
     [queryKey, apiFilters],
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
-      return api.getCollectiveOfferTemplates(
-        params.name,
-        params.offererId,
-        params.status,
-        params.venueId,
-        params.periodBeginningDate,
-        params.periodEndingDate,
-        params.format,
-        params.locationType,
-        params.offererAddressId
-      )
+      return apiNew.getCollectiveOfferTemplates({ query: { ...params } })
     },
     { fallbackData: [] }
   )

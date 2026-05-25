@@ -1,12 +1,13 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type SharedCurrentUserResponseModel,
   UserRole,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -21,6 +22,12 @@ import {
   TemplateCollectiveOffersScreen,
   type TemplateCollectiveOffersScreenProps,
 } from './TemplateCollectiveOffersScreen'
+
+vi.mock('@/apiClient/api', () => ({
+  apiNew: {
+    getVenueAddresses: vi.fn(),
+  },
+}))
 
 const renderOffers = (
   props: TemplateCollectiveOffersScreenProps,
@@ -46,13 +53,6 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    listOfferersNames: vi.fn().mockReturnValue({}),
-    deleteDraftOffers: vi.fn(),
-  },
-}))
-
 const offers = [collectiveOfferTemplateFactory()]
 
 const props = {
@@ -73,6 +73,8 @@ describe('TemplateCollectiveOffersScreen', () => {
     currentUser = sharedCurrentUserFactory({
       roles: [UserRole.PRO],
     })
+
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue([])
 
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
