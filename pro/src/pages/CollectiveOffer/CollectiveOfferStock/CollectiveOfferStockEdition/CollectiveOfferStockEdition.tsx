@@ -16,6 +16,7 @@ import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -87,6 +88,9 @@ export const CollectiveOfferStockEdition = ({
       <div className={styles['actions']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </div>
+      {offer.isPublicApi && (
+        <BannerPublicApi className={styles['banner-space']} />
+      )}
       <OfferEducationalStock
         initialValues={initialValues}
         mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}

@@ -17,7 +17,6 @@ import {
 import { NBSP } from '@/commons/core/shared/constants'
 import { isDateValid } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -94,9 +93,6 @@ export const OfferEducationalStock = ({
           <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
-            {offer.isPublicApi && (
-              <BannerPublicApi className={styles['banner-space']} />
-            )}
             <FormLayout.MandatoryInfo />
             <div className={styles['offer-educational-stock-banner']}>
               <Banner
