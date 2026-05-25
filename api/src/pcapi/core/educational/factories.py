@@ -207,6 +207,15 @@ class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
     priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
 
 
+class CollectiveAdditionalFeeFactory(BaseFactory[models.CollectiveAdditionalFee]):
+    class Meta:
+        model = models.CollectiveAdditionalFee
+
+    collectiveStock = factory.SubFactory(CollectiveStockFactory)
+    type = models.CollectiveAdditionalFeeType.TRAVEL
+    amount = 50
+
+
 class EducationalYearFactory(BaseFactory[models.EducationalYear]):
     class Meta:
         model = models.EducationalYear

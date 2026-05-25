@@ -117,6 +117,7 @@ tables_to_clean: list[type[Model]] = [
     bookings_models.ExternalBooking,
     bookings_models.FraudulentBookingTag,
     bookings_models.Booking,
+    educational_models.CollectiveAdditionalFee,
     educational_models.CollectiveStock,
     offers_models.Stock,
     users_models.Favorite,

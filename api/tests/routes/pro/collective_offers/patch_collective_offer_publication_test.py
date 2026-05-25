@@ -11,10 +11,13 @@ from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns204Test:
     num_queries = 1  # session + user
     num_queries += 1  # offer
+    num_queries += 1  # collective_additional_fees (selectinload)
     num_queries += 1  # user_offerer
     num_queries += 1  # venue_already_has_validated_offer
     num_queries += 1  # offer_validation_rules
@@ -72,7 +75,6 @@ class Returns204Test:
         assert offer.validation == OfferValidationStatus.PENDING
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -97,7 +99,6 @@ class Returns404Test:
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)

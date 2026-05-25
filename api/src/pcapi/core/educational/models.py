@@ -282,6 +282,16 @@ class CollectiveLocationType(enum.Enum):
     TO_BE_DEFINED = "TO_BE_DEFINED"
 
 
+class CollectiveAdditionalFeeType(enum.Enum):
+    ACCOMMODATION = "ACCOMMODATION"
+    TRAVEL = "TRAVEL"
+    MEAL = "MEAL"
+    CONSUMABLE_ITEMS = "CONSUMABLE_ITEMS"
+    COPYRIGHT = "COPYRIGHT"
+    APPLICATION_FEE = "APPLICATION_FEE"
+    OTHER = "OTHER"
+
+
 @sa_orm.declarative_mixin
 class HasImageMixin:
     BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
@@ -1258,6 +1268,12 @@ class CollectiveStock(PcObject, models.Model):
 
     priceDetail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
+    collectiveAdditionalFees: sa_orm.Mapped[list["CollectiveAdditionalFee"]] = sa_orm.relationship(
+        "CollectiveAdditionalFee",
+        foreign_keys="CollectiveAdditionalFee.collectiveStockId",
+        back_populates="collectiveStock",
+    )
+
     __table_args__ = (sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime),)
 
     @property
@@ -1333,6 +1349,29 @@ class CollectiveStock(PcObject, models.Model):
     def isSoldOut(self) -> bool:
         non_cancelled_bookings = self.get_non_cancelled_bookings()
         return len(non_cancelled_bookings) > 0
+
+
+class CollectiveAdditionalFee(PcObject, models.Model):
+    __tablename__ = "collective_additional_fee"
+
+    collectiveStockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False
+    )
+    collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
+        "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveAdditionalFees"
+    )
+
+    type: sa_orm.Mapped[CollectiveAdditionalFeeType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CollectiveAdditionalFeeType), nullable=False
+    )
+
+    # label is filled only when type is OTHER
+    label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+
+    amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
+        sa.Numeric(10, 2),
+        nullable=False,
+    )
 
 
 class EducationalInstitution(PcObject, models.Model):

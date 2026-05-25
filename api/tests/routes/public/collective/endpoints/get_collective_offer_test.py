@@ -18,6 +18,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select collective_offer and collective_stock
+    num_queries += 1  # select collective_additional_fees (selectinload)
     num_queries_error = num_queries + 2  # double rollback
 
     def test_get_offer(self):
@@ -141,7 +142,8 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         plain_api_key, provider = self.setup_provider()
         provider_factories.VenueProviderFactory(provider=provider)
 
-        with assert_num_queries(self.num_queries_error):
+        # collective_additional_fees is not loaded when there is no stock
+        with assert_num_queries(self.num_queries_error - 1):
             response = self.make_request(plain_api_key, {"offer_id": 25})
             assert response.status_code == 404
 
@@ -158,7 +160,8 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer = educational_factories.CollectiveOfferFactory()
         offer_id = offer.id
 
-        with assert_num_queries(self.num_queries_error):
+        # collective_additional_fees is not loaded when there is no stock
+        with assert_num_queries(self.num_queries_error - 1):
             response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 404
 

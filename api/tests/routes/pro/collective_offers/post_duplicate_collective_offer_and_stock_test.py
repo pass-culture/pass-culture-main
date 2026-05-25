@@ -81,6 +81,7 @@ class Returns200Test:
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, numberOfTeachers=5)
+        educational_factories.CollectiveAdditionalFeeFactory(collectiveStock=offer.collectiveStock)
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
@@ -89,6 +90,13 @@ class Returns200Test:
         assert duplicate.additionalDetails == "My details"
         assert duplicate.collectiveStock.numberOfTeachers == 5
         assert duplicate.collectiveStock.servicePrice == 100
+        [duplicate_fee] = duplicate.collectiveStock.collectiveAdditionalFees
+        [original_fee] = offer.collectiveStock.collectiveAdditionalFees
+        assert duplicate_fee.type == original_fee.type
+        assert duplicate_fee.type == original_fee.type
+        assert duplicate_fee.label == original_fee.label
+        assert duplicate_fee.amount == original_fee.amount
+
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
