@@ -23,7 +23,7 @@ export const VenueEditionFormScreen = ({
     return (
       <Banner
         title="Cette structure vous permet uniquement de créer des offres numériques, elle n’est pas visible sur l’application pass Culture."
-        description='Vous n’avez pas d’informations à remplir à destination du grand public. Si vous souhaitez modifier d’autres informations, vous pouvez vous rendre dans la page "Paramètres généraux".'
+        description='Vous n’avez pas d’informations à remplir à destination du grand public. Si vous souhaitez modifier d’autres informations, vous pouvez vous rendre dans la page "Paramètres".'
       />
     )
   }

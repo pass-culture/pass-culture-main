@@ -36,13 +36,17 @@ describe('toFormValues', () => {
     })
 
     const expectedFormValues = {
+      activity: 'CULTURAL_CENTRE',
       street: '79 Quai du Palladium',
       postalCode: '34000',
       inseeCode: '34172',
+      isOpenToPublic: 'true',
       city: 'Montpellier',
       addressAutocomplete: '79 Quai du Palladium 34000 Montpellier',
       'search-addressAutocomplete': '79 Quai du Palladium 34000 Montpellier',
       coords: '43.609296, 3.882445',
+      culturalDomains: [],
+      description: 'desc',
       latitude: '43.609296',
       longitude: '3.882445',
       banId: '49759_1304_00002',
@@ -98,5 +102,36 @@ describe('toFormValues', () => {
       },
     })
     expect(formValues.siret).toEqual('0123456789')
+  })
+
+  it('should return empty siret for caledonian venue with null siret', () => {
+    const formValues = toFormValues({
+      venue: {
+        ...venue,
+        isCaledonian: true,
+        siret: null,
+      },
+    })
+    expect(formValues.siret).toEqual('')
+  })
+
+  it('should map collectiveDomains names to culturalDomains', () => {
+    const formValues = toFormValues({
+      venue: {
+        ...venue,
+        collectiveDomains: [
+          { id: 1, name: 'Cinéma' },
+          { id: 2, name: 'Musique' },
+        ],
+      },
+    })
+    expect(formValues.culturalDomains).toEqual(['Cinéma', 'Musique'])
+  })
+
+  it('should return empty string for description when null', () => {
+    const formValues = toFormValues({
+      venue: { ...venue, description: null },
+    })
+    expect(formValues.description).toEqual('')
   })
 })

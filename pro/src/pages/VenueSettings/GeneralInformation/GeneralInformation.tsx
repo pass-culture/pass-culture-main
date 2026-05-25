@@ -4,14 +4,18 @@ import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { getActivities } from '@/commons/mappings/mappings'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { objectKeys } from '@/commons/utils/object'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
+import { ActivityDetails } from '@/pages/VenueEdition/components/ActivityDetails/ActivityDetails'
 import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/RouteLeavingGuardVenueEdition'
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
@@ -34,6 +38,8 @@ const GeneralInformation = () => {
     isVenueVirtual: venue.isVirtual ?? false,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
+    isOpenToPublic: venue.isOpenToPublic.toString(),
+    activity: venue.activity as VenueSettingsFormValues['activity'],
   }
 
   const form = useForm<VenueSettingsFormValues>({
@@ -81,6 +87,28 @@ const GeneralInformation = () => {
     setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
+  const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isOpenToPublicValue = e.target.value.toString()
+
+    form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
+
+    const activityKeys = objectKeys(
+      getActivities(
+        isOpenToPublicValue === 'true' ? 'OPEN_TO_PUBLIC' : 'NOT_OPEN_TO_PUBLIC'
+      )
+    )
+    const isInitialActivityValid = formContext.activity
+      ? activityKeys.includes(formContext.activity)
+      : false
+
+    if (isInitialActivityValid) {
+      form.setValue('activity', formContext.activity)
+      form.clearErrors('activity')
+    } else {
+      form.setValue('activity', null)
+    }
+  }
+
   return (
     <>
       <MandatoryInfo />
@@ -105,27 +133,41 @@ const GeneralInformation = () => {
               </FormLayout.Row>
 
               {!venue.isVirtual && (
-                <>
-                  <FormLayout.Row mdSpaceAfter>
-                    <TextInput
-                      {...register('publicName')}
-                      label="Nom public"
-                      description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
-                    />
-                  </FormLayout.Row>
-
-                  <AddressFields
-                    addressRegister={register('addressAutocomplete')}
-                    disabled={disabled}
-                    onAddressChosen={onAddressSelect}
-                    error={errors.addressAutocomplete?.message}
-                    renderManual={() => <AddressManual />}
-                    manual={manuallySetAddress}
-                    onManualChange={toggleManuallySetAddress}
+                <FormLayout.Row>
+                  <TextInput
+                    {...register('publicName')}
+                    label="Nom public"
+                    description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
                   />
-                </>
+                </FormLayout.Row>
               )}
             </FormLayout.Section>
+
+            <FormLayout.SubSection title="Accueil du public">
+              <FormLayout.Row mdSpaceAfter>
+                <OpenToPublicToggle
+                  onChange={toggleOpenToPublic}
+                  radioDescriptions={{
+                    yes: 'Votre adresse postale sera visible',
+                  }}
+                  isOpenToPublic={form.watch('isOpenToPublic')}
+                />
+              </FormLayout.Row>
+              {form.watch('isOpenToPublic') === 'true' && (
+                <AddressFields
+                  description="Indiquez ici l'adresse où vous recevez votre public."
+                  addressRegister={register('addressAutocomplete')}
+                  disabled={disabled}
+                  onAddressChosen={onAddressSelect}
+                  error={errors.addressAutocomplete?.message}
+                  renderManual={() => <AddressManual />}
+                  manual={manuallySetAddress}
+                  onManualChange={toggleManuallySetAddress}
+                />
+              )}
+            </FormLayout.SubSection>
+
+            <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
 
             {!venue.isVirtual && <WithdrawalDetails />}
 

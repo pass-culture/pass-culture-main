@@ -7,7 +7,7 @@ import { SettingsTabs } from '@/components/SettingsTabs/SettingsTabs'
 export const VenueSettings = (): JSX.Element => {
   return (
     <BasicLayout>
-      <MainHeading mainHeading="Paramètres généraux" />
+      <MainHeading mainHeading="Paramètres" />
       <SettingsTabs />
       <Outlet />
     </BasicLayout>

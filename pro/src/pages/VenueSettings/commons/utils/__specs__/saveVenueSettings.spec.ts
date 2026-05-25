@@ -15,6 +15,9 @@ import type {
 } from '../../types'
 
 const defaultFormValues: VenueSettingsFormValues = {
+  activity: null,
+  culturalDomains: [],
+  description: 'desc',
   bookingEmail: 'contact@lieuexemple.com',
   comment: '',
   name: '',
@@ -34,6 +37,7 @@ const defaultFormValues: VenueSettingsFormValues = {
   inseeCode: '75111',
   'search-addressAutocomplete': '123 Rue Principale, Ville Exemple',
   street: '123 Rue Principale',
+  isOpenToPublic: 'true',
 }
 
 const defaultFormContext: VenueSettingsFormContext = {
@@ -41,6 +45,7 @@ const defaultFormContext: VenueSettingsFormContext = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '12345678901234',
+  isOpenToPublic: 'true',
 }
 
 describe('saveVenueSettings', () => {
@@ -61,12 +66,16 @@ describe('saveVenueSettings', () => {
     expect(apiNew.editVenue).toHaveBeenCalledWith({
       path: { venue_id: venue.id },
       body: {
+        activity: null,
         banId: '12345',
         bookingEmail: 'contact@lieuexemple.com',
         city: 'Ville Exemple',
         comment: '',
+        culturalDomains: [],
+        description: 'desc',
         inseeCode: '75111',
         isManualEdition: false,
+        isOpenToPublic: true,
         latitude: 48.8566,
         longitude: 2.3522,
         name: '',

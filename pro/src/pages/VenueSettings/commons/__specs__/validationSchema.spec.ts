@@ -13,6 +13,7 @@ describe('VenueSettingsValidationSchema', () => {
     withSiret: true,
     siren: '123456789',
     isVenueVirtual: false,
+    isOpenToPublic: 'true',
   }
 
   const baseFormValues: VenueSettingsFormValues = {
@@ -35,6 +36,7 @@ describe('VenueSettingsValidationSchema', () => {
     inseeCode: '75111',
     'search-addressAutocomplete': '123 Rue Principale, Ville Exemple',
     street: '123 Rue Principale',
+    isOpenToPublic: 'true',
   }
 
   interface Case {

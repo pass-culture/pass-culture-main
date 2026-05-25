@@ -18,6 +18,8 @@ describe('SiretOrCommentValidationSchema', () => {
     withSiret: true,
     siren: '123456789',
     isVenueVirtual: false,
+    isOpenToPublic: 'true',
+    activity: 'someActivity' as VenueSettingsFormValues['activity'],
   }
 
   const baseFormValues: SiretOrCommentFormValues = {

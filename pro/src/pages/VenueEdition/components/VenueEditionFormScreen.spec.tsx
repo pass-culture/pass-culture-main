@@ -807,27 +807,6 @@ describe('VenueEditionFormScreen', () => {
 
         expect(editVenueSpy).toHaveBeenCalled()
       })
-
-      it('should display the proper activities list for structures not open to public', async () => {
-        renderForm({
-          ...baseVenue,
-          isOpenToPublic: false,
-        })
-
-        const mainActivitySelect = await screen.findByRole('combobox', {
-          name: /Activité principale/,
-        })
-
-        ;[
-          'Société de production, tourneur ou label',
-          'Presse ou média',
-          'Cinéma itinérant',
-        ].forEach((label) => {
-          expect(
-            within(mainActivitySelect).getByRole('option', { name: label })
-          ).toBeInTheDocument()
-        })
-      })
     })
 
     describe('when the venue is open to public', () => {
@@ -880,24 +859,6 @@ describe('VenueEditionFormScreen', () => {
         })
       })
 
-      it('should display the activity select', async () => {
-        renderForm({
-          ...baseVenue,
-          isOpenToPublic: true,
-          activity: null,
-        })
-
-        const activitySelect =
-          await screen.findByLabelText(/Activité principale/)
-
-        expect(activitySelect).toBeInTheDocument()
-        expect(activitySelect).toHaveValue('')
-        expect(
-          screen.getByText('Sélectionnez votre activité principale')
-        ).toBeInTheDocument()
-        expect(activitySelect).not.toBeDisabled()
-      })
-
       it('should display an acceslibre accessibility subsection when externally defined', async () => {
         renderForm({
           ...baseVenue,
@@ -916,20 +877,6 @@ describe('VenueEditionFormScreen', () => {
           ).not.toBeInTheDocument()
           expect(
             screen.getByText('Modalités d’accessibilité via acceslibre')
-          ).toBeInTheDocument()
-        })
-      })
-
-      it('should display the proper activities list for structures open to public', async () => {
-        renderForm({ ...baseVenue, isOpenToPublic: true })
-
-        const mainActivitySelect = await screen.findByRole('combobox', {
-          name: /Activité principale/,
-        })
-
-        ;['Librairie', 'Cinéma', 'Centre socio-culturel'].forEach((label) => {
-          expect(
-            within(mainActivitySelect).getByRole('option', { name: label })
           ).toBeInTheDocument()
         })
       })
@@ -1071,92 +1018,6 @@ describe('VenueEditionFormScreen', () => {
         }
       )
       expect(screen.getByText(/Non renseigné/)).toBeInTheDocument()
-    })
-
-    it('should render cultural domains input', async () => {
-      renderForm(
-        {
-          ...baseVenue,
-          description: 'TOTOTO',
-          contact: {
-            phoneNumber: '123',
-            email: 'e@mail.fr',
-            website: 'site.web',
-            socialMedias: null,
-          },
-        },
-        {
-          initialRouterEntries: ['/edition'],
-        }
-      )
-      const multiSelect = screen.getByLabelText(
-        'Sélectionnez un ou plusieurs domaines d’activité'
-      )
-
-      expect(multiSelect).toBeInTheDocument()
-      await userEvent.click(multiSelect)
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getByText(/3 résultats trouvés/)).toBeInTheDocument()
-      expect(screen.getByText(/domaine III/)).toBeInTheDocument()
-    })
-
-    it('should render cultural domains input with context value', async () => {
-      renderForm(
-        {
-          ...baseVenue,
-          description: 'TOTOTO',
-          contact: {
-            phoneNumber: '123',
-            email: 'e@mail.fr',
-            website: 'site.web',
-            socialMedias: null,
-          },
-          collectiveDomains: [{ name: 'domaine 1', id: 1 }],
-        },
-        {
-          initialRouterEntries: ['/edition'],
-        }
-      )
-
-      await userEvent.click(screen.getByLabelText('domaine sélectionné'))
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
-    })
-
-    it('should select cultural domain', async () => {
-      renderForm(
-        {
-          ...baseVenue,
-          description: 'TOTOTO',
-          contact: {
-            phoneNumber: '123',
-            email: 'e@mail.fr',
-            website: 'site.web',
-            socialMedias: null,
-          },
-        },
-        {
-          initialRouterEntries: ['/edition'],
-        }
-      )
-
-      await userEvent.click(
-        screen.getByLabelText(
-          'Sélectionnez un ou plusieurs domaines d’activité'
-        )
-      )
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(1)
-      await userEvent.click(screen.getByText(/domaine 1/))
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
-      await userEvent.click(screen.getByText(/domaine III/))
-      expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
     })
   })
 })

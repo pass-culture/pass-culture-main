@@ -11,6 +11,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/design-system/Button/Button'
+import type { VenueSettingsFormValues } from '@/pages/VenueSettings/commons/types'
 
 import {
   SiretOrCommentFields,
@@ -31,6 +32,8 @@ const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '123456789',
+  isOpenToPublic: 'true',
+  activity: 'someActivity' as VenueSettingsFormValues['activity'],
 }
 
 const defaultInitialValues = {

@@ -31,6 +31,8 @@ describe('VenueSettings', () => {
   it('should render the settings page heading', () => {
     renderVenueSettings()
 
-    expect(screen.getByText('Paramètres généraux')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Paramètres', level: 1 })
+    ).toBeInTheDocument()
   })
 })

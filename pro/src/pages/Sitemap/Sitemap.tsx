@@ -128,7 +128,7 @@ export const Sitemap = () => {
       children: [],
     },
     {
-      title: 'Paramètres généraux',
+      title: 'Paramètres',
       path: `/parametres`,
       children: [],
     },
