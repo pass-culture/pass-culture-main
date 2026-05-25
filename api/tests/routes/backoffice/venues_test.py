@@ -339,6 +339,7 @@ class GetVenueTest(GetEndpointHelper):
 
     def test_get_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory(
+            activity=offerers_models.Activity.BOOKSTORE,
             venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
             contact__website="www.example.com",
             publicName="Le grand Rantanplan 1",
@@ -374,7 +375,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "ID ADAGE" not in response_text
         assert "Ouvert au public : Oui" in response_text
         assert "Site web : https://www.example.com" in response_text
-        assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
+        assert "Activité principale : Librairie" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
         assert "Type de lieu" not in response_text
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
