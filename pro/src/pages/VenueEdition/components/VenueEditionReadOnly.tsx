@@ -110,6 +110,19 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
       <SummarySubSection
+        title="Informations de retrait de vos offres"
+        shouldShowDivider={false}
+      >
+        <SummaryDescriptionList
+          descriptions={[
+            {
+              title: 'Informations de retrait',
+              text: venue.withdrawalDetails || 'Non renseignée',
+            },
+          ]}
+        />
+      </SummarySubSection>
+      <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}
       >

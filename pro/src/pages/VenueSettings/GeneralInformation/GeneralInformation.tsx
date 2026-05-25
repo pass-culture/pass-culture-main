@@ -28,7 +28,6 @@ import type {
 import { toFormValues } from '../commons/utils/toFormValues'
 import { venueSettingsValidationSchema } from '../commons/validationSchema'
 import { SiretOrCommentFields } from '../components/SiretOrCommentFields/SiretOrCommentFields'
-import { WithdrawalDetails } from '../components/WithdrawalDetails/WithdrawalDetails'
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
@@ -168,8 +167,6 @@ const GeneralInformation = () => {
             </FormLayout.SubSection>
 
             <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
-
-            {!venue.isVirtual && <WithdrawalDetails />}
 
             {venue.pricingPoint?.id && (
               <ReimbursementFields
