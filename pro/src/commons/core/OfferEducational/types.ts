@@ -76,12 +76,12 @@ export enum Mode {
 }
 
 export type OfferEducationalStockFormValues = {
-  startDatetime: string
-  endDatetime: string
+  startDate: string
+  endDate: string
   eventTime: string
   numberOfPlaces: number | null
   totalPrice: number | null
-  bookingLimitDatetime: string
+  bookingLimitDate: string
   priceDetail: string
 }
 

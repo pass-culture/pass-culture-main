@@ -8,12 +8,12 @@ const departmentCode = '56'
 describe('createStockDataPayload', () => {
   it('should return valid payload when form values are provided', () => {
     const values: OfferEducationalStockFormValues = {
-      bookingLimitDatetime: '2024-06-30',
-      endDatetime: '2024-06-30',
+      bookingLimitDate: '2024-06-30',
+      endDate: '2024-06-30',
       eventTime: '04:15',
       numberOfPlaces: 400,
       priceDetail: 'some price details',
-      startDatetime: '2024-06-30',
+      startDate: '2024-06-30',
       totalPrice: 450,
     }
 

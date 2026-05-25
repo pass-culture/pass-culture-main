@@ -12,7 +12,7 @@ export const createStockDataPayload = (
   offerId: number
 ): CollectiveStockCreationBodyModel => {
   if (
-    !values.startDatetime ||
+    !values.startDate ||
     !values.eventTime ||
     !values.numberOfPlaces ||
     typeof values.totalPrice !== 'number'
@@ -22,19 +22,19 @@ export const createStockDataPayload = (
 
   return {
     startDatetime: buildDatetimeForStockPayload(
-      values.startDatetime,
+      values.startDate,
       values.eventTime,
       departmentCode
     ),
     endDatetime: buildDatetimeForStockPayload(
-      values.endDatetime,
+      values.endDate,
       values.eventTime,
       departmentCode
     ),
     bookingLimitDatetime: buildBookingLimitDatetimeForStockPayload(
-      values.startDatetime,
+      values.startDate,
       values.eventTime,
-      values.bookingLimitDatetime,
+      values.bookingLimitDate,
       departmentCode
     ),
     totalPrice: values.totalPrice,

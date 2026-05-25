@@ -166,12 +166,12 @@ export const OfferEducationalStock = ({
                   label={BOOKING_LIMIT_DATETIME_LABEL}
                   minDate={new Date()}
                   maxDate={
-                    isDateValid(new Date(values.startDatetime))
-                      ? new Date(values.startDatetime)
+                    isDateValid(new Date(values.startDate))
+                      ? new Date(values.startDate)
                       : undefined
                   }
-                  {...form.register('bookingLimitDatetime')}
-                  error={form.formState.errors.bookingLimitDatetime?.message}
+                  {...form.register('bookingLimitDate')}
+                  error={form.formState.errors.bookingLimitDate?.message}
                   className={styles['input-date']}
                   required
                   requiredIndicator="symbol"

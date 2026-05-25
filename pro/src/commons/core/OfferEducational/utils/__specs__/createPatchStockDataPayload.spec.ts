@@ -11,22 +11,22 @@ describe('createPatchStockDataPayload', () => {
     expect(
       createPatchStockDataPayload(
         {
-          startDatetime: startDate,
-          endDatetime: endDate,
+          startDate: startDate,
+          endDate: endDate,
           eventTime: '12:00',
           numberOfPlaces: 11,
           totalPrice: 10,
-          bookingLimitDatetime: bookingDate,
+          bookingLimitDate: bookingDate,
           priceDetail: 'price detail',
         },
         '56',
         {
-          startDatetime: '',
-          endDatetime: '',
+          startDate: '',
+          endDate: '',
           eventTime: '',
           numberOfPlaces: null,
           totalPrice: null,
-          bookingLimitDatetime: '',
+          bookingLimitDate: '',
           priceDetail: '',
         }
       )
@@ -46,12 +46,12 @@ describe('createPatchStockDataPayload', () => {
     const bookingDate = addDays(new Date(), 1).toISOString().split('T')[0]
 
     const initialValues = {
-      startDatetime: startDate,
-      endDatetime: endDate,
+      startDate: startDate,
+      endDate: endDate,
       eventTime: '10:00',
       numberOfPlaces: 11,
       totalPrice: 10,
-      bookingLimitDatetime: bookingDate,
+      bookingLimitDate: bookingDate,
       priceDetail: 'price detail',
     }
 

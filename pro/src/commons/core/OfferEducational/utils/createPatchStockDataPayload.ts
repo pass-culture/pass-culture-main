@@ -8,36 +8,36 @@ import {
 } from './buildDatetimesForStockPayload'
 
 type OfferEducationalStockFormValuesForSerializer = {
-  startDatetime: string
-  endDatetime: string
+  startDate: string
+  endDate: string
   eventTime: string
   numberOfPlaces: number
   totalPrice: number
-  bookingLimitDatetime: string
+  bookingLimitDate: string
   priceDetail: string
 }
 
 const serializer = {
-  startDatetime: (
+  startDate: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
     startDatetime: buildDatetimeForStockPayload(
-      values.startDatetime,
+      values.startDate,
       values.eventTime,
       departmentCode
     ),
   }),
-  endDatetime: (
+  endDate: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
     endDatetime: buildDatetimeForStockPayload(
-      values.endDatetime,
+      values.endDate,
       values.eventTime,
       departmentCode
     ),
@@ -49,12 +49,12 @@ const serializer = {
   ) => ({
     ...changedValues,
     startDatetime: buildDatetimeForStockPayload(
-      values.startDatetime,
+      values.startDate,
       values.eventTime,
       departmentCode
     ),
     endDatetime: buildDatetimeForStockPayload(
-      values.endDatetime,
+      values.endDate,
       values.eventTime,
       departmentCode
     ),
@@ -73,16 +73,16 @@ const serializer = {
     ...changedValues,
     totalPrice: values.totalPrice,
   }),
-  bookingLimitDatetime: (
+  bookingLimitDate: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
     bookingLimitDatetime: buildBookingLimitDatetimeForStockPayload(
-      values.startDatetime,
+      values.startDate,
       values.eventTime,
-      values.bookingLimitDatetime,
+      values.bookingLimitDate,
       departmentCode
     ),
   }),

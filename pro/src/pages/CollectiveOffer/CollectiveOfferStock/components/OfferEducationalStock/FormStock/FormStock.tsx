@@ -39,20 +39,15 @@ export const FormStock = ({
 
   const values = watch()
 
-  const minEndDatetime = isDateValid(values.startDatetime)
-    ? new Date(values.startDatetime)
+  const minEndDate = isDateValid(values.startDate)
+    ? new Date(values.startDate)
     : new Date()
 
-  function handleStartDatetimeChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-    setValue('startDatetime', event.target.value, { shouldValidate: true })
+  function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setValue('startDate', event.target.value, { shouldValidate: true })
     if (mode === Mode.EDITION || mode === Mode.CREATION) {
-      if (
-        !isDateValid(values.endDatetime) ||
-        values.endDatetime < event.target.value
-      ) {
-        setValue('endDatetime', event.target.value, { shouldValidate: true })
+      if (!isDateValid(values.endDate) || values.endDate < event.target.value) {
+        setValue('endDate', event.target.value, { shouldValidate: true })
       }
     }
   }
@@ -63,9 +58,9 @@ export const FormStock = ({
         disabled={!canEditDates}
         label={START_DATE_LABEL}
         minDate={new Date()}
-        {...register('startDatetime')}
-        onChange={handleStartDatetimeChange}
-        error={formState.errors.startDatetime?.message}
+        {...register('startDate')}
+        onChange={handleStartDateChange}
+        error={formState.errors.startDate?.message}
         required
         requiredIndicator="symbol"
       />
@@ -81,12 +76,12 @@ export const FormStock = ({
             </Tooltip>
           </span>
         }
-        minDate={minEndDatetime}
+        minDate={minEndDate}
         className={styles['input-date']}
         required
         requiredIndicator="hidden"
-        {...register('endDatetime')}
-        error={formState.errors.endDatetime?.message}
+        {...register('endDate')}
+        error={formState.errors.endDate?.message}
       />
       <TimePicker
         disabled={!canEditDates}
