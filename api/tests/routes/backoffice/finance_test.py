@@ -1951,6 +1951,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200

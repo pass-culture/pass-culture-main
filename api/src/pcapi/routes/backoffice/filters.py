@@ -559,6 +559,7 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
 def format_booking_cancellation(
     reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
     author: users_models.User | None = None,
+    use_html: bool = True,
 ) -> str:
     match reason:
         case (
@@ -566,22 +567,28 @@ def format_booking_cancellation(
             | educational_models.CollectiveBookingCancellationReasons.OFFERER
         ):
             if author:
-                return Markup(
-                    'Annulée par l\'acteur culturel (<a class="link-primary" href="{url}">{email}</a>)'
-                ).format(
-                    url=url_for("backoffice_web.pro_user.get", user_id=author.id),
-                    email=author.email,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée par l\'acteur culturel (<a class="link-primary" href="{url}">{email}</a>)'
+                    ).format(
+                        url=url_for("backoffice_web.pro_user.get", user_id=author.id),
+                        email=author.email,
+                    )
+                return f"Annulée par l'acteur culturel ({author.email})"
             return "Annulée par l'acteur culturel"
         case (
             bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS
             | educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
         ):
             if author:
-                return Markup('Annulée par <a class="link-primary" href="{url}">{full_name}</a> via Connect As').format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée par <a class="link-primary" href="{url}">{full_name}</a> via Connect As'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée par {author.full_name} via Connect As"
             return "Annulée via Connect As"
         case (
             bookings_models.BookingCancellationReasons.BENEFICIARY
@@ -618,53 +625,65 @@ def format_booking_cancellation(
             | bookings_models.BookingCancellationReasons.BACKOFFICE
         ):
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a>'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a>'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name}"
             return "Annulée depuis le backoffice"
         case (
             educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
             | bookings_models.BookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
         ):
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour annulation d’évènement'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour annulation d’évènement'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name} pour annulation d’évènement"
             return "Annulée depuis le backoffice pour annulation d’évènement"
         case bookings_models.BookingCancellationReasons.BACKOFFICE_OVERBOOKING:
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour surbooking'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour surbooking'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name} pour surbooking"
             return "Annulée depuis le backoffice pour surbooking"
         case bookings_models.BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST:
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> sur demande du bénéficiaire'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> sur demande du bénéficiaire'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name} sur demande du bénéficiaire"
             return "Annulée depuis le backoffice sur demande du bénéficiaire"
         case (
             educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
             | bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
         ):
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour modification des informations de l\'offre'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour modification des informations de l\'offre'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return (
+                    f"Annulée depuis le backoffice par {author.full_name} pour modification des informations de l'offre"
                 )
             return "Annulée depuis le backoffice pour modification des informations de l'offre"
         case (
@@ -672,24 +691,28 @@ def format_booking_cancellation(
             | bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION
         ):
             if author:
-                return Markup(
-                    "Annulée depuis le backoffice par <a class='link-primary' href=\"{url}\">{full_name}</a> pour erreur d'information dans l'offre"
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        "Annulée depuis le backoffice par <a class='link-primary' href=\"{url}\">{full_name}</a> pour erreur d'information dans l'offre"
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name} pour erreur d'information dans l'offre"
             return "Annulée depuis le backoffice pour erreur d'information dans l'offre"
         case (
             bookings_models.BookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED
             | educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED
         ):
             if author:
-                return Markup(
-                    'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture d\'entité juridique'
-                ).format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
+                if use_html:
+                    return Markup(
+                        'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour cause de fermeture d\'entité juridique'
+                    ).format(
+                        url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                        full_name=author.full_name,
+                    )
+                return f"Annulée depuis le backoffice par {author.full_name} pour cause de fermeture d'entité juridique"
             return "Annulée depuis le backoffice pour cause de fermeture d'entité juridique"
         case (
             bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -784,7 +807,7 @@ def format_booking_status(
         return "Confirmée"
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
         return Markup('<span class="text-nowrap">Pré-réservée</span>') if with_badge else "Pré-réservée"
-    return "Réservée"
+    return format_badge("Réservée", "info") if with_badge else "Réservée"
 
 
 def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:

@@ -1599,6 +1599,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
                 "object_ids": parameter_ids,
                 "send_mails": True,
             },
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
@@ -1728,3 +1729,92 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
         assert sheet.cell(row=2, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == bookings[0].venue.name
         assert sheet.cell(row=4, column=1).value == None
+
+
+class GetIndividualBookingTest(GetEndpointHelper):
+    endpoint = "backoffice_web.individual_bookings.get_individual_booking"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
+    # session
+    # booking (and joinedload)
+    # check if booking has current incident
+    # check if booking is external
+    # mediation
+    expected_num_queries = 5
+
+    def test_reimbursed_booking(self, authenticated_client):
+        booking = bookings_factories.ReimbursedBookingFactory(
+            validationAuthorType=bookings_models.BookingValidationAuthorType.OFFERER,
+            stock__offer__withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
+        )
+        booking_id = booking.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
+            assert response.status_code == 200
+
+        descriptions = html_parser.extract_descriptions(response.data)
+        address = booking.stock.offer.offererAddress.address
+        assert descriptions["Bénéficiaire"] == f"{booking.user.full_name} ({booking.user.id})"
+        assert descriptions["Montant"] == "10,10 €"
+        assert descriptions["Contremarque"] == booking.token
+        assert descriptions["ID réservation"] == str(booking.id)
+        assert descriptions["Catégorie"] == "Films, vidéos"
+        assert descriptions["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
+        assert descriptions["Type"] == "Solo"
+        assert descriptions["ID offre"] == str(booking.stock.offer.id)
+        assert descriptions["Entité juridique"] == booking.venue.managingOfferer.name
+        assert descriptions["Partenaire culturel"] == booking.venue.publicName
+        assert descriptions["Adresse de l'offre"] == f"{address.street}, {address.postalCode} {address.city}"
+        assert descriptions["Auteur de la validation"] == "Partenaire culturel"
+        assert descriptions["Modalité de retrait"] == "Sur place"
+
+    def test_booking_with_indicent(self, authenticated_client):
+        booking_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory()
+        booking_id = booking_incident.booking.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
+            assert response.status_code == 200
+        descriptions = html_parser.extract_descriptions(response.data)
+        assert descriptions["Incident comptable"] == f"Geste Commercial ({booking_incident.incidentId}) Créé"
+
+    def test_tunnel_completed(self, authenticated_client):
+        booking = bookings_factories.BookingFactory(
+            dateCreated=datetime.datetime(2025, 1, 1, 11, 30, 12),
+            dateUsed=datetime.datetime(2025, 2, 12, 20, 15, 37),
+            reimbursementDate=datetime.datetime(2025, 2, 16, 3, 7, 5),
+        )
+        booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
+
+        booking_id = booking.id
+        with assert_num_queries(self.expected_num_queries - 2):  # do not check for incidents or external
+            response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
+            assert response.status_code == 200
+
+        tunnel = html_parser.extract(response.data, tag="div", class_="steps")
+        assert len(tunnel) == 4
+        assert tunnel[0] == "Réservation effectuée 01/01/2025à 12h30"
+        assert tunnel[1] == "Réservation confirmée 05/01/2025à 12h30"
+        assert tunnel[2] == "Réservation consommée 12/02/2025à 21h15"
+        assert tunnel[3] == "Réservation remboursée 16/02/2025à 04h07"
+
+    def test_tunnel_cancelled(self, authenticated_client):
+        booking = bookings_factories.BookingFactory(
+            dateCreated=datetime.datetime(2025, 1, 1, 11, 30, 12),
+        )
+        booking.cancellationDate = datetime.datetime(2025, 1, 3, 10, 40, 33)
+        booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
+
+        booking_id = booking.id
+        with assert_num_queries(self.expected_num_queries - 2):  # do not check for incidents or external
+            response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
+            assert response.status_code == 200
+
+        tunnel = html_parser.extract(response.data, tag="div", class_="steps")
+        assert len(tunnel) == 5
+        assert tunnel[0] == "Réservation effectuée 01/01/2025à 12h30"
+        assert tunnel[1] == "Réservation annulée 03/01/2025à 11h40"
+        assert tunnel[2] == "Réservation confirmée 05/01/2025à 12h30"
+        assert tunnel[3] == "Réservation consommée En attente"
+        assert tunnel[4] == "Réservation remboursée En attente"

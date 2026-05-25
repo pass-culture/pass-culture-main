@@ -1,5 +1,5 @@
 {% import "components/forms.html" as forms with context %}
-{% macro booking_modal(booking, title, div_id, form, dst, table_id) %}
+{% macro booking_modal(booking, title, div_id, form, dst, table_id=None) %}
   {% set aria_described_by_id = random_hash() %}
   <div class="modal modal-lg fade"
        id="{{ div_id }}"
@@ -9,10 +9,15 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <form name="{{ dst | action_to_name }}"
+              {%+ if table_id %}
               hx-target="#{{ table_id }}"
               hx-post="{{ dst }}"
               hx-swap="outerHTML"
-              hx-trigger="submit">
+              hx-trigger="submit"
+              {% else %}
+              action="{{ dst }}"
+              method="POST"
+              {% endif +%}>
           <div class="modal-header"
                id="{{ aria_described_by_id }}">
             <h5 class="modal-title">{{ title }}</h5>

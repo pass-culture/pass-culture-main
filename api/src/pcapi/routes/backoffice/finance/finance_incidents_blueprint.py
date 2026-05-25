@@ -1,6 +1,7 @@
 import typing
 from collections import defaultdict
 from datetime import datetime
+from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -663,7 +664,10 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings()
+        return request_utils.redirect_if_not_htmx(
+            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            render_function=_render_individual_bookings,
+        )
 
     bookings = (
         db.session.query(bookings_models.Booking)
@@ -687,7 +691,12 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
             'Au moins une des réservations sélectionnées est dans un état différent de "remboursé".',
             "warning",
         )
-        return _render_individual_bookings(form.object_ids_list)
+        return request_utils.redirect_if_not_htmx(
+            route=url_for(
+                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
+            ),
+            render_function=partial(_render_individual_bookings, form.object_ids_list),
+        )
 
     amount = form.total_amount.data
     percent = form.percent.data
@@ -699,7 +708,12 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings(form.object_ids_list)
+        return request_utils.redirect_if_not_htmx(
+            route=url_for(
+                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
+            ),
+            render_function=partial(_render_individual_bookings, form.object_ids_list),
+        )
 
     incident = finance_api.create_overpayment_finance_incident(
         bookings=bookings,
@@ -718,7 +732,10 @@ def create_individual_booking_overpayment() -> response_utils.BackofficeResponse
         ),
         "success",
     )
-    return _render_individual_bookings(form.object_ids_list)
+    return request_utils.redirect_if_not_htmx(
+        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        render_function=partial(_render_individual_bookings, form.object_ids_list),
+    )
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
@@ -729,7 +746,10 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings()
+        return request_utils.redirect_if_not_htmx(
+            route=url_for("backoffice_web.individual_bookings.list_individual_bookings"),
+            render_function=_render_individual_bookings,
+        )
 
     amount = form.total_amount.data
 
@@ -754,7 +774,12 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
             'Au moins une des réservations sélectionnées est dans un état différent de "annulée".',
             "warning",
         )
-        return _render_individual_bookings(form.object_ids_list)
+        return request_utils.redirect_if_not_htmx(
+            route=url_for(
+                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
+            ),
+            render_function=partial(_render_individual_bookings, form.object_ids_list),
+        )
 
     if not (
         valid := validation.check_commercial_gesture_bookings(bookings)
@@ -763,7 +788,12 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings(form.object_ids_list)
+        return request_utils.redirect_if_not_htmx(
+            route=url_for(
+                "backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]
+            ),
+            render_function=partial(_render_individual_bookings, form.object_ids_list),
+        )
 
     commercial_gesture = finance_api.create_finance_commercial_gesture(
         bookings=bookings,
@@ -782,7 +812,10 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         "success",
     )
 
-    return _render_individual_bookings(form.object_ids_list)
+    return request_utils.redirect_if_not_htmx(
+        route=url_for("backoffice_web.individual_bookings.get_individual_booking", booking_id=form.object_ids_list[0]),
+        render_function=partial(_render_individual_bookings, form.object_ids_list),
+    )
 
 
 @finance_incidents_blueprint.route(
