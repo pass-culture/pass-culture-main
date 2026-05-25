@@ -1,10 +1,4 @@
-import React, {
-  type ForwardedRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react'
+import React, { type ForwardedRef, useRef } from 'react'
 
 import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -43,7 +37,7 @@ export type PriceInputProps = Pick<
   /**
    * The quantity value. Should be `undefined` if the quantity is unlimited.
    */
-  value?: number | ''
+  value?: number | string | null
   /**
    * A flag to show the "Gratuit" checkbox.
    */
@@ -79,78 +73,41 @@ export type PriceInputProps = Pick<
  *  max={100}
  * />
  */
+
 export const PriceInput = React.forwardRef(
   (
     {
       name,
       label,
-      value,
-      max,
       disabled,
-      showFreeCheckbox,
       requiredIndicator = 'symbol',
       required = true,
       error,
+      max,
       description,
       currency = 'EUR',
+      value,
+      showFreeCheckbox,
       onChange,
       onBlur,
     }: PriceInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
-    const priceRef = useRef<HTMLInputElement>(null)
-
-    useImperativeHandle(ref, () => priceRef.current as HTMLInputElement)
-
-    const freeName = `${name}.free`
     const freeRef = useRef<HTMLInputElement>(null)
-    const initialIsFree = value === 0
-    const [isFree, setIsFree] = useState(initialIsFree)
+    const freeName = `${name}.free`
 
+    const isFree = value === 0 || value === '0'
     const step = currency === 'XPF' ? 1 : 0.01
-
     const labelCurrency = currency === 'XPF' ? '(en F)' : '(en €)'
 
-    useEffect(() => {
-      // Move focus to the price input if free is unchecked.
-      const focusedElement = document.activeElement as HTMLElement
-      const isFreeCheckboxFocused = focusedElement === freeRef.current
-      if (!isFree && isFreeCheckboxFocused) {
-        priceRef.current?.focus()
-      }
-    }, [isFree])
-
-    const onTextInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newPriceAmount: string = event.target.value
-
-      let cleanedPriceAmount =
-        newPriceAmount !== '' ? Number(newPriceAmount) : undefined
-      if (showFreeCheckbox && isFree) {
-        cleanedPriceAmount = 0
-      }
+    const onCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const nextIsFree = e.target.checked
+      const nextFieldValue = nextIsFree ? 0 : ''
 
       onChange?.({
-        target: { valueAsNumber: cleanedPriceAmount },
-      } as React.ChangeEvent<HTMLInputElement>)
-
-      showFreeCheckbox && setIsFree(event.target.value === '0')
-    }
-
-    const onCheckboxChange = () => {
-      const nextIsFree = !isFree
-      setIsFree(nextIsFree)
-
-      let nextFieldValue = ''
-      if (nextIsFree) {
-        // If the checkbox is going to be checked,
-        // we need to set the price to '0'
-        // '0' means free offer.
-        nextFieldValue = '0'
-      }
-
-      onChange?.({
-        target: { valueAsNumber: Number(nextFieldValue) },
-      } as React.ChangeEvent<HTMLInputElement>)
+        ...e,
+        target: { ...e.target, name, value: nextFieldValue },
+      } as unknown as React.ChangeEvent<HTMLInputElement>)
     }
 
     const inputExtension = (
@@ -166,28 +123,27 @@ export const PriceInput = React.forwardRef(
 
     return (
       <TextInput
-        ref={priceRef}
-        autoComplete="off"
-        required={required}
+        key={String(isFree)}
+        ref={ref}
         name={name}
+        disabled={disabled || isFree}
         label={`${label} ${labelCurrency}`}
-        value={value?.toString() ?? ''}
-        type="number"
+        error={error}
         step={step}
         min={0}
         max={max}
-        disabled={disabled}
+        type="number"
+        required={required}
         description={description}
         requiredIndicator={requiredIndicator}
-        onChange={onTextInputChange}
+        autoComplete="off"
+        onChange={onChange}
         onBlur={onBlur}
         onKeyDown={(event) => {
-          // If the number input should have no decimal, prevent the user from typing "," or "."
           if (step === 1 && /[,.]/.test(event.key)) {
             event.preventDefault()
           }
         }}
-        error={error}
         {...(showFreeCheckbox ? { extension: inputExtension } : {})}
       />
     )

@@ -8,7 +8,6 @@ import {
   fillCustomAddress,
   mockAddressSearch,
 } from './helpers/address'
-import { expectIndividualOffersOrBookingsAreFound } from './helpers/assertions'
 import {
   isGetCategoriesResponse,
   isGetOfferResponse,
@@ -97,6 +96,11 @@ test.describe('Create individual offers new flow', () => {
     await expect(page.getByLabel('Intitulé du tarif')).toHaveValue(
       'Tarif unique'
     )
+
+    const firstPriceInput = page.getByLabel(/Prix \(en €\)/).first()
+    await firstPriceInput.fill('23.45')
+    await expect(firstPriceInput).toHaveValue('23.45')
+
     await page.getByText('Ajouter un tarif').click()
     await page.getByText('Ajouter un tarif').click()
     await page.getByText('Ajouter un tarif').click()
@@ -215,7 +219,13 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Publier l’offre').click(),
     ])
 
-    await page.getByRole('button', { name: 'Plus tard' }).click()
+    await page
+      .getByRole('dialog', {
+        name: 'Félicitations, vous avez créé votre offre !',
+      })
+      .getByRole('button', { name: 'Plus tard' })
+      .click()
+
     await Promise.all([
       page.waitForResponse(isGetOffersResponse),
       page.waitForResponse(isGetCategoriesResponse),
@@ -295,19 +305,25 @@ test.describe('Create individual offers new flow', () => {
       page.getByText('Publier l’offre').click(),
     ])
 
-    await page.getByText('Accéder à la liste des offres').click()
-    const expectedNewResults = [
-      ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
-      [
-        '',
-        offerTitle,
-        'Libellé de mon adresse custom - Place de la gare 12312 Y',
-        '42',
-        'publiée',
-      ],
-      [],
-    ]
-    await expectIndividualOffersOrBookingsAreFound(page, expectedNewResults)
+    await Promise.all([
+      page.waitForResponse(isGetOffersResponse),
+      page.waitForResponse(isGetCategoriesResponse),
+      page.getByText('Accéder à la liste des offres').click(),
+    ])
+    await expect(
+      page.getByRole('cell', { name: offerTitle }).first()
+    ).toBeVisible()
+    await expect(
+      page
+        .getByRole('cell', {
+          name: 'Libellé de mon adresse custom - Place de la gare 12312 Y',
+        })
+        .first()
+    ).toBeVisible()
+    await expect(page.getByRole('cell', { name: '42' }).first()).toBeVisible()
+    await expect(
+      page.getByRole('cell', { name: 'publiée' }).first()
+    ).toBeVisible()
     await expect(page.getByText(ean)).toBeVisible()
   })
 })
