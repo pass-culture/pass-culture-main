@@ -2,19 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.no-data {
-  color: var(--color-text-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-
-  &-icon {
-    width: rem.torem(42px);
-    height: rem.torem(32px);
-  }
-}
-
 .data-container {
   display: grid;
   width: 100%;

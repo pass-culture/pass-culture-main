@@ -17,11 +17,7 @@ import 'chartjs-adapter-date-fns'
 import type { VenueDailyViewModel } from '@/apiClient/v1'
 import { getDateTimeToFrenchText } from '@/commons/utils/date'
 
-import {
-  buildDatasets,
-  buildGraphOptions,
-  computeGraphSteps,
-} from '../statsUtils'
+import { buildDatasets, buildGraphOptions, computeGraphSteps } from '../utils'
 import styles from './CumulatedViews.module.scss'
 import { CumulatedViewsEmptyState } from './CumulatedViewsEmptyState'
 
