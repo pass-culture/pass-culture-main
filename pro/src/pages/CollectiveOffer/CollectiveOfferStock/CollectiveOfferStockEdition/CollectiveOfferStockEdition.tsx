@@ -3,7 +3,6 @@ import { useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type CollectiveOfferStockFormValues,
@@ -37,10 +36,7 @@ export const CollectiveOfferStockEdition = ({
 
   const initialValues = extractInitialStockValues(offer)
 
-  const handleSubmitStock = async (
-    offer: GetCollectiveOfferResponseModel,
-    values: CollectiveOfferStockFormValues
-  ) => {
+  const handleSubmitStock = async (values: CollectiveOfferStockFormValues) => {
     if (!offer.collectiveStock) {
       return snackBar.error('Impossible de mettre à jour le stock.')
     }
@@ -94,7 +90,7 @@ export const CollectiveOfferStockEdition = ({
       <OfferEducationalStock
         initialValues={initialValues}
         mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
-        offer={offer}
+        allowedActions={offer.allowedActions}
         onSubmit={handleSubmitStock}
       />
     </CollectiveOfferLayout>

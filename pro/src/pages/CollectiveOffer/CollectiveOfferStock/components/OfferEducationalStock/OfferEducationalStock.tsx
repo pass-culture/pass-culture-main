@@ -5,10 +5,7 @@ import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import {
-  CollectiveOfferAllowedAction,
-  type GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import {
   type CollectiveOfferStockFormValues,
@@ -38,36 +35,33 @@ import { generateValidationSchema } from './validationSchema'
 
 export interface OfferEducationalStockProps {
   initialValues: CollectiveOfferStockFormValues
-  offer: GetCollectiveOfferResponseModel
-  onSubmit: (
-    offer: GetCollectiveOfferResponseModel,
-    values: CollectiveOfferStockFormValues
-  ) => Promise<void>
+  allowedActions: CollectiveOfferAllowedAction[]
+  onSubmit: (values: CollectiveOfferStockFormValues) => Promise<void>
   mode: Mode
-  requestId?: string | null
+  goBackLink?: string
 }
 
 export const OfferEducationalStock = ({
   initialValues,
-  offer,
+  allowedActions,
   onSubmit,
   mode,
-  requestId = '',
+  goBackLink = '/offres/collectives',
 }: OfferEducationalStockProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const canEditDiscount = offer.allowedActions.includes(
+  const canEditDiscount = allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
 
-  const canEditDates = offer.allowedActions.includes(
+  const canEditDates = allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
   const postForm = async (values: CollectiveOfferStockFormValues) => {
     setIsLoading(true)
     try {
-      await onSubmit(offer, values)
+      await onSubmit(values)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         serializeApiErrors(error.body, form.setError)
@@ -79,7 +73,7 @@ export const OfferEducationalStock = ({
   const form = useForm({
     defaultValues: initialValues,
     resolver: yupResolver<CollectiveOfferStockFormValues, unknown, unknown>(
-      generateValidationSchema(offer.allowedActions, initialValues.totalPrice)
+      generateValidationSchema(allowedActions, initialValues.totalPrice)
     ),
     mode: 'onSubmit',
   })
@@ -174,13 +168,7 @@ export const OfferEducationalStock = ({
                       ? ButtonColor.BRAND
                       : ButtonColor.NEUTRAL
                   }
-                  to={
-                    mode === Mode.CREATION
-                      ? `/offre/collectif/${offer.id}/creation${
-                          requestId ? `?requete=${requestId}` : ''
-                        }`
-                      : '/offres/collectives'
-                  }
+                  to={goBackLink}
                   label={
                     mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'
                   }

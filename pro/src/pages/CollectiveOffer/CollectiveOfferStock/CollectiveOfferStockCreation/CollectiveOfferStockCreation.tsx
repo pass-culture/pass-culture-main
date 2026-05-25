@@ -70,11 +70,17 @@ export const CollectiveOfferStockCreation = ({
     requestInformations
   )
 
+  const stepUrls = {
+    previous: `/offre/collectif/${offer.id}/creation`,
+    next: `/offre/${offer.id}/collectif/etablissement`,
+  }
+  if (requestId) {
+    stepUrls.previous += `?requete=${requestId}`
+    stepUrls.next += `?requete=${requestId}`
+  }
+
   /* istanbul ignore next: DEBT, TO FIX unit test submit mock */
-  const handleSubmitStock = async (
-    offer: GetCollectiveOfferResponseModel,
-    values: CollectiveOfferStockFormValues
-  ) => {
+  const handleSubmitStock = async (values: CollectiveOfferStockFormValues) => {
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
@@ -108,9 +114,8 @@ export const CollectiveOfferStockCreation = ({
         { revalidate: false }
       )
 
-      const nexStepUrl = `/offre/${offer.id}/collectif/etablissement`
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(requestId ? `${nexStepUrl}?requete=${requestId}` : nexStepUrl)
+      navigate(stepUrls.next)
     } catch (e) {
       if (
         hasStatusCodeAndErrorsCode(e) &&
@@ -151,9 +156,9 @@ export const CollectiveOfferStockCreation = ({
       <OfferEducationalStock
         initialValues={initialValues}
         mode={Mode.CREATION}
-        offer={offer}
+        allowedActions={offer.allowedActions}
         onSubmit={handleSubmitStock}
-        requestId={requestId}
+        goBackLink={stepUrls.previous}
       />
     </CollectiveOfferLayout>
   )
