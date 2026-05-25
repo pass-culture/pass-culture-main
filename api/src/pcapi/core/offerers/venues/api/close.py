@@ -2,7 +2,10 @@ import logging
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.history import api as history_api
 from pcapi.core.offerers import models
+from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils.chunks import get_chunks
 
 
@@ -32,3 +35,21 @@ def cancel_venue_bookings(
         cancelled.extend(bookings)
 
     return bookings
+
+
+def do_not_send_emails_anymore(venue: models.Venue, author: users_models.User) -> None:
+    """Nullify venue's booking and contact email addresses"""
+    if not venue.bookingEmail and (venue.contact and not venue.contact.email):
+        return
+
+    snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+
+    venue.bookingEmail = None
+    snapshot.trace_update({"bookingEmail": None})
+
+    if venue.contact:
+        venue.contact.email = None
+        snapshot.trace_update({"email": None}, target=venue.contact)
+
+    snapshot.add_action()
+    db.session.flush()
