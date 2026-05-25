@@ -7,7 +7,7 @@ import type {
   CollectiveOfferTemplateResponseModel,
   GetVenueAddressResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
@@ -54,13 +54,13 @@ const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
-      getCollectiveOfferTemplates: vi.fn(),
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
     },
     apiNew: {
       getVenueAddresses: vi.fn(),
+      getCollectiveOfferTemplates: vi.fn(),
     },
   }
 })
@@ -121,7 +121,9 @@ describe('route TemplateCollectiveOffers', () => {
 
   beforeEach(() => {
     offersRecap = [collectiveOfferTemplateFactory()]
-    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offersRecap)
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue(
+      offersRecap
+    )
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
@@ -149,7 +151,7 @@ describe('route TemplateCollectiveOffers', () => {
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
         offersRecap
       )
       await renderOffers()
@@ -198,7 +200,7 @@ describe('route TemplateCollectiveOffers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
         offersRecap
       )
       await renderOffers()
@@ -224,7 +226,7 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     it('should have the status in the url value when user filters by one status', async () => {
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
         offersRecap
       )
       await renderOffers()
@@ -249,7 +251,7 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     it('should have the status in the url value when user filters by multiple statuses', async () => {
-      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
         offersRecap
       )
       await renderOffers()
