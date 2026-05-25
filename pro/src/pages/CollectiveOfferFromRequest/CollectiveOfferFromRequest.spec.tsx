@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -26,11 +26,8 @@ const mockLogEvent = vi.fn()
 const mockNavigate = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getCollectiveOfferRequest: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
-  },
   apiNew: {
+    getCollectiveOfferRequest: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     listEducationalOfferers: vi.fn(),
     getVenues: vi.fn(),
@@ -95,20 +92,6 @@ describe('CollectiveOfferFromRequest', () => {
         },
       })
     )
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
-      getCollectiveOfferTemplateFactory({
-        name: 'mon offre',
-        venue: getCollectiveOfferVenueFactory({
-          managingOfferer: getCollectiveOfferManagingOffererFactory({
-            id: offererId,
-          }),
-        }),
-        dates: {
-          end: new Date().toISOString(),
-          start: new Date().toISOString(),
-        },
-      })
-    )
     vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
@@ -133,7 +116,7 @@ describe('CollectiveOfferFromRequest', () => {
       requestedDate: '2030-06-27',
     }
 
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getCollectiveOfferRequest').mockResolvedValueOnce(
       collectiveRequest
     )
 
@@ -141,8 +124,8 @@ describe('CollectiveOfferFromRequest', () => {
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
-    expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+    expect(apiNew.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
+    expect(apiNew.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
 
     expect(screen.getByText('request@example.com')).toBeInTheDocument()
     expect(screen.getByText('Test unit')).toBeInTheDocument()
@@ -169,7 +152,7 @@ describe('CollectiveOfferFromRequest', () => {
       },
       institution,
     }
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getCollectiveOfferRequest').mockResolvedValueOnce(
       collectiveRequest
     )
 
