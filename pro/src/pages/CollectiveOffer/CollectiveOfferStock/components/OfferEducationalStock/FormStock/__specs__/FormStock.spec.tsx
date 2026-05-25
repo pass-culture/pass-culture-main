@@ -79,10 +79,10 @@ describe('FormStock', () => {
       startDate: '',
       endDate: '',
       eventTime: '',
-      numberOfPlaces: null,
+      numberOfTickets: null,
       totalPrice: null,
       bookingLimitDate: '',
-      priceDetail: '',
+      educationalPriceDetail: '',
     }
 
     allowedActions = [
@@ -194,11 +194,8 @@ describe('FormStock', () => {
   it('should not disable price and place when offer status is reimbursment', () => {
     renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
-    const priceInput = screen.getByLabelText(/Prix total TTC/)
-    const placeInput = screen.getByLabelText(/Nombre de participants/)
-
-    expect(priceInput).toBeDisabled()
-    expect(placeInput).toBeDisabled()
+    expect(screen.getByLabelText(/Prix total TTC/)).toBeDisabled()
+    expect(screen.getByLabelText(/Nombre de participants/)).toBeDisabled()
   })
 
   it('should not allow price to be greater than initial value', async () => {
@@ -224,44 +221,28 @@ describe('FormStock', () => {
   it('should disable start date, end date and event time inputs when form access is read only', () => {
     renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
-    const startDateInput = screen.getByLabelText(/Date de début */)
-    const endDateInput = screen.getAllByLabelText(/Date de fin */)[1]
-    const eventTimeInput = screen.getByLabelText(/Horaire */)
-
-    expect(startDateInput).toBeDisabled()
-    expect(endDateInput).toBeDisabled()
-    expect(eventTimeInput).toBeDisabled()
+    expect(screen.getByLabelText(/Date de début */)).toBeDisabled()
+    expect(screen.getAllByLabelText(/Date de fin */)[1]).toBeDisabled()
+    expect(screen.getByLabelText(/Horaire */)).toBeDisabled()
   })
 
   it('should disable start date, end date, price and place and event time inputs when allowed actions CAN_EDIT_DATES and CAN_EDIT_DISCOUNT do not exist', () => {
     renderFormStock({ initialValues, onSubmit, allowedActions: [] })
 
-    const startDateInput = screen.getByLabelText(/Date de début */)
-    const endDateInput = screen.getAllByLabelText(/Date de fin */)[1]
-    const eventTimeInput = screen.getByLabelText(/Horaire */)
-    const placeInput = screen.getByLabelText(/Nombre de participants */)
-    const priceInput = screen.getByLabelText(/Prix total TTC */)
-
-    expect(placeInput).toBeDisabled()
-    expect(priceInput).toBeDisabled()
-    expect(startDateInput).toBeDisabled()
-    expect(endDateInput).toBeDisabled()
-    expect(eventTimeInput).toBeDisabled()
+    expect(screen.getByLabelText(/Date de début */)).toBeDisabled()
+    expect(screen.getAllByLabelText(/Date de fin */)[1]).toBeDisabled()
+    expect(screen.getByLabelText(/Horaire */)).toBeDisabled()
+    expect(screen.getByLabelText(/Nombre de participants */)).toBeDisabled()
+    expect(screen.getByLabelText(/Prix total TTC */)).toBeDisabled()
   })
 
   it('should not disable price, place number, start date, end date and event time when allowed actions CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exist', () => {
     renderFormStock({ initialValues, onSubmit, allowedActions })
 
-    const startDateInput = screen.getByLabelText(/Date de début */)
-    const endDateInput = screen.getAllByLabelText(/Date de fin */)[1]
-    const eventTimeInput = screen.getByLabelText(/Horaire */)
-    const placeInput = screen.getByLabelText(/Nombre de participants */)
-    const priceInput = screen.getByLabelText(/Prix total TTC */)
-
-    expect(placeInput).not.toBeDisabled()
-    expect(priceInput).not.toBeDisabled()
-    expect(startDateInput).not.toBeDisabled()
-    expect(endDateInput).not.toBeDisabled()
-    expect(eventTimeInput).not.toBeDisabled()
+    expect(screen.getByLabelText(/Date de début */)).not.toBeDisabled()
+    expect(screen.getAllByLabelText(/Date de fin */)[1]).not.toBeDisabled()
+    expect(screen.getByLabelText(/Horaire */)).not.toBeDisabled()
+    expect(screen.getByLabelText(/Nombre de participants */)).not.toBeDisabled()
+    expect(screen.getByLabelText(/Prix total TTC */)).not.toBeDisabled()
   })
 })

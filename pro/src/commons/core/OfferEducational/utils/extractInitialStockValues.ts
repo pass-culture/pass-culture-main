@@ -21,14 +21,14 @@ export const extractInitialStockValues = (
   if (requestInformations) {
     const { totalStudents, totalTeachers, requestedDate } = requestInformations
 
-    const numberOfPlaces =
+    const numberOfTickets =
       totalStudents || totalTeachers
         ? (totalStudents ?? 0) + (totalTeachers ?? 0)
-        : DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces
+        : DEFAULT_EAC_STOCK_FORM_VALUES.numberOfTickets
 
     return {
       ...DEFAULT_EAC_STOCK_FORM_VALUES,
-      numberOfPlaces,
+      numberOfTickets,
       startDate: requestedDate
         ? format(new Date(requestedDate), FORMAT_ISO_DATE_ONLY)
         : DEFAULT_EAC_STOCK_FORM_VALUES.startDate,
@@ -39,7 +39,7 @@ export const extractInitialStockValues = (
     if (offerTemplate?.educationalPriceDetail) {
       return {
         ...DEFAULT_EAC_STOCK_FORM_VALUES,
-        priceDetail: offerTemplate.educationalPriceDetail,
+        educationalPriceDetail: offerTemplate.educationalPriceDetail,
       }
     }
     return DEFAULT_EAC_STOCK_FORM_VALUES
@@ -88,13 +88,13 @@ export const extractInitialStockValues = (
     startDate,
     endDate,
     eventTime,
-    numberOfPlaces:
+    numberOfTickets:
       collectiveStock.numberOfTickets ??
-      DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
+      DEFAULT_EAC_STOCK_FORM_VALUES.numberOfTickets,
     totalPrice: collectiveStock.price,
     bookingLimitDate,
-    priceDetail:
+    educationalPriceDetail:
       collectiveStock.educationalPriceDetail ??
-      DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
+      DEFAULT_EAC_STOCK_FORM_VALUES.educationalPriceDetail,
   }
 }

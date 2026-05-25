@@ -14,7 +14,7 @@ export const createStockDataPayload = (
   if (
     !values.startDate ||
     !values.eventTime ||
-    !values.numberOfPlaces ||
+    !values.numberOfTickets ||
     typeof values.totalPrice !== 'number'
   ) {
     throw Error('Missing required values')
@@ -38,8 +38,8 @@ export const createStockDataPayload = (
       departmentCode
     ),
     totalPrice: values.totalPrice,
-    numberOfTickets: values.numberOfPlaces,
-    educationalPriceDetail: values.priceDetail,
+    numberOfTickets: values.numberOfTickets,
+    educationalPriceDetail: values.educationalPriceDetail,
     offerId,
   }
 }

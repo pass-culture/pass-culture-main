@@ -95,8 +95,8 @@ export const FormStock = ({
       <TextInput
         disabled={!canEditDiscount}
         label={NUMBER_OF_PLACES_LABEL}
-        {...register('numberOfPlaces')}
-        error={formState.errors.numberOfPlaces?.message}
+        {...register('numberOfTickets')}
+        error={formState.errors.numberOfTickets?.message}
         type="number"
         icon={strokeCollaborator}
         required

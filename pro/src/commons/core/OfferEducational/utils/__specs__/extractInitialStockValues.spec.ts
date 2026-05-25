@@ -42,8 +42,8 @@ describe('extractInitialStockValues', () => {
       startDate: '2023-02-23',
       endDate: '2023-02-23',
       eventTime: '11:46',
-      numberOfPlaces: 20,
-      priceDetail: 'test',
+      numberOfTickets: 20,
+      educationalPriceDetail: 'test',
       totalPrice: 1200,
     })
   })
@@ -58,7 +58,7 @@ describe('extractInitialStockValues', () => {
       )
     ).toStrictEqual({
       ...DEFAULT_EAC_STOCK_FORM_VALUES,
-      priceDetail: 'initialStockValues',
+      educationalPriceDetail: 'initialStockValues',
     })
   })
 
@@ -83,8 +83,8 @@ describe('extractInitialStockValues', () => {
       startDate: '2030-07-30',
       endDate: '',
       eventTime: '',
-      numberOfPlaces: 20,
-      priceDetail: '',
+      numberOfTickets: 20,
+      educationalPriceDetail: '',
       totalPrice: null,
     })
   })
@@ -110,8 +110,8 @@ describe('extractInitialStockValues', () => {
       startDate: '',
       endDate: '',
       eventTime: '',
-      numberOfPlaces: null,
-      priceDetail: '',
+      numberOfTickets: null,
+      educationalPriceDetail: '',
       totalPrice: null,
     })
   })
@@ -135,8 +135,8 @@ describe('extractInitialStockValues', () => {
       startDate: '',
       endDate: '',
       eventTime: '',
-      numberOfPlaces: 8,
-      priceDetail: '',
+      numberOfTickets: 8,
+      educationalPriceDetail: '',
       totalPrice: null,
     })
   })
@@ -160,8 +160,8 @@ describe('extractInitialStockValues', () => {
       startDate: '',
       endDate: '',
       eventTime: '',
-      numberOfPlaces: 6,
-      priceDetail: '',
+      numberOfTickets: 6,
+      educationalPriceDetail: '',
       totalPrice: null,
     })
   })

@@ -11,10 +11,10 @@ type OfferEducationalStockFormValuesForSerializer = {
   startDate: string
   endDate: string
   eventTime: string
-  numberOfPlaces: number
+  numberOfTickets: number
   totalPrice: number
   bookingLimitDate: string
-  priceDetail: string
+  educationalPriceDetail: string
 }
 
 const serializer = {
@@ -59,12 +59,12 @@ const serializer = {
       departmentCode
     ),
   }),
-  numberOfPlaces: (
+  numberOfTickets: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel
   ) => ({
     ...changedValues,
-    numberOfTickets: values.numberOfPlaces,
+    numberOfTickets: values.numberOfTickets,
   }),
   totalPrice: (
     values: OfferEducationalStockFormValuesForSerializer,
@@ -86,12 +86,12 @@ const serializer = {
       departmentCode
     ),
   }),
-  priceDetail: (
+  educationalPriceDetail: (
     values: OfferEducationalStockFormValuesForSerializer,
     changedValues: CollectiveStockEditionBodyModel
   ) => ({
     ...changedValues,
-    educationalPriceDetail: values.priceDetail,
+    educationalPriceDetail: values.educationalPriceDetail,
   }),
 }
 
@@ -99,7 +99,7 @@ const valuesIsOfferEducationalStockFormValuesForSerializer = (
   values: OfferEducationalStockFormValues
 ): values is OfferEducationalStockFormValuesForSerializer => {
   return (
-    typeof values.numberOfPlaces === 'number' &&
+    typeof values.numberOfTickets === 'number' &&
     typeof values.totalPrice === 'number'
   )
 }

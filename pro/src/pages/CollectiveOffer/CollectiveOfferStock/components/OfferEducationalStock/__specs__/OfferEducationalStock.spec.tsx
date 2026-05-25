@@ -29,9 +29,9 @@ const initialValuesNotEmpty = {
   endDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
   bookingLimitDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
-  numberOfPlaces: 10,
+  numberOfTickets: 10,
   totalPrice: 100,
-  priceDetail: 'Détail du prix',
+  educationalPriceDetail: 'Détail du prix',
 }
 
 vi.mock('react-router', async () => ({
@@ -59,9 +59,9 @@ describe('OfferEducationalStock', () => {
         endDate: '2022-02-10',
         eventTime: '00:00',
         bookingLimitDate: '2022-02-10',
-        numberOfPlaces: 10,
+        numberOfTickets: 10,
         totalPrice: 100,
-        priceDetail: 'Détail du prix',
+        educationalPriceDetail: 'Détail du prix',
       },
       mode: Mode.EDITION,
     }

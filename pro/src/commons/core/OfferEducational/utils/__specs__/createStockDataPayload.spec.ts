@@ -11,8 +11,8 @@ describe('createStockDataPayload', () => {
       bookingLimitDate: '2024-06-30',
       endDate: '2024-06-30',
       eventTime: '04:15',
-      numberOfPlaces: 400,
-      priceDetail: 'some price details',
+      numberOfTickets: 400,
+      educationalPriceDetail: 'some price details',
       startDate: '2024-06-30',
       totalPrice: 450,
     }

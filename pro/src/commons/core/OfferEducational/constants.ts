@@ -74,10 +74,10 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   startDate: '',
   endDate: '',
   eventTime: '',
-  numberOfPlaces: null,
+  numberOfTickets: null,
   totalPrice: null,
   bookingLimitDate: '',
-  priceDetail: '',
+  educationalPriceDetail: '',
 }
 
 export const DEFAULT_INSTITUTION_FORM_VALUES: InstitutionFormValues = {

@@ -146,9 +146,9 @@ export const OfferEducationalStock = ({
                   disabled={!canEditDiscount}
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_PRICE_DETAILS_LENGTH}
-                  {...form.register('priceDetail')}
+                  {...form.register('educationalPriceDetail')}
                   description={PRICE_DETAIL_PLACEHOLDER}
-                  error={form.formState.errors.priceDetail?.message}
+                  error={form.formState.errors.educationalPriceDetail?.message}
                   requiredIndicator="symbol"
                   required
                 />

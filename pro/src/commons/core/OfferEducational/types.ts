@@ -79,10 +79,10 @@ export type OfferEducationalStockFormValues = {
   startDate: string
   endDate: string
   eventTime: string
-  numberOfPlaces: number | null
+  numberOfTickets: number | null
   totalPrice: number | null
   bookingLimitDate: string
-  priceDetail: string
+  educationalPriceDetail: string
 }
 
 export const isCollectiveOffer = (

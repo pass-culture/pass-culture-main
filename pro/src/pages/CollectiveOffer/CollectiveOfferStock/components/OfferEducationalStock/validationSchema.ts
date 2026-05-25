@@ -44,7 +44,7 @@ export const generateValidationSchema = (
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )
 
-  // can edit price (only decrease), numberOfTickets and priceDetails
+  // can edit price (only decrease), numberOfTickets and educationalPriceDetails
   const canEditDiscount = offerAllowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
@@ -125,7 +125,7 @@ export const generateValidationSchema = (
             message: "L'heure doit être postérieure à l'heure actuelle",
           }),
       }),
-    numberOfPlaces: yup
+    numberOfTickets: yup
       .number()
       .transform((value) => (Number.isNaN(value) ? null : value))
       .min(1, 'Minimum 1 participant')
@@ -153,7 +153,7 @@ export const generateValidationSchema = (
                 !canEditDetails || isBookingDateAfterNow(bookingLimitDate)
             ),
       }),
-    priceDetail: yup
+    educationalPriceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
       .max(MAX_PRICE_DETAILS_LENGTH),
