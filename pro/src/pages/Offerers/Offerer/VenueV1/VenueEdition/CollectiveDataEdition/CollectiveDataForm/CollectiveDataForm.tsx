@@ -18,17 +18,20 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { getActivities } from '@/commons/mappings/mappings'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullNextIcon from '@/icons/full-next.svg'
 import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/RouteLeavingGuardVenueEdition'
-import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
+import { DefinitionList } from '@/ui-kit/DefinitionList/DefinitionList'
+import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -40,7 +43,6 @@ import { validationSchema } from './validationSchema'
 
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
-  domains: Option[]
 }
 
 const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
@@ -50,8 +52,7 @@ const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
 
 export const CollectiveDataForm = ({
   statuses,
-  domains,
-}: CollectiveDataFormProps): JSX.Element | null => {
+}: Readonly<CollectiveDataFormProps>) => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -157,53 +158,49 @@ export const CollectiveDataForm = ({
             </FormLayout.SubSection>
 
             <FormLayout.SubSection title="Informations de la structure">
-              <FormLayout.Row mdSpaceAfter>
-                <Select
-                  {...register('activity')}
-                  options={[
-                    ...(selectedPartnerVenue.activity === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
-                      ? [
-                          {
-                            value: '',
-                            label: 'Sélectionnez votre activité principale',
-                          },
-                        ]
-                      : []),
-                    ...buildSelectOptions(
-                      getActivities(
-                        selectedPartnerVenue.isOpenToPublic
-                          ? 'OPEN_TO_PUBLIC'
-                          : 'NOT_OPEN_TO_PUBLIC'
-                      )
-                    ),
-                  ]}
-                  label="Activité principale"
-                  error={errors.activity?.message}
-                  required
-                />
-              </FormLayout.Row>
-              <FormLayout.Row>
-                <MultiSelect
-                  name="collectiveDomains"
-                  label="Domaine artistique et culturel"
-                  options={domains}
-                  defaultOptions={domains.filter((option) =>
-                    watch('collectiveDomains')?.includes(option.id)
-                  )}
-                  hasSearch
-                  searchLabel="Rechercher un domaine artistique et culturel"
-                  buttonLabel="Domaines artistiques"
-                  onSelectedOptionsChanged={(selectedOptions) =>
-                    setValue(
-                      'collectiveDomains',
-                      selectedOptions.map((opt) => opt.id)
-                    )
-                  }
-                  error={errors.collectiveDomains?.message}
-                />
-              </FormLayout.Row>
+              <DefinitionList>
+                <DefinitionList.Row>
+                  <DefinitionList.Term>Activité</DefinitionList.Term>
+                  <DefinitionList.Definition>
+                    {selectedPartnerVenue.activity
+                      ? getActivityLabel(selectedPartnerVenue.activity)
+                      : 'Non renseignée'}
+                  </DefinitionList.Definition>
+                </DefinitionList.Row>
 
-              <FormLayout.Row>
+                <DefinitionList.Row>
+                  <DefinitionList.Term>
+                    {pluralizeFr(
+                      selectedPartnerVenue.collectiveDomains.length,
+                      'Domaine artistique et culturel',
+                      'Domaines artistiques et culturels'
+                    )}
+                  </DefinitionList.Term>
+                  <DefinitionList.Definition>
+                    {selectedPartnerVenue.collectiveDomains.length > 0
+                      ? selectedPartnerVenue.collectiveDomains
+                          .map((domain) => domain.name)
+                          .join(', ')
+                      : 'Non renseigné'}
+                  </DefinitionList.Definition>
+                </DefinitionList.Row>
+              </DefinitionList>
+
+              <Banner
+                title="Les informations liées à votre activité se modifient dans la page Paramètres"
+                actions={[
+                  {
+                    href: '/parametres/informations-generales',
+                    icon: fullNextIcon,
+                    label: 'Accéder à la page Paramètres',
+                    type: 'link',
+                  },
+                ]}
+              />
+
+              <FormLayout.Row
+                className={styles['collective-intervention-area-row']}
+              >
                 <MultiSelect
                   name="collectiveInterventionArea"
                   label="Zone de mobilité"

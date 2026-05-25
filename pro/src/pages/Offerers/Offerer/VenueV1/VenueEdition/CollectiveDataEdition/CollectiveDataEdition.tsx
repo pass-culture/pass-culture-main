@@ -4,13 +4,11 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Banner } from '@/design-system/Banner/Banner'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
-import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveDataEdition.module.scss'
@@ -19,18 +17,11 @@ import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 
 export const CollectiveDataEdition = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const { data: educationalDomains, isLoading: areEducationalDomainsLoading } =
-    useEducationalDomains()
 
   const educationalStatusesQuery = useSWR(
     [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
     () => api.getVenuesEducationalStatuses()
   )
-
-  const domains: Option[] = educationalDomains.map((domain) => ({
-    id: domain.id.toString(),
-    label: domain.name,
-  }))
 
   const statuses: SelectOption[] =
     educationalStatusesQuery.data?.statuses.map((status) => ({
@@ -40,7 +31,7 @@ export const CollectiveDataEdition = () => {
 
   const location = useLocation()
 
-  if (areEducationalDomainsLoading || educationalStatusesQuery.isLoading) {
+  if (educationalStatusesQuery.isLoading) {
     return <Spinner className={styles.spinner} />
   }
 
@@ -76,7 +67,7 @@ export const CollectiveDataEdition = () => {
           <hr className={styles['separator']} />
 
           {location.pathname.includes('/edition') ? (
-            <CollectiveDataForm statuses={statuses} domains={domains} />
+            <CollectiveDataForm statuses={statuses} />
           ) : (
             <CollectiveDataEditionReadOnly />
           )}

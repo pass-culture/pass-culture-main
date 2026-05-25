@@ -43,6 +43,10 @@ export const SummaryDescriptionList = ({
 
   // dd/dt/dl is more semantic but less supported by assistive technologies
   // we use ul/li instead for now
+  // TODO (igabriele, 2026-05-25): Use dl/dt/dd because this claim doesn't hold and ul/li are for genuine peer items.
+  // The only exception is when term and definition are confusing which they shouldn't be in the first place (=> ":").
+  // https://adrianroselli.com/2025/01/updated-brief-note-on-description-list-support.html (W3C Accessibility Expert)
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl#accessibility
   return (
     <ul data-testid={listDataTestId}>
       {descriptions.map(({ text, title }, index) => (
