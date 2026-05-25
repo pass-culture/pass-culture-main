@@ -36,9 +36,9 @@ import { StatsCard } from './components/StatsCard/StatsCard'
 import { HomepageVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
-import styles from './NewHomepage.module.scss'
+import styles from './Homepage.module.scss'
 
-export const NewHomepage = (): JSX.Element => {
+export const Homepage = (): JSX.Element => {
   const selectedPartnerVenue: GetVenueResponseModel = useAppSelector(
     ensureSelectedPartnerVenue
   )
@@ -252,4 +252,4 @@ export const NewHomepage = (): JSX.Element => {
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = NewHomepage
+export const Component = Homepage
