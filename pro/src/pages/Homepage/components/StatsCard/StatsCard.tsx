@@ -6,9 +6,9 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUES_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Card } from '@/ui-kit/Card/Card'
 
-import { CumulatedViews } from '../StatisticsDashboard/components/CumulatedViews'
-import { MostViewedOffers } from '../StatisticsDashboard/components/MostViewedOffers'
-import styles from '../StatisticsDashboard/StatisticsDashboard.module.scss'
+import { CumulatedViews } from './components/CumulatedViews'
+import { MostViewedOffers } from './components/MostViewedOffers'
+import styles from './StatsCard.module.scss'
 
 interface StatsCardProps {
   venue: GetVenueResponseModel

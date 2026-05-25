@@ -3,8 +3,7 @@ import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-
-import { formatNumberLabel } from '../../../../commons/utils/formatNumber'
+import { formatNumberLabel } from '@/commons/utils/formatNumber'
 
 const MONTH_FORMAT = 'LLLL'
 const FORMAT_OPTIONS = { locale: fr }

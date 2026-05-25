@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   ReimbursementFields,
   type ReimbursementFieldsProps,
-} from '../ReimbursementFields'
+} from './ReimbursementFields'
 
 describe('ReimbursementFields', () => {
   const defaultProps: ReimbursementFieldsProps = {

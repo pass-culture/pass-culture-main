@@ -6,7 +6,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PartnerPageCollectiveSection } from '../PartnerPageCollectiveSection'
+import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
 
 type RenderOptions = {
   lastCollectiveDmsApplication?: DMSApplicationForEAC | null

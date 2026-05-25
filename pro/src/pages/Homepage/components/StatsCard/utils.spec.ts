@@ -1,11 +1,7 @@
 import type { LinearScaleOptions, TooltipItem } from 'chart.js'
 import { describe, expect, it } from 'vitest'
 
-import {
-  buildDatasets,
-  buildGraphOptions,
-  computeGraphSteps,
-} from '../statsUtils'
+import { buildDatasets, buildGraphOptions, computeGraphSteps } from './utils'
 
 describe('buildDatasets', () => {
   it('should return the correct dataset structure', () => {

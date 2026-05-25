@@ -10,7 +10,7 @@ import { LinkColor } from '@/design-system/Link/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullNextIcon from '@/icons/full-next.svg'
 
-import styles from './PartnerPage.module.scss'
+import styles from './PartnerPageCollectiveSection.module.scss'
 
 interface PartnerPageCollectiveSectionProps {
   isDisplayedInHomepage?: boolean
