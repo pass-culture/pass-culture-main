@@ -16,11 +16,9 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'
 import { isDateValid } from '@/commons/utils/date'
-import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -59,13 +57,11 @@ export const OfferEducationalStock = ({
 }: OfferEducationalStockProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const canEditDiscount = isActionAllowedOnCollectiveOffer(
-    offer,
+  const canEditDiscount = offer.allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
 
-  const canEditDates = isActionAllowedOnCollectiveOffer(
-    offer,
+  const canEditDates = offer.allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
@@ -93,11 +89,6 @@ export const OfferEducationalStock = ({
 
   return (
     <>
-      <OfferEducationalActions
-        className={styles.actions}
-        offer={offer}
-        mode={mode}
-      />
       <FormProvider {...form}>
         <form noValidate onSubmit={form.handleSubmit(postForm)}>
           <ScrollToFirstHookFormErrorAfterSubmit />

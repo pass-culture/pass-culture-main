@@ -16,6 +16,7 @@ import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
@@ -23,6 +24,7 @@ import {
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
+import styles from './CollectiveOfferStockEdition.module.scss'
 
 export const CollectiveOfferStockEdition = ({
   offer,
@@ -82,6 +84,9 @@ export const CollectiveOfferStockEdition = ({
       subTitle={offer.name}
       isTemplate={false}
     >
+      <div className={styles['actions']}>
+        <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
+      </div>
       <OfferEducationalStock
         initialValues={initialValues}
         mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
