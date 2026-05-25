@@ -53,7 +53,7 @@
             <span class="visually-hidden">Partenaire culturel ouvert au public</span><i class="bi bi-check-circle-fill"></i>
           {% endif %}
         </td>
-        <td>{{ venue.venueTypeCode.value }}</td>
+        <td>{{ venue.activity | format_activity }}</td>
         <td>
           {% if venue.web_presence %}
             {% for link in venue.web_presence.split(", ") %}

@@ -200,7 +200,7 @@
                 </p>
                 <p class="mb-0">
                   <span class="fw-bold">Activité principale :</span>
-                  {{ venue.venueTypeCode.value }}
+                  {{ venue.activity | format_activity }}
                 </p>
                 {% if venue.venueLabel %}
                   <p class="mb-0">

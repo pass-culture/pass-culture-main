@@ -936,15 +936,15 @@ def get_managed_venues(offerer_id: int) -> response_utils.BackofficeResponse:
         )
         .options(
             sa_orm.load_only(
+                offerers_models.Venue.activity,
                 offerers_models.Venue.id,
+                offerers_models.Venue.isOpenToPublic,
+                offerers_models.Venue.isPermanent,
+                offerers_models.Venue.isReimbursementSuspended,
                 offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
-                offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.isPermanent,
-                offerers_models.Venue.isOpenToPublic,
-                offerers_models.Venue.isReimbursementSuspended,
             ),
             sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,

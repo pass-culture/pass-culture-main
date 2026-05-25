@@ -1608,6 +1608,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         now = date_utils.get_naive_utc_now()
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(
+            activity=offerers_models.Activity.ARTISTIC_PRACTICE,
             name="Deuxième",
             publicName="Second",
             managingOfferer=offerer,
@@ -1627,7 +1628,11 @@ class GetOffererVenuesTest(GetEndpointHelper):
         )
 
         venue_2 = offerers_factories.VenueFactory(
-            name="Premier", publicName="NumeroUn", managingOfferer=offerer, isOpenToPublic=False
+            activity=offerers_models.Activity.ARTISTIC_PRACTICE,
+            name="Premier",
+            publicName="NumeroUn",
+            managingOfferer=offerer,
+            isOpenToPublic=False,
         )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
@@ -1649,7 +1654,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Permanent"] == ""
         assert rows[0]["Ouvert au public"] == ""
         assert rows[0]["Nom"] == venue_2.publicName
-        assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
+        assert rows[0]["Activité principale"] == "Pratique ou enseignement artistique"
         assert not rows[0].get("Activité principale du partenaire")
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[0]["Offres cibles"] == "Indiv. et coll."
@@ -1662,7 +1667,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Permanent"] == "Partenaire culturel permanent"
         assert rows[1]["Ouvert au public"] == "Partenaire culturel ouvert au public"
         assert rows[1]["Nom"] == venue_1.publicName
-        assert rows[1]["Activité principale"] == venue_1.venueTypeCode.value
+        assert rows[1]["Activité principale"] == "Pratique ou enseignement artistique"
         assert not rows[0].get("Activité principale du partenaire")
         assert rows[1]["Présence web"] == ""
         assert rows[1]["Offres cibles"] == ""
@@ -1672,7 +1677,9 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     def test_get_caledonian_managed_venues(self, authenticated_client):
         offerer = offerers_factories.CaledonianOffererFactory()
-        venue = offerers_factories.CaledonianVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.CaledonianVenueFactory(
+            managingOfferer=offerer, activity=offerers_models.Activity.MUSEUM
+        )
         bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte NC")
         offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
 
@@ -1689,7 +1696,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["RIDET"] == venue.ridet
         assert rows[0]["Permanent"] == "Partenaire culturel permanent"
         assert rows[0]["Nom"] == venue.publicName
-        assert rows[0]["Activité principale"] == venue.venueTypeCode.value
+        assert rows[0]["Activité principale"] == "Musée"
         assert not rows[0].get("Activité principale du partenaire")
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
