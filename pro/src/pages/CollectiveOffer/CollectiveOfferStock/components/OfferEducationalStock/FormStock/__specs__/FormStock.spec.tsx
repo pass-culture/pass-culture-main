@@ -5,10 +5,7 @@ import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import {
-  Mode,
-  type OfferEducationalStockFormValues,
-} from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   type RenderWithProvidersOptions,
@@ -46,14 +43,6 @@ function renderFormStock({
       canEditDates: allowedActions.includes(
         CollectiveOfferAllowedAction.CAN_EDIT_DATES
       ),
-      mode:
-        allowedActions.length === 0
-          ? Mode.READ_ONLY
-          : allowedActions.includes(
-                CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-              )
-            ? Mode.CREATION
-            : Mode.EDITION,
     }
 
     return (
