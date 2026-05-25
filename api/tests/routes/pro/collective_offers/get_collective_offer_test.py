@@ -14,14 +14,20 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     # session + user
     # offerer
     # user_offerer
     # collective_offer
-    # google_places_info
-    num_queries = 5
+    # collective_addtional_fees (selectinload)
+    # google_places_info (only when venue.bannerUrl is not filled)
+    num_queries = 6
+
+    # collective_addtional_fees is not loaded when there is no stock
+    num_queries_no_stock = num_queries - 1
 
     def test_basics(self, client):
         template = educational_factories.CollectiveOfferTemplateFactory()
@@ -140,7 +146,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_no_stock):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -163,7 +169,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_no_stock):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -188,7 +194,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_no_stock):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -212,7 +218,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        with assert_num_queries(self.num_queries_no_stock):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -307,7 +313,6 @@ class Returns200Test:
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
@@ -320,7 +325,6 @@ class Returns200Test:
         }
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()

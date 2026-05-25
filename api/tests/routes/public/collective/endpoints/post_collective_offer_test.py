@@ -148,6 +148,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         num_queries += 1  # fetch collective offer
         num_queries += 1  # update collective offer image
         num_queries += 1  # fetch collective offer for serialization
+        num_queries += 1  # fetch collective additional fees (selectinload)
 
         with assert_num_queries(num_queries):
             with patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock:

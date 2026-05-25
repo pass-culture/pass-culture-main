@@ -766,7 +766,7 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
     )
 
     if original_offer.collectiveStock is not None:
-        models.CollectiveStock(
+        stock = models.CollectiveStock(
             startDatetime=original_offer.collectiveStock.startDatetime,
             endDatetime=original_offer.collectiveStock.endDatetime,
             collectiveOffer=offer,
@@ -777,6 +777,14 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
             numberOfTeachers=original_offer.collectiveStock.numberOfTeachers,
             priceDetail=original_offer.collectiveStock.priceDetail,
         )
+
+        for additional_fee in original_offer.collectiveStock.collectiveAdditionalFees:
+            models.CollectiveAdditionalFee(
+                collectiveStock=stock,
+                type=additional_fee.type,
+                label=additional_fee.label,
+                amount=additional_fee.amount,
+            )
 
     db.session.add(offer)
     db.session.flush()

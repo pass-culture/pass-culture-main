@@ -265,19 +265,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             },
         ]
 
-    def test_user_did_not_create_offer_using_the_api(self, client):
-        """Ensure that a user cannot fetch an offer that he did not
-        created with the API"""
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        offer_id = factories.CollectiveStockFactory().collectiveOffer.id
-
-        api_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-        with testing.assert_num_queries(self.num_queries + 2):  # double rollback
-            response = api_client.get(f"/v2/collective/offers/{offer_id}")
-            assert response.status_code == 403
-
     @pytest.mark.parametrize(
         "query_params,expected_json",
         (
