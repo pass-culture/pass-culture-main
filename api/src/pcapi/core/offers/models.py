@@ -923,6 +923,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             "publicationDatetime",
             postgresql_where='"publicationDatetime" IS NOT NULL',
         ),
+        sa.Index(
+            "ix_offer_venueId_validation_publicationDatetime",
+            "venueId",
+            "validation",
+            "publicationDatetime",
+        ),
     )
 
     @property
