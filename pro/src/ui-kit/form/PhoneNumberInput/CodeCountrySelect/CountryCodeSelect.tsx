@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type ChangeEvent, type FocusEvent, useId } from 'react'
+import type { ChangeEvent, FocusEvent } from 'react'
 
 import fullRightIcon from '@/icons/full-right.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -8,6 +8,7 @@ import type { CountryCodeSelectOption } from '../PhoneNumberInput'
 import styles from './CountryCodeSelect.module.scss'
 
 interface CountryCodeSelectProps {
+  id: string
   disabled: boolean
   options: CountryCodeSelectOption[]
   className?: string
@@ -17,6 +18,7 @@ interface CountryCodeSelectProps {
 }
 
 export const CountryCodeSelect = ({
+  id,
   disabled,
   options,
   className,
@@ -24,8 +26,6 @@ export const CountryCodeSelect = ({
   onChange,
   onBlur,
 }: CountryCodeSelectProps) => {
-  const countryId = useId()
-
   return (
     <div className={cn(styles['select-input-wrapper'], className)}>
       <SvgIcon
@@ -38,7 +38,7 @@ export const CountryCodeSelect = ({
       />
       <select
         className={styles['select-input']}
-        id={countryId}
+        id={id}
         disabled={disabled}
         value={value}
         onChange={onChange}
