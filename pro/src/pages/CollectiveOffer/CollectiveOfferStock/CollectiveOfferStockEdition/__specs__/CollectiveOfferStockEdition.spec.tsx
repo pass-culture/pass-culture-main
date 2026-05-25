@@ -173,4 +173,16 @@ describe('CollectiveOfferStockEdition', () => {
     expect(mockSnackBarSuccess).not.toHaveBeenCalled()
     expect(mockNavigate).not.toHaveBeenCalled()
   })
+
+  it('should render for offer imported with a public api', async () => {
+    renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
+      offer: { ...defaultOffer, isPublicApi: true },
+    })
+
+    expect(
+      await screen.findByText(
+        'Cette offre a été importée automatiquement depuis votre système de billetterie.'
+      )
+    ).toBeVisible()
+  })
 })

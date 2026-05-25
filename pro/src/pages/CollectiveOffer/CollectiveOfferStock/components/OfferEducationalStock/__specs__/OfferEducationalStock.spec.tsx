@@ -6,7 +6,6 @@ import * as router from 'react-router'
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -24,7 +23,7 @@ const defaultProps: OfferEducationalStockProps = {
     bookingLimitDate: '',
     educationalPriceDetail: '',
   },
-  offer: getCollectiveOfferFactory({}),
+  allowedActions: [],
   onSubmit: vi.fn(),
   mode: Mode.CREATION,
 }
@@ -51,15 +50,13 @@ describe('OfferEducationalStock', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
   it('should render for offer with a stock', () => {
-    const offer = getCollectiveOfferFactory({
-      allowedActions: [
-        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-      ],
-    })
+    const allowedActions = [
+      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+    ]
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
-      offer,
+      allowedActions,
       initialValues: {
         startDate: '2022-02-10',
         endDate: '2022-02-10',
@@ -78,28 +75,10 @@ describe('OfferEducationalStock', () => {
     ).toBeVisible()
   })
 
-  it('should render for offer imported with a public api', () => {
-    const offer = getCollectiveOfferFactory({ isPublicApi: true })
-    const testProps: OfferEducationalStockProps = {
-      ...defaultProps,
-      offer,
-      mode: Mode.EDITION,
-    }
-    renderWithProviders(<OfferEducationalStock {...testProps} />)
-
-    expect(
-      screen.getByText(
-        'Cette offre a été importée automatiquement depuis votre système de billetterie.'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should call submit callback when clicking next step with valid form data and edit action is allowed', async () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
-      offer: getCollectiveOfferFactory({
-        allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
-      }),
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
       initialValues: initialValuesNotEmpty,
       mode: Mode.CREATION,
     }
@@ -155,9 +134,7 @@ it('should display saved information in the action bar', () => {
 it('should not disable start date, end date and event time inputs when date edition is allowed', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
-    offer: getCollectiveOfferFactory({
-      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
-    }),
+    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
   }
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -171,9 +148,7 @@ it('should not disable description, price and places when action CAN_EDIT_DISCOU
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     mode: Mode.EDITION,
-    offer: getCollectiveOfferFactory({
-      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
-    }),
+    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
   }
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -191,9 +166,6 @@ it('should disable description, price and places when allowed action CAN_EDIT_DI
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     mode: Mode.EDITION,
-    offer: getCollectiveOfferFactory({
-      allowedActions: [],
-    }),
   }
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
