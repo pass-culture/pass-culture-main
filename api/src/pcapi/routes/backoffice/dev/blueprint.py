@@ -86,7 +86,7 @@ def create_qf_fraud_check(user: users_models.User, form: forms.QuotientFamilialC
                 value=form.quotient_familial_value.data
             ),
             children=[
-                bonus_schemas.QuotientFamilialChild(
+                bonus_schemas.QuotientFamilialPerson(
                     last_name=form.last_name.data,
                     common_name=form.common_name.data,
                     first_names=[first_name.strip() for first_name in form.first_names.data.split(",")],
