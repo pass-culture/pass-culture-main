@@ -4,7 +4,7 @@ import {
   expectCollectiveModules,
   expectIndividualModules,
   loginAsAndGoToHomepage,
-} from './fixtures/newHomepage'
+} from './fixtures/homepage'
 import { doLogin } from './helpers/auth'
 import {
   BASE_API_URL,

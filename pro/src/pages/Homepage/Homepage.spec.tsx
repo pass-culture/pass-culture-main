@@ -16,7 +16,7 @@ import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import * as utils from './commons/utils'
 import { HomepageVariant, type OffersCardVariant } from './components/types'
-import { NewHomepage } from './NewHomepage'
+import { Homepage } from './Homepage'
 
 vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
   CollectiveDmsTimeline: () => <div>timeline DMS</div>,
@@ -79,21 +79,21 @@ vi.mock('./components/EditoCard/EditoCard', () => ({
   ),
 }))
 
-const newHomepageRoutes = [
+const homepageRoutes = [
   {
     path: '/',
     Component: PartnerLayout,
     children: [
       {
         path: 'accueil',
-        element: <NewHomepage />,
+        element: <Homepage />,
         handle: { title: 'Espace acteurs culturels' },
       },
     ],
   },
 ]
 
-const renderNewHomepage = (
+const renderHomepage = (
   venueOverrides?: Partial<GetVenueResponseModel>,
   options?: RenderWithProvidersOptions
 ) => {
@@ -105,7 +105,7 @@ const renderNewHomepage = (
   })
   const { storeOverrides, ...restOptions } = options ?? {}
   return renderWithProviders(null, {
-    routes: newHomepageRoutes,
+    routes: homepageRoutes,
     initialRouterEntries: ['/accueil'],
     user,
     ...restOptions,
@@ -122,9 +122,9 @@ const renderNewHomepage = (
   })
 }
 
-describe('NewHomepage', () => {
+describe('Homepage', () => {
   it('should display the selected venue public name in the title', () => {
-    renderNewHomepage({ hasNonDraftOffers: true })
+    renderHomepage({ hasNonDraftOffers: true })
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Votre espace Nom public de la structure'
     )
@@ -132,7 +132,7 @@ describe('NewHomepage', () => {
 
   describe('venue validation banner', () => {
     it('should not be displayed when the venue is validated', () => {
-      renderNewHomepage({
+      renderHomepage({
         ...defaultGetVenueResponseModel,
         isValidated: true,
       })
@@ -141,7 +141,7 @@ describe('NewHomepage', () => {
     })
 
     it('should be displayed if the venue is not validated', () => {
-      renderNewHomepage({
+      renderHomepage({
         ...defaultGetVenueResponseModel,
         isValidated: false,
       })
@@ -167,7 +167,7 @@ describe('NewHomepage', () => {
         hasCollectiveDMS,
         shouldDisplayTabs,
       }) => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           allowedOnAdage,
           hasNonDraftOffers,
@@ -185,7 +185,7 @@ describe('NewHomepage', () => {
     )
 
     it('should render without accessibility violation', async () => {
-      const { container } = renderNewHomepage({
+      const { container } = renderHomepage({
         ...defaultGetVenueResponseModel,
         allowedOnAdage: true,
         hasNonDraftOffers: true,
@@ -200,7 +200,7 @@ describe('NewHomepage', () => {
 
     it('should display the corresponding panel when click on a given tab', async () => {
       const user = userEvent.setup()
-      renderNewHomepage({
+      renderHomepage({
         ...defaultGetVenueResponseModel,
         allowedOnAdage: true,
         hasNonDraftOffers: true,
@@ -229,7 +229,7 @@ describe('NewHomepage', () => {
         vi.spyOn(utils, 'onNewTabSelected')
 
         const user = userEvent.setup()
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           allowedOnAdage: true,
           hasNonDraftOffers: true,
@@ -259,7 +259,7 @@ describe('NewHomepage', () => {
           vi.spyOn(utils, 'getInitialTab').mockReturnValue(initialTab)
           vi.spyOn(utils, 'onNewTabSelected')
 
-          renderNewHomepage({
+          renderHomepage({
             ...defaultGetVenueResponseModel,
             allowedOnAdage: hasCollective,
             hasNonDraftOffers: hasIndividual,
@@ -279,7 +279,7 @@ describe('NewHomepage', () => {
     })
 
     it('should display onboarding offers choice when venue has no tab', () => {
-      renderNewHomepage({
+      renderHomepage({
         ...defaultGetVenueResponseModel,
         allowedOnAdage: false,
         hasNonDraftOffers: false,
@@ -318,7 +318,7 @@ describe('NewHomepage', () => {
 
     describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           hasNonDraftOffers: true,
           hasNonFreeOffers: true,
@@ -330,7 +330,7 @@ describe('NewHomepage', () => {
       })
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           hasNonDraftOffers: true,
           hasNonFreeOffers: false,
@@ -356,7 +356,7 @@ describe('NewHomepage', () => {
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           dateCreated,
           hasNonDraftOffers: true,
@@ -374,7 +374,7 @@ describe('NewHomepage', () => {
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           dateCreated,
           hasNonDraftOffers: true,
@@ -389,7 +389,7 @@ describe('NewHomepage', () => {
     })
 
     it('should always have the mandatory modules', () => {
-      renderNewHomepage({
+      renderHomepage({
         ...defaultGetVenueResponseModel,
         hasNonDraftOffers: true,
       })
@@ -419,7 +419,7 @@ describe('NewHomepage', () => {
   describe('collective panel', () => {
     describe('collective DMS timeline', () => {
       it('should be displayed when venue has a collective DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
@@ -430,7 +430,7 @@ describe('NewHomepage', () => {
       })
 
       it('should not be displayed when venue has not a collective DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: null,
           allowedOnAdage: true,
@@ -444,7 +444,7 @@ describe('NewHomepage', () => {
 
     describe('individual offers modules', () => {
       it('should be displayed when venue has a refused DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: {
             ...defaultDMSApplicationForEACV2,
@@ -458,7 +458,7 @@ describe('NewHomepage', () => {
       })
 
       it('should be displayed when venue has a "sans suite" DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: {
             ...defaultDMSApplicationForEACV2,
@@ -472,7 +472,7 @@ describe('NewHomepage', () => {
       })
 
       it('should not be displayed when venue has a pending DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
         })
@@ -483,7 +483,7 @@ describe('NewHomepage', () => {
       })
 
       it('should not be displayed when venue has no DMS application', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           lastCollectiveDmsApplication: null,
           allowedOnAdage: true,
@@ -497,7 +497,7 @@ describe('NewHomepage', () => {
 
     describe('income module', () => {
       it('should be displayed if the venue has non free offers', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           hasNonFreeOffers: true,
           allowedOnAdage: true,
@@ -509,7 +509,7 @@ describe('NewHomepage', () => {
       })
 
       it("should not be displayed if the venue doesn't have non free offers", () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           hasNonFreeOffers: false,
           allowedOnAdage: true,
@@ -521,7 +521,7 @@ describe('NewHomepage', () => {
       })
 
       it('should not be displayed when the venue is not allowed on adage', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           hasNonFreeOffers: false,
           allowedOnAdage: false,
@@ -536,7 +536,7 @@ describe('NewHomepage', () => {
 
     describe('mandatory modules', () => {
       it('should always have the mandatory modules when allowed on adage', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           allowedOnAdage: true,
         })
@@ -559,7 +559,7 @@ describe('NewHomepage', () => {
       })
 
       it('should not have the mandatory modules when venue is not allowed on adage', () => {
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           allowedOnAdage: false,
           lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
@@ -597,7 +597,7 @@ describe('NewHomepage', () => {
         const today = new Date(adageInscriptionDate)
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           adageInscriptionDate,
           allowedOnAdage: true,
@@ -615,7 +615,7 @@ describe('NewHomepage', () => {
         const today = new Date(adageInscriptionDate)
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           adageInscriptionDate,
           allowedOnAdage: true,
@@ -633,7 +633,7 @@ describe('NewHomepage', () => {
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 30)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
@@ -652,7 +652,7 @@ describe('NewHomepage', () => {
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
@@ -671,7 +671,7 @@ describe('NewHomepage', () => {
         const today = new Date(dateCreated)
         today.setDate(today.getDate() + 40)
         vi.setSystemTime(today)
-        renderNewHomepage({
+        renderHomepage({
           ...defaultGetVenueResponseModel,
           dateCreated,
           adageInscriptionDate: null,
