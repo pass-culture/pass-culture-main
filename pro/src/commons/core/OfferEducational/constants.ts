@@ -1,10 +1,7 @@
 import { CollectiveLocationType } from '@/apiClient/v1'
 import type { InstitutionFormValues } from '@/pages/CollectiveOfferInstitution/commons/validationSchema'
 
-import type {
-  OfferEducationalFormValues,
-  OfferEducationalStockFormValues,
-} from './types'
+import type { OfferEducationalFormValues } from './types'
 import { buildStudentLevelsMapWithDefaultValue } from './utils/buildStudentLevelsMapWithDefaultValue'
 
 export function getDefaultEducationalValues(
@@ -68,16 +65,6 @@ export function getDefaultEducationalValues(
     },
     contactFormType: 'form',
   }
-}
-
-export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
-  startDate: '',
-  endDate: '',
-  eventTime: '',
-  numberOfTickets: null,
-  totalPrice: null,
-  bookingLimitDate: '',
-  educationalPriceDetail: '',
 }
 
 export const DEFAULT_INSTITUTION_FORM_VALUES: InstitutionFormValues = {
