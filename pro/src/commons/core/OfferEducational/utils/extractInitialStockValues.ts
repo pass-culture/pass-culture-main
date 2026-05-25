@@ -8,8 +8,17 @@ import type {
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from '../constants'
 import type { OfferEducationalStockFormValues } from '../types'
+
+const DEFAULT_COLLECTIVE_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
+  startDate: '',
+  endDate: '',
+  eventTime: '',
+  numberOfTickets: null,
+  totalPrice: null,
+  bookingLimitDate: '',
+  educationalPriceDetail: '',
+}
 
 export const extractInitialStockValues = (
   offer: GetCollectiveOfferResponseModel,
@@ -24,25 +33,25 @@ export const extractInitialStockValues = (
     const numberOfTickets =
       totalStudents || totalTeachers
         ? (totalStudents ?? 0) + (totalTeachers ?? 0)
-        : DEFAULT_EAC_STOCK_FORM_VALUES.numberOfTickets
+        : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.numberOfTickets
 
     return {
-      ...DEFAULT_EAC_STOCK_FORM_VALUES,
+      ...DEFAULT_COLLECTIVE_STOCK_FORM_VALUES,
       numberOfTickets,
       startDate: requestedDate
         ? format(new Date(requestedDate), FORMAT_ISO_DATE_ONLY)
-        : DEFAULT_EAC_STOCK_FORM_VALUES.startDate,
+        : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.startDate,
     }
   }
 
   if (!collectiveStock) {
     if (offerTemplate?.educationalPriceDetail) {
       return {
-        ...DEFAULT_EAC_STOCK_FORM_VALUES,
+        ...DEFAULT_COLLECTIVE_STOCK_FORM_VALUES,
         educationalPriceDetail: offerTemplate.educationalPriceDetail,
       }
     }
-    return DEFAULT_EAC_STOCK_FORM_VALUES
+    return DEFAULT_COLLECTIVE_STOCK_FORM_VALUES
   }
 
   const startDate = collectiveStock.startDatetime
@@ -53,7 +62,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.startDate
+    : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.startDate
 
   const endDate = collectiveStock.endDatetime
     ? format(
@@ -63,7 +72,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.endDate
+    : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.endDate
 
   const eventTime = collectiveStock.startDatetime
     ? format(
@@ -73,7 +82,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_HH_mm
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.eventTime
+    : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.eventTime
 
   const bookingLimitDate = collectiveStock.bookingLimitDatetime
     ? format(
@@ -82,7 +91,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDate
+    : DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.bookingLimitDate
 
   return {
     startDate,
@@ -90,11 +99,11 @@ export const extractInitialStockValues = (
     eventTime,
     numberOfTickets:
       collectiveStock.numberOfTickets ??
-      DEFAULT_EAC_STOCK_FORM_VALUES.numberOfTickets,
+      DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.numberOfTickets,
     totalPrice: collectiveStock.price,
     bookingLimitDate,
     educationalPriceDetail:
       collectiveStock.educationalPriceDetail ??
-      DEFAULT_EAC_STOCK_FORM_VALUES.educationalPriceDetail,
+      DEFAULT_COLLECTIVE_STOCK_FORM_VALUES.educationalPriceDetail,
   }
 }

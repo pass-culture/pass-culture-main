@@ -4,7 +4,6 @@ import { addDays, addMinutes, format } from 'date-fns'
 import * as router from 'react-router'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -16,7 +15,15 @@ import {
 } from '../OfferEducationalStock'
 
 const defaultProps: OfferEducationalStockProps = {
-  initialValues: DEFAULT_EAC_STOCK_FORM_VALUES,
+  initialValues: {
+    startDate: '',
+    endDate: '',
+    eventTime: '',
+    numberOfTickets: null,
+    totalPrice: null,
+    bookingLimitDate: '',
+    educationalPriceDetail: '',
+  },
   offer: getCollectiveOfferFactory({}),
   onSubmit: vi.fn(),
   mode: Mode.CREATION,
@@ -24,7 +31,6 @@ const defaultProps: OfferEducationalStockProps = {
 
 const tomorrow = addDays(new Date(), 1)
 const initialValuesNotEmpty = {
-  ...DEFAULT_EAC_STOCK_FORM_VALUES,
   startDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   endDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),

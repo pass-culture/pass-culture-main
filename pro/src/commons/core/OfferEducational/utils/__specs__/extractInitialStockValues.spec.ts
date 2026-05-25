@@ -1,5 +1,4 @@
 import type { GetCollectiveOfferCollectiveStockResponseModel } from '@/apiClient/v1/new'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferFactory,
@@ -7,7 +6,18 @@ import {
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 
+import type { OfferEducationalStockFormValues } from '../../types'
 import { extractInitialStockValues } from '../extractInitialStockValues'
+
+const emptyCollectiveStockFormValues: OfferEducationalStockFormValues = {
+  startDate: '',
+  endDate: '',
+  eventTime: '',
+  numberOfTickets: null,
+  totalPrice: null,
+  bookingLimitDate: '',
+  educationalPriceDetail: '',
+}
 
 describe('extractInitialStockValues', () => {
   it('should return default values when collectiveStock is not defined', () => {
@@ -17,7 +27,7 @@ describe('extractInitialStockValues', () => {
           collectiveStock: null,
         })
       )
-    ).toStrictEqual(DEFAULT_EAC_STOCK_FORM_VALUES)
+    ).toStrictEqual(emptyCollectiveStockFormValues)
   })
 
   it('should return stock details', () => {
@@ -57,7 +67,7 @@ describe('extractInitialStockValues', () => {
         })
       )
     ).toStrictEqual({
-      ...DEFAULT_EAC_STOCK_FORM_VALUES,
+      ...emptyCollectiveStockFormValues,
       educationalPriceDetail: 'initialStockValues',
     })
   })
@@ -79,13 +89,9 @@ describe('extractInitialStockValues', () => {
         }
       )
     ).toStrictEqual({
-      bookingLimitDate: '',
+      ...emptyCollectiveStockFormValues,
       startDate: '2030-07-30',
-      endDate: '',
-      eventTime: '',
       numberOfTickets: 20,
-      educationalPriceDetail: '',
-      totalPrice: null,
     })
   })
 
@@ -105,15 +111,7 @@ describe('extractInitialStockValues', () => {
           totalTeachers: null,
         }
       )
-    ).toStrictEqual({
-      bookingLimitDate: '',
-      startDate: '',
-      endDate: '',
-      eventTime: '',
-      numberOfTickets: null,
-      educationalPriceDetail: '',
-      totalPrice: null,
-    })
+    ).toStrictEqual(emptyCollectiveStockFormValues)
   })
 
   it('should return stock details from requested offer when only totalStudents is defined', () => {
@@ -130,15 +128,7 @@ describe('extractInitialStockValues', () => {
           totalStudents: 8,
         }
       )
-    ).toStrictEqual({
-      bookingLimitDate: '',
-      startDate: '',
-      endDate: '',
-      eventTime: '',
-      numberOfTickets: 8,
-      educationalPriceDetail: '',
-      totalPrice: null,
-    })
+    ).toStrictEqual({ ...emptyCollectiveStockFormValues, numberOfTickets: 8 })
   })
 
   it('should return stock details from requested offer when only totalTeachers is defined', () => {
@@ -155,14 +145,6 @@ describe('extractInitialStockValues', () => {
           totalTeachers: 6,
         }
       )
-    ).toStrictEqual({
-      bookingLimitDate: '',
-      startDate: '',
-      endDate: '',
-      eventTime: '',
-      numberOfTickets: 6,
-      educationalPriceDetail: '',
-      totalPrice: null,
-    })
+    ).toStrictEqual({ ...emptyCollectiveStockFormValues, numberOfTickets: 6 })
   })
 })
