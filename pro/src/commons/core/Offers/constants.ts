@@ -4,13 +4,6 @@ import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/ty
 
 import type { CollectiveSearchFiltersParams } from './types'
 
-export enum INDIVIDUAL_OFFER_SUBTYPE {
-  PHYSICAL_GOOD = 'PHYSICAL_GOOD',
-  VIRTUAL_GOOD = 'VIRTUAL_GOOD',
-  PHYSICAL_EVENT = 'PHYSICAL_EVENT',
-  VIRTUAL_EVENT = 'VIRTUAL_EVENT',
-}
-
 export enum CATEGORY_STATUS {
   ONLINE = 'ONLINE',
   OFFLINE = 'OFFLINE',
