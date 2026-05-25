@@ -6,8 +6,8 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
+  type CollectiveOfferStockFormValues,
   Mode,
-  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
@@ -36,7 +36,7 @@ export const CollectiveOfferStockEdition = ({
 
   const handleSubmitStock = async (
     offer: GetCollectiveOfferResponseModel,
-    values: OfferEducationalStockFormValues
+    values: CollectiveOfferStockFormValues
   ) => {
     if (!offer.collectiveStock) {
       return snackBar.error('Impossible de mettre à jour le stock.')

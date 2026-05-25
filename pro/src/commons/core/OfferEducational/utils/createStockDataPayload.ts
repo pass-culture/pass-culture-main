@@ -1,13 +1,13 @@
 import type { CollectiveStockCreationBodyModel } from '@/apiClient/v1/new'
 
-import type { OfferEducationalStockFormValues } from '../types'
+import type { CollectiveOfferStockFormValues } from '../types'
 import {
   buildBookingLimitDatetimeForStockPayload,
   buildDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
 
 export const createStockDataPayload = (
-  values: OfferEducationalStockFormValues,
+  values: CollectiveOfferStockFormValues,
   departmentCode: string,
   offerId: number
 ): CollectiveStockCreationBodyModel => {

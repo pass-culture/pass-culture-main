@@ -8,9 +8,9 @@ import type {
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
-import type { OfferEducationalStockFormValues } from '../types'
+import type { CollectiveOfferStockFormValues } from '../types'
 
-const DEFAULT_COLLECTIVE_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
+const DEFAULT_COLLECTIVE_STOCK_FORM_VALUES: CollectiveOfferStockFormValues = {
   startDate: '',
   endDate: '',
   eventTime: '',
@@ -24,7 +24,7 @@ export const extractInitialStockValues = (
   offer: GetCollectiveOfferResponseModel,
   offerTemplate?: GetCollectiveOfferTemplateResponseModel,
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
-): OfferEducationalStockFormValues => {
+): CollectiveOfferStockFormValues => {
   const { collectiveStock } = offer
 
   if (requestInformations) {

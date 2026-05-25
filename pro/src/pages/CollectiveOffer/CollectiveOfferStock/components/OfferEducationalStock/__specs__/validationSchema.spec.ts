@@ -1,7 +1,7 @@
 import { addDays, addYears, format, subMinutes } from 'date-fns'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
+import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { generateValidationSchema } from '../validationSchema'
@@ -20,7 +20,7 @@ describe('validationSchema', () => {
   const cases: {
     description: string
     offerAllowedActions: CollectiveOfferAllowedAction[]
-    formValues: Partial<OfferEducationalStockFormValues>
+    formValues: Partial<CollectiveOfferStockFormValues>
     expectedErrors: string[]
     isReadOnly?: boolean
     preventPriceIncrease?: boolean

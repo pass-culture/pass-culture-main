@@ -6,10 +6,10 @@ import {
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 
-import type { OfferEducationalStockFormValues } from '../../types'
+import type { CollectiveOfferStockFormValues } from '../../types'
 import { extractInitialStockValues } from '../extractInitialStockValues'
 
-const emptyCollectiveStockFormValues: OfferEducationalStockFormValues = {
+const emptyCollectiveStockFormValues: CollectiveOfferStockFormValues = {
   startDate: '',
   endDate: '',
   eventTime: '',
