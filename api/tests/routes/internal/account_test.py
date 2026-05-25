@@ -8,18 +8,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-@pytest.fixture(name="auth_client")
-def auth_client_fixture(app, settings):
-    settings.E2E_API_KEY = "secret"
-    _client = TestClient(app.test_client())
-    _client.auth_header = {"x-api-key": settings.E2E_API_KEY}
-    return _client
 
 
 class E2EAccountTest:
@@ -30,7 +20,7 @@ class E2EAccountTest:
     def test_create_account_forbidden(self, client, settings):
         settings.E2E_API_KEY = "titi"
         response = client.post("/e2e/account", json={}, headers={"x-api-key": "toto"})
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_create_account(self, auth_client):
         """
@@ -95,7 +85,7 @@ class E2EAccountUbbleConfigTest:
         settings.E2E_API_KEY = "titi"
         user = users_factories.ProfileCompletedUserFactory()
         response = client.post(f"/e2e/account/{user.id}/ubble", json={}, headers={"x-api-key": "toto"})
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_configure_account_ubble(self, auth_client):
         user = users_factories.ProfileCompletedUserFactory()
@@ -122,7 +112,7 @@ class E2EAccountQFConfigTest:
         settings.E2E_API_KEY = "titi"
         user = users_factories.BeneficiaryFactory()
         response = client.post(f"/e2e/account/{user.id}/quotient_familial", json={}, headers={"x-api-key": "toto"})
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_configure_account_qf(self, auth_client):
         user = users_factories.BeneficiaryFactory()

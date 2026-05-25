@@ -7,12 +7,12 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import Feature
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.apis import public_api
+from pcapi.routes.internal.auth import api_key_required
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
 from . import serializers
-from .e2e_account import api_key_required
 
 
 logger = logging.getLogger(__name__)

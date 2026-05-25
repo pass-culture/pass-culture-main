@@ -5,8 +5,7 @@ from flask import send_file
 
 from pcapi.core.object_storage.backends.local import LocalBackend
 from pcapi.routes.apis import public_api
-
-from .e2e_account import api_key_required
+from pcapi.routes.internal.auth import api_key_required
 
 
 @public_api.route("/storage/<bucket_id>/<path:object_id>")

@@ -291,6 +291,11 @@ MENU_SECTIONS = [
                 settings=["ENABLE_TEST_USER_GENERATION"],
             ),
             MenuItem(
+                label="Générateur d'offres de test",
+                url_name="backoffice_web.dev.get_generate_offer_form",
+                settings=["ENABLE_TEST_OFFER_GENERATION"],
+            ),
+            MenuItem(
                 label="Suppression d'utilisateur",
                 url_name="backoffice_web.dev.delete_user",
                 settings=["ENABLE_TEST_USER_GENERATION"],

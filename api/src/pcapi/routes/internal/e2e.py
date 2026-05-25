@@ -8,9 +8,8 @@ from pcapi.db_utils import clean_all_database
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
+from pcapi.routes.internal.auth import api_key_required
 from pcapi.sandboxes.scripts import getters
-
-from .e2e_account import api_key_required
 
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
