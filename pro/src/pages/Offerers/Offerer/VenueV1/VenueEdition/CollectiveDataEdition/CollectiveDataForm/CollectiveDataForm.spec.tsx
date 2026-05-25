@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import {
-  ActivityOpenToPublic,
-  type GetVenueResponseModel,
-} from '@/apiClient/v1'
+import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -56,10 +53,6 @@ function renderCollectiveDataForm(
           value: '2',
           label: 'statut 2',
         },
-      ]}
-      domains={[
-        { id: '1', label: 'Arts numériques' },
-        { id: '2', label: 'Architecture' },
       ]}
     />,
     {
@@ -117,43 +110,38 @@ describe('CollectiveDataForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should check collective domains', async () => {
-    renderCollectiveDataForm()
-
-    await userEvent.click(screen.getByLabelText('Domaines artistiques'))
-
-    const domainsCheckbox = screen.getByRole('checkbox', {
-      name: 'Architecture',
-    })
-
-    await userEvent.click(domainsCheckbox)
-
-    expect(domainsCheckbox).toBeChecked()
-  })
-
-  it('should check activity field', async () => {
-    renderCollectiveDataForm()
-
-    const activityField = screen.getByRole('combobox', {
-      name: /Activité principale/,
-    })
-
-    await userEvent.selectOptions(
-      activityField,
-      screen.getByRole('option', { name: 'Cinéma' })
+  it('should display the collective domains as a read-only list', () => {
+    renderCollectiveDataForm(
+      {},
+      {
+        collectiveDomains: [
+          { id: 1, name: 'Architecture' },
+          { id: 2, name: 'Arts numériques' },
+        ],
+      }
     )
 
-    expect(activityField).toHaveValue(ActivityOpenToPublic.CINEMA)
+    expect(
+      screen.getByText('Architecture, Arts numériques')
+    ).toBeInTheDocument()
   })
 
-  it('should have blank activity field is activity is null', () => {
+  it('should display "Non renseigné" when there is no collective domain', () => {
+    renderCollectiveDataForm({}, { collectiveDomains: [] })
+
+    expect(screen.getByText('Non renseigné')).toBeInTheDocument()
+  })
+
+  it('should display the activity as a read-only label', () => {
+    renderCollectiveDataForm({}, { activity: DisplayableActivity.CINEMA })
+
+    expect(screen.getByText('Cinéma')).toBeInTheDocument()
+  })
+
+  it('should display "Non renseignée" when activity is null', () => {
     renderCollectiveDataForm({}, { activity: null })
 
-    const activityField = screen.getByRole('combobox', {
-      name: /Activité principale/,
-    })
-
-    expect(activityField).toHaveValue('')
+    expect(screen.getByText('Non renseignée')).toBeInTheDocument()
   })
 
   it('should dispatch setSelectedPartnerVenue', async () => {
