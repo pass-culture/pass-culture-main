@@ -14,20 +14,20 @@ describe('createPatchStockDataPayload', () => {
           startDate: startDate,
           endDate: endDate,
           eventTime: '12:00',
-          numberOfPlaces: 11,
+          numberOfTickets: 11,
           totalPrice: 10,
           bookingLimitDate: bookingDate,
-          priceDetail: 'price detail',
+          educationalPriceDetail: 'price detail',
         },
         '56',
         {
           startDate: '',
           endDate: '',
           eventTime: '',
-          numberOfPlaces: null,
+          numberOfTickets: null,
           totalPrice: null,
           bookingLimitDate: '',
-          priceDetail: '',
+          educationalPriceDetail: '',
         }
       )
     ).toEqual({
@@ -49,10 +49,10 @@ describe('createPatchStockDataPayload', () => {
       startDate: startDate,
       endDate: endDate,
       eventTime: '10:00',
-      numberOfPlaces: 11,
+      numberOfTickets: 11,
       totalPrice: 10,
       bookingLimitDate: bookingDate,
-      priceDetail: 'price detail',
+      educationalPriceDetail: 'price detail',
     }
 
     const payload = createPatchStockDataPayload(initialValues, '56', {

@@ -12,8 +12,8 @@ describe('validationSchema', () => {
     endDate: '2050-09-02',
     bookingLimitDate: '2050-08-31',
     eventTime: '14:00',
-    numberOfPlaces: 56,
-    priceDetail: 'Détails sur le prix',
+    numberOfTickets: 56,
+    educationalPriceDetail: 'Détails sur le prix',
     totalPrice: 1500,
   }
 
@@ -91,7 +91,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        numberOfPlaces: 0,
+        numberOfTickets: 0,
       },
       expectedErrors: ['Minimum 1 participant'],
     },
@@ -103,7 +103,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        numberOfPlaces: 3001,
+        numberOfTickets: 3001,
       },
       expectedErrors: ['Le nombre de participants ne doit pas dépasser 3000'],
     },
