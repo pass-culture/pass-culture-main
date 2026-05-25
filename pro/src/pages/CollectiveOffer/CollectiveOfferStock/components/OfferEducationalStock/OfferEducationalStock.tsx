@@ -135,7 +135,6 @@ export const OfferEducationalStock = ({
                 </span>
               </p>
               <FormStock
-                mode={mode}
                 canEditDiscount={canEditDiscount}
                 canEditDates={canEditDates}
               />

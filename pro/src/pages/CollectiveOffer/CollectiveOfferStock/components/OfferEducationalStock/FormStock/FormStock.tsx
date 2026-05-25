@@ -1,10 +1,7 @@
 import type React from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import {
-  Mode,
-  type OfferEducationalStockFormValues,
-} from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -24,13 +21,11 @@ import {
 import styles from './FormStock.module.scss'
 
 interface FormStockProps {
-  mode: Mode
   canEditDiscount: boolean
   canEditDates: boolean
 }
 
 export const FormStock = ({
-  mode,
   canEditDiscount,
   canEditDates,
 }: FormStockProps): JSX.Element => {
@@ -45,10 +40,8 @@ export const FormStock = ({
 
   function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     setValue('startDate', event.target.value, { shouldValidate: true })
-    if (mode === Mode.EDITION || mode === Mode.CREATION) {
-      if (!isDateValid(values.endDate) || values.endDate < event.target.value) {
-        setValue('endDate', event.target.value, { shouldValidate: true })
-      }
+    if (!isDateValid(values.endDate) || values.endDate < event.target.value) {
+      setValue('endDate', event.target.value, { shouldValidate: true })
     }
   }
 
