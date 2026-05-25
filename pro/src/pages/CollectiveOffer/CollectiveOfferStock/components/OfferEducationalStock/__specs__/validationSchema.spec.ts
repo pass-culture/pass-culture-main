@@ -8,9 +8,9 @@ import { generateValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const values = {
-    startDatetime: '2050-09-01',
-    endDatetime: '2050-09-02',
-    bookingLimitDatetime: '2050-08-31',
+    startDate: '2050-09-01',
+    endDate: '2050-09-02',
+    bookingLimitDate: '2050-08-31',
     eventTime: '14:00',
     numberOfPlaces: 56,
     priceDetail: 'Détails sur le prix',
@@ -33,9 +33,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        endDatetime: addYears(values.startDatetime, 2)
-          .toISOString()
-          .split('T')[0],
+        endDate: addYears(values.startDate, 2).toISOString().split('T')[0],
       },
       expectedErrors: ['Les dates doivent être sur la même année scolaire'],
     },
@@ -48,8 +46,8 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        startDatetime: '2050-09-01',
-        endDatetime: '2051-08-31',
+        startDate: '2050-09-01',
+        endDate: '2051-08-31',
       },
       expectedErrors: [],
     },
@@ -61,7 +59,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        bookingLimitDatetime: addDays(values.startDatetime, 1)
+        bookingLimitDate: addDays(values.startDate, 1)
           .toISOString()
           .split('T')[0],
       },
@@ -78,9 +76,9 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        startDatetime: new Date().toISOString().split('T')[0],
-        endDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
-        bookingLimitDatetime: new Date().toISOString().split('T')[0],
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: addDays(new Date(), 2).toISOString().split('T')[0],
+        bookingLimitDate: new Date().toISOString().split('T')[0],
         eventTime: format(subMinutes(new Date(), 1), 'HH:mm'),
       },
       expectedErrors: ["L'heure doit être postérieure à l'heure actuelle"],
@@ -141,7 +139,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        bookingLimitDatetime: '2024-08-31T13:00:00Z',
+        bookingLimitDate: '2024-08-31T13:00:00Z',
       },
       expectedErrors: [
         'La date limite de réservation doit être égale ou postérieure à la date actuelle',
@@ -153,17 +151,17 @@ describe('validationSchema', () => {
       offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
       formValues: {
         ...values,
-        bookingLimitDatetime: '2024-08-31T13:00:00Z',
+        bookingLimitDate: '2024-08-31T13:00:00Z',
       },
       expectedErrors: [],
     },
     {
       description:
-        'bookingLimitDatetime: la règle ne s’applique pas si CAN_EDIT_DATES=false',
+        'bookingLimitDate: la règle ne s’applique pas si CAN_EDIT_DATES=false',
       offerAllowedActions: [],
       formValues: {
         ...values,
-        bookingLimitDatetime: '2000-01-01',
+        bookingLimitDate: '2000-01-01',
       },
       expectedErrors: [],
     },

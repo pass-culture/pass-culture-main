@@ -38,9 +38,9 @@ describe('extractInitialStockValues', () => {
         })
       )
     ).toStrictEqual({
-      bookingLimitDatetime: '2023-02-28',
-      startDatetime: '2023-02-23',
-      endDatetime: '2023-02-23',
+      bookingLimitDate: '2023-02-28',
+      startDate: '2023-02-23',
+      endDate: '2023-02-23',
       eventTime: '11:46',
       numberOfPlaces: 20,
       priceDetail: 'test',
@@ -79,9 +79,9 @@ describe('extractInitialStockValues', () => {
         }
       )
     ).toStrictEqual({
-      bookingLimitDatetime: '',
-      startDatetime: '2030-07-30',
-      endDatetime: '',
+      bookingLimitDate: '',
+      startDate: '2030-07-30',
+      endDate: '',
       eventTime: '',
       numberOfPlaces: 20,
       priceDetail: '',
@@ -106,9 +106,9 @@ describe('extractInitialStockValues', () => {
         }
       )
     ).toStrictEqual({
-      bookingLimitDatetime: '',
-      startDatetime: '',
-      endDatetime: '',
+      bookingLimitDate: '',
+      startDate: '',
+      endDate: '',
       eventTime: '',
       numberOfPlaces: null,
       priceDetail: '',
@@ -131,9 +131,9 @@ describe('extractInitialStockValues', () => {
         }
       )
     ).toStrictEqual({
-      bookingLimitDatetime: '',
-      startDatetime: '',
-      endDatetime: '',
+      bookingLimitDate: '',
+      startDate: '',
+      endDate: '',
       eventTime: '',
       numberOfPlaces: 8,
       priceDetail: '',
@@ -156,9 +156,9 @@ describe('extractInitialStockValues', () => {
         }
       )
     ).toStrictEqual({
-      bookingLimitDatetime: '',
-      startDatetime: '',
-      endDatetime: '',
+      bookingLimitDate: '',
+      startDate: '',
+      endDate: '',
       eventTime: '',
       numberOfPlaces: 6,
       priceDetail: '',

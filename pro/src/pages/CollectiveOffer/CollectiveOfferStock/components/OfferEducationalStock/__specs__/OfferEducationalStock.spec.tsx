@@ -25,10 +25,10 @@ const defaultProps: OfferEducationalStockProps = {
 const tomorrow = addDays(new Date(), 1)
 const initialValuesNotEmpty = {
   ...DEFAULT_EAC_STOCK_FORM_VALUES,
-  startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
-  endDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+  startDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+  endDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
-  bookingLimitDatetime: format(new Date(), FORMAT_ISO_DATE_ONLY),
+  bookingLimitDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
   numberOfPlaces: 10,
   totalPrice: 100,
   priceDetail: 'Détail du prix',
@@ -55,10 +55,10 @@ describe('OfferEducationalStock', () => {
       ...defaultProps,
       offer,
       initialValues: {
-        startDatetime: '2022-02-10',
-        endDatetime: '2022-02-10',
+        startDate: '2022-02-10',
+        endDate: '2022-02-10',
         eventTime: '00:00',
-        bookingLimitDatetime: '2022-02-10',
+        bookingLimitDate: '2022-02-10',
         numberOfPlaces: 10,
         totalPrice: 100,
         priceDetail: 'Détail du prix',
@@ -123,7 +123,7 @@ describe('OfferEducationalStock', () => {
   })
 })
 
-it('should disable booking limit datetime when form access is read only', () => {
+it('should disable booking limit date when form access is read only', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     mode: Mode.READ_ONLY,
@@ -131,11 +131,7 @@ it('should disable booking limit datetime when form access is read only', () => 
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const bookingLimitDatetimeInput = screen.getByLabelText(
-    'Date limite de réservation *'
-  )
-
-  expect(bookingLimitDatetimeInput).toBeDisabled()
+  expect(screen.getByLabelText('Date limite de réservation *')).toBeDisabled()
 })
 
 it('should display saved information in the action bar', () => {
@@ -147,11 +143,10 @@ it('should display saved information in the action bar', () => {
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
-
   expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
 })
 
-it('should not disable start datetime, end datetime and event time inputs when date edition is allowed', () => {
+it('should not disable start date, end date and event time inputs when date edition is allowed', () => {
   const testProps: OfferEducationalStockProps = {
     ...defaultProps,
     offer: getCollectiveOfferFactory({
@@ -161,13 +156,9 @@ it('should not disable start datetime, end datetime and event time inputs when d
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const startDatetimeInput = screen.getByLabelText(/Date de début */)
-  const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
-  const eventTimeInput = screen.getByLabelText(/Horaire */)
-
-  expect(startDatetimeInput).not.toBeDisabled()
-  expect(endDatetimeInput).not.toBeDisabled()
-  expect(eventTimeInput).not.toBeDisabled()
+  expect(screen.getByLabelText(/Date de début */)).not.toBeDisabled()
+  expect(screen.getAllByLabelText(/Date de fin */)[1]).not.toBeDisabled()
+  expect(screen.getByLabelText(/Horaire */)).not.toBeDisabled()
 })
 
 it('should not disable description, price and places when action CAN_EDIT_DISCOUNT is allowed', () => {
@@ -181,15 +172,13 @@ it('should not disable description, price and places when action CAN_EDIT_DISCOU
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const descriptionInput = screen.getByRole('textbox', {
-    name: /Informations sur le prix(?: |\u00A0)\*/,
-  })
-  const priceInput = screen.getByLabelText(/Prix total TTC */)
-  const placeInput = screen.getByLabelText(/Nombre de participants */)
-
-  expect(descriptionInput).not.toBeDisabled()
-  expect(priceInput).not.toBeDisabled()
-  expect(placeInput).not.toBeDisabled()
+  expect(
+    screen.getByRole('textbox', {
+      name: /Informations sur le prix(?: |\u00A0)\*/,
+    })
+  ).not.toBeDisabled()
+  expect(screen.getByLabelText(/Prix total TTC/)).not.toBeDisabled()
+  expect(screen.getByLabelText(/Nombre de participants/)).not.toBeDisabled()
 })
 
 it('should disable description, price and places when allowed action CAN_EDIT_DISCOUNT doesnt exist', () => {
@@ -203,13 +192,11 @@ it('should disable description, price and places when allowed action CAN_EDIT_DI
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const descriptionInput = screen.getByRole('textbox', {
-    name: /Informations sur le prix(?: |\u00A0)\*/,
-  })
-  const priceInput = screen.getByLabelText(/Prix total TTC/)
-  const placeInput = screen.getByLabelText(/Nombre de participants/)
-
-  expect(descriptionInput).toBeDisabled()
-  expect(priceInput).toBeDisabled()
-  expect(placeInput).toBeDisabled()
+  expect(
+    screen.getByRole('textbox', {
+      name: /Informations sur le prix(?: |\u00A0)\*/,
+    })
+  ).toBeDisabled()
+  expect(screen.getByLabelText(/Prix total TTC/)).toBeDisabled()
+  expect(screen.getByLabelText(/Nombre de participants/)).toBeDisabled()
 })

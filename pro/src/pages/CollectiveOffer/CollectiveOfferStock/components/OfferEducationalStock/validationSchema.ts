@@ -3,6 +3,7 @@ import * as yup from 'yup'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
+import { isDateValid } from '@/commons/utils/date'
 
 import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
 
@@ -13,27 +14,25 @@ const todayAtMidnight = () => {
 }
 
 const isBookingDateBeforeStartDate = (
-  bookingLimitDatetime: Date | null | undefined,
-  context: yup.TestContext
+  bookingLimitDate: Date | null | undefined,
+  parent: yup.TestContext['parent']
 ) => {
-  if (!context.parent.startDatetime || !bookingLimitDatetime) {
+  if (!isDateValid(parent.startDate) || !isDateValid(bookingLimitDate)) {
     return true
   }
 
   return (
-    isBefore(bookingLimitDatetime, context.parent.startDatetime) ||
-    isSameDay(bookingLimitDatetime, context.parent.startDatetime)
+    isBefore(bookingLimitDate, parent.startDate) ||
+    isSameDay(bookingLimitDate, parent.startDate)
   )
 }
 
-function isBookingDateAfterNow(
-  bookingLimitDatetime: string | null | undefined
-) {
-  if (!bookingLimitDatetime) {
+function isBookingDateAfterNow(bookingLimitDate: string | null | undefined) {
+  if (!isDateValid(bookingLimitDate)) {
     return true
   }
 
-  return !isBefore(bookingLimitDatetime, todayAtMidnight())
+  return !isBefore(bookingLimitDate, todayAtMidnight())
 }
 
 export const generateValidationSchema = (
@@ -71,7 +70,7 @@ export const generateValidationSchema = (
   }
 
   return yup.object().shape({
-    startDatetime: yup
+    startDate: yup
       .string()
       .required('La date de début est obligatoire')
       .when([], {
@@ -83,7 +82,7 @@ export const generateValidationSchema = (
             (startDate) => !isBefore(startDate, todayAtMidnight())
           ),
       }),
-    endDatetime: yup
+    endDate: yup
       .string()
       .required('La date de fin est obligatoire')
       .when([], {
@@ -101,7 +100,7 @@ export const generateValidationSchema = (
               function (endDate) {
                 return !isAfter(
                   endDate,
-                  getMaxEndDateInSchoolYear(this.parent.startDatetime)
+                  getMaxEndDateInSchoolYear(this.parent.startDate)
                 )
               }
             ),
@@ -109,9 +108,9 @@ export const generateValidationSchema = (
     eventTime: yup
       .string()
       .required('L’horaire est obligatoire')
-      .when('startDatetime', {
-        is: (startDatetime: string) =>
-          isSameDay(new Date(startDatetime), new Date()) && canEditDates,
+      .when('startDate', {
+        is: (startDate: string) =>
+          isSameDay(new Date(startDate), new Date()) && canEditDates,
         then: (schema) =>
           schema.test({
             name: 'is-before-current-time',
@@ -134,7 +133,7 @@ export const generateValidationSchema = (
       .nullable()
       .required('Le nombre de participants est obligatoire'),
     totalPrice: totalPriceValidation,
-    bookingLimitDatetime: yup
+    bookingLimitDate: yup
       .string()
       .required('La date limite de réservation est obligatoire')
       .when([], {
@@ -144,14 +143,14 @@ export const generateValidationSchema = (
             .test(
               'is-before-event',
               'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
-              function (bookingDate) {
-                return isBookingDateBeforeStartDate(new Date(bookingDate), this)
-              }
+              (bookingLimitDate, { parent }) =>
+                isBookingDateBeforeStartDate(new Date(bookingLimitDate), parent)
             )
             .test(
               'is-after-today',
               'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-              (endDate) => !canEditDetails || isBookingDateAfterNow(endDate)
+              (bookingLimitDate) =>
+                !canEditDetails || isBookingDateAfterNow(bookingLimitDate)
             ),
       }),
     priceDetail: yup

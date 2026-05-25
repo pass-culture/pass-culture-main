@@ -71,12 +71,12 @@ export function getDefaultEducationalValues(
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
-  startDatetime: '',
-  endDatetime: '',
+  startDate: '',
+  endDate: '',
   eventTime: '',
   numberOfPlaces: null,
   totalPrice: null,
-  bookingLimitDatetime: '',
+  bookingLimitDate: '',
   priceDetail: '',
 }
 

@@ -29,9 +29,9 @@ export const extractInitialStockValues = (
     return {
       ...DEFAULT_EAC_STOCK_FORM_VALUES,
       numberOfPlaces,
-      startDatetime: requestedDate
+      startDate: requestedDate
         ? format(new Date(requestedDate), FORMAT_ISO_DATE_ONLY)
-        : DEFAULT_EAC_STOCK_FORM_VALUES.startDatetime,
+        : DEFAULT_EAC_STOCK_FORM_VALUES.startDate,
     }
   }
 
@@ -45,7 +45,7 @@ export const extractInitialStockValues = (
     return DEFAULT_EAC_STOCK_FORM_VALUES
   }
 
-  const startDatetime = collectiveStock.startDatetime
+  const startDate = collectiveStock.startDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
           collectiveStock.startDatetime,
@@ -53,9 +53,9 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.startDatetime
+    : DEFAULT_EAC_STOCK_FORM_VALUES.startDate
 
-  const endDatetime = collectiveStock.endDatetime
+  const endDate = collectiveStock.endDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
           collectiveStock.endDatetime,
@@ -63,7 +63,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.endDatetime
+    : DEFAULT_EAC_STOCK_FORM_VALUES.endDate
 
   const eventTime = collectiveStock.startDatetime
     ? format(
@@ -75,24 +75,24 @@ export const extractInitialStockValues = (
       )
     : DEFAULT_EAC_STOCK_FORM_VALUES.eventTime
 
-  const bookingLimitDatetime = collectiveStock.bookingLimitDatetime
+  const bookingLimitDate = collectiveStock.bookingLimitDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
           collectiveStock.bookingLimitDatetime
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime
+    : DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDate
 
   return {
-    startDatetime,
-    endDatetime,
+    startDate,
+    endDate,
     eventTime,
     numberOfPlaces:
       collectiveStock.numberOfTickets ??
       DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
     totalPrice: collectiveStock.price,
-    bookingLimitDatetime,
+    bookingLimitDate,
     priceDetail:
       collectiveStock.educationalPriceDetail ??
       DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
