@@ -5,7 +5,7 @@ import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
+import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   type RenderWithProvidersOptions,
@@ -22,7 +22,7 @@ function renderFormStock({
   onSubmit = vi.fn(),
   options,
 }: {
-  initialValues: OfferEducationalStockFormValues
+  initialValues: CollectiveOfferStockFormValues
   allowedActions: CollectiveOfferAllowedAction[]
   onSubmit: () => void
   options?: RenderWithProvidersOptions
@@ -30,7 +30,7 @@ function renderFormStock({
   function FormStockWrapper() {
     const form = useForm({
       defaultValues: initialValues,
-      resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
+      resolver: yupResolver<CollectiveOfferStockFormValues, unknown, unknown>(
         generateValidationSchema(allowedActions, initialValues.totalPrice)
       ),
       mode: 'onTouched',
@@ -59,7 +59,7 @@ function renderFormStock({
 }
 
 describe('FormStock', () => {
-  let initialValues: OfferEducationalStockFormValues
+  let initialValues: CollectiveOfferStockFormValues
   const onSubmit = vi.fn()
   let allowedActions: CollectiveOfferAllowedAction[]
 

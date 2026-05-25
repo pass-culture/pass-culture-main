@@ -1,7 +1,7 @@
 import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1/new'
 import { isEqual } from '@/commons/utils/isEqual'
 
-import type { OfferEducationalStockFormValues } from '../types'
+import type { CollectiveOfferStockFormValues } from '../types'
 import {
   buildBookingLimitDatetimeForStockPayload,
   buildDatetimeForStockPayload,
@@ -96,7 +96,7 @@ const serializer = {
 }
 
 const valuesIsOfferEducationalStockFormValuesForSerializer = (
-  values: OfferEducationalStockFormValues
+  values: CollectiveOfferStockFormValues
 ): values is OfferEducationalStockFormValuesForSerializer => {
   return (
     typeof values.numberOfTickets === 'number' &&
@@ -105,15 +105,15 @@ const valuesIsOfferEducationalStockFormValuesForSerializer = (
 }
 
 export const createPatchStockDataPayload = (
-  values: OfferEducationalStockFormValues,
+  values: CollectiveOfferStockFormValues,
   departmentCode: string,
-  initialValues: OfferEducationalStockFormValues
+  initialValues: CollectiveOfferStockFormValues
 ): CollectiveStockEditionBodyModel => {
   let changedValues: CollectiveStockEditionBodyModel = {}
 
   if (valuesIsOfferEducationalStockFormValuesForSerializer(values)) {
     ;(
-      Object.keys(initialValues) as (keyof OfferEducationalStockFormValues)[]
+      Object.keys(initialValues) as (keyof CollectiveOfferStockFormValues)[]
     ).forEach((key) => {
       if (!isEqual(values[key], initialValues[key])) {
         changedValues = serializer[key](values, changedValues, departmentCode)

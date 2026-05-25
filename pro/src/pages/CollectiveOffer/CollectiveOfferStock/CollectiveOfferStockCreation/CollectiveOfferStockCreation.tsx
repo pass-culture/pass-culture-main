@@ -13,8 +13,8 @@ import {
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import {
+  type CollectiveOfferStockFormValues,
   Mode,
-  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
 import { createStockDataPayload } from '@/commons/core/OfferEducational/utils/createStockDataPayload'
@@ -73,7 +73,7 @@ export const CollectiveOfferStockCreation = ({
   /* istanbul ignore next: DEBT, TO FIX unit test submit mock */
   const handleSubmitStock = async (
     offer: GetCollectiveOfferResponseModel,
-    values: OfferEducationalStockFormValues
+    values: CollectiveOfferStockFormValues
   ) => {
     try {
       let response: CollectiveStockResponseModel | null = null

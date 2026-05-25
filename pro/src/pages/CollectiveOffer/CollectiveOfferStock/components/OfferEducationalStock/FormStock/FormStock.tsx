@@ -1,7 +1,7 @@
 import type React from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
+import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -30,7 +30,7 @@ export const FormStock = ({
   canEditDates,
 }: FormStockProps): JSX.Element => {
   const { watch, setValue, register, formState } =
-    useFormContext<OfferEducationalStockFormValues>()
+    useFormContext<CollectiveOfferStockFormValues>()
 
   const values = watch()
 

@@ -75,7 +75,7 @@ export enum Mode {
   READ_ONLY,
 }
 
-export type OfferEducationalStockFormValues = {
+export type CollectiveOfferStockFormValues = {
   startDate: string
   endDate: string
   eventTime: string

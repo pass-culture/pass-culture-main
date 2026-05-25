@@ -11,8 +11,8 @@ import {
 } from '@/apiClient/v1/new'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import {
+  type CollectiveOfferStockFormValues,
   Mode,
-  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'
 import { isDateValid } from '@/commons/utils/date'
@@ -40,11 +40,11 @@ import styles from './OfferEducationalStock.module.scss'
 import { generateValidationSchema } from './validationSchema'
 
 export interface OfferEducationalStockProps {
-  initialValues: OfferEducationalStockFormValues
+  initialValues: CollectiveOfferStockFormValues
   offer: GetCollectiveOfferResponseModel
   onSubmit: (
     offer: GetCollectiveOfferResponseModel,
-    values: OfferEducationalStockFormValues
+    values: CollectiveOfferStockFormValues
   ) => Promise<void>
   mode: Mode
   requestId?: string | null
@@ -69,7 +69,7 @@ export const OfferEducationalStock = ({
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
-  const postForm = async (values: OfferEducationalStockFormValues) => {
+  const postForm = async (values: CollectiveOfferStockFormValues) => {
     setIsLoading(true)
     try {
       await onSubmit(offer, values)
@@ -83,7 +83,7 @@ export const OfferEducationalStock = ({
 
   const form = useForm({
     defaultValues: initialValues,
-    resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
+    resolver: yupResolver<CollectiveOfferStockFormValues, unknown, unknown>(
       generateValidationSchema(offer.allowedActions, initialValues.totalPrice)
     ),
     mode: 'onSubmit',

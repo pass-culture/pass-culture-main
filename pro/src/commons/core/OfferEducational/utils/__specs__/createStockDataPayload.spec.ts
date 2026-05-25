@@ -1,4 +1,4 @@
-import type { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
+import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 
 import { createStockDataPayload } from '../createStockDataPayload'
 
@@ -7,7 +7,7 @@ const departmentCode = '56'
 
 describe('createStockDataPayload', () => {
   it('should return valid payload when form values are provided', () => {
-    const values: OfferEducationalStockFormValues = {
+    const values: CollectiveOfferStockFormValues = {
       bookingLimitDate: '2024-06-30',
       endDate: '2024-06-30',
       eventTime: '04:15',
