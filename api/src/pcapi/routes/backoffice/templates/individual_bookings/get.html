@@ -1,0 +1,209 @@
+{% extends "layouts/details.html" %}
+{% import "components/badges.html" as badges with context %}
+{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
+{% from "components/description.html" import description_detail_vertical with context %}
+{% from "components/clipboard.html" import copy_to_clipboard with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/bookings/modal.html" import booking_modal with context %}
+{% from "components/description.html" import description_detail_horizontal %}
+{% from "components/description.html" import description_detail_vertical %}
+{% import "components/links.html" as links with context %}
+{% from "components/connect_as.html" import build_connect_as %}
+{% from "components/history/tunnel_history.html" import build_tunnel_history %}
+{% from "components/presentation/images.html" import offer_detail_image %}
+{% if booking.stock.offer.offererAddress %}
+  {% set address = booking.stock.offer.offererAddress.address %}
+{% else %}
+  {% set address = booking.venue.offererAddress.address %}
+{% endif %}
+{% block title %}Réservation - {{ booking.stock.offer.name }}{% endblock %}
+{% block header_extra %}
+  {{ booking | format_booking_status(with_badge=True) }}
+  {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+    {{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}
+  {% endif %}
+{% endblock header_extra %}
+{% block action_buttons %}
+  {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+    {{ action_bar_button("check-circle", "Valider", modal_id="#pc-validate-booking-modal-" + booking.id |string) }}
+  {% endif %}
+  {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
+    {{ action_bar_button("x-circle", "Annuler", modal_id="#pc-cancel-booking-modal-" + booking.id |string) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
+    {{ action_bar_button("exclamation-diamond", "Créer un incident", modal_id="#overpayment-creation-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+    {{ action_bar_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
+    {{ action_bar_button("hand-thumbs-down", "Frauduleuse", modal_id="#batch-tag-fraudulent-booking-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
+    {{ action_bar_button("hand-thumbs-up", "Non frauduleuse", modal_id="#batch-remove-fraudulent-booking-tag-modal") }}
+  {% endif %}
+  <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
+  {% if allowed_actions.additional_actions %}
+    <ul class="dropdown-menu">
+      {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+        <li>{{ action_bar_additional_button("check-circle", "Valider", modal_id="#pc-validate-booking-modal" + booking.id |string) }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
+        <li>{{ action_bar_additional_button("x-circle", "Annuler", modal_id="#pc-cancel-booking-modal-" + booking.id |string) }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
+        <li>{{ action_bar_additional_button("exclamation-diamond", "Créer un incident", modal_id="#overpayment-creation-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+        <li>
+          {{ action_bar_additional_button("exclamation-triangle", "Créer un geste commercial", modal_id="#commercial-gesture-creation-modal") }}
+        </li>
+      {% endif %}
+      {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
+        <li>{{ action_bar_additional_button("hand-thumbs-down", "Frauduleuse", modal_id="#batch-tag-fraudulent-booking-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
+        <li>{{ action_bar_additional_button("hand-thumbs-up", "Non frauduleuse", modal_id="#batch-remove-fraudulent-booking-tag-modal") }}</li>
+      {% endif %}
+    </ul>
+  {% endif %}
+{% endblock action_buttons %}
+{% block details_container %}
+  {% call nav_section("info", "Informations pratiques") %}
+    <div class="d-flex gap-1">
+      <div class="flex-grow-1">
+        {% call description_detail_horizontal("Bénéficiaire") %}
+          {{ links.build_public_user_name_to_details_link(booking.user) }}
+          {{ copy_to_clipboard(booking.user.full_name, "Copier le nom du bénéficiaire") }}
+        {% endcall %}
+        {% if booking.stock.beginningDatetime %}
+          {% call description_detail_horizontal("Date de l'évènement") %}
+            {{ booking.stock.beginningDatetime | format_date_time(address) }}
+          {% endcall %}
+        {% endif %}
+        {% if booking.stock.bookingLimitDatetime %}
+          {% call description_detail_horizontal("Date limite de réservation") %}
+            {{ booking.stock.bookingLimitDatetime | format_date_time(address) }}
+          {% endcall %}
+        {% endif %}
+      </div>
+      {{ offer_detail_image(booking.stock.offer.image.url, booking.stock.offer.image.credit) }}
+    </div>
+  {% endcall %}
+  {% call nav_section("tunel", "Suivi de la réservation") %}
+    {{ build_tunnel_history(history) }}
+  {% endcall %}
+  {% call nav_section("finance", "Informations financières") %}
+    {% call description_detail_horizontal("Montant") %}
+      {{ booking.amount | format_amount(booking.user) }}
+    {% endcall %}
+    {% call description_detail_horizontal("Contremarque") %}
+      {{ booking.token | placeholder_if_empty }}
+      {% if booking.token %}{{ copy_to_clipboard(booking.token, "Copier la contremarque") }}{% endif %}
+    {% endcall %}
+    {% if booking.cashflow_batch %}
+      {% call description_detail_horizontal("N° de virement") %}
+        {{ booking.cashflow_batch.label }}
+        {{ copy_to_clipboard(booking.cashflow_batch.label, "Copier le numéro de virement") }}
+      {% endcall %}
+    {% endif %}
+    {% if booking.reimbursement_pricing %}
+      {% call description_detail_horizontal("Montant remboursé") %}
+        {{ -booking.reimbursement_pricing.amount | format_cents(target=booking.user) }}
+      {% endcall %}
+    {% endif %}
+    {% if booking.reimbursement_pricing %}
+      {% call description_detail_horizontal("Taux de remboursement") %}
+        {{ booking.reimbursement_rate | format_rate }}
+      {% endcall %}
+    {% endif %}
+    {% if booking.incidents %}
+      {% call description_detail_horizontal("Incident comptable") %}
+        {% for booking_finance_incident in booking.incidents | sort(attribute="incidentId", reverse=True) %}
+          {% set incident = booking_finance_incident.incident %}
+          <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=incident.id) }}"
+             class="link-primary"
+             data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-title="{{ incident.status | format_finance_incident_status }}">{{ incident.kind | format_finance_incident_type_str }} ({{ incident.id }})</a>
+          {{ incident.status | format_finance_incident_status_badge }}
+        {% endfor %}
+      {% endcall %}
+    {% endif %}
+  {% endcall %}
+{% endblock details_container %}
+{% block side_column %}
+  <div class="align-self-start">
+    {% call build_connect_as(connect_as) %}
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg"
+              href="{{ connect_as.href }}"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              data-bs-title="Accéder à l'offre sur PC Pro"
+              data-submit-form="{{ connect_as.formName }}">
+        Accéder PC Pro
+        <i class="bi bi-briefcase"></i>
+      </button>
+    {% endcall %}
+    {% call description_detail_vertical("ID réservation") %}
+      {{ booking.id }}
+      {{ copy_to_clipboard(booking.id, "Copier l'ID réservation") }}
+    {% endcall %}
+    {% call description_detail_vertical("Catégorie") %}
+      {{ booking.stock.offer.subcategoryId | format_offer_category }}
+    {% endcall %}
+    {% call description_detail_vertical("Sous-catégorie") %}
+      {{ booking.stock.offer.subcategory.app_label }}
+    {% endcall %}
+    {% call description_detail_vertical("Type") %}
+      {% if booking.quantity == 2 %}
+        Duo
+      {% else %}
+        Solo
+      {% endif %}
+    {% endcall %}
+    <hr />
+    {% call description_detail_vertical("ID offre") %}
+      {{ links.build_offer_details_link(booking.stock.offer) }}
+      {{ copy_to_clipboard(booking.stock.offer.id, "Copier l'ID de l'offre") }}
+    {% endcall %}
+    {% call description_detail_vertical("Entité juridique") %}
+      {{ links.build_offerer_name_to_details_link(booking.venue.managingOfferer) }}
+    {% endcall %}
+    {% call description_detail_vertical("Partenaire culturel") %}
+      {{ links.build_venue_name_to_details_link(booking.venue) }}
+    {% endcall %}
+    {% call description_detail_vertical("Adresse de l'offre") %}
+      {{ address.street }}, {{ address.postalCode }} {{ address.city }}
+    {% endcall %}
+    <hr />
+    {% call description_detail_vertical("Auteur de la validation") %}
+      {{ booking.validationAuthorType | format_booking_validation_author_type | placeholder_if_empty }}
+    {% endcall %}
+    {% call description_detail_vertical("Modalité de retrait") %}
+      {{ booking.stock.offer.withdrawalType | format_withdrawal_type | placeholder_if_empty }}
+    {% endcall %}
+  </div>
+{% endblock side_column %}
+{% block extra_main_content %}
+  <!-- HIDDEN FORMS/AND MODALS -->
+  {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, mark_as_used_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) ) }}
+  {% endif %}
+  {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) ) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Créer un incident pour la réservation " + booking.token, "overpayment-creation-modal", create_incident_form, url_for('backoffice_web.finance_incidents.create_individual_booking_overpayment') ) }}
+  {% endif %}
+  {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Créer un geste commercial pour la réservation " + booking.token, "commercial-gesture-creation-modal", create_commercial_gesture_form, url_for('backoffice_web.finance_incidents.create_individual_booking_commercial_gesture') ) }}
+  {% endif %}
+  {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "batch-tag-fraudulent-booking-modal", mark_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_tag_fraudulent_bookings') ) }}
+  {% endif %}
+  {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
+    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme non frauduleuse", "batch-remove-fraudulent-booking-tag-modal", mark_non_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag') ) }}
+  {% endif %}
+{% endblock extra_main_content %}
