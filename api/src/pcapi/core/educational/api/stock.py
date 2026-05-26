@@ -51,6 +51,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         bookingLimitDatetime=booking_limit_datetime,
         price=decimal.Decimal(total_price),
         numberOfTickets=number_of_tickets,
+        numberOfTeachers=0,
         priceDetail=educational_price_detail,
     )
     db.session.add(collective_stock)

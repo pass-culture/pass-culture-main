@@ -49,6 +49,8 @@ class Return200Test:
         offer = db.session.get(CollectiveOffer, offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
+        assert created_stock.numberOfTickets == 38
+        assert created_stock.numberOfTeachers == 0
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
@@ -86,6 +88,8 @@ class Return200Test:
         offer = db.session.get(CollectiveOffer, offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
+        assert created_stock.numberOfTickets == 38
+        assert created_stock.numberOfTeachers == 0
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
         assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)

@@ -1242,7 +1242,12 @@ class CollectiveStock(PcObject, models.Model):
 
     bookingLimitDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
+    # numberOfTickets is the number of students
+    # numberOfTeachers is the number of adults accompanying the students
     numberOfTickets: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
+    numberOfTeachers: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.Integer, nullable=False, default=0, server_default=sa.text("0")
+    )
 
     priceDetail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
