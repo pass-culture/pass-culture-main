@@ -19,6 +19,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.criteria import constants
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.event_series import factories as event_series_factories
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
@@ -69,6 +70,7 @@ Fake = faker.Faker(locale="fr_FR")
 @log_func_duration
 def save_test_cases_sandbox() -> None:
     create_artists()
+    create_event_series()
     create_offers_with_gtls()
     create_offers_with_same_ean()
     create_cinema_data()
@@ -100,6 +102,7 @@ def save_test_cases_sandbox() -> None:
     create_users_with_reactions()
     create_user_that_booked_some_cinema()  # to suggest reactions on cinema bookings
     create_users_for_credit_v3_tests()
+    create_event_series()
 
 
 @log_func_duration
@@ -1630,3 +1633,56 @@ def create_user_that_booked_some_cinema() -> None:
         user_email = f"ella-reserveducine-{i}@example.com"
         user = users_factories.BeneficiaryFactory.create(email=user_email)
         bookings_factories.UsedBookingFactory.create(user=user, stock=stock, dateUsed=seance_cine_start)
+
+
+@log_func_duration
+def create_event_series() -> None:
+    series_configs = [
+        (
+            "Zamdane",
+            "Le rappeur marseillais Zamdane en tournée",
+            subcategories.CONCERT.id,
+            ["Marseille - Le Moulin", "Paris - La Cigale", "Lyon - Le Transbordeur"],
+        ),
+        (
+            "Moon Duo",
+            "Moon Duo, duo de rock psychédélique américain, en tournée européenne",
+            subcategories.CONCERT.id,
+            ["Paris - La Maroquinerie", "Bordeaux - Rock School Barbey", "Nantes - Le Stereolux"],
+        ),
+        (
+            "Bad Bunny",
+            "Bad Bunny en tournée mondiale",
+            subcategories.CONCERT.id,
+            ["Paris - Accor Arena", "Marseille - Orange Vélodrome", "Lyon - LDLC Arena"],
+        ),
+        (
+            "L'Avare par la Comédie-Française",
+            "La pièce de Molière mise en scène par la Comédie-Française en tournée",
+            subcategories.SPECTACLE_REPRESENTATION.id,
+            ["Paris - Salle Richelieu", "Bordeaux - Grand Théâtre", "Strasbourg - Opéra National du Rhin"],
+        ),
+        (
+            "Un Normand à Paris !",
+            "La comédie Un Normand à Paris en tournée nationale",
+            subcategories.SPECTACLE_REPRESENTATION.id,
+            ["Rouen - Théâtre des Arts", "Paris - Théâtre de la Madeleine", "Caen - Théâtre de Caen"],
+        ),
+    ]
+
+    for series_name, description, subcategory_id, venue_names in series_configs:
+        event_series = event_series_factories.EventSeriesFactory.create(
+            name=series_name,
+            description=description,
+        )
+        for venue_name in venue_names:
+            venue = offerers_factories.VenueFactory.create(name=venue_name)
+            offer = offers_factories.EventStockFactory.create(
+                offer__venue=venue,
+                offer__name=series_name,
+                offer__subcategoryId=subcategory_id,
+            ).offer
+            event_series_factories.EventSeriesOfferLinkFactory.create(
+                event_series=event_series,
+                offer=offer,
+            )
