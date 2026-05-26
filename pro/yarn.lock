@@ -704,30 +704,12 @@
     idb "7.1.1"
     tslib "^2.1.0"
 
-"@firebase/component@0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.7.2.tgz#82a87848ad389d6037019745c973e4f2779a6983"
-  integrity sha512-iyVDGc6Vjx7Rm0cAdccLH/NG6fADsgJak/XW9IA2lPf8AjIlsemOpFGKczYyPHxm4rnKdR8z6sK4+KEC7NwmEg==
-  dependencies:
-    "@firebase/util" "1.15.0"
-    tslib "^2.1.0"
-
 "@firebase/component@0.7.3":
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.7.3.tgz#900c9720f7e5abb2a23975f90f96366d62d085b9"
   integrity sha512-wFofIaa2879ogD/WvkjYXJxRmfnL0scen6ORgaC3na1FNOR9ASIUANQdhqQcmWu/h77/pVHY7ch5flewa5Bcew==
   dependencies:
     "@firebase/util" "1.15.1"
-    tslib "^2.1.0"
-
-"@firebase/installations@0.6.21":
-  version "0.6.21"
-  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.21.tgz#38c9a5487c7ccc7dd4328736556afad8eebf453e"
-  integrity sha512-xGFGTeICJZ5vhrmmDukeczIcFULFXybojML2+QSDFoKj5A7zbGN7KzFGSKNhDkIxpjzsYG9IleJyUebuAcmqWA==
-  dependencies:
-    "@firebase/component" "0.7.2"
-    "@firebase/util" "1.15.0"
-    idb "7.1.1"
     tslib "^2.1.0"
 
 "@firebase/installations@0.6.22":
@@ -738,13 +720,6 @@
     "@firebase/component" "0.7.3"
     "@firebase/util" "1.15.1"
     idb "7.1.1"
-    tslib "^2.1.0"
-
-"@firebase/logger@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@firebase/logger/-/logger-0.5.0.tgz#a9e55b1c669a0983dc67127fa4a5964ce8ed5e1b"
-  integrity sha512-cGskaAvkrnh42b3BA3doDWeBmuHFO/Mx5A83rbRDYakPjO9bJtRL3dX7javzc2Rr/JHZf4HlterTW2lUkfeN4g==
-  dependencies:
     tslib "^2.1.0"
 
 "@firebase/logger@0.5.1":
@@ -763,13 +738,6 @@
     "@firebase/installations" "0.6.22"
     "@firebase/logger" "0.5.1"
     "@firebase/util" "1.15.1"
-    tslib "^2.1.0"
-
-"@firebase/util@1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.15.0.tgz#783c1a67dc0690dbe3afca668174c11368843008"
-  integrity sha512-AmWf3cHAOMbrCPG4xdPKQaj5iHnyYfyLKZxwz+Xf55bqKbpAmcYifB4jQinT2W9XhDRHISOoPyBOariJpCG6FA==
-  dependencies:
     tslib "^2.1.0"
 
 "@firebase/util@1.15.1":
@@ -4399,10 +4367,10 @@ react-remove-scroll@^2.6.3:
     use-callback-ref "^1.3.3"
     use-sidecar "^1.1.3"
 
-react-router@7.15.0:
-  version "7.15.0"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-7.15.0.tgz#cb438ff254ab5a1e356ef5a23d7821d8f6fbe652"
-  integrity sha512-HW9vYwuM8f4yx66Izy8xfrzCM+SBJluoZcCbww9A1TySax11S5Vgw6fi3ZjMONw9J4gQwngL7PzkyIpJJpJ7RQ==
+react-router@7.15.1:
+  version "7.15.1"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-7.15.1.tgz#0a12fece05887a47c54970480745385c793bcaac"
+  integrity sha512-R8rl9HhgikFYoPJymnUtPXWbnDb3oget6lQnfIoupbt61aT9aOhRkDsY2XRhZRyX1Z/8a5sL74fXmFNm3NRK5A==
   dependencies:
     cookie "^1.0.1"
     set-cookie-parser "^2.6.0"
