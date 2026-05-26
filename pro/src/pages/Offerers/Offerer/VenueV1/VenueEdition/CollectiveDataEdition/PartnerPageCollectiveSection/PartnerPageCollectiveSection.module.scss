@@ -9,13 +9,6 @@
   margin-top: var(--size-spacing-xxl);
 }
 
-.details-title {
-  @include fonts.title4;
-
-  display: inline-block;
-  margin-right: var(--size-spacing-s);
-}
-
 .details-normal {
   margin-right: var(--size-spacing-s);
   color: var(--color-text-subtle);

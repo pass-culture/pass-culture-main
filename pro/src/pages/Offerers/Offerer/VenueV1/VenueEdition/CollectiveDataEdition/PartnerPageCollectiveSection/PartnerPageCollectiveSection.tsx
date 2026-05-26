@@ -8,17 +8,10 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
 import { LinkColor } from '@/design-system/Link/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
-import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from './PartnerPageCollectiveSection.module.scss'
 
-interface PartnerPageCollectiveSectionProps {
-  isDisplayedInHomepage?: boolean
-}
-
-export const PartnerPageCollectiveSection = ({
-  isDisplayedInHomepage = false,
-}: Readonly<PartnerPageCollectiveSectionProps>) => {
+export const PartnerPageCollectiveSection = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { logEvent } = useAnalytics()
 
@@ -35,18 +28,6 @@ export const PartnerPageCollectiveSection = ({
       <AdageInformations
         tagText="Référencé dans ADAGE"
         variant={TagVariant.SUCCESS}
-        isDisplayedInHomepage={isDisplayedInHomepage}
-        description={
-          isDisplayedInHomepage ? (
-            <p>
-              Les enseignants voient les offres vitrines et celles que vous
-              adressez à leur établissement sur ADAGE. Complétez vos
-              informations à destination des enseignants pour qu’ils vous
-              contactent !
-            </p>
-          ) : undefined
-        }
-        venueName={selectedPartnerVenue.name}
       />
     )
   }
@@ -56,7 +37,6 @@ export const PartnerPageCollectiveSection = ({
       <AdageInformations
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.DEFAULT}
-        isDisplayedInHomepage={isDisplayedInHomepage}
         description={
           <p>
             Pour pouvoir adresser des offres aux enseignants, vous devez être
@@ -74,7 +54,6 @@ export const PartnerPageCollectiveSection = ({
             />
           </p>
         }
-        venueName={selectedPartnerVenue.name}
       >
         <div className={styles['details-link']}>
           <Button
@@ -102,7 +81,6 @@ export const PartnerPageCollectiveSection = ({
       <AdageInformations
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.ERROR}
-        isDisplayedInHomepage={isDisplayedInHomepage}
         description={
           <p>
             Pour pouvoir adresser des offres aux enseignants, vous devez être
@@ -120,7 +98,6 @@ export const PartnerPageCollectiveSection = ({
             />
           </p>
         }
-        venueName={selectedPartnerVenue.name}
       />
     )
   }
@@ -129,13 +106,11 @@ export const PartnerPageCollectiveSection = ({
     <AdageInformations
       tagText="Référencement en cours"
       variant={TagVariant.WARNING}
-      isDisplayedInHomepage={isDisplayedInHomepage}
       description={
         <p>
           Votre démarche de référencement est en cours de traitement par ADAGE.
         </p>
       }
-      venueName={selectedPartnerVenue.name}
     >
       <div className={styles['details-link']}>
         <Button
@@ -157,50 +132,27 @@ type AdageInformationsProps = {
   children?: React.ReactNode
   variant: TagVariant
   tagText: string
-  isDisplayedInHomepage: boolean
   description?: React.ReactNode
-  venueName: string
 }
 
 function AdageInformations({
   children,
   tagText,
   variant,
-  isDisplayedInHomepage,
   description,
-  venueName,
 }: AdageInformationsProps) {
-  const { logEvent } = useAnalytics()
   return (
     <section className={styles['details']}>
       <div>
-        {isDisplayedInHomepage ? (
-          <h4 className={styles['details-title']}>Enseignants</h4>
-        ) : (
-          <span className={styles['details-normal']}>
-            État auprès des enseignants&nbsp;:
-          </span>
-        )}
+        <span className={styles['details-normal']}>
+          État auprès des enseignants&nbsp;:
+        </span>
         <div className={styles['tag']}>
           <Tag label={tagText} variant={variant} />
         </div>
       </div>
       {description && (
         <div className={styles['details-description']}>{description}</div>
-      )}
-      {isDisplayedInHomepage && (
-        <div className={styles['details-link']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.SECONDARY}
-            color={ButtonColor.NEUTRAL}
-            to={`/partenaire/page-collective`}
-            aria-label={`Gérer la page pour les enseignants ${venueName}`}
-            icon={fullNextIcon}
-            onClick={() => logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME)}
-            label="Gérer votre page pour les enseignants"
-          />
-        </div>
       )}
       {children}
     </section>
