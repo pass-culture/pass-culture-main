@@ -80,13 +80,14 @@ class Returns200Test:
             additionalDetails="My details",
         )
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, numberOfTeachers=5)
 
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         assert response.status_code == 201
         duplicate = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert duplicate.additionalDetails == "My details"
+        assert duplicate.collectiveStock.numberOfTeachers == 5
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
