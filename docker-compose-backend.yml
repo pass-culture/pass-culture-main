@@ -37,6 +37,7 @@ services:
     volumes:
       - ./api/documentation/static/openapi.json:/usr/src/app/documentation/static/openapi.json
       - ./api/tests:/usr/src/app/tests
+      - ./api/src/pcapi/alembic/versions:/usr/src/app/src/pcapi/alembic/versions # Alembic migrations
     develop:
       watch:
         - action: sync
