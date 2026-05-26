@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n,r=e((()=>{t=e=>`control-${e.replace(/\s+/g,`-`)}`,n=e=>`set-${e.replace(/\s+/g,`-`)}`}));export{n,r,t};

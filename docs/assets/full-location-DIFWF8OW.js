@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n=e((()=>{t=``+new URL(`full-location-CXTffjx5.svg`,import.meta.url).href}));export{n,t};

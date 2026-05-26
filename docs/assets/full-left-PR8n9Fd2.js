@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n=e((()=>{t=``+new URL(`full-left-Dbgyqw8b.svg`,import.meta.url).href}));export{n,t};

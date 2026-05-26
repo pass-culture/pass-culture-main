@@ -1,1 +1,0 @@
-import{n as e}from"./chunk-DnJy8xQt.js";var t,n=e((()=>{t=``+new URL(`stroke-video-glsc8PyB.svg`,import.meta.url).href}));export{t as n,n as t};
