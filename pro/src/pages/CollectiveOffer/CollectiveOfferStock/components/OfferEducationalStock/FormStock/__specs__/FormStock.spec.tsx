@@ -5,7 +5,6 @@ import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   type RenderWithProvidersOptions,
@@ -13,7 +12,10 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/design-system/Button/Button'
 
-import { generateValidationSchema } from '../../validationSchema'
+import {
+  type CollectiveOfferStockFormValues,
+  generateValidationSchema,
+} from '../../validationSchema'
 import { FormStock } from '../FormStock'
 
 function renderFormStock({
@@ -22,16 +24,19 @@ function renderFormStock({
   onSubmit = vi.fn(),
   options,
 }: {
-  initialValues: CollectiveOfferStockFormValues
+  initialValues: Partial<CollectiveOfferStockFormValues>
   allowedActions: CollectiveOfferAllowedAction[]
   onSubmit: () => void
   options?: RenderWithProvidersOptions
 }) {
   function FormStockWrapper() {
-    const form = useForm({
+    const form = useForm<CollectiveOfferStockFormValues>({
       defaultValues: initialValues,
-      resolver: yupResolver<CollectiveOfferStockFormValues, unknown, unknown>(
-        generateValidationSchema(allowedActions, initialValues.totalPrice)
+      resolver: yupResolver(
+        generateValidationSchema(
+          allowedActions,
+          initialValues.totalPrice ?? null
+        )
       ),
       mode: 'onTouched',
     })
@@ -59,7 +64,7 @@ function renderFormStock({
 }
 
 describe('FormStock', () => {
-  let initialValues: CollectiveOfferStockFormValues
+  let initialValues: Partial<CollectiveOfferStockFormValues>
   const onSubmit = vi.fn()
   let allowedActions: CollectiveOfferAllowedAction[]
 
@@ -68,8 +73,6 @@ describe('FormStock', () => {
       startDate: '',
       endDate: '',
       eventTime: '',
-      numberOfTickets: null,
-      totalPrice: null,
       bookingLimitDate: '',
       educationalPriceDetail: '',
     }

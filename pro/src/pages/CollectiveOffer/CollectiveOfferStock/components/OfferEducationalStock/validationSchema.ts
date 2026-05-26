@@ -39,17 +39,14 @@ export const generateValidationSchema = (
   offerAllowedActions: CollectiveOfferAllowedAction[],
   initialPrice: number | null
 ) => {
-  // can edit everything except dates, including price (increase and decrease)
   const canEditDetails = offerAllowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )
 
-  // can edit price (only decrease), numberOfTickets and educationalPriceDetails
   const canEditDiscount = offerAllowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
 
-  // can edit dates (start / end / bookingLimit)
   const canEditDates = offerAllowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
@@ -159,3 +156,7 @@ export const generateValidationSchema = (
       .max(MAX_PRICE_DETAILS_LENGTH),
   })
 }
+
+export type CollectiveOfferStockFormValues = yup.InferType<
+  ReturnType<typeof generateValidationSchema>
+>

@@ -75,16 +75,6 @@ export enum Mode {
   READ_ONLY,
 }
 
-export type CollectiveOfferStockFormValues = {
-  startDate: string
-  endDate: string
-  eventTime: string
-  numberOfTickets: number | null
-  totalPrice: number | null
-  bookingLimitDate: string
-  educationalPriceDetail: string
-}
-
 export const isCollectiveOffer = (
   value: unknown
 ): value is GetCollectiveOfferResponseModel =>

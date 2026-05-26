@@ -1,10 +1,12 @@
 import { addDays, addYears, format, subMinutes } from 'date-fns'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
-import { generateValidationSchema } from '../validationSchema'
+import {
+  type CollectiveOfferStockFormValues,
+  generateValidationSchema,
+} from '../validationSchema'
 
 describe('validationSchema', () => {
   const values = {

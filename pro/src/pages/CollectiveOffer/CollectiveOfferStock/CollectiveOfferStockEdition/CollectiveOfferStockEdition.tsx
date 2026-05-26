@@ -3,14 +3,9 @@ import { useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
+import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import {
-  type CollectiveOfferStockFormValues,
-  Mode,
-} from '@/commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
-import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils/extractInitialStockValues'
+import { Mode } from '@/commons/core/OfferEducational/types'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
@@ -34,22 +29,18 @@ export const CollectiveOfferStockEdition = ({
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
 
-  const initialValues = extractInitialStockValues(offer)
+  const departementCode = offer.venue.departementCode ?? ''
 
-  const handleSubmitStock = async (values: CollectiveOfferStockFormValues) => {
+  const handleSubmitStock = async (
+    newCollectiveStock: CollectiveStockEditionBodyModel
+  ) => {
     if (!offer.collectiveStock) {
       return snackBar.error('Impossible de mettre à jour le stock.')
     }
-
-    const stockPayload = createPatchStockDataPayload(
-      values,
-      offer.venue.departementCode ?? '',
-      initialValues
-    )
     try {
       await apiNew.editCollectiveStock({
         path: { collective_stock_id: offer.collectiveStock.id },
-        body: stockPayload,
+        body: newCollectiveStock,
       })
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
@@ -64,13 +55,8 @@ export const CollectiveOfferStockEdition = ({
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
     await syncVenue(offer.venue.id)
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate(
-      `/offre/${computeURLCollectiveOfferId(
-        offer.id,
-        false
-      )}/collectif/recapitulatif`
-    )
+    const nextStep = `/offre/${offer.id}/collectif/recapitulatif`
+    navigate(nextStep)
     snackBar.success(PATCH_SUCCESS_MESSAGE)
   }
   const stockCanBeEdited = isCollectiveStockEditable(offer)
@@ -88,7 +74,8 @@ export const CollectiveOfferStockEdition = ({
         <BannerPublicApi className={styles['banner-space']} />
       )}
       <OfferEducationalStock
-        initialValues={initialValues}
+        initialStock={offer.collectiveStock ?? {}}
+        departementCode={departementCode}
         mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
         allowedActions={offer.allowedActions}
         onSubmit={handleSubmitStock}
