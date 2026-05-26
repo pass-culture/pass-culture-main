@@ -1111,7 +1111,7 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
     return activable_code
 
 
-def get_bookings_count_subquery(offer_id: int) -> sa.sql.selectable.ScalarSelect:
+def get_bookings_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.coalesce(sa.func.sum(models.Stock.dnBookedQuantity), 0))
         .select_from(models.Stock)
@@ -1121,7 +1121,7 @@ def get_bookings_count_subquery(offer_id: int) -> sa.sql.selectable.ScalarSelect
     )
 
 
-def is_non_free_offer_subquery(offer_id: int) -> sa.sql.selectable.Exists:
+def is_non_free_offer_subquery() -> sa.sql.selectable.Exists:
     return (
         sa.select(1)
         .select_from(models.Stock)
@@ -1131,14 +1131,15 @@ def is_non_free_offer_subquery(offer_id: int) -> sa.sql.selectable.Exists:
     )
 
 
-def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
+def get_pending_bookings_subquery() -> sa.sql.selectable.Exists:
     return (
         sa.select(bookings_models.Booking.id)
         .join(models.Stock, models.Stock.id == bookings_models.Booking.stockId)
         .filter(
-            models.Stock.offerId == offer_id,
+            models.Stock.offerId == models.Offer.id,
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
+        .correlate(models.Offer)
         .exists()
     )
 
@@ -1295,13 +1296,9 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 )
             )
         if "bookings_count" in load_options:
-            query = query.options(
-                sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id))
-            )
+            query = query.options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery()))
         if "is_non_free_offer" in load_options:
-            query = query.options(
-                sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery(offer_id))
-            )
+            query = query.options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery()))
 
         if "offerer_address" in load_options:
             query = query.options(
@@ -1314,7 +1311,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.options(
                 sa_orm.with_expression(
                     models.Offer.hasPendingBookings,
-                    get_pending_bookings_subquery(offer_id),
+                    get_pending_bookings_subquery(),
                 )
             )
         if "highlight_requests" in load_options:
@@ -1352,8 +1349,8 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
         .options(sa_orm.contains_eager(models.Offer.stocks))
         .options(sa_orm.joinedload(models.Offer.mediations))
         .options(sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
-        .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery(offer_id)))
-        .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id)))
+        .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery()))
+        .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.offererAddress)
             .load_only(
