@@ -782,7 +782,7 @@ class OfferProAdvice(HttpBodyModel):
             distance=distance if pro_advice.venue.isOpenToPublic else None,
             venue_id=pro_advice.venue.id,
             venue_name=pro_advice.venue.publicName,
-            venue_thumb_url=pro_advice.venue.thumbUrl,
+            venue_thumb_url=pro_advice.venue.bannerUrl,
             publication_datetime=pro_advice.updatedAt,
         )
 

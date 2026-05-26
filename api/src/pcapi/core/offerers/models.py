@@ -756,11 +756,14 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return sum(result for (result,) in results)
 
     @property
-    def thumbUrl(self) -> str:
+    def thumbUrl(self) -> str | None:
         """
-        Override to discard the thumbCount column: not used by Venues
-        which have at most one banner (thumb).
+        Override because venues have at most one banner (thumb), so the
+        suffix logic from HasThumbMixin is unnecessary. Returns None when
+        no thumbnail has been uploaded (thumbCount == 0).
         """
+        if self.thumbCount == 0:
+            return None
         return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
 
     @property
