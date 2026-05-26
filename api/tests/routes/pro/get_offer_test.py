@@ -25,12 +25,12 @@ from pcapi.utils.human_ids import humanize
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
     # get user_session + user
-    # get offer
+    # get offer + 4 selectinload
     # get artist
     # check user_offerer exists
     # rollback
     # rollback
-    num_queries = 6
+    num_queries = 10
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -66,6 +66,7 @@ class Returns404Test:
 class Returns200Test:
     num_queries = 1  # session + user
     num_queries += 1  # payload (joined query)
+    num_queries += 4  # payload (selectinload part)
     num_queries += 1  # get artist
     num_queries += 1  # user offerer
 
@@ -252,7 +253,8 @@ class Returns200Test:
         offer_id = offer.id
 
         client = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries):
+        # +1 selectinload query for the product's mediations
+        with testing.assert_num_queries(self.num_queries + 1):
             response = client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -267,7 +269,8 @@ class Returns200Test:
         offer_id = offer.id
 
         client = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(self.num_queries):
+        # +1 selectinload query for the product's mediations
+        with testing.assert_num_queries(self.num_queries + 1):
             response = client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
