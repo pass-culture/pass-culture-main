@@ -29,6 +29,6 @@ jobs:
           path: semgrep-results.sarif
 
       - name: Upload SARIF result to the GitHub Security Dashboard
-        uses: github/codeql-action/upload-sarif@7434149006143a4d75b82a2f411ef15b03ccc2d7 #v4
+        uses: github/codeql-action/upload-sarif@0e150e40762c1253b364a04b0fc9f2cc14effff2 #v4
         with:
           sarif_file: semgrep-results.sarif
