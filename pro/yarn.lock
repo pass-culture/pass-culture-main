@@ -682,15 +682,15 @@
   resolved "https://registry.yarnpkg.com/@exodus/bytes/-/bytes-1.15.0.tgz#54479e0f406cbad024d6fe1c3190ecca4468df3b"
   integrity sha512-UY0nlA+feH81UGSHv92sLEPLCeZFjXOuHhrIo0HQydScuQc8s0A7kL/UdgwgDq8g8ilksmuoF35YVTNphV2aBQ==
 
-"@firebase/analytics@0.10.21":
-  version "0.10.21"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.21.tgz#109d95d287acefe3d8276835291dbbcf4688c18c"
-  integrity sha512-j2y2q65BlgLGB5Pwjhv/Jopw2X/TBTzvAtI5z/DSp56U4wBj7LfhBfzbdCtFPges+Wz0g55GdoawXibOH5jGng==
+"@firebase/analytics@0.10.22":
+  version "0.10.22"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.22.tgz#20f3a6431ed51c4590cf898455de7fd40b2163f0"
+  integrity sha512-8BSaq/QRGU1+xyi8L2PTLTJU7MH9aMA72RQdIxrbhWFauOZY9OXo8f2YDN/972xA8d588tlnNVEQ2Mo69pT9Ow==
   dependencies:
-    "@firebase/component" "0.7.2"
-    "@firebase/installations" "0.6.21"
-    "@firebase/logger" "0.5.0"
-    "@firebase/util" "1.15.0"
+    "@firebase/component" "0.7.3"
+    "@firebase/installations" "0.6.22"
+    "@firebase/logger" "0.5.1"
+    "@firebase/util" "1.15.1"
     tslib "^2.1.0"
 
 "@firebase/app@0.14.12":
