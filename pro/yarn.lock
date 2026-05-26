@@ -1005,11 +1005,6 @@
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.130.0.tgz#a7825148711dc28805c46cfc21d94b63a4d41e88"
   integrity sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q==
 
-"@oxc-project/types@=0.130.0":
-  version "0.130.0"
-  resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.130.0.tgz#a7825148711dc28805c46cfc21d94b63a4d41e88"
-  integrity sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q==
-
 "@parcel/watcher-android-arm64@2.5.6":
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/@parcel/watcher-android-arm64/-/watcher-android-arm64-2.5.6.tgz#5f32e0dba356f4ac9a11068d2a5c134ca3ba6564"
@@ -3429,20 +3424,20 @@ ini@^1.3.5:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-instantsearch-ui-components@0.26.1:
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.26.1.tgz#2fe859a0ef4c26f59c522e19e81cd7f47a6bd1be"
-  integrity sha512-oWP8d130JXFpFQzDnTrZ2qdEJf0ZSz0qDuaemoK8K7tQchoHTqE7NA3S9I5Kos9VDPSzwv9D2relAh6L0yLMzw==
+instantsearch-ui-components@0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/instantsearch-ui-components/-/instantsearch-ui-components-0.27.0.tgz#c0a684509c5ca2733fe7c72d2ddf0bca949b7a12"
+  integrity sha512-N+u14ae8xtvWA3vMTjUaZqu1cof3jBbkGGUMMAq+QfA+fQSrHG1nVCXqiz72zrV+oxo8+VyxmhCb0d/M6mwgzQ==
   dependencies:
     "@swc/helpers" "0.5.18"
     markdown-to-jsx "^7.7.15"
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-instantsearch.js@4.97.0:
-  version "4.97.0"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.97.0.tgz#0f957744c0323d3d9594c0a669b675f76af12441"
-  integrity sha512-+HVczmXa5TdvnaYj37Pe5nSaSSmYffwl8RUciEpQQYCTxwv9MU7R866A5vL+JMAS9GhQAa4ZUgZeTk7PMaTjZw==
+instantsearch.js@4.98.0:
+  version "4.98.0"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.98.0.tgz#4b6f438eb1ec78c2402d8a756f4826f83d3f542c"
+  integrity sha512-QGEjT5I56TmH2zmHG0NPt9Yl60EAJ3daasErB7TKMsPgNMxH+oEwW0Fqc/WkacN+ya2SZvHxMJOmNR8+sgUycw==
   dependencies:
     "@algolia/events" "^4.0.1"
     "@swc/helpers" "0.5.18"
@@ -3453,7 +3448,7 @@ instantsearch.js@4.97.0:
     algoliasearch-helper "3.29.1"
     hogan.js "^3.0.2"
     htm "^3.0.0"
-    instantsearch-ui-components "0.26.1"
+    instantsearch-ui-components "0.27.0"
     preact "^10.10.0"
     qs "^6.5.1"
     react ">= 0.14.0"
@@ -4335,13 +4330,6 @@ react-dom@19.2.6, "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   dependencies:
     scheduler "^0.27.0"
 
-"react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.6.tgz#44a81b0bcca22da814c00847d09d01c8615529b7"
-  integrity sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==
-  dependencies:
-    scheduler "^0.27.0"
-
 react-dropzone@15.0.0:
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-15.0.0.tgz#bd03c7c2b14fe4ea9db1a9c74502b85339f2e505"
@@ -4361,27 +4349,27 @@ react-inspector@9.0.0:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-9.0.0.tgz#9c942f5c4a5b9eec890a7f564d465340ae46c4b5"
   integrity sha512-w/VJucSeHxlwRa2nfM2k7YhpT1r5EtlDOClSR+L7DyQP91QMdfFEDXDs9bPYN4kzP7umFtom7L0b2GGjph4Kow==
 
-react-instantsearch-core@7.32.3:
-  version "7.32.3"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.32.3.tgz#6909619d1ad7885d3f0b07039080c2098521b4b7"
-  integrity sha512-J+SbvmJD5ptQDYeVoKPciAWNxK6Nukjlksolo/EacsD7CA6yJRmzg4/us3drE27EsK0vuLtmEe1BKmFAxvA9fQ==
+react-instantsearch-core@7.33.0:
+  version "7.33.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.33.0.tgz#69a49742681ecbc847331cc63828410871b8b0c2"
+  integrity sha512-XN+dsWGW7YKTis7bn3zCwcpi0keIIsbwC75auTkPQ5ZWuE3CQwgcM/QSOW+FAWzXR7EjqFUr19zd6QIs6I1FMQ==
   dependencies:
     "@swc/helpers" "0.5.18"
     algoliasearch-helper "3.29.1"
-    instantsearch.js "4.97.0"
+    instantsearch.js "4.98.0"
     use-sync-external-store "^1.0.0"
     zod "^3.25.76 || ^4"
     zod-to-json-schema "3.24.6"
 
-react-instantsearch@7.32.3:
-  version "7.32.3"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.32.3.tgz#b408ca1be97a5dd4997d3bb7a278b9610c15c52e"
-  integrity sha512-/kRimDSx4E0WuG7bcbx8KGWsBc/70WbeFPPauqYKR5iLUtNeOfCIyrEtP9iL2wRvgIss9EAPDQ7LFZm9lrONdw==
+react-instantsearch@7.33.0:
+  version "7.33.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.33.0.tgz#898f5b9b7ae1edd76a8b63db19cf1be2033eaa94"
+  integrity sha512-ontL/N+mh99lfJULSp76ceYotk4R8YD50gHi8/GsQ8F1EqEowtlA3LAFDhj5QJrUPSLfbsnG7zRcXqttb+Dr2Q==
   dependencies:
     "@swc/helpers" "0.5.18"
-    instantsearch-ui-components "0.26.1"
-    instantsearch.js "4.97.0"
-    react-instantsearch-core "7.32.3"
+    instantsearch-ui-components "0.27.0"
+    instantsearch.js "4.98.0"
+    react-instantsearch-core "7.33.0"
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -4442,11 +4430,6 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     tslib "^2.0.0"
 
 react@19.2.6, "react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
-  integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
-
-"react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   version "19.2.6"
   resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
   integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
@@ -4563,30 +4546,6 @@ rolldown@1.0.0:
     "@rolldown/binding-wasm32-wasi" "1.0.0"
     "@rolldown/binding-win32-arm64-msvc" "1.0.0"
     "@rolldown/binding-win32-x64-msvc" "1.0.0"
-
-rolldown@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/rolldown/-/rolldown-1.0.1.tgz#2e2e839106dc47951e42dbba414f0f0ecf97ac68"
-  integrity sha512-X0KQHljNnEkWNqqiz9zJrGunh1B0HgOxLXvnFpCOcadzcy5qohZ3tqMEUg00vncoRovXuK3ZqCT9KnnKzoInFQ==
-  dependencies:
-    "@oxc-project/types" "=0.130.0"
-    "@rolldown/pluginutils" "^1.0.0"
-  optionalDependencies:
-    "@rolldown/binding-android-arm64" "1.0.1"
-    "@rolldown/binding-darwin-arm64" "1.0.1"
-    "@rolldown/binding-darwin-x64" "1.0.1"
-    "@rolldown/binding-freebsd-x64" "1.0.1"
-    "@rolldown/binding-linux-arm-gnueabihf" "1.0.1"
-    "@rolldown/binding-linux-arm64-gnu" "1.0.1"
-    "@rolldown/binding-linux-arm64-musl" "1.0.1"
-    "@rolldown/binding-linux-ppc64-gnu" "1.0.1"
-    "@rolldown/binding-linux-s390x-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-musl" "1.0.1"
-    "@rolldown/binding-openharmony-arm64" "1.0.1"
-    "@rolldown/binding-wasm32-wasi" "1.0.1"
-    "@rolldown/binding-win32-arm64-msvc" "1.0.1"
-    "@rolldown/binding-win32-x64-msvc" "1.0.1"
 
 rolldown@1.0.1:
   version "1.0.1"
@@ -5273,19 +5232,6 @@ vite@8.0.12:
     picomatch "^4.0.4"
     postcss "^8.5.14"
     rolldown "1.0.0"
-    tinyglobby "^0.2.16"
-  optionalDependencies:
-    fsevents "~2.3.3"
-
-"vite@^6.0.0 || ^7.0.0 || ^8.0.0":
-  version "8.0.13"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-8.0.13.tgz#d75fb40aeee761051b0eb4620993da625c7719ab"
-  integrity sha512-MFtjBYgzmSxmgA4RAfjIyXWpGe1oALnjgUTzzV7QLx/TKxCzjtMH6Fd9/eVK+5Fg1qNoz5VAwsmMs/NofrmJvw==
-  dependencies:
-    lightningcss "^1.32.0"
-    picomatch "^4.0.4"
-    postcss "^8.5.14"
-    rolldown "1.0.1"
     tinyglobby "^0.2.16"
   optionalDependencies:
     fsevents "~2.3.3"
