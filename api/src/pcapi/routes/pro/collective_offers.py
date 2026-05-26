@@ -1,3 +1,5 @@
+import logging
+
 from PIL import UnidentifiedImageError
 from flask import request
 from flask_login import current_user
@@ -28,6 +30,9 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
+
+
+logger = logging.getLogger(__name__)
 
 
 def _get_filters_from_query(
@@ -669,6 +674,7 @@ def attach_offer_image(
             credit=form.credit,
         )
     except UnidentifiedImageError:
+        logger.warning("Error on collective offer image upload", exc_info=True)
         raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
     return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
@@ -704,6 +710,7 @@ def attach_offer_template_image(
             credit=form.credit,
         )
     except UnidentifiedImageError:
+        logger.warning("Error on collective offer template image upload", exc_info=True)
         raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
     return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
