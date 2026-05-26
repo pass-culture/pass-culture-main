@@ -135,80 +135,6 @@ class Screening(HttpBodyModel):
         )
 
 
-class VenueScreenings(HttpBodyModel):
-    address: str
-    distance: float
-    label: str
-    offer_id: int
-    thumb_url: str | None
-    venue_id: int
-    day_screenings: list[Screening]
-    next_screening: Screening | None
-
-    @classmethod
-    def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
-        assert screening.venue_data
-        return cls(
-            address=f"{screening.venue_data.street}, {screening.venue_data.postal_code} {screening.venue_data.city}",
-            distance=screening.venue_data.distance,
-            label=screening.venue_data.label,
-            offer_id=screening.offer_id,
-            thumb_url=screening.thumb_url,
-            venue_id=screening.venue_data.venue_id,
-            day_screenings=[],
-            next_screening=None,
-        )
-
-
-def _get_best_next_screening(current_best: Screening, candidate: Screening, day: date) -> Screening:
-    current_delta_from_day = (current_best.beginning_datetime.date() - day).days
-    new_delta_from_day = (candidate.beginning_datetime.date() - day).days
-    if abs(new_delta_from_day) < abs(current_delta_from_day):
-        return candidate
-
-    return current_best
-
-
-class MovieCalendarResponse(HttpBodyModel):
-    calendar: dict[date, list[VenueScreenings]]
-
-    @classmethod
-    def from_raw_screenings(
-        cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
-    ) -> typing.Self:
-        calendar = {}
-        for day_delta in range((end_date - start_date).days + 1):
-            day = (start_date + timedelta(days=day_delta)).date()
-            venues: dict[int, VenueScreenings] = {}
-            for raw_screening in raw_screenings:
-                assert raw_screening.venue_data
-                venue_id = raw_screening.venue_data.venue_id
-                if venue_id not in venues:
-                    venues[venue_id] = VenueScreenings.from_raw_screening(raw_screening)
-
-                venue = venues[venue_id]
-                screening = Screening.from_raw_screening(raw_screening)
-                if screening.beginning_datetime.date() == day:
-                    venue.day_screenings.append(screening)
-
-                if not venue.next_screening:
-                    venue.next_screening = screening
-                else:
-                    venue.next_screening = _get_best_next_screening(
-                        current_best=venue.next_screening, candidate=screening, day=day
-                    )
-
-            sorted_screenings = sorted(
-                venues.values(), key=lambda venue: (len(venue.day_screenings) == 0, venue.distance)
-            )
-            for venue in venues.values():
-                venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
-
-            calendar[day] = sorted_screenings
-
-        return cls(calendar=calendar)
-
-
 class MovieScreenings(HttpBodyModel):
     duration: int | None
     genres: list[str]
@@ -234,6 +160,57 @@ class MovieScreenings(HttpBodyModel):
         )
 
 
+class VenueScreenings(HttpBodyModel):
+    address: str
+    distance: float
+    label: str
+    offer_id: int
+    thumb_url: str | None
+    venue_id: int
+    day_screenings: list[Screening]
+    next_screening: Screening | None
+
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
+        assert screening.venue_data
+        return cls(
+            address=f"{screening.venue_data.street}, {screening.venue_data.postal_code} {screening.venue_data.city}",
+            distance=screening.venue_data.distance,
+            label=screening.venue_data.label,
+            offer_id=screening.offer_id,
+            thumb_url=screening.thumb_url,
+            venue_id=screening.venue_data.venue_id,
+            day_screenings=[],
+            next_screening=None,
+        )
+
+
+class MovieCalendarResponse(HttpBodyModel):
+    calendar: dict[date, list[VenueScreenings]]
+
+    @classmethod
+    def from_raw_screenings(
+        cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
+    ) -> typing.Self:
+        def get_venue_id(raw_screening: RawScreening) -> int:
+            assert raw_screening.venue_data
+            return raw_screening.venue_data.venue_id
+
+        def sort_venues_by_distance(venues: list[VenueScreenings]) -> list[VenueScreenings]:
+            return sorted(venues, key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
+
+        return cls(
+            calendar=serialize_calendar(
+                raw_screenings,
+                start_date,
+                end_date,
+                block_serializer=VenueScreenings.from_raw_screening,
+                block_id_getter=get_venue_id,
+                sort_blocks=sort_venues_by_distance,
+            )
+        )
+
+
 class VenueMovieCalendarResponse(HttpBodyModel):
     calendar: dict[date, list[MovieScreenings]]
 
@@ -241,31 +218,64 @@ class VenueMovieCalendarResponse(HttpBodyModel):
     def from_raw_venue_screenings(
         cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
     ) -> typing.Self:
-        calendar = {}
-        for day_delta in range((end_date - start_date).days + 1):
-            day = (start_date + timedelta(days=day_delta)).date()
-            movies: dict[int, MovieScreenings] = {}
-            for raw_screening in raw_screenings:
-                offer_id = raw_screening.offer_id
-                if offer_id not in movies:
-                    movies[offer_id] = MovieScreenings.from_raw_screening(raw_screening)
+        def sort_movies_by_popularity(movies: list[MovieScreenings]) -> list[MovieScreenings]:
+            return sorted(movies, key=lambda movie: (len(movie.day_screenings) == 0, -movie.last_30_days_bookings))
 
-                movie = movies[offer_id]
-                screening = Screening.from_raw_screening(raw_screening)
-                if screening.beginning_datetime.date() == day:
-                    movie.day_screenings.append(screening)
-
-                if not movie.next_screening:
-                    movie.next_screening = screening
-                else:
-                    movie.next_screening = _get_best_next_screening(movie.next_screening, screening, day)
-
-            sorted_screenings = sorted(
-                movies.values(), key=lambda movie: (len(movie.day_screenings) == 0, -movie.last_30_days_bookings)
+        return cls(
+            calendar=serialize_calendar(
+                raw_screenings,
+                start_date,
+                end_date,
+                block_serializer=MovieScreenings.from_raw_screening,
+                block_id_getter=lambda raw_screening: raw_screening.offer_id,
+                sort_blocks=sort_movies_by_popularity,
             )
-            for movie in movies.values():
-                movie.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+        )
 
-            calendar[day] = sorted_screenings
 
-        return cls(calendar=calendar)
+T = typing.TypeVar("T", MovieScreenings, VenueScreenings)
+
+
+def _get_best_next_screening(current_best: Screening, candidate: Screening, day: date) -> Screening:
+    current_delta_from_day = (current_best.beginning_datetime.date() - day).days
+    new_delta_from_day = (candidate.beginning_datetime.date() - day).days
+    if abs(new_delta_from_day) < abs(current_delta_from_day):
+        return candidate
+
+    return current_best
+
+
+def serialize_calendar(
+    raw_screenings: list[RawScreening],
+    start_date: datetime,
+    end_date: datetime,
+    block_serializer: typing.Callable[[RawScreening], T],
+    block_id_getter: typing.Callable[[RawScreening], int],
+    sort_blocks: typing.Callable[[list[T]], list[T]],
+) -> dict[date, list[T]]:
+    calendar = {}
+    for day_delta in range((end_date - start_date).days + 1):
+        day = (start_date + timedelta(days=day_delta)).date()
+        blocks: dict[int, T] = {}
+        for raw_screening in raw_screenings:
+            block_id = block_id_getter(raw_screening)
+            if block_id not in blocks:
+                blocks[block_id] = block_serializer(raw_screening)
+
+            block = blocks[block_id]
+            screening = Screening.from_raw_screening(raw_screening)
+            if screening.beginning_datetime.date() == day:
+                block.day_screenings.append(screening)
+
+            if not block.next_screening:
+                block.next_screening = screening
+            else:
+                block.next_screening = _get_best_next_screening(block.next_screening, screening, day)
+
+        sorted_blocks = sort_blocks(list(blocks.values()))
+        for block in blocks.values():
+            block.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+
+        calendar[day] = sorted_blocks
+
+    return calendar
