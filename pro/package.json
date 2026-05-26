@@ -112,7 +112,7 @@
     "regenerator-runtime": "0.14.1",
     "rollup-plugin-visualizer": "7.0.1",
     "sass": "1.99.0",
-    "storybook": "10.3.6",
+    "storybook": "10.4.0",
     "storybook-addon-remix-react-router": "6.1.0",
     "stylelint": "16.26.1",
     "stylelint-a11y": "1.2.3",
