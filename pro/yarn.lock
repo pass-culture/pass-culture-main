@@ -730,6 +730,16 @@
     idb "7.1.1"
     tslib "^2.1.0"
 
+"@firebase/installations@0.6.22":
+  version "0.6.22"
+  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.22.tgz#f5e7d2f51e58d22f8fd5c44901e56e3555d58837"
+  integrity sha512-ef6nn3GGQTdReCfotRMG77PJZu8CqEbiK5pEoBnM0gTu/Z9v0i/az2p3HABsa/1beQmmyh1OsOjf7P5+pgwdZw==
+  dependencies:
+    "@firebase/component" "0.7.3"
+    "@firebase/util" "1.15.1"
+    idb "7.1.1"
+    tslib "^2.1.0"
+
 "@firebase/logger@0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@firebase/logger/-/logger-0.5.0.tgz#a9e55b1c669a0983dc67127fa4a5964ce8ed5e1b"
@@ -744,15 +754,15 @@
   dependencies:
     tslib "^2.1.0"
 
-"@firebase/remote-config@0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@firebase/remote-config/-/remote-config-0.8.2.tgz#389d2b01d4d877c6cb13bf85692dfda45d61fe6d"
-  integrity sha512-5EXqOThV4upjK9D38d/qOSVwOqRhemlaOFk9vCkMNNALeIlwr+4pLjtLNo4qoY8etQmU/1q4aIATE9N8PFqg0g==
+"@firebase/remote-config@0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@firebase/remote-config/-/remote-config-0.8.3.tgz#88b1f63dea634f669f7a354d2ff8cf329c76ba1f"
+  integrity sha512-ggGKAaLy9YNOvpFoQZgm5p5SiFw3ZFtwti08dojnBQmQicpThTxvG5xZMSpCTYMj2o3gM/yK9CVd2w+kZub8YA==
   dependencies:
-    "@firebase/component" "0.7.2"
-    "@firebase/installations" "0.6.21"
-    "@firebase/logger" "0.5.0"
-    "@firebase/util" "1.15.0"
+    "@firebase/component" "0.7.3"
+    "@firebase/installations" "0.6.22"
+    "@firebase/logger" "0.5.1"
+    "@firebase/util" "1.15.1"
     tslib "^2.1.0"
 
 "@firebase/util@1.15.0":
@@ -999,11 +1009,6 @@
   version "0.129.0"
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.129.0.tgz#8e6362388ce6092feafd14f3a73ae6407b1285d9"
   integrity sha512-3oz8m3FGdr2nDXVqmFUw7jolKliC4MoyXYIG2c7gpjBnzUWQpUGIYcXYKxTdTi+N2jusvt610ckTMkxdwHkYEg==
-
-"@oxc-project/types@=0.130.0":
-  version "0.130.0"
-  resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.130.0.tgz#a7825148711dc28805c46cfc21d94b63a4d41e88"
-  integrity sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q==
 
 "@oxc-project/types@=0.130.0":
   version "0.130.0"
@@ -4335,13 +4340,6 @@ react-dom@19.2.6, "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   dependencies:
     scheduler "^0.27.0"
 
-"react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.6.tgz#44a81b0bcca22da814c00847d09d01c8615529b7"
-  integrity sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==
-  dependencies:
-    scheduler "^0.27.0"
-
 react-dropzone@15.0.0:
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-15.0.0.tgz#bd03c7c2b14fe4ea9db1a9c74502b85339f2e505"
@@ -4442,11 +4440,6 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     tslib "^2.0.0"
 
 react@19.2.6, "react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
-  integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
-
-"react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   version "19.2.6"
   resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
   integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
@@ -4563,30 +4556,6 @@ rolldown@1.0.0:
     "@rolldown/binding-wasm32-wasi" "1.0.0"
     "@rolldown/binding-win32-arm64-msvc" "1.0.0"
     "@rolldown/binding-win32-x64-msvc" "1.0.0"
-
-rolldown@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/rolldown/-/rolldown-1.0.1.tgz#2e2e839106dc47951e42dbba414f0f0ecf97ac68"
-  integrity sha512-X0KQHljNnEkWNqqiz9zJrGunh1B0HgOxLXvnFpCOcadzcy5qohZ3tqMEUg00vncoRovXuK3ZqCT9KnnKzoInFQ==
-  dependencies:
-    "@oxc-project/types" "=0.130.0"
-    "@rolldown/pluginutils" "^1.0.0"
-  optionalDependencies:
-    "@rolldown/binding-android-arm64" "1.0.1"
-    "@rolldown/binding-darwin-arm64" "1.0.1"
-    "@rolldown/binding-darwin-x64" "1.0.1"
-    "@rolldown/binding-freebsd-x64" "1.0.1"
-    "@rolldown/binding-linux-arm-gnueabihf" "1.0.1"
-    "@rolldown/binding-linux-arm64-gnu" "1.0.1"
-    "@rolldown/binding-linux-arm64-musl" "1.0.1"
-    "@rolldown/binding-linux-ppc64-gnu" "1.0.1"
-    "@rolldown/binding-linux-s390x-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-musl" "1.0.1"
-    "@rolldown/binding-openharmony-arm64" "1.0.1"
-    "@rolldown/binding-wasm32-wasi" "1.0.1"
-    "@rolldown/binding-win32-arm64-msvc" "1.0.1"
-    "@rolldown/binding-win32-x64-msvc" "1.0.1"
 
 rolldown@1.0.1:
   version "1.0.1"
@@ -5273,19 +5242,6 @@ vite@8.0.12:
     picomatch "^4.0.4"
     postcss "^8.5.14"
     rolldown "1.0.0"
-    tinyglobby "^0.2.16"
-  optionalDependencies:
-    fsevents "~2.3.3"
-
-"vite@^6.0.0 || ^7.0.0 || ^8.0.0":
-  version "8.0.13"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-8.0.13.tgz#d75fb40aeee761051b0eb4620993da625c7719ab"
-  integrity sha512-MFtjBYgzmSxmgA4RAfjIyXWpGe1oALnjgUTzzV7QLx/TKxCzjtMH6Fd9/eVK+5Fg1qNoz5VAwsmMs/NofrmJvw==
-  dependencies:
-    lightningcss "^1.32.0"
-    picomatch "^4.0.4"
-    postcss "^8.5.14"
-    rolldown "1.0.1"
     tinyglobby "^0.2.16"
   optionalDependencies:
     fsevents "~2.3.3"
