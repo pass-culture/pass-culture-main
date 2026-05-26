@@ -1,11 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays, addMinutes, format } from 'date-fns'
+import { addDays } from 'date-fns'
 import * as router from 'react-router'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { Mode } from '@/commons/core/OfferEducational/types'
-import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -14,29 +13,11 @@ import {
 } from '../OfferEducationalStock'
 
 const defaultProps: OfferEducationalStockProps = {
-  initialValues: {
-    startDate: '',
-    endDate: '',
-    eventTime: '',
-    numberOfTickets: null,
-    totalPrice: null,
-    bookingLimitDate: '',
-    educationalPriceDetail: '',
-  },
+  initialStock: {},
+  departementCode: '75',
   allowedActions: [],
   onSubmit: vi.fn(),
   mode: Mode.CREATION,
-}
-
-const tomorrow = addDays(new Date(), 1)
-const initialValuesNotEmpty = {
-  startDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
-  endDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
-  eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
-  bookingLimitDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
-  numberOfTickets: 10,
-  totalPrice: 100,
-  educationalPriceDetail: 'Détail du prix',
 }
 
 vi.mock('react-router', async () => ({
@@ -57,13 +38,12 @@ describe('OfferEducationalStock', () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       allowedActions,
-      initialValues: {
-        startDate: '2022-02-10',
-        endDate: '2022-02-10',
-        eventTime: '00:00',
-        bookingLimitDate: '2022-02-10',
+      initialStock: {
+        startDatetime: '2022-02-10T00:00',
+        endDatetime: '2022-02-10T00:00',
+        bookingLimitDatetime: '2022-02-10T00:00',
         numberOfTickets: 10,
-        totalPrice: 100,
+        price: 100,
         educationalPriceDetail: 'Détail du prix',
       },
       mode: Mode.EDITION,
@@ -76,10 +56,19 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should call submit callback when clicking next step with valid form data and edit action is allowed', async () => {
+    const tomorrow = addDays(new Date(), 1).toISOString()
+
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
-      initialValues: initialValuesNotEmpty,
+      initialStock: {
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: new Date().toISOString(),
+        numberOfTickets: 10,
+        price: 100,
+        educationalPriceDetail: 'Détail du prix',
+      },
       mode: Mode.CREATION,
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)

@@ -1,7 +1,6 @@
 import type React from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import type { CollectiveOfferStockFormValues } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -18,6 +17,7 @@ import {
   START_DATE_LABEL,
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
+import type { CollectiveOfferStockFormValues } from '../validationSchema'
 import styles from './FormStock.module.scss'
 
 interface FormStockProps {
@@ -39,9 +39,16 @@ export const FormStock = ({
     : new Date()
 
   function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setValue('startDate', event.target.value, { shouldValidate: true })
+    setValue('startDate', event.target.value, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    })
     if (!isDateValid(values.endDate) || values.endDate < event.target.value) {
-      setValue('endDate', event.target.value, { shouldValidate: true })
+      setValue('endDate', event.target.value, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
     }
   }
 

@@ -1,9 +1,11 @@
+import { format } from 'date-fns'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
+  CollectiveStockCreationBodyModel,
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1/new'
@@ -12,16 +14,11 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import {
-  type CollectiveOfferStockFormValues,
-  Mode,
-} from '@/commons/core/OfferEducational/types'
-import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
-import { createStockDataPayload } from '@/commons/core/OfferEducational/utils/createStockDataPayload'
-import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils/extractInitialStockValues'
+import { Mode } from '@/commons/core/OfferEducational/types'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -30,6 +27,20 @@ import {
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
+
+function isComplete(
+  stock: Partial<CollectiveStockCreationBodyModel>
+): stock is CollectiveStockCreationBodyModel {
+  const allKeys: (keyof CollectiveStockCreationBodyModel)[] = [
+    'bookingLimitDatetime',
+    'educationalPriceDetail',
+    'endDatetime',
+    'numberOfTickets',
+    'startDatetime',
+    'totalPrice',
+  ]
+  return allKeys.every((key) => key in stock && stock[key] !== undefined)
+}
 
 export const CollectiveOfferStockCreation = ({
   offer,
@@ -64,11 +75,28 @@ export const CollectiveOfferStockCreation = ({
       })
   )
 
-  const initialValues = extractInitialStockValues(
-    offer,
-    offerFromTemplate,
-    requestInformations
-  )
+  const initialStock: Partial<CollectiveStockResponseModel> =
+    offer.collectiveStock || {}
+
+  if (requestInformations) {
+    const { totalStudents, totalTeachers, requestedDate } = requestInformations
+    if (totalStudents || totalTeachers) {
+      initialStock.numberOfTickets = (totalStudents ?? 0) + (totalTeachers ?? 0)
+    }
+    if (requestedDate) {
+      initialStock.startDatetime = format(
+        new Date(requestedDate),
+        FORMAT_ISO_DATE_ONLY
+      )
+    }
+  }
+
+  if (!offer.collectiveStock && offerFromTemplate?.educationalPriceDetail) {
+    initialStock.educationalPriceDetail =
+      offerFromTemplate.educationalPriceDetail
+  }
+
+  const departementCode = offer.venue.departementCode ?? ''
 
   const stepUrls = {
     previous: `/offre/collectif/${offer.id}/creation`,
@@ -79,29 +107,23 @@ export const CollectiveOfferStockCreation = ({
     stepUrls.next += `?requete=${requestId}`
   }
 
-  /* istanbul ignore next: DEBT, TO FIX unit test submit mock */
-  const handleSubmitStock = async (values: CollectiveOfferStockFormValues) => {
+  const handleSubmitStock = async (
+    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+  ) => {
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
-        const patchPayload = createPatchStockDataPayload(
-          values,
-          offer.venue.departementCode ?? '',
-          initialValues
-        )
         response = await apiNew.editCollectiveStock({
           path: { collective_stock_id: offer.collectiveStock.id },
-          body: patchPayload,
+          body: newCollectiveStock,
+        })
+      } else if (isComplete(newCollectiveStock)) {
+        response = await apiNew.createCollectiveStock({
+          body: { ...newCollectiveStock, offerId: offer.id },
         })
       } else {
-        const stockPayload = createStockDataPayload(
-          values,
-          offer.venue.departementCode ?? '',
-          offer.id
-        )
-        response = await apiNew.createCollectiveStock({ body: stockPayload })
+        throw new Error('Missing required values')
       }
-
       await mutate<GetCollectiveOfferResponseModel>(
         [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offer.id)],
         {
@@ -114,9 +136,9 @@ export const CollectiveOfferStockCreation = ({
         { revalidate: false }
       )
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(stepUrls.next)
     } catch (e) {
+      console.error(e)
       if (
         hasStatusCodeAndErrorsCode(e) &&
         e.status === 400 &&
@@ -154,7 +176,8 @@ export const CollectiveOfferStockCreation = ({
       offer={offer}
     >
       <OfferEducationalStock
-        initialValues={initialValues}
+        initialStock={initialStock}
+        departementCode={departementCode}
         mode={Mode.CREATION}
         allowedActions={offer.allowedActions}
         onSubmit={handleSubmitStock}

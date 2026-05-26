@@ -5,12 +5,13 @@ import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
-import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import {
-  type CollectiveOfferStockFormValues,
-  Mode,
-} from '@/commons/core/OfferEducational/types'
+  CollectiveOfferAllowedAction,
+  type CollectiveStockCreationBodyModel,
+  type CollectiveStockResponseModel,
+} from '@/apiClient/v1/new'
+import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
+import { Mode } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'
 import { isDateValid } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -31,18 +32,27 @@ import {
 } from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import { generateValidationSchema } from './validationSchema'
+import { buildDatetimesForStock } from './utils/buildDatetimesForStock'
+import { extractFormDates } from './utils/extractFormDates'
+import {
+  type CollectiveOfferStockFormValues,
+  generateValidationSchema,
+} from './validationSchema'
 
 export interface OfferEducationalStockProps {
-  initialValues: CollectiveOfferStockFormValues
+  initialStock: Partial<CollectiveStockResponseModel>
+  departementCode: string
   allowedActions: CollectiveOfferAllowedAction[]
-  onSubmit: (values: CollectiveOfferStockFormValues) => Promise<void>
+  onSubmit: (
+    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+  ) => Promise<void>
   mode: Mode
   goBackLink?: string
 }
 
 export const OfferEducationalStock = ({
-  initialValues,
+  initialStock,
+  departementCode,
   allowedActions,
   onSubmit,
   mode,
@@ -58,10 +68,65 @@ export const OfferEducationalStock = ({
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
-  const postForm = async (values: CollectiveOfferStockFormValues) => {
+  const {
+    startDatetime,
+    endDatetime,
+    bookingLimitDatetime,
+    educationalPriceDetail,
+    numberOfTickets,
+    price: totalPrice,
+  } = initialStock
+
+  const initialDatesValues = extractFormDates(
+    { startDatetime, endDatetime, bookingLimitDatetime },
+    departementCode
+  )
+
+  const form = useForm<CollectiveOfferStockFormValues>({
+    defaultValues: {
+      numberOfTickets,
+      totalPrice,
+      educationalPriceDetail: educationalPriceDetail ?? '',
+      ...initialDatesValues,
+    },
+    resolver: yupResolver(
+      generateValidationSchema(allowedActions, totalPrice ?? null)
+    ),
+    mode: 'onSubmit',
+  })
+
+  const postForm = async (formValues: CollectiveOfferStockFormValues) => {
     setIsLoading(true)
     try {
-      await onSubmit(values)
+      const {
+        educationalPriceDetail,
+        totalPrice,
+        numberOfTickets,
+        ...dateFormValues
+      } = formValues
+
+      const dirtyKeys = new Set(Object.keys(form.formState.dirtyFields))
+
+      const updatedStock: Partial<CollectiveStockCreationBodyModel> = {}
+      if (dirtyKeys.has('educationalPriceDetail') && educationalPriceDetail) {
+        updatedStock.educationalPriceDetail = educationalPriceDetail
+      }
+      if (dirtyKeys.has('totalPrice') && totalPrice) {
+        updatedStock.totalPrice = totalPrice
+      }
+      if (dirtyKeys.has('numberOfTickets') && numberOfTickets) {
+        updatedStock.numberOfTickets = numberOfTickets
+      }
+
+      if (Object.keys(dateFormValues).some((dateK) => dirtyKeys.has(dateK))) {
+        const stockDates = buildDatetimesForStock(
+          dateFormValues,
+          departementCode
+        )
+        Object.assign(updatedStock, stockDates)
+      }
+
+      await onSubmit(updatedStock)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         serializeApiErrors(error.body, form.setError)
@@ -69,14 +134,6 @@ export const OfferEducationalStock = ({
     }
     setIsLoading(false)
   }
-
-  const form = useForm({
-    defaultValues: initialValues,
-    resolver: yupResolver<CollectiveOfferStockFormValues, unknown, unknown>(
-      generateValidationSchema(allowedActions, initialValues.totalPrice)
-    ),
-    mode: 'onSubmit',
-  })
 
   const values = form.watch()
 

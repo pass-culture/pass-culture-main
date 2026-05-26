@@ -7,6 +7,11 @@ import {
 } from '@/commons/utils/date'
 import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 
+import type {
+  CollectiveStockDatetimes,
+  CollectiveStockFormDates,
+} from '../types'
+
 const getBookingLimitDatetime = (
   bookingLimitDatetime: string,
   startDateTimeInUserTimezone: Date
@@ -20,7 +25,7 @@ const getBookingLimitDatetime = (
   return endOfDay(new Date(bookingLimitDatetime))
 }
 
-export const buildDatetimeForStockPayload = (
+const buildDatetimeForStockPayload = (
   datetime: string,
   eventTime: string,
   departmentCode: string
@@ -33,7 +38,7 @@ export const buildDatetimeForStockPayload = (
   return toISOStringWithoutMilliseconds(dateTimeInUTCTimezone)
 }
 
-export const buildBookingLimitDatetimeForStockPayload = (
+const buildBookingLimitDatetimeForStockPayload = (
   startDatetime: string,
   eventTime: string,
   bookingLimitDatetime: string,
@@ -45,4 +50,28 @@ export const buildBookingLimitDatetimeForStockPayload = (
     departmentCode
   )
   return toISOStringWithoutMilliseconds(bookingLimitDatetimeUtc)
+}
+
+export const buildDatetimesForStock = (
+  { startDate, endDate, eventTime, bookingLimitDate }: CollectiveStockFormDates,
+  departmentCode: string
+): CollectiveStockDatetimes => {
+  return {
+    startDatetime: buildDatetimeForStockPayload(
+      startDate,
+      eventTime,
+      departmentCode
+    ),
+    endDatetime: buildDatetimeForStockPayload(
+      endDate,
+      eventTime,
+      departmentCode
+    ),
+    bookingLimitDatetime: buildBookingLimitDatetimeForStockPayload(
+      startDate,
+      eventTime,
+      bookingLimitDate,
+      departmentCode
+    ),
+  }
 }
