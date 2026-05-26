@@ -229,6 +229,9 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText(/Description/)).toBeInTheDocument()
       expect(screen.getByText(/TOTOTO/)).toBeInTheDocument()
       expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
+      expect(
+        screen.getByText('Informations de retrait de vos offres')
+      ).toBeInTheDocument()
       expect(screen.getByText('Informations de contact')).toBeInTheDocument()
       expect(screen.getByText(/Adresse e-mail/)).toBeInTheDocument()
       expect(screen.getByText('e@mail.fr')).toBeInTheDocument()
@@ -672,6 +675,14 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
+    it('should render the withdrawal details section', async () => {
+      renderForm({ ...baseVenue, isVirtual: false })
+
+      expect(
+        await screen.findByText('Informations de retrait de vos offres')
+      ).toBeInTheDocument()
+    })
+
     describe('when the venue is virtual', () => {
       it('should display a specific message', () => {
         renderForm({ ...baseVenue, isVirtual: true })
@@ -942,7 +953,7 @@ describe('VenueEditionFormScreen', () => {
         },
         { initialRouterEntries: ['/'] }
       )
-      expect(screen.queryByText(/Non renseigné/)).toBeInTheDocument()
+      expect(screen.queryByText('Non renseigné')).toBeInTheDocument()
     })
 
     it('should display singular label when there is one domain', () => {
@@ -994,7 +1005,7 @@ describe('VenueEditionFormScreen', () => {
         }
       )
       const h3Titles = screen.getAllByRole('heading', { level: 3 })
-      expect(h3Titles).toHaveLength(3)
+      expect(h3Titles).toHaveLength(4)
       expect(h3Titles[1].textContent).toEqual('À propos de votre activité')
       expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
       expect(screen.getByText(/domaine 1, domaine III/)).toBeInTheDocument()
@@ -1017,7 +1028,7 @@ describe('VenueEditionFormScreen', () => {
           initialRouterEntries: ['/'],
         }
       )
-      expect(screen.getByText(/Non renseigné/)).toBeInTheDocument()
+      expect(screen.getByText('Non renseigné')).toBeInTheDocument()
     })
   })
 })

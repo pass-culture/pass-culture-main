@@ -28,6 +28,7 @@ import {
 } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { ActivityDetails } from '@/pages/VenueEdition/components/ActivityDetails/ActivityDetails'
+import { WithdrawalDetails } from '@/pages/VenueSettings/components/WithdrawalDetails/WithdrawalDetails'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
@@ -271,6 +272,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             </FormLayout.SubSection>
 
             <ActivityDetails isVenueVirtual={!!venue.isVirtual} />
+
+            {!venue.isVirtual && <WithdrawalDetails />}
 
             <FormLayout.SubSection
               title="Informations de contact"

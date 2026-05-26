@@ -116,14 +116,6 @@ describe('GeneralInformation', () => {
       expect(screen.getByTestId('address-fields')).toBeInTheDocument()
     })
 
-    it('should render the withdrawal details section', async () => {
-      renderGeneralInformation({ id: 1, isVirtual: false })
-
-      expect(
-        await screen.findByText('Informations de retrait de vos offres')
-      ).toBeInTheDocument()
-    })
-
     it('should toggle manual address when clicking the manual address button', async () => {
       renderGeneralInformation({ id: 1, isVirtual: false })
 
