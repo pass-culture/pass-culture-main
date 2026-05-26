@@ -3,33 +3,22 @@ export enum Events {
   CLICKED_DISABLED_SELECTED_OFFERS = 'hasClickedDisabledOffers',
   CLICKED_CONSULT_CGU = 'hasClickedConsultCGU',
   CLICKED_CREATE_ACCOUNT = 'hasClickedCreateAccount',
-  CLICKED_CREATE_VENUE = 'hasClickedCreateVenue',
   CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL = 'hasClickedSeeLaterFromSuccessOfferCreationModal',
   CLICKED_SAVE_VENUE = 'hasClickedSaveVenue',
-  CLICKED_DOWNLOAD_BOOKINGS = 'hasClickedDownloadBooking',
   CLICKED_ADMIN_DOWNLOAD_BOOKINGS = 'hasClickedAdminDownloadBooking',
-  CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
   CLICKED_ADMIN_DOWNLOAD_BOOKINGS_CSV = 'hasClickedAdminDownloadBookingCsv',
-  CLICKED_DOWNLOAD_BOOKINGS_XLS = 'hasClickedDownloadBookingXls',
   CLICKED_ADMIN_DOWNLOAD_BOOKINGS_XLS = 'hasClickedAdminDownloadBookingXls',
-  CLICKED_DOWNLOAD_COLLECTIVE_OFFERS = 'hasClickedDownloadCollectiveOffers',
   CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS = 'hasClickedAdminDownloadCollectiveOffers',
-  CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_CSV = 'hasClickedDownloadCollectiveOffersCsv',
   CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_CSV = 'hasClickedAdminDownloadCollectiveOffersCsv',
-  CLICKED_DOWNLOAD_COLLECTIVE_OFFERS_XLS = 'hasClickedDownloadCollectiveOffersXls',
   CLICKED_ADMIN_DOWNLOAD_COLLECTIVE_OFFERS_XLS = 'hasClickedAdminDownloadCollectiveOffersXls',
   CLICKED_EDIT_COLLECTIVE_OFFER = 'hasClickedEditCollectiveOffer',
-  CLICKED_HOME_STATS_PENDING_OFFERS_FAQ = 'hasClickedHomeStatsPendingOffersFaq',
   CLICKED_FORGOTTEN_PASSWORD = 'hasClickedForgottenPassword',
   CLICKED_UNKNOWN_SIRET = 'hasClickedUnknownSiret',
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
   CLICKED_LOGOUT = 'hasClickedLogout',
-  CLICKED_CONFIRMED_ADD_HEADLINE_OFFER = 'hasClickedConfirmedAddHeadlineOffer',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',
   CLICKED_CANCEL_OFFER_CREATION = 'hasClickedCancelOfferCreation',
-  CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK = 'hasClickedPartnerBlockPreviewVenueLink',
-  CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK = 'hasClickedPartnerBlockCopyVenueLink',
   CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK = 'hasClickedPartnerBlockDmsApplicationLink',
   CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK = 'hasClickedPartnerBlockCollectiveHelpLink',
   CLICKED_PRO = 'hasClickedPro',
@@ -49,7 +38,6 @@ export enum Events {
   SIGNUP_FORM_ABORT = 'signupFormAbort',
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
-  CLICKED_NO_VENUE = 'hasClickedNoVenue',
   CLICKED_EAC_DMS_TIMELINE = 'hasClickedEacDmsTimeline',
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
@@ -59,7 +47,6 @@ export enum Events {
   CLICKED_DOWNLOAD_OFFER_BOOKINGS = 'hasDownloadedBookings',
   CLICKED_INVOICES_DOWNLOAD = 'hasClickedInvoicesDownload',
   CLICKED_PUBLISH_FUTURE_OFFER_EARLIER = 'hasClickedPublishFutureOfferEarlier',
-  EXTRA_PRO_DATA = 'extra_pro_data',
   CLICKED_NEW_EVOLUTIONS = 'hasClickedNewEvolutions',
   CLICKED_CONSULT_HELP = 'hasClickedConsultHelp',
   UPDATED_BOOKING_LIMIT_DATE = 'hasUpdatedBookingLimitDate',
@@ -73,9 +60,7 @@ export enum Events {
 }
 
 export enum VenueEvents {
-  CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
   CLICKED_VENUE_ADD_RIB_BUTTON = 'hasClickedVenueAddRibButton',
-  CLICKED_VENUE_PUBLISHED_OFFERS_LINK = 'hasClickedVenuePublishedOffersLink',
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
@@ -89,7 +74,6 @@ export enum SynchronizationEvents {
 }
 
 export enum OffererLinkEvents {
-  CLICKED_INVITE_COLLABORATOR = 'hasClickedInviteCollaborator',
   CLICKED_ADD_COLLABORATOR = 'hasClickedAddCollaborator',
   CLICKED_SEND_INVITATION = 'hasSentInvitation',
 }
