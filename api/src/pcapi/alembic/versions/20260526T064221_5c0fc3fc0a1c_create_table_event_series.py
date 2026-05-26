@@ -15,13 +15,14 @@ depends_on: list[str] | None = None
 def upgrade() -> None:
     op.create_table(
         "event_series",
-        sa.Column("id", sa.BigInteger(), nullable=False),
+        sa.Column("id", sa.Text(), nullable=False),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("mediation_uuid", sa.Text(), nullable=True),
         sa.Column("date_created", sa.DateTime(), nullable=False, server_default=sa.func.now()),
         sa.Column("date_modified", sa.DateTime(), nullable=False, onupdate=sa.func.now(), server_default=sa.func.now()),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
 
 
