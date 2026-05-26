@@ -1271,16 +1271,18 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 ),
             ).options(sa_orm.contains_eager(models.Offer.stocks))
         if "mediations" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.mediations))
+            query = query.options(sa_orm.selectinload(models.Offer.mediations))
         if "meta_data" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.metaData))
         if "product" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
+            query = query.options(
+                sa_orm.joinedload(models.Offer.product).selectinload(models.Product.productMediations)
+            )
         if "headline_offer" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.headlineOffers))
+            query = query.options(sa_orm.selectinload(models.Offer.headlineOffers))
         if "price_category" in load_options:
             query = query.options(
-                sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
+                sa_orm.selectinload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
             )
         if "venue" in load_options:
             query = query.options(
@@ -1310,7 +1312,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "highlight_requests" in load_options:
             query = query.options(
-                sa_orm.joinedload(models.Offer.highlight_requests).joinedload(
+                sa_orm.selectinload(models.Offer.highlight_requests).joinedload(
                     highlights_models.HighlightRequest.highlight
                 ),
             )
