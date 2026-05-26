@@ -94,7 +94,30 @@ def get_alembic_heads_on_local(git_root: pathlib.Path) -> dict[str, str]:
     #     e7a96231bff2 (pre) (head)
     #     7b9467cdbeec (post) (head)
     #     >>>>>>> 170f5ed9af (my commit)
-    return {"pre": lines[4].split(" ")[0], "post": lines[5].split(" ")[0]}
+    # Or:
+    #     <<<<<< HEAD
+    #     f830372aa947 (pre) (head)
+    #     =======
+    #     e7a96231bff2 (pre) (head)
+    #     >>>>>>> 170f5ed9af (my commit)
+    #     7b9467cdbeec (post) (head)
+    # Or:
+    #     f830372aa947 (pre) (head)
+    #     <<<<<< HEAD
+    #     0b8e5f65a615 (post) (head)
+    #     =======
+    #     7b9467cdbeec (post) (head)
+    #     >>>>>>> 170f5ed9af (my commit)
+
+    # pre and post both modified
+    if len(lines) == 7:
+        return {"pre": lines[4].split(" ")[0], "post": lines[5].split(" ")[0]}
+    # only pre modified
+    elif "HEAD" in lines[0]:
+        return {"pre": lines[3].split(" ")[0], "post": lines[5].split(" ")[0]}
+    # only post modified
+    else:
+        return {"pre": lines[0].split(" ")[0], "post": lines[4].split(" ")[0]}
 
 
 def get_first_revisions(
