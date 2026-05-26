@@ -37,7 +37,7 @@ def get_filtered_artists_for_search(search_value: str) -> list[models.Artist]:
             models.Artist.wikidata_id.is_not(None),
             func.immutable_unaccent(models.Artist.name).ilike(func.immutable_unaccent(f"%{search_value}%")),
         )
-        .order_by(priority, models.Artist.name)
+        .order_by(priority, models.Artist.pro_search_score.desc())
         .limit(5)
         .all()
     )
