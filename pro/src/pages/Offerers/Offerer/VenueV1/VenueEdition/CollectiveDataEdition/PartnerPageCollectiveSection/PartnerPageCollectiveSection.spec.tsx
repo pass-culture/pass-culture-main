@@ -11,32 +11,25 @@ import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
 type RenderOptions = {
   lastCollectiveDmsApplication?: DMSApplicationForEAC | null
   allowedOnAdage?: boolean
-  isDisplayedInHomepage?: boolean
 }
 
 const renderPartnerPageCollectiveSection = ({
   lastCollectiveDmsApplication = defaultDMSApplicationForEAC,
   allowedOnAdage = false,
-  isDisplayedInHomepage,
 }: RenderOptions = {}) => {
-  renderWithProviders(
-    <PartnerPageCollectiveSection
-      isDisplayedInHomepage={isDisplayedInHomepage}
-    />,
-    {
-      storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-          selectedPartnerVenue: makeGetVenueResponseModel({
-            id: 7,
-            name: 'Venue name',
-            allowedOnAdage,
-            lastCollectiveDmsApplication,
-          }),
-        },
+  renderWithProviders(<PartnerPageCollectiveSection />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 7,
+          name: 'Venue name',
+          allowedOnAdage,
+          lastCollectiveDmsApplication,
+        }),
       },
-    }
-  )
+    },
+  })
 }
 
 describe('PartnerPages', () => {
@@ -109,24 +102,10 @@ describe('PartnerPages', () => {
     expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
   })
 
-  it('should display the EAC section when it has an adageId in homepage', () => {
+  it('should not display the EAC section when it has an adageId in venue form', () => {
     renderPartnerPageCollectiveSection({
       lastCollectiveDmsApplication: null,
       allowedOnAdage: true,
-      isDisplayedInHomepage: true,
-    })
-
-    expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
-    expect(
-      screen.getByText(/Les enseignants voient les offres vitrines/)
-    ).toBeInTheDocument()
-  })
-
-  it('should display the EAC section when it has an adageId in venue form', () => {
-    renderPartnerPageCollectiveSection({
-      lastCollectiveDmsApplication: null,
-      allowedOnAdage: true,
-      isDisplayedInHomepage: false,
     })
 
     expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
