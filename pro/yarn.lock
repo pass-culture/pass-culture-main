@@ -388,59 +388,59 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@biomejs/biome@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/biome/-/biome-2.4.13.tgz#0b2aba2e7da656e89101ad640ec8609230cfa846"
-  integrity sha512-gLXOwkOBBg0tr7bDsqlkIh4uFeKuMjxvqsrb1Tukww1iDmHcfr4Uu8MoQxp0Rcte+69+osRNWXwHsu/zxT6XqA==
+"@biomejs/biome@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/biome/-/biome-2.4.15.tgz#cb84ad6eb4235e7230b3c105a825e9bc03399944"
+  integrity sha512-j5VH3a/h/HXTKBM50MDMxRCzkeLv9S2XJcW2WgnZT1+xyisi+0bISrXR82gCX+8S9lvK0skEvHJRN+3Ktr2hlw==
   optionalDependencies:
-    "@biomejs/cli-darwin-arm64" "2.4.13"
-    "@biomejs/cli-darwin-x64" "2.4.13"
-    "@biomejs/cli-linux-arm64" "2.4.13"
-    "@biomejs/cli-linux-arm64-musl" "2.4.13"
-    "@biomejs/cli-linux-x64" "2.4.13"
-    "@biomejs/cli-linux-x64-musl" "2.4.13"
-    "@biomejs/cli-win32-arm64" "2.4.13"
-    "@biomejs/cli-win32-x64" "2.4.13"
+    "@biomejs/cli-darwin-arm64" "2.4.15"
+    "@biomejs/cli-darwin-x64" "2.4.15"
+    "@biomejs/cli-linux-arm64" "2.4.15"
+    "@biomejs/cli-linux-arm64-musl" "2.4.15"
+    "@biomejs/cli-linux-x64" "2.4.15"
+    "@biomejs/cli-linux-x64-musl" "2.4.15"
+    "@biomejs/cli-win32-arm64" "2.4.15"
+    "@biomejs/cli-win32-x64" "2.4.15"
 
-"@biomejs/cli-darwin-arm64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-arm64/-/cli-darwin-arm64-2.4.13.tgz#3873a231d78f219fff4d4ae427232eb347e49574"
-  integrity sha512-2KImO1jhNFBa2oWConyr0x6flxbQpGKv6902uGXpYM62Xyem8U80j441SyUJ8KyngsmKbQjeIv1q2CQfDkNnYg==
+"@biomejs/cli-darwin-arm64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-arm64/-/cli-darwin-arm64-2.4.15.tgz#3469daa56ac3ff4f16588a120df706381a96f65c"
+  integrity sha512-rF3PPqLq1yoST79zaQbDjVJwsuIeci/O+9bgNmC5QpgOqz6aqYuzA4abyAGx+mgyiDXn4A049xAN8gijbuR1Qg==
 
-"@biomejs/cli-darwin-x64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-x64/-/cli-darwin-x64-2.4.13.tgz#dea76c1bbff010e85835cfa4d1e272ccf6b32a2f"
-  integrity sha512-BKrJklbaFN4p1Ts4kPBczo+PkbsHQg57kmJ+vON9u2t6uN5okYHaSr7h/MutPCWQgg2lglaWoSmm+zhYW+oOkg==
+"@biomejs/cli-darwin-x64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-x64/-/cli-darwin-x64-2.4.15.tgz#0697b81089409635da16682ac1e539165c262006"
+  integrity sha512-/5KHXYMfSJs1fNXiX30xFtI8JcCFV6zaVVLxOa0M2sfqBKHkpQhRTv94yxQWxeTY2lzo2OuTlNvPC+hDQt2wcQ==
 
-"@biomejs/cli-linux-arm64-musl@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64-musl/-/cli-linux-arm64-musl-2.4.13.tgz#03911f80fedc202e5b96363e7f4582752c1cbc3f"
-  integrity sha512-U5MsuBQW25dXaYtqWWSPM3P96H6Y+fHuja3TQpMNnylocHW0tEbtFTDlUj6oM+YJLntvEkQy4grBvQNUD4+RCg==
+"@biomejs/cli-linux-arm64-musl@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64-musl/-/cli-linux-arm64-musl-2.4.15.tgz#c6af054e3732c361e9ad8c44070f909666b5616f"
+  integrity sha512-ZPcxznxm0pogHBLZhYntyR3sR+MrZjqJIKEr7ZqVen0Rl+P/4upVmfYXjftizi9RoqZntg33fv/1fbdhbYXpEQ==
 
-"@biomejs/cli-linux-arm64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64/-/cli-linux-arm64-2.4.13.tgz#51aad20b4df93c08225f4627da9cfd7408e2affc"
-  integrity sha512-NzkUDSqfvMBrPplKgVr3aXLHZ2NEELvvF4vZxXulEylKWIGqlvNEcwUcj9OLrn75TD3lJ/GIqCVlBwd1MZCuYQ==
+"@biomejs/cli-linux-arm64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64/-/cli-linux-arm64-2.4.15.tgz#527cef60339649a442d51a9cd129ae9dfe9da926"
+  integrity sha512-owaAMZD/T4LrD0ELNCk0Km3qrRHuM0X6EAyVE1FSqGY0rbLoiDLrO4Us2tllm6cAeB2Ioa9C2C08NZPdr8+0Ug==
 
-"@biomejs/cli-linux-x64-musl@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64-musl/-/cli-linux-x64-musl-2.4.13.tgz#24b61df96b9593662955183d94480dfcccf70aba"
-  integrity sha512-Z601MienRgTBDza/+u2CH3RSrWoXo9rtr8NK6A4KJzqGgfxx+H3VlyLgTJ4sRo40T3pIsqpTmiOQEvYzQvBRvQ==
+"@biomejs/cli-linux-x64-musl@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64-musl/-/cli-linux-x64-musl-2.4.15.tgz#b39292ad106c3d5a612bf3c61ba3119f66833013"
+  integrity sha512-CNq/9W38SYSH023lfcQ4KKU8K0YX8T//FZUhcgtMMRABDojx5XsMV7jlweAvGSl389wJQB29Qo6Zb/a+jdvt+w==
 
-"@biomejs/cli-linux-x64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64/-/cli-linux-x64-2.4.13.tgz#aa80440a42000b1757bfd0af7ffe77becc219042"
-  integrity sha512-Az3ZZedYRBo9EQzNnD9SxFcR1G5QsGo6VEc2hIyVPZ1rdKwee/7E9oeBBZFpE8Z44ekxsDQBqbiWGW5ShOhUSQ==
+"@biomejs/cli-linux-x64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64/-/cli-linux-x64-2.4.15.tgz#7360b7f81ff03ec6d9350bedc76b89f783b0945d"
+  integrity sha512-0jj7THz12GbUOLmMibktK6DZjqz2zV64KFxyBtcFTKPiiOIY0a7vns1elpO1dERvxpsZ5ik0oFfz0oGwFde1+g==
 
-"@biomejs/cli-win32-arm64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-arm64/-/cli-win32-arm64-2.4.13.tgz#8fdaa4cfe0ea479e220541a4fd7e7fd83718b465"
-  integrity sha512-Px9PS2B5/Q183bUwy/5VHqp3J2lzdOCeVGzMpphYfl8oSa7VDCqenBdqWpy6DCy/en4Rbf/Y1RieZF6dJPcc9A==
+"@biomejs/cli-win32-arm64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-arm64/-/cli-win32-arm64-2.4.15.tgz#9542aac679174892a9379267e0c0048f8eee4d9f"
+  integrity sha512-ouhkYdlhp/1GghEJPdWwD/Vi3gQ1nFxuSpMolWsbq3Lsq3QUR4jl6UdhhscdCugKU5vOEuMiJhvKj66O0OCq+w==
 
-"@biomejs/cli-win32-x64@2.4.13":
-  version "2.4.13"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.4.13.tgz#e3ae4900abd495160c460da02ed4f9a01f29f7c7"
-  integrity sha512-tTcMkXyBrmHi9BfrD2VNHs/5rYIUKETqsBlYOvSAABwBkJhSDVb5e7wPukftsQbO3WzQkXe6kaztC6WtUOXSoQ==
+"@biomejs/cli-win32-x64@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.4.15.tgz#80288e4eea8f916fc5c876e9a486baadb8de537d"
+  integrity sha512-zBrGq5mx5wwpnow4+2BxUvleDM+GNd4sLbPaMapsSLQLD0NGRCquqPBTgN+7XkUteHvj7M+BstuI8tmnV7+HgQ==
 
 "@bramus/specificity@^2.4.2":
   version "2.4.2"
@@ -999,11 +999,6 @@
   version "0.129.0"
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.129.0.tgz#8e6362388ce6092feafd14f3a73ae6407b1285d9"
   integrity sha512-3oz8m3FGdr2nDXVqmFUw7jolKliC4MoyXYIG2c7gpjBnzUWQpUGIYcXYKxTdTi+N2jusvt610ckTMkxdwHkYEg==
-
-"@oxc-project/types@=0.130.0":
-  version "0.130.0"
-  resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.130.0.tgz#a7825148711dc28805c46cfc21d94b63a4d41e88"
-  integrity sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q==
 
 "@oxc-project/types@=0.130.0":
   version "0.130.0"
@@ -4335,13 +4330,6 @@ react-dom@19.2.6, "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   dependencies:
     scheduler "^0.27.0"
 
-"react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.6.tgz#44a81b0bcca22da814c00847d09d01c8615529b7"
-  integrity sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==
-  dependencies:
-    scheduler "^0.27.0"
-
 react-dropzone@15.0.0:
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-15.0.0.tgz#bd03c7c2b14fe4ea9db1a9c74502b85339f2e505"
@@ -4442,11 +4430,6 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     tslib "^2.0.0"
 
 react@19.2.6, "react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version "19.2.6"
-  resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
-  integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
-
-"react@>= 0.14.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
   version "19.2.6"
   resolved "https://registry.yarnpkg.com/react/-/react-19.2.6.tgz#3dadb8e12b2a7934c1d5317973e5dce1301f9a4d"
   integrity sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==
@@ -4563,30 +4546,6 @@ rolldown@1.0.0:
     "@rolldown/binding-wasm32-wasi" "1.0.0"
     "@rolldown/binding-win32-arm64-msvc" "1.0.0"
     "@rolldown/binding-win32-x64-msvc" "1.0.0"
-
-rolldown@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/rolldown/-/rolldown-1.0.1.tgz#2e2e839106dc47951e42dbba414f0f0ecf97ac68"
-  integrity sha512-X0KQHljNnEkWNqqiz9zJrGunh1B0HgOxLXvnFpCOcadzcy5qohZ3tqMEUg00vncoRovXuK3ZqCT9KnnKzoInFQ==
-  dependencies:
-    "@oxc-project/types" "=0.130.0"
-    "@rolldown/pluginutils" "^1.0.0"
-  optionalDependencies:
-    "@rolldown/binding-android-arm64" "1.0.1"
-    "@rolldown/binding-darwin-arm64" "1.0.1"
-    "@rolldown/binding-darwin-x64" "1.0.1"
-    "@rolldown/binding-freebsd-x64" "1.0.1"
-    "@rolldown/binding-linux-arm-gnueabihf" "1.0.1"
-    "@rolldown/binding-linux-arm64-gnu" "1.0.1"
-    "@rolldown/binding-linux-arm64-musl" "1.0.1"
-    "@rolldown/binding-linux-ppc64-gnu" "1.0.1"
-    "@rolldown/binding-linux-s390x-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-gnu" "1.0.1"
-    "@rolldown/binding-linux-x64-musl" "1.0.1"
-    "@rolldown/binding-openharmony-arm64" "1.0.1"
-    "@rolldown/binding-wasm32-wasi" "1.0.1"
-    "@rolldown/binding-win32-arm64-msvc" "1.0.1"
-    "@rolldown/binding-win32-x64-msvc" "1.0.1"
 
 rolldown@1.0.1:
   version "1.0.1"
@@ -5273,19 +5232,6 @@ vite@8.0.12:
     picomatch "^4.0.4"
     postcss "^8.5.14"
     rolldown "1.0.0"
-    tinyglobby "^0.2.16"
-  optionalDependencies:
-    fsevents "~2.3.3"
-
-"vite@^6.0.0 || ^7.0.0 || ^8.0.0":
-  version "8.0.13"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-8.0.13.tgz#d75fb40aeee761051b0eb4620993da625c7719ab"
-  integrity sha512-MFtjBYgzmSxmgA4RAfjIyXWpGe1oALnjgUTzzV7QLx/TKxCzjtMH6Fd9/eVK+5Fg1qNoz5VAwsmMs/NofrmJvw==
-  dependencies:
-    lightningcss "^1.32.0"
-    picomatch "^4.0.4"
-    postcss "^8.5.14"
-    rolldown "1.0.1"
     tinyglobby "^0.2.16"
   optionalDependencies:
     fsevents "~2.3.3"
