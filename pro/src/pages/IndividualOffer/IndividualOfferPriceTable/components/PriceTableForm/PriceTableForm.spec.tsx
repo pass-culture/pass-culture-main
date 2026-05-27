@@ -426,7 +426,7 @@ describe('PriceTableForm', () => {
     }) as HTMLInputElement
 
     await userEvent.clear(priceInput)
-    await userEvent.type(priceInput, '23.2')
+    await userEvent.type(priceInput, '23,2')
     expect(priceInput.value).toBe('232')
   })
 

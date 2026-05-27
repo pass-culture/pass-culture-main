@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
+import { vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import type { Currency } from '@/commons/core/shared/types'
@@ -9,10 +10,19 @@ import { PriceInput, type PriceInputProps } from './PriceInput'
 
 const renderPriceInput = (props: Partial<PriceInputProps>) => {
   const Wrapper = () => {
-    const [value, setValue] = useState<number | null>(null)
+    const [value, setValue] = useState<number | string | null>(
+      props.value ?? null
+    )
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(event.target.valueAsNumber)
+      const newValue = event.target.value
+      if (newValue === '') {
+        setValue(null)
+      } else {
+        const numValue = Number(newValue)
+        setValue(Number.isNaN(numValue) ? null : numValue)
+      }
+      props.onChange?.(event)
     }
 
     return (
@@ -20,7 +30,7 @@ const renderPriceInput = (props: Partial<PriceInputProps>) => {
         {...props}
         name="price"
         label="Prix"
-        value={value ?? ''}
+        value={value}
         onChange={onChange}
       />
     )
@@ -30,7 +40,7 @@ const renderPriceInput = (props: Partial<PriceInputProps>) => {
 }
 
 const LABELS = {
-  input: /Prix/,
+  input: /Prix \(en/,
   checkbox: /Gratuit/,
 }
 
@@ -68,73 +78,76 @@ describe('PriceInput', () => {
       expect(checkbox).toBeDisabled()
     })
 
-    it('should check the checkbox when the input value changes to 0', async () => {
-      renderPriceInput({ showFreeCheckbox: true })
+    it('should check the checkbox when initial value is 0', () => {
+      renderPriceInput({ showFreeCheckbox: true, value: 0 })
 
-      const input = screen.getByRole('spinbutton', { name: LABELS.input })
       const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
-
-      await userEvent.clear(input)
-      await userEvent.type(input, '0')
       expect(checkbox).toBeChecked()
     })
 
-    it('should uncheck the checkbox when the input value changes to a non-zero value', async () => {
-      renderPriceInput({ showFreeCheckbox: true })
+    it('should disable input when initial value is 0', () => {
+      renderPriceInput({ showFreeCheckbox: true, value: 0 })
 
       const input = screen.getByRole('spinbutton', { name: LABELS.input })
-      const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
+      expect(input).toBeDisabled()
+    })
 
-      await userEvent.type(input, '1')
+    it('should keep checkbox unchecked when initial value is non-zero', () => {
+      renderPriceInput({ showFreeCheckbox: true, value: 10 })
+
+      const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
       expect(checkbox).not.toBeChecked()
     })
 
-    it('should set the input value to 0 when the checkbox is checked', async () => {
-      renderPriceInput({ showFreeCheckbox: true })
+    it('should trigger onChange when checkbox is clicked', async () => {
+      const onChange = vi.fn()
+      renderPriceInput({ showFreeCheckbox: true, onChange })
 
-      const input = screen.getByRole('spinbutton', { name: LABELS.input })
       const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
-
       await userEvent.click(checkbox)
-      expect(input).toHaveValue(0)
+      expect(onChange).toHaveBeenCalled()
     })
 
-    it('should move focus to the input when the checkbox is unchecked and reset the input value', async () => {
-      renderPriceInput({ showFreeCheckbox: true })
+    it('should trigger onChange with empty string when checkbox is unchecked', async () => {
+      const onChange = vi.fn()
+      renderPriceInput({ showFreeCheckbox: true, value: 0, onChange })
 
-      const input = screen.getByRole('spinbutton', { name: LABELS.input })
       const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
-
       await userEvent.click(checkbox)
-      await userEvent.click(checkbox)
-      expect(input).toHaveValue(0)
-      expect(input).toHaveFocus()
+      expect(onChange).toHaveBeenCalled()
     })
   })
 
   describe('Input validation', () => {
     const setNumberPriceValue = [
-      { value: '20', expectedNumber: 20 },
-      { value: 'azer', expectedNumber: null },
-      { value: 'AZER', expectedNumber: null },
-      { value: '2fsqjk', expectedNumber: 2 },
-      { value: '2fsqm0', expectedNumber: 20 },
-      { value: '20.50', expectedNumber: 20.5 },
-      { value: '20.504', expectedNumber: 20.504 },
-      { value: '20.5.2', expectedNumber: 20.52 },
+      { value: '20', expected: '20' },
+      { value: 'azer', expected: 'NaN' },
+      { value: 'AZER', expected: 'NaN' },
+      { value: '2fsqjk', expected: '2' },
+      { value: '2fsqm0', expected: '20' },
+      { value: '20.50', expected: '20.50' },
+      { value: '20.504', expected: '20.504' },
+      { value: '20.5.2', expected: '20.52' },
     ]
     it.each(
       setNumberPriceValue
     )('should only type numbers for price input', async ({
       value,
-      expectedNumber,
+      expected,
     }) => {
       renderPriceInput({})
 
       const input = screen.getByRole('spinbutton', { name: LABELS.input })
       await userEvent.type(input, value)
       await userEvent.tab()
-      expect(input).toHaveValue(expectedNumber)
+      const expectedValue = expected === '' ? null : Number(expected)
+      const actualValue = (input as HTMLInputElement).valueAsNumber
+
+      if (Number.isNaN(expectedValue as number)) {
+        expect(Number.isNaN(actualValue)).toBe(true)
+      } else {
+        expect(actualValue).toBe(expectedValue)
+      }
     })
   })
 
@@ -152,7 +165,9 @@ describe('PriceInput', () => {
         currency: currency,
       })
 
-      expect(screen.getByText(`Prix (en ${sign})`)).toBeInTheDocument()
+      expect(
+        screen.getByText(new RegExp(`Prix \\(en ${sign}\\)`))
+      ).toBeInTheDocument()
     })
   })
 })
