@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask_login import current_user
+from sqlalchemy.dialects.postgresql import insert
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
@@ -163,15 +164,28 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
     if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
         raise ResourceNotFoundError()
 
-    favorite = db.session.query(Favorite).filter_by(offerId=body.offer_id, userId=current_user.id).one_or_none()
-    if not favorite:
-        favorite = Favorite(offer=offer, user=current_user)
-        db.session.add(favorite)
-        db.session.flush()
+    stmt: sa.sql.dml.ReturningInsert = (
+        insert(Favorite)
+        .values({"offerId": body.offer_id, "userId": current_user.id})
+        .on_conflict_do_update(
+            index_elements=[Favorite.offerId, Favorite.userId],
+            set_={"offerId": body.offer_id},
+        )
+        .returning(
+            Favorite.id,
+            # xmax is a "system" column that returns the transaction id that modified the row.
+            # In case of insertion, no row has been modified → xmax = 0
+            sa.literal_column("xmax = 0").label("is_inserted"),
+        )
+    )
+    favorite_ids = db.session.execute(stmt).all()
+    favorite_id, inserted = favorite_ids[0]
+
+    if inserted:
         update_external_user(current_user)
         track_offer_added_to_favorites_event(current_user.id, offer)
 
-    favorite_data = get_favorites_for(current_user, favorite.id)[0]
+    favorite_data = get_favorites_for(current_user, favorite_id)[0]
     return serializers.FavoriteResponse(
         id=favorite_data.favorite.id, offer=serializers.FavoriteOfferResponse.build(favorite_data)
     )

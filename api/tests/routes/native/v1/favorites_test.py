@@ -1,9 +1,13 @@
+import concurrent.futures
+import time
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from decimal import Decimal
+from unittest import mock
 
 import pytest
+import sqlalchemy as sa
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.bookings import factories as bookings_factories
@@ -18,6 +22,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.native.v1.favorites import get_favorites_for
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
@@ -505,6 +510,54 @@ class CreateFavoriteTest:
         # Then
         assert response.status_code == status_code
         assert db.session.query(Favorite).count() == count
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_create_favorite_concurrently(self, client, app, settings):
+        user = users_factories.BeneficiaryGrant18Factory()
+        offer = offers_factories.ThingOfferFactory()
+        offer_id = offer.id
+        client_with_user = client.with_token(user)
+
+        def add_to_favorite(position):
+            def slow_get_favorites(*args, **kwargs):
+                time.sleep(position % 2)
+                # return the mocked function's return value
+                return mock.DEFAULT
+
+            with (
+                mock.patch("pcapi.routes.native.v1.favorites.update_external_user") as update_external_user_mock,
+                mock.patch(
+                    "pcapi.routes.native.v1.favorites.track_offer_added_to_favorites_event",
+                ) as track_offer_added_to_favorites_event_mock,
+                mock.patch(
+                    "pcapi.routes.native.v1.favorites.get_favorites_for", wraps=get_favorites_for
+                ) as get_favorites_for_mock,
+            ):
+                # Use the app context in the new thread
+                app.app_context().push()
+                # Simulate a slow db transaction so we can get the race condition
+                get_favorites_for_mock.side_effect = slow_get_favorites
+                # Allow lock_timeout to be sure that the db transaction is waiting while another transaction is inserting the same row
+                db.session.execute(sa.text("SET LOCAL lock_timeout='3s'"))
+                try:
+                    response = client_with_user.post(FAVORITES_URL, json={"offerId": offer_id})
+                finally:
+                    db.session.execute(sa.text(f"SET LOCAL lock_timeout='{settings.DATABASE_LOCK_TIMEOUT}'"))
+            return (
+                response.status_code,
+                update_external_user_mock.call_count,
+                track_offer_added_to_favorites_event_mock.call_count,
+            )
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            futures = []
+            for i in range(3):
+                futures.append(executor.submit(add_to_favorite, i))
+            results = [future.result() for future in futures]
+
+        # all returned status codes should be == 200. update_external_user and track_offer_added_to_favorites_event should be called once
+        assert set(results) == {(200, 1, 1), (200, 0, 0)}
+        assert db.session.query(Favorite).filter(Favorite.offerId == offer_id, Favorite.userId == user.id).count() == 1
 
 
 class DeleteTest:
