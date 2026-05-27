@@ -40,6 +40,11 @@ const renderOnboardingOfferIndividual = (
               },
             ],
           },
+          selectedPartnerVenue: {
+            ...defaultGetOffererVenueResponseModelNew,
+            isPermanent: true,
+            id: 1337,
+          },
         },
       },
     },

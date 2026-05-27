@@ -10,7 +10,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import editFullIcon from '@/icons/full-edit.svg'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
@@ -23,13 +23,13 @@ import styles from './OnboardingOfferIndividual.module.scss'
 export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
-  const selectedOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
     () => {
       return apiNew.listOffers({
-        query: { offererId: selectedOfferer?.id, status: OfferStatus.DRAFT },
+        query: { venueId: selectedPartnerVenue.id, status: OfferStatus.DRAFT },
       })
     },
     { fallbackData: [] }
@@ -39,9 +39,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     return <Spinner />
   }
 
-  const draftOffers = offersQuery.data
-    .filter(({ status }) => status === OfferStatus.DRAFT)
-    .slice(0, MAX_DRAFT_TO_DISPLAY)
+  const draftOffers = offersQuery.data.slice(0, MAX_DRAFT_TO_DISPLAY)
 
   return (
     <OnboardingLayout

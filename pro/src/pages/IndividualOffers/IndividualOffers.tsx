@@ -35,7 +35,6 @@ export const IndividualOffers = () => {
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualOffersFilters>),
-    venueId: selectedPartnerVenue.id,
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
@@ -74,7 +73,7 @@ export const IndividualOffers = () => {
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedPartnerVenue.managingOfferer.id
+    selectedPartnerVenue.id
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
