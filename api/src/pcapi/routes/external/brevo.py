@@ -170,23 +170,11 @@ def _brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResp
         "subcategories": RECOMMENDATION_SUBCATEGORIES,
         "price_max": float(price_max),
     }
-    try:
-        raw_response = recommendation_api.get_playlist(user, params=user_location, body=body)
-    except (recommendation_api.RecommendationApiException, recommendation_api.RecommendationApiTimeoutException) as exc:
-        logger.error("Request to recommendation API failed", extra={"error": str(exc)})
-        raise ApiErrors(status_code=503)
+    recommended_offer_ids = _get_offer_ids_from_recommendation_api(user, params=user_location, body=body)
+    if len(recommended_offer_ids) < 2:
+        recommended_offer_ids = _get_offer_ids_from_recommendation_api(user, params=user_location, body=None)
 
-    try:
-        decoded = json.loads(raw_response.decode(encoding="utf-8"))
-    except json.decoder.JSONDecodeError as exc:
-        logger.error(
-            "Failed decoding recommendation API response",
-            extra={"error": str(exc), "response": raw_response.decode(encoding="utf-8")},
-        )
-        raise ApiErrors(status_code=500)
-
-    offer_ids = [int(offer_id) for offer_id in decoded.get("playlist_recommended_offers", [])]
-    offer_ids = offer_ids[: settings.BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED]
+    offer_ids = recommended_offer_ids[: settings.BREVO_NUMBER_OF_OFFERS_IN_EXTERNAL_FEED]
     query = (
         sa.select(offers_models.Offer)
         .where(offers_models.Offer.id.in_(offer_ids))
@@ -221,6 +209,25 @@ def _brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResp
             for offer in offers
         ]
     )
+
+
+def _get_offer_ids_from_recommendation_api(user: User, params: dict | None, body: dict | None) -> list[int]:
+    try:
+        raw_response = recommendation_api.get_playlist(user, params=params, body=body)
+    except (recommendation_api.RecommendationApiException, recommendation_api.RecommendationApiTimeoutException) as exc:
+        logger.error("Request to recommendation API failed", extra={"error": str(exc)})
+        raise ApiErrors(status_code=503)
+
+    try:
+        decoded = json.loads(raw_response.decode(encoding="utf-8"))
+    except json.decoder.JSONDecodeError as exc:
+        logger.error(
+            "Failed decoding recommendation API response",
+            extra={"error": str(exc), "response": raw_response.decode(encoding="utf-8")},
+        )
+        raise ApiErrors(status_code=500)
+
+    return [int(offer_id) for offer_id in decoded.get("playlist_recommended_offers", [])]
 
 
 def _old_brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
