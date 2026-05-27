@@ -30,7 +30,7 @@ jobs:
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:
-          version: 53a863506809826cc6c48f5d5d3f3d62966dd620
+          version: v0.3.0
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
       - name: Post message

@@ -51,7 +51,7 @@ jobs:
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:
-          version: IC-1020-docker-push
+          version: v0.3.0
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
       - name: Download artifact

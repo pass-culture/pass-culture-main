@@ -3,7 +3,7 @@ description: An action to install passdirector CLI onto the runner
 inputs:
   version:
     description: The passdirector version
-    default: v0.1.0
+    default: v0.3.0
     required: false
   github_app_id:
     description: The application ID to use to clone passdirector
