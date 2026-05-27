@@ -629,7 +629,11 @@ class CreatePriceCategoryModel(BaseModel):
         label: str
     else:
         label: constr(min_length=1, max_length=50)
-    price: decimal.Decimal
+    price: decimal.Decimal = Field(
+        max_digits=12,
+        decimal_places=2,
+        ge=0.00,
+    )
 
     class Config:
         extra = "forbid"
@@ -641,7 +645,11 @@ class EditPriceCategoryModel(BaseModel):
         label: str
     else:
         label: constr(min_length=1, max_length=50)
-    price: decimal.Decimal
+    price: decimal.Decimal = Field(
+        max_digits=12,
+        decimal_places=2,
+        ge=0.00,
+    )
 
     class Config:
         extra = "forbid"

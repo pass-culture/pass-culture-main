@@ -306,3 +306,30 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Cannot delete price categories on non-draft offers"]}
         assert db.session.query(offers_models.PriceCategory).filter_by(id=price_category.id).one()
+
+    def test_create_same_price_categories_twice(self, client):
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "priceCategories": [
+                {"price": 10.00, "label": "The throne"},
+                {"price": 10.00001, "label": "The throne"},
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400, response.json
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        # TODO(xordoquy): Error message is far from decent, it'll be reworked soon enough with Pydantic v2 migration
+        assert response.json == {
+            "priceCategories.1.id": ["Ce champ est obligatoire"],
+            "priceCategories.1.price": [
+                "ensure that there are no more than 2 decimal places",
+                "ensure that there are no more than 2 decimal places",
+            ],
+        }
