@@ -348,6 +348,8 @@ def uncancel_collective_booking(collective_booking: models.CollectiveBooking) ->
             finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
             booking=collective_booking,
         )
+    collective_booking.collectiveStock.collectiveOffer.isActive = True
+    collective_booking.collectiveStock.collectiveOffer.dateArchived = None
     db.session.flush()
 
     logger.info(
