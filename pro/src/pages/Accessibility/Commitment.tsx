@@ -1,5 +1,7 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
@@ -111,20 +113,16 @@ export const Commitment = () => {
         <p className={styles['paragraph']}>
           D’autres évolutions sont prévues dans les prochains mois et sont
           disponibles sur le {''}
-          <Button
-            as="a"
+          <Link
             to="/accessibilite/schema-pluriannuel"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+            color={LinkColor.NEUTRAL}
             label="Schéma pluriannuel d’accessibilité 2024 - 2025"
           />
           {''} et le {''}
-          <Button
-            as="a"
+          <Link
             to="https://passculture.app/accessibilite/plan-d-actions"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            isExternal
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             label="Schéma pluriannuel d’accessibilité 2022 - 2024"
           />
         </p>
@@ -146,22 +144,18 @@ export const Commitment = () => {
           mouvement. Vous trouverez d’ailleurs dans le schéma pluriannuel les
           chantiers sur lesquels nous travaillons à ce niveau. Si vous avez des
           retours au sujet de notre traitement, n’hésitez pas à écrire à {''}
-          <Button
-            as="a"
-            isExternal
+          <Link
+            isExternalLink
             to="mailto:accessibilite@passculture.app"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+            color={LinkColor.NEUTRAL}
             label="accessibilite@passculture.app"
           />
         </p>
         <p className={styles['paragraph']}>
-          <Button
-            as="a"
+          <Link
             to="https://aide.passculture.app/hc/fr/sections/4597468688924-Situation-de-handicap"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            isExternal
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             label="Vous pouvez retrouver également toutes nos fiches d’aide pour vous
           inscrire sur le pass Culture directement dans notre centre d’aide."
           />

@@ -1,5 +1,7 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
@@ -30,19 +32,15 @@ export const Declaration = () => {
 
         <ul>
           <li className={styles['list-item']}>
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
+            <Link
+              color={LinkColor.NEUTRAL}
               to="/accessibilite/schema-pluriannuel"
               label="Schéma pluriannuel d’accessibilité 2024 - 2025"
             />
           </li>
           <li className={styles['list-item']}>
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
+            <Link
+              color={LinkColor.NEUTRAL}
               to="/accessibilite/schema-pluriannuel"
               label="Plan d’actions 2024 - 2025"
             />
@@ -50,12 +48,10 @@ export const Declaration = () => {
         </ul>
         <p className={styles['paragraph']}>
           Cette déclaration d’accessibilité s’applique au site internet{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
             to="https://passculture.pro/"
-            isExternal
+            isExternalLink
             label="https://passculture.pro/"
           />
         </p>
@@ -223,12 +219,10 @@ export const Declaration = () => {
           conformément aux environnements de test suivants :
         </p>
         <p className={styles['paragraph']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
             to="https://accessibilite.numerique.gouv.fr/methode/environnement-de-test/"
-            isExternal
+            isExternalLink
             label="Plus d’information sur l’environnement de test"
           />
         </p>
@@ -242,12 +236,10 @@ export const Declaration = () => {
           accessibles dans le cas où l’examen du code seul n’a pas suffi.
         </p>
         <p className={styles['paragraph']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
             to="https://accessibilite.numerique.gouv.fr/ressources/methodologie-de-test/"
-            isExternal
+            isExternalLink
             label="Plus d’information sur les outils d’assistance"
           />
         </p>
@@ -265,12 +257,10 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Connexion</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
+                <Link
+                  color={LinkColor.NEUTRAL}
                   to="https://passculture.pro/connexion?de=%2F"
-                  isExternal
+                  isExternalLink
                   label="https://passculture.pro/connexion?de=%2F"
                 />
               </td>
@@ -278,12 +268,10 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Mot de passe oublié</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
+                <Link
+                  color={LinkColor.NEUTRAL}
                   to="https://passculture.pro/demande-mot-de-passe"
-                  isExternal
+                  isExternalLink
                   label="https://passculture.pro/demande-mot-de-passe"
                 />
               </td>
@@ -291,12 +279,10 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Inscription</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
+                <Link
+                  color={LinkColor.NEUTRAL}
                   to="https://passculture.pro/inscription/compte/creation"
-                  isExternal
+                  isExternalLink
                   label="https://passculture.pro/inscription/compte/creation"
                 />
               </td>
@@ -306,12 +292,10 @@ export const Declaration = () => {
                 Confirmation d’inscription - Merci
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
                   to="https://passculture.pro/inscription/compte/confirmation"
+                  isExternalLink
                   label="https://passculture.pro/inscription/compte/confirmation"
                 />
               </td>
@@ -319,11 +303,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Accueil connecté</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/accueil"
                   label="https://passculture.pro/accueil"
                 />
@@ -332,11 +314,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Offres / Recherche offres</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offres"
                   label="https://passculture.pro/offres"
                 />
@@ -345,11 +325,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Création d’une offre - Accueil</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/creation"
                   label="https://passculture.pro/offre/creation"
                 />
@@ -358,11 +336,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Création d’une offre - Détails</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
                   label="https://passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
                 />
@@ -373,11 +349,9 @@ export const Declaration = () => {
                 Réservations / recherche réservations
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/recherche"
                   label="https://passculture.pro/inscription/structure/recherche"
                 />
@@ -388,11 +362,9 @@ export const Declaration = () => {
                 Création d’une offre - Stock & prix
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/individuelle/24200/creation/stocks"
                   label="https://passculture.pro/offre/individuelle/24200/creation/stocks"
                 />
@@ -403,11 +375,9 @@ export const Declaration = () => {
                 Création d’une offre - Récapitulatif
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/individuelle/24200/creation/recapitulatif"
                   label="https://passculture.pro/offre/individuelle/24200/creation/recapitulatif"
                 />
@@ -418,11 +388,9 @@ export const Declaration = () => {
                 Création d’une offre - Confirmation
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/individuelle/creation/confirmation"
                   label="https://passculture.pro/offre/individuelle/creation/confirmation"
                 />
@@ -433,11 +401,9 @@ export const Declaration = () => {
                 Première connexion - Rattachement
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/rattachement"
                   label="https://passculture.pro/inscription/structure/rattachement"
                 />
@@ -446,11 +412,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Première connexion - Accueil</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure"
                   label="https://passculture.pro/inscription/structure"
                 />
@@ -459,11 +423,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Première connexion - Structure</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/recherche"
                   label="https://passculture.pro/inscription/structure/recherche"
                 />
@@ -472,11 +434,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Inscription - Identification</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/identification"
                   label="https://passculture.pro/inscription/structure/identification"
                 />
@@ -485,11 +445,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Inscription - Activité</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/activite"
                   label="https://passculture.pro/inscription/structure/activite"
                 />
@@ -500,11 +458,9 @@ export const Declaration = () => {
                 Création d’une offre - Collective - Détail
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/creation/collectif"
                   label="https://passculture.pro/offre/creation/collectif"
                 />
@@ -515,11 +471,9 @@ export const Declaration = () => {
                 Création d’une offre - Collective - Aperçu
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/552/collectif/creation/apercu"
                   label="https://passculture.pro/offre/552/collectif/creation/apercu"
                 />
@@ -528,11 +482,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Inscription - Validation</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/inscription/structure/confirmation"
                   label="https://passculture.pro/inscription/structure/confirmation"
                 />
@@ -541,11 +493,9 @@ export const Declaration = () => {
             <tr>
               <td className={styles['td']}>Création d’une offre - Tarifs</td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://passculture.pro/offre/individuelle/68514/creation/tarifs"
                   label="https://passculture.pro/offre/individuelle/68514/creation/tarifs"
                 />
@@ -556,11 +506,9 @@ export const Declaration = () => {
                 Création d’une offre - Dates & Capacités
               </td>
               <td className={styles['td']}>
-                <Button
-                  as="a"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  isExternal
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
                   to="https://.passculture.pro/offre/individuelle/68514/creation/stocks"
                   label="https://passculture.pro/offre/individuelle/68514/creation/stocks"
                 />
@@ -594,11 +542,9 @@ export const Declaration = () => {
         <ul>
           <li className={styles['list-item']}>
             Écrire un message au Défenseur des droits (
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              isExternal
+            <Link
+              color={LinkColor.NEUTRAL}
+              isExternalLink
               to="https://formulaire.defenseurdesdroits.fr/"
               label="Ouvrir le formulaire"
             />
@@ -606,11 +552,9 @@ export const Declaration = () => {
           </li>
           <li className={styles['list-item']}>
             Contacter le délégué du Défenseur des droits dans votre région (
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              isExternal
+            <Link
+              color={LinkColor.NEUTRAL}
+              isExternalLink
               to="https://www.defenseurdesdroits.fr/saisir/delegues"
               label="Consulter l’annuaire des délégués"
             />

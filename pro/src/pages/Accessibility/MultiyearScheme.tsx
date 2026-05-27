@@ -1,5 +1,7 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor } from '@/design-system/Link/types'
 import fullBackIcon from '@/icons/full-back.svg'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
@@ -247,11 +249,9 @@ export const MultiyearScheme = () => {
           Conformément aux dispositions prévues par le RGAA et aux attentes
           légitimes des utilisateurs, un moyen de contact est mis en place : les
           demandes sont traitées par le pôle Support (contact –{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            isExternal
+          <Link
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             to="mailto:accessibilite@passculture.app"
             label="accessibilite@passculture.app"
           />
@@ -284,24 +284,20 @@ export const MultiyearScheme = () => {
         </p>
         <p className={styles['paragraph']}>
           Ce schéma pluriannuel ne concerne que le site{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             to="https://passculture.pro/"
-            isExternal
             label="https://passculture.pro/"
           />
         </p>
         <p className={styles['paragraph']}>
           Vous pouvez retrouver le plan annuel général incluant l’ensemble des
           sites gérés par le pass Culture à l’adresse suivante:{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             to="https://passculture.fr/"
-            isExternal
             label="https://passculture.fr/"
           />
         </p>
@@ -362,12 +358,10 @@ export const MultiyearScheme = () => {
         </h2>
         <p className={styles['paragraph']}>
           Site à destination des acteurs culturels :{' '}
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
+          <Link
+            color={LinkColor.NEUTRAL}
+            isExternalLink
             to="https://passculture.pro/"
-            isExternal
             label="https://passculture.pro/"
           />
         </p>

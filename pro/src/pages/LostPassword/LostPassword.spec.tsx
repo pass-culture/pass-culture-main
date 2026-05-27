@@ -45,12 +45,14 @@ describe('LostPassword', () => {
         'coucou@example.com'
       )
       await userEvent.tab()
-      await userEvent.click(screen.getByText(/Réinitialiser/))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser/ })
+      )
 
       // he has been redirected to next step
       await waitFor(() => {
         expect(
-          screen.getByText(/Vous allez recevoir un email/)
+          screen.getByRole('heading', { name: /Vous allez recevoir un email/ })
         ).toBeInTheDocument()
       })
     })
@@ -63,25 +65,33 @@ describe('LostPassword', () => {
 
       renderLostPassword()
       expect(
-        screen.getByText('Réinitialisez votre mot de passe')
+        screen.getByRole('heading', {
+          name: 'Réinitialisez votre mot de passe',
+        })
       ).toBeInTheDocument()
       expect(
         screen.getByText(
           'Entrez votre email pour recevoir un lien de réinitialisation.'
         )
       ).toBeInTheDocument()
-      expect(screen.getByText('Réinitialiser')).toBeInTheDocument()
-      expect(screen.getByText('Retour à la connexion')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Réinitialiser' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Retour à la connexion' })
+      ).toBeInTheDocument()
 
       await userEvent.type(
         screen.getByLabelText(/Adresse email */),
         'coucou@example.com'
       )
       await userEvent.tab()
-      await userEvent.click(screen.getByText(/Réinitialiser/))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser/ })
+      )
       await waitFor(() => {
         expect(
-          screen.getByText(/Vous allez recevoir un email/)
+          screen.getByRole('heading', { name: /Vous allez recevoir un email/ })
         ).toBeInTheDocument()
       })
     })
@@ -104,16 +114,20 @@ describe('LostPassword', () => {
 
       await userEvent.tab()
 
-      await userEvent.click(screen.getByText(/Réinitialiser/))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser/ })
+      )
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Vous allez recevoir un email/)
+          screen.getByRole('heading', { name: /Vous allez recevoir un email/ })
         ).toBeInTheDocument()
       })
 
       // when
-      await userEvent.click(screen.getByText('cliquez ici'))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Renvoyer un nouveau lien' })
+      )
 
       // then
       await waitFor(() => {
@@ -151,7 +165,9 @@ describe('LostPassword', () => {
         'coucou@example.com'
       )
       await userEvent.tab()
-      await userEvent.click(screen.getByText(/Réinitialiser/))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser/ })
+      )
 
       // then
       await waitFor(() => {
@@ -175,16 +191,20 @@ describe('LostPassword', () => {
         'coucou@example.com'
       )
       await userEvent.tab()
-      await userEvent.click(screen.getByText(/Réinitialiser/))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser/ })
+      )
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Vous allez recevoir un email/)
+          screen.getByRole('heading', { name: /Vous allez recevoir un email/ })
         ).toBeInTheDocument()
       })
 
       // then
-      await userEvent.click(screen.getByText('cliquez ici'))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Renvoyer un nouveau lien' })
+      )
 
       await waitFor(() => {
         expect(screen.getByText('Email envoyé.')).toBeInTheDocument()
