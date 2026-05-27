@@ -196,8 +196,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert "Règles de conformité" not in rows[0]
-        assert "Ministère" not in rows[0]
-        assert "Année" not in rows[0]
+        assert "Ministère" in rows[0]
+        assert "Année" in rows[0]
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
         query_args = {

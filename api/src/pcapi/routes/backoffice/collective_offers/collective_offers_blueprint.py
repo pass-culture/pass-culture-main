@@ -428,6 +428,44 @@ def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearch
 def _get_collective_offers(
     collective_offers_ids: list[int] | sa_orm.Query,
 ) -> sa_orm.Query:
+    institution_info_subquery = (
+        sa.select(
+            sa.func.jsonb_build_object(
+                "ministry",
+                educational_models.EducationalDeposit.ministry,
+                "educational_programs",
+                sa.func.array_agg(educational_models.EducationalInstitutionProgram.label),
+                "educational_year",
+                educational_models.EducationalYear.displayed_year,
+            )
+        )
+        .select_from(educational_models.EducationalDeposit)
+        .filter(
+            educational_models.EducationalDeposit.educationalInstitutionId
+            == educational_models.EducationalInstitution.id,
+            educational_models.EducationalDeposit.educationalYearId
+            == _get_educational_year_subquery(educational_models.CollectiveStock),
+        )
+        .outerjoin(
+            educational_models.EducationalYear,
+            educational_models.EducationalYear.adageId == educational_models.EducationalDeposit.educationalYearId,
+        )
+        .outerjoin(
+            educational_models.EducationalInstitutionProgramAssociation,
+            sa.and_(
+                educational_models.EducationalInstitutionProgramAssociation.institutionId
+                == educational_models.EducationalInstitution.id,
+                educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                    educational_models.CollectiveStock.startDatetime
+                ),
+            ),
+        )
+        .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
+        .group_by(educational_models.EducationalDeposit.ministry, educational_models.EducationalYear.displayed_year)
+        .correlate(educational_models.EducationalInstitution, educational_models.CollectiveStock)
+        .scalar_subquery()
+    )
+
     if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Subqueries avoid too many joins, which would make the query planner decide to seq scan tables.
 
@@ -441,44 +479,6 @@ def _get_collective_offers(
                 == educational_models.CollectiveOffer.id
             )
             .correlate(educational_models.CollectiveOffer)
-            .scalar_subquery()
-        )
-
-        institution_info_subquery = (
-            sa.select(
-                sa.func.jsonb_build_object(
-                    "ministry",
-                    educational_models.EducationalDeposit.ministry,
-                    "educational_programs",
-                    sa.func.array_agg(educational_models.EducationalInstitutionProgram.label),
-                    "educational_year",
-                    educational_models.EducationalYear.displayed_year,
-                )
-            )
-            .select_from(educational_models.EducationalDeposit)
-            .filter(
-                educational_models.EducationalDeposit.educationalInstitutionId
-                == educational_models.EducationalInstitution.id,
-                educational_models.EducationalDeposit.educationalYearId
-                == _get_educational_year_subquery(educational_models.CollectiveStock),
-            )
-            .outerjoin(
-                educational_models.EducationalYear,
-                educational_models.EducationalYear.adageId == educational_models.EducationalDeposit.educationalYearId,
-            )
-            .outerjoin(
-                educational_models.EducationalInstitutionProgramAssociation,
-                sa.and_(
-                    educational_models.EducationalInstitutionProgramAssociation.institutionId
-                    == educational_models.EducationalInstitution.id,
-                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
-                        educational_models.CollectiveStock.startDatetime
-                    ),
-                ),
-            )
-            .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
-            .group_by(educational_models.EducationalDeposit.ministry, educational_models.EducationalYear.displayed_year)
-            .correlate(educational_models.EducationalInstitution, educational_models.CollectiveStock)
             .scalar_subquery()
         )
 
@@ -519,7 +519,7 @@ def _get_collective_offers(
     else:
         entities = (
             educational_models.CollectiveOffer,
-            sa.null(),  # otherwise row is the CollectiveOffer itself
+            institution_info_subquery.label("institution_info"),
         )
 
     query = (
