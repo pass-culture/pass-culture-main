@@ -250,8 +250,14 @@ def link_venue_to_bank_account(
         raise resource_not_found_error()
     try:
         finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
-    except finance_exceptions.VenueAlreadyLinkedToAnotherBankAccount as exc:
-        raise ApiErrors({"code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT", "message": str(exc)})
+    except finance_exceptions.VenueAlreadyLinkedToAnotherBankAccount:
+        raise ApiErrors(
+            errors={
+                "venuesIds": [
+                    "Une ou plusieurs structures sélectionnées sont déjà rattachées à un autre compte bancaire."
+                ]
+            }
+        )
 
 
 def get_offers_with_headlines_and_mediations(

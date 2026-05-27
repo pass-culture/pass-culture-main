@@ -696,8 +696,7 @@ class OffererPatchBankAccountsTest:
 
         assert response.status_code == 400
         assert response.json == {
-            "code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT",
-            "message": f"At least one venue ({venue.id},) is already linked to another bank account",
+            "venuesIds": ["Une ou plusieurs structures sélectionnées sont déjà rattachées à un autre compte bancaire."]
         }
         assert len(venue.bankAccountLinks) == 1
         assert venue.current_bank_account_link.bankAccountId == first_bank_account.id
