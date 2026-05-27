@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
+from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
@@ -378,13 +379,9 @@ def create_artists() -> None:
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
-    for _ in range(2):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_4.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(
+        venue, artist_4, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
+    )
 
     # Artist 5: with AI biography but no Wikipedia source (edge case)
     artist_5 = artist_factories.ArtistFactory.create(
@@ -396,13 +393,9 @@ def create_artists() -> None:
         image_license="CC BY-SA 4.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
     )
-    for _ in range(2):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(
+        venue, artist_5, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
+    )
 
     # Artist 6: AI biography + Wikipedia source - music (CD)
     artist_6 = artist_factories.ArtistFactory.create(
@@ -420,13 +413,9 @@ def create_artists() -> None:
         image_license="CC BY-SA 2.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
     )
-    for _ in range(3):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_6.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(
+        venue, artist_6, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ArtistType.PERFORMER, count=3
+    )
 
     # Artist 7: AI biography + Wikipedia source - cinema (actress)
     artist_7 = artist_factories.ArtistFactory.create(
@@ -444,13 +433,7 @@ def create_artists() -> None:
         image_license="CC BY 3.0",
         image_license_url="https://creativecommons.org/licenses/by/3.0",
     )
-    for _ in range(3):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_7.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(venue, artist_7, subcategories.SEANCE_CINE.id, ArtistType.PERFORMER, count=3)
 
     # Artist 8: AI biography + Wikipedia source - cinema (director)
     artist_8 = artist_factories.ArtistFactory.create(
@@ -468,13 +451,7 @@ def create_artists() -> None:
         image_license="CC BY-SA 4.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
     )
-    for _ in range(3):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_8.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(venue, artist_8, subcategories.SEANCE_CINE.id, ArtistType.PERFORMER, count=3)
 
     # Artist 9: AI biography + Wikipedia source - book (writer)
     artist_9 = artist_factories.ArtistFactory.create(
@@ -492,16 +469,26 @@ def create_artists() -> None:
         image_license="CC BY-SA 3.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
     )
-    for _ in range(3):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_9.id, product_id=product.id, artist_type=ArtistType.AUTHOR
-        )
+    _create_offers_for_artist(venue, artist_9, subcategories.LIVRE_PAPIER.id, ArtistType.AUTHOR, count=3)
 
     _create_multi_artists_offer(venue)
     _create_library_with_writers()
+
+
+def _create_offers_for_artist(
+    venue: offerers_models.Venue,
+    artist: Artist,
+    subcategory_id: str,
+    artist_type: ArtistType,
+    count: int,
+) -> None:
+    for _ in range(count):
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategory_id)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
+        offers_factories.ArtistProductLinkFactory.create(
+            artist_id=artist.id, product_id=product.id, artist_type=artist_type
+        )
 
 
 def _create_multi_artists_offer(venue: offerers_models.Venue) -> None:
