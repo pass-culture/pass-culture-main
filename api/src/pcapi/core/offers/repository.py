@@ -85,7 +85,6 @@ def get_capped_offers_for_filters(
     *,
     user_id: int,
     offers_limit: int,
-    offerer_id: int | None = None,
     status: offer_mixin.OfferStatus | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
@@ -97,7 +96,6 @@ def get_capped_offers_for_filters(
 ) -> list[models.Offer]:
     query = get_offers_by_filters(
         user_id=user_id,
-        offerer_id=offerer_id,
         status=status,
         venue_id=venue_id,
         category_id=category_id,
