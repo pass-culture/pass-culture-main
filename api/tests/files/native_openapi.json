@@ -3927,29 +3927,6 @@
                 "title": "MotorDisability",
                 "type": "object"
             },
-            "MovieCalendarForUserResponse": {
-                "additionalProperties": false,
-                "properties": {
-                    "calendar": {
-                        "additionalProperties": {
-                            "items": {
-                                "$ref": "#/components/schemas/VenueScreeningsForUser"
-                            },
-                            "type": "array"
-                        },
-                        "propertyNames": {
-                            "format": "date"
-                        },
-                        "title": "Calendar",
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "calendar"
-                ],
-                "title": "MovieCalendarForUserResponse",
-                "type": "object"
-            },
             "MovieCalendarResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -7144,43 +7121,6 @@
                 "title": "Screening",
                 "type": "object"
             },
-            "ScreeningForUser": {
-                "additionalProperties": false,
-                "properties": {
-                    "beginningDatetime": {
-                        "format": "date-time",
-                        "title": "Beginningdatetime",
-                        "type": "string"
-                    },
-                    "bookability": {
-                        "$ref": "#/components/schemas/Bookability"
-                    },
-                    "features": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "title": "Features",
-                        "type": "array"
-                    },
-                    "price": {
-                        "title": "Price",
-                        "type": "number"
-                    },
-                    "stockId": {
-                        "title": "Stockid",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "beginningDatetime",
-                    "bookability",
-                    "features",
-                    "price",
-                    "stockId"
-                ],
-                "title": "ScreeningForUser",
-                "type": "object"
-            },
             "SearchGroupResponseModelv2": {
                 "additionalProperties": false,
                 "properties": {
@@ -9381,71 +9321,6 @@
                 "title": "VenueScreenings",
                 "type": "object"
             },
-            "VenueScreeningsForUser": {
-                "additionalProperties": false,
-                "properties": {
-                    "address": {
-                        "title": "Address",
-                        "type": "string"
-                    },
-                    "dayScreenings": {
-                        "items": {
-                            "$ref": "#/components/schemas/ScreeningForUser"
-                        },
-                        "title": "Dayscreenings",
-                        "type": "array"
-                    },
-                    "distance": {
-                        "title": "Distance",
-                        "type": "number"
-                    },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    },
-                    "nextScreening": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/ScreeningForUser"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ]
-                    },
-                    "offerId": {
-                        "title": "Offerid",
-                        "type": "integer"
-                    },
-                    "thumbUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Thumburl"
-                    },
-                    "venueId": {
-                        "title": "Venueid",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "address",
-                    "distance",
-                    "label",
-                    "offerId",
-                    "thumbUrl",
-                    "venueId",
-                    "dayScreenings",
-                    "nextScreening"
-                ],
-                "title": "VenueScreeningsForUser",
-                "type": "object"
-            },
             "VisualDisability": {
                 "additionalProperties": false,
                 "properties": {
@@ -11160,7 +11035,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MovieCalendarForUserResponse"
+                                    "$ref": "#/components/schemas/MovieCalendarResponse"
                                 }
                             }
                         },
