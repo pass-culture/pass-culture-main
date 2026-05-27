@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { addDays } from 'date-fns'
 
 import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   type OfferPublicationEditionProps,
@@ -12,7 +14,11 @@ import {
 function renderOfferPublicationEditionTags(
   props: OfferPublicationEditionProps
 ) {
-  render(<OfferPublicationEditionTags {...props} />)
+  renderWithProviders(<OfferPublicationEditionTags {...props} />, {
+    storeOverrides: {
+      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+    },
+  })
 }
 
 describe('OfferPublicationEditionTags', () => {

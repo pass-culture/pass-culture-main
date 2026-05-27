@@ -27,8 +27,6 @@ import {
   StudentLevels,
 } from '@/apiClient/v1'
 
-import { listOffersVenueV2Factory } from './commonOffersApiFactories'
-
 let offerId = 1
 let stockId = 1
 let venueId = 1
@@ -46,7 +44,6 @@ export const collectiveOfferFactory = (
     id: currentId,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     name: `offer name ${offerId}`,
-    venue: listOffersVenueV2Factory(),
     dates: {
       start: new Date().toISOString(),
       end: addDays(new Date(), 1).toISOString(),
@@ -78,7 +75,6 @@ export const collectiveOfferTemplateFactory = (
     id: currentId,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
     name: `Offre vitrine ${currentId}`,
-    venue: listOffersVenueV2Factory(),
     dates: {
       start: new Date().toISOString(),
       end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),

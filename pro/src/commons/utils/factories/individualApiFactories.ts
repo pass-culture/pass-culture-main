@@ -35,8 +35,6 @@ import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
-import { listOffersVenueV2Factory } from './commonOffersApiFactories'
-
 let offerId = 1
 let stockId = 1
 let venueId = 1
@@ -59,7 +57,6 @@ export const listOffersOfferFactory = (
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     name: `offer name ${offerId}`,
     isEvent: true,
-    venue: listOffersVenueV2Factory(),
     stocks: [],
     highlightRequests: [],
     ...customListOffersOffer,

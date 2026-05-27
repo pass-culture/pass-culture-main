@@ -19,6 +19,7 @@ import {
   getOfferStockFactory,
   getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { StockSection, type StockSectionProps } from './StockSection'
@@ -55,7 +56,12 @@ const renderStockSection = (
         element={<div>Offer creation: page horaires</div>}
       />
     </Routes>,
-    { initialRouterEntries: [url] }
+    {
+      initialRouterEntries: [url],
+      storeOverrides: {
+        user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+      },
+    }
   )
 
 describe('Summary stock section', () => {

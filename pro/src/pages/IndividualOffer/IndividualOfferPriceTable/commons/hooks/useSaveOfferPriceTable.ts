@@ -4,9 +4,11 @@ import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
 import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
@@ -23,6 +25,7 @@ export const useSaveOfferPriceTable = ({
 }): {
   save: (formValues: PriceTableFormValues) => Promise<boolean>
 } => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const mode = useOfferWizardMode()
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
@@ -42,6 +45,7 @@ export const useSaveOfferPriceTable = ({
         } else {
           await saveNonEventOfferPriceTable(formValues, form, {
             offer,
+            venue: selectedPartnerVenue,
           })
         }
       }

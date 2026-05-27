@@ -105,8 +105,10 @@ export const test = base.extend<{
 
       // Wait for CSS animations to finish before running axe-core,
       // otherwise mid-animation transforms can cause false color-contrast failures.
+      // Use allSettled so that cancelled animations (e.g. snackbar auto-dismiss)
+      // don't cause a rejection that would abort the check.
       await authenticatedPage.evaluate(() =>
-        Promise.all(document.getAnimations().map((a) => a.finished))
+        Promise.allSettled(document.getAnimations().map((a) => a.finished))
       )
 
       const results = await axeBuilder.analyze()

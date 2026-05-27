@@ -168,7 +168,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                       <li key={offer.id}>
                         <CardLink
                           label={offer.name}
-                          description={offer.venue.name}
+                          description={selectedPartnerVenue.publicName}
                           onClick={() => {
                             handleOfferCardSelected(offer.id)
                           }}

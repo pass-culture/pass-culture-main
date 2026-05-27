@@ -31,6 +31,7 @@ const baseOffer = listOffersOfferFactory({
     city: 'Paris',
     street: '3 rue de Valois',
     postalCode: '75001',
+    departmentCode: '75',
     isManualEdition: true,
     latitude: 48.85332,
     longitude: 2.348979,

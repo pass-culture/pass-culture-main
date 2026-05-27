@@ -1,8 +1,10 @@
-import type { ListOffersVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import {
   type CollectiveOffer,
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   formatShortDateForInput,
   getDateTimeToFrenchText,
@@ -18,13 +20,14 @@ export interface OfferEventDateCellProps {
 
 function getBookableOfferDate(
   date: string,
-  venue: ListOffersVenueResponseModel
+  venue: GetVenueResponseModel
 ): Date {
-  return getLocalDepartementDateTimeFromUtc(date, venue.departementCode)
+  return getLocalDepartementDateTimeFromUtc(date, venue.location.departmentCode)
 }
 
 export const OfferDateCell = ({ offer }: OfferEventDateCellProps) => {
   const isTemplateTable = !isCollectiveOfferBookable(offer)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const getFormattedDatesForOffer = (offer: CollectiveOffer) => {
     const offerDatetimes = offer.dates
@@ -43,10 +46,10 @@ export const OfferDateCell = ({ offer }: OfferEventDateCellProps) => {
     }
     const offerStartDate = isTemplateTable
       ? toDateStrippedOfTimezone(offerDatetimes.start)
-      : getBookableOfferDate(offerDatetimes.start, offer.venue)
+      : getBookableOfferDate(offerDatetimes.start, selectedPartnerVenue)
     const offerEndDate = isTemplateTable
       ? toDateStrippedOfTimezone(offerDatetimes.end)
-      : getBookableOfferDate(offerDatetimes.end, offer.venue)
+      : getBookableOfferDate(offerDatetimes.end, selectedPartnerVenue)
 
     if (
       offerDatetimes.start === offerDatetimes.end ||
