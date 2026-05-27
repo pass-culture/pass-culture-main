@@ -127,7 +127,12 @@ def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
     if isinstance(booking, bookings_models.Booking):
-        eventDatetime = booking.stock.beginningDatetime
+        # TODO(jbaudet - 06/2026): remove .replace() once other objects
+        # have a timezone.
+        if booking.stock.beginningDatetime:
+            eventDatetime = booking.stock.beginningDatetime.replace(tzinfo=None)
+        else:
+            eventDatetime = None
     else:
         eventDatetime = booking.collectiveStock.endDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query

@@ -457,7 +457,7 @@ class EditStockTest:
     def test_edit_event_without_beginning_update(self):
         # Given
         previous_booking_limit = date_utils.get_naive_utc_now() + timedelta(days=4)
-        beginning = date_utils.get_naive_utc_now() + timedelta(days=8)
+        beginning = datetime.now(UTC) + timedelta(days=8)
         new_booking_limit = date_utils.get_naive_utc_now() + timedelta(days=6)
         existing_stock = factories.EventStockFactory(
             price=10, quantity=7, beginningDatetime=beginning, bookingLimitDatetime=previous_booking_limit
@@ -709,7 +709,7 @@ class EditStockTest:
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
         previous_booking_limit = date_utils.get_naive_utc_now()
-        previous_beginning = date_utils.get_naive_utc_now() + timedelta(days=1)
+        previous_beginning = datetime.now(UTC) + timedelta(days=1)
         existing_stock = factories.EventStockFactory(
             bookingLimitDatetime=previous_booking_limit, beginningDatetime=previous_beginning
         )
@@ -4150,7 +4150,7 @@ class GetStocksStatsTest:
     def test_get_stocks_stats(self):
         # Given
         offer = factories.OfferFactory()
-        now = date_utils.get_naive_utc_now()
+        now = datetime.now(UTC)
         factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5, beginningDatetime=now)
         factories.StockFactory(offer=offer, quantity=20, dnBookedQuantity=5, beginningDatetime=now + timedelta(hours=1))
 
@@ -4981,7 +4981,7 @@ class MoveOfferTest:
 
     def test_move_event_offer_with_past_stocks(self):
         """Moving an event offer with past stocks should be possible"""
-        today = date.today()
+        today = datetime.now(UTC)
         yesterday = today - timedelta(days=1)
         tomorow = today + timedelta(days=1)
 

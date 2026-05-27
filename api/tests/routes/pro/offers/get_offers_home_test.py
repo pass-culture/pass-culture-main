@@ -84,8 +84,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json[0]["bookingsCount"] == 30 + 20 + 10
         expected = [
-            {"beginningDatetime": stock_1.beginningDatetime.isoformat() + "Z"},
-            {"beginningDatetime": stock_2.beginningDatetime.isoformat() + "Z"},
+            {"beginningDatetime": format_into_utc_date(stock_1.beginningDatetime)},
+            {"beginningDatetime": format_into_utc_date(stock_2.beginningDatetime)},
         ]
         result = response.json[0]["stocks"]
         assert sorted(result, key=itemgetter("beginningDatetime")) == sorted(

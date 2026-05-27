@@ -353,7 +353,10 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         back_populates="stock",
         cascade="all, delete-orphan",
     )
-    beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+            db_utils.TimezonedDatetime,
+            nullable=True
+    )
     bookingLimitDatetime = sa_orm.mapped_column(sa.DateTime, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
@@ -478,7 +481,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
 
     @hybrid_property
     def isEventExpired(self) -> bool:
-        return bool(self.beginningDatetime and self.beginningDatetime <= date_utils.get_naive_utc_now())
+        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.now(datetime.UTC))
 
     @isEventExpired.inplace.expression
     @classmethod
@@ -499,7 +502,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        return limit_date_for_stock_deletion >= date_utils.get_naive_utc_now()
+        return limit_date_for_stock_deletion >= datetime.datetime.now(datetime.UTC)
 
     @hybrid_property
     def isSoldOut(self) -> bool:
@@ -991,7 +994,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > date_utils.get_naive_utc_now())
+                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.now(datetime.UTC))
                 and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
             ):
                 return False

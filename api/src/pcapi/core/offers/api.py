@@ -739,7 +739,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bo
             )
             return
         bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
-        date_in_two_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
+        date_in_two_days = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)

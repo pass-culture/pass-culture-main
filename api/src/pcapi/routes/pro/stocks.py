@@ -17,6 +17,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
@@ -33,7 +34,7 @@ def _stock_already_exists(
 ) -> bool:
     return any(
         (
-            stock.beginningDatetime == stock_data.beginning_datetime.replace(tzinfo=None)
+            stock.beginningDatetime == date_utils.make_timezone_aware_utc(stock_data.beginning_datetime)
             and stock.priceCategoryId == stock_data.price_category_id
             and (not hasattr(stock_data, "id") or stock.id != stock_data.id)
         )

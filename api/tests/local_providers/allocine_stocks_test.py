@@ -343,21 +343,21 @@ class UpdateObjectsTest:
         assert first_stock.quantity is None
         assert first_stock.price == 10
         assert first_stock.priceCategory == first_price_category
-        assert first_stock.beginningDatetime == datetime(2023, 12, 18, 13, 0)
+        assert first_stock.beginningDatetime == datetime(2023, 12, 18, 13, 0, tzinfo=UTC)
         assert first_stock.bookingLimitDatetime == datetime(2023, 12, 18, 13, 0)
 
         assert second_stock.offerId == unique_offer.id
         assert second_stock.quantity is None
         assert second_stock.price == 10
         assert second_stock.priceCategory == first_price_category
-        assert second_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
+        assert second_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0, tzinfo=UTC)
         assert second_stock.bookingLimitDatetime == datetime(2023, 12, 18, 15, 0)
 
         assert third_stock.offerId == unique_offer.id
         assert third_stock.quantity is None
         assert third_stock.price == 10
         assert third_stock.priceCategory == first_price_category
-        assert third_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
+        assert third_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0, tzinfo=UTC)
         assert third_stock.bookingLimitDatetime == datetime(2023, 12, 18, 15, 0)
 
         assert first_price_category.offerId == unique_offer.id

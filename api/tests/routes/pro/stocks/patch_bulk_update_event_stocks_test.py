@@ -75,7 +75,7 @@ class Returns200Test:
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
+        beginning = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
         tomorrow = beginning + datetime.timedelta(days=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
@@ -83,14 +83,14 @@ class Returns200Test:
         )
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,
-            beginningDatetime=format_into_utc_date(beginning),
+            beginningDatetime=beginning,
             bookingLimitDatetime=format_into_utc_date(beginning),
             priceCategory=price_category,
             quantity=10,
         )
         offers_factories.EventStockFactory(
             offer=offer,
-            beginningDatetime=format_into_utc_date(tomorrow),
+            beginningDatetime=tomorrow,
             bookingLimitDatetime=format_into_utc_date(beginning),
             priceCategory=price_category,
             quantity=10,
@@ -229,7 +229,7 @@ class Returns200Test:
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
         existing_stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
-        beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
+        beginning = datetime.datetime.now(datetime.UTC) + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         bookings_factories.BookingFactory(stock=existing_stock, user__email="beneficiary@bookingEmail.fr")
@@ -273,7 +273,7 @@ class Returns200Test:
             ],
         }
         assert edited_stock.beginningDatetime == beginning
-        assert edited_stock.bookingLimitDatetime == beginning
+        assert edited_stock.bookingLimitDatetime == beginning.replace(tzinfo=None)
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
@@ -289,7 +289,7 @@ class Returns200Test:
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, client
     ):
-        now = date_utils.get_naive_utc_now()
+        now = datetime.datetime.now(datetime.UTC)
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -357,7 +357,7 @@ class Returns200Test:
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
-        now = date_utils.get_naive_utc_now() + relativedelta(hours=4)
+        now = datetime.datetime.now(datetime.UTC) + relativedelta(hours=4)
         date_used_in_48_hours = now + relativedelta(days=2)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
@@ -394,7 +394,7 @@ class Returns200Test:
         assert response.status_code == 200
         updated_booking = db.session.get(bookings_models.Booking, booking.id)
         assert updated_booking.status is bookings_models.BookingStatus.USED
-        assert updated_booking.dateUsed == date_used_in_48_hours
+        assert updated_booking.dateUsed == date_used_in_48_hours.replace(tzinfo=None)
 
     def test_update_event_stock_quantity(self, client):
         beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
@@ -402,7 +402,7 @@ class Returns200Test:
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,
-            beginningDatetime=format_into_utc_date(beginning),
+            beginningDatetime=beginning,
             bookingLimitDatetime=format_into_utc_date(beginning),
             priceCategory=price_category_1,
             quantity=20,

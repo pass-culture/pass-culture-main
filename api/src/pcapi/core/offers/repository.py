@@ -192,7 +192,7 @@ def _get_offer_home_score(offer: models.Offer, date_limit: datetime.datetime) ->
         )
         stocks = sorted(active_future_stocks, key=operator.attrgetter("beginningDatetime"))
         # set max datetime when no stocks to sort nulls last
-        first_date = stocks[0].beginningDatetime if stocks else datetime.datetime.max
+        first_date = stocks[0].beginningDatetime if stocks else datetime.datetime.max.replace(tzinfo=datetime.UTC)
         return (5, first_date)
     else:
         if offer.validation == offer_mixin.OfferValidationStatus.PENDING:
@@ -205,7 +205,7 @@ def _get_offer_home_score(offer: models.Offer, date_limit: datetime.datetime) ->
 def get_offers_for_homepage(*, venue_id: int, offers_limit: int) -> list[models.Offer]:
     # filter on venueId and publicationDatetime + order by publicationDatetime
     # this is possible with the multi index ix_offer_venueId_publicationDatetime
-    now = date_utils.get_naive_utc_now()
+    now = datetime.datetime.now(datetime.UTC)
     date_filter = now - datetime.timedelta(days=90)
     status_values = (
         offer_mixin.OfferStatus.PENDING,

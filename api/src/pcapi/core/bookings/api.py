@@ -73,7 +73,7 @@ def _is_ended_booking(booking: models.Booking) -> bool:
     if (
         booking.stock.beginningDatetime
         and booking.status != models.BookingStatus.CANCELLED
-        and booking.stock.beginningDatetime >= date_utils.get_naive_utc_now()
+        and booking.stock.beginningDatetime >= datetime.datetime.now(datetime.UTC)
     ):
         # consider future events as "ongoing" even if they are used
         return False
@@ -180,11 +180,32 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     return (db.session.query(models.Booking).filter_by(userId=user.id).options(*_get_booking_options())).all()
 
 
+def _get_end_datetime_from_booking(booking: models.Booking) -> datetime.datetime:
+    return (
+        # TODO(jbaudet - 06/2026): remove .replace() once all other
+        # columns have timezones
+        (booking.stock.beginningDatetime.replace(tzinfo=None) if booking.stock.beginningDatetime else None)
+        or booking.dateUsed
+        or booking.cancellationDate
+        or datetime.datetime.min
+    )
+
+
 def _sort_ended_bookings(bookings: list[models.Booking]) -> list[models.Booking]:
     return sorted(
         bookings,
-        key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.datetime.min,
+        key=_get_end_datetime_from_booking,
         reverse=True,
+    )
+
+
+def _get_ongoing_datetime_from_booking(booking: models.Booking) -> datetime.datetime:
+    return (
+        booking.expirationDate
+        # TODO(jbaudet - 06/2026): remove .replace() once all other
+        # columns have timezones
+        or (booking.stock.beginningDatetime.replace(tzinfo=None) if booking.stock.beginningDatetime else None)
+        or datetime.datetime.max
     )
 
 
@@ -192,7 +213,7 @@ def _sort_ongoing_bookings(bookings: list[models.Booking]) -> list[models.Bookin
     # put permanent bookings at the end with datetime.max
     return sorted(
         bookings,
-        key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max, -b.id),
+        key=lambda b: (_get_ongoing_datetime_from_booking(b), -b.id),
     )
 
 
@@ -1084,7 +1105,7 @@ def update_cancellation_limit_dates(
     for booking in bookings_to_update:
         booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
             event_beginning=new_beginning_datetime,
-            edition_date=date_utils.get_naive_utc_now(),
+            edition_date=datetime.datetime.now(datetime.UTC),
         )
     db.session.add_all(bookings_to_update)
     db.session.flush()
@@ -1533,7 +1554,7 @@ def cancel_ems_external_bookings() -> None:
 def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
         if stock.beginningDatetime:
-            delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
+            delta = stock.beginningDatetime - datetime.datetime.now(datetime.UTC)
             return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
     return True
 
@@ -1547,6 +1568,6 @@ def is_voucher_displayed(offer: offers_models.Offer, isExternal: bool) -> bool:
 
 def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None) -> bool:
     if withdrawal_delay and stock.beginningDatetime:
-        delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
+        delta = stock.beginningDatetime - datetime.datetime.now(datetime.UTC)
         return delta.total_seconds() < withdrawal_delay
     return False
