@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { OffersCardVariant } from '../types'
@@ -33,7 +34,14 @@ const defaultProps: CollectiveOffersCardProps<'TEMPLATE'> = {
 
 const renderCollectiveOffersCard = (
   props?: Partial<ComponentProps<typeof CollectiveOffersCard>>
-) => renderWithProviders(<CollectiveOffersCard {...defaultProps} {...props} />)
+) =>
+  renderWithProviders(<CollectiveOffersCard {...defaultProps} {...props} />, {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
+  })
 
 describe('CollectiveOffersCard', () => {
   it('should display skeleton when data is loading', () => {

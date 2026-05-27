@@ -3,8 +3,8 @@ import {
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
   type GetEducationalOffererResponseModel,
+  type GetVenueResponseModel,
   type StudentLevels,
-  type VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
 import {
   formatShortDateForInput,
@@ -147,7 +147,7 @@ const getTemplateDateFields = (
 export const computeInitialValuesFromOffer = (
   offerer: GetEducationalOffererResponseModel | null,
   isTemplate: boolean,
-  venues: VenueListItemResponseModel[],
+  venue: GetVenueResponseModel,
   offer?: CollectiveOffer,
   venueIdQueryParam?: string | null,
   isMarseilleEnabled?: boolean
@@ -163,16 +163,15 @@ export const computeInitialValuesFromOffer = (
   const defaultEducationalFormValues =
     getDefaultEducationalValues(isMarseilleEnabled)
 
-  const defaultVenue = venues.find((v) => v.id.toString() === initialVenueId)
-  const venueAddress = defaultVenue?.location
-  const offerLocationFromVenue = defaultVenue
+  const venueAddress = venue?.location
+  const offerLocationFromVenue = venue
     ? {
         locationType: CollectiveLocationType.ADDRESS,
         location: {
           isManualEdition: false,
-          label: defaultVenue.publicName,
+          label: venue.publicName,
           isVenueLocation: true,
-          id: defaultVenue.location?.id.toString() ?? '',
+          id: venue.location?.id.toString() ?? '',
         },
       }
     : defaultEducationalFormValues.location

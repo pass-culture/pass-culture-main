@@ -9,7 +9,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import {
   COLLECTIVE_OFFER_STATUS_PROPERTIES,
@@ -45,6 +47,7 @@ export const CollectiveOffersTemplateLine = ({
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const formattedOfferDates = formatOfferDates(offer.dates)
 
@@ -54,7 +57,7 @@ export const CollectiveOffersTemplateLine = ({
       offerType: 'collective',
       offerStatus: offer.displayedStatus,
     })
-    createOfferFromTemplate(navigate, snackBar, offer.id)
+    createOfferFromTemplate(navigate, snackBar, offer.id, selectedPartnerVenue)
   }
 
   return (

@@ -1,6 +1,7 @@
 import type { useNavigate } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -13,6 +14,7 @@ export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   snackBar: ReturnType<typeof useSnackBar>,
   templateOfferId: number,
+  venue: GetVenueResponseModel,
   requestId?: string,
   isMarseilleActive?: boolean,
   setIsCreatingNewOffer?: (isCreating: boolean) => void
@@ -32,19 +34,12 @@ export const createOfferFromTemplate = async (
     const targetOfferer = educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === targetOffererId
     )
-    const offerers = targetOfferer || null
-    const { venues } = await apiNew.getVenues({
-      query: {
-        validated: null,
-        activeOfferersOnly: true,
-        offererId: targetOffererId,
-      },
-    })
+    const offerer = targetOfferer || null
 
     const initialValues = computeInitialValuesFromOffer(
-      offerers,
+      offerer,
       false,
-      venues,
+      venue,
       offerTemplateResponse,
       undefined,
       isMarseilleActive

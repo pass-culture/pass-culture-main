@@ -109,6 +109,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       navigate,
       snackBar,
       offerId,
+      selectedPartnerVenue,
       undefined,
       isMarseilleActive,
       setIsCreatingNewOffer

@@ -6,8 +6,10 @@ import {
 } from '@/apiClient/v1/new'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
-import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  defaultGetVenue,
+  getCollectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
@@ -26,17 +28,16 @@ const venueAddress: LocationResponseModelV2 = {
   label: '',
 }
 
-const venues = [
-  venueListItemFactory({
-    location: venueAddress,
-    id: 2,
-  }),
-]
+const venue = {
+  ...defaultGetVenue,
+  location: venueAddress,
+  id: 2,
+}
 
 const offerer = {
   allowedOnAdage: true,
   id: 1,
-  managedVenues: venues,
+  managedVenues: [venue],
   siren: '123456789',
   name: 'toto',
 }
@@ -52,7 +53,7 @@ const offerVenue: GetCollectiveOfferVenueResponseModel = {
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    expect(computeInitialValuesFromOffer(offerer, false, venues)).toEqual({
+    expect(computeInitialValuesFromOffer(offerer, false, venue)).toEqual({
       ...getDefaultEducationalValues(),
       offererId: '1',
       venueId: '2',
@@ -67,7 +68,7 @@ describe('computeInitialValuesFromOffer', () => {
           id: '1',
           isManualEdition: false,
           isVenueLocation: true,
-          label: 'Nom public de la structure 2',
+          label: 'Nom public de la structure',
         },
       },
       contactUrl: undefined,
@@ -76,7 +77,7 @@ describe('computeInitialValuesFromOffer', () => {
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
     expect(
-      computeInitialValuesFromOffer(null, true, venues).beginningDate
+      computeInitialValuesFromOffer(null, true, venue).beginningDate
     ).toEqual(formatShortDateForInput(new Date()))
   })
 
@@ -85,7 +86,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           dates: {
             end: '2024-01-29T23:00:28.040559Z',
@@ -101,7 +102,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         undefined,
         undefined,
         false
@@ -119,7 +120,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           contactEmail: 'email@test.co',
           contactPhone: null,
@@ -140,7 +141,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: '00000000',
@@ -161,7 +162,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: undefined,
@@ -184,7 +185,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         null,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: undefined,
@@ -206,7 +207,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         offerer,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
@@ -257,14 +258,13 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         offerer,
         true,
-        venues,
+        venue,
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
             location: venueAddress,
             locationComment: null,
           },
-          venue: offerVenue,
         }),
         undefined,
         false
@@ -281,7 +281,7 @@ describe('computeInitialValuesFromOffer', () => {
             id: '1',
             isVenueLocation: true,
             isManualEdition: false,
-            label: 'Nom public de la structure 2',
+            label: 'Nom public de la structure',
           },
           locationType: 'ADDRESS',
         },
