@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
+from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
@@ -378,13 +379,9 @@ def create_artists() -> None:
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
-    for _ in range(2):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_4.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(
+        venue, artist_4, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
+    )
 
     # Artist 5: with AI biography but no Wikipedia source (edge case)
     artist_5 = artist_factories.ArtistFactory.create(
@@ -396,16 +393,102 @@ def create_artists() -> None:
         image_license="CC BY-SA 4.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
     )
-    for _ in range(2):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-        offers_factories.StockFactory.create(offer=offer)
-        offers_factories.ArtistProductLinkFactory.create(
-            artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
-        )
+    _create_offers_for_artist(
+        venue, artist_5, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
+    )
+
+    # Artist 6: AI biography + Wikipedia source - music (CD)
+    artist_6 = artist_factories.ArtistFactory.create(
+        name="Stromae",
+        description="auteur-compositeur-interprète belge",
+        biography=(
+            "Paul Van Haver, dit Stromae, né le 12 mars 1985 à Etterbeek, est un auteur-compositeur-interprète,"
+            " rappeur et producteur belge. Révélé en 2009 avec Alors on danse, il s'impose comme une figure"
+            " majeure de la chanson francophone avec les albums Cheese (2010), Racine carrée (2013) et"
+            " Multitude (2022)."
+        ),
+        wikidata_id="Q3271605",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Stromae",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Le_chanteur_Stromae.jpg",
+        image_license="CC BY-SA 2.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
+    )
+    _create_offers_for_artist(
+        venue, artist_6, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ArtistType.PERFORMER, count=3
+    )
+
+    # Artist 7: AI biography + Wikipedia source - cinema (actress)
+    artist_7 = artist_factories.ArtistFactory.create(
+        name="Marion Cotillard",
+        description="actrice française",
+        biography=(
+            "Marion Cotillard, née le 30 septembre 1975 à Paris, est une actrice française. Révélée par la"
+            " saga Taxi, elle accède à la reconnaissance internationale grâce à son interprétation d'Édith"
+            " Piaf dans La Môme (2007), qui lui vaut l'Oscar de la meilleure actrice. Elle tourne ensuite"
+            " avec Christopher Nolan, Jacques Audiard et les frères Dardenne."
+        ),
+        wikidata_id="Q193048",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Marion_Cotillard",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Marion_Cotillard_at_2019_Cannes.jpg",
+        image_license="CC BY 3.0",
+        image_license_url="https://creativecommons.org/licenses/by/3.0",
+    )
+    _create_offers_for_artist(venue, artist_7, subcategories.SEANCE_CINE.id, ArtistType.PERFORMER, count=3)
+
+    # Artist 8: AI biography + Wikipedia source - cinema (director)
+    artist_8 = artist_factories.ArtistFactory.create(
+        name="Céline Sciamma",
+        description="réalisatrice et scénariste française",
+        biography=(
+            "Céline Sciamma, née le 12 novembre 1978 à Pontoise, est une réalisatrice et scénariste"
+            " française. Elle se fait connaître avec Naissance des pieuvres (2007) puis confirme avec"
+            " Tomboy (2011), Bande de filles (2014) et Portrait de la jeune fille en feu (2019),"
+            " récompensé du Prix du scénario à Cannes."
+        ),
+        wikidata_id="Q3043571",
+        wikipedia_url="https://fr.wikipedia.org/wiki/C%C3%A9line_Sciamma",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9line_Sciamma_%282022%29.jpg",
+        image_license="CC BY-SA 4.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
+    )
+    _create_offers_for_artist(venue, artist_8, subcategories.SEANCE_CINE.id, ArtistType.PERFORMER, count=3)
+
+    # Artist 9: AI biography + Wikipedia source - book (writer)
+    artist_9 = artist_factories.ArtistFactory.create(
+        name="Marc Levy",
+        description="écrivain français",
+        biography=(
+            "Marc Levy, né le 16 octobre 1961 à Boulogne-Billancourt, est un écrivain français. Son premier"
+            " roman, Et si c'était vrai... (2000), est adapté au cinéma par Steven Spielberg. Avec plus de"
+            " cinquante millions d'exemplaires vendus dans le monde, il est l'auteur français vivant le plus"
+            " lu à l'étranger."
+        ),
+        wikidata_id="Q462099",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Marc_Levy",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Marc_Levy_2013-04-11_B.jpg",
+        image_license="CC BY-SA 3.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
+    )
+    _create_offers_for_artist(venue, artist_9, subcategories.LIVRE_PAPIER.id, ArtistType.AUTHOR, count=3)
 
     _create_multi_artists_offer(venue)
     _create_library_with_writers()
+
+
+def _create_offers_for_artist(
+    venue: offerers_models.Venue,
+    artist: Artist,
+    subcategory_id: str,
+    artist_type: ArtistType,
+    count: int,
+) -> None:
+    for _ in range(count):
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategory_id)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.StockFactory.create(offer=offer)
+        offers_factories.ArtistProductLinkFactory.create(
+            artist_id=artist.id, product_id=product.id, artist_type=artist_type
+        )
 
 
 def _create_multi_artists_offer(venue: offerers_models.Venue) -> None:
