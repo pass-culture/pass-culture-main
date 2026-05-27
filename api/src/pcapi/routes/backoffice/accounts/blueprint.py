@@ -63,6 +63,7 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils import user_actions
 from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
@@ -456,17 +457,6 @@ def render_public_account_details(
     if not user:
         raise NotFound()
 
-    has_changed_email = any(
-        email_event.eventType
-        not in (
-            users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,  # step 1/4
-            users_models.EmailHistoryEventTypeEnum.CONFIRMATION,  # step 2/4
-            users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,  # step 3/4
-            users_models.EmailHistoryEventTypeEnum.CANCELLATION,
-        )
-        for email_event in user.email_history
-    )
-
     domains_credit = (
         users_api.get_domains_credit(user, user_bookings=user.userBookings) if user.is_beneficiary else None
     )
@@ -599,7 +589,6 @@ def render_public_account_details(
         search_form=search_form,
         search_dst=url_for(".search_public_accounts"),
         user=user,
-        has_changed_email=has_changed_email,
         tunnel=tunnel,
         fraud_actions_desc=fraud_actions_desc,
         credit=domains_credit,
@@ -2038,32 +2027,32 @@ def _get_duplicate_fraud_history(
 
 def get_public_account_history(
     user: users_models.User, bo_user: users_models.User | None = None
-) -> list[serialization.AccountAction | history_models.ActionHistory]:
+) -> list[user_actions.AccountAction | history_models.ActionHistory]:
     # All data should have been joinloaded with user
-    history: list[history_models.ActionHistory | serialization.AccountAction] = list(user.action_history)
+    history: list[history_models.ActionHistory | user_actions.AccountAction] = list(user.action_history)
 
     if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
-        history.append(serialization.AccountCreatedAction(user))
+        history.append(user_actions.AccountCreatedAction(user))
 
     for change in user.email_history:
-        history.append(serialization.EmailChangeAction(change))
+        history.append(user_actions.EmailChangeAction(change))
 
     for fraud_check in user.beneficiaryFraudChecks:
-        history.append(serialization.FraudCheckAction(fraud_check, bo_user))
+        history.append(user_actions.FraudCheckAction(fraud_check, bo_user))
 
     for review in user.beneficiaryFraudReviews:
-        history.append(serialization.ReviewAction(review))
+        history.append(user_actions.ReviewAction(review))
 
     for import_ in user.beneficiaryImports:
         for status in import_.statuses:
-            history.append(serialization.ImportStatusAction(import_, status))
+            history.append(user_actions.ImportStatusAction(import_, status))
 
     for deposit in user.deposits:
-        history.append(serialization.DepositAction(deposit))
+        history.append(user_actions.DepositAction(deposit))
         initial_recredit = deposit.initial_recredit
         for recredit in deposit.recredits:
             if recredit != initial_recredit:
-                history.append(serialization.RecreditAction(recredit))
+                history.append(user_actions.RecreditAction(recredit))
 
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 

@@ -1,5 +1,6 @@
 from functools import partial
 
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -17,7 +18,6 @@ from pcapi.core.external.batch import tasks as batch_tasks
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
@@ -38,6 +38,7 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils import user_actions
 from pcapi.tasks import batch_tasks as batch_cloud_tasks
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
@@ -60,6 +61,7 @@ def get(user_id: int) -> response_utils.BackofficeResponse:
         users_api.get_pro_account_base_query(user_id)
         .options(
             sa_orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+            sa_orm.joinedload(users_models.User.email_history),
         )
         .one_or_none()
     )
@@ -105,12 +107,26 @@ def get(user_id: int) -> response_utils.BackofficeResponse:
 
 @pro_user_blueprint.route("/details", methods=["GET"])
 def get_details(user_id: int) -> response_utils.BackofficeResponse:
-    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    user = (
+        users_api.get_pro_account_base_query(user_id)
+        .outerjoin(
+            history_models.ActionHistory,
+            sa.and_(
+                history_models.ActionHistory.userId == user_id,
+                history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
+            ),
+        )
+        .options(
+            sa_orm.contains_eager(users_models.User.action_history).options(
+                sa_orm.joinedload(history_models.ActionHistory.authorUser)
+            ),
+            sa_orm.selectinload(users_models.User.email_history),
+        )
+        .one_or_none()
+    )
     if not user:
         raise NotFound()
 
-    actions = history_repository.find_all_actions_by_user(user_id)
-    can_add_comment = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     user_offerers = (
         db.session.query(offerers_models.UserOfferer)
         .filter_by(userId=user_id)
@@ -119,15 +135,16 @@ def get_details(user_id: int) -> response_utils.BackofficeResponse:
         .all()
     )
 
+    can_add_comment = access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     form = pro_users_forms.CommentForm()
     dst = url_for("backoffice_web.pro_user.comment_pro_user", user_id=user.id)
 
     return render_template(
         "pro_user/get/details.html",
         user=user,
+        history=user_actions.get_default_user_history(user),
         form=form,
         dst=dst,
-        actions=actions,
         can_add_comment=can_add_comment,
         user_offerers=user_offerers,
         active_tab=request.args.get("active_tab", "history"),
