@@ -637,11 +637,17 @@ def get_pro_advices(
         .join(models.ProAdvice.venue)
         .join(offerers_models.Venue.managingOfferer)
         .options(
-            sa_orm.contains_eager(models.ProAdvice.venue).load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.isOpenToPublic,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.thumbCount,
+            sa_orm.contains_eager(models.ProAdvice.venue).options(
+                sa_orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.isOpenToPublic,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue._bannerUrl,
+                    offerers_models.Venue.venueTypeCode,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo).load_only(
+                    offerers_models.GooglePlacesInfo.bannerUrl,
+                ),
             )
         )
         .where(offerers_models.Offerer.isActive, offerers_models.Offerer.isValidated)

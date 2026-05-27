@@ -2784,7 +2784,7 @@ class GetProAdvicesTest:
                     "distance": None,
                     "venueId": offer.venue.id,
                     "venueName": offer.venue.name,
-                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "venueThumbUrl": offer.venue.bannerUrl,
                     "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
                 }
             ],
@@ -2808,7 +2808,7 @@ class GetProAdvicesTest:
                     "distance": None,
                     "venueId": offer.venue.id,
                     "venueName": offer.venue.publicName,
-                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "venueThumbUrl": offer.venue.bannerUrl,
                     "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
                 }
             ],
@@ -2858,7 +2858,7 @@ class GetProAdvicesTest:
                     "distance": 1000,
                     "venueId": offer.venue.id,
                     "venueName": offer.venue.publicName,
-                    "venueThumbUrl": offer.venue.thumbUrl,
+                    "venueThumbUrl": offer.venue.bannerUrl,
                     "publicationDatetime": date_utils.format_into_utc_date(pro_advice.updatedAt),
                 }
             ],
@@ -2878,6 +2878,27 @@ class GetProAdvicesTest:
 
         assert response.status_code == 200
         assert response.json["proAdvices"][0]["distance"] == 1000
+
+    def test_venue_thumb_url_uses_pro_uploaded_banner(self, client):
+        venue = offerers_factories.VenueFactory(_bannerUrl="https://example.com/my-banner.jpg")
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.ProAdviceFactory(offer=offer)
+
+        response = client.get(f"/native/v1/offer/{offer.id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["venueThumbUrl"] == "https://example.com/my-banner.jpg"
+
+    def test_venue_thumb_url_falls_back_to_google_places(self, client):
+        venue = offerers_factories.VenueFactory(_bannerUrl=None)
+        offerers_factories.GooglePlacesInfoFactory(venue=venue, bannerUrl="https://maps.google.com/photo.jpg")
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.ProAdviceFactory(offer=offer)
+
+        response = client.get(f"/native/v1/offer/{offer.id}/advices")
+
+        assert response.status_code == 200
+        assert response.json["proAdvices"][0]["venueThumbUrl"] == "https://maps.google.com/photo.jpg"
 
     def test_does_not_return_advices_from_not_validated_offerer(self, client):
         venue = offerers_factories.VenueFactory(
