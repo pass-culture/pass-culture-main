@@ -560,6 +560,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
         )
         .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
         .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
+        .options(sa_orm.joinedload(offers_models.Offer.quality).load_only(offers_models.OfferQuality.completionScore))
         .options(
             sa_orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )

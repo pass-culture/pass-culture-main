@@ -242,6 +242,7 @@ class AlgoliaSerializationMixin:
                 "artist": " ".join(extra_data_artists).strip() or None,
                 "bookMacroSection": macro_section,
                 "chroniclesCount": chronicles_count or None,
+                "completionScore": offer.quality.completionScore if offer.quality else None,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
