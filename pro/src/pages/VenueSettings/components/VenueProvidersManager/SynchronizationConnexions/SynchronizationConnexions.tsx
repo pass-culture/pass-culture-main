@@ -49,6 +49,7 @@ export const SynchronizationConnexions = ({
                   icon: fullLinkIcon,
                   href: 'https://passcultureapp.notion.site/Synchronisez-votre-logiciel-avec-le-pass-Culture-5eeb9cf86fe0457bbe479ad303daefd4',
                   type: 'link',
+                  isExternal: true,
                 },
               ]}
             />
