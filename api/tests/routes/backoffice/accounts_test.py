@@ -5840,7 +5840,7 @@ class GetIdDocumentTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
-        assert html_parser.extract_inputs(response.data) == ["username", "password"]
+        assert html_parser.extract_inputs(response.data)["id-document-login"] == ["username", "password"]
 
     def test_user_has_no_picture_stored(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -5886,7 +5886,7 @@ class ViewIdDocumentTest(PostEndpointHelper):
             user_id=user_id,
         )
 
-        assert html_parser.extract_inputs(response.data) == []
+        assert "id-document-login" not in html_parser.extract_inputs(response.data)
 
         imgs = html_parser.get_soup(response.data).find_all("img", class_="pc-id-document")
         assert len(imgs) == 2
@@ -5923,7 +5923,7 @@ class ViewIdDocumentTest(PostEndpointHelper):
             user_id=user_id,
         )
 
-        assert html_parser.extract_inputs(response.data) == []
+        assert "id-document-login" not in html_parser.extract_inputs(response.data)
 
         imgs = html_parser.get_soup(response.data).find_all("img", class_="pc-id-document")
         assert len(imgs) == 0
@@ -5955,7 +5955,7 @@ class ViewIdDocumentTest(PostEndpointHelper):
         )
 
         # Login form is displayed
-        assert html_parser.extract_inputs(response.data) == ["username", "password"]
+        assert html_parser.extract_inputs(response.data)["id-document-login"] == ["username", "password"]
 
     def test_user_has_no_picture_stored(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()

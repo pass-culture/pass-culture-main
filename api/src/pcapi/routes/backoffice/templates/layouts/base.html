@@ -43,5 +43,15 @@
   <body class="data-bs-no-jquery">
     {% block content %}
     {% endblock content %}
+    <div class="d-none">
+      <form id="analytics-form"
+            hx-swap="none"
+            hx-get="{{ url_for('backoffice_web.analytics.save') }}">
+        <input name="type" type="hidden" />
+        <input name="name" type="hidden" />
+        <input name="origin" type="hidden" />
+        <input name="submit" type="submit" />
+      </form>
+    </div>
   </body>
 </html>

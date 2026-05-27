@@ -262,12 +262,17 @@ def extract_tom_select_options(html_content: str, name: str, selected_only: bool
     return {option["id"]: filter_whitespaces(option["text"]) for option in options}
 
 
-def extract_inputs(html_content: str) -> list[str]:
-    soup = get_soup(html_content)
+def extract_inputs(html_content: str) -> dict[str, list[str]]:
+    forms = get_soup(html_content).find_all("form")
 
-    input_fields = soup.find_all("input")
+    result = {}
+    for i, form in enumerate(forms):
+        form_name = form.attrs.get("name") or form.attrs.get("id") or form.attrs.get("action")
+        form_name = form_name or form.attrs.get("hx-get") or form.attrs.get("hx-post", str(i))
+        fields = form.find_all("input")
+        result[form_name] = [field.attrs["name"] for field in fields if field.attrs["type"] != "hidden"]
 
-    return [input.attrs["name"] for input in input_fields if input.attrs["type"] != "hidden"]
+    return result
 
 
 def extract_input_value(html_content: str, name: str) -> str:
