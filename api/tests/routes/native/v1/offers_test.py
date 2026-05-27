@@ -1059,7 +1059,7 @@ class OffersV2Test:
         offer_id = offer.id
         setattr(features, ff_name, ff_value)
 
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
+        num_queries = self.base_num_queries + self.num_queries_with_product
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
