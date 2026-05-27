@@ -610,6 +610,30 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert f"La réservation {cancelled.id} a été validée" in alerts["success"]
 
+    def test_uncancel_archived_booking(self, authenticated_client, collective_bookings):
+        cancelled = educational_factories.CancelledCollectiveBookingFactory(
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=7),
+            collectiveStock__collectiveOffer__dateArchived=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+            collectiveStock__collectiveOffer__isActive=False,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=cancelled.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{cancelled.id}")
+        assert cells[1] == str(cancelled.id)
+
+        db.session.refresh(cancelled)
+        assert cancelled.status is educational_models.CollectiveBookingStatus.CONFIRMED
+        assert cancelled.collectiveStock.collectiveOffer.dateArchived is None
+        assert cancelled.collectiveStock.collectiveOffer.isActive is True
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert f"La réservation {cancelled.id} a été validée" in alerts["success"]
+
     def test_uncancel_non_cancelled_booking(self, authenticated_client, collective_bookings):
         non_cancelled = collective_bookings[3]
         old_status = non_cancelled.status
