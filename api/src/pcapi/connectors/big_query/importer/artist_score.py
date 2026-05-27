@@ -7,6 +7,7 @@ from sqlalchemy import exc as sa_exc
 
 from pcapi.connectors.big_query.queries.artist import ArtistScoresModel
 from pcapi.connectors.big_query.queries.artist import ArtistScoresQuery
+from pcapi.core import search
 from pcapi.core.artist import models as artist_models
 from pcapi.models import db
 from pcapi.utils.repository import transaction
@@ -53,6 +54,8 @@ class ArtistScoresImporter:
             duration = time.perf_counter() - start_time
             logger.warning("Batch update failed. Retrying one by one", extra={"duration": duration, "error": str(exc)})
             self._process_one_by_one(batch)
+
+        search.async_index_artist_ids([item.id for item in batch], reason=search.IndexationReason.ARTIST_EDITION)
 
     def _process_one_by_one(self, batch: Sequence[ArtistScoresModel]) -> None:
         for item in batch:
