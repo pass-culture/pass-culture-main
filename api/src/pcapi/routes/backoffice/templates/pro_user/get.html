@@ -1,6 +1,6 @@
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/logo.html" as logo %}
-{% from "components/badges.html" import build_pro_user_status_badge %}
+{% import "components/badges.html" as badges with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/dynamic/spinner.html" import build_loading_spinner with context %}
@@ -16,7 +16,7 @@
               <div class="fs-5 ps-4 mb-3 align-middle">
                 {% for role in user.roles %}{{ role | format_role | format_badge("secondary") }}{% endfor %}
                 {% if not user.isActive %}{{ user.isActive | format_state | format_badge("danger") }}{% endif %}
-                {{ build_pro_user_status_badge(user) }}
+                {{ badges.build_pro_user_status_badge(user) }}
               </div>
               <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
                 {% if has_permission("MANAGE_PRO_ENTITY") %}
@@ -54,6 +54,7 @@
                 <p class="mb-1">
                   <span class="fw-bold">Email :</span> {{ user.email }}
                   <span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}</span>
+                  {{ badges.build_has_changed_email_icon(user) }}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}

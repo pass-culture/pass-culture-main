@@ -607,6 +607,19 @@ class User(PcObject, Model, DeactivableMixin):
         return max(0, balance)
 
     @property
+    def has_changed_email(self) -> bool:
+        return any(
+            email_event.eventType
+            not in (
+                EmailHistoryEventTypeEnum.UPDATE_REQUEST,  # step 1/4
+                EmailHistoryEventTypeEnum.CONFIRMATION,  # step 2/4
+                EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,  # step 3/4
+                EmailHistoryEventTypeEnum.CANCELLATION,
+            )
+            for email_event in self.email_history
+        )
+
+    @property
     # list[history_models.ActionHistory] -> None, untyped due to import loop
     def suspension_action_history(self) -> list:
         import pcapi.core.history.models as history_models

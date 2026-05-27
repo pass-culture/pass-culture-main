@@ -51,3 +51,11 @@
 {% macro badges_container() %}
   <div class="d-inline-flex flex-wrap gap-2">{{ caller() }}</div>
 {% endmacro %}
+{% macro build_has_changed_email_icon(user) %}
+  {% if user.has_changed_email %}
+    <i class="bi bi-envelope-plus-fill text-warning  pc-email-changed-icon px-1"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="L'utilisateur a déjà changé d'email"></i>
+  {% endif %}
+{% endmacro %}

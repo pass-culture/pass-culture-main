@@ -406,7 +406,9 @@ def offerer_fixture():
 
 @pytest.fixture(name="pro_user")
 def pro_user_fixture():
-    user = offerers_factories.UserOffererFactory().user
+    user = offerers_factories.UserOffererFactory(
+        user__dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
+    ).user
     return user
 
 

@@ -209,12 +209,7 @@
     {% endif %}
     {% call description_detail_vertical("Email") %}
       {{ user.email }}&nbsp;{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}
-      {% if has_changed_email %}
-        <i class="bi bi-envelope-plus-fill text-warning  pc-email-changed-icon"
-           data-bs-toggle="tooltip"
-           data-bs-placement="top"
-           data-bs-title="L'utilisateur a déjà changé d'email"></i>
-      {% endif %}
+      {{ badges.build_has_changed_email_icon(user) }}
     {% endcall %}
     {% if show_personal_info %}
       {% call description_detail_vertical("Date de naissance") %}

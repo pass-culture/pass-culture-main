@@ -1,3 +1,4 @@
+{% import "components/badges.html" as badges with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links with context %}
 {% from "components/dynamic/modal.html" import build_lazy_modal with context %}
@@ -97,7 +98,9 @@
         </td>
         <td class="fw-bolder text-break">{{ row.full_name | empty_string_if_null }}</td>
         <td class="fw-bolder">
-          {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
+          {{ row.email | empty_string_if_null }}
+          <span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
+          {{ badges.build_has_changed_email_icon(row) }}
         </td>
         <td class="fw-bolder">{{ row.sessions_count }}</td>
         <td class="fw-bolder">

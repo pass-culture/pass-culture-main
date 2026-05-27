@@ -624,6 +624,25 @@ def get_pro_users(offerer_id: int) -> response_utils.BackofficeResponse:
         .correlate(users_models.User)
     )
 
+    has_changed_email_subquery = (
+        # Keep synchronized with User.has_changed_email property
+        db.session.query(
+            sa.exists()
+            .where(
+                users_models.UserEmailHistory.userId == users_models.User.id,
+                users_models.UserEmailHistory.eventType.not_in(
+                    (
+                        users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST,  # step 1/4
+                        users_models.EmailHistoryEventTypeEnum.CONFIRMATION,  # step 2/4
+                        users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,  # step 3/4
+                        users_models.EmailHistoryEventTypeEnum.CANCELLATION,
+                    )
+                ),
+            )
+            .correlate(users_models.User)
+        ).scalar_subquery()
+    )
+
     options = sa_orm.joinedload(offerers_models.OffererInvitation.user).load_only(
         users_models.User.id,
         users_models.User.firstName,
@@ -645,6 +664,7 @@ def get_pro_users(offerer_id: int) -> response_utils.BackofficeResponse:
             offerers_models.UserOfferer,
             offerers_models.OffererInvitation,
             session_count_subquery.label("sessions_count"),
+            has_changed_email_subquery.label("has_changed_email"),
         )
         .select_from(users_models.User)
         .outerjoin(
@@ -719,6 +739,7 @@ def get_pro_users(offerer_id: int) -> response_utils.BackofficeResponse:
             "isActive": False,
             "roles": [],
             "sessions_count": 0,
+            "has_changed_email": False,
         }
         for user_invited in users_invited
     ]

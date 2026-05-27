@@ -1343,6 +1343,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         uo4 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName="Hang", lastName="Man", isActive=False)
         )
+        users_factories.EmailUpdateEntryFactory(user=uo1.user)
 
         offerers_factories.UserOffererFactory()
 
@@ -1381,6 +1382,8 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[3]["Email"] == uo4.user.email
         assert rows[3]["Sessions actives"] == "0"
         assert rows[3]["Invitation"] == ""
+
+        assert html_parser.get_soup(response.data).find("i", class_="pc-email-changed-icon") is None
 
     @pytest.mark.parametrize(
         "roles,active,result",
@@ -1504,6 +1507,22 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[0]["Email"] == guest2.email
         assert rows[0]["Invitation"].startswith("Invité le ")
         assert rows[0]["Invitation"].endswith("par " + guest2.user.full_name)
+
+    def test_get_pro_users_with_changed_email(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        users_factories.EmailUpdateEntryFactory(user=user_offerer.user)
+        users_factories.EmailValidationEntryFactory(user=user_offerer.user)
+
+        url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Email"] == user_offerer.user.email
+
+        assert html_parser.get_soup(response.data).find("i", class_="pc-email-changed-icon") is not None
 
     def test_user_offerer_details_tab(self, authenticated_client, offerer):
         user = users_factories.ProFactory()

@@ -1,4 +1,3 @@
-import datetime
 import enum
 import typing
 from functools import partial
@@ -21,12 +20,12 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
-from pcapi.routes.backoffice.accounts import serialization
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils import user_actions
 from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import email as email_utils
 
@@ -87,21 +86,6 @@ def search_bo_users() -> response_utils.BackofficeResponse:
         get_link_to_detail=get_admin_account_link,
         rows=paginated_rows,
     )
-
-
-def get_bo_user_history(user: users_models.User) -> list[serialization.AccountAction | history_models.ActionHistory]:
-    # All data should have been joinloaded with user
-    history: list[history_models.ActionHistory | serialization.AccountAction] = list(user.action_history)
-
-    if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
-        history.append(serialization.AccountCreatedAction(user))
-
-    for change in user.email_history:
-        history.append(serialization.EmailChangeAction(change))
-
-    history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
-
-    return history
 
 
 class AdminDetailsActionType(enum.StrEnum):
@@ -170,7 +154,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     return render_template(
         "accounts/get.html",
         user=user,
-        history=get_bo_user_history(user),
+        history=user_actions.get_default_user_history(user),
         roles=user.backoffice_profile.roles if user.backoffice_profile else [],
         active_tab=request.args.get("active_tab", "history"),
         allowed_actions=actions,

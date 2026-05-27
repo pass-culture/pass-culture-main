@@ -294,6 +294,21 @@ class UserTest:
         offerers_factories.PendingUserOffererFactory(user=user)
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
+    def test_has_changed_email(self):
+        user = users_factories.UserFactory()
+        users_factories.EmailUpdateEntryFactory(user=user)
+        users_factories.EmailValidationEntryFactory(user=user)
+
+        assert user.has_changed_email is True
+
+    def test_has_not_changed_email(self):
+        user = users_factories.UserFactory()
+        users_factories.EmailUpdateEntryFactory(user=user)
+        users_factories.EmailConfirmationEntryFactory(user=user)
+        users_factories.NewEmailSelectionEntryFactory(user=user)
+
+        assert user.has_changed_email is False
+
 
 @pytest.mark.usefixtures("db_session")
 class HasAccessTest:

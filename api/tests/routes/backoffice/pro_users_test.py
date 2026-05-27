@@ -306,8 +306,15 @@ class GetProUserHistoryTest(GetEndpointHelper):
             return url_for("backoffice_web.pro_user.get_details", user_id=user.id)
 
     def test_get_history(self, authenticated_client, pro_user):
+        email = pro_user.email
         action1 = history_factories.ActionHistoryFactory(
             user=pro_user, actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
+        )
+        email_request = users_factories.EmailUpdateEntryFactory(
+            user=pro_user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=4)
+        )
+        email_validation = users_factories.EmailValidationEntryFactory(
+            user=pro_user, creationDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=3)
         )
         action2 = history_factories.ActionHistoryFactory(
             actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
@@ -323,7 +330,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(rows) == 2
+        assert len(rows) == 5
 
         assert rows[0]["Type"] == "Compte suspendu"
         assert rows[0]["Date/Heure"] == format_date(action2.actionDate, "%d/%m/%Y à %Hh%M")
@@ -333,10 +340,25 @@ class GetProUserHistoryTest(GetEndpointHelper):
         )
         assert rows[0]["Auteur"] == action2.authorUser.full_name
 
-        assert rows[1]["Type"] == "Commentaire interne"
-        assert rows[1]["Date/Heure"] == format_date(action1.actionDate, "%d/%m/%Y à %Hh%M")
-        assert rows[1]["Commentaire"] == action1.comment
-        assert rows[1]["Auteur"] == action1.authorUser.full_name
+        assert rows[1]["Type"] == "Validation de changement d'email"
+        assert rows[1]["Date/Heure"] == format_date(email_validation.creationDate, "%d/%m/%Y à %Hh%M")
+        assert rows[1]["Commentaire"] == f"de {email} à {email}.update"
+        assert rows[1]["Auteur"] == ""
+
+        assert rows[2]["Type"] == "Demande de changement d'email"
+        assert rows[2]["Date/Heure"] == format_date(email_request.creationDate, "%d/%m/%Y à %Hh%M")
+        assert rows[2]["Commentaire"] == f"de {email} à {email}.update"
+        assert rows[2]["Auteur"] == ""
+
+        assert rows[3]["Type"] == "Commentaire interne"
+        assert rows[3]["Date/Heure"] == format_date(action1.actionDate, "%d/%m/%Y à %Hh%M")
+        assert rows[3]["Commentaire"] == action1.comment
+        assert rows[3]["Auteur"] == action1.authorUser.full_name
+
+        assert rows[4]["Type"] == "Création du compte"
+        assert rows[4]["Date/Heure"] == format_date(pro_user.dateCreated, "%d/%m/%Y à %Hh%M")
+        assert rows[4]["Commentaire"] == ""
+        assert rows[4]["Auteur"] == pro_user.full_name
 
     def test_no_history(self, authenticated_client, pro_user):
         url = url_for(self.endpoint, user_id=pro_user.id)
@@ -345,7 +367,13 @@ class GetProUserHistoryTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
+        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
+        assert len(rows) == 1
+
+        assert rows[0]["Type"] == "Création du compte"
+        assert rows[0]["Date/Heure"] == format_date(pro_user.dateCreated, "%d/%m/%Y à %Hh%M")
+        assert rows[0]["Commentaire"] == ""
+        assert rows[0]["Auteur"] == pro_user.full_name
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryFactory, users_factories.AdminFactory])
     def test_non_pro_user_history(self, authenticated_client, user_factory):
