@@ -5,6 +5,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor } from '@/design-system/Link/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullNextIcon from '@/icons/full-next.svg'
 
@@ -35,9 +37,14 @@ export const PartnerPageCollectiveSection = ({
         variant={TagVariant.SUCCESS}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description={
-          isDisplayedInHomepage
-            ? 'Les enseignants voient les offres vitrines et celles que vous adressez à leur établissement sur ADAGE. Complétez vos informations à destination des enseignants pour qu’ils vous contactent !'
-            : undefined
+          isDisplayedInHomepage ? (
+            <p>
+              Les enseignants voient les offres vitrines et celles que vous
+              adressez à leur établissement sur ADAGE. Complétez vos
+              informations à destination des enseignants pour qu’ils vous
+              contactent !
+            </p>
+          ) : undefined
         }
         venueName={selectedPartnerVenue.name}
       />
@@ -50,7 +57,23 @@ export const PartnerPageCollectiveSection = ({
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.DEFAULT}
         isDisplayedInHomepage={isDisplayedInHomepage}
-        description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Éducation nationale dédiée à l’EAC."
+        description={
+          <p>
+            Pour pouvoir adresser des offres aux enseignants, vous devez être
+            référencé sur ADAGE, l'application du ministère de l'Education
+            nationale et de la Jeunesse dédiée à l'EAC. Si vous souhaitez en
+            savoir plus sur le pass Culture à destination des scolaires, vous
+            pouvez{' '}
+            <Link
+              color={LinkColor.NEUTRAL}
+              to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+              isExternalLink
+              onClick={logCollectiveHelpLinkClick}
+              shouldOpenNewTab
+              label="Consulter notre page pass Culture pour le scolaires"
+            />
+          </p>
+        }
         venueName={selectedPartnerVenue.name}
       >
         <div className={styles['details-link']}>
@@ -63,19 +86,6 @@ export const PartnerPageCollectiveSection = ({
             opensInNewTab
             onClick={logDMSApplicationLinkClick}
             label="Déposer un dossier ADAGE"
-          />
-        </div>
-
-        <div className={styles['details-link']}>
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-            isExternal
-            opensInNewTab
-            onClick={logCollectiveHelpLinkClick}
-            label="En savoir plus sur le pass Culture à destination des scolaires"
           />
         </div>
       </AdageInformations>
@@ -93,9 +103,23 @@ export const PartnerPageCollectiveSection = ({
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.ERROR}
         isDisplayedInHomepage={isDisplayedInHomepage}
-        description="Pour pouvoir adresser des offres aux enseignants, vous devez être
-        référencé dans ADAGE, l’application du ministère de l’Éducation
-        nationale dédiée à l’EAC."
+        description={
+          <p>
+            Pour pouvoir adresser des offres aux enseignants, vous devez être
+            référencé sur ADAGE, l'application du ministère de l'Education
+            nationale et de la Jeunesse dédiée à l'EAC. Si vous souhaitez en
+            savoir plus sur le pass Culture à destination des scolaires, vous
+            pouvez{' '}
+            <Link
+              color={LinkColor.NEUTRAL}
+              to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+              isExternalLink
+              onClick={logCollectiveHelpLinkClick}
+              shouldOpenNewTab
+              label="Consulter notre page pass Culture pour le scolaires"
+            />
+          </p>
+        }
         venueName={selectedPartnerVenue.name}
       />
     )
@@ -106,7 +130,11 @@ export const PartnerPageCollectiveSection = ({
       tagText="Référencement en cours"
       variant={TagVariant.WARNING}
       isDisplayedInHomepage={isDisplayedInHomepage}
-      description="Votre démarche de référencement est en cours de traitement par ADAGE."
+      description={
+        <p>
+          Votre démarche de référencement est en cours de traitement par ADAGE.
+        </p>
+      }
       venueName={selectedPartnerVenue.name}
     >
       <div className={styles['details-link']}>
@@ -130,7 +158,7 @@ type AdageInformationsProps = {
   variant: TagVariant
   tagText: string
   isDisplayedInHomepage: boolean
-  description?: string
+  description?: React.ReactNode
   venueName: string
 }
 
@@ -158,7 +186,7 @@ function AdageInformations({
         </div>
       </div>
       {description && (
-        <p className={styles['details-description']}>{description}</p>
+        <div className={styles['details-description']}>{description}</div>
       )}
       {isDisplayedInHomepage && (
         <div className={styles['details-link']}>

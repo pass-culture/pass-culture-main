@@ -71,24 +71,22 @@ describe('<SiretInputForm />', () => {
   it('should render component', async () => {
     renderInputForm()
 
-    expect(
-      await screen.findByText(
-        'Renseignez le SIRET de la structure à laquelle vous êtes rattaché.'
-      )
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Renseignez le SIRET de la structure à laquelle vous êtes rattaché.'
+    )
     expect(
       await screen.findByRole('button', { name: 'submit' })
     ).toBeInTheDocument()
 
     expect(
-      screen.queryByText('Modifier la visibilité de mon SIRET')
+      screen.queryByRole('link', {
+        name: /Modifier la visibilité de mon SIRET/,
+      })
     ).not.toBeInTheDocument()
 
-    expect(
-      screen.getByText(
-        'Vous êtes un équipement d’une collectivité ou d’un établissement public ?'
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      /Vous êtes un équipement d’une collectivité ou d’un établissement public \?/
+    )
 
     expect(
       screen.getByRole('link', { name: /En savoir plus/ })
@@ -98,8 +96,12 @@ describe('<SiretInputForm />', () => {
     )
 
     expect(
+      screen.getByText('Vous ne connaissez pas votre SIRET ?')
+    ).toBeInTheDocument()
+
+    expect(
       screen.getByRole('link', {
-        name: /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises/,
+        name: /Consultez l'Annuaire des Entreprises/,
       })
     ).toHaveAttribute('href', 'https://annuaire-entreprises.data.gouv.fr/')
   })
@@ -116,7 +118,9 @@ describe('<SiretInputForm />', () => {
 
     expect(api.getStructureData).toHaveBeenCalledOnce()
 
-    expect(screen.queryByText("Le SIRET n'existe pas")).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).not.toHaveTextContent(
+      "Le SIRET n'existe pas"
+    )
     expect(mockHandleSiretData).toHaveBeenCalled()
   })
 
@@ -145,7 +149,9 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(screen.queryByText("Le SIRET n'existe pas")).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).not.toHaveTextContent(
+      "Le SIRET n'existe pas"
+    )
 
     expect(mockBeforeFalse).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
@@ -177,7 +183,11 @@ describe('<SiretInputForm />', () => {
 
     expect(api.getStructureData).toHaveBeenCalledOnce()
 
-    expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        "Le SIRET n'existe pas"
+      )
+    })
     expect(api.getStructureData).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
   })
@@ -200,7 +210,9 @@ describe('<SiretInputForm />', () => {
     renderInputForm()
 
     expect(
-      screen.queryByText('Modifier la visibilité de mon SIRET')
+      screen.queryByRole('link', {
+        name: /Modifier la visibilité de mon SIRET/,
+      })
     ).not.toBeInTheDocument()
 
     await userEvent.type(
@@ -217,7 +229,7 @@ describe('<SiretInputForm />', () => {
 
     expect(api.getStructureData).toHaveBeenCalled()
     expect(
-      screen.getByText('Modifier la visibilité de mon SIRET')
+      screen.getByRole('link', { name: /Modifier la visibilité de mon SIRET/ })
     ).toBeInTheDocument()
   })
 
@@ -228,11 +240,10 @@ describe('<SiretInputForm />', () => {
     }))
 
     renderInputForm()
-
     await userEvent.click(
-      screen.getByText(
-        /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises\./
-      )
+      screen.getByRole('link', {
+        name: /Consultez l'Annuaire des Entreprises/,
+      })
     )
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedUnknownSiret')
   })
@@ -263,9 +274,11 @@ describe('<SiretInputForm />', () => {
       siretValue
     )
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
-    expect(
-      await screen.findByText('Le SIRET doit comporter 14 caractères')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Le SIRET doit comporter 14 caractères'
+      )
+    })
   })
 
   it('should handle error that is not an instance of Error', async () => {
@@ -282,7 +295,9 @@ describe('<SiretInputForm />', () => {
     // The form should remain visible and no error should be set
     await waitFor(() => {
       expect(
-        screen.queryByText('Modifier la visibilité de mon SIRET')
+        screen.queryByRole('link', {
+          name: /Modifier la visibilité de mon SIRET/,
+        })
       ).not.toBeInTheDocument()
     })
   })

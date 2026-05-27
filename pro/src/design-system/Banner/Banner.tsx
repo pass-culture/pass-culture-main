@@ -119,6 +119,11 @@ export const Banner = ({
                         icon={a.icon}
                         onClick={() => a.onClick?.()}
                         label={a.label}
+                        size={
+                          size === 'default'
+                            ? ButtonSize.SMALL
+                            : ButtonSize.DEFAULT
+                        }
                       />
                     )}
                   </li>

@@ -16,8 +16,8 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BannerInvisibleSiren } from '@/components/SignupJourneyForm/Offerer/BannerInvisibleSiren/BannerInvisibleSiren'
 import { validationSchema } from '@/components/SignupJourneyForm/Offerer/validationSchema'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Link } from '@/design-system/Link/Link'
+import { LinkColor, LinkSize } from '@/design-system/Link/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
 
@@ -134,16 +134,18 @@ export const SiretInputForm = ({
             />
           </FormLayout.Row>
           <FormLayout.Row>
-            <Button
-              as="a"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              to="https://annuaire-entreprises.data.gouv.fr/"
-              isExternal
-              opensInNewTab
-              onClick={() => logEvent(Events.CLICKED_UNKNOWN_SIRET)}
-              label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
-            />
+            <p>
+              Vous ne connaissez pas votre SIRET ?{' '}
+              <Link
+                color={LinkColor.NEUTRAL}
+                size={LinkSize.SMALL}
+                to="https://annuaire-entreprises.data.gouv.fr/"
+                isExternalLink
+                shouldOpenNewTab
+                onClick={() => logEvent(Events.CLICKED_UNKNOWN_SIRET)}
+                label="Consultez l'Annuaire des Entreprises"
+              />
+            </p>
           </FormLayout.Row>
         </FormLayout.Section>
         {showInvisibleBanner && <BannerInvisibleSiren />}

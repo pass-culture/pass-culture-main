@@ -84,3 +84,21 @@
   font-size: var(--typography-button-s-font-size);
   line-height: var(--typography-button-s-line-height);
 }
+
+@mixin link() {
+  font-family: var(--typography-link-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-font-size);
+  line-height: var(--typography-link-line-height);
+}
+
+@mixin link-s() {
+  font-family: var(--typography-link-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-s-font-size);
+  line-height: var(--typography-link-s-line-height);
+}
+
+@mixin link-xs() {
+  font-family: var(--typography-link-xs-font-family), system-ui, sans-serif;
+  font-size: var(--typography-link-xs-font-size);
+  line-height: var(--typography-link-xs-line-height);
+}

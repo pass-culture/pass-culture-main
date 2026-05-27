@@ -1,0 +1,95 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.link {
+  display: inline;
+  text-decoration: underline;
+  text-decoration-thickness: rem.torem(1px);
+  text-underline-offset: rem.torem(2px);
+  color: var(--color-text-brand-primary);
+  border-radius: var(--size-border-radius-s);
+  transition: color 0.15s ease-in-out;
+
+  // prevent wrapping to next line just after the icon
+  white-space: nowrap;
+
+  .link-icon {
+    vertical-align: middle;
+
+    // visually center icon with text
+    transform: translateY(-0.05em);
+  }
+
+  .link-label {
+    // allow wrapping to next line within the label
+    white-space: normal;
+  }
+
+  &:focus-visible {
+    outline: rem.torem(2px) solid var(--color-outline-default);
+    outline-offset: rem.torem(2px);
+  }
+
+  // =============================================================================
+  // SIZES
+  // =============================================================================
+  &.link-default {
+    .link-label {
+      @include fonts.link;
+    }
+
+    .link-icon {
+      width: rem.torem(22px);
+      margin-right: var(--size-spacing-s);
+    }
+  }
+
+  &.link-small {
+    .link-label {
+      @include fonts.link-s;
+    }
+
+    .link-icon {
+      width: rem.torem(18px);
+      margin-right: var(--size-spacing-xs);
+    }
+  }
+
+  &.link-extra-small {
+    .link-label {
+      @include fonts.link-xs;
+    }
+
+    .link-icon {
+      width: rem.torem(14px);
+      margin-right: var(--size-spacing-xs);
+    }
+  }
+
+  // =============================================================================
+  // COLORS
+  // =============================================================================
+  &.link-brand {
+    color: var(--color-text-brand-primary);
+
+    &:hover {
+      color: var(--color-text-brand-primary-hover);
+    }
+
+    &:visited {
+      color: var(--color-text-brand-secondary-hover);
+    }
+  }
+
+  &.link-neutral {
+    color: var(--color-text-default);
+
+    &:hover {
+      color: var(--color-text-brand-primary-hover);
+    }
+
+    &:visited {
+      color: var(--color-text-brand-secondary-hover);
+    }
+  }
+}

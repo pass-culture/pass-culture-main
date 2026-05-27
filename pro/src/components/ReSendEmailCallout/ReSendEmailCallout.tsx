@@ -1,7 +1,6 @@
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import fullRefreshIcon from '@/icons/full-refresh.svg'
 
 import styles from './ReSendEmailCallout.module.scss'
 
@@ -29,24 +28,22 @@ export const ReSendEmailCallout = ({
   return (
     <Banner
       title="Email non reçu ?"
+      actions={
+        hideLink
+          ? []
+          : [
+              {
+                label: 'Renvoyer un nouveau lien',
+                icon: fullRefreshIcon,
+                type: 'button',
+                href: '',
+                onClick,
+              },
+            ]
+      }
       description={
         <p className={styles['re-send-callout']}>
-          Vérifiez vos spams
-          {hideLink ? (
-            '.'
-          ) : (
-            <>
-              {' '}
-              ou{' '}
-              <Button
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.BRAND}
-                onClick={onClick}
-                label="cliquez ici"
-              />{' '}
-              pour le recevoir à nouveau.
-            </>
-          )}
+          Vérifiez vos spams{!hideLink && ' ou déclencher un nouvel envoi'}.
         </p>
       }
     />
