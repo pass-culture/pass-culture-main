@@ -4,29 +4,45 @@ import { addDays } from 'date-fns'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import {
+  CollectiveOfferDisplayedStatus,
+  type CollectiveOfferTemplateHomeResponseModel,
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { buildCollectiveOfferTemplateHome } from '@/commons/utils/factories/adageFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOffersTemplateLine } from './CollectiveOffersTemplateLine'
 
+const offer = buildCollectiveOfferTemplateHome()
+
+function renderCollectiveOffersTemplateLine(
+  offerOverrides?: Partial<CollectiveOfferTemplateHomeResponseModel>
+) {
+  return renderWithProviders(
+    <CollectiveOffersTemplateLine offer={{ ...offer, ...offerOverrides }} />,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
+  )
+}
+
 describe('<CollectiveOffersTemplateLine />', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderWithProviders(
-      <CollectiveOffersTemplateLine
-        offer={buildCollectiveOfferTemplateHome()}
-      />
-    )
+    const { container } = renderCollectiveOffersTemplateLine()
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display the right content for a published template offer with dates', () => {
-    const offer = buildCollectiveOfferTemplateHome()
-    renderWithProviders(<CollectiveOffersTemplateLine offer={offer} />)
+    renderCollectiveOffersTemplateLine()
 
     const { date: expectedStartDate } = formatDateTimeParts(
       new Date().toISOString()
@@ -51,7 +67,7 @@ describe('<CollectiveOffersTemplateLine />', () => {
     const offer = buildCollectiveOfferTemplateHome(
       CollectiveOfferDisplayedStatus.UNDER_REVIEW
     )
-    renderWithProviders(<CollectiveOffersTemplateLine offer={offer} />)
+    renderCollectiveOffersTemplateLine(offer)
 
     expect(screen.getByText(offer.name)).toBeVisible()
     expect(screen.getByText('en instruction')).toBeVisible()
@@ -63,7 +79,8 @@ describe('<CollectiveOffersTemplateLine />', () => {
       ...buildCollectiveOfferTemplateHome(),
       dates: null,
     }
-    renderWithProviders(<CollectiveOffersTemplateLine offer={offer} />)
+
+    renderCollectiveOffersTemplateLine(offer)
 
     expect(screen.getByText(offer.name)).toBeVisible()
     expect(screen.queryByText(/^Du /)).not.toBeInTheDocument()
@@ -91,6 +108,11 @@ describe('<CollectiveOffersTemplateLine />', () => {
               element: <FakeOfferDetailComponent />,
             },
           ],
+          storeOverrides: {
+            user: {
+              selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+            },
+          },
         }),
         user,
         offer,

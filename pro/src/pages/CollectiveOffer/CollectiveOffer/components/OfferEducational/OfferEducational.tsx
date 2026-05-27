@@ -83,7 +83,7 @@ export const OfferEducational = ({
   const baseInitialValues = computeInitialValuesFromOffer(
     userOfferer,
     isTemplate,
-    venues,
+    selectedPartnerVenue,
     offer,
     selectedPartnerVenue.id.toString(),
     isMarseilleEnabled

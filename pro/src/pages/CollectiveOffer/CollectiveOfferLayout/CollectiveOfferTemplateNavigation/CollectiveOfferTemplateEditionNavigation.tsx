@@ -15,7 +15,9 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
@@ -51,6 +53,7 @@ export const CollectiveOfferTemplateEditionNavigation = ({
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const adagePreviewButtonRef = useRef<HTMLAnchorElement>(null)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const archiveOffer = async () => {
     if (!offerId) {
@@ -81,6 +84,7 @@ export const CollectiveOfferTemplateEditionNavigation = ({
       navigate,
       snackBar,
       offerId,
+      selectedPartnerVenue,
       undefined,
       isMarseilleActive
     )
@@ -92,7 +96,12 @@ export const CollectiveOfferTemplateEditionNavigation = ({
       offerStatus: offer?.displayedStatus,
       offerType: 'collective',
     })
-    return duplicateBookableOffer(navigate, snackBar, offerId)
+    return duplicateBookableOffer(
+      navigate,
+      snackBar,
+      offerId,
+      selectedPartnerVenue
+    )
   }
 
   const canPreviewOffer =

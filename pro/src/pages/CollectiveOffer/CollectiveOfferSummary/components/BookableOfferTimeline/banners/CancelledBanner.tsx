@@ -8,7 +8,9 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   Banner,
   type BannerLink,
@@ -30,6 +32,7 @@ export const CancelledBanner = ({
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const snackBar = useSnackBar()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const message = useMemo(() => {
     switch (reason) {
@@ -72,7 +75,12 @@ export const CancelledBanner = ({
               offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
               offerType: 'collective',
             })
-            await duplicateBookableOffer(navigate, snackBar, offerId)
+            await duplicateBookableOffer(
+              navigate,
+              snackBar,
+              offerId,
+              selectedPartnerVenue
+            )
           },
         },
       ]

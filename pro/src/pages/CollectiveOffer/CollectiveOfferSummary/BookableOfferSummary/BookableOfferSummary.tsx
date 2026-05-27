@@ -16,7 +16,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {
   isActionAllowedOnCollectiveOffer,
@@ -74,6 +76,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
   const [isCancelBookingModalOpen, setIsCancelBookingModalOpen] =
     useState(false)
+
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const cancelBooking = async () => {
     if (!offer.id) {
@@ -297,7 +301,12 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                         offerStatus: offer.displayedStatus,
                         offerType: 'collective',
                       })
-                      await duplicateBookableOffer(navigate, snackBar, offer.id)
+                      await duplicateBookableOffer(
+                        navigate,
+                        snackBar,
+                        offer.id,
+                        selectedPartnerVenue
+                      )
                     }}
                     ref={duplicateButtonRef}
                     label="Dupliquer"

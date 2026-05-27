@@ -19,7 +19,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferTemplateEditionNavigation } from './CollectiveOfferTemplateEditionNavigation'
@@ -41,7 +41,14 @@ const renderOfferTemplateEditionNavigation = (
   offer: GetCollectiveOfferTemplateResponseModel
 ) =>
   renderWithProviders(
-    <CollectiveOfferTemplateEditionNavigation offer={offer} />
+    <CollectiveOfferTemplateEditionNavigation offer={offer} />,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 
 describe('<CollectiveOfferTemplateEditionNavigation />', () => {
@@ -49,11 +56,6 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
     vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
       getCollectiveOfferTemplateFactory()
     )
-
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-      venues: [makeVenueListItem({ id: 2 })],
-    })
-
     vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })

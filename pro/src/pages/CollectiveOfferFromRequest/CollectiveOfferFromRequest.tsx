@@ -11,7 +11,9 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -33,6 +35,8 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     offerId: string
     requestId: string
   }>()
+
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const { data: offerTemplate } = useSWR(
     () => (offerId ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId] : null),
@@ -62,6 +66,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       navigate,
       snackBar,
       Number(offerId),
+      selectedPartnerVenue,
       requestId,
       isMarseilleActive
     )

@@ -2,6 +2,7 @@ import type { useNavigate } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -12,7 +13,8 @@ import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 export const duplicateBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
   snackBar: ReturnType<typeof useSnackBar>,
-  offerId: number
+  offerId: number,
+  venue: GetVenueResponseModel
 ) => {
   let initialValues: OfferEducationalFormValues
   let offererId: number | null = null
@@ -31,18 +33,10 @@ export const duplicateBookableOffer = async (
     )
     const offerer = targetOfferer || null
 
-    const { venues } = await apiNew.getVenues({
-      query: {
-        validated: null,
-        activeOfferersOnly: true,
-        offererId: offerer?.id,
-      },
-    })
-
     initialValues = computeInitialValuesFromOffer(
       offerer,
       false,
-      venues,
+      venue,
       offerResponse
     )
   } catch {

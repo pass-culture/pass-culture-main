@@ -21,7 +21,9 @@ import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/du
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
@@ -79,6 +81,8 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
 
   const { mutate } = useSWRConfig()
 
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const offerId = computeURLCollectiveOfferId(offer.id, isTemplateTable)
   const editionOfferLink = getCollectiveOfferLink(
     offerId,
@@ -100,6 +104,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       navigate,
       snackBar,
       offer.id,
+      selectedPartnerVenue,
       undefined,
       isMarseilleActive
     )
@@ -117,6 +122,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
           navigate,
           snackBar,
           offer.id,
+          selectedPartnerVenue,
           undefined,
           isMarseilleActive
         )
@@ -128,7 +134,12 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
         offerStatus: offer.displayedStatus,
         offerType: 'collective',
       })
-      await duplicateBookableOffer(navigate, snackBar, offer.id)
+      await duplicateBookableOffer(
+        navigate,
+        snackBar,
+        offer.id,
+        selectedPartnerVenue
+      )
     }
   }
 
