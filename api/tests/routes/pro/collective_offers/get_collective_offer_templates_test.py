@@ -46,11 +46,6 @@ class Returns200Test:
                     "start": offer.start.isoformat() + "Z",
                     "end": offer.end.isoformat() + "Z",
                 },
-                "venue": {
-                    "id": venue.id,
-                    "departementCode": venue.offererAddress.address.departmentCode,
-                    "name": venue.name,
-                },
                 "location": {
                     "location": None,
                     "locationComment": None,
