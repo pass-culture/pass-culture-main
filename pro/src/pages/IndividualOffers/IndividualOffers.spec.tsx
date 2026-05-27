@@ -33,7 +33,7 @@ const makeQuery = (
   overrides: Partial<ListOffersQueryModel> = {}
 ): ListOffersQueryModel => ({
   nameOrIsbn: undefined,
-  offererId: 1,
+  offererId: undefined,
   venueId: 2,
   categoryId: undefined,
   status: undefined,

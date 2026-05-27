@@ -511,11 +511,11 @@ describe('IndividualOffersScreen', () => {
           isActive: true,
           nameOrIsbn: undefined,
           offererAddressId: undefined,
-          offererId: 1,
+          offererId: undefined,
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: 2,
+          venueId: 1,
         },
       })
     })
@@ -547,11 +547,11 @@ describe('IndividualOffersScreen', () => {
           isActive: true,
           nameOrIsbn: undefined,
           offererAddressId: undefined,
-          offererId: 1,
+          offererId: undefined,
           periodBeginningDate: undefined,
           periodEndingDate: undefined,
           status: undefined,
-          venueId: 2,
+          venueId: 1,
         },
       })
     })
