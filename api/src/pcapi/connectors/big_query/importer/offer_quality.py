@@ -8,6 +8,7 @@ from sqlalchemy import exc as sa_exc
 
 from pcapi.connectors.big_query.queries.offer_quality import OfferQualityModel
 from pcapi.connectors.big_query.queries.offer_quality import OfferQualityQuery
+from pcapi.core import search
 from pcapi.core.offers import models as offer_models
 from pcapi.models import db
 from pcapi.utils.repository import transaction
@@ -57,6 +58,8 @@ class OfferQualityImporter:
             duration = time.perf_counter() - start_time
             logger.warning("Batch update failed. Retrying one by one", extra={"duration": duration, "error": str(exc)})
             self._process_one_by_one(batch, offer_map)
+
+        search.async_index_offer_ids(ids, reason=search.IndexationReason.OFFER_UPDATE)
 
     def _process_one_by_one(self, batch: Sequence[OfferQualityModel], offer_map: Dict[int, offer_models.Offer]) -> None:
         for item in batch:
