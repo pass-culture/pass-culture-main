@@ -57,7 +57,6 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
         offers_limit=offers_constants.OFFERS_RECAP_LIMIT,
-        offerer_id=query.offerer_id,
         status=query.status,
         venue_id=query.venue_id,
         category_id=query.categoryId,
