@@ -23,6 +23,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
 from pcapi.utils import date as date_utils
@@ -942,3 +943,26 @@ class OffersV3Test:
             assert caplog.records[0].extra == {"offer_id": offer_id}
 
         assert response.json["video"] is None
+
+    @pytest.mark.parametrize(
+        "validation_status, publication_datetime, status",
+        [
+            (OfferValidationStatus.APPROVED, None, OfferStatus.INACTIVE),
+            (OfferValidationStatus.APPROVED, datetime.now() + timedelta(days=2), OfferStatus.SCHEDULED),
+            (OfferValidationStatus.DRAFT, None, OfferStatus.DRAFT),
+            (OfferValidationStatus.PENDING, None, OfferStatus.PENDING),
+            (OfferValidationStatus.REJECTED, None, OfferStatus.REJECTED),
+        ],
+    )
+    def test_return_404_on_offer_status(self, validation_status, publication_datetime, status, client):
+        offer = offers_factories.OfferFactory(validation=validation_status, publicationDatetime=publication_datetime)
+
+        offer_id = offer.id
+        expected_num_queries = 1  # offer
+        expected_num_queries += 1  # rollback 1
+        expected_num_queries += 1  # rollback 2
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v3/offer/{offer_id}")
+
+        assert offer.status == status
+        assert response.status_code == 404

@@ -1,3 +1,5 @@
+import logging
+
 from pcapi.core.offers import repository
 from pcapi.models.utils import first_or_404
 from pcapi.serialization.decorator import spectree_serialize
@@ -5,6 +7,9 @@ from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import offers as serializers
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.native_route("/offer/<int:offer_id>", version="v3", methods=["GET"])

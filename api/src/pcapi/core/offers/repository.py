@@ -471,7 +471,14 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(
             models.Offer.id.in_(offer_ids),
-            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.status.in_(
+                (
+                    offer_mixin.OfferStatus.ACTIVE,
+                    offer_mixin.OfferStatus.EXPIRED,
+                    offer_mixin.OfferStatus.PUBLISHED,
+                    offer_mixin.OfferStatus.SOLD_OUT,
+                )
+            ),
         )
     )
 
