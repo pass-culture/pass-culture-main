@@ -1,4 +1,5 @@
 import logging
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -133,7 +134,7 @@ class GetUserRecommendationsTest:
         "pcapi.connectors.recommendation.get_playlist",
         return_value=b'{"playlist_recommended_offers": ["1", "2"], "params": {}}',
     )
-    def test_get_user_recommendations(self, _get_playlist_mock, client):
+    def test_get_user_recommendations(self, get_playlist_mock, client):
         user = BeneficiaryFactory(id=1)
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         ProductMediationFactory(product=product, uuid="12345678", imageType=ImageType.RECTO)
@@ -148,7 +149,7 @@ class GetUserRecommendationsTest:
             response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
         assert response.status_code == 200
-        _get_playlist_mock.assert_called_with(
+        get_playlist_mock.assert_called_with(
             user,
             params={"latitude": 48.87171, "longitude": 2.308289},
             body={
@@ -187,6 +188,60 @@ class GetUserRecommendationsTest:
                 "url": "https://webapp-v2.example.com/offre/1",
             },
         ]
+
+    @patch(
+        "pcapi.connectors.recommendation.get_playlist",
+        return_value=b'{"playlist_recommended_offers": ["1"], "params": {}}',
+    )
+    def test_calls_without_filters_if_not_enough_offers_returned(self, get_playlist_mock, client):
+        user = BeneficiaryFactory()
+        OfferFactory(id=1)
+        OfferFactory(id=2)
+
+        user_id = user.id
+        expected_num_queries = 1  # user + deposit
+        expected_num_queries += 1  # bookings
+        expected_num_queries += 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
+
+        assert response.status_code == 200
+        get_playlist_mock.assert_has_calls(
+            [
+                call(
+                    user,
+                    params={"latitude": 48.87171, "longitude": 2.308289},
+                    body={
+                        "subcategories": [
+                            "ABO_BIBLIOTHEQUE",
+                            "ABO_CONCERT",
+                            "ABO_MEDIATHEQUE",
+                            "ABO_PRATIQUE_ART",
+                            "ABO_SPECTACLE",
+                            "ATELIER_PRATIQUE_ART",
+                            "CONCERT",
+                            "CONFERENCE",
+                            "DECOUVERTE_METIERS",
+                            "EVENEMENT_MUSIQUE",
+                            "EVENEMENT_PATRIMOINE",
+                            "FESTIVAL_ART_VISUEL",
+                            "FESTIVAL_CINE",
+                            "FESTIVAL_LIVRE",
+                            "FESTIVAL_MUSIQUE",
+                            "FESTIVAL_SPECTACLE",
+                            "MUSEE_VENTE_DISTANCE",
+                            "RENCONTRE",
+                            "SALON",
+                            "SPECTACLE_REPRESENTATION",
+                            "VISITE_GUIDEE",
+                            "VISITE",
+                        ],
+                        "price_max": 150.0,
+                    },
+                ),
+                call(user, params={"latitude": 48.87171, "longitude": 2.308289}, body=None),
+            ]
+        )
 
     @pytest.mark.settings(
         BREVO_WEBHOOK_SECRET="secret",
