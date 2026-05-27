@@ -19,12 +19,13 @@ import pcapi.core.subscription.ubble.tasks  # noqa: F401
 from pcapi import settings
 from pcapi.celery_tasks import metrics
 from pcapi.core.logging import JsonFormatter
-from pcapi.flask_app import app as flask_app
+from pcapi.flask_app import create_flask_app
 
 
 if settings.CELERY_WORKER_ENABLE_METRICS:
     metrics.start_metrics_server()
 
+flask_app = create_flask_app()
 celery_app = flask_app.extensions["celery"]
 registered_tasks = sorted(task for task in celery_app.tasks.keys() if not task.startswith("celery"))
 

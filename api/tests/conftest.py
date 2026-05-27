@@ -124,7 +124,7 @@ def build_backoffice_app():
             login_user(user, remember=True)
             return ""
 
-        yield app
+    return app
 
 
 def build_main_app():
@@ -138,14 +138,17 @@ def build_main_app():
         app.register_blueprint(test_bookings_blueprint, url_prefix="/v2")
         app.register_blueprint(test_extended_spec_tree_blueprint)
 
-        yield app
+    return app
 
 
 @pytest.fixture(scope="session", autouse=True)
-def prepare_db(app):
-    install_database_extensions()
-    run_migrations()
-    feature.install_feature_flags()
+def prepare_db():
+    # Let's use the main app context to run migrations
+    app = APPS["main_app"]
+    with app.app_context():
+        install_database_extensions()
+        run_migrations()
+        feature.install_feature_flags()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -154,28 +157,36 @@ def setup_query_log(pytestconfig):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def init_celery(app: Flask):
-    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
-    app.config.from_mapping(CELERY=celery_config)
-    celery_init_app(app, task_with_app_context=False)
+def init_celery():
+    for app in APPS.values():
+        celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
+        app.config.from_mapping(CELERY=celery_config)
+        celery_init_app(app, task_with_app_context=False)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def manage_teardown(app: Flask):
-    from pcapi.flask_app import remove_db_session
+# @pytest.fixture(scope="session", autouse=True)
+# def manage_teardown():
+#     from pcapi.flask_app import remove_db_session
 
-    # Some tests fail without this. It's probably because of
-    # pytest_flask_sqlalchemy.
-    app.teardown_request_funcs[None].remove(remove_db_session)
-    app.teardown_request(_clean_g_between_requests)
+#     for app in APPS.values():
+#         # Some tests fail without this. It's probably because of
+#         # pytest_flask_sqlalchemy.
+#         app.teardown_request_funcs[None].remove(remove_db_session)
+#         app.teardown_request(_clean_g_between_requests)
 
 
-@pytest.fixture(scope="session", name="app")
-def app_fixture(pytestconfig):
-    if pytestconfig.option.markexpr == "backoffice":
-        yield from build_backoffice_app()
+APPS = {
+    "backoffice": build_backoffice_app(),
+    "main_app": build_main_app(),
+}
+
+
+@pytest.fixture(scope="function", name="app")
+def app_fixture(request):
+    if any(marker.name == "backoffice" for marker in request.node.iter_markers()):
+        yield APPS["backoffice"]
     else:
-        yield from build_main_app()
+        yield APPS["main_app"]
 
 
 @pytest.fixture(name="celery_with_context")
@@ -243,15 +254,14 @@ def clean_database():
     clean_all_database()
 
 
-@pytest.fixture(scope="session")
-def _db(app):
+@pytest.fixture(scope="function")
+def _db(app: Flask):
     """
     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
     database connection.
     """
     install_database_extensions()
     run_migrations()
-
     clean_all_database()
 
     return db
@@ -674,20 +684,20 @@ def run_command(app, clean_database):
     return functools.partial(_run_command, app)
 
 
-@pytest.hookimpl()
-def pytest_collection_finish(session):
-    backoffice_routes_dir = Path("tests/routes/backoffice")
-    routes_dir = Path("tests/routes")
-    BO_matches = [
-        session.config.rootdir / backoffice_routes_dir in Path(item.fspath).parents
-        for item in session.items
-        if session.config.rootdir / routes_dir in Path(item.fspath).parents
-    ]
-    if any(BO_matches) and not all(BO_matches):
-        if not session.config.option.collectonly:
-            pytest.exit("You can not run backoffice tests with non backoffice tests")
-    if any(BO_matches):
-        session.config.option.markexpr = "backoffice"
+# @pytest.hookimpl()
+# def pytest_collection_finish(session):
+#     backoffice_routes_dir = Path("tests/routes/backoffice")
+#     routes_dir = Path("tests/routes")
+#     BO_matches = [
+#         session.config.rootdir / backoffice_routes_dir in Path(item.fspath).parents
+#         for item in session.items
+#         if session.config.rootdir / routes_dir in Path(item.fspath).parents
+#     ]
+#     if any(BO_matches) and not all(BO_matches):
+#         if not session.config.option.collectonly:
+#             pytest.exit("You can not run backoffice tests with non backoffice tests")
+#     if any(BO_matches):
+#         session.config.option.markexpr = "backoffice"
 
 
 @pytest.fixture(name="rsa_keys")
@@ -723,7 +733,7 @@ class TestSession(sa.orm.Session):
 
 
 @pytest.fixture(scope="function")
-def db_session(_db, mocker, request, app):
+def db_session(mocker, request, app):
     """
     Make sure all the different ways that we access the database in the code
     are scoped to a transactional context, and return a Session object that

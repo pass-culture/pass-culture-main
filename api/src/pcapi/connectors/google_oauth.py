@@ -1,8 +1,9 @@
 from pcapi.core.users import schemas as users_schemas
-from pcapi.flask_app import native_app_oauth
 
 
 def get_google_user(authorization_code: str, is_web: bool) -> users_schemas.SSOUser:
+    from pcapi.app import native_app_oauth
+
     # postmessage is needed when the app uses a popup to fetch the authorization code
     # see https://stackoverflow.com/questions/71968377
     redirect_uri = "postmessage" if is_web else None

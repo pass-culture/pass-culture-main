@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import typing
 
+from authlib.integrations.flask_client import OAuth
 from flask import Response
 from flask import flash
 from flask import make_response
@@ -11,11 +12,13 @@ from flask_wtf.csrf import CSRFProtect
 
 from pcapi import settings
 from pcapi.core.users.sessions import install_backoffice_login
-from pcapi.flask_app import app
+from pcapi.flask_app import create_flask_app
 from pcapi.flask_app import setup_metrics
 from pcapi.routes.backoffice.utils import static as static_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
+
+app = create_flask_app()
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
@@ -30,6 +33,14 @@ app.config["USE_GLOBAL_ATOMIC"] = True
 
 csrf = CSRFProtect()
 csrf.init_app(app)
+
+
+backoffice_oauth = OAuth(app)
+backoffice_oauth.register(
+    name="google",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 
 @app.after_request

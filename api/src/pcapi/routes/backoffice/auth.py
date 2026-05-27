@@ -17,7 +17,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
-from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
@@ -31,6 +30,8 @@ logger = logging.getLogger(__name__)
 
 @blueprint.backoffice_web.route("/login", methods=["GET"])
 def login() -> response_utils.BackofficeResponse:
+    from pcapi.backoffice_app import backoffice_oauth
+
     use_google_without_credentials = settings.BACKOFFICE_LOGIN_WITHOUT_CREDENTIALS and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
     )
@@ -56,6 +57,8 @@ def login() -> response_utils.BackofficeResponse:
 
 @blueprint.backoffice_web.route("/authorize", methods=["GET"])
 def authorize() -> response_utils.BackofficeResponse:
+    from pcapi.backoffice_app import backoffice_oauth
+
     try:
         token = backoffice_oauth.google.authorize_access_token()
     except MismatchingStateError:

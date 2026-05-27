@@ -1,11 +1,15 @@
 #!/usr/bin/env python
+from authlib.integrations.flask_client import OAuth
 from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
 
 from pcapi import settings
 from pcapi.core.users.sessions import install_routed_login
-from pcapi.flask_app import app
+from pcapi.flask_app import create_flask_app
 from pcapi.flask_app import setup_metrics
+
+
+app = create_flask_app()
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -25,6 +29,16 @@ app.config["USE_GLOBAL_ATOMIC"] = False
 jwt = JWTManager(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
+
+native_app_oauth = OAuth(app)
+native_app_oauth.register(
+    name="google",
+    client_id=settings.NATIVE_APP_GOOGLE_CLIENT_ID,
+    client_secret=settings.NATIVE_APP_GOOGLE_CLIENT_SECRET,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
+
 
 with app.app_context():
     from pcapi.routes import install_all_routes
