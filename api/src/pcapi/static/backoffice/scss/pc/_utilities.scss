@@ -106,3 +106,11 @@ tr:has([type="checkbox"]:checked) {
 .bg-secondary-emphasis {
   background-color: $gray-100;
 }
+
+h1, h2, h3, h4, h5 {
+  color: $gray-900 !important;
+}
+
+.nav-link:not(.active) {
+  border-color: $gray-200 !important;
+}
