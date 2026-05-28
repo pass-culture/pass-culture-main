@@ -99,7 +99,7 @@
     "@types/react-instantsearch-dom": "6.12.9",
     "@vitejs/plugin-react": "6.0.2",
     "@vitest/coverage-istanbul": "4.1.6",
-    "@vitest/runner": "4.1.6",
+    "@vitest/runner": "4.1.7",
     "allure-js-commons": "3.8.0",
     "allure-vitest": "3.8.0",
     "axe-core": "4.11.4",
