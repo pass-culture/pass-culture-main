@@ -56,6 +56,7 @@ export const collectiveOfferFactory = (
     stock: {
       bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
       numberOfTickets: 10,
+      numberOfTeachers: 5,
       price: 10,
     },
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
@@ -136,6 +137,7 @@ export const getCollectiveOfferFactory = (
     ...sharedCollectiveOfferData,
     id: currentOfferId,
     venue: getCollectiveOfferVenueFactory(),
+    additionalDetails: null,
     booking: null,
     institution: null,
     teacher: null,
@@ -175,11 +177,14 @@ export const getCollectiveOfferCollectiveStockFactory = (
   return {
     id: currentStockId,
     price: 100,
+    servicePrice: 100,
+    collectiveAdditionalFees: [],
     startDatetime: add(Date.now(), { days: 2 }).toISOString(),
     endDatetime: add(Date.now(), { days: 3 }).toISOString(),
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
     educationalPriceDetail: 'detail',
     numberOfTickets: 10,
+    numberOfTeachers: 1,
     ...customGetCollectiveOfferCollectiveStock,
   }
 }

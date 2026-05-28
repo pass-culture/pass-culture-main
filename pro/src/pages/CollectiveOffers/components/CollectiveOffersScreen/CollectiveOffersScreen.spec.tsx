@@ -332,6 +332,7 @@ describe('CollectiveOffersScreen', () => {
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
           numberOfTickets: 1,
+          numberOfTeachers: 1,
           price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
@@ -354,6 +355,7 @@ describe('CollectiveOffersScreen', () => {
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
           numberOfTickets: 1,
+          numberOfTeachers: 1,
           price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
@@ -374,6 +376,7 @@ describe('CollectiveOffersScreen', () => {
         stock: {
           bookingLimitDatetime: '2024-07-31T09:11:00Z',
           numberOfTickets: 1,
+          numberOfTeachers: 1,
           price: 10,
         },
         displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,

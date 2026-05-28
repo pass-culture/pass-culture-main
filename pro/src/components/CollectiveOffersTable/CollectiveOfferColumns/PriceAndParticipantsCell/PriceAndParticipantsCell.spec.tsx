@@ -12,6 +12,7 @@ describe('PriceAndParticipantsCell', () => {
       stock: {
         bookingLimitDatetime: String(new Date()),
         numberOfTickets: 5,
+        numberOfTeachers: 1,
         price: 10,
       },
     })

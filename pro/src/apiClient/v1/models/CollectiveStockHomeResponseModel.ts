@@ -5,6 +5,7 @@
 export type CollectiveStockHomeResponseModel = {
   bookingLimitDatetime: string;
   endDatetime: string;
+  numberOfTeachers: number;
   numberOfTickets: number;
   startDatetime: string;
 };

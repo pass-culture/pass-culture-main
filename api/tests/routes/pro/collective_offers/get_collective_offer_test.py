@@ -32,6 +32,7 @@ class Returns200Test:
     def test_basics(self, client):
         template = educational_factories.CollectiveOfferTemplateFactory()
         stock = educational_factories.CollectiveStockFactory()
+        additional_fee = educational_factories.CollectiveAdditionalFeeFactory(collectiveStock=stock)
         teacher = educational_factories.EducationalRedactorFactory()
         national_program = educational_factories.NationalProgramFactory()
         provider = providers_factories.ProviderFactory()
@@ -43,6 +44,7 @@ class Returns200Test:
             nationalProgram=national_program,
             provider=provider,
             venue=venue,
+            additionalDetails="some details",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -55,6 +57,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json == {
+            "additionalDetails": offer.additionalDetails,
             "allowedActions": ["CAN_DUPLICATE", "CAN_ARCHIVE"],
             "audioDisabilityCompliant": False,
             "booking": None,
@@ -65,8 +68,17 @@ class Returns200Test:
                 "endDatetime": format_into_utc_date(stock.endDatetime),
                 "id": stock.id,
                 "numberOfTickets": stock.numberOfTickets,
+                "numberOfTeachers": stock.numberOfTeachers,
                 "price": float(stock.price),
+                "servicePrice": float(stock.servicePrice),
                 "startDatetime": format_into_utc_date(stock.startDatetime),
+                "collectiveAdditionalFees": [
+                    {
+                        "amount": additional_fee.amount,
+                        "label": additional_fee.label,
+                        "type": additional_fee.type.value,
+                    }
+                ],
             },
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,

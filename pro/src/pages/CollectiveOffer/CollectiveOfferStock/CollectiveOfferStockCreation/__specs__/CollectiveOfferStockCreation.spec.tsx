@@ -157,7 +157,7 @@ describe('CollectiveOfferStockCreation', () => {
   it('on submit : should call creation endpoint if no stock exists yet on offer', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({ collectiveStock: null })
-    const collectiveStock: Record<string, string | number | null> =
+    const collectiveStock: Record<string, any> =
       getCollectiveOfferCollectiveStockFactory()
     delete collectiveStock.id
     // TODO (mdesquilbet, 2026-05-29): clean when totalPrice will be renamed

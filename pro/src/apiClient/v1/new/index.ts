@@ -168,6 +168,8 @@ export {
   type ChangeProEmailBody,
   type CheckTokenBodyModel,
   type ClientOptions,
+  type CollectiveAdditionalFeeResponseModel,
+  CollectiveAdditionalFeeType,
   CollectiveBookingCancellationReasons,
   CollectiveBookingStatus,
   CollectiveLocationType,

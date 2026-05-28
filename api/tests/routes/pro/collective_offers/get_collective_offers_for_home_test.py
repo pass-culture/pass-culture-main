@@ -57,6 +57,7 @@ class Returns200Test:
                         "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat() + "Z",
                         "endDatetime": stock.endDatetime.isoformat() + "Z",
                         "numberOfTickets": 25,
+                        "numberOfTeachers": 5,
                         "startDatetime": stock.startDatetime.isoformat() + "Z",
                     },
                 }

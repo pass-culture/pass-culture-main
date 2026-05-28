@@ -140,6 +140,15 @@ class Returns200Test:
                 "price": 100.0,
                 "numberOfTickets": 25,
                 "educationalPriceDetail": offer.collectiveStock.priceDetail,
+                "numberOfTeachers": offer.collectiveStock.numberOfTeachers,
+                "servicePrice": offer.collectiveStock.servicePrice,
+                "collectiveAdditionalFees": [
+                    {
+                        "amount": offer.collectiveStock.collectiveAdditionalFees[0].amount,
+                        "label": offer.collectiveStock.collectiveAdditionalFees[0].label,
+                        "type": offer.collectiveStock.collectiveAdditionalFees[0].type.value,
+                    },
+                ],
             },
             "institution": {
                 "id": institution.id,
@@ -185,6 +194,7 @@ class Returns200Test:
                     {"datetime": None, "status": "DRAFT"},
                 ],
             },
+            "additionalDetails": offer.additionalDetails,
         }
 
     @pytest.mark.parametrize("status", STATUSES_ALLOWING_DUPLICATE)
