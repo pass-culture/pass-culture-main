@@ -5,8 +5,6 @@ name: 3 [CI] Ping data team on slack
 on:
   workflow_call:
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
-      GCP_EHP_SERVICE_ACCOUNT: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
       SLACK_BOT_TOKEN: { required: true }
@@ -29,4 +27,8 @@ jobs:
     with:
       channel: ${{vars.SLACK_DB_CHANGES_CHANNEL_ID}}
       message: "<${{ needs.pr-info.outputs.pr_url }}|Pull Request base de données> : ${{ needs.pr-info.outputs.pr_title }}"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+

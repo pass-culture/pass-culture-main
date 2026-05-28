@@ -51,7 +51,10 @@ jobs:
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.alembic-changed == 'true' }}
     uses: ./.github/workflows/ci_sub_ping_data_team.yml
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   tag-rc:
     name: Push rc tag
