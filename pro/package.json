@@ -94,7 +94,7 @@
     "@types/node": "25.6.0",
     "@types/qrcode.react": "3.0.0",
     "@types/query-string": "6.3.0",
-    "@types/react": "19.2.14",
+    "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@types/react-instantsearch-dom": "6.12.9",
     "@vitejs/plugin-react": "6.0.2",
