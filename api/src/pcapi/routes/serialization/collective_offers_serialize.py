@@ -14,6 +14,7 @@ from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
+from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.routes.serialization import educational_institutions
 from pcapi.routes.serialization import national_programs
 from pcapi.routes.serialization import venue_serialize
@@ -49,6 +50,7 @@ class CollectiveOfferStockResponseModel(HttpBodyModel):
     bookingLimitDatetime: datetime
     price: float
     numberOfTickets: int
+    numberOfTeachers: int
 
 
 class DatesModel(HttpBodyModel):
@@ -165,6 +167,7 @@ class CollectiveStockHomeResponseModel(HttpBodyModel):
     endDatetime: datetime
     bookingLimitDatetime: datetime
     numberOfTickets: int
+    numberOfTeachers: int
 
 
 class CollectiveOfferHomeResponseModel(HttpBodyModel):
@@ -311,8 +314,11 @@ class GetCollectiveOfferCollectiveStockResponseModel(HttpBodyModel):
     endDatetime: datetime
     bookingLimitDatetime: datetime
     price: float
+    servicePrice: float | None
     numberOfTickets: int
+    numberOfTeachers: int
     priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
+    collectiveAdditionalFees: list[collective_stock_serialize.CollectiveAdditionalFeeResponseModel]
 
 
 class EducationalRedactorResponseModel(HttpBodyModel):
@@ -347,6 +353,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isTemplate: bool = False
     allowedActions: list[models.CollectiveOfferAllowedAction]
     history: collective_history_serialize.CollectiveOfferHistory
+    additionalDetails: str | None
 
     @classmethod
     def build(cls, offer: models.CollectiveOffer) -> typing.Self:
@@ -415,6 +422,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
             isTemplate=False,
             allowedActions=offer.allowedActions,
             history=collective_history_serialize.get_collective_offer_history(offer),
+            additionalDetails=offer.additionalDetails,
         )
 
 

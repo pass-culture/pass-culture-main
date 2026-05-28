@@ -18,6 +18,7 @@ import type { NationalProgramResponseModel } from './NationalProgramResponseMode
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
 export type GetCollectiveOfferResponseModel = {
+  additionalDetails: (string | null);
   allowedActions: Array<CollectiveOfferAllowedAction>;
   audioDisabilityCompliant: (boolean | null);
   booking: (GetCollectiveOfferBookingResponseModel | null);

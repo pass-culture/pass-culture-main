@@ -53,6 +53,7 @@ class Returns200Test:
                     "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat() + "Z",
                     "price": float(stock.price),
                     "numberOfTickets": stock.numberOfTickets,
+                    "numberOfTeachers": stock.numberOfTeachers,
                 },
                 "educationalInstitution": {
                     "name": institution.name,

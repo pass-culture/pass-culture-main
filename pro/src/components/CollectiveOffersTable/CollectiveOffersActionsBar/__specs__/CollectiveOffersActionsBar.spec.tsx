@@ -72,6 +72,7 @@ describe('ActionsBar', () => {
     stock = {
       bookingLimitDatetime: new Date(Date.now()).toISOString(),
       numberOfTickets: 10,
+      numberOfTeachers: 1,
       price: 10,
     }
 

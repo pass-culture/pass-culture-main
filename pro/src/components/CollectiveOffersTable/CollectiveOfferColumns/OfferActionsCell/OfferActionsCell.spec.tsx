@@ -112,6 +112,7 @@ describe('OfferActionsCells', () => {
         stock: {
           bookingLimitDatetime: String(new Date()),
           numberOfTickets: 1,
+          numberOfTeachers: 1,
           price: 10,
         },
       }),

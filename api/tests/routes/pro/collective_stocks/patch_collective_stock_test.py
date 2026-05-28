@@ -73,7 +73,10 @@ class Return200Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "id": stock.id,
             "price": 1500.0,
+            "servicePrice": 1500.0,
+            "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
+            "numberOfTeachers": 5,
             "educationalPriceDetail": "Nouvelle description du prix",
         }
 
@@ -113,7 +116,10 @@ class Return200Test:
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
             "id": stock.id,
             "price": 1200.0,
+            "servicePrice": 100.0,
+            "collectiveAdditionalFees": [],
             "numberOfTickets": 32,
+            "numberOfTeachers": 5,
             "educationalPriceDetail": "Détail du prix",
         }
 

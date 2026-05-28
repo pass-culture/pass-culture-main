@@ -72,7 +72,10 @@ describe('BookableOfferSummary', () => {
       collectiveStock: {
         id: 1,
         numberOfTickets: 50,
+        numberOfTeachers: 5,
         price: 1000,
+        servicePrice: 1000,
+        collectiveAdditionalFees: [],
         startDatetime: '2023-12-21T10:00:00Z',
         endDatetime: '2023-12-21T10:00:00Z',
         bookingLimitDatetime: '2023-12-31T22:59:59Z',
@@ -140,7 +143,10 @@ describe('BookableOfferSummary', () => {
         collectiveStock: {
           id: 1,
           numberOfTickets: 50,
+          numberOfTeachers: 5,
           price: 0,
+          servicePrice: 0,
+          collectiveAdditionalFees: [],
           bookingLimitDatetime: '2023-12-21T10:00:00Z',
           startDatetime: '2023-12-21T10:00:00Z',
           endDatetime: '2023-12-21T10:00:00Z',
@@ -202,7 +208,10 @@ describe('BookableOfferSummary', () => {
         collectiveStock: {
           id: 1,
           numberOfTickets: 50,
+          numberOfTeachers: 5,
           price: 1000,
+          servicePrice: 1000,
+          collectiveAdditionalFees: [],
           startDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
           endDatetime: '2023-12-22T10:00:00Z', // 11:00 in Paris (UTC+1)
           bookingLimitDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)

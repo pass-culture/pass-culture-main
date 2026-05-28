@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type CollectiveOfferStockResponseModel = {
   bookingLimitDatetime: string;
+  numberOfTeachers: number;
   numberOfTickets: number;
   price: number;
 };

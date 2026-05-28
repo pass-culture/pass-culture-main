@@ -16,6 +16,7 @@ describe('ExpirationCell', () => {
   const stock: CollectiveOfferStockResponseModel = {
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
     numberOfTickets: 10,
+    numberOfTeachers: 1,
     price: 10,
   }
 

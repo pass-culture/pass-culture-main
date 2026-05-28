@@ -472,6 +472,34 @@ export type CheckTokenBodyModel = {
 };
 
 /**
+ * CollectiveAdditionalFeeResponseModel
+ */
+export type CollectiveAdditionalFeeResponseModel = {
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Label
+     */
+    label: string | null;
+    type: CollectiveAdditionalFeeType;
+};
+
+/**
+ * CollectiveAdditionalFeeType
+ */
+export enum CollectiveAdditionalFeeType {
+    ACCOMMODATION = 'ACCOMMODATION',
+    TRAVEL = 'TRAVEL',
+    MEAL = 'MEAL',
+    CONSUMABLE_ITEMS = 'CONSUMABLE_ITEMS',
+    COPYRIGHT = 'COPYRIGHT',
+    APPLICATION_FEE = 'APPLICATION_FEE',
+    OTHER = 'OTHER'
+}
+
+/**
  * CollectiveBookingCancellationReasons
  */
 export enum CollectiveBookingCancellationReasons {
@@ -694,6 +722,10 @@ export type CollectiveOfferStockResponseModel = {
      */
     bookingLimitDatetime: string;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers: number;
+    /**
      * Numberoftickets
      */
     numberOfTickets: number;
@@ -867,6 +899,10 @@ export type CollectiveStockHomeResponseModel = {
      */
     endDatetime: string;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers: number;
+    /**
      * Numberoftickets
      */
     numberOfTickets: number;
@@ -885,6 +921,10 @@ export type CollectiveStockResponseModel = {
      */
     bookingLimitDatetime: string;
     /**
+     * Collectiveadditionalfees
+     */
+    collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponseModel>;
+    /**
      * Educationalpricedetail
      */
     educationalPriceDetail: string | null;
@@ -897,6 +937,10 @@ export type CollectiveStockResponseModel = {
      */
     id: number;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers: number;
+    /**
      * Numberoftickets
      */
     numberOfTickets: number;
@@ -904,6 +948,10 @@ export type CollectiveStockResponseModel = {
      * Price
      */
     price: number;
+    /**
+     * Serviceprice
+     */
+    servicePrice: number | null;
     /**
      * Startdatetime
      */
@@ -1976,6 +2024,10 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
      */
     bookingLimitDatetime: string;
     /**
+     * Collectiveadditionalfees
+     */
+    collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponseModel>;
+    /**
      * Educationalpricedetail
      */
     educationalPriceDetail: string | null;
@@ -1988,6 +2040,10 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
      */
     id: number;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers: number;
+    /**
      * Numberoftickets
      */
     numberOfTickets: number;
@@ -1995,6 +2051,10 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
      * Price
      */
     price: number;
+    /**
+     * Serviceprice
+     */
+    servicePrice: number | null;
     /**
      * Startdatetime
      */
@@ -2077,6 +2137,10 @@ export type GetCollectiveOfferRequestResponseModel = {
  * GetCollectiveOfferResponseModel
  */
 export type GetCollectiveOfferResponseModel = {
+    /**
+     * Additionaldetails
+     */
+    additionalDetails: string | null;
     /**
      * Allowedactions
      */

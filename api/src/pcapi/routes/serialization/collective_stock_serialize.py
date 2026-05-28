@@ -5,6 +5,7 @@ from datetime import timezone
 import pydantic as pydantic_v2
 
 from pcapi import settings
+from pcapi.core.educational import models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.exceptions import PydanticError
 
@@ -90,11 +91,20 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     educationalPriceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
 
 
+class CollectiveAdditionalFeeResponseModel(HttpBodyModel):
+    type: models.CollectiveAdditionalFeeType
+    label: str | None
+    amount: float
+
+
 class CollectiveStockResponseModel(HttpBodyModel):
     id: int
     startDatetime: datetime
     endDatetime: datetime
     bookingLimitDatetime: datetime
     price: float
+    servicePrice: float | None
+    collectiveAdditionalFees: list[CollectiveAdditionalFeeResponseModel]
     numberOfTickets: int
+    numberOfTeachers: int
     priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")

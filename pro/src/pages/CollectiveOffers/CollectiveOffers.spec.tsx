@@ -64,6 +64,7 @@ const LABELS = {
 const stock: CollectiveOfferStockResponseModel = {
   bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
   numberOfTickets: 100,
+  numberOfTeachers: 5,
   price: 10,
 }
 
@@ -518,6 +519,7 @@ describe('CollectiveOffers', () => {
     const stock: CollectiveOfferStockResponseModel = {
       bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
       numberOfTickets: 100,
+      numberOfTeachers: 5,
       price: 10,
     }
 

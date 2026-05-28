@@ -169,7 +169,8 @@ export const defaultUseInfiniteHitsReturn = {
 export function buildCollectiveStock(
   bookingDateDaysFromToday: number,
   startDateDaysFromToday: number,
-  numberOfTickets: number = 100
+  numberOfTickets: number = 100,
+  numberOfTeachers: number = 5
 ): CollectiveStockHomeResponseModel {
   const today = new Date()
   return {
@@ -180,6 +181,7 @@ export function buildCollectiveStock(
     startDatetime: addDays(today, startDateDaysFromToday).toISOString(),
     endDatetime: addDays(today, startDateDaysFromToday + 1).toISOString(),
     numberOfTickets,
+    numberOfTeachers,
   }
 }
 
