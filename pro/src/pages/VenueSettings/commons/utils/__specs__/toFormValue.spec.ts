@@ -57,6 +57,14 @@ describe('toFormValues', () => {
       publicName: 'Adresse de la venue',
       siret: '',
       withdrawalDetails: '',
+      accessibility: {
+        visual: true,
+        mental: true,
+        audio: false,
+        motor: false,
+        none: false,
+      },
+      isAccessibilityAppliedOnAllOffers: false,
     }
 
     expect(formValues).toEqual(expectedFormValues)

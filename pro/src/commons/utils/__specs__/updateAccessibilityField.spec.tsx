@@ -93,7 +93,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
 
     await userEvent.click(visualCheckbox) // uncheck "Visuel"
@@ -109,7 +109,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
   })
 
@@ -133,7 +133,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
 
     await userEvent.click(mentalCheckbox) // uncheck "Psychique ou cognitif"
@@ -149,7 +149,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
 
     const motorCheckbox = screen.getByRole('checkbox', {
@@ -168,7 +168,7 @@ describe('updateAccessibilityField', () => {
         motor: true,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
   })
 
@@ -191,7 +191,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: true,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
   })
 
@@ -214,7 +214,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
 
     await userEvent.click(noneCheckbox) // uncheck "Non accessible"
@@ -230,7 +230,7 @@ describe('updateAccessibilityField', () => {
         motor: false,
         audio: false,
       },
-      { shouldValidate: true }
+      { shouldDirty: true, shouldValidate: true }
     )
   })
 })

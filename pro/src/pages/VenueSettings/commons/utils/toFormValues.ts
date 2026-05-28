@@ -1,4 +1,5 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { humanizeSiret, unhumanizeRidet } from '@/commons/utils/siren'
 
 import type { VenueSettingsFormValues } from '../types'
@@ -37,5 +38,7 @@ export const toFormValues = ({
     activity: venue.activity as VenueSettingsFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayableActivity`, but not in `ActivityOpenToPublic`
     culturalDomains: venue.collectiveDomains.map((domain) => domain.name),
     description: venue.description ?? '',
+    accessibility: getAccessibilityInfoFromVenue(venue).accessibility,
+    isAccessibilityAppliedOnAllOffers: false,
   }
 }

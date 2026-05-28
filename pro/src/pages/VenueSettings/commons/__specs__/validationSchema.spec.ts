@@ -36,6 +36,14 @@ describe('VenueSettingsValidationSchema', () => {
     'search-addressAutocomplete': '123 Rue Principale, Ville Exemple',
     street: '123 Rue Principale',
     isOpenToPublic: 'true',
+    accessibility: {
+      visual: true,
+      mental: false,
+      audio: false,
+      motor: false,
+      none: false,
+    },
+    isAccessibilityAppliedOnAllOffers: false,
   }
 
   interface Case {

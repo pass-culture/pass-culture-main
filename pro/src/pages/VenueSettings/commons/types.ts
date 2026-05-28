@@ -1,6 +1,10 @@
-import type { FlatAddressFormValues } from '@/commons/core/shared/types'
+import type {
+  AccessibilityFormValues,
+  FlatAddressFormValues,
+} from '@/commons/core/shared/types'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import type { Nullable } from '@/commons/utils/types'
 
 export type VenueSettingsFormContext = {
   isCaledonian: boolean
@@ -23,4 +27,6 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
   culturalDomains?: string[]
   description?: string
+  accessibility: Nullable<AccessibilityFormValues>
+  isAccessibilityAppliedOnAllOffers: boolean
 }

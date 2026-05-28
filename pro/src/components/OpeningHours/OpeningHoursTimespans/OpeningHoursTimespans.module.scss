@@ -32,28 +32,11 @@
 }
 
 .timespan-separator {
-  margin-top: calc(
-    ((#{size.$input-min-height} - var(--typography-body-line-height)) / 2)
-  );
-
-  &.first-timespan {
-    margin-top: calc(
-      ((#{size.$input-min-height} - var(--typography-body-line-height)) / 2) +
-        #{var(--typography-body-line-height)} +
-        #{forms.$label-space-before-input}
-    );
-  }
+  margin-top: var(--size-spacing-s);
 }
 
 .timespan-actions {
   $action-button-height: rem.torem(36px);
 
-  margin-top: calc((#{size.$input-min-height} - #{$action-button-height}) / 2);
-
-  &.first-timespan {
-    margin-top: calc(
-      var(--typography-body-line-height) + #{forms.$label-space-before-input} +
-        (#{size.$input-min-height} - #{$action-button-height}) / 2
-    );
-  }
+  margin-top: var(--size-spacing-s);
 }

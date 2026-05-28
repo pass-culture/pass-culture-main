@@ -4,7 +4,6 @@ import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { AccessibilityLabel } from '@/ui-kit/AccessibilityLabel/AccessibilityLabel'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
-import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
 
 import styles from './AccessibilitySummarySection.module.scss'
 
@@ -79,9 +78,12 @@ export const AccessibilitySummarySection = ({
   )
 
   return isSubSubSection ? (
-    <SummarySubSubSection title="Modalités d’accessibilité">
+    <SummarySubSection
+      title="Modalités d’accessibilité"
+      shouldShowDivider={false}
+    >
       {sectionContent}
-    </SummarySubSubSection>
+    </SummarySubSection>
   ) : (
     <SummarySubSection
       title="Modalités d’accessibilité"

@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .container {
   container: openinghours / inline-size;
@@ -18,11 +19,7 @@
   margin: var(--size-spacing-xl) 0;
 
   &.has-timespans .legend {
-    margin-top: calc(
-      ((#{size.$input-min-height} - var(--typography-body-line-height)) / 2) +
-        #{var(--typography-body-line-height)} +
-        #{forms.$label-space-before-input}
-    );
+    margin-top: var(--size-spacing-m);
   }
 
   &:not(&.has-timespans) .legend {
@@ -41,7 +38,18 @@
 .timespans {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-s);
+  gap: var(--size-spacing-l);
+}
+
+.timespans-headers {
+  @include fonts.body-accent-s;
+
+  color: var(--color-text-subtle);
+  display: flex;
+  flex-direction: row;
+  margin-left: rem.torem(56px);
+  margin-right: rem.torem(64px);
+  justify-content: space-evenly;
 }
 
 @container openinghours (min-width: #{rem.torem(400px)}) {

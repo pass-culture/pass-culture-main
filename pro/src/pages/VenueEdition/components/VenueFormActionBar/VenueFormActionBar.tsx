@@ -6,11 +6,13 @@ import styles from './VenueFormActionBar.module.scss'
 export interface VenueFormActionBarProps {
   isSubmitting?: boolean
   disableFormSubmission?: boolean
+  isSettingsPage?: boolean
 }
 
 export const VenueFormActionBar = ({
   disableFormSubmission,
   isSubmitting = false,
+  isSettingsPage = false,
 }: VenueFormActionBarProps) => {
   return (
     <div className={styles['action-bar']}>
@@ -18,7 +20,7 @@ export const VenueFormActionBar = ({
         as="a"
         variant={ButtonVariant.SECONDARY}
         color={ButtonColor.NEUTRAL}
-        to="/parametres"
+        to={isSettingsPage ? '/parametres' : '/partenaire/page-partenaire'}
         label="Annuler"
         fullWidth
       />

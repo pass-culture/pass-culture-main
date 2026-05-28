@@ -36,6 +36,14 @@ describe('toBody', () => {
         'OPEN_TO_PUBLIC_ACTIVITY' as VenueSettingsFormValues['activity'],
       culturalDomains: ['Domaine 1', 'Domaine 2'],
       description: 'This is a venue description',
+      accessibility: {
+        visual: true,
+        mental: false,
+        audio: false,
+        motor: false,
+        none: false,
+      },
+      isAccessibilityAppliedOnAllOffers: false,
     }
 
     formContext = {

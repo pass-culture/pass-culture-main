@@ -1,7 +1,7 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { AccessibilitySummarySection as InternalAccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
-import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import { AccessibilityCallout } from '../AccessibilityCallout/AccessibilityCallout'
 
@@ -26,11 +26,14 @@ export const AccessibilityReadOnly = ({
   }
 
   return (
-    <SummarySubSubSection title="Modalités d’accessibilité via acceslibre">
+    <SummarySubSection
+      title="Modalités d’accessibilité via acceslibre"
+      shouldShowDivider={false}
+    >
       <ExternalAccessibility
         externalAccessibilityId={venue.externalAccessibilityId}
         externalAccessibilityData={venue.externalAccessibilityData}
       />
-    </SummarySubSubSection>
+    </SummarySubSection>
   )
 }

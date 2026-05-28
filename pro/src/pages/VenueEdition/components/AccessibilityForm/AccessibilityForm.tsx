@@ -72,7 +72,8 @@ export const AccessibilityForm = ({
                 onChange={(e) =>
                   setValue(
                     'isAccessibilityAppliedOnAllOffers',
-                    e.target.checked
+                    e.target.checked,
+                    { shouldDirty: true }
                   )
                 }
                 className={styles['apply-on-all-offers-checkbox']}

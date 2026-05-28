@@ -20,6 +20,10 @@ export function OpeningHours({
 
   return (
     <div className={styles['container']}>
+      <div className={styles['timespans-headers']}>
+        <span>Ouvre à</span>
+        <span>Ferme à</span>
+      </div>
       {OPENING_HOURS_DAYS.map((day) => {
         const dayHasTimespans = Boolean(
           openingHours?.[day] && openingHours[day].length > 0

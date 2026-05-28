@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -60,7 +59,6 @@ export function OpeningHoursTimespans({
       <div className={styles['timespan']} key={field.id}>
         <div className={styles['timespan-inputs']}>
           <TimePicker
-            label="Ouvre à"
             required
             isLabelHidden={i === 1}
             className={styles['time-picker']}
@@ -72,15 +70,8 @@ export function OpeningHoursTimespans({
               (i === 1 ? hasOverlappingTimespans : '')
             }
           />
-          <span
-            className={classNames(styles['timespan-separator'], {
-              [styles['first-timespan']]: i === 0,
-            })}
-          >
-            -
-          </span>
+          <span className={styles['timespan-separator']}>-</span>
           <TimePicker
-            label="Ferme à"
             required
             className={styles['time-picker']}
             isLabelHidden={i === 1}
@@ -91,11 +82,7 @@ export function OpeningHoursTimespans({
           />
         </div>
 
-        <div
-          className={classNames(styles['timespan-actions'], {
-            [styles['first-timespan']]: i === 0,
-          })}
-        >
+        <div className={styles['timespan-actions']}>
           {timespans.fields.length > 0 && (
             <Button
               variant={ButtonVariant.TERTIARY}

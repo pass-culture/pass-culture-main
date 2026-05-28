@@ -40,9 +40,11 @@ const GeneralInformation = () => {
     activity: venue.activity as VenueSettingsFormValues['activity'],
   }
 
+  const initialValues: VenueSettingsFormValues = toFormValues({ venue })
+
   const form = useForm<VenueSettingsFormValues>({
     context: formContext,
-    defaultValues: toFormValues({ venue }),
+    defaultValues: initialValues,
     resolver: yupResolver(
       // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
       venueSettingsValidationSchema as any
@@ -85,10 +87,25 @@ const GeneralInformation = () => {
     setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
+  const resetOpeningHoursAndAccessibility = () => {
+    const fieldsToReset: (keyof VenueSettingsFormValues)[] = [
+      'accessibility',
+      'isAccessibilityAppliedOnAllOffers',
+    ]
+
+    for (const field of fieldsToReset) {
+      form.setValue(field, initialValues[field])
+    }
+  }
+
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
 
     form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
+
+    if (isOpenToPublicValue === 'false') {
+      resetOpeningHoursAndAccessibility()
+    }
 
     const activityKeys = objectKeys(
       getActivities(
@@ -157,8 +174,9 @@ const GeneralInformation = () => {
                 />
               )}
             </FormLayout.SubSection>
-
-            <ActivityDetails />
+            <FormLayout.SubSection title="À propos de votre activité">
+              <ActivityDetails />
+            </FormLayout.SubSection>
 
             {venue.pricingPoint?.id && (
               <ReimbursementFields
@@ -169,7 +187,7 @@ const GeneralInformation = () => {
               />
             )}
           </FormLayout>
-          <VenueFormActionBar isSubmitting={isSubmitting} />
+          <VenueFormActionBar isSubmitting={isSubmitting} isSettingsPage />
           <RouteLeavingGuardVenueEdition
             shouldBlock={isDirty && !isSubmitting && !isSubmitted}
           />

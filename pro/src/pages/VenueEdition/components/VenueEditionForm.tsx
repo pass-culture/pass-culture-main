@@ -9,16 +9,12 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
-import { getActivities } from '@/commons/mappings/mappings'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
-import { objectKeys } from '@/commons/utils/object'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
-import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Banner } from '@/design-system/Banner/Banner'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -26,9 +22,11 @@ import {
   ButtonVariant,
 } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { ActivityDetails } from '@/pages/VenueEdition/components/ActivityDetails/ActivityDetails'
-import { WithdrawalDetails } from '@/pages/VenueSettings/components/WithdrawalDetails/WithdrawalDetails'
+import fullInfoIcon from '@/icons/full-info.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import { WithdrawalDetails } from '@/pages/VenueEdition/components/WithdrawalDetails/WithdrawalDetails'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
@@ -36,6 +34,7 @@ import { setInitialFormValues } from '../commons/setInitialFormValues'
 import type { VenueEditionFormValues } from '../commons/types'
 import { getValidationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
+import { ActivityDetailsReadOnly } from './ActivityDetails/ActivityDetailsReadOnly/ActivityDetailsReadOnly'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import styles from './VenueEditionForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
@@ -58,16 +57,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     mode: 'onBlur',
   })
 
-  const resetOpeningHoursAndAccessibility = () => {
-    const fieldsToReset: (keyof VenueEditionFormValues)[] = [
-      'accessibility',
-      'isAccessibilityAppliedOnAllOffers',
-    ]
-
-    for (const field of fieldsToReset) {
-      methods.setValue(field, initialValues[field])
-    }
-  }
+  const hasDirtyFields = Object.keys(methods.formState.dirtyFields).length > 0
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
@@ -126,43 +116,103 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isOpenToPublicValue = e.target.value.toString()
-
-    methods.setValue('isOpenToPublic', isOpenToPublicValue, {
-      shouldDirty: true,
-    })
-
-    if (isOpenToPublicValue === 'false') {
-      resetOpeningHoursAndAccessibility()
-    }
-
-    const activityKeys = objectKeys(
-      getActivities(
-        isOpenToPublicValue === 'true' ? 'OPEN_TO_PUBLIC' : 'NOT_OPEN_TO_PUBLIC'
-      )
-    )
-    const isInitialActivityValid = initialValues.activity
-      ? activityKeys.includes(initialValues.activity)
-      : false
-
-    if (isInitialActivityValid) {
-      methods.setValue('activity', initialValues.activity)
-      methods.clearErrors('activity')
-    } else {
-      methods.setValue('activity', null)
-    }
-  }
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout fullWidthActions>
-          <FormLayout.Section title="Vos informations">
-            <MandatoryInfo />
+          <FormLayout.Section
+            title={
+              venue.isOpenToPublic
+                ? 'Vos informations pour le grand public'
+                : 'Vos informations'
+            }
+          >
+            <FormLayout.SubSection
+              title="À propos de votre activité"
+              className={styles['sub-section--first']}
+            >
+              <FormLayout.Row mdSpaceAfter>
+                <ActivityDetailsReadOnly
+                  venue={venue}
+                  isEditionMode
+                ></ActivityDetailsReadOnly>
+              </FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
+                <Banner
+                  title="Les informations liées à votre activité se modifient dans la page Paramètres."
+                  variant={BannerVariants.DEFAULT}
+                  icon={fullInfoIcon}
+                  actions={[
+                    {
+                      label: 'Accéder à la page Paramètres',
+                      icon: fullNextIcon,
+                      href: '/parametres',
+                      type: 'link',
+                    },
+                  ]}
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <TextArea
+                  {...methods.register('description')}
+                  label="Description"
+                  maxLength={1000}
+                  description={
+                    'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                  }
+                  error={methods.formState.errors.description?.message}
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
+            {venue.isOpenToPublic && (
+              <>
+                <FormLayout.SubSubSection
+                  title="Adresse et horaires"
+                  className={styles['opening-hours-subsubsection']}
+                >
+                  <FormLayout.Row>
+                    <div
+                      className={
+                        styles['opening-hours-subsubsection-address-input']
+                      }
+                    >
+                      {`Adresse : ${getFormattedAddress(venue.location)}`}
+                    </div>
+                    <div data-testid="address-callout">
+                      <Banner
+                        title="L'adresse de votre structure se modifie dans la page Paramètres."
+                        actions={[
+                          {
+                            label: 'Accéder à la page Paramètres',
+                            icon: fullNextIcon,
+                            href: '/parametres',
+                            type: 'link',
+                          },
+                        ]}
+                      />
+                    </div>
+                  </FormLayout.Row>
+                  <FormLayout.Row>
+                    <fieldset>
+                      <div className={styles['opening-hours']}>
+                        <OpeningHours />
+                      </div>
+                    </fieldset>
+                  </FormLayout.Row>
+                </FormLayout.SubSubSection>
+                <AccessibilityForm
+                  isVenuePermanent={!!venue.isPermanent}
+                  externalAccessibilityId={venue.externalAccessibilityId}
+                  externalAccessibilityData={venue.externalAccessibilityData}
+                  isSubSubSection
+                />
+              </>
+            )}
+            <WithdrawalDetails />
             <FormLayout.SubSection
               title="Bénévolat"
+              className={styles['sub-section']}
               description={
                 <>
                   Proposez des missions de bénévolat au sein du service{' '}
@@ -205,71 +255,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
-
-            <FormLayout.SubSection title="Accueil du public">
-              <FormLayout.Row>
-                <OpenToPublicToggle
-                  onChange={toggleOpenToPublic}
-                  isOpenToPublic={methods.watch('isOpenToPublic')}
-                />
-              </FormLayout.Row>
-              {methods.watch('isOpenToPublic') === 'true' && (
-                <>
-                  <FormLayout.SubSubSection
-                    title="Adresse et horaires"
-                    className={styles['opening-hours-subsubsection']}
-                  >
-                    <FormLayout.Row>
-                      <div
-                        className={
-                          styles['opening-hours-subsubsection-address-input']
-                        }
-                      >
-                        <TextInput
-                          name="street"
-                          label="Adresse postale"
-                          disabled
-                          value={getFormattedAddress(venue.location)}
-                        />
-                      </div>
-                      <div
-                        data-testid="address-callout"
-                        className={
-                          styles['opening-hours-subsubsection-callout']
-                        }
-                      >
-                        <Banner
-                          title="Modification dans Paramètres"
-                          description="L'adresse de votre structure se modifie dans la page Paramètres."
-                        />
-                      </div>
-                    </FormLayout.Row>
-                    <FormLayout.Row>
-                      <fieldset>
-                        <legend>Horaires d’ouverture</legend>
-                        <div className={styles['opening-hours']}>
-                          <OpeningHours />
-                        </div>
-                      </fieldset>
-                    </FormLayout.Row>
-                  </FormLayout.SubSubSection>
-                  <AccessibilityForm
-                    isVenuePermanent={!!venue.isPermanent}
-                    externalAccessibilityId={venue.externalAccessibilityId}
-                    externalAccessibilityData={venue.externalAccessibilityData}
-                    isSubSubSection
-                  />
-                </>
-              )}
-            </FormLayout.SubSection>
-
-            <ActivityDetails />
-
-            <WithdrawalDetails />
-
             <FormLayout.SubSection
               title="Informations de contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
+              className={styles['sub-section']}
             >
               <FormLayout.Row mdSpaceAfter>
                 <PhoneNumberInput
@@ -303,9 +292,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
         <VenueFormActionBar isSubmitting={methods.formState.isSubmitting} />
         <RouteLeavingGuardVenueEdition
-          shouldBlock={
-            methods.formState.isDirty && !methods.formState.isSubmitting
-          }
+          shouldBlock={hasDirtyFields && !methods.formState.isSubmitting}
         />
       </form>
     </FormProvider>
