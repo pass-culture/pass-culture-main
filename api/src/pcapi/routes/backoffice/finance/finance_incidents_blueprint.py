@@ -737,10 +737,6 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         db.session.query(bookings_models.Booking)
         .options(
             sa_orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
-            sa_orm.joinedload(bookings_models.Booking.deposit)
-            .load_only(finance_models.Deposit.amount)
-            .joinedload(finance_models.Deposit.user)
-            .load_only(users_models.User.id),
         )
         .filter(
             bookings_models.Booking.id.in_(form.object_ids_list),

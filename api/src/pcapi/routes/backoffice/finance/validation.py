@@ -208,11 +208,6 @@ def check_commercial_gesture_total_amount(
                 message="Le montant du geste commercial ne peut JAMAIS être supérieur à 300€ par réservation.",
             )
 
-        if booking.deposit and booking.deposit.user.wallet_balance > amount_per_booking:
-            return Valid(
-                is_valid=False,
-                message="Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation.",
-            )
     return Valid(True)
 
 
