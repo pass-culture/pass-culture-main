@@ -227,6 +227,16 @@ def mark_booking_as_used(collective_booking_id: int) -> response_utils.Backoffic
             render_function=partial(_render_collective_bookings, [collective_booking.id]),
         )
 
+    if collective_booking.validated_incident_id:
+        flash("Impossible de valider une réservation annulée liée à un incident finance validé", "warning")
+        return request_utils.redirect_if_not_htmx(
+            route=url_for(
+                "backoffice_web.collective_offer.get_collective_offer_details",
+                collective_offer_id=collective_booking.collectiveStock.collectiveOfferId,
+            ),
+            render_function=partial(_render_collective_bookings, [collective_booking.id]),
+        )
+
     try:
         educational_api_booking.uncancel_collective_booking(collective_booking)
     except Exception as exc:

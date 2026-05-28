@@ -449,6 +449,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
                 bookings_exceptions.BookingIsAlreadyUsed,
                 bookings_exceptions.BookingIsAlreadyRefunded,
                 bookings_exceptions.BookingDepositCreditExpired,
+                bookings_exceptions.BookingIsLinkedToValidatedFinanceIncident,
             ) as exc:
                 error_dict[exc.__class__.__name__].append(token)
                 mark_transaction_as_invalid()
@@ -600,6 +601,11 @@ def _flash_success_and_error_messages(
                     error_text += _build_booking_error_str(
                         tokens,
                         f"réservation{pluralize(len(tokens))} déjà remboursée{pluralize(len(tokens))}",
+                    )
+                case "BookingIsLinkedToValidatedFinanceIncident":
+                    error_text += _build_booking_error_str(
+                        tokens,
+                        f"réservation{pluralize(len(tokens))} liée{pluralize(len(tokens))} à un ou plusieurs incidents finance validés",
                     )
                 case "BookingDepositCreditExpired":
                     error_text += _build_booking_error_str(

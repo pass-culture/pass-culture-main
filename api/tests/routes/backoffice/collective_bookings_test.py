@@ -630,6 +630,31 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert "Impossible de valider une réservation qui n'est pas annulée" in alerts["warning"]
 
+    def test_uncancel_with_finance_incident(self, authenticated_client):
+        collective_booking = educational_factories.CancelledCollectiveBookingFactory(
+            incidents=[
+                finance_factories.CollectiveBookingFinanceIncidentFactory(
+                    incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
+                )
+            ]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=collective_booking.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{collective_booking.id}")
+        assert cells[1] == str(collective_booking.id)
+
+        db.session.refresh(collective_booking)
+        assert collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Impossible de valider une réservation annulée liée à un incident finance validé" in alerts["warning"]
+
 
 class CancelCollectiveBookingTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.mark_booking_as_cancelled"
