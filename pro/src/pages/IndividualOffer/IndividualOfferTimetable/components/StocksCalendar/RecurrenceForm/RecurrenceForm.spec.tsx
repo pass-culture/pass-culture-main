@@ -127,6 +127,7 @@ describe('RecurrenceForm', () => {
     renderRecurrenceForm()
 
     await userEvent.click(screen.getByLabelText('Tous les jours'))
+    expect(screen.queryByLabelText('Lundi')).not.toBeInTheDocument()
   })
 
   it('should render for weekly recurrence', async () => {

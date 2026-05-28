@@ -330,10 +330,23 @@ describe('CollectiveDataEdition', () => {
       )
     })
 
-    it('should not call educational partner if venue has no siret and no collective data', async () => {
-      renderCollectiveDataEdition()
+    it('should render form without siret or collective data', async () => {
+      renderCollectiveDataEdition({
+        hasAdageId: false,
+        collectiveDomains: [],
+        collectiveDescription: '',
+        collectiveEmail: '',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: null,
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: null,
+      })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
     })
   })
 })

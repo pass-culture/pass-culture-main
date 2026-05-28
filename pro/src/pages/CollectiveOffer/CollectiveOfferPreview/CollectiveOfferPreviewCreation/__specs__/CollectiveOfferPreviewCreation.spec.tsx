@@ -138,7 +138,9 @@ describe('CollectiveOfferPreviewCreation', () => {
 
     await userEvent.click(screen.getByText('Publier l’offre'))
 
-    screen.getByText(/Félicitations, vous avez créé votre offre !/)
+    expect(
+      screen.getByText(/Félicitations, vous avez créé votre offre !/)
+    ).toBeInTheDocument()
   })
 
   it('should call tracker when clicking save draft and exit', async () => {

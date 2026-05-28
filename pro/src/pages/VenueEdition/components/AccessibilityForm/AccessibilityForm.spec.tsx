@@ -139,7 +139,7 @@ describe('Accessibility', () => {
       )
 
       LABELS.external.collapsibleSectionTitles.forEach((title) => {
-        expect(screen.getByText(title)).toBeInTheDocument
+        expect(screen.getByText(title)).toBeInTheDocument()
       })
     })
   })
