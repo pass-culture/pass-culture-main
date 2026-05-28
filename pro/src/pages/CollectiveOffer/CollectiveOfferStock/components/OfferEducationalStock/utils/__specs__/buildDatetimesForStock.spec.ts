@@ -10,71 +10,43 @@ const BASE_DATES: CollectiveStockFormDates = {
 
 describe('buildDatetimesForStock', () => {
   it('should return correctly formatted datetimes', () => {
-    const result = buildDatetimesForStock(BASE_DATES, '75')
+    const res = buildDatetimesForStock(BASE_DATES, '75')
 
-    expect(result.startDatetime).toBe('2024-06-15T12:30:00Z')
-    expect(result.endDatetime).toBe('2024-06-20T12:30:00Z')
-    expect(result.bookingLimitDatetime).toBe('2024-06-10T21:59:59Z')
+    expect(res.startDatetime).toBe('2024-06-15T12:30:00Z')
+    expect(res.endDatetime).toBe('2024-06-20T12:30:00Z')
+    expect(res.bookingLimitDatetime).toBe('2024-06-10T21:59:59Z')
   })
 
   it('should return different datetimes if departementCode is in different timezone', () => {
-    const result75 = buildDatetimesForStock(BASE_DATES, '75')
-    const result971 = buildDatetimesForStock(BASE_DATES, '971')
+    const res31 = buildDatetimesForStock(BASE_DATES, '31')
+    const res971 = buildDatetimesForStock(BASE_DATES, '971')
 
-    expect(result75.startDatetime).not.toBe(result971.startDatetime)
-    expect(result75.endDatetime).not.toBe(result971.endDatetime)
-    expect(result75.bookingLimitDatetime).not.toBe(
-      result971.bookingLimitDatetime
+    expect(res31.startDatetime).not.toBe(res971.startDatetime)
+    expect(res31.endDatetime).not.toBe(res971.endDatetime)
+    expect(res31.bookingLimitDatetime).not.toBe(res971.bookingLimitDatetime)
+  })
+
+  it('should set booking limit datetime at start datetime in user timezone when booking limit date empty', () => {
+    const res = buildDatetimesForStock(
+      { ...BASE_DATES, bookingLimitDate: '' },
+      '31'
     )
+    expect(res.bookingLimitDatetime).toBe('2024-06-15T12:30:00Z')
+  })
+
+  it('should set booking limit datetime at start datetime in user timezone when both given dates are the same', () => {
+    const res = buildDatetimesForStock(
+      { ...BASE_DATES, bookingLimitDate: BASE_DATES.startDate },
+      '31'
+    )
+    expect(res.bookingLimitDatetime).toBe('2024-06-15T12:30:00Z')
+  })
+
+  it('should set booking limit datetime at the end of the given day', () => {
+    const res = buildDatetimesForStock(
+      { ...BASE_DATES, bookingLimitDate: '2024-06-10' },
+      '31'
+    )
+    expect(res.bookingLimitDatetime).toBe('2024-06-10T21:59:59Z')
   })
 })
-
-// describe('buildBookingLimitDatetimeForStockPayload', () => {
-//   it('should return start datetime in user timezone when booking limit datetime is not valid', () => {
-//     const bookingLimitDatetime = ''
-//     const startDatetime = '2024-06-21'
-//     const eventTime = '03:45'
-//     const departmentCode = '56'
-
-//     expect(
-//       buildBookingLimitDatetimeForStockPayload(
-//         startDatetime,
-//         eventTime,
-//         bookingLimitDatetime,
-//         departmentCode
-//       )
-//     ).toBe('2024-06-21T01:45:00Z')
-//   })
-
-//   it('should return start datetime in user timezone when booking limit datetime is the same as start datetime', () => {
-//     const bookingLimitDatetime = '2024-06-21'
-//     const startDatetime = '2024-06-21'
-//     const eventTime = '03:45'
-//     const departmentCode = '56'
-
-//     expect(
-//       buildBookingLimitDatetimeForStockPayload(
-//         startDatetime,
-//         eventTime,
-//         bookingLimitDatetime,
-//         departmentCode
-//       )
-//     ).toBe('2024-06-21T01:45:00Z')
-//   })
-
-//   it('should return the end of the booking limit datetime when it is different from the start datetime', () => {
-//     const bookingLimitDatetime = '2024-06-15'
-//     const startDatetime = '2024-06-21'
-//     const eventTime = '03:45'
-//     const departmentCode = '56'
-
-//     expect(
-//       buildBookingLimitDatetimeForStockPayload(
-//         startDatetime,
-//         eventTime,
-//         bookingLimitDatetime,
-//         departmentCode
-//       )
-//     ).toBe('2024-06-15T21:59:59Z')
-//   })
-// })
