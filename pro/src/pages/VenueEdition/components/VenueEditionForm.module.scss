@@ -4,16 +4,20 @@
   &-address-input {
     margin-bottom: var(--size-spacing-l);
   }
-
-  &-callout {
-    margin-bottom: var(--size-spacing-xl);
-  }
 }
 
 .opening-hours {
-  margin: var(--size-spacing-xl) 0;
+  margin: var(--size-spacing-l) 0;
 }
 
 .volunteering-link {
   vertical-align: middle;
+}
+
+.sub-section {
+  margin-top: var(--size-spacing-xxl);
+
+  &--first {
+    margin-top: var(--size-spacing-l);
+  }
 }

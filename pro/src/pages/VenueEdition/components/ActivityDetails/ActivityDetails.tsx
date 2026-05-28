@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
@@ -8,11 +7,10 @@ import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
+import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import styles from './ActivityDetails.module.scss'
+import { defaultCulturalDomain } from './activityDomainsHelper'
 
 interface ActivityFormFields {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
@@ -24,26 +22,17 @@ interface ActivityFormFields {
 export const ActivityDetails = () => {
   const { register, watch, setValue, formState } =
     useFormContext<ActivityFormFields>()
+
   const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
     useEducationalDomains()
 
-  const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
-    return educationalDomains.length === 0 ||
-      !formState.defaultValues?.culturalDomains
-      ? undefined
-      : educationalDomains
-          .filter((apiDomain) =>
-            formState.defaultValues?.culturalDomains?.find(
-              (domain) => apiDomain.name === domain
-            )
-          )
-          .map((domain) => {
-            return { id: String(domain.id), label: domain.name }
-          })
-  }, [educationalDomains, formState.defaultValues])
+  const defaultCulturalDomains = defaultCulturalDomain(
+    formState,
+    educationalDomains
+  )
 
   return (
-    <FormLayout.SubSection title="À propos de votre activité">
+    <>
       <FormLayout.Row key={watch('activity')} mdSpaceAfter>
         <Select
           {...register('activity')}
@@ -77,7 +66,7 @@ export const ActivityDetails = () => {
               id: String(educationalDomain.id),
               label: educationalDomain.name,
             }))}
-            defaultOptions={defaultCulturalDomain}
+            defaultOptions={defaultCulturalDomains}
             error={formState.errors.culturalDomains?.message}
             label="Domaine(s) d'activité"
             required={watch('isOpenToPublic') === 'false'}
@@ -100,19 +89,6 @@ export const ActivityDetails = () => {
           />
         </FormLayout.Row>
       )}
-      <FormLayout.Row>
-        <p className={styles['description-helper']}>
-          Vous pouvez décrire les différentes actions que vous menez, votre
-          histoire ou préciser des informations sur votre activité.
-        </p>
-        <TextArea
-          label="Description"
-          description="Par exemple : mon établissement propose des spectacles, de l'improvisation..."
-          maxLength={1000}
-          {...register('description')}
-          error={formState.errors.description?.message}
-        />
-      </FormLayout.Row>
-    </FormLayout.SubSection>
+    </>
   )
 }

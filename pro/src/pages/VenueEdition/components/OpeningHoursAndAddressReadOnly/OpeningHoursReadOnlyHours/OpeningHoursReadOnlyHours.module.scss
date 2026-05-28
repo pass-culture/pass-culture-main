@@ -1,5 +1,0 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-
-.important {
-    @include fonts.body-accent;
-}

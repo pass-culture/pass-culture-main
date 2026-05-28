@@ -40,12 +40,21 @@ describe('VenueFormActionBar', () => {
     expect(screen.getByText('Enregistrer')).toBeInTheDocument()
   })
 
-  it('should display venue cancel link when not creating', () => {
-    renderVenueFormActionBar({})
+  it('should display venue cancel link towards settings page', () => {
+    renderVenueFormActionBar({ isSettingsPage: true })
 
     expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
       'href',
       `/parametres`
+    )
+  })
+
+  it('should display venue cancel link towards partner page', () => {
+    renderVenueFormActionBar({ isSettingsPage: false })
+
+    expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
+      'href',
+      `/partenaire/page-partenaire`
     )
   })
 })

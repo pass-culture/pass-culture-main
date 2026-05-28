@@ -70,7 +70,7 @@ const Notifications = () => {
             </FormLayout.Row>
           </FormLayout.Section>
         </FormLayout>
-        <VenueFormActionBar isSubmitting={isSubmitting} />
+        <VenueFormActionBar isSubmitting={isSubmitting} isSettingsPage />
         <RouteLeavingGuardVenueEdition
           shouldBlock={isDirty && !isSubmitting && !isSubmitted}
         />

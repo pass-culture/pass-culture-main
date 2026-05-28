@@ -1,5 +1,3 @@
-import styles from './OpeningHoursReadOnlyHours.module.scss'
-
 export function OpeningHoursReadOnlyHours({
   openingHoursForDay,
 }: {
@@ -10,19 +8,11 @@ export function OpeningHoursReadOnlyHours({
   }
   return (
     <>
-      de <span className={styles['important']}>{openingHoursForDay[0][0]}</span>{' '}
-      à <span className={styles['important']}>{openingHoursForDay[0][1]}</span>
+      de {openingHoursForDay[0][0]} à {openingHoursForDay[0][1]}
       {openingHoursForDay.length > 1 && (
         <>
           {' '}
-          et de{' '}
-          <span className={styles['important']}>
-            {openingHoursForDay[1][0]}
-          </span>{' '}
-          à{' '}
-          <span className={styles['important']}>
-            {openingHoursForDay[1][1]}
-          </span>
+          et de {openingHoursForDay[1][0]} à {openingHoursForDay[1][1]}
         </>
       )}
     </>

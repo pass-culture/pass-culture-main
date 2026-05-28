@@ -57,8 +57,7 @@ describe('OpeningHours', () => {
   it('should show a date input for each timespan', () => {
     renderOpeningHours()
 
-    expect(screen.getAllByLabelText(/Ouvre à */)).toHaveLength(5)
-    expect(screen.getAllByLabelText(/Ferme à */)).toHaveLength(5)
+    expect(document.querySelectorAll('input[type="time"]')).toHaveLength(10)
   })
 
   it('should add a start and end timespans when clicking on the "Ajouter une plage horaire" button', async () => {
@@ -66,15 +65,13 @@ describe('OpeningHours', () => {
       openingHours: { MONDAY: [['10:10', '11:11']] },
     })
 
-    expect(screen.getAllByLabelText(/Ouvre à */)).toHaveLength(1)
-    expect(screen.getAllByLabelText(/Ferme à */)).toHaveLength(1)
+    expect(document.querySelectorAll('input[type="time"]')).toHaveLength(2)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Ajouter une plage horaire le lundi' })
     )
 
-    expect(screen.getAllByLabelText(/Ouvre à */)).toHaveLength(2)
-    expect(screen.getAllByLabelText(/Ferme à */)).toHaveLength(2)
+    expect(document.querySelectorAll('input[type="time"]')).toHaveLength(4)
   })
 
   it('should remove a start and end timespans when clicking on the "Supprimer la plage horaire" button', async () => {
@@ -87,8 +84,7 @@ describe('OpeningHours', () => {
       },
     })
 
-    expect(screen.getAllByLabelText(/Ouvre à */)).toHaveLength(2)
-    expect(screen.getAllByLabelText(/Ferme à */)).toHaveLength(2)
+    expect(document.querySelectorAll('input[type="time"]')).toHaveLength(4)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -96,8 +92,7 @@ describe('OpeningHours', () => {
       })
     )
 
-    expect(screen.getAllByLabelText(/Ouvre à */)).toHaveLength(1)
-    expect(screen.getAllByLabelText(/Ferme à */)).toHaveLength(1)
+    expect(document.querySelectorAll('input[type="time"]')).toHaveLength(2)
   })
 
   it('should show that the day is closed when there are no opening hours for the day', () => {

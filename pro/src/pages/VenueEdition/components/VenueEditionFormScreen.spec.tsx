@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import useSWR, { type SWRResponse } from 'swr'
@@ -8,10 +8,12 @@ import createFetchMock from 'vitest-fetch-mock'
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { apiNew } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
-import { DisplayableActivity } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
@@ -314,13 +316,6 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText('domaine 1, domaine b')).toBeInTheDocument()
     })
 
-    it('should always display an "Accueil du public"', () => {
-      renderForm(baseVenue, {
-        initialRouterEntries: ['/'],
-      })
-      expect(screen.getByText('Accueil du public')).toBeInTheDocument()
-    })
-
     describe('when the venue is not open to public', () => {
       it('should not display any address and hours subsection', () => {
         renderForm(
@@ -346,19 +341,6 @@ describe('VenueEditionFormScreen', () => {
         expect(
           screen.queryByText(/Modalités d’accessibilité/)
         ).not.toBeInTheDocument()
-      })
-
-      it('should display a message indicating the venue is not open to public', () => {
-        renderForm(
-          { ...baseVenue, isOpenToPublic: false },
-          {
-            initialRouterEntries: ['/'],
-          }
-        )
-
-        expect(
-          screen.getByText('Accueil du public dans la structure : Non')
-        ).toBeInTheDocument()
       })
     })
 
@@ -494,6 +476,31 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
+    it('should display the route leaving guard when accessibility was changed', async () => {
+      renderForm(baseVenue)
+
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Moteur' }))
+      await userEvent.click(screen.getByText('Annuler'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Les informations non enregistrées seront perdues')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should not display the route leaving guard when leaving without any change', async () => {
+      renderForm(baseVenue)
+
+      await userEvent.click(screen.getByText('Annuler'))
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText('Les informations non enregistrées seront perdues')
+        ).not.toBeInTheDocument()
+      })
+    })
+
     it('should not send opening hours if the field was not filled, and if there were no opening hours already added previously', async () => {
       const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
 
@@ -525,14 +532,18 @@ describe('VenueEditionFormScreen', () => {
         },
       })
 
-      const mondayGroup = await screen.findByRole('group', {
-        name: /Lundi/,
-      })
-
-      const [morningOpen, afternoonOpen] =
-        await within(mondayGroup).findAllByLabelText(/Ouvre à/)
-      const [morningClose, afternoonClose] =
-        await within(mondayGroup).findAllByLabelText(/Ferme à/)
+      const morningOpen = document.querySelector<HTMLInputElement>(
+        'input[name="openingHours.MONDAY.0.0"]'
+      )!
+      const morningClose = document.querySelector<HTMLInputElement>(
+        'input[name="openingHours.MONDAY.0.1"]'
+      )!
+      const afternoonOpen = document.querySelector<HTMLInputElement>(
+        'input[name="openingHours.MONDAY.1.0"]'
+      )!
+      const afternoonClose = document.querySelector<HTMLInputElement>(
+        'input[name="openingHours.MONDAY.1.1"]'
+      )!
 
       await userEvent.clear(morningOpen)
       await userEvent.type(morningOpen, '08:00')
@@ -668,49 +679,6 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
-    it('should display an "Accueil du public section"', async () => {
-      renderForm(baseVenue)
-
-      await waitFor(() => {
-        expect(screen.getByText('Accueil du public')).toBeInTheDocument
-      })
-    })
-
-    it('should display a mandatory toggle to define isOpenToPublic', async () => {
-      renderForm({ ...baseVenue, isOpenToPublic: false })
-
-      const toggle = screen.getByRole('group', {
-        name: "Disposez-vous d'un lieu ouvert au public ?",
-      })
-
-      await waitFor(() => {
-        expect(toggle).toBeInTheDocument()
-      })
-    })
-
-    it('should pass the isOpenToPublic value to the API', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
-
-      renderForm({
-        ...baseVenue,
-        isOpenToPublic: false,
-      })
-
-      await userEvent.click(screen.getByRole('radio', { name: /Oui/ }))
-      await userEvent.selectOptions(
-        screen.getByRole('combobox', { name: /Activité principale/ }),
-        screen.getByRole('option', {
-          name: 'Lieu culturel pluridisciplinaire (tiers-lieu, friche, etc…)',
-        })
-      )
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      expect(editVenueSpy).toHaveBeenCalledWith({
-        path: { venue_id: expect.anything() },
-        body: expect.objectContaining({ isOpenToPublic: true }),
-      })
-    })
-
     describe('when the venue is not open to public', () => {
       it('should not display any "Addresse et horaires" subsection', async () => {
         renderForm({ ...baseVenue, isOpenToPublic: false })
@@ -826,26 +794,6 @@ describe('VenueEditionFormScreen', () => {
         })
       })
     })
-
-    describe('when days/hours or accessibility have been updated', () => {
-      it('should be reset to initial values if user set isOpenToPublic to false', async () => {
-        renderForm({ ...baseVenue, isOpenToPublic: true })
-        expect(baseVenue.motorDisabilityCompliant).toBe(false)
-        let visualAccessibilityCheckbox = screen.getByRole('checkbox', {
-          name: 'Moteur',
-        })
-        await userEvent.click(visualAccessibilityCheckbox)
-        expect(visualAccessibilityCheckbox).toBeChecked()
-        const noRadio = await screen.findByRole('radio', { name: /Non/ })
-        await userEvent.click(noRadio)
-        const yesRadio = await screen.findByRole('radio', { name: /Oui/ })
-        await userEvent.click(yesRadio)
-        visualAccessibilityCheckbox = screen.getByRole('checkbox', {
-          name: 'Moteur',
-        })
-        expect(visualAccessibilityCheckbox).not.toBeChecked()
-      })
-    })
   })
   describe('Cultural domains', () => {
     beforeEach(() => {
@@ -916,33 +864,6 @@ describe('VenueEditionFormScreen', () => {
       )
 
       expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
-    })
-
-    it('should display about activity upper with the FF enabled', () => {
-      renderForm(
-        {
-          ...baseVenue,
-          description: 'TOTOTO',
-          contact: {
-            phoneNumber: '123',
-            email: 'e@mail.fr',
-            website: 'site.web',
-            socialMedias: null,
-          },
-          collectiveDomains: [
-            { id: 1, name: 'domaine 1' },
-            { id: 3, name: 'domaine III' },
-          ],
-        },
-        {
-          initialRouterEntries: ['/'],
-        }
-      )
-      const h3Titles = screen.getAllByRole('heading', { level: 3 })
-      expect(h3Titles).toHaveLength(5)
-      expect(h3Titles[2].textContent).toEqual('À propos de votre activité')
-      expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
-      expect(screen.getByText(/domaine 1, domaine III/)).toBeInTheDocument()
     })
 
     it('should display no domain if not present', () => {
