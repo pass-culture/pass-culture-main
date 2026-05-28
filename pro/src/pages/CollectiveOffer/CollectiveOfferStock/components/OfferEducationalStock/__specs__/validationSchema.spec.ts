@@ -17,14 +17,24 @@ describe('validationSchema', () => {
     totalPrice: 1500,
   }
 
-  const cases: {
-    description: string
-    offerAllowedActions: CollectiveOfferAllowedAction[]
-    formValues: Partial<CollectiveOfferStockFormValues>
-    expectedErrors: string[]
-    isReadOnly?: boolean
-    preventPriceIncrease?: boolean
-  }[] = [
+  it.each([
+    {
+      description: 'should require mandatory fields',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
+      formValues: {},
+      expectedErrors: [
+        'La date de début est obligatoire',
+        'La date de fin est obligatoire',
+        'L’horaire est obligatoire',
+        'Le nombre de participants est obligatoire',
+        'Le prix total TTC est obligatoire',
+        'La date limite de réservation est obligatoire',
+        'L’information sur le prix est obligatoire',
+      ],
+    },
     {
       description: 'start and end date should be on same school year',
       offerAllowedActions: [
@@ -165,18 +175,57 @@ describe('validationSchema', () => {
       },
       expectedErrors: [],
     },
-  ]
-
-  cases.forEach(
-    ({ description, offerAllowedActions, formValues, expectedErrors }) => {
-      it(`should validate the form for case: ${description}`, async () => {
-        const initialPrice = 0
-        const errors = await getYupValidationSchemaErrors(
-          generateValidationSchema(offerAllowedActions, initialPrice),
-          formValues
-        )
-        expect(errors).toEqual(expectedErrors)
-      })
-    }
-  )
+    {
+      description: 'totalPrice: can be increased',
+      offerAllowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      formValues: {
+        ...values,
+        totalPrice: 100,
+      },
+      expectedErrors: [],
+      initialPrice: 10,
+    },
+    {
+      description: 'totalPrice: cannot be increased',
+      offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+      formValues: {
+        ...values,
+        totalPrice: 100,
+      },
+      expectedErrors: ['Vous ne pouvez pas définir un prix plus élevé.'],
+      initialPrice: 10,
+    },
+    {
+      description: 'totalPrice: can decreased',
+      offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+      formValues: {
+        ...values,
+        totalPrice: 100,
+      },
+      expectedErrors: [],
+      initialPrice: 200,
+    },
+  ])(`$description`, async ({
+    offerAllowedActions,
+    formValues,
+    expectedErrors,
+    initialPrice = null,
+  }: {
+    description: string
+    offerAllowedActions: CollectiveOfferAllowedAction[]
+    formValues: Partial<CollectiveOfferStockFormValues>
+    expectedErrors: string[]
+    isReadOnly?: boolean
+    preventPriceIncrease?: boolean
+    initialPrice?: number | null
+  }) => {
+    const errors = await getYupValidationSchemaErrors(
+      generateValidationSchema(offerAllowedActions, initialPrice),
+      formValues
+    )
+    expect(errors).toEqual(expectedErrors)
+  })
 })
