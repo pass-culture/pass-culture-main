@@ -1,1 +1,0 @@
-import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n=e((()=>{t=``+new URL(`stroke-wrong-CJs7zhHt.svg`,import.meta.url).href}));export{t as n,n as t};

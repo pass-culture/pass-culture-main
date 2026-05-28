@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-xPQekRTU.js";var t,n=e((()=>{t=``+new URL(`full-info-Cfi0ALfj.svg`,import.meta.url).href}));export{n,t};

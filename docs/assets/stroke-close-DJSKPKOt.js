@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-xPQekRTU.js";var t,n=e((()=>{t=``+new URL(`stroke-close-f05bv-n9.svg`,import.meta.url).href}));export{t as n,n as t};

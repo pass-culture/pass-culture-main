@@ -1,1 +1,0 @@
-import{i as e}from"./preload-helper-Cs4UwXAW.js";var t,n=e((()=>{t=``+new URL(`full-bulb-BkPG8eFp.svg`,import.meta.url).href}));export{n,t};
