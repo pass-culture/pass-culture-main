@@ -1,4 +1,5 @@
 import enum
+import hashlib
 import typing
 from dataclasses import dataclass
 from datetime import datetime
@@ -120,7 +121,6 @@ def save_jwt_container(data: tuple[dict, dict], request: flask.Request) -> JwtCo
     raw = request.headers.get("Authorization", " ").split(" ")[1]
 
     unsigned_data, signed_data = data
-
     flask.g.jwt = JwtContainer(
         raw=raw,
         data=JwtData(
@@ -132,7 +132,7 @@ def save_jwt_container(data: tuple[dict, dict], request: flask.Request) -> JwtCo
             nbf=datetime.fromtimestamp(signed_data["nbf"]),
             csrf=signed_data["csrf"],
             exp=datetime.fromtimestamp(signed_data["exp"]),
-            user_claims=signed_data.get("user_claims", None),
+            user_claims=signed_data.get("user_claims", {}),
         ),
     )
     return flask.g.jwt
@@ -152,7 +152,11 @@ def create_user_jwt_tokens(
         duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
     else:
         duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
-    refresh_token = create_refresh_token(identity=str(user.id), expires_delta=duration)
+    refresh_token = create_refresh_token(
+        identity=str(user.id),
+        expires_delta=duration,
+        additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
+    )
 
     access_token = create_access_token(identity=str(user.id))
     _register_tokens(
@@ -181,6 +185,7 @@ def refresh_user_jwt_tokens(
         refresh_token = create_refresh_token(
             identity=str(user.id),
             expires_delta=(flask.g.jwt.data.exp - date_utils.get_naive_utc_now()),
+            additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
         )
 
     access_token = create_access_token(identity=str(user.id))

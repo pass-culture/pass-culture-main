@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import logging
 import uuid
 from datetime import datetime
@@ -1410,6 +1411,42 @@ class RefreshTest:
             )
             .count()
         )
+
+    def test_with_valid_email(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(
+            identity=str(user.id),
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"email_hash": hashlib.sha256(user.email.encode()).hexdigest()},
+        )
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        access_token = response.json.get("accessToken")
+        assert access_token
+        assert db.session.query(NativeUserSession).count() == 1
+        assert (
+            db.session.query(NativeUserSession)
+            .filter(
+                NativeUserSession.accessToken == decode_token(access_token)["jti"],
+                NativeUserSession.refreshToken == decode_token(token)["jti"],
+            )
+            .count()
+        )
+
+    def test_with_invalid_email(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(
+            identity=str(user.id),
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"email_hash": hashlib.sha256(b"invalid@invalid").hexdigest()}},
+        )
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert db.session.query(NativeUserSession).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
