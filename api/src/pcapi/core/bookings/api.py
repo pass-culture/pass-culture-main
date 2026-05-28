@@ -960,6 +960,8 @@ def mark_as_used_with_uncancelling(
         raise exceptions.BookingDepositCreditExpired()
 
     if booking.status == models.BookingStatus.CANCELLED:
+        if booking.validated_booking_incident:
+            raise exceptions.BookingIsLinkedToValidatedFinanceIncident()
         booking.uncancel_booking_set_used()
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         stock.dnBookedQuantity += booking.quantity

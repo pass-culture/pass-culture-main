@@ -906,6 +906,36 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
             f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})"
         ) in alerts["warning"]
 
+    def test_uncancel_booking_finance_incident(self, authenticated_client):
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking_id = bookings_factories.CancelledBookingFactory(
+            user=beneficiary,
+            incidents=[
+                finance_factories.IndividualBookingFinanceIncidentFactory(
+                    incident=finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
+                )
+            ],
+        ).id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking_id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
+        assert cells[2] == str(booking_id)
+
+        booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Impossible de valider ces réservations : "
+            f"- 1 réservation liée à un ou plusieurs incidents finance validés ({booking.token})"
+        ) in alerts["warning"]
+
     def test_uncancel_and_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
         festival_booking = bookings[1]
 
