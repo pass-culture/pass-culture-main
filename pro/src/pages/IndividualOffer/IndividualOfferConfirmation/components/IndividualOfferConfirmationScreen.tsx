@@ -45,7 +45,7 @@ export const IndividualOfferConfirmationScreen = ({
     new Date() < new Date(offer.publicationDate)
   const isPendingOffer = offer.status === OfferStatus.PENDING
 
-  const offerAppUrl = `${WEBAPP_URL}/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_campaign=product`
+  const offerAppUrl = `${WEBAPP_URL}/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_gen=product&utm_campaign=proOfferPreview`
 
   const offerReadOnlyUrl = getIndividualOfferUrl({
     offerId: offer.id,
