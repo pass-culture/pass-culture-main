@@ -10,190 +10,104 @@ gh workflow run on_dispatch_pcapi_console_job.yaml \
   -f NAMESPACE=clean_artist_again \
   -f SCRIPT_ARGUMENTS="";
 
+Rebuilds ArtistOfferLink rows for every offer created before CUTOFF_DATE:
+
+  1. Deletes all ArtistOfferLink rows for those offers (including offers linked to a product).
+  2. Re-creates one ArtistOfferLink per relevant artist_type present in the offer's extraData, with `(artist_id=None, custom_name=<exact extraData value>)`.
+     The raw extraData value is copied into custom_name. Offers linked to a product are NOT re-created.
 """
 
 import argparse
-import csv
-import itertools
 import logging
-import os
 import typing
-import unicodedata
 
 import sqlalchemy as sa
-from sqlalchemy.orm import joinedload
 
-from pcapi.core.artist import models as artist_models
-from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 1000
-OFFER_ID_HEADER = "offer_id"
-ARTIST_TYPE_HEADER = "artist_type"
+BATCH_SIZE = 50_000
+DEFAULT_MIN_ID = 0
+DEFAULT_MAX_ID = 50000
 
 
-def read_csv_file(filename: str) -> typing.Iterator[dict[str, str]]:
-    namespace_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(f"{namespace_dir}/{filename}.csv", "r", encoding="utf-8") as csv_file:
-        csv_rows = csv.DictReader(csv_file, delimiter=",")
-        yield from csv_rows
-
-
-def slugify_name(name: str) -> str:
+_DELETE_SQL = sa.text(
     """
-    Retourne le nom en minuscule et sans accents
+    DELETE FROM artist_offer_link
+    WHERE offer_id BETWEEN :low AND :high
     """
-    if not name:
-        return ""
-    normalized = unicodedata.normalize("NFD", name)
-    return "".join(c for c in normalized if unicodedata.category(c) != "Mn").lower().strip()
+)
+
+_INSERT_SQL = sa.text(
+    """
+    INSERT INTO artist_offer_link (offer_id, artist_type, custom_name)
+    SELECT DISTINCT sub.offer_id,
+        CASE kv.key WHEN 'stageDirector' THEN 'stage_director' ELSE kv.key END,
+        kv.value
+    FROM (
+        SELECT
+            o.id AS offer_id,
+            o."jsonData" AS extra_data
+        FROM offer o
+        WHERE o.id BETWEEN :low AND :high
+          AND o."productId" IS NULL
+    ) sub
+    CROSS JOIN LATERAL jsonb_each_text(
+        CASE WHEN jsonb_typeof(sub.extra_data) = 'object' THEN sub.extra_data ELSE '{}'::jsonb END
+    ) AS kv
+    WHERE kv.key IN ('author', 'performer', 'stageDirector')
+      AND kv.value IS NOT NULL
+      AND btrim(kv.value) <> ''
+    ON CONFLICT DO NOTHING
+    """
+)
+
+_INSERT_SQL_WITH_RETURN = sa.text(_INSERT_SQL.text + " RETURNING offer_id, artist_type, custom_name")
 
 
-def _update_artist_offer_links(rows_to_process: dict, offers_mapping: dict, links_mapping: dict) -> set:
-    modified_offers = set()
+def _process_range(low: int, high: int, verbose: bool) -> int:
+    params = {"low": low, "high": high}
+    db.session.execute(_DELETE_SQL, params)
+    if verbose:
+        rows = db.session.execute(_INSERT_SQL_WITH_RETURN, params).all()
+        for offer_id, artist_type, custom_name in rows:
+            logger.info("  offre %s : %s = %r", offer_id, artist_type, custom_name)
+        return len(rows)
+    else:
+        result = typing.cast(sa.CursorResult, db.session.execute(_INSERT_SQL, params))
+        return result.rowcount or 0
 
-    for o_id, a_type in rows_to_process.keys():
-        offer = offers_mapping.get(o_id)
-        extra_data = offer.extraData if offer else None
-        name_to_keep = extra_data.get(a_type) if extra_data else None
 
-        if not name_to_keep:
-            continue
+def main(
+    commit: bool,
+    min_offer_id: int = DEFAULT_MIN_ID,
+    max_offer_id: int = DEFAULT_MAX_ID,
+    batch_size: int = BATCH_SIZE,
+    verbose: bool = False,
+) -> None:
+    logger.info("Traitement des offres %s..%s (commit=%s)", min_offer_id, max_offer_id, commit)
+    low = min_offer_id
 
-        existing_links = [link for link in links_mapping.get(o_id, []) if link.artist_type.value == a_type]
+    total_created = 0
+    while low <= max_offer_id:
+        high = min(low + batch_size - 1, max_offer_id)
+        created = _process_range(low, high, verbose)
+        total_created += created
+        logger.info("Batch %s..%s : %s liens créés", low, high, created)
 
-        if not existing_links:
-            continue
-
-        existing_link_to_keep = next(
-            (link for link in existing_links if link.artist_id is None and link.custom_name == name_to_keep), None
-        )
-
-        if existing_link_to_keep:
-            duplicates = [link for link in existing_links if link.id != existing_link_to_keep.id]
+        if commit:
+            db.session.commit()
         else:
-            existing_link_to_update = existing_links[0]
-            duplicates = existing_links[1:]
-
-            update_stmt = (
-                sa.update(artist_models.ArtistOfferLink)
-                .where(artist_models.ArtistOfferLink.id == existing_link_to_update.id)
-                .values(custom_name=name_to_keep, artist_id=None)
-            )
-            db.session.execute(update_stmt)
-
-        modified_offers.add(o_id)
-
-        for duplicate in duplicates:
-            delete_stmt = sa.delete(artist_models.ArtistOfferLink).where(
-                artist_models.ArtistOfferLink.id == duplicate.id
-            )
-            db.session.execute(delete_stmt)
-            logger.info(f"Offre {o_id} ({a_type}) : Suppression du lien doublon ID {duplicate.id}")
-
-    return modified_offers
-
-
-def _clean_duplicates(modified_offers: set) -> None:
-    cleanup_stmt = sa.select(
-        artist_models.ArtistOfferLink.id,
-        artist_models.ArtistOfferLink.offer_id,
-        artist_models.ArtistOfferLink.artist_type,
-        artist_models.ArtistOfferLink.custom_name,
-    ).where(
-        artist_models.ArtistOfferLink.offer_id.in_(list(modified_offers)),
-        artist_models.ArtistOfferLink.artist_id.is_(None),
-    )
-
-    existing_links = db.session.execute(cleanup_stmt).all()
-
-    # Si on a le même tuple (offer_id, artist_type, slug_name) -> On ne garde que la première ligne
-    seen_combinations = {}
-    links_ids_to_delete = []
-
-    for link in existing_links:
-        slug = slugify_name(link.custom_name)
-        key = (link.offer_id, link.artist_type, slug)
-
-        if key in seen_combinations:
-            # le tuple (offer_id, artist_type, slug_name) à déjà été vu : on marque cet ArtistOfferLink pour être supprimé
-            links_ids_to_delete.append(link.id)
-            logger.info(
-                f"Doublon détecté pour l'ArtistOfferLink {link.id}) sur l'offre {link.offer_id} avec le nom {link.custom_name}."
-            )
-        else:
-            seen_combinations[key] = link.id
-
-    if links_ids_to_delete:
-        delete_duplicates_stmt = sa.delete(artist_models.ArtistOfferLink).where(
-            artist_models.ArtistOfferLink.id.in_(links_ids_to_delete)
-        )
-        db.session.execute(delete_duplicates_stmt)
-        logger.info(f"{len(links_ids_to_delete)} liens en doublon supprimés de la table ArtistOfferLink.")
-
-
-def process_batch(batch_rows: tuple, commit: bool) -> None:
-    offer_ids_to_fetch = []
-    rows = []
-
-    for row in batch_rows:
-        o_id = int(row.get(OFFER_ID_HEADER))
-        a_type = row.get(ARTIST_TYPE_HEADER)
-        offer_ids_to_fetch.append(o_id)
-        rows.append({"offer_id": o_id, "artist_type": a_type})
-
-    rows_to_process = {(r["offer_id"], r["artist_type"]): r for r in rows}
-    offer_stmt = (
-        sa.select(offers_models.Offer)
-        .where(offers_models.Offer.id.in_(list(offer_ids_to_fetch)))
-        .options(joinedload(offers_models.Offer.product))
-    )
-    offers_mapping = {offer.id: offer for offer in db.session.scalars(offer_stmt).all()}
-
-    links_stmt = sa.select(artist_models.ArtistOfferLink).where(
-        artist_models.ArtistOfferLink.offer_id.in_(list(offer_ids_to_fetch))
-    )
-
-    links_mapping: dict[int, list] = dict()
-    for link in db.session.scalars(links_stmt).all():
-        if link.offer_id not in links_mapping:
-            links_mapping[link.offer_id] = []
-        links_mapping[link.offer_id].append(link)
-
-    # 1/2 : Remplacer les ArtistOfferLink ayant un custom_name uniquement par la bonne valeur dans les extraData
-    modified_offers = _update_artist_offer_links(rows_to_process, offers_mapping, links_mapping)
-
-    # 2/2 on supprime les doublons (cf ticket JIRA)
-    if modified_offers:
-        _clean_duplicates(modified_offers)
+            db.session.flush()
+        low = high + 1
 
     if commit:
-        db.session.commit()
+        logger.info("Script terminé avec succès — %s liens créés au total", total_created)
     else:
-        db.session.flush()
-
-    logger.info("Fin du batch")
-    db.session.expunge_all()
-
-
-def main(commit: bool, filename: str, start_from_batch: int = 1) -> None:
-    rows = read_csv_file(filename)
-
-    for batch_idx, batch_rows in enumerate(itertools.batched(rows, BATCH_SIZE), start=1):
-        if batch_idx < start_from_batch:
-            continue
-
-        logger.info(f"Traitement du batch {batch_idx}")
-        process_batch(batch_rows, commit)
-
-    if not commit:
         db.session.rollback()
-        logger.info("Dry run terminé, rollback des données")
-    else:
-        logger.info("Script terminé avec succès")
+        logger.info("Dry run terminé (%s liens auraient été créés), rollback des données", total_created)
 
 
 if __name__ == "__main__":
@@ -203,8 +117,37 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", action="store_true")
-    parser.add_argument("--start-from-batch", type=int, default=1)
+    parser.add_argument(
+        "--min-offer-id",
+        type=int,
+        default=DEFAULT_MIN_ID,
+        help="Resume from this offer id (inclusive).",
+    )
+    parser.add_argument(
+        "--max-offer-id",
+        type=int,
+        default=DEFAULT_MAX_ID,
+        help="Stop at this offer id (inclusive).",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=BATCH_SIZE,
+        help="Offer id range processed per batch.",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Log every created artist_offer_link (offer id, artist type, custom name).",
+    )
     args = parser.parse_args()
-    filename = "artist_cleanup"
 
-    main(commit=args.commit, start_from_batch=args.start_from_batch, filename=filename)
+    db.session.execute(sa.text("SET SESSION statement_timeout = '1200s'"))  # 20 minutes
+
+    main(
+        commit=args.commit,
+        min_offer_id=args.min_offer_id,
+        max_offer_id=args.max_offer_id,
+        batch_size=args.batch_size,
+        verbose=args.verbose,
+    )

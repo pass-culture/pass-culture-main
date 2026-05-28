@@ -1,4 +1,4 @@
-from unittest.mock import patch
+import logging
 
 import pytest
 
@@ -7,245 +7,180 @@ from pcapi.core.artist import models as artist_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
 from pcapi.scripts.clean_artist_again.main import main
-from pcapi.scripts.clean_artist_again.main import slugify_name
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_slugify():
-    name = "Lucía Sánchez Saornil"
-    assert slugify_name(name) == "lucia sanchez saornil"
-
-
-@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
-def test_with_custom_name_and_artist_id(mock_read_csv):
-    offer = offers_factories.OfferFactory(extraData={"author": "Ursula K. Le Guin"})
-    offer_id = offer.id
-    artist = artist_factories.ArtistFactory(name="ursula k. le guin")
-    artist_id = artist.id
-    artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        artist_id=artist_id,
-        custom_name="ursula k. le guin",
-        artist_type=artist_models.ArtistType.AUTHOR,
+def _links_for(offer_id: int) -> list[artist_models.ArtistOfferLink]:
+    return (
+        db.session.query(artist_models.ArtistOfferLink)
+        .filter_by(offer_id=offer_id)
+        .order_by(artist_models.ArtistOfferLink.artist_type, artist_models.ArtistOfferLink.custom_name)
+        .all()
     )
 
-    mock_read_csv.return_value = [
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "ursula k. le guin",
-            "artist_id": str(artist_id),
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        }
-    ]
 
-    main(commit=True, filename="mock_filename")
+def test_creates_link_from_extra_data():
+    offer = offers_factories.OfferFactory(extraData={"author": "Author Name"})
 
-    link = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).first()
-    assert link is not None
-    assert link.offer_id == offer_id
-    assert link.artist_id == None
-    assert link.custom_name == "Ursula K. Le Guin"
-    assert link.artist_name == "Ursula K. Le Guin"
+    main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id)
+
+    links = _links_for(offer.id)
+    assert len(links) == 1
+    assert links[0].artist_id is None
+    assert links[0].custom_name == "Author Name"
+    assert links[0].artist_type == artist_models.ArtistType.AUTHOR
 
 
-@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
-def test_with_custom_name_and_no_artist_id(mock_read_csv):
+def test_empty_values_produce_no_links():
     offer = offers_factories.OfferFactory(
-        extraData={"author": "Ursula K. Le Guin"},
+        extraData={"author": "", "performer": "   ", "stageDirector": None},
     )
-    offer_id = offer.id
+
+    main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id)
+
+    assert _links_for(offer.id) == []
+
+
+def test_only_relevant_artist_types_are_kept():
+    offer = offers_factories.OfferFactory(
+        extraData={
+            "author": "Author Name",
+            "performer": "Performer Name",
+            "stageDirector": "Stage Director Name",
+            "musicSubType": "Music Sub Type",
+        },
+    )
+
+    main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id)
+
+    links = _links_for(offer.id)
+    assert {(link.artist_type, link.custom_name) for link in links} == {
+        (artist_models.ArtistType.AUTHOR, "Author Name"),
+        (artist_models.ArtistType.PERFORMER, "Performer Name"),
+        (artist_models.ArtistType.STAGE_DIRECTOR, "Stage Director Name"),
+    }
+
+
+def test_delete_existing_links():
+    offer = offers_factories.OfferFactory(extraData=None)
+    any_artist = artist_factories.ArtistFactory(name="Artist Name")
     artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        artist_id=None,
-        custom_name="ursula k. le guin",
+        offer_id=offer.id,
+        artist_id=any_artist.id,
+        custom_name=None,
         artist_type=artist_models.ArtistType.AUTHOR,
     )
-
-    mock_read_csv.return_value = [
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "ursula k. le guin",
-            "artist_id": "",
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        }
-    ]
-
-    main(commit=True, filename="mock_filename")
-
-    link = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).first()
-    assert link is not None
-    assert link.offer_id == offer_id
-    assert link.artist_id == None
-    assert link.custom_name == "Ursula K. Le Guin"
-    assert link.artist_name == "Ursula K. Le Guin"
-
-
-@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
-def test_with_custom_name_and_no_artist_id_and_product(mock_read_csv):
-    product = offers_factories.ProductFactory(extraData={"author": "Ursula K. Le Guin"})
-    product_id = product.id
-    offer = offers_factories.OfferFactory(productId=product_id)
-    offer_id = offer.id
     artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
+        offer_id=offer.id,
         artist_id=None,
-        custom_name="ursula k. le guin",
+        custom_name="Custom Name",
         artist_type=artist_models.ArtistType.AUTHOR,
     )
 
-    mock_read_csv.return_value = [
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "ursula k. le guin",
-            "artist_id": "",
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        }
-    ]
+    main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id)
 
-    main(commit=True, filename="mock_filename")
-
-    link = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).first()
-    assert link is not None
-    assert link.offer_id == offer_id
-    assert link.artist_id == None
-    assert link.custom_name == "Ursula K. Le Guin"
-    assert link.artist_name == "Ursula K. Le Guin"
+    assert _links_for(offer.id) == []
 
 
-@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
-def test_without_artist_id_should_update(mock_read_csv):
-    offer = offers_factories.OfferFactory(extraData={"author": "Mariana Enriquez"})
-    offer_id = offer.id
-    artist = artist_factories.ArtistFactory(name="mariana enriquez")
-    artist_id = artist.id
+def test_offer_with_product_links_are_not_recreated():
+    product = offers_factories.ProductFactory(extraData={"author": "Product Author"})
+    offer = offers_factories.OfferFactory(
+        product=product,
+        extraData={"author": "Product Author"},
+    )
     artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        custom_name="mariana enriquez",
-        artist=None,
+        offer_id=offer.id,
+        artist_id=None,
+        custom_name="Custom Name",
         artist_type=artist_models.ArtistType.AUTHOR,
     )
 
-    mock_read_csv.return_value = [
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "mariana enriquez",
-            "artist_id": str(artist_id),
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        }
-    ]
+    main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id)
 
-    main(commit=True, filename="mock_filename")
-
-    link = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).first()
-    assert link is not None
-    assert link.offer_id == offer_id
-    assert link.artist_id == None
-    assert link.custom_name == "Mariana Enriquez"
-    assert link.artist_name == "Mariana Enriquez"
+    assert _links_for(offer.id) == []
 
 
-@patch("pcapi.scripts.clean_artist_again.main.read_csv_file")
-def test_handle_duplicates(mock_read_csv):
-    offer = offers_factories.OfferFactory(extraData={"author": "Lena Dunham", "performer": "Lena Dunham"})
-    another_offer = offers_factories.OfferFactory(extraData={"author": "Lena dunham"})
-    offer_id = offer.id
-    another_offer_id = another_offer.id
-
-    artist = artist_factories.ArtistFactory(name="lena dunham")
-    another_artist = artist_factories.ArtistFactory(name="lena dunham")
-    artist_id = artist.id
-    another_artist_id = another_artist.id
-
-    link_to_update = artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id, custom_name=None, artist_id=artist_id, artist_type=artist_models.ArtistType.AUTHOR
-    )  # a garder
-    link_to_delete = artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        custom_name=None,
-        artist_id=another_artist_id,
-        artist_type=artist_models.ArtistType.AUTHOR,
-    )  # a supprimer : doublon car artist_id est différent
-    link_different_type = artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        custom_name=None,
-        artist_id=artist_id,
-        artist_type=artist_models.ArtistType.PERFORMER,
-    )  # à garder: l'artist type est différent
-    link_different_offer = artist_factories.ArtistOfferLinkFactory(
-        offer_id=another_offer_id,
-        custom_name=None,
-        artist_id=another_artist_id,
-        artist_type=artist_models.ArtistType.AUTHOR,
-    )  # à garder: l'offre est différente
-    link_with_custom_name = artist_factories.ArtistOfferLinkFactory(
-        offer_id=offer_id,
-        custom_name="Lena dunham",
+def test_dry_run_does_not_persist_changes():
+    offer = offers_factories.OfferFactory(extraData={"author": "Author Name"})
+    pre_existing = artist_factories.ArtistOfferLinkFactory(
+        offer_id=offer.id,
         artist_id=None,
+        custom_name="Custom Name",
         artist_type=artist_models.ArtistType.AUTHOR,
-    )  # à supprimer : doublon avec link_to_update lorsqu'il sera mis à jour
+    )
+    pre_existing_id = pre_existing.id
+    db.session.commit()
 
-    link_to_update_id = link_to_update.id
-    link_to_delete_id = link_to_delete.id
-    link_different_type_id = link_different_type.id
-    link_different_offer_id = link_different_offer.id
-    link_with_custom_name_id = link_with_custom_name.id
-
-    mock_read_csv.return_value = [
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "lena dunham",
-            "artist_id": str(artist.id),
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        },  # on garde le link_to_update
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "lena dunham",
-            "artist_id": str(another_artist.id),
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        },  # cette ligne doit supprimer le link_to_delete
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "lena dunham",
-            "artist_id": str(artist.id),
-            "artist_type": artist_models.ArtistType.PERFORMER.value,
-        },  # on garde également le link_different_type
-        {
-            "offer_id": str(another_offer_id),
-            "custom_name": "lena dunham",
-            "artist_id": str(another_artist.id),
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        },  # on garde car c'est une autre offre
-        {
-            "offer_id": str(offer_id),
-            "custom_name": "lena dunham",
-            "artist_id": None,
-            "artist_type": artist_models.ArtistType.AUTHOR.value,
-        },  # on supprime car doublon avec link_to_update
-    ]
-
-    main(commit=True, filename="mock_filename")
+    main(commit=False, min_offer_id=offer.id, max_offer_id=offer.id)
 
     db.session.expire_all()
+    links = _links_for(offer.id)
+    assert len(links) == 1
+    assert links[0].id == pre_existing_id
+    assert links[0].custom_name == "Custom Name"
 
-    offer_links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer_id).all()
-    another_offer_links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=another_offer_id).all()
 
-    assert len(offer_links) == 2
-    assert len(another_offer_links) == 1
+def test_processes_all_offers_in_range():
+    offer_a = offers_factories.OfferFactory(extraData={"author": "Author A"})
+    offer_b = offers_factories.OfferFactory(extraData={"performer": "Performer B"})
 
-    assert db.session.get(artist_models.ArtistOfferLink, link_to_update_id) is not None
-    assert db.session.get(artist_models.ArtistOfferLink, link_different_type_id) is not None
-    assert db.session.get(artist_models.ArtistOfferLink, link_different_offer_id) is not None
+    main(commit=True, min_offer_id=offer_a.id, max_offer_id=offer_b.id)
 
-    assert db.session.get(artist_models.ArtistOfferLink, link_to_delete_id) is None
-    assert db.session.get(artist_models.ArtistOfferLink, link_with_custom_name_id) is None
+    assert {link.custom_name for link in _links_for(offer_a.id)} == {"Author A"}
+    assert {link.custom_name for link in _links_for(offer_b.id)} == {"Performer B"}
 
-    for link in offer_links:
-        assert link.artist_id is None
-        assert link.custom_name == "Lena Dunham"
 
-    for link in another_offer_links:
-        assert link.artist_id is None
-        assert link.custom_name == "Lena dunham"
+def test_min_offer_id_skips_earlier_offers():
+    offer_a = offers_factories.OfferFactory(extraData={"author": "Author A"})
+    offer_b = offers_factories.OfferFactory(extraData={"author": "Author B"})
+    skipped_link = artist_factories.ArtistOfferLinkFactory(
+        offer_id=offer_a.id,
+        artist_id=None,
+        custom_name="Custom Name",
+        artist_type=artist_models.ArtistType.PERFORMER,
+    )
+    skipped_link_id = skipped_link.id
+
+    main(commit=True, min_offer_id=offer_b.id, max_offer_id=offer_b.id)
+
+    links_a = _links_for(offer_a.id)
+    assert len(links_a) == 1
+    assert links_a[0].id == skipped_link_id
+    assert {link.custom_name for link in _links_for(offer_b.id)} == {"Author B"}
+
+
+def test_max_offer_id_skips_later_offers():
+    offer_a = offers_factories.OfferFactory(extraData={"author": "Author A"})
+    offer_b = offers_factories.OfferFactory(extraData={"author": "Author B"})
+    skipped_link = artist_factories.ArtistOfferLinkFactory(
+        offer_id=offer_b.id,
+        artist_id=None,
+        custom_name="Custom Name",
+        artist_type=artist_models.ArtistType.PERFORMER,
+    )
+    skipped_link_id = skipped_link.id
+
+    main(commit=True, min_offer_id=offer_a.id, max_offer_id=offer_a.id)
+
+    assert {link.custom_name for link in _links_for(offer_a.id)} == {"Author A"}
+    links_b = _links_for(offer_b.id)
+    assert len(links_b) == 1
+    assert links_b[0].id == skipped_link_id
+
+
+def test_verbose_logs_each_created_link(caplog):
+    offer = offers_factories.OfferFactory(
+        extraData={"author": "Author Name", "performer": "Performer Name"},
+    )
+
+    with caplog.at_level(logging.INFO):
+        main(commit=True, min_offer_id=offer.id, max_offer_id=offer.id, verbose=True)
+
+    assert {link.custom_name for link in _links_for(offer.id)} == {"Author Name", "Performer Name"}
+    link_logs = [record.message for record in caplog.records if f"offre {offer.id} :" in record.message]
+    assert sorted(link_logs) == [
+        f"  offre {offer.id} : author = 'Author Name'",
+        f"  offre {offer.id} : performer = 'Performer Name'",
+    ]
