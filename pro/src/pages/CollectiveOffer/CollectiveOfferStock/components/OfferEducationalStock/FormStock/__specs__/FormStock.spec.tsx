@@ -165,22 +165,31 @@ describe('FormStock', () => {
     })
   })
 
-  it('should automatically update end date input when the user edits the start date', async () => {
+  it('should automatically update end date input when the user sets the start date after', async () => {
+    const user = userEvent.setup()
+
+    async function setStartDate(date: string) {
+      const startDateInput = screen.getByLabelText(/Date de début */)
+      await user.click(startDateInput)
+      await user.clear(startDateInput)
+      await waitFor(() => user.type(startDateInput, date))
+    }
+
+    const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
     renderFormStock({
       initialValues: {
         ...initialValues,
-        startDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+        startDate: today,
       },
       allowedActions,
       onSubmit,
     })
-    const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-    const startDateInput = screen.getByLabelText(/Date de début */)
-    await userEvent.click(startDateInput)
-    await userEvent.clear(startDateInput)
-    await waitFor(() => userEvent.type(startDateInput, userDateInput))
+    const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+    await setStartDate(tomorrow)
     const endDateInput = screen.getAllByLabelText(/Date de fin */)[1]
-    expect(endDateInput).toHaveValue(userDateInput)
+    expect(endDateInput).toHaveValue(tomorrow)
+    await setStartDate(today)
+    expect(endDateInput).toHaveValue(tomorrow)
   })
 
   it('should not disable price and place when offer status is reimbursment', () => {

@@ -25,10 +25,6 @@ vi.mock('react-router', async () => ({
   useNavigate: vi.fn(),
 }))
 
-afterEach(() => {
-  vi.clearAllMocks()
-})
-
 describe('OfferEducationalStock', () => {
   it('should render for offer with a stock in the past', () => {
     const testProps: OfferEducationalStockProps = {
@@ -51,7 +47,49 @@ describe('OfferEducationalStock', () => {
     expect(
       screen.getByText('Indiquez le prix et la date de votre offre')
     ).toBeVisible()
+    expect(screen.getByLabelText(/Date de début/)).toHaveValue('2022-02-10')
+    expect(screen.getByLabelText(/Horaire/)).toHaveValue('01:00')
   })
+
+  it.each`
+    datetimeInput          | departementCode | expectedDateValue | expectedTimeValue
+    ${'2022-02-10T00:00Z'} | ${'75'}         | ${'2022-02-10'}   | ${'01:00'}
+    ${'2022-02-10T00:00Z'} | ${''}           | ${'2022-02-10'}   | ${'01:00'}
+    ${'2022-02-10T00:00Z'} | ${'973'}        | ${'2022-02-09'}   | ${'21:00'}
+  `(
+    'when departement is $departement : should set a date value corresponding to the right timezone',
+    ({
+      datetimeInput,
+      departementCode,
+      expectedDateValue,
+      expectedTimeValue,
+    }) => {
+      const testProps: OfferEducationalStockProps = {
+        ...defaultProps,
+        allowedActions: [
+          CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+          CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        ],
+        initialStock: {
+          startDatetime: datetimeInput,
+          endDatetime: datetimeInput,
+          bookingLimitDatetime: datetimeInput,
+        },
+        departementCode,
+      }
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
+      expect(screen.getByLabelText(/Date de début/)).toHaveValue(
+        expectedDateValue
+      )
+      expect(screen.getAllByLabelText(/Date de fin/)[1]).toHaveValue(
+        expectedDateValue
+      )
+      expect(screen.getByLabelText(/Date limite/)).toHaveValue(
+        expectedDateValue
+      )
+      expect(screen.getByLabelText(/Horaire/)).toHaveValue(expectedTimeValue)
+    }
+  )
 
   it('should call submit callback when clicking next step with valid form data and edit action is allowed', async () => {
     const user = userEvent.setup()
