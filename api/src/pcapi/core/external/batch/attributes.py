@@ -7,8 +7,6 @@ from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.external.batch import serialization
 from pcapi.core.external.batch import tasks
 from pcapi.core.external.batch.utils import format_date
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import batch_tasks as batch_cloud_tasks
 from pcapi.utils.transaction_manager import on_commit
 
 
@@ -27,13 +25,8 @@ def update_user_attributes(
     formatted_attributes = format_user_attributes(
         user_attributes, cultural_survey_answers=cultural_survey_answers, batch_extra_data=batch_extra_data
     )
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.UpdateBatchAttributesRequestV2(attributes=formatted_attributes, user_id=user_id)
-        on_commit(partial(tasks.update_user_attributes_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
-        on_commit(partial(batch_cloud_tasks.update_user_attributes_android_task.delay, payload))
-        on_commit(partial(batch_cloud_tasks.update_user_attributes_ios_task.delay, payload))
+    payload = serialization.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
+    on_commit(partial(tasks.update_user_attributes_task.delay, payload.model_dump()))
 
 
 def format_user_attributes(

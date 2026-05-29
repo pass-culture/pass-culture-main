@@ -6,7 +6,6 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
@@ -1419,60 +1418,6 @@ class CancelBookingTest:
 
     def test_cancel_booking_trigger_recredit_event(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        initial_deposit_amount = user.deposit.amount
-        booking = booking_factories.BookingFactory(user=user)
-
-        client = client.with_token(user)
-        with assert_num_queries(28):
-            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
-
-        assert response.status_code == 204
-
-        booking = db.session.get(Booking, booking.id)
-        assert len(push_testing.requests) == 3
-        assert push_testing.requests[0] == {
-            "can_be_asynchronously_retried": True,
-            "event_name": "recredit_account_cancellation",
-            "event_payload": {
-                "credit": Decimal(initial_deposit_amount),
-                "formatted_credit": "150 €",
-                "offer_id": booking.stock.offer.id,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": Decimal("10.1"),
-                "formatted_offer_price": "10,10 €",
-            },
-            "user_id": user.id,
-        }
-
-    def test_cancel_booking_trigger_recredit_event_for_caledonian_user(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, postalCode="98818")
-        booking = booking_factories.BookingFactory(user=user)
-
-        client = client.with_token(user)
-        with assert_num_queries(28):
-            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
-
-        assert response.status_code == 204
-
-        booking = db.session.get(Booking, booking.id)
-        assert len(push_testing.requests) == 3
-        assert push_testing.requests[0] == {
-            "can_be_asynchronously_retried": True,
-            "event_name": "recredit_account_cancellation",
-            "event_payload": {
-                "credit": Decimal("150"),
-                "formatted_credit": "17900 F",
-                "offer_id": booking.stock.offer.id,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": Decimal("10.1"),
-                "formatted_offer_price": "1205 F",
-            },
-            "user_id": user.id,
-        }
-
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_BATCH=True)
-    def test_cancel_booking_trigger_recredit_event_with_celery(self, client):
-        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(user)
@@ -1497,8 +1442,7 @@ class CancelBookingTest:
             "user_id": user.id,
         }
 
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_BATCH=True)
-    def test_cancel_booking_trigger_recredit_event_for_caledonian_user_with_celery(self, client):
+    def test_cancel_booking_trigger_recredit_event_for_caledonian_user(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, postalCode="98818")
         booking = booking_factories.BookingFactory(user=user)
 

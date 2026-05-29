@@ -71,17 +71,6 @@ class BatchBackend:
         raise requests.ExternalAPIException(is_retryable=is_retryable)
 
     def update_user_attributes(
-        self, batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
-    ) -> None:
-        self.handle_request(
-            "POST",
-            f"{API_URL}/1.0/{batch_api.value}/data/users/{user_id}",
-            api_name="update_user_attributes",
-            can_be_asynchronously_retried=can_be_asynchronously_retried,
-            payload={"overwrite": False, "values": attribute_values},
-        )
-
-    def update_user_attributes_new(
         self, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
     ) -> None:
         def make_post_request(api: BatchAPI) -> None:
@@ -119,7 +108,7 @@ class BatchBackend:
 
     def send_transactional_notification(
         self,
-        notification_data: serialization.TransactionalNotificationData | serialization.TransactionalNotificationDataV2,
+        notification_data: serialization.TransactionalNotificationData,
         can_be_asynchronously_retried: bool = False,
     ) -> None:
         def make_post_request(api: BatchAPI) -> None:
@@ -182,7 +171,7 @@ class BatchBackend:
 
     def track_event_bulk(
         self,
-        track_event_data: list[serialization.TrackBatchEventRequest] | list[serialization.TrackBatchEventRequestV2],
+        track_event_data: list[serialization.TrackBatchEventRequest],
         can_be_asynchronously_retried: bool = False,
     ) -> None:
         """https://doc.batch.com/developer/api/mep/trigger-events-api/track-events#bulk-tracking"""

@@ -29,7 +29,6 @@ from pcapi.core.users.sessions import disconnect_user_session
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -39,7 +38,6 @@ from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import user_actions
-from pcapi.tasks import batch_tasks as batch_cloud_tasks
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -233,12 +231,8 @@ def delete(user_id: int) -> response_utils.BackofficeResponse:
         on_commit(partial(mails_api.delete_contact, user.email, True))
 
     # clear from push notifications
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = batch_serialization.DeleteBatchUserAttributesRequestV2(user_id=user.id)
-        on_commit(partial(batch_tasks.delete_user_attributes_task.delay, payload_v2.model_dump()))
-    else:
-        payload = batch_serialization.DeleteBatchUserAttributesRequest(user_id=user.id)
-        on_commit(partial(batch_cloud_tasks.delete_user_attributes_task.delay, payload))
+    payload = batch_serialization.DeleteBatchUserAttributesRequest(user_id=user.id)
+    on_commit(partial(batch_tasks.delete_user_attributes_task.delay, payload.model_dump()))
 
     # Delete all related objects if the user has already been created as a beneficiary
     db.session.query(beneficiary_import_status_models.BeneficiaryImportStatus).filter(
