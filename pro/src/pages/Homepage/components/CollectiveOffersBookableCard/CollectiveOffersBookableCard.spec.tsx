@@ -2,9 +2,12 @@ import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { buildCollectiveOfferHome } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { OffersCardVariant } from '../types'
 import { CollectiveOffersBookableCard } from './CollectiveOffersBookableCard'
 import type { CollectiveOffersBookableLineProps } from './components/CollectiveOffersBookableLine/CollectiveOffersBookableLine'
 
@@ -19,7 +22,14 @@ vi.mock(
   })
 )
 
+const mockLogEvent = vi.fn()
+
 describe('<CollectiveOffersBookableCard />', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
       <CollectiveOffersBookableCard offers={[buildCollectiveOfferHome()]} />
@@ -75,5 +85,28 @@ describe('<CollectiveOffersBookableCard />', () => {
     expect(
       screen.getByText('Liste de toutes les offres réservables')
     ).toBeVisible()
+  })
+
+  it('should log event on press CTA that sends to collective offer list', async () => {
+    const user = userEvent.setup()
+    const collectiveOfferHome = buildCollectiveOfferHome(1)
+
+    renderWithProviders(
+      <CollectiveOffersBookableCard offers={[collectiveOfferHome]} />
+    )
+
+    const allOffersBtn = screen.getByRole('link', {
+      name: 'Voir toutes les offres',
+    })
+    expect(allOffersBtn).toBeVisible()
+    await user.click(allOffersBtn)
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      HomepageEvents.CLICKED_SEE_ALL_OFFERS,
+      {
+        offersVariant: OffersCardVariant.BOOKABLE,
+        hasOffersDisplayed: true,
+      }
+    )
   })
 })

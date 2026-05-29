@@ -2,9 +2,12 @@ import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { buildCollectiveOfferTemplateHome } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
+import { OffersCardVariant } from '../types'
 import { CollectiveOffersTemplateCard } from './CollectiveOffersTemplateCard'
 import type { CollectiveOffersTemplateLineProps } from './components/CollectiveOffersTemplateLine/CollectiveOffersTemplateLine'
 
@@ -20,8 +23,14 @@ vi.mock(
     ),
   })
 )
+const mockLogEvent = vi.fn()
 
 describe('<CollectiveOffersTemplateCard />', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
       <CollectiveOffersTemplateCard
@@ -79,5 +88,26 @@ describe('<CollectiveOffersTemplateCard />', () => {
     expect(
       screen.getByText('Liste de toutes les offres vitrines')
     ).toBeVisible()
+  })
+
+  it('should log event on press CTA that sends to template offer list', async () => {
+    const user = userEvent.setup()
+    const offer = buildCollectiveOfferTemplateHome()
+
+    renderWithProviders(<CollectiveOffersTemplateCard offers={[offer]} />)
+
+    const allOffersBtn = screen.getByRole('link', {
+      name: 'Voir toutes les offres',
+    })
+    expect(allOffersBtn).toBeVisible()
+    await user.click(allOffersBtn)
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      HomepageEvents.CLICKED_SEE_ALL_OFFERS,
+      {
+        offersVariant: OffersCardVariant.TEMPLATE,
+        hasOffersDisplayed: true,
+      }
+    )
   })
 })
