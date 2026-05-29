@@ -23,8 +23,12 @@ describe('IndividualOfferSummaryPracticalInfosScreen', () => {
   it('should render the practical information summary sections', () => {
     renderIndividualOfferSummaryPracticalInfosScreen()
 
-    screen.getByRole('heading', { name: 'Informations pratiques' })
-    screen.getByRole('heading', { name: 'Notification des réservations' })
+    expect(
+      screen.getByRole('heading', { name: 'Informations pratiques' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Notification des réservations' })
+    ).toBeInTheDocument()
   })
 
   it('should render the offer description infos', () => {
@@ -38,10 +42,12 @@ describe('IndividualOfferSummaryPracticalInfosScreen', () => {
       }),
     })
 
-    screen.getByText('Details for the withdrawal')
-    screen.getByText(/Précisez la façon dont vous distribuerez les billets/)
-    screen.getByText(/Heure de retrait/)
-    screen.getByText('test@contact.co')
-    screen.getByText('test2@contact.co')
+    expect(screen.getByText('Details for the withdrawal')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Précisez la façon dont vous distribuerez les billets/)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Heure de retrait/)).toBeInTheDocument()
+    expect(screen.getByText('test@contact.co')).toBeInTheDocument()
+    expect(screen.getByText('test2@contact.co')).toBeInTheDocument()
   })
 })

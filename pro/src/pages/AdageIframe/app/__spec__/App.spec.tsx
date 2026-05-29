@@ -152,7 +152,9 @@ describe('app', () => {
         initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
       })
 
-      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      expect(
+        await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
     })
 
     it('should display venue tag when venueId is provided and public name exists', async () => {
@@ -161,7 +163,9 @@ describe('app', () => {
         initialRouterEntries: ['/recherche?venue=1436'],
       })
 
-      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      expect(
+        await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
     })
 
     it('should display venue when venueId is provided in url', async () => {
@@ -176,7 +180,9 @@ describe('app', () => {
         initialRouterEntries: ['/recherche?venue=1436'],
       })
 
-      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      expect(
+        await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
     })
 
     it('should add geo location filter when user has latitude and longitude', async () => {
