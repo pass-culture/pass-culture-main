@@ -2,9 +2,6 @@ name: 3 [CI] Test changes
 
 on:
   workflow_call:
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
-      GCP_EHP_SERVICE_ACCOUNT: { required: true }
     inputs:
       # changes
       api-changed:
@@ -60,7 +57,6 @@ jobs:
     uses: ./.github/workflows/ci_sub_test_backend.yml
     with:
       tag: ${{ github.sha }}
-    secrets: inherit
 
   test-api-documentation:
     name: Public API documentation
@@ -71,9 +67,6 @@ jobs:
     name: Front Pro
     if: ${{inputs.pro-changed || inputs.github-changed}}
     uses: ./.github/workflows/ci_sub_test_front_pro.yml
-    with:
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets: inherit
 
   test-e2e:
     name: E2E

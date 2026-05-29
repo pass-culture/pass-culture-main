@@ -29,7 +29,6 @@ jobs:
     name: Test changes
     needs: compute-changes
     uses: ./.github/workflows/ci_sub_test_changes.yml
-    secrets: inherit
     with:
       api-changed: ${{ needs.compute-changes.outputs.api-changed == 'true' }}
       api-documentation-changed: ${{ needs.compute-changes.outputs.api-documentation-changed == 'true' }}
