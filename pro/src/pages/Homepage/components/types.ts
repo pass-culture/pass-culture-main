@@ -15,4 +15,10 @@ export interface CollectiveOffersVariantMap {
 
 export type CollectiveOffersCardVariant = keyof CollectiveOffersVariantMap
 
-export type OffersCardVariant = CollectiveOffersCardVariant | 'INDIVIDUAL'
+export const OffersCardVariant = {
+  BOOKABLE: 'BOOKABLE',
+  TEMPLATE: 'TEMPLATE',
+  INDIVIDUAL: 'INDIVIDUAL',
+} as const satisfies Record<CollectiveOffersCardVariant | 'INDIVIDUAL', string>
+
+export type OffersCardVariant = keyof typeof OffersCardVariant

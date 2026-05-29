@@ -33,7 +33,7 @@ import { NewsletterCard } from './components/NewsletterCard/NewsletterCard'
 import { OffersEmptyStateCard } from './components/OffersEmptyStateCard/OffersEmptyStateCard'
 import { PartnerPageCard } from './components/PartnerPageCard/PartnerPageCard'
 import { StatsCard } from './components/StatsCard/StatsCard'
-import { HomepageVariant } from './components/types'
+import { HomepageVariant, OffersCardVariant } from './components/types'
 import { VenueValidationBanner } from './components/VenueValidationBanner/VenueValidationBanner'
 import { WebinarCard } from './components/WebinarCard/WebinarCard'
 import styles from './Homepage.module.scss'
@@ -210,7 +210,7 @@ export const Homepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             {hasRefusedDmsApplication && (
-              <OffersEmptyStateCard variant="INDIVIDUAL" />
+              <OffersEmptyStateCard variant={OffersCardVariant.INDIVIDUAL} />
             )}
             {selectedPartnerVenue.allowedOnAdage && (
               <CollectiveOffersCardsContainer

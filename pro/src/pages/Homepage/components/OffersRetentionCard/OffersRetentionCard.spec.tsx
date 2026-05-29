@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import type { OffersCardVariant } from '../types'
+import { OffersCardVariant } from '../types'
 import { OffersRetentionCard } from './OffersRetentionCard'
 
 const FakeCreateOfferPage = ({ variant }: { variant: OffersCardVariant }) => (
@@ -25,37 +26,47 @@ const renderOffersRetentionCard = (variant: OffersCardVariant) => {
         },
         {
           path: '/offre/creation/collectif/vitrine',
-          element: <FakeCreateOfferPage variant={'TEMPLATE'} />,
+          element: <FakeCreateOfferPage variant={OffersCardVariant.TEMPLATE} />,
         },
         {
           path: '/offre/creation/collectif',
-          element: <FakeCreateOfferPage variant={'BOOKABLE'} />,
+          element: <FakeCreateOfferPage variant={OffersCardVariant.BOOKABLE} />,
         },
         {
           path: '/offre/individuelle/creation/description',
-          element: <FakeCreateOfferPage variant={'INDIVIDUAL'} />,
+          element: (
+            <FakeCreateOfferPage variant={OffersCardVariant.INDIVIDUAL} />
+          ),
         },
         {
           path: '/offres/vitrines',
-          element: <FakeListOffersPage variant={'TEMPLATE'} />,
+          element: <FakeListOffersPage variant={OffersCardVariant.TEMPLATE} />,
         },
         {
           path: '/offres/collectives',
-          element: <FakeListOffersPage variant={'BOOKABLE'} />,
+          element: <FakeListOffersPage variant={OffersCardVariant.BOOKABLE} />,
         },
         {
           path: '/offres',
-          element: <FakeListOffersPage variant={'INDIVIDUAL'} />,
+          element: (
+            <FakeListOffersPage variant={OffersCardVariant.INDIVIDUAL} />
+          ),
         },
       ],
     }),
     user,
   }
 }
+const mockLogEvent = vi.fn()
 
 describe('OffersRetentionCard', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
   it('should display template retention card', () => {
-    renderOffersRetentionCard('TEMPLATE')
+    renderOffersRetentionCard(OffersCardVariant.TEMPLATE)
 
     expect(
       screen.getByRole('heading', {
@@ -71,7 +82,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to template offer creation page', async () => {
-    const { user } = renderOffersRetentionCard('TEMPLATE')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.TEMPLATE)
 
     await user.click(
       screen.getByRole('link', { name: 'Créer une offre vitrine' })
@@ -81,7 +92,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to template offers list page', async () => {
-    const { user } = renderOffersRetentionCard('TEMPLATE')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.TEMPLATE)
 
     await user.click(
       screen.getByRole('link', { name: 'Voir toutes les offres' })
@@ -91,7 +102,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should display bookable retention card', () => {
-    renderOffersRetentionCard('BOOKABLE')
+    renderOffersRetentionCard(OffersCardVariant.BOOKABLE)
 
     expect(
       screen.getByRole('heading', {
@@ -107,7 +118,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to bookable offer creation page', async () => {
-    const { user } = renderOffersRetentionCard('BOOKABLE')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.BOOKABLE)
 
     await user.click(
       screen.getByRole('link', { name: 'Créer une offre réservable' })
@@ -117,7 +128,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to bookable offers list page', async () => {
-    const { user } = renderOffersRetentionCard('BOOKABLE')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.BOOKABLE)
 
     await user.click(
       screen.getByRole('link', { name: 'Voir toutes les offres' })
@@ -127,7 +138,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should display individual retention card', () => {
-    renderOffersRetentionCard('INDIVIDUAL')
+    renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL)
 
     expect(
       screen.getByRole('heading', {
@@ -143,7 +154,7 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to individual offer creation page', async () => {
-    const { user } = renderOffersRetentionCard('INDIVIDUAL')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL)
 
     await user.click(screen.getByRole('link', { name: 'Créer une offre' }))
 
@@ -151,7 +162,17 @@ describe('OffersRetentionCard', () => {
   })
 
   it('should navigate to individual offers list page', async () => {
-    const { user } = renderOffersRetentionCard('INDIVIDUAL')
+    const { user } = renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL)
+
+    await user.click(
+      screen.getByRole('link', { name: 'Voir toutes les offres' })
+    )
+
+    expect(screen.getByText('Page liste offres individual')).toBeVisible()
+  })
+
+  it('should log event on press CTA that sends to offer list', async () => {
+    const { user } = renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL)
 
     await user.click(
       screen.getByRole('link', { name: 'Voir toutes les offres' })
