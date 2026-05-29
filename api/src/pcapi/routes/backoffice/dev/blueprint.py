@@ -290,6 +290,9 @@ def delete_user() -> response_utils.BackofficeResponse:
         return render_template("dev/users_deletion.html", form=form), 400
 
     try:
+        db.session.query(users_models.TrustedDevice).filter_by(userId=user.id).delete()
+        db.session.query(users_models.LoginDeviceHistory).filter_by(userId=user.id).delete()
+        db.session.query(users_models.GdprUserAnonymization).filter_by(userId=user.id).delete()
         db.session.query(users_models.User).filter_by(id=user.id).delete()
         db.session.flush()
     except IntegrityError as e:
