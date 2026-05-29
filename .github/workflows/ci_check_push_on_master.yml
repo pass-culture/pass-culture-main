@@ -44,7 +44,6 @@ jobs:
     needs: [compute-changes, test-changes]
     if: ${{ always() && needs.compute-changes.outputs.maintenance-site-changed == 'true' }}
     uses: ./.github/workflows/cd_sub_deploy_maintenance_site.yml
-    secrets: inherit
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
