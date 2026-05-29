@@ -252,10 +252,12 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
     endpoint = "backoffice_web.dev.delete_user"
     needed_permission = None
 
-    def test_sso_user_deletion(self, authenticated_client):
+    def test_user_deletion(self, authenticated_client):
         user = users_factories.UserFactory()
         users_factories.SingleSignOnFactory(user=user)
         users_factories.TrustedDeviceFactory(user=user)
+        users_factories.LoginDeviceHistoryFactory(user=user)
+        users_factories.GdprUserAnonymizationFactory(user=user)
 
         response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
 
