@@ -1,3 +1,5 @@
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
@@ -41,7 +43,15 @@ export const OffersEmptyStateCard = ({
 }: {
   variant: OffersCardVariant
 }) => {
+  const { logEvent } = useAnalytics()
   const cardContent = EMPTY_STATE_CONFIG[variant]
+
+  const logCreateOfferClick = () =>
+    logEvent(HomepageEvents.CLICKED_CREATE_OFFER, {
+      offersVariant: variant,
+      hasOffers: false,
+    })
+
   return (
     <Card>
       <Card.Image
@@ -60,6 +70,7 @@ export const OffersEmptyStateCard = ({
           color={ButtonColor.NEUTRAL}
           to={cardContent.to}
           as="a"
+          onClick={logCreateOfferClick}
         />
       </Card.Footer>
     </Card>

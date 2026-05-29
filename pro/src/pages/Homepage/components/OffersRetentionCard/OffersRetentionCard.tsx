@@ -44,6 +44,12 @@ export const OffersRetentionCard = ({
       hasOffersDisplayed: false,
     })
 
+  const logCreateOfferClick = () =>
+    logEvent(HomepageEvents.CLICKED_CREATE_OFFER, {
+      offersVariant: variant,
+      hasOffers: true,
+    })
+
   return (
     <Card>
       <Card.Header title={config.title} />
@@ -63,6 +69,7 @@ export const OffersRetentionCard = ({
           variant={ButtonVariant.SECONDARY}
           to={config.to}
           as="a"
+          onClick={logCreateOfferClick}
         />
       </Card.Footer>
     </Card>
