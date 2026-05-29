@@ -11,7 +11,7 @@ export const getCurrentUserPermissions = (
 ): UserPermissions => {
   const {
     currentUser,
-    offerersNamesWithPendingValidation,
+    offererNames,
     selectedAdminOfferer,
     selectedPartnerVenue,
     venues,
@@ -34,8 +34,8 @@ export const getCurrentUserPermissions = (
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
   const isSelectedAdminOffererAssociated =
     hasSelectedAdminOfferer &&
-    !offerersNamesWithPendingValidation?.some(
-      (offerer) => offerer.id === selectedAdminOfferer.id
+    !!offererNames?.some(
+      (offerer) => offerer.validated && offerer.id === selectedAdminOfferer.id
     )
   const isSelectedPartnerVenueAssociated =
     hasSelectedPartnerVenue &&

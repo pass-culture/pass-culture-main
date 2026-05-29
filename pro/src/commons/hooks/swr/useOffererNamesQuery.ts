@@ -25,27 +25,18 @@ import { useAppSelector } from '../useAppSelector'
 export const useOffererNamesQuery = (): SWRResponse<
   GetOffererNameResponseModel[]
 > => {
-  const storeOffererNamesValidated = useAppSelector(
-    (state) => state.user.offererNamesValidated
-  )
-  const storeOfferersNamesWithPendingValidation = useAppSelector(
-    (state) => state.user.offerersNamesWithPendingValidation
-  )
+  const storeOffererNames = useAppSelector((state) => state.user.offererNames)
   const dispatch = useAppDispatch()
 
   const offererNamesQuery = useSWR<GetOffererNameResponseModel[]>(
     [GET_OFFERER_NAMES_QUERY_KEY],
     async (): Promise<GetOffererNameResponseModel[]> => {
-      if (storeOffererNamesValidated) {
-        return storeOffererNamesValidated.concat(
-          storeOfferersNamesWithPendingValidation ?? []
-        )
+      if (storeOffererNames) {
+        return storeOffererNames
       } else {
         const response = await api.listOfferersNames()
-        dispatch(updateOffererNames(response))
-        return response.offerersNames.concat(
-          response.offerersNamesWithPendingValidation ?? []
-        )
+        dispatch(updateOffererNames(response.offerersNames))
+        return response.offerersNames
       }
     },
     {

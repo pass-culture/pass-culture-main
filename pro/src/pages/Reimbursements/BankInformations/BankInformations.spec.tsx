@@ -272,13 +272,14 @@ describe('BankInformations page', () => {
         getOffererNameFactory({
           id: 1,
           name: 'first offerer',
+          validated: true,
         }),
         getOffererNameFactory({
           id: 2,
           name: 'second offerer',
+          validated: true,
         }),
       ],
-      offerersNamesWithPendingValidation: [],
     })
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))

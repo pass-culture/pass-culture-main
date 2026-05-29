@@ -38,15 +38,6 @@ export const ensureVenues = (state: RootState) => {
   return state.user.venues
 }
 
-export const ensureOffererNamesValidated = (state: RootState) => {
-  assertOrFrontendError(
-    state.user.offererNamesValidated,
-    '`state.user.offererNamesValidated` is null.'
-  )
-
-  return state.user.offererNamesValidated
-}
-
 export const ensureOffererNames = (state: RootState) => {
   assertOrFrontendError(
     state.user.offererNames,

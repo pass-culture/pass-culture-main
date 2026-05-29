@@ -56,11 +56,8 @@ describe('src | App', () => {
         name: 'Venue A1',
       })
     )
-    const mockOffererNames = {
-      offerersNames: [{ id: 1, name: 'Offerer A' }],
-      offerersNamesWithPendingValidation: [],
-    }
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOffererNames)
+    const offerersNames = [{ id: 1, name: 'Offerer A', validated: true }]
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({

@@ -46,11 +46,9 @@ const renderOnboardingCollectiveModal = (
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
-        offererNames: [getOffererNameFactory({ id: SELECTED_OFFERER_ID })],
-        offererNamesValidated: [
-          getOffererNameFactory({ id: SELECTED_OFFERER_ID }),
+        offererNames: [
+          getOffererNameFactory({ id: SELECTED_OFFERER_ID, validated: true }),
         ],
-        offerersNamesWithPendingValidation: [],
         selectedAdminOfferer: null,
         selectedPartnerVenue: makeGetVenueResponseModel({
           id: SELECTED_VENUE_ID,

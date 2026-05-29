@@ -28,7 +28,7 @@ const renderOnboardingOfferIndividual = (
     ...{
       storeOverrides: {
         user: {
-          offererNamesValidated: [],
+          offererNames: [],
           selectedAdminOfferer: {
             id: 42,
             isOnboarded: false,

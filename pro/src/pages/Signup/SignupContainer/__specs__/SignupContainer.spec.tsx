@@ -69,13 +69,14 @@ describe('Signup', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
+          validated: true,
         }),
         getOffererNameFactory({
           id: 1,
           name: 'Ma super librairie',
+          validated: true,
         }),
       ],
-      offerersNamesWithPendingValidation: [],
     })
     Element.prototype.scrollIntoView = vi.fn()
   })

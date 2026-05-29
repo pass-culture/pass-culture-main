@@ -23,6 +23,8 @@ class Returns200ForProUserTest:
             assert response.status_code == 200
 
         assert response.json == {
-            "offerersNames": [{"name": offerer.name, "id": offerer.id}],
-            "offerersNamesWithPendingValidation": [{"name": offerer_non_attached.name, "id": offerer_non_attached.id}],
+            "offerersNames": [
+                {"name": offerer.name, "id": offerer.id, "validated": True},
+                {"name": offerer_non_attached.name, "id": offerer_non_attached.id, "validated": False},
+            ]
         }

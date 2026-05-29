@@ -87,7 +87,6 @@ describe('TemplateCollectiveOffers', () => {
     )
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
-      offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,

@@ -48,7 +48,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
       storeOverrides: {
         user: {
           currentUser: { id: 123 },
-          offererNamesValidated: [{ id: 456, name: 'Offerer' }],
+          offererNames: [{ id: 456, name: 'Offerer', validated: true }],
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
         },
       },

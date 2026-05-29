@@ -35,9 +35,7 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         user: {
-          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          offererNames: [getOffererNameFactory({ id: 100 })],
-          offerersNamesWithPendingValidation: null,
+          offererNames: [getOffererNameFactory({ id: 100, validated: true })],
         },
       })
 
@@ -65,9 +63,7 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         user: {
-          offererNamesValidated: [getOffererNameFactory({ id: 200 })],
-          offererNames: [getOffererNameFactory({ id: 200 })],
-          offerersNamesWithPendingValidation: null,
+          offererNames: [getOffererNameFactory({ id: 200, validated: true })],
         },
       })
 
@@ -97,9 +93,7 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         user: {
-          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
-          offererNames: [getOffererNameFactory({ id: 100 })],
-          offerersNamesWithPendingValidation: null,
+          offererNames: [getOffererNameFactory({ id: 100, validated: true })],
         },
       })
 
@@ -120,9 +114,7 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         user: {
-          offererNamesValidated: [getOffererNameFactory({ id: 200 })],
-          offererNames: [getOffererNameFactory({ id: 200 })],
-          offerersNamesWithPendingValidation: null,
+          offererNames: [getOffererNameFactory({ id: 200, validated: true })],
         },
       })
 
@@ -141,13 +133,9 @@ describe('setSelectedAdminOffererById', () => {
 
       const store = configureTestStore({
         user: {
-          offererNamesValidated: [getOffererNameFactory({ id: 100 })],
           offererNames: [
-            getOffererNameFactory({ id: 100 }),
-            getOffererNameFactory({ id: 101 }),
-          ],
-          offerersNamesWithPendingValidation: [
-            getOffererNameFactory({ id: 101 }),
+            getOffererNameFactory({ id: 100, validated: true }),
+            getOffererNameFactory({ id: 101, validated: false }),
           ],
         },
       })

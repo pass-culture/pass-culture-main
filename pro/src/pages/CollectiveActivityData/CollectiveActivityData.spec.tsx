@@ -61,9 +61,13 @@ const renderCollectiveActivityData = () => {
       user: {
         currentUser: sharedCurrentUserFactory(),
         selectedAdminOfferer: defaultGetOffererResponseModel,
-        offererNamesValidated: [defaultGetOffererResponseModel],
-        offererNames: [defaultGetOffererResponseModel],
-        offerersNamesWithPendingValidation: [],
+        offererNames: [
+          {
+            id: defaultGetOffererResponseModel.id,
+            name: defaultGetOffererResponseModel.name,
+            validated: true,
+          },
+        ],
       },
     },
   })

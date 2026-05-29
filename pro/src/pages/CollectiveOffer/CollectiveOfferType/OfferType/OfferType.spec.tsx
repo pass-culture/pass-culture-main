@@ -80,9 +80,9 @@ describe('OfferType', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Ma super structure',
+          validated: true,
         }),
       ],
-      offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
 

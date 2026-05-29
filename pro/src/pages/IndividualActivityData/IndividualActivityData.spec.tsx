@@ -6,8 +6,14 @@ import { apiNew } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { setSelectedAdminOfferer } from '@/commons/store/user/reducer'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  defaultGetOffererResponseModel,
+  getOffererNameFactory,
+} from '@/commons/utils/factories/individualApiFactories'
+import {
+  makeUserSliceState,
+  sharedCurrentUserFactory,
+} from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdministrationLayout } from '@/layouts/AdministrationLayout/AdministrationLayout'
 
@@ -24,7 +30,7 @@ vi.mock('@/app/App/analytics/firebase', () => ({
   useAnalytics: () => ({ logEvent: mockLogEvent }),
 }))
 vi.mock('@/commons/hooks/swr/useOffererNamesQuery', () => ({
-  useOffererNamesQuery: () => ({ isLoading: false }),
+  useOffererNamesQuery: () => ({ isLoading: false, data: [] }),
 }))
 vi.mock('@/commons/utils/date', async () => ({
   ...(await vi.importActual('@/commons/utils/date')),
@@ -47,19 +53,20 @@ const routes: RouteObject[] = [
   },
 ]
 
-const secondOfferer = { ...defaultGetOffererResponseModel, id: 2 }
-
 const renderIndividualActivityData = () =>
   renderWithProviders(null, {
     routes,
     initialRouterEntries: ['/administration/donnees-activite/individuel'],
     user,
     storeOverrides: {
-      user: {
+      user: makeUserSliceState({
         currentUser: user,
         selectedAdminOfferer: defaultGetOffererResponseModel,
-        offererNamesValidated: [defaultGetOffererResponseModel, secondOfferer],
-      },
+        offererNames: [
+          getOffererNameFactory({ id: defaultGetOffererResponseModel.id }),
+          getOffererNameFactory({ id: 2 }),
+        ],
+      }),
     },
   })
 
