@@ -116,11 +116,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select mediation
         num_queries += 1  # select offerer/venue/bank account/...
         num_queries += 1  # update offer
-        num_queries += 1  # select user
-        num_queries += 2  # select offerer/venue/bank account/... + 1 selectinload (educational_domains)
-        num_queries += 2  # select existing collective offers (x2) on venue
-        num_queries += 1  # select existing active offers on venue
-        num_queries += 1  # select existing non cancelled bookings
 
         with caplog.at_level(logging.INFO):
             with testing.assert_num_queries(num_queries):
