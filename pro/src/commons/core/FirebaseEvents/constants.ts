@@ -119,4 +119,5 @@ export enum HomepageEvents {
   CLICKED_WEBINAR = 'hasClickedWebinar',
   CLICKED_NEWSLETTER = 'hasClickedNewsletter',
   CLICKED_RECOMMENDATION = 'hasClickedRecommendation',
+  CLICKED_SEE_ALL_OFFERS = 'hasClickedSeeAllOffers',
 }
