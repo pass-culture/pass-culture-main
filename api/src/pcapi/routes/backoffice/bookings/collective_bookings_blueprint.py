@@ -1,5 +1,6 @@
 from functools import partial
 
+import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_dialects_psql
 import sqlalchemy.orm as sa_orm
 from flask import flash
@@ -42,11 +43,23 @@ collective_bookings_blueprint = backoffice_blueprint.child_backoffice_blueprint(
 def _get_collective_bookings_query() -> sa_orm.Query:
     return (
         db.session.query(educational_models.CollectiveBooking)
-        .join(educational_models.CollectiveStock)
-        .join(educational_models.CollectiveOffer)
-        .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveStock.collectiveOffer)
+        .join(educational_models.CollectiveBooking.educationalInstitution)
+        .outerjoin(
+            educational_models.EducationalInstitutionProgramAssociation,
+            sa.and_(
+                educational_models.EducationalInstitutionProgramAssociation.institutionId
+                == educational_models.EducationalInstitution.id,
+                educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                    educational_models.CollectiveStock.startDatetime
+                ),
+            ),
+        )
+        .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
+        .outerjoin(educational_models.CollectiveBooking.educationalDeposit)
         .options(
-            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            sa_orm.contains_eager(educational_models.CollectiveBooking.collectiveStock)
             .load_only(
                 educational_models.CollectiveStock.collectiveOfferId,
                 educational_models.CollectiveStock.startDatetime,
@@ -56,7 +69,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 educational_models.CollectiveStock.price,
                 educational_models.CollectiveStock.numberOfTickets,
             )
-            .joinedload(educational_models.CollectiveStock.collectiveOffer)
+            .contains_eager(educational_models.CollectiveStock.collectiveOffer)
             .load_only(
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
@@ -66,12 +79,20 @@ def _get_collective_bookings_query() -> sa_orm.Query:
             .load_only()
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(geography_models.Address.timezone),
-            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+            sa_orm.contains_eager(educational_models.CollectiveBooking.educationalInstitution)
+            .load_only(
                 educational_models.EducationalInstitution.id,
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,
                 educational_models.EducationalInstitution.institutionType,
                 educational_models.EducationalInstitution.city,
+            )
+            .contains_eager(educational_models.EducationalInstitution.programAssociations)
+            .load_only()
+            .contains_eager(educational_models.EducationalInstitutionProgramAssociation.program)
+            .load_only(educational_models.EducationalInstitutionProgram.label),
+            sa_orm.contains_eager(educational_models.CollectiveBooking.educationalDeposit).load_only(
+                educational_models.EducationalDeposit.ministry
             ),
             sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
@@ -106,10 +127,12 @@ def _get_collective_bookings_query() -> sa_orm.Query:
     )
 
 
-def _get_collective_bookings(
-    form: booking_forms.GetCollectiveBookingListForm,
-) -> list[educational_models.CollectiveBooking]:
-    base_query = _get_collective_bookings_query()
+def _get_collective_booking_ids_query(form: booking_forms.GetCollectiveBookingListForm) -> sa_orm.Query:
+    base_query = (
+        db.session.query(educational_models.CollectiveBooking.id)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveStock.collectiveOffer)
+    )
 
     if form.formats.data:
         base_query = base_query.filter(
@@ -123,7 +146,12 @@ def _get_collective_bookings(
             educational_models.CollectiveBooking.educationalInstitutionId.in_(form.institution.data)
         )
 
-    base_query = booking_helpers.get_filtered_booking_query(
+    if form.ministry.data:
+        base_query = base_query.join(educational_models.CollectiveBooking.educationalDeposit).filter(
+            educational_models.EducationalDeposit.ministry.in_(form.ministry.data)
+        )
+
+    return booking_helpers.get_filtered_booking_query(
         base_query=base_query,
         form=form,
         stock_class=educational_models.CollectiveStock,
@@ -136,7 +164,6 @@ def _get_collective_bookings(
             educational_models.CollectiveOffer.name,
         ],
     )
-    return base_query.all()
 
 
 def _render_collective_bookings(collective_bookings_ids: list[int] | None = None) -> response_utils.BackofficeResponse:
@@ -174,7 +201,11 @@ def list_collective_bookings() -> response_utils.BackofficeResponse:
         # Empty results when no filter is set
         return render_template("collective_bookings/list.html", rows=[], form=form)
 
-    bookings = _get_collective_bookings(form)
+    bookings = (
+        _get_collective_bookings_query()
+        .filter(educational_models.CollectiveBooking.id.in_(_get_collective_booking_ids_query(form)))
+        .all()
+    )
 
     bookings = search_utils.limit_rows(
         bookings,

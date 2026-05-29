@@ -29,7 +29,11 @@ pytestmark = [
 @pytest.fixture(scope="function", name="collective_bookings")
 def collective_bookings_fixture() -> tuple:
     institution1 = educational_factories.EducationalInstitutionFactory(name="Collège Pépin le Bref")
-    institution2 = educational_factories.EducationalInstitutionFactory(name="Collège Bertrade de Laon")
+    program = educational_factories.EducationalInstitutionProgramFactory(name="prog", label="Programme")
+    institution2 = educational_factories.EducationalInstitutionFactory(
+        name="Collège Bertrade de Laon",
+        programAssociations=[educational_factories.EducationalInstitutionProgramAssociationFactory(program=program)],
+    )
     institution3 = educational_factories.EducationalInstitutionFactory(name="Lycée Charlemagne")
     venue = offerers_factories.VenueFactory()  # same venue and offerer for 2 bookings
     # 0
@@ -53,6 +57,7 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
         collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=24),
         dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+        ministry=educational_models.Ministry.AGRICULTURE,
     )
     # 2
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
@@ -192,6 +197,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         )
         assert row["Entité juridique"] == collective_bookings[1].offerer.name
         assert row["Partenaire culturel"] == collective_bookings[1].venue.name
+        assert row["Ministère"] == educational_models.Ministry.AGRICULTURE.value
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Formats : {EacFormat.VISITE_GUIDEE.value}" in extra_data
@@ -308,6 +314,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         )
         assert row["Entité juridique"] == collective_bookings[2].offerer.name
         assert row["Partenaire culturel"] == collective_bookings[2].venue.name
+        assert row["Ministère"] == f"{educational_models.Ministry.EDUCATION_NATIONALE.value} Programme"
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
         assert f"Formats : {EacFormat.CONCERT.value}" in extra_data
@@ -472,6 +479,16 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, institution=institution_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id}
+
+    def test_list_bookings_by_ministry(self, authenticated_client, collective_bookings):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, ministry=educational_models.Ministry.AGRICULTURE.name)
+            )
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
