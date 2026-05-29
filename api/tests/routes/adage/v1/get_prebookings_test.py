@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.educational import models
 from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
+from pcapi.core.educational.factories import CollectiveAdditionalFeeFactory
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
@@ -12,9 +13,12 @@ from pcapi.core.testing import assert_num_queries
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     num_queries = 1  # fetch bookings
+    num_queries += 1  # selectinload additional fees
 
     def test_get_prebookings_without_query_params(self, client):
         redactor = EducationalRedactorFactory(
@@ -29,6 +33,7 @@ class Returns200Test:
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
             educationalRedactor=redactor,
+            collectiveStock__collectiveAdditionalFees=[CollectiveAdditionalFeeFactory()],
             collectiveStock__collectiveOffer__description=None,
             collectiveStock__collectiveOffer__students=[
                 models.StudentLevels.CAP1,

@@ -94,10 +94,12 @@ def _get_booking(booking_id: int) -> models.CollectiveBooking | None:
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
-            sa_orm.joinedload(models.CollectiveBooking.collectiveStock)
-            .joinedload(models.CollectiveStock.collectiveOffer)
-            .joinedload(models.CollectiveOffer.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address)
+            sa_orm.joinedload(models.CollectiveBooking.collectiveStock).options(
+                sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
+                sa_orm.joinedload(models.CollectiveStock.collectiveOffer)
+                .joinedload(models.CollectiveOffer.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address),
+            )
         )
         .one_or_none()
     )

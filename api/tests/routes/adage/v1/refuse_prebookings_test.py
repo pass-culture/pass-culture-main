@@ -18,7 +18,9 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     def test_refuse_collective_booking(self, client):
         redactor = EducationalRedactorFactory(
@@ -42,6 +44,7 @@ class Returns200Test:
         booking_id = collective_booking.id
 
         num_queries = 1  # re-fetch collective booking with related data
+        num_queries += 1  # selectinload additional fees
         num_queries += 1  # update booking
         with assert_num_queries(num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
@@ -155,7 +158,6 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 0
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def test_returns_error_when_not_refusable(self, client):
         booking = UsedCollectiveBookingFactory()

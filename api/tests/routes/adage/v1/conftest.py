@@ -22,6 +22,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "contact": {"email": offer.contactEmail, "phone": offer.contactPhone},
         "creationDate": format_into_utc_date(booking.dateCreated),
         "description": offer.description,
+        "additionalDetails": offer.additionalDetails,
         "durationMinutes": offer.durationMinutes,
         "expirationDate": None,
         "id": booking.id,
@@ -29,9 +30,14 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "venueName": venue.name,
         "name": offer.name,
         "numberOfTickets": stock.numberOfTickets,
+        "numberOfTeachers": stock.numberOfTeachers,
         "participants": [students.value for students in offer.students],
         "priceDetail": stock.priceDetail,
         "price": float(stock.price),
+        "servicePrice": float(stock.servicePrice),
+        "additionalFees": [
+            {"label": fee.label or fee.type.value, "amount": fee.amount} for fee in stock.collectiveAdditionalFees
+        ],
         "quantity": 1,
         "redactor": {
             "email": redactor.email,

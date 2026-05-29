@@ -191,60 +191,65 @@ def get_educational_year_beginning_at_given_year(year: int) -> models.Educationa
 
 
 def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBooking]:
-    query = db.session.query(models.CollectiveBooking)
-    query = query.options(
-        sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True)
-        .load_only(
-            models.CollectiveStock.startDatetime,
-            models.CollectiveStock.endDatetime,
-            models.CollectiveStock.numberOfTickets,
-            models.CollectiveStock.priceDetail,
-            models.CollectiveStock.price,
-            models.CollectiveStock.collectiveOfferId,
-        )
-        .joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
-        .load_only(
-            models.CollectiveOffer.audioDisabilityCompliant,
-            models.CollectiveOffer.mentalDisabilityCompliant,
-            models.CollectiveOffer.motorDisabilityCompliant,
-            models.CollectiveOffer.visualDisabilityCompliant,
-            models.CollectiveOffer.contactEmail,
-            models.CollectiveOffer.contactPhone,
-            models.CollectiveOffer.description,
-            models.CollectiveOffer.durationMinutes,
-            models.CollectiveOffer.name,
-            models.CollectiveOffer.students,
-            models.CollectiveOffer.id,
-            models.CollectiveOffer.interventionArea,
-            models.CollectiveOffer.imageCredit,
-            models.CollectiveOffer.imageId,
-            models.CollectiveOffer.bookingEmails,
-            models.CollectiveOffer.formats,
-            models.CollectiveOffer.locationType,
-            models.CollectiveOffer.locationComment,
-            models.CollectiveOffer.offererAddressId,
-        )
-        .options(
-            sa_orm.joinedload(models.CollectiveOffer.domains).load_only(models.EducationalDomain.id),
-            sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
-                sa_orm.load_only(
-                    offerers_models.Venue.publicName,
-                    offerers_models.Venue.name,
-                    offerers_models.Venue.siret,
-                ),
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
-                    offerers_models.Offerer.name
-                ),
-                sa_orm.joinedload(offerers_models.Venue.offererAddress)
-                .joinedload(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.departmentCode, geography_models.Address.timezone),
+    query = db.session.query(models.CollectiveBooking).options(
+        sa_orm.joinedload(models.CollectiveBooking.educationalInstitution),
+        sa_orm.joinedload(models.CollectiveBooking.educationalRedactor),
+        sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True).options(
+            sa_orm.load_only(
+                models.CollectiveStock.startDatetime,
+                models.CollectiveStock.endDatetime,
+                models.CollectiveStock.numberOfTickets,
+                models.CollectiveStock.numberOfTeachers,
+                models.CollectiveStock.priceDetail,
+                models.CollectiveStock.price,
+                models.CollectiveStock.servicePrice,
+                models.CollectiveStock.collectiveOfferId,
             ),
-        )
+            sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
+            sa_orm.joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .load_only(
+                models.CollectiveOffer.audioDisabilityCompliant,
+                models.CollectiveOffer.mentalDisabilityCompliant,
+                models.CollectiveOffer.motorDisabilityCompliant,
+                models.CollectiveOffer.visualDisabilityCompliant,
+                models.CollectiveOffer.contactEmail,
+                models.CollectiveOffer.contactPhone,
+                models.CollectiveOffer.description,
+                models.CollectiveOffer.additionalDetails,
+                models.CollectiveOffer.durationMinutes,
+                models.CollectiveOffer.name,
+                models.CollectiveOffer.students,
+                models.CollectiveOffer.id,
+                models.CollectiveOffer.interventionArea,
+                models.CollectiveOffer.imageCredit,
+                models.CollectiveOffer.imageId,
+                models.CollectiveOffer.bookingEmails,
+                models.CollectiveOffer.formats,
+                models.CollectiveOffer.locationType,
+                models.CollectiveOffer.locationComment,
+                models.CollectiveOffer.offererAddressId,
+            )
+            .options(
+                sa_orm.joinedload(models.CollectiveOffer.domains).load_only(models.EducationalDomain.id),
+                sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
+                sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
+                    sa_orm.load_only(
+                        offerers_models.Venue.publicName,
+                        offerers_models.Venue.name,
+                        offerers_models.Venue.siret,
+                    ),
+                    sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
+                        offerers_models.Offerer.name
+                    ),
+                    sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                    .joinedload(offerers_models.OffererAddress.address)
+                    .load_only(geography_models.Address.departmentCode, geography_models.Address.timezone),
+                ),
+            ),
+        ),
     )
-
-    query = query.options(sa_orm.joinedload(models.CollectiveBooking.educationalInstitution))
-    query = query.options(sa_orm.joinedload(models.CollectiveBooking.educationalRedactor))
 
     return query
 
@@ -254,14 +259,16 @@ def find_collective_bookings_for_adage(
     year_id: str,
     redactor_email: str | None = None,
 ) -> list[models.CollectiveBooking]:
-    query = _get_bookings_for_adage_base_query()
-
-    query = query.join(models.EducationalInstitution)
-    query = query.join(models.EducationalRedactor)
-    query = query.join(models.EducationalYear)
-
-    query = query.filter(models.EducationalInstitution.institutionId == uai_code)
-    query = query.filter(models.EducationalYear.adageId == year_id)
+    query = (
+        _get_bookings_for_adage_base_query()
+        .join(models.EducationalInstitution)
+        .join(models.EducationalRedactor)
+        .join(models.EducationalYear)
+        .filter(
+            models.EducationalInstitution.institutionId == uai_code,
+            models.EducationalYear.adageId == year_id,
+        )
+    )
 
     if redactor_email is not None:
         query = query.filter(models.EducationalRedactor.email == redactor_email)
@@ -312,12 +319,13 @@ def find_active_collective_booking_by_offer_id(
             models.CollectiveStock.collectiveOfferId == collective_offer_id,
         )
         .options(
-            sa_orm.contains_eager(models.CollectiveBooking.collectiveStock)
-            .joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
-            .options(
-                sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True),
-                sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(
-                    offerers_models.OffererAddress.address
+            sa_orm.contains_eager(models.CollectiveBooking.collectiveStock).options(
+                sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
+                sa_orm.joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True).options(
+                    sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True),
+                    sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(
+                        offerers_models.OffererAddress.address
+                    ),
                 ),
             )
         )
@@ -335,53 +343,60 @@ def get_paginated_collective_bookings_for_educational_year(
     page = 1 if page is None else page
     per_page = 1000 if per_page is None else per_page
 
-    query = db.session.query(models.CollectiveBooking).filter(
-        models.CollectiveBooking.educationalYearId == educational_year_id
-    )
-    query = query.options(
-        sa_orm.load_only(
-            models.CollectiveBooking.id,
-            models.CollectiveBooking.collectiveStockId,
-            models.CollectiveBooking.status,
-            models.CollectiveBooking.confirmationDate,
-            models.CollectiveBooking.confirmationLimitDate,
-            models.CollectiveBooking.cancellationReason,
-            models.CollectiveBooking.dateCreated,
-            models.CollectiveBooking.dateUsed,
-            models.CollectiveBooking.offererId,
-            models.CollectiveBooking.cancellationDate,
-            models.CollectiveBooking.cancellationLimitDate,
-        )
-    )
-    query = query.options(
-        # fetch a collective booking's stock...
-        sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True)
-        .load_only(
-            models.CollectiveStock.startDatetime,
-            models.CollectiveStock.endDatetime,
-            models.CollectiveStock.collectiveOfferId,
-            models.CollectiveStock.price,
-        )
-        # ...to fetch its offer...
-        .joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
-        .load_only(
-            models.CollectiveOffer.name,
-            models.CollectiveOffer.venueId,
-            models.CollectiveOffer.formats,
-        )
+    query = (
+        db.session.query(models.CollectiveBooking)
+        .filter(models.CollectiveBooking.educationalYearId == educational_year_id)
         .options(
-            # ... to fetch its venue...
-            sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
-                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.name),
-                # ... to fetch its offerer...
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
-                # ... and its address
-                sa_orm.joinedload(offerers_models.Venue.offererAddress)
-                .joinedload(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.timezone),
+            sa_orm.load_only(
+                models.CollectiveBooking.id,
+                models.CollectiveBooking.collectiveStockId,
+                models.CollectiveBooking.status,
+                models.CollectiveBooking.confirmationDate,
+                models.CollectiveBooking.confirmationLimitDate,
+                models.CollectiveBooking.cancellationReason,
+                models.CollectiveBooking.dateCreated,
+                models.CollectiveBooking.dateUsed,
+                models.CollectiveBooking.offererId,
+                models.CollectiveBooking.cancellationDate,
+                models.CollectiveBooking.cancellationLimitDate,
             ),
-            # and the offer's domains
-            sa_orm.joinedload(models.CollectiveOffer.domains).load_only(models.EducationalDomain.id),
+            # fetch a collective booking's stock...
+            sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True).options(
+                sa_orm.load_only(
+                    models.CollectiveStock.startDatetime,
+                    models.CollectiveStock.endDatetime,
+                    models.CollectiveStock.numberOfTickets,
+                    models.CollectiveStock.numberOfTeachers,
+                    models.CollectiveStock.collectiveOfferId,
+                    models.CollectiveStock.price,
+                    models.CollectiveStock.servicePrice,
+                ),
+                sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
+                # ...to fetch its offer...
+                sa_orm.joinedload(models.CollectiveStock.collectiveOffer, innerjoin=True)
+                .load_only(
+                    models.CollectiveOffer.name,
+                    models.CollectiveOffer.additionalDetails,
+                    models.CollectiveOffer.venueId,
+                    models.CollectiveOffer.formats,
+                )
+                .options(
+                    # ... to fetch its venue...
+                    sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
+                        sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.name),
+                        # ... to fetch its offerer...
+                        sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                            offerers_models.Offerer.name
+                        ),
+                        # ... and its address
+                        sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                        .joinedload(offerers_models.OffererAddress.address)
+                        .load_only(geography_models.Address.timezone),
+                    ),
+                    # and the offer's domains
+                    sa_orm.joinedload(models.CollectiveOffer.domains).load_only(models.EducationalDomain.id),
+                ),
+            ),
         )
     )
     query = query.options(
