@@ -7,24 +7,9 @@ from pcapi.core.external.batch.backends.logger import LoggerBackend
 
 class TestingBackend(LoggerBackend):
     def update_user_attributes(
-        self, batch_api: BatchAPI, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
-    ) -> None:
-        super().update_user_attributes(
-            batch_api, user_id, attribute_values, can_be_asynchronously_retried=can_be_asynchronously_retried
-        )
-        testing.requests.append(
-            {
-                "user_id": user_id,
-                "attribute_values": attribute_values,
-                "batch_api": batch_api.name,
-                "can_be_asynchronously_retried": can_be_asynchronously_retried,
-            }
-        )
-
-    def update_user_attributes_new(
         self, user_id: int, attribute_values: dict, can_be_asynchronously_retried: bool = False
     ) -> None:
-        super().update_user_attributes_new(
+        super().update_user_attributes(
             user_id, attribute_values, can_be_asynchronously_retried=can_be_asynchronously_retried
         )
         testing.requests.append(
@@ -52,7 +37,7 @@ class TestingBackend(LoggerBackend):
 
     def send_transactional_notification(
         self,
-        notification_data: serialization.TransactionalNotificationData | serialization.TransactionalNotificationDataV2,
+        notification_data: serialization.TransactionalNotificationData,
         can_be_asynchronously_retried: bool = False,
     ) -> None:
         super().send_transactional_notification(
@@ -89,7 +74,7 @@ class TestingBackend(LoggerBackend):
 
     def track_event_bulk(
         self,
-        track_event_data: list[serialization.TrackBatchEventRequest] | list[serialization.TrackBatchEventRequestV2],
+        track_event_data: list[serialization.TrackBatchEventRequest],
         can_be_asynchronously_retried: bool = False,
     ) -> None:
         super().track_event_bulk(track_event_data, can_be_asynchronously_retried=can_be_asynchronously_retried)

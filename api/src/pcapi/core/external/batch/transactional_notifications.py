@@ -19,8 +19,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import batch_tasks
 from pcapi.utils.urls import booking_app_link
 from pcapi.utils.urls import offer_app_link
 
@@ -44,10 +42,10 @@ def send_cancel_booking_notification(booking_ids: list[int]) -> None:
 
     offer = bookings[0].stock.offer
     cancelled_object = "commande" if offer.hasUrl or offer.isThing else "réservation"
-    payload = serialization.TransactionalNotificationDataV2(
+    payload = serialization.TransactionalNotificationData(
         group_id=GroupId.CANCEL_BOOKING.value,
         user_ids=[booking.userId for booking in bookings],
-        message=serialization.TransactionalNotificationMessageV2(
+        message=serialization.TransactionalNotificationMessage(
             title=f"{cancelled_object.capitalize()} annulée",
             body=f"""Ta {cancelled_object} "{offer.name}" a été annulée par l'offreur.""",
         ),
@@ -94,10 +92,10 @@ def _send_today_event_notification(stock_ids: set[int]) -> None:
             bookings = bookings_api.get_individual_bookings_from_stock(stock_id)
 
             for booking in bookings:
-                payload = serialization.TransactionalNotificationDataV2(
+                payload = serialization.TransactionalNotificationData(
                     group_id=GroupId.TODAY_STOCK.value,
                     user_ids=[booking.userId],
-                    message=serialization.TransactionalNotificationMessageV2(
+                    message=serialization.TransactionalNotificationMessage(
                         title="C'est aujourd'hui !",
                         body=f"Retrouve les détails de la réservation pour {offer.name} sur l’application pass Culture",
                     ),
@@ -153,10 +151,10 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
 
 
 def send_offer_link_by_push(user_id: int, offer: Offer) -> None:
-    payload = serialization.TransactionalNotificationDataV2(
+    payload = serialization.TransactionalNotificationData(
         group_id=GroupId.OFFER_LINK.value,
         user_ids=[user_id],
-        message=serialization.TransactionalNotificationMessageV2(
+        message=serialization.TransactionalNotificationMessage(
             title=f"Ta réservation pour {offer.name}",
             body="Pour la confirmer, clique sur le lien que tu as reçu par mail 📩",
         ),
@@ -165,8 +163,8 @@ def send_offer_link_by_push(user_id: int, offer: Offer) -> None:
 
 
 def _get_soon_expiring_bookings_with_offers_notification_data(
-    booking: Booking, used_by_celery: bool
-) -> serialization.TransactionalNotificationData | serialization.TransactionalNotificationDataV2:
+    booking: Booking,
+) -> serialization.TransactionalNotificationData:
     assert booking.expirationDate is not None  # help mypy
     remaining_days = (booking.expirationDate.date() - date.today()).days
 
@@ -180,15 +178,6 @@ def _get_soon_expiring_bookings_with_offers_notification_data(
     else:
         body = f'Vite, dernier jour pour récupérer "{booking.stock.offer.name}"'
 
-    if used_by_celery:
-        return serialization.TransactionalNotificationDataV2(
-            group_id=GroupId.SOON_EXPIRING_BOOKINGS.value,
-            user_ids=[booking.userId],
-            message=serialization.TransactionalNotificationMessageV2(
-                title="Tu n'as pas récupéré ta réservation", body=body
-            ),
-            extra={"deeplink": booking_app_link(booking)},
-        )
     return serialization.TransactionalNotificationData(
         group_id=GroupId.SOON_EXPIRING_BOOKINGS.value,
         user_ids=[booking.userId],
@@ -205,13 +194,8 @@ def notify_users_bookings_not_retrieved() -> None:
     bookings = get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
     for booking in bookings:
         try:
-            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-                payload = _get_soon_expiring_bookings_with_offers_notification_data(booking, used_by_celery=True)
-                assert isinstance(payload, serialization.TransactionalNotificationDataV2)
-                tasks.send_transactional_notification_task.delay(payload.model_dump())
-            else:
-                payload = _get_soon_expiring_bookings_with_offers_notification_data(booking, used_by_celery=False)
-                batch_tasks.send_transactional_notification_task.delay(payload)
+            payload = _get_soon_expiring_bookings_with_offers_notification_data(booking)
+            tasks.send_transactional_notification_task.delay(payload.model_dump())
         except exceptions.BookingIsExpired:
             logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
         except Exception:
@@ -224,15 +208,15 @@ def notify_users_bookings_not_retrieved() -> None:
 
 def _get_favorites_not_booked_notification_data(
     offer_id: int, offer_name: str, user_ids: list[int]
-) -> serialization.TransactionalNotificationDataV2:
+) -> serialization.TransactionalNotificationData:
     msg_title = "Ne t’arrête pas en si bon chemin 😮"
     msg_body = f"{offer_name} t’attend sur le pass Culture !"
     utm = "utm_campaign=favorisj%2B3&utm_source=transac&utm_medium=push"
 
-    return serialization.TransactionalNotificationDataV2(
+    return serialization.TransactionalNotificationData(
         group_id=GroupId.FAVORITES_NOT_BOOKED.value,
         user_ids=user_ids,
-        message=serialization.TransactionalNotificationMessageV2(title=msg_title, body=msg_body),
+        message=serialization.TransactionalNotificationMessage(title=msg_title, body=msg_body),
         extra={"deeplink": offer_app_link(offer_id, utm=utm)},
     )
 
