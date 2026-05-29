@@ -1,8 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
+import type { CollectiveStockCreationBodyModel } from '@/apiClient/v1/new'
 import {
   defaultGetCollectiveOfferRequest,
+  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
@@ -19,12 +22,28 @@ vi.mock('@/apiClient/api', () => ({
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
+    editCollectiveStock: vi.fn(),
+    createCollectiveStock: vi.fn(),
   },
 }))
 
 vi.mock('../../components/OfferEducationalStock/OfferEducationalStock', () => ({
   OfferEducationalStock: vi.fn(() => <div data-testid="stock-form" />),
 }))
+
+const setSubmitResponse = (
+  newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+) => {
+  vi.mocked(OfferEducationalStock).mockImplementationOnce(
+    vi.fn(({ onSubmit }) => {
+      return (
+        <button onClick={() => onSubmit(newCollectiveStock)}>
+          Enregistrer
+        </button>
+      )
+    })
+  )
+}
 
 const renderCollectiveStockCreation = (
   path: string,
@@ -44,34 +63,13 @@ const renderCollectiveStockCreation = (
   })
 }
 
-afterEach(() => {
-  vi.clearAllMocks()
-})
-
 describe('CollectiveOfferStockCreation', () => {
   it('should render collective offer stock form', async () => {
-    vi.mocked(OfferEducationalStock).mockImplementation(
-      await vi
-        .importActual<
-          typeof import('../../components/OfferEducationalStock/OfferEducationalStock')
-        >('../../components/OfferEducationalStock/OfferEducationalStock')
-        .then((m) => m.OfferEducationalStock)
-    )
-
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', {
       offer: getCollectiveOfferFactory(),
     })
 
-    expect(
-      await screen.findByRole('heading', {
-        name: /Créer une offre/,
-      })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', {
-        name: 'Indiquez le prix et la date de votre offre',
-      })
-    ).toBeInTheDocument()
+    expect(await screen.findByTestId('stock-form')).toBeInTheDocument()
   })
 
   it('should render collective offer stock form from template', async () => {
@@ -154,5 +152,65 @@ describe('CollectiveOfferStockCreation', () => {
       }),
       undefined
     )
+  })
+
+  it('on submit : should call creation endpoint if no stock exists yet on offer', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({ collectiveStock: null })
+    const collectiveStock: Record<string, string | number | null> =
+      getCollectiveOfferCollectiveStockFactory()
+    delete collectiveStock.id
+    // TODO (mdesquilbet, 2026-05-29): clean when totalPrice will be renamed
+    collectiveStock.totalPrice = collectiveStock.price
+    delete collectiveStock.price
+    setSubmitResponse(collectiveStock)
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
+
+    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
+    expect(apiNew.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      body: {
+        ...collectiveStock,
+        offerId: offer.id,
+      },
+    })
+  })
+
+  it('on submit : should call edition endpoint if a stock already exists on the offer', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory()
+    setSubmitResponse({ numberOfTickets: 12 })
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
+
+    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
+    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      path: { collective_stock_id: offer.collectiveStock?.id },
+      body: { numberOfTickets: 12 },
+    })
+  })
+
+  it('on submit : should raise an error if no stock exists yet on offer and called with partial stock', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(console, 'error').mockImplementationOnce(() => {})
+
+    const offer = getCollectiveOfferFactory({ collectiveStock: null })
+    setSubmitResponse({ numberOfTickets: 12 })
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+    expect(console.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Missing required values',
+      })
+    )
+    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
+    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
   })
 })
