@@ -2,14 +2,6 @@ name: 3 [CI] Test frontend
 
 on:
   workflow_call:
-    inputs:
-      CACHE_BUCKET_NAME:
-        type: string
-        required: true
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
-      GCP_EHP_SERVICE_ACCOUNT: { required: true }
-      PAT_ALLURE_REPORTS_TEMP:
 
 defaults:
   run:
@@ -30,7 +22,7 @@ jobs:
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -70,15 +62,15 @@ jobs:
       - name: "OpenID Connect Authentication"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+          service_account: ${{ vars.PRO_CI_SERVICE_ACCOUNT }}
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -149,10 +141,8 @@ jobs:
         run: yarn global add allure-commandline
 
       - name: "Clone Allure Report Repository to Retrieve History"
-        env:
-          TOKEN: ${{ secrets.PAT_ALLURE_REPORTS_TEMP }}
         run: |
-          git clone "https://x-access-token:${TOKEN}@github.com/fseguin-pass/allure-reports-temp.git" allure-report-temp
+          git clone "https://github.com/fseguin-pass/allure-reports-temp.git" allure-report-temp
             mkdir -p allure-results/history
             if [ -d "allure-report-temp/history" ]; then
               cp -r allure-report-temp/history/* allure-results/history/
@@ -185,7 +175,7 @@ jobs:
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -226,8 +216,8 @@ jobs:
       - name: "OpenID Connect Authentication"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+          service_account: ${{ vars.PRO_CI_SERVICE_ACCOUNT }}
 
       - name: "Get Secret"
         id: "secrets"
