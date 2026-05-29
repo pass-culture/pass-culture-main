@@ -27,7 +27,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import on_commit
 
@@ -79,33 +78,14 @@ def update_external_pro(email: str | None) -> None:
     # Call this function instead of update_external_user in actions which are only available for pro
     # ex. updating a venue, in which bookingEmail is not a User parameter
     from pcapi.core.external.attributes.queue import add_email_to_async_pro_attributes_update
-    from pcapi.core.external.beamer.tasks import update_beamer_pro_attributes_task
-    from pcapi.tasks.brevo_tasks import update_brevo_pro_attributes_task
-    from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
-        if FeatureToggle.WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES.is_active():
-            on_commit(
-                partial(
-                    add_email_to_async_pro_attributes_update,
-                    email,
-                ),
-            )
-        else:
-            now = date_utils.get_naive_utc_now()
-            on_commit(
-                partial(
-                    update_brevo_pro_attributes_task.delay,
-                    payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
-                ),
-            )
-            if FeatureToggle.ENABLE_BEAMER.is_active():
-                on_commit(
-                    partial(
-                        update_beamer_pro_attributes_task.delay,
-                        payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
-                    ),
-                )
+        on_commit(
+            partial(
+                add_email_to_async_pro_attributes_update,
+                email,
+            ),
+        )
 
 
 def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:

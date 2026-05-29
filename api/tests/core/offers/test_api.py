@@ -1367,49 +1367,7 @@ class CreateOfferTest:
 
         assert offer.offererAddressId == None
 
-    def test_create_offer_from_scratch(self, caplog):
-        venue = offerers_factories.VenueFactory()
-        offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
-
-        body = offers_schemas.CreateOffer(
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            externalTicketOfficeUrl="http://example.net",
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        with caplog.at_level(logging.INFO):
-            offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
-
-        assert offer.name == "A pretty good offer"
-        assert offer.venue == venue
-        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert not offer.product
-        assert offer.externalTicketOfficeUrl == "http://example.net"
-        assert offer.audioDisabilityCompliant
-        assert offer.mentalDisabilityCompliant
-        assert offer.motorDisabilityCompliant
-        assert offer.visualDisabilityCompliant
-        assert offer.validation == models.OfferValidationStatus.DRAFT
-        assert offer.extraData == {}
-        assert offer.metaData is None
-        assert not offer.bookingEmail
-        assert db.session.query(models.Offer).count() == 1
-        assert offer.offererAddress == offerer_address
-        assert offer.offererAddress != venue.offererAddress
-
-        # Test tracking
-        offer_update_record = caplog.records[0]
-        mail_third_party_record = caplog.records[1]
-        assert offer_update_record.technical_message_id == "offer.created"
-        assert offer_update_record.message == "Offer has been created"
-
-        assert mail_third_party_record.message == "update_brevo_pro_attributes_task"
-
-    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-    def test_create_offer_from_scratch_with_ff(self, caplog, clear_redis):
+    def test_create_offer_from_scratch(self, caplog, clear_redis):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OfferLocationFactory(offerer=venue.managingOfferer)
 
