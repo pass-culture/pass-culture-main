@@ -5,6 +5,8 @@ import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { buildCollectiveOfferTemplateHome } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -95,6 +97,13 @@ describe('<CollectiveOffersTemplateLine />', () => {
       }
     }
 
+    const mockLogEvent = vi.fn()
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
+
     it('should have the line clickable', async () => {
       const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
       expect(screen.getByRole('img')).toBeVisible()
@@ -123,6 +132,23 @@ describe('<CollectiveOffersTemplateLine />', () => {
       expect(
         screen.getByText(`Detail de mon offre T-${offer.id}`)
       ).toBeVisible()
+    })
+
+    it('should log event on press "Créer une offre réservable"', async () => {
+      const { user, offer } = renderCollectiveOffersTemplateLineWithRouter()
+
+      await user.click(
+        screen.getByRole('button', { name: 'Créer une offre réservable' })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
+        {
+          offerId: `T-${offer.id}`,
+          offerStatus: offer.displayedStatus,
+          offerType: 'collective',
+        }
+      )
     })
   })
 })

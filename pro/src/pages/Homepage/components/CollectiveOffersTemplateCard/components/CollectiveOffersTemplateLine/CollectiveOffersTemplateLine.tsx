@@ -2,6 +2,8 @@ import { Link, useNavigate } from 'react-router'
 
 import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
@@ -40,8 +42,18 @@ export const CollectiveOffersTemplateLine = ({
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
   const navigate = useNavigate()
   const snackBar = useSnackBar()
+  const { logEvent } = useAnalytics()
 
   const formattedOfferDates = formatOfferDates(offer.dates)
+
+  const onClickCreateBookableOffer = () => {
+    logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+      offerId,
+      offerType: 'collective',
+      offerStatus: offer.displayedStatus,
+    })
+    createOfferFromTemplate(navigate, snackBar, offer.id)
+  }
 
   return (
     <div key={offer.id} className={styles['offer-line']}>
@@ -75,7 +87,7 @@ export const CollectiveOffersTemplateLine = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           label="Créer une offre réservable"
-          onClick={() => createOfferFromTemplate(navigate, snackBar, offer.id)}
+          onClick={onClickCreateBookableOffer}
         />
       ) : (
         <Button
