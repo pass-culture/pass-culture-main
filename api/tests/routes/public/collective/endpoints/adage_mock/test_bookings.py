@@ -544,6 +544,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         expected_num_queries += 1  # get educational year (filtered)
         expected_num_queries += 1  # create new booking
         expected_num_queries += 1  # re-fetch booking before serialization
+        expected_num_queries += 1  # selectinload collective_additional_fee
 
         with assert_num_queries(expected_num_queries):
             response = self.assert_request_has_expected_result(

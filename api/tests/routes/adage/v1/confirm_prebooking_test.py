@@ -30,10 +30,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     # 1. select booking
-    # 2. select deposit
-    # 3. select stock.price sum
-    # 4. update booking
-    expected_num_queries = 4
+    # 2. selectinload additional fees
+    # 3. select deposit
+    # 5. select stock.price sum
+    # 5. update booking
+    expected_num_queries = 5
 
     @time_machine.travel("2021-10-15 09:00:00", tick=False)
     def test_confirm_collective_prebooking(self, client, caplog) -> None:

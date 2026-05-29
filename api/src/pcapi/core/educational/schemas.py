@@ -63,6 +63,18 @@ class Redactor(AdageBaseResponseModel):
 CollectiveBookingRefused = typing.Literal["REFUSED"]
 
 
+class AdditionalFeeResponse(AdageBaseResponseModel):
+    label: str
+    amount: decimal.Decimal
+
+    @classmethod
+    def build(cls, fee: models.CollectiveAdditionalFee) -> typing.Self:
+        return cls(
+            label=fee.label or fee.type.value,
+            amount=fee.amount,
+        )
+
+
 class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
@@ -75,14 +87,18 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     contact: Contact = Field(description="Contact of the prebooking")
     creationDate: datetime.datetime
     description: str | None = Field(description="Offer description")
+    additionalDetails: str | None = Field(description="Practical information on the offer")
     durationMinutes: int | None = Field(description="Offer's duration in minutes")
     expirationDate: datetime.datetime | None = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
     hasUrl: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
-    numberOfTickets: int | None = Field(description="Number of tickets")
-    price: decimal.Decimal
+    numberOfTickets: int = Field(description="Number of students")
+    numberOfTeachers: int = Field(description="Number of adults accompanying the students")
+    price: decimal.Decimal = Field(description="Total price of the prebooking")
+    servicePrice: decimal.Decimal = Field(description="Total price minus the additional fees")
+    additionalFees: list[AdditionalFeeResponse] = Field(description="Fees related to transport, accommodation...")
     quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
@@ -154,10 +170,16 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
     status: models.CollectiveBookingStatus | CollectiveBookingRefused
+    additionalDetails: str | None
     cancellationReason: models.CollectiveBookingCancellationReasons | None
     confirmationDate: datetime.datetime | None
     confirmationLimitDate: datetime.datetime
+    numberOfTickets: int
+    numberOfTeachers: int
     totalAmount: decimal.Decimal
+    price: decimal.Decimal
+    servicePrice: decimal.Decimal
+    additionalFees: list[AdditionalFeeResponse]
     startDatetime: datetime.datetime
     endDatetime: datetime.datetime
     venueTimezone: str
@@ -165,10 +187,10 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     redactorEmail: str
     domainIds: list[int]
     domainLabels: list[str]
-    venueId: int | None
-    venueName: str | None
-    offererName: str | None
-    formats: typing.Sequence[EacFormat]
+    venueId: int
+    venueName: str
+    offererName: str
+    formats: list[EacFormat]
 
     class Config:
         use_enum_values = True
@@ -234,12 +256,16 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     endDatetime: datetime.datetime
     contact: AdageCollectiveOfferContact
     description: str | None
+    additionalDetails: str | None
     durationMinutes: int | None
     id: int
     name: str
     numberOfTickets: int
+    numberOfTeachers: int
     participants: list[models.StudentLevels]
     price: decimal.Decimal
+    servicePrice: decimal.Decimal
+    additionalFees: list[AdditionalFeeResponse]
     priceDetail: str | None
     quantity: int
     totalAmount: decimal.Decimal

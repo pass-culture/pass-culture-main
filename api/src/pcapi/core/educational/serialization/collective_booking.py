@@ -10,29 +10,42 @@ from pcapi.core.offers.utils import offer_app_link
 def get_collective_bookings_per_year_response(
     bookings: Iterable[models.CollectiveBooking],
 ) -> schemas.EducationalBookingsPerYearResponse:
-    serialized_bookings = [
-        schemas.EducationalBookingPerYearResponse(
-            id=booking.id,
-            UAICode=booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(booking),
-            cancellationReason=booking.cancellationReason,
-            confirmationDate=booking.confirmationDate,
-            confirmationLimitDate=booking.confirmationLimitDate,
-            totalAmount=booking.collectiveStock.price,
-            startDatetime=booking.collectiveStock.startDatetime,
-            endDatetime=booking.collectiveStock.endDatetime,
-            venueTimezone=booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone,
-            name=booking.collectiveStock.collectiveOffer.name,
-            redactorEmail=booking.educationalRedactor.email,
-            domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
-            domainLabels=[domain.name for domain in booking.collectiveStock.collectiveOffer.domains],
-            venueId=booking.collectiveStock.collectiveOffer.venueId,
-            venueName=booking.collectiveStock.collectiveOffer.venue.name,
-            offererName=booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
-            formats=booking.collectiveStock.collectiveOffer.formats,
+    serialized_bookings: list[schemas.EducationalBookingPerYearResponse] = []
+
+    for booking in bookings:
+        stock = booking.collectiveStock
+        offer = stock.collectiveOffer
+
+        serialized_bookings.append(
+            schemas.EducationalBookingPerYearResponse(
+                id=booking.id,
+                UAICode=booking.educationalInstitution.institutionId,
+                status=get_collective_booking_status(booking),
+                additionalDetails=offer.additionalDetails,
+                cancellationReason=booking.cancellationReason,
+                confirmationDate=booking.confirmationDate,
+                confirmationLimitDate=booking.confirmationLimitDate,
+                numberOfTickets=stock.numberOfTickets,
+                numberOfTeachers=stock.numberOfTeachers,
+                totalAmount=stock.price,
+                price=stock.price,
+                # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
+                servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+                additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
+                startDatetime=stock.startDatetime,
+                endDatetime=stock.endDatetime,
+                venueTimezone=offer.venue.offererAddress.address.timezone,
+                name=offer.name,
+                redactorEmail=booking.educationalRedactor.email,
+                domainIds=[domain.id for domain in offer.domains],
+                domainLabels=[domain.name for domain in offer.domains],
+                venueId=offer.venueId,
+                venueName=offer.venue.name,
+                offererName=offer.venue.managingOfferer.name,
+                formats=offer.formats,
+            )
         )
-        for booking in bookings
-    ]
+
     return schemas.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
@@ -67,6 +80,7 @@ def serialize_collective_booking(
         contact=_get_collective_offer_contact(offer),
         creationDate=collective_booking.dateCreated,
         description=offer.description,
+        additionalDetails=offer.additionalDetails,
         durationMinutes=offer.durationMinutes,
         expirationDate=None,
         id=collective_booking.id,
@@ -74,9 +88,13 @@ def serialize_collective_booking(
         venueName=venue.publicName or venue.name,
         name=offer.name,
         numberOfTickets=stock.numberOfTickets,
+        numberOfTeachers=stock.numberOfTeachers,
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
         price=stock.price,
+        # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
+        servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+        additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
         quantity=1,
         redactor=schemas.Redactor(
             email=redactor.email,
@@ -145,58 +163,9 @@ def _get_educational_offer_accessibility(offer: models.CollectiveOffer) -> str:
 def serialize_reimbursement_notification(
     collective_booking: models.CollectiveBooking, reason: str, value: decimal.Decimal, details: str
 ) -> schemas.AdageReimbursementNotification:
-    stock = collective_booking.collectiveStock
-    offer = stock.collectiveOffer
-    domains = offer.domains
-    venue = offer.venue
-    redactor = collective_booking.educationalRedactor
-
     return schemas.AdageReimbursementNotification(
-        accessibility=_get_educational_offer_accessibility(offer),
-        address=get_collective_offer_address(offer),
-        startDatetime=stock.startDatetime,
-        endDatetime=stock.endDatetime,
-        cancellationDate=collective_booking.cancellationDate,
-        cancellationLimitDate=collective_booking.cancellationLimitDate,
-        cancellationReason=collective_booking.cancellationReason,
-        confirmationDate=collective_booking.confirmationDate,
-        confirmationLimitDate=collective_booking.confirmationLimitDate,
-        contact=_get_collective_offer_contact(offer),
-        creationDate=collective_booking.dateCreated,
-        description=offer.description,
-        durationMinutes=offer.durationMinutes,
-        expirationDate=None,
-        id=collective_booking.id,
-        hasUrl=False,
-        venueName=venue.publicName or venue.name,
-        name=offer.name,
-        numberOfTickets=stock.numberOfTickets,
-        participants=[student.value for student in offer.students],
-        priceDetail=stock.priceDetail,
-        price=stock.price,
-        quantity=1,
-        redactor=schemas.Redactor(
-            email=redactor.email,
-            redactorFirstName=redactor.firstName,
-            redactorLastName=redactor.lastName,
-            redactorCivility=redactor.civility,
-        ),
-        UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=int(collective_booking.educationalYearId),
-        status=get_collective_booking_status(collective_booking),
-        venueTimezone=venue.offererAddress.address.timezone,
-        totalAmount=stock.price,
-        url=offer_app_link(offer),
-        withdrawalDetails=None,
-        domain_ids=[domain.id for domain in domains],
-        domain_labels=[domain.name for domain in domains],
-        interventionArea=offer.interventionArea,
-        imageCredit=offer.imageCredit,
-        imageUrl=offer.imageUrl,
+        **serialize_collective_booking(collective_booking).dict(),
         reimbursementReason=reason,
         reimbursedValue=value,
         reimbursementDetails=details,
-        venueId=venue.id,
-        offererName=venue.managingOfferer.name,
-        formats=collective_booking.collectiveStock.collectiveOffer.formats,
     )

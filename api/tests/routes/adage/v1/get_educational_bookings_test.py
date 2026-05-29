@@ -12,7 +12,9 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     def test_get_collective_bookings(self, client) -> None:
         educational_year = EducationalYearFactory()

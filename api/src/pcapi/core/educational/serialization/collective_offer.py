@@ -38,12 +38,17 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> sche
             phone=collective_offer.contactPhone, email=collective_offer.contactEmail
         ),
         description=collective_offer.description,
+        additionalDetails=collective_offer.additionalDetails,
         durationMinutes=collective_offer.durationMinutes,
         id=collective_offer.id,
         name=collective_offer.name,
         numberOfTickets=stock.numberOfTickets,
+        numberOfTeachers=stock.numberOfTeachers,
         participants=collective_offer.students,
         price=stock.price,
+        # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
+        servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+        additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
         priceDetail=stock.priceDetail,
         quantity=1,
         totalAmount=stock.price,
@@ -56,6 +61,5 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> sche
             redactorCivility=collective_offer.teacher.civility if collective_offer.teacher else None,
             redactorFirstName=collective_offer.teacher.firstName if collective_offer.teacher else None,
             redactorLastName=collective_offer.teacher.lastName if collective_offer.teacher else None,
-        )
-        or None,
+        ),
     )

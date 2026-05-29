@@ -10,6 +10,9 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 def expected_serialized_booking(booking: CollectiveBooking) -> dict:
     formats = booking.collectiveStock.collectiveOffer.formats
     formats = [format.value for format in formats] if formats else None
@@ -17,10 +20,19 @@ def expected_serialized_booking(booking: CollectiveBooking) -> dict:
         "id": booking.id,
         "UAICode": booking.educationalInstitution.institutionId,
         "status": booking.status.value,
+        "additionalDetails": booking.collectiveStock.collectiveOffer.additionalDetails,
         "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
         "confirmationDate": format_into_utc_date(booking.confirmationDate),
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        "numberOfTickets": booking.collectiveStock.numberOfTickets,
+        "numberOfTeachers": booking.collectiveStock.numberOfTeachers,
         "totalAmount": booking.collectiveStock.price,
+        "price": booking.collectiveStock.price,
+        "servicePrice": booking.collectiveStock.servicePrice,
+        "additionalFees": [
+            {"label": fee.label or fee.type.value, "amount": fee.amount}
+            for fee in booking.collectiveStock.collectiveAdditionalFees
+        ],
         "startDatetime": format_into_utc_date(booking.collectiveStock.startDatetime),
         "endDatetime": format_into_utc_date(booking.collectiveStock.endDatetime),
         "venueTimezone": booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone,
@@ -35,7 +47,6 @@ def expected_serialized_booking(booking: CollectiveBooking) -> dict:
     }
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_all_collective_bookings_per_year(self, client) -> None:
         educationalYear = EducationalYearFactory(adageId="1")
@@ -69,7 +80,8 @@ class Returns200Test:
         client = client.with_eac_token()
         adage_id = booking1.educationalYear.adageId
 
-        with assert_num_queries(1):
+        # select bookings + selectinload additional fees
+        with assert_num_queries(2):
             response = client.get(f"/adage/v1/years/{adage_id}/prebookings")
 
         assert response.status_code == 200
