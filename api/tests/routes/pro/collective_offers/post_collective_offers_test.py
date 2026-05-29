@@ -12,7 +12,6 @@ from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.phone_number import ParsedPhoneNumber
@@ -99,62 +98,7 @@ def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
 
 
 class Returns200Test:
-    def test_create_collective_offer(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        data = base_offer_payload(venue=venue)
-        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-
-        assert_offer_values(offer, data, user, offerer)
-
-        # 3 requests (for 2 bookingEmail and the first one for user auth) for Brevo
-        assert len(brevo_testing.brevo_requests) == 3
-
-    def test_bookingEmails_not_required(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        data = {k: v for k, v in base_offer_payload(venue=venue).items() if k != "bookingEmails"}
-        auth_client = client.with_session_auth("user@example.com")
-
-        brevo_testing.reset_brevo_requests()
-        response = auth_client.post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-
-        assert_offer_values(offer, data, user, offerer)
-
-        assert len(brevo_testing.brevo_requests) == 0
-
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_additional_details(self, client):
-        venue = offerers_factories.VenueFactory()
-        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-
-        data = {
-            **base_offer_payload(venue=venue),
-            "additionalDetails": "details",
-        }
-        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-        assert offer.additionalDetails == "details"
-
-    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-    def test_create_collective_offer_with_ff(self, client, clear_redis):
+    def test_create_collective_offer(self, client, clear_redis):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
@@ -173,6 +117,41 @@ class Returns200Test:
             user.email,
             *offer.bookingEmails,
         }
+
+    def test_bookingEmails_not_required(self, client, clear_redis):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+        data = {k: v for k, v in base_offer_payload(venue=venue).items() if k != "bookingEmails"}
+        auth_client = client.with_session_auth("user@example.com")
+
+        response = auth_client.post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+
+        offer_id = response.json["id"]
+        offer = db.session.get(models.CollectiveOffer, offer_id)
+
+        assert_offer_values(offer, data, user, offerer)
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {"user@example.com"}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "additionalDetails": "details",
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer_id = response.json["id"]
+        offer = db.session.get(models.CollectiveOffer, offer_id)
+        assert offer.additionalDetails == "details"
 
     def test_create_collective_offer_allowed_one_adage(self, client):
         # offerer is allowed on adage but has no venue with adageId
