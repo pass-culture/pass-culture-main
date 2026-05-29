@@ -86,6 +86,13 @@
     </td>
     <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
     <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
+    <td>
+      {% if collective_booking.educationalDeposit %}{{ collective_booking.educationalDeposit.ministry.value }}{% endif %}
+      {% for program_association in collective_booking.educationalInstitution.programAssociations %}
+        <br />
+        {{ program_association.program.label }}
+      {% endfor %}
+    </td>
   </tr>
   {{ build_collective_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
 {% endfor %}
