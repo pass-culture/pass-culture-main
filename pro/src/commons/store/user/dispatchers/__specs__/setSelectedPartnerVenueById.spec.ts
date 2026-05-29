@@ -64,16 +64,11 @@ describe('setSelectedPartnerVenueById', () => {
           managingOffererId: 300,
         }),
       ],
-      offererNamesValidated: [
-        getOffererNameFactory({ id: 100 }),
-        getOffererNameFactory({ id: 200 }),
-      ],
       offererNames: [
-        getOffererNameFactory({ id: 100 }),
-        getOffererNameFactory({ id: 200 }),
-        getOffererNameFactory({ id: 300 }),
+        getOffererNameFactory({ id: 100, validated: true }),
+        getOffererNameFactory({ id: 200, validated: true }),
+        getOffererNameFactory({ id: 300, validated: false }),
       ],
-      offerersNamesWithPendingValidation: [getOffererNameFactory({ id: 300 })],
     },
   }
 
@@ -199,7 +194,7 @@ describe('setSelectedPartnerVenueById', () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
     )
-    // The selected venue belongs to offerer 999, which is not in offererNamesValidated
+    // The selected venue belongs to offerer 999, which is not validated in offererNames
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 999,
@@ -227,15 +222,10 @@ describe('setSelectedPartnerVenueById', () => {
           }),
         ],
         venuesWithPendingValidation: null,
-        offererNamesValidated: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
-        ],
         offererNames: [
-          getOffererNameFactory({ id: 100 }),
-          getOffererNameFactory({ id: 200 }),
+          getOffererNameFactory({ id: 100, validated: true }),
+          getOffererNameFactory({ id: 200, validated: true }),
         ],
-        offerersNamesWithPendingValidation: [],
       },
     })
 

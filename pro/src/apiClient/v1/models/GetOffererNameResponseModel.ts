@@ -5,5 +5,6 @@
 export type GetOffererNameResponseModel = {
   id: number;
   name: string;
+  validated: boolean;
 };
 

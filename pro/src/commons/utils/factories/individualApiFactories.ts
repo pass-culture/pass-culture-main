@@ -379,6 +379,7 @@ export function getOffererNameFactory(
   return {
     id: getOffererNameId++,
     name: 'Ma super structure',
+    validated: true,
     ...customGetOfferer,
   }
 }

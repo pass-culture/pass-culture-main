@@ -127,7 +127,6 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
-      offerersNamesWithPendingValidation: [],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,

@@ -134,6 +134,7 @@ class GetOffererResponseModel(HttpBodyModel):
 class GetOffererNameResponseModel(HttpBodyModel):
     id: int
     name: str
+    validated: bool
 
 
 class OffererMemberStatus(enum.Enum):
@@ -152,17 +153,18 @@ class GetOffererMembersResponseModel(HttpBodyModel):
 
 class GetOfferersNamesResponseModel(HttpBodyModel):
     offerers_names: list[GetOffererNameResponseModel]
-    offerers_names_with_pending_validation: list[GetOffererNameResponseModel]
 
     @classmethod
     def build(
         cls, offerers_names: Iterable, offerers_names_with_pending_validation: Iterable
     ) -> "GetOfferersNamesResponseModel":
+        validated = [GetOffererNameResponseModel(id=o.id, name=o.name, validated=True) for o in offerers_names]
+        pending = [
+            GetOffererNameResponseModel(id=o.id, name=o.name, validated=False)
+            for o in offerers_names_with_pending_validation
+        ]
         return cls(
-            offerers_names=[GetOffererNameResponseModel(id=o.id, name=o.name) for o in offerers_names],
-            offerers_names_with_pending_validation=[
-                GetOffererNameResponseModel(id=o.id, name=o.name) for o in offerers_names_with_pending_validation
-            ],
+            offerers_names=validated + pending,
         )
 
 

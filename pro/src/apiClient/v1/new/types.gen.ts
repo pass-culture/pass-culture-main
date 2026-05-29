@@ -3079,6 +3079,10 @@ export type GetOffererNameResponseModel = {
      * Name
      */
     name: string;
+    /**
+     * Validated
+     */
+    validated: boolean;
 };
 
 /**
@@ -3246,10 +3250,6 @@ export type GetOfferersNamesResponseModel = {
      * Offerersnames
      */
     offerersNames: Array<GetOffererNameResponseModel>;
-    /**
-     * Offerersnameswithpendingvalidation
-     */
-    offerersNamesWithPendingValidation: Array<GetOffererNameResponseModel>;
 };
 
 /**

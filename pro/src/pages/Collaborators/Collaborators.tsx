@@ -14,7 +14,7 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
-  ensureOffererNamesValidated,
+  ensureOffererNames,
   ensureSelectedAdminOfferer,
 } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -46,9 +46,9 @@ const Collaborators = () => {
 
   const offererId = selectedAdminOfferer.id
 
-  const offererNamesValidated = useAppSelector(ensureOffererNamesValidated)
-  const isSelectedOffererValidated = offererNamesValidated.some(
-    (offerer) => offerer.id === offererId
+  const offererNames = useAppSelector(ensureOffererNames)
+  const isSelectedOffererValidated = offererNames.some(
+    (offerer) => offerer.validated && offerer.id === offererId
   )
 
   const { data } = useSWR(

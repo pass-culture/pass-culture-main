@@ -47,13 +47,11 @@ export const initializeUser = createAsyncThunk<
   try {
     const offererNamesResponse = await api.listOfferersNames()
     const venuesResponse = await api.getVenuesLite()
-    const offererNames = offererNamesResponse.offerersNames.concat(
-      offererNamesResponse.offerersNamesWithPendingValidation
-    )
+    const offererNames = offererNamesResponse.offerersNames
     const allVenues = venuesResponse.venues.concat(
       venuesResponse.venuesWithPendingValidation
     )
-    dispatch(updateOffererNames(offererNamesResponse))
+    dispatch(updateOffererNames(offererNames))
     dispatch(setVenues(venuesResponse))
     dispatch(updateUser(user))
 

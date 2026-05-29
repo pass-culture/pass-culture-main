@@ -225,7 +225,7 @@ describe('getCurrentUserPermissions', () => {
         it('should return hasSelectedAdminOfferer as false', () => {
           const userSliceState = makeUserSliceState({
             currentUser: fakeCurrentUser,
-            offerersNamesWithPendingValidation: null,
+            offererNames: null,
             selectedAdminOfferer: null,
             venues: fakeVenues,
           })
@@ -248,7 +248,13 @@ describe('getCurrentUserPermissions', () => {
         it('should return hasSelectedAdminOfferer as true', () => {
           const userSliceState = makeUserSliceState({
             currentUser: fakeCurrentUser,
-            offerersNamesWithPendingValidation: null,
+            offererNames: [
+              {
+                id: fakeAdminOfferer.id,
+                name: fakeAdminOfferer.name,
+                validated: true,
+              },
+            ],
             selectedAdminOfferer: fakeAdminOfferer,
             venues: fakeVenues,
           })
@@ -268,7 +274,13 @@ describe('getCurrentUserPermissions', () => {
           it('should return isSelectedAdminOffererAssociated as false', () => {
             const userSliceState = makeUserSliceState({
               currentUser: fakeCurrentUser,
-              offerersNamesWithPendingValidation: [fakeAdminOfferer],
+              offererNames: [
+                {
+                  id: fakeAdminOfferer.id,
+                  name: fakeAdminOfferer.name,
+                  validated: false,
+                },
+              ],
               selectedAdminOfferer: fakeAdminOfferer,
               venues: fakeVenues,
             })
@@ -289,7 +301,13 @@ describe('getCurrentUserPermissions', () => {
           it('should return isSelectedAdminOffererAssociated as true', () => {
             const userSliceState = makeUserSliceState({
               currentUser: fakeCurrentUser,
-              offerersNamesWithPendingValidation: null,
+              offererNames: [
+                {
+                  id: fakeAdminOfferer.id,
+                  name: fakeAdminOfferer.name,
+                  validated: true,
+                },
+              ],
               selectedAdminOfferer: fakeAdminOfferer,
               venues: fakeVenues,
             })

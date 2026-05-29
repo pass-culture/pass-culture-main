@@ -41,7 +41,7 @@ describe('getInitialAdminOffererId', () => {
   })
 
   describe('Priority 2: localStorage', () => {
-    it('should return saved offerer id when present in offererNamesValidated', () => {
+    it('should return saved offerer id when present in offererNames and validated', () => {
       vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')
 
       const result = getInitialAdminOffererId({

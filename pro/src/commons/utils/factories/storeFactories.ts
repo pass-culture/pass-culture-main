@@ -6,9 +6,7 @@ export const makeUserSliceState = (
   overrides: Partial<UserSliceState> = {}
 ): UserSliceState => ({
   currentUser: null,
-  offererNames: null,
-  offererNamesValidated: null,
-  offerersNamesWithPendingValidation: null,
+  offererNames: [],
   selectedAdminOfferer: null,
   selectedPartnerVenue: null,
   venues: null,

@@ -35,8 +35,6 @@ const TestComponent = () => {
 const renderComponent = (
   overrides: DeepPartial<RootState> = {
     user: {
-      offererNamesValidated: null,
-      offerersNamesWithPendingValidation: null,
       offererNames: null,
     },
   }
@@ -49,17 +47,13 @@ const renderComponent = (
 
 describe('useOffererNamesQuery', () => {
   it('should invoke API and dispatch if no data is present in the store', async () => {
-    const expectedOfferersNamesValidated = [
-      { id: 1, name: 'Offerer 1' },
-      { id: 2, name: 'Offerer 2' },
-    ]
-    const expectedOfferersNamesWithPendingValidation = [
-      { id: 3, name: 'Offerer 3' },
+    const expectedOfferersNames = [
+      { id: 1, name: 'Offerer 1', validated: true },
+      { id: 2, name: 'Offerer 2', validated: true },
+      { id: 3, name: 'Offerer 3', validated: false },
     ]
     vi.mocked(api.listOfferersNames).mockResolvedValueOnce({
-      offerersNames: expectedOfferersNamesValidated,
-      offerersNamesWithPendingValidation:
-        expectedOfferersNamesWithPendingValidation,
+      offerersNames: expectedOfferersNames,
     })
 
     const { store } = renderComponent()
@@ -68,12 +62,7 @@ describe('useOffererNamesQuery', () => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
-    expect(store.getState().user.offererNamesValidated).toEqual(
-      expectedOfferersNamesValidated
-    )
-    expect(store.getState().user.offerersNamesWithPendingValidation).toEqual(
-      expectedOfferersNamesWithPendingValidation
-    )
+    expect(store.getState().user.offererNames).toEqual(expectedOfferersNames)
 
     expect(screen.getByText('Offerer 1')).toBeInTheDocument()
     expect(screen.getByText('Offerer 2')).toBeInTheDocument()
@@ -81,19 +70,15 @@ describe('useOffererNamesQuery', () => {
   })
 
   it('should not invoke API and dispatch if data is present in the store', async () => {
-    const mockOffererNamesValidated = [
-      { id: 3, name: 'Offerer 3' },
-      { id: 4, name: 'Offerer 4' },
-    ]
-    const mockOfferersNamesWithPendingValidation = [
-      { id: 5, name: 'Offerer 5' },
+    const mockOffererNames = [
+      { id: 3, name: 'Offerer 3', validated: true },
+      { id: 4, name: 'Offerer 4', validated: true },
+      { id: 5, name: 'Offerer 5', validated: false },
     ]
 
     renderComponent({
       user: {
-        offererNamesValidated: mockOffererNamesValidated,
-        offerersNamesWithPendingValidation:
-          mockOfferersNamesWithPendingValidation,
+        offererNames: mockOffererNames,
       },
     })
 

@@ -6,7 +6,6 @@ import { ApiError, OffererMemberStatus } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -25,11 +24,11 @@ vi.mock('@/apiClient/api', () => ({
 
 const mockLogEvent = vi.fn()
 
-const offererNamesValidated = [
+const offererNames = [
   {
-    ...defaultGetOffererResponseModel,
     id: 1,
     name: 'Offerer 1',
+    validated: true,
   },
 ]
 
@@ -44,8 +43,7 @@ const renderCollaborators = (options?: RenderWithProvidersOptions) => {
         user: {
           currentUser: sharedCurrentUserFactory(),
           selectedAdminOfferer: { id: 1 },
-          offererNamesValidated,
-          offererNames: offererNamesValidated,
+          offererNames: offererNames,
         },
       },
       ...options,

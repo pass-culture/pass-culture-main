@@ -95,13 +95,14 @@ describe('SignIn', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
+          validated: true,
         }),
         getOffererNameFactory({
           id: 1,
           name: 'Ma super librairie',
+          validated: true,
         }),
       ],
-      offerersNamesWithPendingValidation: [],
     })
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(

@@ -54,14 +54,9 @@ const renderDialog = (
         offererNames: [
           getOffererNameFactory({
             id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
+            validated: true,
           }),
         ],
-        offererNamesValidated: [
-          getOffererNameFactory({
-            id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
-          }),
-        ],
-        offerersNamesWithPendingValidation: [],
         selectedAdminOfferer: null,
         selectedPartnerVenue: makeGetVenueResponseModel({
           id: SELECTED_PARTNER_VENUE_ID,

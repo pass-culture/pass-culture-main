@@ -24,7 +24,7 @@ describe('OnboardingOffersChoice Component', () => {
     renderWithProviders(<OnboardingOffersChoice />, {
       storeOverrides: {
         user: {
-          offererNamesValidated: [],
+          offererNames: null,
           selectedPartnerVenue: {
             managingOfferer: { id: 1 },
           },

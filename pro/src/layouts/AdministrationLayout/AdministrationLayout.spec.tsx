@@ -1,19 +1,26 @@
 import { screen } from '@testing-library/react'
 
 import * as useCurrentUserPermissionsModule from '@/commons/auth/useCurrentUserPermissions'
+import * as useOffererNamesQueryModule from '@/commons/hooks/swr/useOffererNamesQuery'
 import { makeUserPermissions } from '@/commons/utils/factories/authFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeUserSliceState } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { AdministrationLayout } from './AdministrationLayout'
 
 const renderAdministrationLayout = (offererCount = 1) => {
-  const offererNames = Array.from({ length: offererCount }, (_, i) => ({
-    ...defaultGetOffererResponseModel,
-    id: i + 1,
-    name: `Offerer ${i + 1}`,
-  }))
+  const offererNames = Array.from({ length: offererCount }, (_, i) =>
+    getOffererNameFactory({ id: i + 1, name: `Offerer ${i + 1}` })
+  )
+
+  vi.spyOn(useOffererNamesQueryModule, 'useOffererNamesQuery').mockReturnValue({
+    data: offererNames,
+    isLoading: false,
+    isValidating: false,
+    error: undefined,
+    mutate: vi.fn(),
+  } as any)
 
   renderWithProviders(null, {
     routes: [
@@ -30,7 +37,10 @@ const renderAdministrationLayout = (offererCount = 1) => {
     ],
     initialRouterEntries: ['/administration/donnees-activite/individuel'],
     storeOverrides: {
-      user: makeUserSliceState({ offererNames }),
+      user: makeUserSliceState({
+        offererNames,
+        selectedAdminOfferer: { id: 1 } as any,
+      }),
     },
   })
 }
