@@ -83,7 +83,6 @@ const generateNavItems = (
             group: 'main' as const,
             title: 'Page sur l’application',
             to: `/partenaire/page-partenaire`,
-            end: true,
             showNotification:
               isVolunteeringActive && !hasSeenVolunteeringSection,
           },
@@ -112,7 +111,6 @@ const generateNavItems = (
       group: 'main' as const,
       title: 'Page dans ADAGE',
       to: `/partenaire/page-collective`,
-      end: true,
     },
   ]
 
