@@ -7,13 +7,11 @@ from pcapi.celery_tasks.tasks import CloudTaskRetryException
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.external.batch.api import update_user_attributes
-from pcapi.core.external.batch.api import update_user_attributes_new
 from pcapi.core.external.batch.attributes import format_user_attributes
-from pcapi.core.external.batch.backends.batch import BatchAPI
 from pcapi.core.external.batch.backends.batch import BatchBackend
-from pcapi.core.external.batch.serialization import TransactionalNotificationDataV2
-from pcapi.core.external.batch.serialization import TransactionalNotificationMessageV2
-from pcapi.core.external.batch.serialization import UpdateBatchAttributesRequestV2
+from pcapi.core.external.batch.serialization import TransactionalNotificationData
+from pcapi.core.external.batch.serialization import TransactionalNotificationMessage
+from pcapi.core.external.batch.serialization import UpdateBatchAttributesRequest
 from pcapi.core.external.batch.tasks import update_user_attributes_task
 from pcapi.core.external.batch.utils import batch_length
 from pcapi.core.external.batch.utils import shorten_for_batch
@@ -30,23 +28,7 @@ def test_update_user_attributes():
     user_id = 123
     attributes = {"param": "value"}
 
-    update_user_attributes(BatchAPI.IOS, user_id, attributes)
-
-    assert batch_testing.requests == [
-        {
-            "attribute_values": {"param": "value"},
-            "batch_api": "IOS",
-            "user_id": 123,
-            "can_be_asynchronously_retried": False,
-        }
-    ]
-
-
-def test_update_user_attributes_new():
-    user_id = 123
-    attributes = {"param": "value"}
-
-    update_user_attributes_new(user_id, attributes)
+    update_user_attributes(user_id, attributes)
 
     assert batch_testing.requests == [
         {
@@ -169,10 +151,12 @@ class FormatUserAttributesTest:
 class BatchPushNotificationClientTest:
     def test_update_user_attributes(self):
         with requests_mock.Mocker() as mock:
-            ios_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/1")
+            android_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/1")
+            ios_post = mock.post("https://api.batch.com/1.0/fake_ios_api_key/data/users/1")
 
-            BatchBackend().update_user_attributes(BatchAPI.ANDROID, 1, {"attri": "but"})
+            BatchBackend().update_user_attributes(1, {"attri": "but"})
 
+            assert android_post.last_request.json() == {"overwrite": False, "values": {"attri": "but"}}
             assert ios_post.last_request.json() == {"overwrite": False, "values": {"attri": "but"}}
 
     def test_send_transactional_notification(self):
@@ -181,10 +165,10 @@ class BatchPushNotificationClientTest:
             ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
-                TransactionalNotificationDataV2(
+                TransactionalNotificationData(
                     group_id="Group_id",
                     user_ids=[1234, 4321],
-                    message=TransactionalNotificationMessageV2(title="Putsch", body="Notif"),
+                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
                 )
             )
 
@@ -205,10 +189,10 @@ class BatchPushNotificationClientTest:
             ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
-                TransactionalNotificationDataV2(
+                TransactionalNotificationData(
                     group_id="Group_id",
                     user_ids=[1234, 4321],
-                    message=TransactionalNotificationMessageV2(title="Putsch", body="Notif"),
+                    message=TransactionalNotificationMessage(title="Putsch", body="Notif"),
                 )
             )
 
@@ -230,7 +214,7 @@ class BatchBackendTest:
         with requests_mock.Mocker() as mock:
             android_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/123")
             ios_post = mock.post("https://api.batch.com/1.0/fake_ios_api_key/data/users/123")
-            update_user_attributes_task(UpdateBatchAttributesRequestV2(user_id=123, attributes={"TEXTE_À": True}))
+            update_user_attributes_task(UpdateBatchAttributesRequest(user_id=123, attributes={"TEXTE_À": True}))
             android_posted_json = android_post.last_request.json()
             ios_posted_json = ios_post.last_request.json()
 
@@ -242,7 +226,7 @@ class BatchBackendTest:
             with requests_mock.Mocker() as mock:
                 mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/123", exc=ValueError)
                 mock.post("https://api.batch.com/1.0/fake_ios_api_key/data/users/123", exc=ValueError)
-                update_user_attributes_task(UpdateBatchAttributesRequestV2(user_id=123, attributes={"TEXTE_À": True}))
+                update_user_attributes_task(UpdateBatchAttributesRequest(user_id=123, attributes={"TEXTE_À": True}))
 
             assert caplog.records[1].levelname == "WARNING"
             assert caplog.records[1].message == "Exception with Batch update_user_attributes API"
@@ -251,7 +235,7 @@ class BatchBackendTest:
         with requests_mock.Mocker() as mock:
             mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/123", status_code=400)
             mock.post("https://api.batch.com/1.0/fake_ios_api_key/data/users/123", status_code=400)
-            update_user_attributes_task(UpdateBatchAttributesRequestV2(user_id=123, attributes={"TEXTE_À": True}))
+            update_user_attributes_task(UpdateBatchAttributesRequest(user_id=123, attributes={"TEXTE_À": True}))
 
         assert caplog.records[0].levelname == "ERROR"
         assert caplog.records[0].message == "Error with Batch update_user_attributes API: 400"
