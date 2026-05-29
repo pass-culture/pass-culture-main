@@ -55,6 +55,11 @@ const renderPartnerPageCard = (
 }
 
 describe('PartnerPageCard', () => {
+  beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+  })
   it('should render the partner page module with the venue information', () => {
     renderPartnerPageCard(HomepageVariant.INDIVIDUAL, {
       bannerMeta: {
@@ -87,10 +92,6 @@ describe('PartnerPageCard', () => {
       height: 100,
     })
 
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-
     renderPartnerPageCard()
 
     const imageInput = screen.getByLabelText('Importez une image')
@@ -103,6 +104,53 @@ describe('PartnerPageCard', () => {
         isEdition: true,
         imageCreationStage: 'add image',
       })
+    })
+  })
+
+  describe('analytics event', () => {
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
+
+    it('should log CLICKED_PARTNER_PAGE on "Voir ma page" click', async () => {
+      const user = userEvent.setup()
+
+      renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
+
+      await user.click(screen.getByRole('link', { name: /Voir ma page/ }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        HomepageEvents.CLICKED_PARTNER_PAGE
+      )
+    })
+
+    it('should log CLICKED_PARTNER_PAGE only once on multiple clicks', async () => {
+      const user = userEvent.setup()
+
+      renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
+
+      const link = screen.getByRole('link', { name: /Voir ma page/ })
+      await user.click(link)
+      await user.click(link)
+
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    })
+
+    it('should log CLICKED_FILL_PARTNER_PAGE on "Compléter ma page" click', async () => {
+      const user = userEvent.setup()
+
+      renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
+
+      await user.click(screen.getByRole('link', { name: /Compléter ma page/ }))
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        HomepageEvents.CLICKED_FILL_PARTNER_PAGE,
+        {
+          variant: HomepageVariant.INDIVIDUAL,
+        }
+      )
     })
   })
 
@@ -152,37 +200,5 @@ describe('PartnerPageCard', () => {
         screen.queryByRole('link', { name: /Voir ma page/ })
       ).not.toBeInTheDocument()
     })
-  })
-
-  it('should log CLICKED_PARTNER_PAGE on "Voir ma page" click', async () => {
-    const user = userEvent.setup()
-
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-
-    renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
-
-    await user.click(screen.getByRole('link', { name: /Voir ma page/ }))
-
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      HomepageEvents.CLICKED_PARTNER_PAGE
-    )
-  })
-
-  it('should log CLICKED_PARTNER_PAGE only once on multiple clicks', async () => {
-    const user = userEvent.setup()
-
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-
-    renderPartnerPageCard(HomepageVariant.INDIVIDUAL)
-
-    const link = screen.getByRole('link', { name: /Voir ma page/ })
-    await user.click(link)
-    await user.click(link)
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 })
