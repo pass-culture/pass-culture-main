@@ -218,22 +218,54 @@ describe('FormStock', () => {
     expect(screen.getByLabelText(/Horaire */)).toBeDisabled()
   })
 
-  it('should disable start date, end date, price and place and event time inputs when allowed actions CAN_EDIT_DATES and CAN_EDIT_DISCOUNT do not exist', () => {
-    renderFormStock({ initialValues, onSubmit, allowedActions: [] })
+  it('should disable start date, end date and event time inputs when allowed actions CAN_EDIT_DATES do not exist', () => {
+    renderFormStock({
+      initialValues,
+      onSubmit,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+    })
 
     expect(screen.getByLabelText(/Date de début */)).toBeDisabled()
     expect(screen.getAllByLabelText(/Date de fin */)[1]).toBeDisabled()
     expect(screen.getByLabelText(/Horaire */)).toBeDisabled()
+  })
+
+  it('should disable price and place inputs when allowed actions CAN_EDIT_DISCOUNT do not exist', () => {
+    renderFormStock({
+      initialValues,
+      onSubmit,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
+    })
+
     expect(screen.getByLabelText(/Nombre de participants */)).toBeDisabled()
     expect(screen.getByLabelText(/Prix total TTC */)).toBeDisabled()
   })
 
-  it('should not disable price, place number, start date, end date and event time when allowed actions CAN_EDIT_DISCOUNT and CAN_EDIT_DATES exist', () => {
-    renderFormStock({ initialValues, onSubmit, allowedActions })
+  it('should not disable start date, end date and event time when allowed actions CAN_EDIT_DATES exist', () => {
+    renderFormStock({
+      initialValues,
+      onSubmit,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
+    })
 
     expect(screen.getByLabelText(/Date de début */)).not.toBeDisabled()
     expect(screen.getAllByLabelText(/Date de fin */)[1]).not.toBeDisabled()
     expect(screen.getByLabelText(/Horaire */)).not.toBeDisabled()
+  })
+
+  it('should not disable price, place number, when allowed actions CAN_EDIT_DISCOUNT exist', () => {
+    renderFormStock({
+      initialValues,
+      onSubmit,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+    })
+
     expect(screen.getByLabelText(/Nombre de participants */)).not.toBeDisabled()
     expect(screen.getByLabelText(/Prix total TTC */)).not.toBeDisabled()
   })
