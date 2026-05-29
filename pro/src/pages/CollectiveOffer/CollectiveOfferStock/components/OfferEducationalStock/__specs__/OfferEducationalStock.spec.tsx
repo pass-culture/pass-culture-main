@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import * as router from 'react-router'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { Mode } from '@/commons/core/OfferEducational/types'
@@ -25,19 +24,18 @@ vi.mock('react-router', async () => ({
   useNavigate: vi.fn(),
 }))
 
+afterEach(() => {
+  vi.clearAllMocks()
+})
+
 describe('OfferEducationalStock', () => {
-  const mockNavigate = vi.fn()
-  beforeEach(() => {
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-  })
-  it('should render for offer with a stock', () => {
-    const allowedActions = [
-      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-    ]
+  it('should render for offer with a stock in the past', () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
-      allowedActions,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
       initialStock: {
         startDatetime: '2022-02-10T00:00',
         endDatetime: '2022-02-10T00:00',
@@ -46,7 +44,6 @@ describe('OfferEducationalStock', () => {
         price: 100,
         educationalPriceDetail: 'Détail du prix',
       },
-      mode: Mode.EDITION,
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
 
@@ -56,8 +53,9 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should call submit callback when clicking next step with valid form data and edit action is allowed', async () => {
-    const tomorrow = addDays(new Date(), 1).toISOString()
+    const user = userEvent.setup()
 
+    const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
@@ -69,101 +67,117 @@ describe('OfferEducationalStock', () => {
         price: 100,
         educationalPriceDetail: 'Détail du prix',
       },
-      mode: Mode.CREATION,
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.click(submitButton)
+    await user.click(submitButton)
 
     expect(testProps.onSubmit).toHaveBeenCalled()
   })
 
-  it('should have a cancel button instead of the previous step button when editing the offer', () => {
+  it.each`
+    mode             | visibleBtn              | nonVisibleBtn
+    ${Mode.CREATION} | ${'Retour'}             | ${'Annuler et quitter'}
+    ${Mode.EDITION}  | ${'Annuler et quitter'} | ${'Retour'}
+  `(
+    'should have a $visibleBtn button instead of the $nonVisibleBtn button on $mode mode',
+    ({ mode, visibleBtn, nonVisibleBtn }) => {
+      renderWithProviders(
+        <OfferEducationalStock {...defaultProps} mode={mode} />
+      )
+
+      expect(
+        screen.queryByRole('link', { name: nonVisibleBtn })
+      ).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: visibleBtn })).toBeVisible()
+    }
+  )
+
+  it('should disable booking limit date when allowed actions does not have CAN_EDIT_DATES', () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
-      mode: Mode.EDITION,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
     }
 
     renderWithProviders(<OfferEducationalStock {...testProps} />)
-    expect(
-      screen.queryByRole('button', { name: /Étape suivante/ })
-    ).not.toBeInTheDocument()
 
-    expect(
-      screen.queryByRole('button', { name: 'Annuler et quitter' })
-    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Date limite de réservation *')).toBeDisabled()
   })
-})
 
-it('should disable booking limit date when form access is read only', () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    mode: Mode.READ_ONLY,
-  }
+  it('should display saved information in the action bar', () => {
+    renderWithProviders(<OfferEducationalStock {...defaultProps} />)
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
+    expect(screen.getByText('Brouillon enregistré')).toBeVisible()
+    expect(screen.getByText('Enregistrer et continuer')).toBeVisible()
+  })
 
-  expect(screen.getByLabelText('Date limite de réservation *')).toBeDisabled()
-})
+  it('should not disable description, price and places when action CAN_EDIT_DISCOUNT is allowed', () => {
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+    }
 
-it('should display saved information in the action bar', () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    mode: Mode.CREATION,
-  }
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
+    expect(
+      screen.getByRole('textbox', {
+        name: /Informations sur le prix(?: |\u00A0)\*/,
+      })
+    ).not.toBeDisabled()
+  })
 
-  expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
-  expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
-})
+  it('should disable description, price and places when allowed action CAN_EDIT_DISCOUNT doesnt exist', () => {
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      ],
+    }
 
-it('should not disable start date, end date and event time inputs when date edition is allowed', () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
-  }
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
+    expect(
+      screen.getByRole('textbox', {
+        name: /Informations sur le prix(?: |\u00A0)\*/,
+      })
+    ).toBeDisabled()
+  })
 
-  expect(screen.getByLabelText(/Date de début */)).not.toBeDisabled()
-  expect(screen.getAllByLabelText(/Date de fin */)[1]).not.toBeDisabled()
-  expect(screen.getByLabelText(/Horaire */)).not.toBeDisabled()
-})
+  it('should send only dirty data if the stock already exists', async () => {
+    const user = userEvent.setup()
 
-it('should not disable description, price and places when action CAN_EDIT_DISCOUNT is allowed', () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    mode: Mode.EDITION,
-    allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
-  }
+    const tomorrow = addDays(new Date(), 1).toISOString()
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+      initialStock: {
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: tomorrow,
+        numberOfTickets: 10,
+        price: 100,
+        educationalPriceDetail: 'Détail du prix',
+      },
+    }
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
-
-  expect(
-    screen.getByRole('textbox', {
+    const priceDetailsTextarea = screen.getByRole('textbox', {
       name: /Informations sur le prix(?: |\u00A0)\*/,
     })
-  ).not.toBeDisabled()
-  expect(screen.getByLabelText(/Prix total TTC/)).not.toBeDisabled()
-  expect(screen.getByLabelText(/Nombre de participants/)).not.toBeDisabled()
-})
 
-it('should disable description, price and places when allowed action CAN_EDIT_DISCOUNT doesnt exist', () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    mode: Mode.EDITION,
-  }
+    expect(priceDetailsTextarea).toBeVisible()
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
+    await user.clear(priceDetailsTextarea)
+    await user.type(priceDetailsTextarea, 'Nouveau contenu')
 
-  expect(
-    screen.getByRole('textbox', {
-      name: /Informations sur le prix(?: |\u00A0)\*/,
+    expect(priceDetailsTextarea).toHaveValue('Nouveau contenu')
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+      educationalPriceDetail: 'Nouveau contenu',
     })
-  ).toBeDisabled()
-  expect(screen.getByLabelText(/Prix total TTC/)).toBeDisabled()
-  expect(screen.getByLabelText(/Nombre de participants/)).toBeDisabled()
+  })
 })
