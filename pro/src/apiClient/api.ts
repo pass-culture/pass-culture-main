@@ -6,7 +6,7 @@ import { client as adageClient } from './adage/new/client.gen'
 import { AppClient, type OpenAPIConfig } from './v1'
 import { client as v1Client } from './v1/new/client.gen'
 
-const params = new URLSearchParams(window.location.search)
+const params = new URLSearchParams(globalThis.location.search)
 const token = params.get('token')
 
 const config: OpenAPIConfig = {

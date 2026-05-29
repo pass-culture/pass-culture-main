@@ -162,21 +162,7 @@ export const OfferEducational = ({
           { revalidate: false }
         )
       }
-      if (mode === Mode.EDITION && offer !== undefined) {
-        return navigate(
-          `/offre/${computeURLCollectiveOfferId(
-            offer.id,
-            offer.isTemplate
-          )}/collectif/recapitulatif`
-        )
-      }
-      const requestIdParams = requestId ? `?requete=${requestId}` : ''
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(
-        isTemplate
-          ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
-          : `/offre/${offerId}/collectif/stocks${requestIdParams}`
-      )
+      navigateAfterSubmit(offerId)
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
         serializeApiErrors(error.body, form.setError)
@@ -184,6 +170,23 @@ export const OfferEducational = ({
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
     }
+  }
+
+  const navigateAfterSubmit = (offerId: number) => {
+    if (mode === Mode.EDITION && offer !== undefined) {
+      return navigate(
+        `/offre/${computeURLCollectiveOfferId(
+          offer.id,
+          offer.isTemplate
+        )}/collectif/recapitulatif`
+      )
+    }
+    const requestIdParams = requestId ? `?requete=${requestId}` : ''
+    navigate(
+      isTemplate
+        ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+        : `/offre/${offerId}/collectif/stocks${requestIdParams}`
+    )
   }
 
   const form = useForm<OfferEducationalFormValues>({

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { createPortal } from 'react-dom'
 
-import { orejime } from '@/app/App/analytics/orejime'
+import { orejimeRef } from '@/app/App/analytics/orejime'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
@@ -115,7 +115,7 @@ export const Footer = ({ layout }: FooterProps) => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
-            onClick={() => orejime?.prompt()}
+            onClick={() => orejimeRef.current?.prompt()}
             label="Gestion des cookies"
           />
         </li>

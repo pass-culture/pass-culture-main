@@ -12,13 +12,13 @@ import {
 } from './orejimeConfig'
 
 // biome-ignore lint/suspicious/noExplicitAny: Orejime comes from a loaded script
-export let orejime: any = null
+export const orejimeRef = { current: null as any }
 
 function addListener(
   setConsentedToFirebase: Dispatch<SetStateAction<boolean>>,
   setConsentedToBeamer: Dispatch<SetStateAction<boolean>>
 ) {
-  orejime.manager.on(
+  orejimeRef.current.manager.on(
     'update',
     (
       updatedConsents: { [key in Consents]: boolean },
@@ -49,14 +49,14 @@ function initOrejimeConsent(
     }
 
     try {
-      if (!orejime || !document.cookie.includes('pc-pro-orejime')) {
-        orejime = globalThis.loadOrejime(orejimeConfig)
+      if (!orejimeRef.current || !document.cookie.includes('pc-pro-orejime')) {
+        orejimeRef.current = globalThis.loadOrejime(orejimeConfig)
         addListener(setConsentedToFirebase, setConsentedToBeamer)
         setConsentedToFirebase(
-          orejime.manager.getConsent(Consents.FIREBASE) || false
+          orejimeRef.current.manager.getConsent(Consents.FIREBASE) || false
         )
         setConsentedToBeamer(
-          orejime.manager.getConsent(Consents.BEAMER) || false
+          orejimeRef.current.manager.getConsent(Consents.BEAMER) || false
         )
       }
     } catch (e) {

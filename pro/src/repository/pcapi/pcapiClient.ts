@@ -43,13 +43,15 @@ const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
       ) {
         window.location.assign(URL_FOR_MAINTENANCE)
       }
-      return Promise.reject(
-        results ? { errors: results, status: response.status } : null
+      throw new Error(
+        JSON.stringify(
+          results ? { errors: results, status: response.status } : null
+        )
       )
     }
-    return Promise.resolve(results)
+    return results
   } catch {
-    return Promise.reject(null)
+    throw new Error(JSON.stringify(null))
   }
 }
 

@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
@@ -47,353 +49,495 @@ const isMoreThan48hAgo = (dateString: string) => {
   return diffMs > 48 * 60 * 60 * 1000
 }
 
+const getDateTimeLabel = (
+  datetime: string | null | undefined,
+  venueDepartmentCode: string | null | undefined
+) => {
+  return datetime
+    ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+    : undefined
+}
+
+const waitingWording: Partial<Record<CollectiveOfferDisplayedStatus, string>> =
+  {
+    [CollectiveOfferDisplayedStatus.PUBLISHED]: 'En attente de préréservation',
+    [CollectiveOfferDisplayedStatus.PREBOOKED]: 'En attente de réservation',
+    [CollectiveOfferDisplayedStatus.ENDED]: 'En attente de remboursement',
+  }
+
+type TimelineStep = {
+  type: TimelineStepType
+  content: ReactNode
+}
+
+type PastHistoryStep =
+  GetCollectiveOfferResponseModel['history']['past'][number]
+
+const getStatusWithDate = (
+  status: CollectiveOfferDisplayedStatus,
+  datetime: string | null | undefined,
+  venueDepartmentCode: string | null | undefined
+) => {
+  return (
+    <StatusWithDate
+      status={statusLabelMapping[status]}
+      date={getDateTimeLabel(datetime, venueDepartmentCode)}
+    />
+  )
+}
+
+const buildFallbackPastStep = (
+  status: CollectiveOfferDisplayedStatus
+): TimelineStep => {
+  return {
+    type: TimelineStepType.SUCCESS,
+    content: statusLabelMapping[status],
+  }
+}
+
+const buildWaitingPastStep = ({
+  offer,
+  status,
+  isCurrentStep,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  status: CollectiveOfferDisplayedStatus
+  isCurrentStep: boolean
+}): TimelineStep => {
+  return {
+    type: TimelineStepType.WAITING,
+    content: (
+      <>
+        <StatusWithDate status={statusLabelMapping[status]} />
+        {isCurrentStep && status === CollectiveOfferDisplayedStatus.DRAFT && (
+          <DraftBanner offerId={offer.id} />
+        )}
+        {isCurrentStep &&
+          status === CollectiveOfferDisplayedStatus.UNDER_REVIEW && (
+            <UnderReviewBanner />
+          )}
+      </>
+    ),
+  }
+}
+
+const buildRejectedPastStep = ({
+  offer,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  return {
+    type: TimelineStepType.ERROR,
+    content: (
+      <>
+        {getStatusWithDate(
+          CollectiveOfferDisplayedStatus.REJECTED,
+          datetime,
+          venueDepartmentCode
+        )}
+        {isCurrentStep && (
+          <RejectedBanner
+            offerId={offer.id}
+            canDuplicate={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_DUPLICATE
+            )}
+          />
+        )}
+      </>
+    ),
+  }
+}
+
+const buildBookedPastStep = ({
+  offer,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  return {
+    type: TimelineStepType.SUCCESS,
+    content: (
+      <>
+        {getStatusWithDate(
+          CollectiveOfferDisplayedStatus.BOOKED,
+          datetime,
+          venueDepartmentCode
+        )}
+        {isCurrentStep && (
+          <BookedBanner
+            offerId={offer.id}
+            cancellationLimitDate={offer.booking?.cancellationLimitDate}
+            departmentCode={offer.venue.departementCode}
+            canEditDiscount={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+            )}
+          />
+        )}
+      </>
+    ),
+  }
+}
+
+const buildExpiredPastStep = ({
+  offer,
+  past,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+  bookingLimitDatetime,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  past: PastHistoryStep[]
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+  bookingLimitDatetime: string
+}): TimelineStep => {
+  const stepBeforeExpiredStatus = past[past.length - 2].status
+
+  return {
+    type: TimelineStepType.ERROR,
+    content: (
+      <>
+        {getStatusWithDate(
+          CollectiveOfferDisplayedStatus.EXPIRED,
+          datetime,
+          venueDepartmentCode
+        )}
+        {isCurrentStep && (
+          <ExpiredBanner
+            stepBeforeExpiredStatus={stepBeforeExpiredStatus}
+            offerId={offer.id}
+            bookingLimitDatetime={bookingLimitDatetime}
+            departmentCode={offer.venue.departementCode}
+            canEditDates={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_EDIT_DATES
+            )}
+            contactEmail={
+              offer.booking?.educationalRedactor?.email ?? offer.teacher?.email
+            }
+          />
+        )}
+      </>
+    ),
+  }
+}
+
+const buildCancelledPastStep = ({
+  offer,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  return {
+    type: TimelineStepType.ERROR,
+    content: (
+      <>
+        {getStatusWithDate(
+          CollectiveOfferDisplayedStatus.CANCELLED,
+          datetime,
+          venueDepartmentCode
+        )}
+        {isCurrentStep && (
+          <CancelledBanner
+            offerId={offer.id}
+            reason={offer.booking?.cancellationReason}
+            canDuplicate={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_DUPLICATE
+            )}
+          />
+        )}
+      </>
+    ),
+  }
+}
+
+const buildEndedPastStep = ({
+  offer,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  const endedMoreThan48hAgo = datetime && isMoreThan48hAgo(datetime)
+
+  return {
+    type: TimelineStepType.SUCCESS,
+    content: (
+      <>
+        {getStatusWithDate(
+          CollectiveOfferDisplayedStatus.ENDED,
+          datetime,
+          venueDepartmentCode
+        )}
+        {isCurrentStep && !endedMoreThan48hAgo && (
+          <EndBanner
+            offerId={offer.id}
+            canEditDiscount={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+            )}
+          />
+        )}
+      </>
+    ),
+  }
+}
+
+const buildSimpleSuccessPastStep = ({
+  status,
+  datetime,
+  isCurrentStep,
+  venueDepartmentCode,
+}: {
+  status:
+    | CollectiveOfferDisplayedStatus.REIMBURSED
+    | CollectiveOfferDisplayedStatus.ARCHIVED
+  datetime: string | null | undefined
+  isCurrentStep: boolean
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  return {
+    type: TimelineStepType.SUCCESS,
+    content: (
+      <>
+        {getStatusWithDate(status, datetime, venueDepartmentCode)}
+        {isCurrentStep &&
+          status === CollectiveOfferDisplayedStatus.REIMBURSED && (
+            <ReimbursedBanner />
+          )}
+        {isCurrentStep &&
+          status === CollectiveOfferDisplayedStatus.ARCHIVED && (
+            <ArchivedBanner />
+          )}
+      </>
+    ),
+  }
+}
+
+const buildPastStep = ({
+  offer,
+  past,
+  datetime,
+  status,
+  index,
+  venueDepartmentCode,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  past: PastHistoryStep[]
+  datetime: string | null | undefined
+  status: CollectiveOfferDisplayedStatus
+  index: number
+  venueDepartmentCode: string | null | undefined
+}): TimelineStep => {
+  const isCurrentStep = past.length - 1 === index
+
+  switch (status) {
+    case CollectiveOfferDisplayedStatus.DRAFT:
+    case CollectiveOfferDisplayedStatus.UNDER_REVIEW:
+      return buildWaitingPastStep({
+        offer,
+        status,
+        isCurrentStep,
+      })
+    case CollectiveOfferDisplayedStatus.REJECTED:
+      return buildRejectedPastStep({
+        offer,
+        datetime,
+        isCurrentStep,
+        venueDepartmentCode,
+      })
+    case CollectiveOfferDisplayedStatus.PUBLISHED:
+    case CollectiveOfferDisplayedStatus.PREBOOKED:
+      return {
+        type: TimelineStepType.SUCCESS,
+        content: getStatusWithDate(status, datetime, venueDepartmentCode),
+      }
+    case CollectiveOfferDisplayedStatus.BOOKED:
+      return buildBookedPastStep({
+        offer,
+        datetime,
+        isCurrentStep,
+        venueDepartmentCode,
+      })
+    case CollectiveOfferDisplayedStatus.EXPIRED:
+      return offer.collectiveStock?.bookingLimitDatetime
+        ? buildExpiredPastStep({
+            offer,
+            past,
+            datetime,
+            isCurrentStep,
+            venueDepartmentCode,
+            bookingLimitDatetime: offer.collectiveStock.bookingLimitDatetime,
+          })
+        : buildFallbackPastStep(status)
+    case CollectiveOfferDisplayedStatus.CANCELLED:
+      return buildCancelledPastStep({
+        offer,
+        datetime,
+        isCurrentStep,
+        venueDepartmentCode,
+      })
+    case CollectiveOfferDisplayedStatus.ENDED:
+      return buildEndedPastStep({
+        offer,
+        datetime,
+        isCurrentStep,
+        venueDepartmentCode,
+      })
+    case CollectiveOfferDisplayedStatus.REIMBURSED:
+    case CollectiveOfferDisplayedStatus.ARCHIVED:
+      return buildSimpleSuccessPastStep({
+        status,
+        datetime,
+        isCurrentStep,
+        venueDepartmentCode,
+      })
+    default:
+      return buildFallbackPastStep(status)
+  }
+}
+
+const buildFutureStep = (
+  status: CollectiveOfferDisplayedStatus
+): TimelineStep => {
+  return {
+    type: TimelineStepType.DISABLED,
+    content: (
+      <StatusWithDate
+        status={statusLabelMapping[status]}
+        stepType={TimelineStepType.DISABLED}
+      />
+    ),
+  }
+}
+
+const getWaitingStep = (
+  offer: GetCollectiveOfferResponseModel,
+  lastPastStep: PastHistoryStep
+): TimelineStep | null => {
+  const lastPastStepStatus = lastPastStep.status
+
+  if (!waitingWording[lastPastStepStatus]) {
+    return null
+  }
+
+  if (
+    lastPastStepStatus === CollectiveOfferDisplayedStatus.ENDED &&
+    lastPastStep.datetime &&
+    isMoreThan48hAgo(lastPastStep.datetime)
+  ) {
+    return {
+      type: TimelineStepType.WAITING,
+      content: (
+        <>
+          <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+          <ReimbursementWaitingBanner />
+        </>
+      ),
+    }
+  }
+
+  if (
+    (lastPastStepStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
+      lastPastStepStatus === CollectiveOfferDisplayedStatus.PREBOOKED) &&
+    offer.collectiveStock?.bookingLimitDatetime
+  ) {
+    return {
+      type: TimelineStepType.WAITING,
+      content: (
+        <>
+          <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+          <BookingWaitingBanner
+            offerStatus={lastPastStepStatus}
+            offerId={offer.id}
+            bookingLimitDatetime={offer.collectiveStock.bookingLimitDatetime}
+            departmentCode={offer.venue.departementCode}
+            canEditDates={isActionAllowedOnCollectiveOffer(
+              offer,
+              CollectiveOfferAllowedAction.CAN_EDIT_DATES
+            )}
+            contactEmail={
+              offer.booking?.educationalRedactor?.email ?? offer.teacher?.email
+            }
+          />
+        </>
+      ),
+    }
+  }
+
+  return null
+}
+
+const buildAllSteps = ({
+  offer,
+  past,
+  pastSteps,
+  futureSteps,
+}: {
+  offer: GetCollectiveOfferResponseModel
+  past: PastHistoryStep[]
+  pastSteps: TimelineStep[]
+  futureSteps: TimelineStep[]
+}) => {
+  const lastPastStep = past[past.length - 1]
+  const waitingStep = getWaitingStep(offer, lastPastStep)
+
+  if (waitingStep) {
+    return [...pastSteps, waitingStep, ...futureSteps]
+  }
+
+  return [...pastSteps, ...futureSteps]
+}
+
 export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
   const venueDepartmentCode =
     offer.location?.location?.departmentCode ?? offer.venue.departementCode
 
-  const pastSteps = past.map(({ datetime, status }, index) => {
-    const statusLabel = statusLabelMapping[status]
-    const isCurrentStep = past.length - 1 === index
-
-    if (status === CollectiveOfferDisplayedStatus.DRAFT) {
-      return {
-        type: TimelineStepType.WAITING,
-        content: (
-          <>
-            <StatusWithDate status={statusLabel} />
-            {isCurrentStep && <DraftBanner offerId={offer.id} />}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.UNDER_REVIEW) {
-      return {
-        type: TimelineStepType.WAITING,
-        content: (
-          <>
-            <StatusWithDate status={statusLabel} />
-            {isCurrentStep && <UnderReviewBanner />}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.REJECTED) {
-      return {
-        type: TimelineStepType.ERROR,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && (
-              <RejectedBanner
-                offerId={offer.id}
-                canDuplicate={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_DUPLICATE
-                )}
-              />
-            )}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.PUBLISHED) {
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={
-              datetime
-                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                : undefined
-            }
-          />
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.PREBOOKED) {
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={
-              datetime
-                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                : undefined
-            }
-          />
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.BOOKED) {
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && (
-              <BookedBanner
-                offerId={offer.id}
-                cancellationLimitDate={offer.booking?.cancellationLimitDate}
-                departmentCode={offer.venue.departementCode}
-                canEditDiscount={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
-                )}
-              />
-            )}
-          </>
-        ),
-      }
-    }
-
-    if (
-      status === CollectiveOfferDisplayedStatus.EXPIRED &&
-      offer.collectiveStock?.bookingLimitDatetime
-    ) {
-      const stepBeforeExpiredStatus = past[past.length - 2].status
-
-      return {
-        type: TimelineStepType.ERROR,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && (
-              <ExpiredBanner
-                stepBeforeExpiredStatus={stepBeforeExpiredStatus}
-                offerId={offer.id}
-                bookingLimitDatetime={
-                  offer.collectiveStock.bookingLimitDatetime
-                }
-                departmentCode={offer.venue.departementCode}
-                canEditDates={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_EDIT_DATES
-                )}
-                contactEmail={
-                  offer.booking?.educationalRedactor?.email ??
-                  offer.teacher?.email
-                }
-              />
-            )}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.CANCELLED) {
-      return {
-        type: TimelineStepType.ERROR,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && (
-              <CancelledBanner
-                offerId={offer.id}
-                reason={offer.booking?.cancellationReason}
-                canDuplicate={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_DUPLICATE
-                )}
-              />
-            )}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.ENDED) {
-      const endedMoreThan48hAgo = datetime && isMoreThan48hAgo(datetime)
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && !endedMoreThan48hAgo ? (
-              <EndBanner
-                offerId={offer.id}
-                canEditDiscount={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
-                )}
-              />
-            ) : null}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.REIMBURSED) {
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && <ReimbursedBanner />}
-          </>
-        ),
-      }
-    }
-
-    if (status === CollectiveOfferDisplayedStatus.ARCHIVED) {
-      return {
-        type: TimelineStepType.SUCCESS,
-        content: (
-          <>
-            <StatusWithDate
-              status={statusLabel}
-              date={
-                datetime
-                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                  : undefined
-              }
-            />
-            {isCurrentStep && <ArchivedBanner />}
-          </>
-        ),
-      }
-    }
-
-    return {
-      type: TimelineStepType.SUCCESS,
-      content: statusLabelMapping[status],
-    }
-  })
-
-  const futureSteps = future.map((status) => {
-    return {
-      type: TimelineStepType.DISABLED,
-      content: (
-        <StatusWithDate
-          status={statusLabelMapping[status]}
-          stepType={TimelineStepType.DISABLED}
-        />
-      ),
-    }
-  })
-
-  const waitingWording: Partial<
-    Record<CollectiveOfferDisplayedStatus, string>
-  > = {
-    [CollectiveOfferDisplayedStatus.PUBLISHED]: 'En attente de préréservation',
-    [CollectiveOfferDisplayedStatus.PREBOOKED]: 'En attente de réservation',
-    [CollectiveOfferDisplayedStatus.ENDED]: 'En attente de remboursement',
-  }
-
-  const getAllSteps = () => {
-    const lastPastStep = past[past.length - 1]
-    const lastPastStepStatus = lastPastStep.status
-
-    if (waitingWording[lastPastStepStatus]) {
-      if (
-        lastPastStepStatus === CollectiveOfferDisplayedStatus.ENDED &&
-        lastPastStep.datetime &&
-        isMoreThan48hAgo(lastPastStep.datetime)
-      ) {
-        const waitingStep = {
-          type: TimelineStepType.WAITING,
-          content: (
-            <>
-              <StatusWithDate status={waitingWording[lastPastStepStatus]} />
-              <ReimbursementWaitingBanner />
-            </>
-          ),
-        }
-        return [...pastSteps, waitingStep, ...futureSteps]
-      }
-
-      if (
-        (lastPastStepStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
-          lastPastStepStatus === CollectiveOfferDisplayedStatus.PREBOOKED) &&
-        offer.collectiveStock?.bookingLimitDatetime
-      ) {
-        const waitingStep = {
-          type: TimelineStepType.WAITING,
-          content: (
-            <>
-              <StatusWithDate status={waitingWording[lastPastStepStatus]} />
-              <BookingWaitingBanner
-                offerStatus={lastPastStepStatus}
-                offerId={offer.id}
-                bookingLimitDatetime={
-                  offer.collectiveStock.bookingLimitDatetime
-                }
-                departmentCode={offer.venue.departementCode}
-                canEditDates={isActionAllowedOnCollectiveOffer(
-                  offer,
-                  CollectiveOfferAllowedAction.CAN_EDIT_DATES
-                )}
-                contactEmail={
-                  offer.booking?.educationalRedactor?.email ??
-                  offer.teacher?.email
-                }
-              />
-            </>
-          ),
-        }
-
-        return [...pastSteps, waitingStep, ...futureSteps]
-      }
-    }
-
-    return [...pastSteps, ...futureSteps]
-  }
+  const pastSteps = past.map(({ datetime, status }, index) =>
+    buildPastStep({
+      offer,
+      past,
+      datetime,
+      status,
+      index,
+      venueDepartmentCode,
+    })
+  )
+  const futureSteps = future.map(buildFutureStep)
+  const allSteps = buildAllSteps({ offer, past, pastSteps, futureSteps })
 
   return (
     <>
       <h2 className={styles['title']}>{'Suivi de l’offre'}</h2>
       <div className={styles['timeline-container']}>
-        <Timeline steps={getAllSteps()} />
+        <Timeline steps={allSteps} />
       </div>
     </>
   )
