@@ -93,12 +93,12 @@ export const RequestFormDialog = ({
         iframeFrom: location.pathname,
         collectiveOfferTemplateId: offerId,
         comment: watch('description'),
-        phoneNumber: watch('teacherPhone'),
+        phoneNumber: watch('teacherPhone') || undefined,
         requestedDate: isDateValid(watch('offerDate'))
           ? watch('offerDate')
           : undefined,
-        totalStudents: watch('nbStudents'),
-        totalTeachers: watch('nbTeachers'),
+        totalStudents: watch('nbStudents') || undefined,
+        totalTeachers: watch('nbTeachers') || undefined,
       })
     }
     reset()

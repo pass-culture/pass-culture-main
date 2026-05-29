@@ -176,8 +176,8 @@ describe('RequestFormDialog', () => {
       comment: 'Test description',
       phoneNumber: undefined,
       requestedDate: today,
-      totalTeachers: 0,
-      totalStudents: 0,
+      totalTeachers: undefined,
+      totalStudents: undefined,
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre demande a bien été envoyée'
@@ -270,10 +270,6 @@ describe('RequestFormDialog', () => {
       iframeFrom: '/',
       collectiveOfferTemplateId: 1,
       comment: 'Test description',
-      phoneNumber: '',
-      requestedDate: undefined,
-      totalStudents: 0,
-      totalTeachers: 0,
     })
   })
 

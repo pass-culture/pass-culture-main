@@ -12,7 +12,7 @@ export const createCollectiveRequestPayload = (
     requestedDate: isDateValid(formValues.offerDate)
       ? formValues.offerDate
       : undefined,
-    totalTeachers: formValues.nbTeachers,
-    totalStudents: formValues.nbStudents,
+    totalTeachers: formValues.nbTeachers || undefined,
+    totalStudents: formValues.nbStudents || undefined,
   }
 }
