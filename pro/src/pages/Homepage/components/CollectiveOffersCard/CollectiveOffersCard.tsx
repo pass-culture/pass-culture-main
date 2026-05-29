@@ -4,25 +4,26 @@ import { CollectiveOffersBookableCard } from '../CollectiveOffersBookableCard/Co
 import { CollectiveOffersTemplateCard } from '../CollectiveOffersTemplateCard/CollectiveOffersTemplateCard'
 import { OffersEmptyStateCard } from '../OffersEmptyStateCard/OffersEmptyStateCard'
 import { OffersRetentionCard } from '../OffersRetentionCard/OffersRetentionCard'
-import type {
-  CollectiveOffersCardVariant,
-  CollectiveOffersVariantMap,
+import {
+  type CollectiveOffersCardVariant,
+  type CollectiveOffersVariantMap,
+  OffersCardVariant,
 } from '../types'
 
 type CollectiveOffersCardConfigs = {
   [K in CollectiveOffersCardVariant]: {
-    emptyStateVariant: K
+    emptyStateVariant: OffersCardVariant
     renderOffers: (offers: CollectiveOffersVariantMap[K][]) => React.ReactNode
   }
 }
 
 const COLLECTIVE_OFFERS_CARD_CONFIG: CollectiveOffersCardConfigs = {
   BOOKABLE: {
-    emptyStateVariant: 'BOOKABLE',
+    emptyStateVariant: OffersCardVariant.BOOKABLE,
     renderOffers: (offers) => <CollectiveOffersBookableCard offers={offers} />,
   },
   TEMPLATE: {
-    emptyStateVariant: 'TEMPLATE',
+    emptyStateVariant: OffersCardVariant.TEMPLATE,
     renderOffers: (offers) => <CollectiveOffersTemplateCard offers={offers} />,
   },
 }

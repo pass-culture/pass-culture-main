@@ -1,3 +1,5 @@
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -34,7 +36,14 @@ export const OffersRetentionCard = ({
 }: {
   variant: OffersCardVariant
 }) => {
+  const { logEvent } = useAnalytics()
   const config = RETENTION_CONFIG[variant]
+  const logSeeAllOffersClick = () =>
+    logEvent(HomepageEvents.CLICKED_SEE_ALL_OFFERS, {
+      offersVariant: variant,
+      hasOffersDisplayed: false,
+    })
+
   return (
     <Card>
       <Card.Header title={config.title} />
@@ -47,6 +56,7 @@ export const OffersRetentionCard = ({
           variant={ButtonVariant.PRIMARY}
           to={config.toOffersList}
           as="a"
+          onClick={logSeeAllOffersClick}
         />
         <Button
           label={config.buttonLabel}
