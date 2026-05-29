@@ -136,7 +136,6 @@ class FeatureToggle(enum.Enum):
         "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
     )
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES = "Active l'utilisation du cron pour les màj des attributs pro"
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_IMGPROXY_PRO = "Activer l'utilisation du nouveau format de requête pour le resizing d'image sur le portail pro"
@@ -205,7 +204,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES,
-    FeatureToggle.WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
