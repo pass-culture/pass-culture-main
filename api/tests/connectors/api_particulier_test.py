@@ -26,7 +26,7 @@ class QuotientFamilialTest:
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
+            gender=users_models.GenderEnum.M,
             birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
             birth_city_cog_code="08480",
         )
@@ -45,7 +45,7 @@ class QuotientFamilialTest:
             "anneeDateNaissance": ["1982"],
             "moisDateNaissance": ["12"],
             "jourDateNaissance": ["27"],
-            "sexeEtatCivil": ["F"],
+            "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
             "codeCogInseeCommuneNaissance": ["08480"],
             "annee": ["2023"],
@@ -59,7 +59,7 @@ class QuotientFamilialTest:
                         nom_naissance="LEFEBVRE",
                         prenoms="ALEXIS GÉRÔME JEAN-PHILIPPE",
                         date_naissance=date(1982, 12, 27),
-                        sexe=users_models.GenderEnum.F,
+                        sexe=users_models.GenderEnum.M,
                     )
                 ],
                 enfants=[
@@ -101,7 +101,7 @@ class QuotientFamilialTest:
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
+            gender=users_models.GenderEnum.M,
             birth_country_cog_code="99243",
             birth_city_cog_code="ignor",
         )
@@ -120,7 +120,7 @@ class QuotientFamilialTest:
             "anneeDateNaissance": ["1982"],
             "moisDateNaissance": ["12"],
             "jourDateNaissance": ["27"],
-            "sexeEtatCivil": ["F"],
+            "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": ["99243"],
             "annee": ["2023"],
             "mois": ["6"],
@@ -194,7 +194,7 @@ class DisabledAdultAllowanceTest:
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
+            gender=users_models.GenderEnum.M,
             birth_country_cog_code="99243",
             birth_city_cog_code="ignor",
         )
@@ -210,7 +210,7 @@ class DisabledAdultAllowanceTest:
             "anneeDateNaissance": ["1982"],
             "moisDateNaissance": ["12"],
             "jourDateNaissance": ["27"],
-            "sexeEtatCivil": ["F"],
+            "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": ["99243"],
         }
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
@@ -283,7 +283,7 @@ class DisabledChildEducationAllowanceTest:
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
+            gender=users_models.GenderEnum.M,
             birth_country_cog_code="99243",
             birth_city_cog_code="ignor",
         )
@@ -299,7 +299,7 @@ class DisabledChildEducationAllowanceTest:
             "anneeDateNaissance": ["1982"],
             "moisDateNaissance": ["12"],
             "jourDateNaissance": ["27"],
-            "sexeEtatCivil": ["F"],
+            "sexeEtatCivil": ["M"],
             "codeCogInseePaysNaissance": ["99243"],
         }
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()

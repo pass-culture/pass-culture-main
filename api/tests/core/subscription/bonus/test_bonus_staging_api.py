@@ -27,7 +27,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 children=[
-                    bonus_schemas.QuotientFamilialChild(
+                    bonus_schemas.QuotientFamilialPerson(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],
@@ -67,7 +67,7 @@ class StagingQuotientFamilialTest:
                     provider="CNAF", value=999_999_999, year=2023, month=6, computation_year=2024, computation_month=12
                 ),
                 children=[
-                    bonus_schemas.QuotientFamilialChild(
+                    bonus_schemas.QuotientFamilialPerson(
                         last_name=user.lastName,
                         common_name=None,
                         first_names=[user.firstName],

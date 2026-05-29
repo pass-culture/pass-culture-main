@@ -25,7 +25,7 @@ class Person(BaseModelV2):
     birth_city_cog_code: CogCode | None = None
 
 
-class QuotientFamilialChild(BaseModelV2):
+class QuotientFamilialPerson(BaseModelV2):
     last_name: str | None = None
     common_name: str | None = None
     first_names: list[str]
@@ -45,7 +45,8 @@ class QuotientFamilialContent(BaseModelV2):
 class QuotientFamilialBonusCreditContent(BaseModelV2):
     custodian: Person
     quotient_familial: QuotientFamilialContent | None = None
-    children: list[QuotientFamilialChild] | None = None
+    householders: list[QuotientFamilialPerson] | None = None
+    children: list[QuotientFamilialPerson] | None = None
     http_status_code: int | None = None
     error_code: str | None = None
 
