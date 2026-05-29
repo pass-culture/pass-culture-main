@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays } from 'date-fns'
+import { addDays, format } from 'date-fns'
 
 import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -146,6 +147,48 @@ describe('OfferEducationalStock', () => {
     ).toBeDisabled()
   })
 
+  it('should send all data if the stock does not already exists', async () => {
+    const user = userEvent.setup()
+
+    const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      initialStock: {
+        // no id given => stock doesn't exists
+        startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+        numberOfTickets: 10,
+        price: 100,
+        educationalPriceDetail: 'Détail du prix',
+      },
+      departementCode: '75',
+    }
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+    const eventTime = '11:00',
+      expectedEventTime = '09:00' // due to departementCode: '75'
+    const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
+
+    await user.type(screen.getAllByLabelText(/Date de fin */)[1], tomorrow)
+    await user.type(screen.getByLabelText(/Horaire */), eventTime)
+    await user.type(screen.getByLabelText(/Date limite/), today)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+      startDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
+      endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
+      bookingLimitDatetime: `${today}T21:59:59Z`,
+      numberOfTickets: 10,
+      totalPrice: 100,
+      educationalPriceDetail: 'Détail du prix',
+    })
+  })
+
   it('should send only dirty data if the stock already exists', async () => {
     const user = userEvent.setup()
 
@@ -154,6 +197,7 @@ describe('OfferEducationalStock', () => {
       ...defaultProps,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
       initialStock: {
+        id: 12, // this is how we know the stock exists.
         startDatetime: tomorrow,
         endDatetime: tomorrow,
         bookingLimitDatetime: tomorrow,

@@ -105,20 +105,24 @@ export const OfferEducationalStock = ({
         ...dateFormValues
       } = formValues
 
-      const dirtyKeys = new Set(Object.keys(form.formState.dirtyFields))
-
       const updatedStock: Partial<CollectiveStockCreationBodyModel> = {}
-      if (dirtyKeys.has('educationalPriceDetail') && educationalPriceDetail) {
+      const dirtyKeys = new Set(Object.keys(form.formState.dirtyFields))
+      const shouldSaveAllFields = !initialStock.id
+
+      if (shouldSaveAllFields || dirtyKeys.has('educationalPriceDetail')) {
         updatedStock.educationalPriceDetail = educationalPriceDetail
       }
-      if (dirtyKeys.has('totalPrice') && totalPrice) {
+      if (shouldSaveAllFields || dirtyKeys.has('totalPrice')) {
         updatedStock.totalPrice = totalPrice
       }
-      if (dirtyKeys.has('numberOfTickets') && numberOfTickets) {
+      if (shouldSaveAllFields || dirtyKeys.has('numberOfTickets')) {
         updatedStock.numberOfTickets = numberOfTickets
       }
 
-      if (Object.keys(dateFormValues).some((dateK) => dirtyKeys.has(dateK))) {
+      const hasDirtyDates = Object.keys(dateFormValues).some((k) =>
+        dirtyKeys.has(k)
+      )
+      if (shouldSaveAllFields || hasDirtyDates) {
         const stockDates = buildDatetimesForStock(
           dateFormValues,
           departementCode
