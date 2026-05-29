@@ -320,6 +320,7 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
 
     assert user  # helps mypy
     user.setPassword(new_password)
+    sessions.disconnect_native_user_sessions(user.id)
 
     if not user.isEmailValidated:
         user.isEmailValidated = True
@@ -572,6 +573,7 @@ def change_email(
         db.session.commit()
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
+    sessions.disconnect_native_user_sessions(user_id=current_user.id)
     db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
 
     if transaction_manager.is_managed_transaction():
@@ -597,6 +599,7 @@ def change_pro_user_email(
 def update_user_password(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
     db.session.add(user)
+    sessions.disconnect_native_user_sessions(user.id)
     if transaction_manager.is_managed_transaction():
         db.session.flush()
     else:
@@ -605,6 +608,7 @@ def update_user_password(user: models.User, new_password: str) -> None:
 
 def update_password_and_external_user(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
+    sessions.disconnect_native_user_sessions(user.id)
     if not user.isEmailValidated:
         user.isEmailValidated = True
         external_attributes_api.update_external_user(user)
@@ -641,6 +645,11 @@ def update_user_info(
     if email is not UNCHANGED:
         old_email = user.email
         user.email = email_utils.sanitize_email(email)
+        if old_email != email:
+            sessions.disconnect_native_user_sessions(user.id)
+            if user.has_pro_role:
+                # TODO(prouzet) even for young users, we should probably remove contact with former email from Brevo lists
+                external_attributes_api.update_external_pro(old_email)
     if first_name is not UNCHANGED:
         if user.firstName != first_name:
             snapshot.set("firstName", old=user.firstName, new=first_name)
@@ -705,9 +714,6 @@ def update_user_info(
     else:
         db.session.add(user)
 
-    # TODO(prouzet) even for young users, we should probably remove contact with former email from Brevo lists
-    if old_email and user.has_pro_role:
-        external_attributes_api.update_external_pro(old_email)
     external_attributes_api.update_external_user(user, batch_extra_data=batch_extra_data)
 
     return snapshot

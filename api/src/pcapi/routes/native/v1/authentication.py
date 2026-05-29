@@ -21,6 +21,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.sessions import create_user_jwt_tokens
+from pcapi.core.users.sessions import disconnect_native_user_sessions
 from pcapi.core.users.sessions import refresh_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -174,6 +175,7 @@ def change_password(body: ChangePasswordRequest) -> None:
     except ApiErrors:
         raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 
+    disconnect_native_user_sessions(current_user.id)
     current_user.setPassword(body.new_password)
     db.session.add(current_user)
     db.session.commit()
