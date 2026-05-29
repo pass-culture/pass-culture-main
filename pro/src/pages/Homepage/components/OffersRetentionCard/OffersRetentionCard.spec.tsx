@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OffersCardVariant } from '../types'
@@ -178,6 +179,26 @@ describe('OffersRetentionCard', () => {
       screen.getByRole('link', { name: 'Voir toutes les offres' })
     )
 
-    expect(screen.getByText('Page liste offres individual')).toBeVisible()
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      HomepageEvents.CLICKED_SEE_ALL_OFFERS,
+      {
+        offersVariant: OffersCardVariant.INDIVIDUAL,
+        hasOffersDisplayed: false,
+      }
+    )
+  })
+
+  it('should log event on press CTA that sends to offer creation', async () => {
+    const { user } = renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL)
+
+    await user.click(screen.getByRole('link', { name: 'Créer une offre' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      HomepageEvents.CLICKED_CREATE_OFFER,
+      {
+        offersVariant: OffersCardVariant.INDIVIDUAL,
+        hasOffers: true,
+      }
+    )
   })
 })

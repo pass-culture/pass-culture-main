@@ -1,5 +1,8 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OffersCardVariant } from '../types'
@@ -69,4 +72,28 @@ it('should display correct information when variant is INDIVIDUAL', () => {
   expect(
     screen.getByRole('link', { name: 'Créer une offre individuelle' })
   ).toHaveAttribute('href', '/offre/individuelle/creation/description')
+})
+
+it('should log event on press CTA that sends to offer creation', async () => {
+  const mockLogEvent = vi.fn()
+
+  vi.spyOn(useAnalytics, 'useAnalytics').mockImplementationOnce(() => ({
+    logEvent: mockLogEvent,
+  }))
+  const user = userEvent.setup()
+  renderWithProviders(
+    <OffersEmptyStateCard variant={OffersCardVariant.BOOKABLE} />
+  )
+
+  await user.click(
+    screen.getByRole('link', { name: 'Créer une offre réservable' })
+  )
+
+  expect(mockLogEvent).toHaveBeenCalledWith(
+    HomepageEvents.CLICKED_CREATE_OFFER,
+    {
+      offersVariant: OffersCardVariant.BOOKABLE,
+      hasOffers: false,
+    }
+  )
 })
