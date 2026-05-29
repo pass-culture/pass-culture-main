@@ -113,6 +113,7 @@ export enum WelcomeCarouselEvents {
 
 export enum HomepageEvents {
   CLICKED_PARTNER_PAGE = 'hasClickedPartnerPage',
+  CLICKED_FILL_PARTNER_PAGE = 'hasClickedFillPartnerPage',
   CLICKED_HEADLINE_OFFER = 'hasClickedHeadlineOffer',
   CLICKED_CULTURAL_SURVEY = 'hasClickedCulturalSurvey',
   CLICKED_WEBINAR = 'hasClickedWebinar',

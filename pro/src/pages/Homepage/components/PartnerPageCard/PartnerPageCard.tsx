@@ -37,6 +37,9 @@ export const PartnerPageCard = ({
   const logPartnerPageClick = useFunctionOnce(() =>
     logEvent(HomepageEvents.CLICKED_PARTNER_PAGE)
   )
+  const logFillPartnerPageClick = () =>
+    logEvent(HomepageEvents.CLICKED_FILL_PARTNER_PAGE, { variant })
+
   const { imageValues, handleOnImageUpload } = useOnVenueImageUpload(
     venueId,
     venueBannerUrl,
@@ -84,6 +87,7 @@ export const PartnerPageCard = ({
           size={ButtonSize.SMALL}
           to={venueEditionLink}
           as="a"
+          onClick={logFillPartnerPageClick}
         />
         {variant === HomepageVariant.INDIVIDUAL && (
           <Button
