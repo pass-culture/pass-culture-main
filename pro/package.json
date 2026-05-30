@@ -103,7 +103,7 @@
     "allure-js-commons": "3.9.0",
     "allure-vitest": "3.9.0",
     "axe-core": "4.11.4",
-    "check-unused-css": "^0.4.0",
+    "check-unused-css": "^0.4.1",
     "jsdom": "29.1.1",
     "mustache": "4.2.0",
     "node-fetch": "3.3.2",

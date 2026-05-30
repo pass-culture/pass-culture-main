@@ -23,10 +23,6 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "./built",
-    // TODO (mdesquilbet - 17/05/2026): remove `baseUrl` and `ignoreDeprecations` when `check-unused-css`
-    // has fix this issue : https://github.com/malinindev/check-unused-css/issues/73
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "*": ["./src/*"]

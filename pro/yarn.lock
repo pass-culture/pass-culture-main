@@ -2554,10 +2554,10 @@ check-error@^2.1.1:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-2.1.3.tgz#2427361117b70cca8dc89680ead32b157019caf5"
   integrity sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA==
 
-check-unused-css@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/check-unused-css/-/check-unused-css-0.4.0.tgz#a7c1101feb53ef026a6d2e1060887009fe47042a"
-  integrity sha512-WrxDEbuGcJTPFNGXLxwzYJl3GSnnztIOesYZSOr07mpoow+H+LEq8amiPXZuGqrlcOjceX2GKlgB8Lt5P4GvOA==
+check-unused-css@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/check-unused-css/-/check-unused-css-0.4.1.tgz#5a4b3d99b2839b89b3aac951ea9254dea7f2ffe7"
+  integrity sha512-DqmdpruM86Ey2Bha942URGEtwgcLF/syATk1abKZaMn5ymEOJCyQUsABQdsqCwICIjYGipA1onpCl1veWR6tOw==
   dependencies:
     "@typescript-eslint/typescript-estree" "^8.58.2"
     css-selector-parser "^3.3.0"
