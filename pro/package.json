@@ -21,7 +21,7 @@
     "lint:scss:fix": "yarn lint:scss --fix",
     "lint:scss:hook": "stylelint",
     "lint:scss:hook:fix": "yarn lint:scss:hook --fix",
-    "lint:scss:checkunused": "check-unused-css --exclude \"scr/apiClient/**\"",
+    "lint:scss:checkunused": "check-unused-css --exclude \"src/apiClient/**\"",
     "lint:dead-code": "knip",
     "lint:dead-code:production": "knip --config knip.production.json --production --files",
     "lint:dead-code:fix": "knip --fix --allow-remove-files",
