@@ -50,14 +50,14 @@
        tabindex="0"
        class="pb-3 overflow-y-auto pc-fill-to-bottom"
        id="{{ navbar_name }}-container">
-    <div class="vstack gap-1">
+    <div class="vstack">
       {# wrap sections in divs to separate them with gaps #}
       {{ caller() }}
     </div>
   </div>
 {% endmacro %}
 {% macro nav_section(section_name, title) %}
-  <div class="pt-4">
+  <div class="pt-3">
     <h4 class="{{ ' focus' if (active_tab == section_name) else ''}}"
         id="{{ section_name }}-section">{{ title }}</h4>
     {{ caller() }}
@@ -68,7 +68,7 @@
     <!-- MAIN COLUMN -->
     <div class="col-9 px-5 pt-3">
       {% block main_column_container %}
-        <div class="vstack gap-3">
+        <div class="vstack gap-2">
           {% block before_title %}
           {% endblock before_title %}
           <!-- TITLE + TAGS -->
