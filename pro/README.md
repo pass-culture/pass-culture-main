@@ -1,6 +1,6 @@
 # 🚀 pass Culture PRO — App Front-End
 
-Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'application Web du portail professionnel du pass Culture.
+Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'application Web du portail professionnel du pass Culture
 
 **Sommaire**
 
