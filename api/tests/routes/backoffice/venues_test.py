@@ -390,6 +390,32 @@ class GetVenueTest(GetEndpointHelper):
         assert "Réservations frauduleuses" not in badges
         assert "Remboursements gelés" not in badges
 
+    def test_get_venue_with_empty_activity(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(
+            activity=None,
+            venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
+            contact__website="www.example.com",
+            publicName="Le grand Rantanplan 1",
+            managingOfferer__allowedOnAdage=False,
+            offererAddress__address__street="1 Boulevard de la Croisette",
+            offererAddress__address__postalCode="06400",
+            offererAddress__address__city="Cannes",
+            offererAddress__address__latitude=43.551407,
+            offererAddress__address__longitude=7.017984,
+            offererAddress__address__inseeCode="06029",
+            offererAddress__address__banId="06029_0880_00001",
+            offererAddress__address__departmentCode="06",
+            isOpenToPublic=True,
+        )
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Activité principale : Autre" in response_text
+
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory(
             adageId="7122022", contact=None, managingOfferer__allowedOnAdage=True

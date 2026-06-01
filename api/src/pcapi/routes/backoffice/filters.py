@@ -2252,7 +2252,10 @@ ACTIVITY_MAPPING = {
 }
 
 
-def format_activity(activity: offerers_models.Activity) -> str:
+# TODO(pro-activation): remove None activity once all are filled
+def format_activity(activity: offerers_models.Activity | None) -> str:
+    if not activity:
+        return ACTIVITY_MAPPING[offerers_models.Activity.OTHER]
     return ACTIVITY_MAPPING.get(activity, activity.name)
 
 
