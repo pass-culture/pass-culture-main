@@ -9,7 +9,7 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
-import { api } from 'apiClient/api'
+import { api, apiNew } from 'apiClient/api'
 import { HeadlineOffer } from './HeadlineOffer'
 
 describe('HeadlineOffer', () => {
@@ -18,7 +18,7 @@ describe('HeadlineOffer', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',
       venueId: 1,

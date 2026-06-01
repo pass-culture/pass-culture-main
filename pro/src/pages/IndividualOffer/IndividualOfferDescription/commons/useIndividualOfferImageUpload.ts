@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { CreateThumbnailResponseModel } from '@/apiClient/v1'
 import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -69,11 +69,11 @@ export const useIndividualOfferImageUpload = (
           offerId,
         }
 
-        return await api.createThumbnail(thumbnail)
+        return await apiNew.createThumbnail({ body: thumbnail })
       }
 
       if (shouldDeleteThumbnail) {
-        await api.deleteThumbnail(offerId)
+        await apiNew.deleteThumbnail({ path: { offer_id: offerId } })
       }
 
       return undefined

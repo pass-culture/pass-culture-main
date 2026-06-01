@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useMemo } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { HeadLineOfferResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { HeadLineOfferResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -49,7 +49,8 @@ export function HeadlineOfferContextProvider({
     selectedPartnerVenue
       ? [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id]
       : null,
-    ([, venueId]) => api.getVenueHeadlineOffer(venueId),
+    ([, venueId]) =>
+      apiNew.getVenueHeadlineOffer({ path: { venue_id: venueId } }),
     {
       onError: (error) => {
         // 404 is expected when there is no headline offer.
@@ -76,7 +77,7 @@ export function HeadlineOfferContextProvider({
       try {
         await mutate(
           [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
-          api.upsertHeadlineOffer({ offerId }),
+          apiNew.upsertHeadlineOffer({ body: { offerId } }),
           { populateCache: true, revalidate: false, throwOnError: true }
         )
 
@@ -99,7 +100,9 @@ export function HeadlineOfferContextProvider({
       try {
         await mutate(
           [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
-          api.deleteHeadlineOffer({ venueId: selectedPartnerVenue.id }),
+          apiNew.deleteHeadlineOffer({
+            body: { venueId: selectedPartnerVenue.id },
+          }),
           {
             populateCache: () => null,
             revalidate: false,

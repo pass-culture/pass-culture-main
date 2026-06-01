@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetVenueAddressResponseModel,
   ListOffersOfferResponseModel,
@@ -94,12 +94,10 @@ vi.mock('@/commons/utils/date', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
-  },
-  apiNew: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
@@ -631,7 +629,7 @@ describe('IndividualOffersScreen', () => {
         venueListItemFactory({ name: 'Une venue physique & permanente' }),
       ],
     })
-    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',
       venueId: 1,
