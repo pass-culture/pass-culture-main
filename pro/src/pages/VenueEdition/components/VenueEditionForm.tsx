@@ -163,7 +163,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             <MandatoryInfo />
             <FormLayout.SubSection
               title="Bénévolat"
-              isNew
               description={
                 <>
                   Proposez des missions de bénévolat au sein du service{' '}

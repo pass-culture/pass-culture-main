@@ -31,10 +31,6 @@ describe('logout', () => {
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '2')
     localStorage.setItem('homepageSelectedOffererId', '1')
-    localStorage.setItem(
-      LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION,
-      'true'
-    )
   })
 
   it('should call signout, clear localStorage, and reset related slices when shouldCallSignout=true', async () => {
@@ -52,9 +48,6 @@ describe('logout', () => {
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
     expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION)
-    ).toBe('true')
   })
 
   it('should handle signout error gracefully and still reset state', async () => {
@@ -73,8 +66,5 @@ describe('logout', () => {
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
     expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
-    expect(
-      localStorage.getItem(LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION)
-    ).toBe('true')
   })
 })
