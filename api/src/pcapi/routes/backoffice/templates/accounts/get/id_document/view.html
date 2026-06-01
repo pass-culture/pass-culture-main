@@ -1,0 +1,19 @@
+{#{% import "components/links.html" as links with context %}#}
+{% extends "layouts/standard.html" %}
+{% block title %}{{ user.full_name }}{% endblock %}
+{% block main_content %}
+  <div class="mx-2">
+    {% if pictures %}
+      {% for picture in pictures %}
+        <div class="py-2">
+          <img src="{{ encode_function(picture) }}"
+               alt="{{ picture.file_name }}"
+               class="pc-id-document" />
+          <br />
+        </div>
+      {% endfor %}
+    {% else %}
+      Aucune image n'est stockée pour la dernière identification Ubble de cet utilisateur, ou la clé saisie ne permet pas de les visualiser.
+    {% endif %}
+  </div>
+{% endblock main_content %}

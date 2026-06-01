@@ -43,6 +43,7 @@ class Permissions(enum.Enum):
     EXTEND_DEPOSIT_VALIDITY = "étendre la validité d'un crédit"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
+    READ_ID_DOCUMENT = "consulter les documents d’identité d'un jeune"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
     ANONYMIZE_PUBLIC_ACCOUNT = "anonymiser un compte grand public"
     READ_CHRONICLE = "visualiser les chroniques"

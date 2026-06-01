@@ -1,3 +1,4 @@
+import base64
 import datetime
 import enum
 import re
@@ -42,6 +43,7 @@ from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
+from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
@@ -65,6 +67,7 @@ from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.backoffice.utils import user_actions
 from pcapi.routes.backoffice.utils.details_actions import DetailsActions
+from pcapi.routes.backoffice.utils.extra_funcs import no_cache
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
@@ -101,6 +104,7 @@ class AccountDetailsActionType(enum.StrEnum):
     ANONYMIZE = enum.auto()
     TAG = enum.auto()
     EXTEND_DEPOSIT = enum.auto()
+    READ_ID_DOCUMENT = enum.auto()
 
 
 def _get_account_details_actions(user: users_models.User) -> DetailsActions:
@@ -143,6 +147,10 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
         perm_models.Permissions.EXTEND_DEPOSIT_VALIDITY
     ) and users_api.can_extend_deposit_validity(user):
         account_details_actions.add_action(AccountDetailsActionType.EXTEND_DEPOSIT)
+    if access_control.has_current_user_permission(perm_models.Permissions.READ_ID_DOCUMENT) and any(
+        fraud_check.idPicturesStored for fraud_check in user.beneficiaryFraudChecks
+    ):
+        account_details_actions.add_action(AccountDetailsActionType.READ_ID_DOCUMENT)
 
     return account_details_actions
 
@@ -2231,3 +2239,54 @@ def mark_booking_as_not_fraudulent(booking_id: int) -> response_utils.Backoffice
     db.session.flush()
 
     return _render_individual_bookings([booking_id])
+
+
+def _get_user_for_id_document_routes(user_id: int) -> users_models.User:
+    user = (
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .join(users_models.User.beneficiaryFraudChecks)
+        .filter(subscription_models.BeneficiaryFraudCheck.idPicturesStored.is_(True))
+        .options(sa_orm.contains_eager(users_models.User.beneficiaryFraudChecks))
+        .one_or_none()
+    )
+
+    if not user:
+        raise NotFound()
+
+    return user
+
+
+@public_accounts_blueprint.route("/<int:user_id>/id-document", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.READ_ID_DOCUMENT)
+def get_id_document(user_id: int) -> response_utils.BackofficeResponse:
+    # check that User exists with stored documents
+    user = _get_user_for_id_document_routes(user_id)
+
+    form = account_forms.GetIdDocumentForm()
+
+    return render_template("accounts/get/id_document/login.html", user=user, form=form)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/id-document", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.READ_ID_DOCUMENT)
+@no_cache()
+def view_id_document(user_id: int) -> response_utils.BackofficeResponse:
+    user = _get_user_for_id_document_routes(user_id)
+
+    form = account_forms.GetIdDocumentForm()
+    if not form.validate():
+        return render_template("accounts/get/id_document/login.html", user=user, form=form), 400
+
+    pictures = ubble_api.get_archived_ubble_id_pictures_data(
+        user, access_key=form.username.data, secret_key=form.password.data
+    )
+
+    return render_template(
+        "accounts/get/id_document/view.html",
+        user=user,
+        pictures=pictures,
+        encode_function=lambda picture: (
+            f"data:{picture.mime_type};base64, {base64.b64encode(picture.content).decode()}"
+        ),
+    )

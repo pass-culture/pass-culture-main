@@ -75,6 +75,9 @@
   {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions.inline_actions %}
     {{ action_bar_button("calendar-plus", "Étendre la validité", modal_id="#extend-deposit-modal") }}
   {% endif %}
+  {% if allowed_actions.actions.READ_ID_DOCUMENT in allowed_actions.inline_actions %}
+    {{ action_bar_button("person-vcard", "Consulter PI", submit_form="id-document") }}
+  {% endif %}
   <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
@@ -116,6 +119,9 @@
       {% endif %}
       {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("calendar-plus", "Étendre la validité", modal_id="#extend-deposit-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.READ_ID_DOCUMENT in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("person-vcard", "Consulter PI", submit_form="id-document") }}</li>
       {% endif %}
     </ul>
     <button type="button"
@@ -330,5 +336,13 @@
   {% endif %}
   {% if allowed_actions.actions.EXTEND_DEPOSIT in allowed_actions %}
     {{ build_simple_modal_form("extend-deposit", extend_deposit_dst, extend_deposit_form, "Étendre la validité", "Enregistrer") }}
+  {% endif %}
+  {% if allowed_actions.actions.READ_ID_DOCUMENT in allowed_actions %}
+    <form name="id-document"
+          method="get"
+          action="{{ url_for('backoffice_web.public_accounts.get_id_document', user_id=user.id) }}"
+          target="_blank"
+          rel="noopener noreferrer">
+    </form>
   {% endif %}
 {% endblock extra_main_content %}

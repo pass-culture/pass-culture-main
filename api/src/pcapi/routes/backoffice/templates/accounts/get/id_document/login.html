@@ -1,0 +1,26 @@
+{#{% import "components/links.html" as links with context %}#}
+{% extends "layouts/standard.html" %}
+{% block title %}{{ user.full_name }}{% endblock %}
+{% block main_content %}
+  <form method="post"
+        action="{{ url_for('backoffice_web.public_accounts.view_id_document', user_id=user.id) }}"
+        name="id-document-login"
+        class="w-100">
+    <div class="d-flex flex-row justify-content-around w-100">
+      <div class="text-center"
+           style="width: 600px">
+        Accès au stockage sécurisé du document d'identité
+        <div class="form-group">
+          {% for form_field in form %}
+            <div class="w-100 my-4">
+              {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+            </div>
+            {{ form_field }}
+          {% endfor %}
+        </div>
+        <button type="submit"
+                class="btn btn-primary">Accéder</button>
+      </div>
+    </div>
+  </form>
+{% endblock main_content %}

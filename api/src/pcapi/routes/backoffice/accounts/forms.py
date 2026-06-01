@@ -294,3 +294,8 @@ class TagAccountForm(FlaskForm):
 
 class TagFraudulentBookingsForm(utils.PCForm):
     send_mails = fields.PCSwitchBooleanField("Envoyer un mail d'avertissement aux acteurs culturels", full_row=True)
+
+
+class GetIdDocumentForm(utils.PCForm):
+    username = fields.PCStringField("Identifiant de clé d'accès")
+    password = fields.PCPasswordField("Clé d'accès secrète")
