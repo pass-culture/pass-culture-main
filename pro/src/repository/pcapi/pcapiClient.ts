@@ -50,8 +50,8 @@ const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
       )
     }
     return results
-  } catch {
-    throw new Error(JSON.stringify(null))
+  } catch (error) {
+    throw error instanceof Error ? error : new Error(JSON.stringify(null))
   }
 }
 
