@@ -88,6 +88,7 @@ jobs:
           service_account: ${{ vars.PRO_PREVIEW_SERVICE_ACCOUNT }}
 
       - name: Change backend if a custom backend was required
+        if: inputs.custom_pcapi_backend_id != ''
         env:
           CUSTOM_BACKEND_ID: ${{ inputs.custom_pcapi_backend_id }}
         run: |
