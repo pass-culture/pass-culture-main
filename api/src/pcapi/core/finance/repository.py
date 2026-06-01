@@ -627,9 +627,13 @@ def get_paid_invoices_query(
     elif offerer_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
 
-    invoices = db.session.query(models.Invoice).filter(
-        models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
-        models.Invoice.status == models.InvoiceStatus.PAID,
+    invoices = (
+        db.session.query(models.Invoice)
+        .filter(
+            models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id)),
+            models.Invoice.status == models.InvoiceStatus.PAID,
+        )
+        .options(sa_orm.joinedload(models.Invoice.bankAccount).load_only(models.BankAccount.label))
     )
 
     if date_from:

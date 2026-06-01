@@ -14,6 +14,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # fetch user_offerers
 
     def test_is_impersonated(self, client):
         user = users_factories.BaseUserFactory(
@@ -27,7 +28,7 @@ class Returns200Test:
         with client.client.session_transaction() as session:
             session["internal_admin_email"] = user.email
 
-        with testing.assert_num_queries(self.num_queries, expire_session=False):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(url)
             assert response.status_code == 200
 
@@ -50,7 +51,7 @@ class Returns200Test:
         client = client.with_session_auth(email="toto@example.com")
         num_queries = 1  # select user + session
         num_queries += 1  # user_offerer
-        with testing.assert_num_queries(num_queries, expire_session=False):
+        with testing.assert_num_queries(num_queries):
             response = client.get("/users/current")
             assert response.status_code == 200
 

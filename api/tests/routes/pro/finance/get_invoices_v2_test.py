@@ -37,7 +37,6 @@ class GetInvoicesTest:
         client = client.with_session_auth(pro.email)
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        queries += 1  # select bank account
         with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/invoices")
             assert response.status_code == 200
@@ -77,7 +76,6 @@ class GetInvoicesTest:
         client = client.with_session_auth(pro.email)
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        queries += 1  # select bank account
         with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/invoices")
             assert response.status_code == 200
@@ -115,7 +113,7 @@ class GetInvoicesTest:
         params = {"bankAccountId": bank_account1.id}
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        with testing.assert_num_queries(queries, expire_session=False):
+        with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
@@ -144,7 +142,6 @@ class GetInvoicesTest:
         client = client.with_session_auth(pro.email)
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        queries += 1  # select bank account
         params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
         with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/invoices", params=params)
@@ -185,7 +182,7 @@ class GetInvoicesTest:
         params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # select invoice
-        with testing.assert_num_queries(queries, expire_session=False):
+        with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/invoices", params=params)
             assert response.status_code == 200
 
