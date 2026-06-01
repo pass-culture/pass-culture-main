@@ -212,7 +212,7 @@ describe('VenueEditionFormScreen', () => {
           },
           volunteeringUrl: 'http://coucou.fr',
         },
-        { initialRouterEntries: ['/'], features: ['WIP_VOLUNTEERING'] }
+        { initialRouterEntries: ['/'] }
       )
       expect(await screen.findByText('Vos informations')).toBeInTheDocument()
       expect(screen.getByText('À propos de votre activité')).toBeInTheDocument()
@@ -577,24 +577,11 @@ describe('VenueEditionFormScreen', () => {
       expect(editVenueSpy).toHaveBeenCalled()
     })
 
-    it('should not let the actor submit with volunteering url when FF is disabled', async () => {
+    it('should let the actor submit with volunteering url', async () => {
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
       renderForm({
         ...baseVenue,
       })
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Bénévolat/)).not.toBeInTheDocument()
-      })
-    })
-
-    it('should let the actor submit with volunteering url', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
-      renderForm(
-        {
-          ...baseVenue,
-        },
-        { features: ['WIP_VOLUNTEERING'] }
-      )
 
       expect(screen.getByText('Bénévolat')).toBeInTheDocument()
       expect(screen.getByText('Nouveau')).toBeInTheDocument()
@@ -618,7 +605,7 @@ describe('VenueEditionFormScreen', () => {
     it('should log an event when the user submit an invalid volunteering url', async () => {
       vi.mocked(getVolunteeringUrlError).mockReturnValue('any-error')
 
-      renderForm({ ...baseVenue }, { features: ['WIP_VOLUNTEERING'] })
+      renderForm({ ...baseVenue })
 
       await userEvent.type(
         screen.getByLabelText(/URL de votre page JeVeuxAider.gouv.fr/),
@@ -956,8 +943,8 @@ describe('VenueEditionFormScreen', () => {
         }
       )
       const h3Titles = screen.getAllByRole('heading', { level: 3 })
-      expect(h3Titles).toHaveLength(4)
-      expect(h3Titles[1].textContent).toEqual('À propos de votre activité')
+      expect(h3Titles).toHaveLength(5)
+      expect(h3Titles[2].textContent).toEqual('À propos de votre activité')
       expect(screen.getByText(/Domaines d’activité/)).toBeInTheDocument()
       expect(screen.getByText(/domaine 1, domaine III/)).toBeInTheDocument()
     })
