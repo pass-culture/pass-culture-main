@@ -34,7 +34,9 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         client,
         form=None,
         headers=None,
+        *,
         follow_redirects=False,
+        expected_status_code: int | None = None,
         expected_num_queries: int | None = None,
         **url_kwargs,
     ):
@@ -49,9 +51,15 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
 
         if expected_num_queries is not None:
             with assert_num_queries(expected_num_queries):
-                return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
+                response = client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
+                if expected_status_code is not None:  # check status before number of queries
+                    assert response.status_code == expected_status_code, response.status_code
+        else:
+            response = client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
+            if expected_status_code is not None:
+                assert response.status_code == expected_status_code, response.status_code
 
-        return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
+        return response
 
     def test_not_logged_in(self, client):
         self.fetch_csrf_token(client)

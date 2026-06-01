@@ -1324,6 +1324,124 @@ class ArchiveUbbleUserIdPicturesTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class GetArchivedUbbleIdPicturesDataTest:
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file", return_value=b"data")
+    def test_get_archived_ubble_id_pictures_data(self, mock_read_file):
+        fraud_check = BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            idPicturesStored=True,
+            thirdPartyId="idv_12345",
+        )
+
+        pictures = ubble_subscription_api.get_archived_ubble_id_pictures_data(
+            fraud_check.user, access_key="test", secret_key="secret"
+        )
+
+        assert pictures == [
+            ubble_subscription_api.ArchivedPicture(
+                file_name=f"{fraud_check.user.id}-idv_12345-front.png",
+                mime_type=ubble_subscription_api.UBBLE_PICTURE_MIME_TYPE,
+                content=b"data",
+            ),
+            ubble_subscription_api.ArchivedPicture(
+                file_name=f"{fraud_check.user.id}-idv_12345-back.png",
+                mime_type=ubble_subscription_api.UBBLE_PICTURE_MIME_TYPE,
+                content=b"data",
+            ),
+        ]
+
+        mock_read_file.assert_called()
+        assert mock_read_file.call_count == 2
+        assert mock_read_file.call_args_list[0].args == (
+            str(fraud_check.user.id),
+            f"{fraud_check.user.id}-idv_12345-front.png",
+        )
+        assert mock_read_file.call_args_list[0].kwargs == {"access_key": "test", "secret_key": "secret"}
+        assert mock_read_file.call_args_list[1].args == (
+            str(fraud_check.user.id),
+            f"{fraud_check.user.id}-idv_12345-back.png",
+        )
+        assert mock_read_file.call_args_list[1].kwargs == {"access_key": "test", "secret_key": "secret"}
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file", side_effect=[b"data", None])
+    def test_get_archived_ubble_id_pictures_data_only_single_file(self, mock_read_file):
+        fraud_check = BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            idPicturesStored=True,
+            thirdPartyId="idv_12345",
+        )
+
+        pictures = ubble_subscription_api.get_archived_ubble_id_pictures_data(
+            fraud_check.user, access_key="test", secret_key="secret"
+        )
+
+        assert pictures == [
+            ubble_subscription_api.ArchivedPicture(
+                file_name=f"{fraud_check.user.id}-idv_12345-front.png",
+                mime_type=ubble_subscription_api.UBBLE_PICTURE_MIME_TYPE,
+                content=b"data",
+            )
+        ]
+
+        mock_read_file.assert_called()
+        assert mock_read_file.call_count == 2
+        assert mock_read_file.call_args_list[0].args == (
+            str(fraud_check.user.id),
+            f"{fraud_check.user.id}-idv_12345-front.png",
+        )
+        assert mock_read_file.call_args_list[0].kwargs == {"access_key": "test", "secret_key": "secret"}
+        assert mock_read_file.call_args_list[1].args == (
+            str(fraud_check.user.id),
+            f"{fraud_check.user.id}-idv_12345-back.png",
+        )
+        assert mock_read_file.call_args_list[1].kwargs == {"access_key": "test", "secret_key": "secret"}
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file", return_value=None)
+    def test_get_archived_ubble_id_pictures_error(self, mock_read_file):
+        fraud_check = BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            idPicturesStored=True,
+        )
+
+        pictures = ubble_subscription_api.get_archived_ubble_id_pictures_data(
+            fraud_check.user, access_key="test", secret_key="secret"
+        )
+
+        assert pictures == []
+        mock_read_file.assert_called()
+        assert mock_read_file.call_count == 2
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file")
+    def test_get_archived_ubble_id_pictures_data_without_id_pictures_stored(self, mock_read_file):
+        fraud_check = BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            idPicturesStored=False,
+        )
+
+        pictures = ubble_subscription_api.get_archived_ubble_id_pictures_data(
+            fraud_check.user, access_key="test", secret_key="secret"
+        )
+
+        assert pictures == []
+        mock_read_file.assert_not_called()
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file")
+    def test_get_archived_ubble_id_pictures_data_no_fraud_check(self, mock_read_file):
+        user = users_factories.UserFactory()
+
+        pictures = ubble_subscription_api.get_archived_ubble_id_pictures_data(
+            user, access_key="test", secret_key="secret"
+        )
+
+        assert pictures == []
+        mock_read_file.assert_not_called()
+
+
+@pytest.mark.usefixtures("db_session")
 class SubscriptionMessageTest:
     def test_started(self):
         fraud_check = BeneficiaryFraudCheckFactory(

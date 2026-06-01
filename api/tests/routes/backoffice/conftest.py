@@ -53,6 +53,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "support_n2": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.READ_ID_DOCUMENT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
         perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW,
         perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT,

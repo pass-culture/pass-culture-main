@@ -262,6 +262,14 @@ def extract_tom_select_options(html_content: str, name: str, selected_only: bool
     return {option["id"]: filter_whitespaces(option["text"]) for option in options}
 
 
+def extract_inputs(html_content: str) -> list[str]:
+    soup = get_soup(html_content)
+
+    input_fields = soup.find_all("input")
+
+    return [input.attrs["name"] for input in input_fields if input.attrs["type"] != "hidden"]
+
+
 def extract_input_value(html_content: str, name: str) -> str:
     soup = get_soup(html_content)
 

@@ -8,6 +8,7 @@ import shutil
 import tempfile
 import typing
 import urllib.parse
+from dataclasses import dataclass
 from functools import partial
 
 import flask
@@ -63,6 +64,12 @@ CONCLUSIVE_STATUSES = [
     ubble_schemas.UbbleIdentificationStatus.DECLINED,
     ubble_schemas.UbbleIdentificationStatus.PROCESSED,
 ]
+
+# ubble default picture type is png, use this mime type when unknown
+UBBLE_PICTURE_MIME_TYPE = "image/png"
+
+UBBLE_PICTURE_FRONT_NAME = "front"
+UBBLE_PICTURE_BACK_NAME = "back"
 
 
 def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
@@ -184,11 +191,14 @@ def start_ubble_workflow(
     return content.identification_url
 
 
-def _get_last_ubble_fraud_check(user: users_models.User) -> subscription_models.BeneficiaryFraudCheck | None:
+def _get_last_ubble_fraud_check(
+    user: users_models.User, *, only_id_pictures_stored: bool = False
+) -> subscription_models.BeneficiaryFraudCheck | None:
     ubble_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type == subscription_models.FraudCheckType.UBBLE
+        and (not only_id_pictures_stored or fraud_check.idPicturesStored is True)
     ]
     last_ubble_fraud_check = next((fraud_check for fraud_check in reversed(ubble_fraud_checks)), None)
     return last_ubble_fraud_check
@@ -387,12 +397,14 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
     exception_during_process = None
     if ubble_content.signed_image_front_url:
         try:
-            _download_and_store_ubble_picture(fraud_check, ubble_content.signed_image_front_url, "front")
+            _download_and_store_ubble_picture(
+                fraud_check, ubble_content.signed_image_front_url, UBBLE_PICTURE_FRONT_NAME
+            )
         except (exceptions.UbbleDownloadedFileEmpty, requests_utils.ExternalAPIException) as exception:
             exception_during_process = exception
     if ubble_content.signed_image_back_url:
         try:
-            _download_and_store_ubble_picture(fraud_check, ubble_content.signed_image_back_url, "back")
+            _download_and_store_ubble_picture(fraud_check, ubble_content.signed_image_back_url, UBBLE_PICTURE_BACK_NAME)
         except (exceptions.UbbleDownloadedFileEmpty, requests_utils.ExternalAPIException) as exception:
             exception_during_process = exception
 
@@ -436,9 +448,37 @@ def _generate_storable_picture_filename(
     fraud_check: subscription_models.BeneficiaryFraudCheck, face_name: str, mime_type: str | None
 ) -> str:
     if mime_type is None:
-        mime_type = "image/png"  # ubble default picture type is png
+        mime_type = UBBLE_PICTURE_MIME_TYPE
     extension = mimetypes.guess_extension(mime_type, strict=True)
     return f"{fraud_check.userId}-{fraud_check.thirdPartyId}-{face_name}{extension}"
+
+
+@dataclass
+class ArchivedPicture:
+    file_name: str
+    mime_type: str
+    content: bytes
+
+
+def get_archived_ubble_id_pictures_data(
+    user: users_models.User, *, access_key: str, secret_key: str
+) -> list[ArchivedPicture]:
+    fraud_check = _get_last_ubble_fraud_check(user, only_id_pictures_stored=True)
+    if fraud_check is None:
+        return []
+
+    archived_pictures: list[ArchivedPicture] = []
+
+    # without the permission to list files, guess file names
+    for face_name in (UBBLE_PICTURE_FRONT_NAME, UBBLE_PICTURE_BACK_NAME):
+        file_name = _generate_storable_picture_filename(fraud_check, face_name, UBBLE_PICTURE_MIME_TYPE)
+        content = outscale.read_file(str(fraud_check.userId), file_name, access_key=access_key, secret_key=secret_key)
+        if content:
+            archived_pictures.append(
+                ArchivedPicture(file_name=file_name, mime_type=UBBLE_PICTURE_MIME_TYPE, content=content)
+            )
+
+    return archived_pictures
 
 
 def get_ubble_subscription_message(

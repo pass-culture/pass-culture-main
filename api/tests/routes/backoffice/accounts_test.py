@@ -5820,3 +5820,161 @@ class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert db.session.query(bookings_models.FraudulentBookingTag).count() == 0
+
+
+class GetIdDocumentTest(GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_id_document"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.READ_ID_DOCUMENT
+
+    # session + user joined with fraud checks
+    expected_num_queries = 2
+    expected_num_queries_with_rollback = expected_num_queries + 1
+
+    def test_get_id_document(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, idPicturesStored=True)
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_inputs(response.data) == ["username", "password"]
+
+    def test_user_has_no_picture_stored(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, idPicturesStored=False)
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries_with_rollback):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 404
+
+    def test_user_does_not_exist(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries_with_rollback):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=999999))
+            assert response.status_code == 404
+
+
+class ViewIdDocumentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.view_id_document"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.READ_ID_DOCUMENT
+
+    # session + user joined with fraud checks
+    expected_num_queries = 2
+    expected_num_queries_with_rollback = expected_num_queries + 1
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file", side_effect=[b"first", b"second"])
+    def test_view_id_document(self, mock_read_file, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            thirdPartyId="idv_12345",
+            idPicturesStored=True,
+        )
+        user_id = user.id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"username": "test", "password": "test"},
+            expected_status_code=200,
+            expected_num_queries=self.expected_num_queries,
+            user_id=user_id,
+        )
+
+        assert html_parser.extract_inputs(response.data) == []
+
+        imgs = html_parser.get_soup(response.data).find_all("img", class_="pc-id-document")
+        assert len(imgs) == 2
+        assert imgs[0].attrs["src"] == "data:image/png;base64, Zmlyc3Q="
+        assert imgs[0].attrs["alt"] == f"{user_id}-idv_12345-front.png"
+        assert imgs[1].attrs["src"] == "data:image/png;base64, c2Vjb25k"
+        assert imgs[1].attrs["alt"] == f"{user_id}-idv_12345-back.png"
+
+        # ensure that browser is requested not to cache
+        assert response.headers.get("Cache-Control") == "no-store, no-cache, must-revalidate, max-age=0"
+        assert response.headers.get("Pragma") == "no-cache"
+        assert response.headers.get("Expires") == "0"
+
+        mock_read_file.assert_called()
+        assert mock_read_file.call_count == 2
+
+    @patch("pcapi.connectors.beneficiaries.outscale.read_file", return_value=None)
+    def test_view_id_document_denied_or_missing(self, mock_read_file, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            thirdPartyId="idv_12345",
+            idPicturesStored=True,
+        )
+        user_id = user.id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"username": "test", "password": "test"},
+            expected_status_code=200,
+            expected_num_queries=self.expected_num_queries,
+            user_id=user_id,
+        )
+
+        assert html_parser.extract_inputs(response.data) == []
+
+        imgs = html_parser.get_soup(response.data).find_all("img", class_="pc-id-document")
+        assert len(imgs) == 0
+
+        assert "Aucune image" in html_parser.content_as_text(response.data)
+
+        mock_read_file.assert_called()
+        assert mock_read_file.call_count == 2
+
+    @pytest.mark.parametrize(
+        "form",
+        [
+            {"username": "", "password": ""},
+            {"username": "test", "password": ""},
+            {"username": "", "password": "test"},
+        ],
+    )
+    def test_view_id_document_missing_credentials(self, authenticated_client, form):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, idPicturesStored=True)
+        user_id = user.id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form,
+            expected_status_code=400,
+            expected_num_queries=self.expected_num_queries_with_rollback,
+            user_id=user_id,
+        )
+
+        # Login form is displayed
+        assert html_parser.extract_inputs(response.data) == ["username", "password"]
+
+    def test_user_has_no_picture_stored(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, idPicturesStored=False)
+        user_id = user.id
+
+        self.post_to_endpoint(
+            authenticated_client,
+            form={},
+            expected_status_code=404,
+            expected_num_queries=self.expected_num_queries_with_rollback,
+            user_id=user_id,
+        )
+
+    def test_user_does_not_exist(self, authenticated_client):
+        self.post_to_endpoint(
+            authenticated_client,
+            form={},
+            expected_status_code=404,
+            expected_num_queries=self.expected_num_queries_with_rollback,
+            user_id=999999,
+        )
