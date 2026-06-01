@@ -15,7 +15,6 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
@@ -27,7 +26,6 @@ import { Table, TableVariant } from '@/ui-kit/Table/Table'
 import type { IndividualOffersFilters } from '../common/types'
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
 import { getIndividualOfferColumns } from './components/IndividualOfferColumns/IndividualOfferColumns'
-import { IndividualOfferRecommendationBanner } from './components/IndividualOfferRecommendationBanner/IndividualOfferRecommendationBanner'
 import { IndividualOffersActionsBar } from './components/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersSearchFilters } from './components/IndividualOffersSearchFilters/IndividualOffersSearchFilters'
 import styles from './IndividualOffersContainer.module.scss'
@@ -55,10 +53,6 @@ export const IndividualOffersContainer = ({
   categories,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
-  const isOfferRecommendationEnabled = useActiveFeature(
-    'WIP_OFFER_RECOMMENDATION_PRO'
-  )
-
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
   const [selectedOfferIds, setSelectedOfferIds] = useState<
     Set<string | number>
@@ -145,7 +139,6 @@ export const IndividualOffersContainer = ({
 
   return (
     <div>
-      {isOfferRecommendationEnabled && <IndividualOfferRecommendationBanner />}
       <IndividualOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}
