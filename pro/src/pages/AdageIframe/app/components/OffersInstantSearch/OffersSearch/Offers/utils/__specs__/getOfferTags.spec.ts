@@ -127,6 +127,60 @@ describe('getOfferTags', () => {
     expect(tagsReduced).toEqual(['Lieu à déterminer'])
   })
 
+  it('should return "Sortie" without distance when adage user has no coordinates', () => {
+    const offer: CollectiveOfferTemplateResponseModel = {
+      ...templateOffer,
+      location: {
+        locationType: CollectiveLocationType.ADDRESS,
+        location: {
+          isManualEdition: false,
+          isVenueLocation: false,
+          id: 1,
+          label: 'Le nom du lieu 1',
+          city: 'Paris',
+          postalCode: '75001',
+          latitude: 1,
+          longitude: 1,
+        },
+      },
+      dates: undefined,
+    }
+    const tags = getOfferTags(
+      offer,
+      { ...adageUser, lat: null, lon: null },
+      false
+    ).map((tag) => tag.text)
+
+    expect(tags).toEqual(['Sortie'])
+  })
+
+  it('should return "Sortie" without distance when offer location has no coordinates', () => {
+    const offer: CollectiveOfferTemplateResponseModel = {
+      ...templateOffer,
+      location: {
+        locationType: CollectiveLocationType.ADDRESS,
+        location: {
+          isManualEdition: false,
+          isVenueLocation: false,
+          id: 1,
+          label: 'Le nom du lieu 1',
+          city: 'Paris',
+          postalCode: '75001',
+          latitude: 0,
+          longitude: 0,
+        },
+      },
+      dates: undefined,
+    }
+    const tags = getOfferTags(
+      offer,
+      { ...adageUser, lat: 0, lon: 0 },
+      false
+    ).map((tag) => tag.text)
+
+    expect(tags).toEqual(['Sortie'])
+  })
+
   it('should return a multi level tag if there are multiple student levels', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...templateOffer,

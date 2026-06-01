@@ -78,7 +78,7 @@ export function getOfferTags(
       },
       [CollectiveLocationType.ADDRESS]: {
         icon: fullLocationIcon,
-        text: `Sortie à ${distanceFromOffer}`,
+        text: distanceFromOffer ? `Sortie à ${distanceFromOffer}` : 'Sortie',
       },
       [CollectiveLocationType.TO_BE_DEFINED]: {
         icon: fullLocationIcon,
