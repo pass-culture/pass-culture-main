@@ -7,7 +7,6 @@ export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
   SELECTED_ADMIN_OFFERER_ID = 'PASS_CULTURE_SELECTED_ADMIN_OFFERER_ID',
   LAST_VISITED_HOMEPAGE_TABS = 'PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS',
-  HAS_SEEN_VOLUNTEERING_SECTION = 'PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION',
   NEW_STRUCTURE_OFFERER = 'PASS_CULTURE_NEW_STRUCTURE_OFFERER',
   NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS = 'PASS_CULTURE_NEW_STRUCTURE_OFFERER_INITIAL_ADDRESS',
   NEW_STRUCTURE_ACTIVITY = 'PASS_CULTURE_NEW_STRUCTURE_ACTIVITY',
@@ -20,14 +19,6 @@ export enum COOKIES {
 }
 
 export const PASS_CULTURE_PREFIX = 'PASS_CULTURE_'
-
-/**
- * Keys that should persist across logout.
- */
-const PERSISTENT_KEYS = new Set<string>([
-  // TODO (tpommellet, 2026-05-01): Remove this key once volunteering GTM period is over.
-  LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION,
-])
 
 export const localStorageManager = {
   getItem: (key: LOCAL_STORAGE_KEY): string | null => {
@@ -59,10 +50,8 @@ export const localStorageManager = {
       return
     }
 
-    Object.keys(localStorage)
-      .filter((key) => !PERSISTENT_KEYS.has(key))
-      .forEach((key) => {
-        localStorage.removeItem(key)
-      })
+    Object.keys(localStorage).forEach((key) => {
+      localStorage.removeItem(key)
+    })
   },
 }

@@ -13,7 +13,6 @@ vi.mock('./components/SideNavLink', () => ({
   RenderNavItem: ({ item, isOpen, onToggleButtonClick }: any) => (
     <li data-testid="render-nav-item">
       <span>{item.title}</span>
-      {item.showNotification && <span data-testid="nav-item-notification" />}
       <button
         onClick={() => onToggleButtonClick?.(!isOpen)}
         data-testid={`toggle-${item.key}`}
@@ -67,22 +66,6 @@ describe('SideNavLinks', () => {
     expect(screen.getByText('Main 2')).toBeInTheDocument()
     expect(screen.getByTestId('user-review-mock')).toBeInTheDocument()
     expect(screen.getByTestId('help-dropdown')).toBeInTheDocument()
-  })
-
-  it('should pass showNotification to nav items', () => {
-    const itemsWithNotification: NavItem[] = [
-      {
-        key: 'with-notif',
-        group: 'main',
-        type: 'link',
-        title: 'With notification',
-        showNotification: true,
-      },
-    ]
-
-    render(<SideNavLinks navItems={itemsWithNotification} />)
-
-    expect(screen.getByTestId('nav-item-notification')).toBeInTheDocument()
   })
 
   it('should forward isAdminSpace=false to UserReviewDialog by default', () => {

@@ -67,16 +67,4 @@ describe('localStorageManager', () => {
     expect(localStorage.getItem('homepageSelectedOffererId')).toBeNull()
     expect(localStorage.getItem('someOtherKey')).toBeNull()
   })
-
-  it('should preserve persistent keys when calling clear', () => {
-    vi.spyOn(storageAvailableModule, 'storageAvailable').mockReturnValue(true)
-
-    localStorage.setItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION', 'true')
-
-    localStorageManager.clear()
-
-    expect(
-      localStorage.getItem('PASS_CULTURE_HAS_SEEN_VOLUNTEERING_SECTION')
-    ).toBe('true')
-  })
 })

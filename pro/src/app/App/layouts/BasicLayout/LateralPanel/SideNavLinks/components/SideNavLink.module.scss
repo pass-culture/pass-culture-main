@@ -53,12 +53,4 @@
       padding-right: rem.torem(3px);
     }
   }
-
-  &-notification {
-    width: rem.torem(12px);
-    min-width: rem.torem(12px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background-color: var(--color-background-brand-primary);
-  }
 }

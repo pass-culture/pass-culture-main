@@ -12,10 +12,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import {
-  LOCAL_STORAGE_KEY,
-  localStorageManager,
-} from '@/commons/utils/localStorageManager'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -44,11 +40,6 @@ interface SideNavLinksProps {
 const generateNavItems = (
   selectedPartnerVenue: GetVenueResponseModel
 ): NavItem[] => {
-  const hasSeenVolunteeringSection =
-    localStorageManager.getItem(
-      LOCAL_STORAGE_KEY.HAS_SEEN_VOLUNTEERING_SECTION
-    ) === 'true'
-
   const individualChildren: NavItem[] = [
     {
       key: 'offers',
@@ -81,7 +72,6 @@ const generateNavItems = (
             group: 'main' as const,
             title: 'Page sur l’application',
             to: `/partenaire/page-partenaire`,
-            showNotification: !hasSeenVolunteeringSection,
           },
         ]
       : []),

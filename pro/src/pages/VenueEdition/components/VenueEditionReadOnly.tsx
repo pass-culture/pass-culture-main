@@ -46,7 +46,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       title="Vos informations"
       editLink={getVenuePagePathToNavigateTo('/edition')}
     >
-      <SummarySubSection title="Bénévolat" shouldShowDivider={false} isNew>
+      <SummarySubSection title="Bénévolat" shouldShowDivider={false}>
         <SummaryDescriptionList
           descriptions={[
             {
