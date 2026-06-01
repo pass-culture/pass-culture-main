@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -55,7 +55,7 @@ const MOCK_DATA = {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
@@ -120,10 +120,10 @@ const renderIndividualOffersContext = () => {
 
 describe('HeadlineOfferContext', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue(
       MOCK_DATA.headlineOffer
     )
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
       venues: [
         makeVenueListItem({
           id: MOCK_DATA.headlineOffer.venueId,
@@ -154,8 +154,10 @@ describe('HeadlineOfferContext', () => {
       await userEvent.click(upsertButton)
 
       await waitFor(() => {
-        expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
-          offerId: MOCK_DATA.newHeadlineOffer.id,
+        expect(apiNew.upsertHeadlineOffer).toHaveBeenCalledWith({
+          body: {
+            offerId: MOCK_DATA.newHeadlineOffer.id,
+          },
         })
       })
 

@@ -1,10 +1,10 @@
 import { act, renderHook } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     createThumbnail: vi.fn(),
     deleteThumbnail: vi.fn(),
   },
@@ -129,7 +129,7 @@ describe('useIndividualOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(1)
     })
 
-    expect(api.createThumbnail).toHaveBeenCalledOnce()
+    expect(apiNew.createThumbnail).toHaveBeenCalledOnce()
   })
 
   it('should call deleteThumbnail when the image is deleted', async () => {
@@ -145,6 +145,6 @@ describe('useIndividualOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(1)
     })
 
-    expect(api.deleteThumbnail).toHaveBeenCalledOnce()
+    expect(apiNew.deleteThumbnail).toHaveBeenCalledOnce()
   })
 })

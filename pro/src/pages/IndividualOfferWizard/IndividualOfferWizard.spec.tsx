@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from '@/pages/IndividualOfferWizard/IndividualOfferWizard'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getCategories: vi.fn(),
     getVenueHeadlineOffer: vi.fn().mockResolvedValue(null),
   },
