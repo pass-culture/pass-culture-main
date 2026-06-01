@@ -3,7 +3,6 @@ import type { useNavigate } from 'react-router'
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
@@ -30,9 +29,7 @@ export const duplicateBookableOffer = async (
     const targetOfferer = educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === offererId
     )
-    const offerer = targetOfferer
-      ? serializeEducationalOfferer(targetOfferer)
-      : null
+    const offerer = targetOfferer || null
 
     const { venues } = await apiNew.getVenues({
       query: {

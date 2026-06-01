@@ -12,7 +12,6 @@ import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 
 export type DomainOption = {
@@ -75,9 +74,7 @@ export const useOfferEducationalFormData = (
     nationalPrograms: domain.nationalPrograms,
   }))
 
-  const offerer = selectedEducationalOfferer
-    ? serializeEducationalOfferer(selectedEducationalOfferer)
-    : null
+  const offerer = selectedEducationalOfferer || null
 
   const isLoading =
     loadingEducationalOfferers || loadingEducationalDomains || loadingVenues

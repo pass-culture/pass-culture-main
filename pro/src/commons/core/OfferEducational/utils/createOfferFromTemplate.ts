@@ -1,7 +1,6 @@
 import type { useNavigate } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -33,9 +32,7 @@ export const createOfferFromTemplate = async (
     const targetOfferer = educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === targetOffererId
     )
-    const offerers = targetOfferer
-      ? serializeEducationalOfferer(targetOfferer)
-      : null
+    const offerers = targetOfferer || null
     const { venues } = await apiNew.getVenues({
       query: {
         validated: null,
