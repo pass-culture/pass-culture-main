@@ -33,6 +33,7 @@ from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -259,7 +260,7 @@ def generate_user() -> response_utils.BackofficeResponse:
 
 
 def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
-    if user_id is None:
+    if user_id is None or not string_utils.is_numeric(user_id):
         return None
 
     return db.session.query(users_models.User).filter_by(id=int(user_id)).one_or_none()
