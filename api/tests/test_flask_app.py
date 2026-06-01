@@ -44,6 +44,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "adage_iframe.create_adage_jwt_fake_token",  # → response.status_code = 200
     "auth.discord_call_back",  # → response.status_code = 303
     "auth.discord_signin",  # → response.status_code = 200
+    "auth.discord_signin_post",  # → response.status_code = 200
     "auth.discord_success",  # → response.status_code = 303
     "native.native_v1.email_validation_remaining_resends",  # → response.status_code = 200
     "native.native_v1.empty_email_validation_remaining_resends",  # → response.status_code = 200

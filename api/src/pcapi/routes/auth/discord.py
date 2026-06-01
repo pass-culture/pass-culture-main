@@ -6,7 +6,6 @@ import jwt
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask_wtf.csrf import CSRFProtect
 from werkzeug.wrappers.response import Response
 
 from pcapi import settings
@@ -25,7 +24,6 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import blueprint
-from . import utils
 
 
 logger = logging.getLogger(__name__)
@@ -158,11 +156,9 @@ def discord_signin_post() -> Response | str:
     if not FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
         return render_template("discord_signin_disabled.html")
 
-    csrf = CSRFProtect()
-    csrf.protect()
     form = SigninForm()
     if not form.validate():
-        form.error_message = utils.build_form_error_msg(form)
+        form.error_message = "La tentative de connexion a échoué, réessayer."
         return render_template("discord_signin.html", form=form)
 
     email = form.email.data
