@@ -72,6 +72,20 @@ class DiscordSigninTest:
         return discord_connector._sign_state(user_id)
 
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    def test_csrf_check(self, client):
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "recaptcha_token": "recaptcha_token",
+        }
+        users_factories.BeneficiaryFactory(email=form_data["email"], password=form_data["password"], isActive=True)
+
+        response = client.post(url_for(self.endpoint), form=form_data)
+
+        assert response.status_code == 200
+        assert "La tentative de connexion a échoué, réessayer." in response.data.decode("utf-8")
+
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_build_discord_redirection_uri(self):
         uri = discord_connector.build_discord_redirection_uri(1)
         assert uri.startswith(
@@ -299,7 +313,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Mot de passe : Information obligatoire" in response_data
+        assert "La tentative de connexion a échoué, réessayer." in response_data
 
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"

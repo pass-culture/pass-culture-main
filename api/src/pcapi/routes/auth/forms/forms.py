@@ -7,3 +7,6 @@ class SigninForm(PCForm):
     password = fields.PCPasswordField("Mot de passe")
     recaptcha_token = fields.PCLongHiddenField("Recaptcha Token")
     error_message: str = ""
+
+    class Meta:
+        csrf = True

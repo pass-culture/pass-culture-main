@@ -7,11 +7,11 @@ from flask import make_response
 from flask import render_template
 from flask import request
 from flask_wtf.csrf import CSRFError
-from flask_wtf.csrf import CSRFProtect
 
 from pcapi import settings
 from pcapi.core.users.sessions import install_backoffice_login
 from pcapi.flask_app import app
+from pcapi.flask_app import csrf
 from pcapi.flask_app import setup_metrics
 from pcapi.routes.backoffice.utils import static as static_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -28,7 +28,6 @@ app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
 app.config["PERMANENT_SESSION_LIFETIME"] = 120 * 60
 app.config["USE_GLOBAL_ATOMIC"] = True
 
-csrf = CSRFProtect()
 csrf.init_app(app)
 
 
