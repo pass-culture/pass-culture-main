@@ -500,11 +500,23 @@ class UserRecreditTest:
         assert user.deposit.type == models.DepositType.GRANT_17_18
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @pytest.mark.parametrize("age", [15, 16, 18])
     @time_machine.travel("2025-03-03")
-    def test_user_already_recredited(self, age):
+    def test_user_cannot_be_recredited(self, age):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
+
+        before_recredit_number = db.session.query(models.Recredit.id).count()
+        api.recredit_users()
+        after_recredit_number = db.session.query(models.Recredit.id).count()
+
+        assert before_recredit_number == after_recredit_number
+
+    @time_machine.travel("2025-03-03")
+    def test_user_already_received_pre_decree_17yo_recredit(self):
+        before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
+        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
 
         before_recredit_number = db.session.query(models.Recredit.id).count()
         api.recredit_users()

@@ -59,9 +59,7 @@ class BaseUserFactory(BaseFactory):
         age = 40
 
     dateCreated = LazyFunction(date_utils.get_naive_utc_now)
-    dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine((o.dateCreated - relativedelta(years=o.age)).date(), time.min)
-    )
+    dateOfBirth = LazyAttribute(lambda o: datetime.combine(datetime.today(), time.min) - relativedelta(years=o.age))
     comment = LazyAttribute(lambda o: str(o.__dict__))
     isEmailValidated = False
 
@@ -249,7 +247,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     - identity validation
     """
 
-    validatedBirthDate = LazyAttribute(lambda o: o.dateCreated - relativedelta(years=o.age))
+    validatedBirthDate = LazyAttribute(lambda o: datetime.today() - relativedelta(years=o.age))
 
     @classmethod
     def beneficiary_fraud_checks(

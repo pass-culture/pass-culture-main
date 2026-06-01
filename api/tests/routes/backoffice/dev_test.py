@@ -235,20 +235,6 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         user = db.session.query(users_models.User).get(user_id)
         assert user.wallet_balance == 150
 
-    def test_validate_age_and_transition_fields(self, authenticated_client):
-        birth_date = datetime.date.today() - relativedelta(years=18)
-        form = {
-            "id_provider": "UBBLE",
-            "step": "BENEFICIARY",
-            "birth_date": f"{birth_date:%Y-%m-%d}",
-            "transition_17_18": True,
-        }
-        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
-
-        assert response.status_code == 200
-        alert = html_parser.extract_alert(response.data)
-        assert "Si la Transition 17-18 est cochée, l'âge est fixé à 18 ans" in alert
-
 
 class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.dev.delete_user"

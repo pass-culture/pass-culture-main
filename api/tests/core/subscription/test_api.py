@@ -2117,9 +2117,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        user = users_factories.HonorStatementValidatedUserFactory(
-            age=17, beneficiaryFraudChecks__dateCreated=before_decree, dateCreated=before_decree
-        )
+        with time_machine.travel(before_decree):
+            user = users_factories.HonorStatementValidatedUserFactory(age=17)
 
         is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
 

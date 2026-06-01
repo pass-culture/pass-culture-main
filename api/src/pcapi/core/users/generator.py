@@ -4,11 +4,12 @@ import decimal
 import enum
 import typing
 
-from dateutil.relativedelta import relativedelta
+import time_machine
 
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.core.users import constants as users_constants
 from pcapi.utils import date as date_utils
@@ -39,18 +40,15 @@ class GenerateUserData:
     credit: decimal.Decimal | None = None
     id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
-    transition_17_18: bool = False
     date_created: datetime.datetime | None = None
     postal_code: str | None = None
 
     def get_age(self) -> int:
-        if self.transition_17_18:
-            return 18
+        if self.birth_date is not None:
+            return users_utils.get_age_at_date(self.birth_date, datetime.datetime.now(tz=None))
         if self.age is not None:
             return self.age
-        if self.birth_date is None:
-            return 18
-        return relativedelta(datetime.date.today(), self.birth_date).years
+        return 18
 
     def get_date_created(self) -> datetime.datetime:
         return date_utils.get_naive_utc_now() if self.date_created is None else self.date_created
@@ -73,26 +71,26 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         )
         raise generation_exception
 
-    Factory = _get_user_factory(user_data)
-    # ensure that postal code is set only for ProfileCompletedUserFactory or a factory that is a descendant of it
-    factory_kwargs: dict[str, typing.Any] = {}
-    if users_factories.ProfileCompletedUserFactory in Factory.mro() and user_data.postal_code:
-        factory_kwargs["postalCode"] = user_data.postal_code
-    if user_data.credit is not None:
-        factory_kwargs["deposit__amount"] = user_data.credit
-    return Factory.create(
-        age=user_data.get_age(),
-        beneficiaryFraudChecks__type=user_data.id_provider.value,
-        beneficiaryFraudChecks__dateCreated=user_data.get_date_created(),
-        activity=user_data.get_activity().value,
-        **factory_kwargs,
-    )
+    with time_machine.travel(user_data.get_date_created()):
+        factory_kwargs: dict[str, typing.Any] = {}
+        Factory = _get_user_factory(user_data)
+
+        # ensure that postal code is set only for ProfileCompletedUserFactory or a factory that is a descendant of it
+        if users_factories.ProfileCompletedUserFactory in Factory.mro() and user_data.postal_code:
+            factory_kwargs["postalCode"] = user_data.postal_code
+        if user_data.credit is not None:
+            factory_kwargs["deposit__amount"] = user_data.credit
+        if user_data.birth_date is not None:
+            factory_kwargs["dateOfBirth"] = user_data.birth_date
+        return Factory.create(
+            age=user_data.get_age(),
+            beneficiaryFraudChecks__type=user_data.id_provider.value,
+            activity=user_data.get_activity().value,
+            **factory_kwargs,
+        )
 
 
 def _get_user_factory(user_data: GenerateUserData) -> type[users_factories.BaseUserFactory]:
-    if user_data.transition_17_18:
-        return users_factories.Transition1718Factory
-
     Factory = users_factories.BaseUserFactory
     if user_data.get_age() in users_constants.ELIGIBILITY_FREE_RANGE:
         match user_data.step:

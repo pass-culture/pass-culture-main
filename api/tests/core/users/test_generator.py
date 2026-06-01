@@ -1,3 +1,4 @@
+import datetime
 import decimal
 import re
 
@@ -197,29 +198,20 @@ class UserGeneratorTest:
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
 
     def test_user_in_transition_17_18(self):
+        eighteen_years_ago = datetime.datetime.now(tz=None) - relativedelta(years=18)
+        year_when_user_was_seventeen = eighteen_years_ago + relativedelta(years=17)
         user_data = users_generator.GenerateUserData(
-            transition_17_18=True, date_created=(date_utils.get_naive_utc_now() - relativedelta(years=1))
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
+            birth_date=eighteen_years_ago,
+            date_created=year_when_user_was_seventeen,
         )
         user = users_generator.generate_user(user_data)
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-        assert user.deposit.expirationDate < date_utils.get_naive_utc_now()
+
         user_subscription_state = subscription_api.get_user_subscription_state(user)
         assert user_subscription_state.next_step == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION
-
-    @pytest.mark.parametrize(
-        "id_provider",
-        [
-            users_generator.GeneratedIdProvider.DMS,
-            users_generator.GeneratedIdProvider.EDUCONNECT,
-            users_generator.GeneratedIdProvider.UBBLE,
-        ],
-    )
-    def test_id_provider_in_transition_17_18(self, id_provider):
-        user_data = users_generator.GenerateUserData(transition_17_18=True, id_provider=id_provider)
-        user = users_generator.generate_user(user_data)
-        assert self.has_fraud_check_validated(user, id_provider.value)
 
     def test_user_generated_with_date_created(self):
         date_in_the_past = date_utils.get_naive_utc_now() - relativedelta(months=5)
@@ -234,14 +226,14 @@ class UserGeneratorTest:
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == subscription_models.FraudCheckType.PROFILE_COMPLETION
         )
-        assert profile_completion_check.dateCreated == date_in_the_past
+        assert profile_completion_check.dateCreated - date_in_the_past < datetime.timedelta(seconds=1)
 
         identity_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         )
-        assert identity_fraud_check.dateCreated == date_in_the_past
+        assert identity_fraud_check.dateCreated - date_in_the_past < datetime.timedelta(seconds=1)
         assert identity_fraud_check.source_data().get_registration_datetime().date() == date_in_the_past.date()
 
     @pytest.mark.parametrize("age", [15, 16])
