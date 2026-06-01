@@ -2,7 +2,10 @@ import type {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
-import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
+import {
+  computeDistanceInMeters,
+  humanizeDistance,
+} from '@/commons/utils/getDistance'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -27,26 +30,27 @@ export function AdageOfferPartnerPanel({
 }: AdageOfferPartnerPanelProps) {
   const venue = offer.venue
 
-  const distanceToSchool =
-    venue.coordinates.latitude !== null &&
-    venue.coordinates.latitude !== undefined &&
-    venue.coordinates.longitude !== null &&
-    venue.coordinates.longitude !== undefined &&
-    adageUser &&
-    adageUser.lat !== null &&
-    adageUser.lat !== undefined &&
-    adageUser.lon !== null &&
-    adageUser.lon !== undefined &&
-    getHumanizeRelativeDistance(
-      {
-        latitude: venue.coordinates.latitude,
-        longitude: venue.coordinates.longitude,
-      },
-      {
-        latitude: adageUser.lat,
-        longitude: adageUser.lon,
-      }
-    )
+  const venueCoords =
+    venue.coordinates.latitude != null && venue.coordinates.longitude != null
+      ? {
+          latitude: venue.coordinates.latitude,
+          longitude: venue.coordinates.longitude,
+        }
+      : null
+
+  const userCoords =
+    adageUser?.lat != null && adageUser?.lon != null
+      ? { latitude: adageUser.lat, longitude: adageUser.lon }
+      : null
+
+  let isFarFromSchool = false
+  let distanceText = ''
+
+  if (venueCoords && userCoords) {
+    const meters = computeDistanceInMeters(venueCoords, userCoords)
+    isFarFromSchool = meters >= 10_000
+    distanceText = humanizeDistance(meters)
+  }
 
   return (
     <div className={styles['partner-panel']}>
@@ -86,16 +90,15 @@ export function AdageOfferPartnerPanel({
       </div>
 
       <div className={styles['partner-panel-location']}>
-        {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
+        {(isPreview || isFarFromSchool) && (
           <Banner
             title="Distance importante"
             description={
               <>
                 Ce partenaire est situé{' '}
                 {(venue.city || venue.postalCode) &&
-                  `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
-                {(isPreview || distanceToSchool) &&
-                  `à ${isPreview ? 'X km' : distanceToSchool} de votre établissement scolaire`}
+                  `à ${venue.city ?? ''} ${venue.postalCode ?? ''},`}
+                {`à ${isPreview ? 'X km' : distanceText} de votre établissement scolaire`}
                 .
               </>
             }

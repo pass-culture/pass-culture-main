@@ -13,7 +13,7 @@ export const getHumanizeRelativeDistance = (
   return humanizeDistance(distanceInMeters).replace('.', ',')
 }
 
-const computeDistanceInMeters = (from: Coordinates, to: Coordinates) => {
+export const computeDistanceInMeters = (from: Coordinates, to: Coordinates) => {
   const newLat = (to.latitude * Math.PI) / 180 - (from.latitude * Math.PI) / 180
   const newLng =
     (to.longitude * Math.PI) / 180 - (from.longitude * Math.PI) / 180
@@ -28,7 +28,7 @@ const computeDistanceInMeters = (from: Coordinates, to: Coordinates) => {
   return EARTH_RADIUS_KM * c * 1000
 }
 
-const humanizeDistance = (distance: number) => {
+export const humanizeDistance = (distance: number) => {
   if (distance < 30) {
     return `${Math.round(distance)} m`
   }
