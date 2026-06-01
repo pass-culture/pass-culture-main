@@ -202,6 +202,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 # Fetch useful information on all venues managed by these offerers
                 joinedload(offerers_models.Offerer.managedVenues)
                 .load_only(
+                    offerers_models.Venue.activity,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
                     offerers_models.Venue.venueTypeCode,
@@ -215,6 +216,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                     .load_only(offerers_models.OffererAddress.id)
                     .joinedload(offerers_models.OffererAddress.address)
                     .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
+                    sa.orm.selectinload(offerers_models.Venue.collectiveDomains),
                 ),
             ),
         )
@@ -287,6 +289,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         )
         .options(
             load_only(
+                offerers_models.Venue.activity,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
                 offerers_models.Venue.venueTypeCode,
@@ -308,6 +311,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             .load_only(offerers_models.OffererAddress.id)
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
+            sa.orm.selectinload(offerers_models.Venue.collectiveDomains),
         )
         .all()
     )
@@ -369,6 +373,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         marketing_email_subscription=marketing_email_subscription,
         offerers_names=offerers_names,
         offerers_tags=offerers_tags,
+        venues_activities={venue.activity.name for venue in all_venues if venue.activity},
+        venues_cultural_domains={domain.name for venue in all_venues for domain in venue.collectiveDomains if domain},
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types=venues_types,
