@@ -374,7 +374,14 @@ def send_booking_notification_to_external_service(
             notificationUrl=notification_url,
             signature=signature,
         )
-        on_commit(functools.partial(providers_tasks.external_api_booking_notification_task.delay, payload.model_dump()))
+
+        if FeatureToggle.WIP_USE_BUILT_IN_CELERY_RATE_LIMIT.is_active():
+            celery_task = providers_tasks.external_api_booking_notification_task_with_built_in_rate_limit
+        else:
+            celery_task = providers_tasks.external_api_booking_notification_task
+
+        on_commit(functools.partial(celery_task.delay, payload.model_dump()))
+
     except Exception as err:
         logger.exception(
             "Error: %s. Could not send external booking notification for: booking: %s, action %s",

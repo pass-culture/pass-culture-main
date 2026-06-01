@@ -74,3 +74,27 @@ def external_api_booking_notification_task(payload: ExternalApiBookingNotificati
             exception,
             extra={"stock_id": payload.data.stock_id, "booking_creation_date": payload.data.booking_creation_date},
         )
+
+
+@celery_async_task(
+    name="tasks.providers.default.external_api_booking_notification",
+    model=ExternalApiBookingNotificationTaskPayload,
+    rate_limit="200/m",
+)
+def external_api_booking_notification_task_with_built_in_rate_limit(
+    payload: ExternalApiBookingNotificationTaskPayload,
+) -> None:
+    try:
+        response = requests.post(
+            payload.notificationUrl,
+            json=payload.data.model_dump_json(),
+            hmac=payload.signature,
+            headers={"Content-Type": "application/json"},
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as exception:
+        logger.warning(
+            "Failed to call provider notification url: %s",
+            exception,
+            extra={"stock_id": payload.data.stock_id, "booking_creation_date": payload.data.booking_creation_date},
+        )

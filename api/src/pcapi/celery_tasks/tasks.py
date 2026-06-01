@@ -12,7 +12,7 @@ import pcapi.celery_tasks.metrics as metrics
 from pcapi import settings
 from pcapi.utils import requests
 from pcapi.utils.rate_limit import RateLimitedError
-from pcapi.utils.rate_limit import rate_limit
+from pcapi.utils.rate_limit import rate_limit as custom_rate_limit
 
 
 # These values will prevent retrying tasks too far in the future as this can have negative effects
@@ -37,6 +37,7 @@ def celery_async_task(
     max_retries: int = settings.CELERY_TASK_MAX_RETRIES,
     time_window_size: int = 60,
     max_per_time_window: int | None = None,
+    rate_limit: int | str | None = None,
 ) -> typing.Callable:
     """
     celery_async_task decorator is used to defer the function execution to a Celery worker.
@@ -58,6 +59,9 @@ def celery_async_task(
     if time_window_size > MAX_TIME_WINDOW_SIZE:
         raise ValueError("task rate limit time_window_size above maximum")
 
+    if max_per_time_window and rate_limit:
+        raise ValueError("You cannot set both `max_per_time_window` and `rate_limit`")
+
     def decorator(f: typing.Callable) -> typing.Callable:
         @shared_task(
             bind=True,
@@ -66,6 +70,7 @@ def celery_async_task(
             retry_backoff=retry_backoff,
             retry_backoff_max=retry_backoff_max,
             max_retries=max_retries,
+            rate_limit=rate_limit,
         )
         @wraps(f)
         def task(self: Task, payload: dict) -> None:
@@ -84,7 +89,7 @@ def celery_async_task(
                     parsed_payload = json.loads(parsed_payload.model_dump_json())
                     parsed_payload = model.model_validate(parsed_payload)
                 if max_per_time_window:
-                    with rate_limit(f"celery:bucket:{name}", time_window_size, max_per_time_window):
+                    with custom_rate_limit(f"celery:bucket:{name}", time_window_size, max_per_time_window):
                         f(parsed_payload)
                 else:
                     f(parsed_payload)
