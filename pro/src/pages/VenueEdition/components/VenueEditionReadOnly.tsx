@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
@@ -22,7 +21,6 @@ interface VenueEditionReadOnlyProps {
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const { data } = useEducationalDomains()
-  const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const mapVenueDomains = useMemo(() => {
     if (data.length === 0) {
@@ -48,18 +46,16 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       title="Vos informations"
       editLink={getVenuePagePathToNavigateTo('/edition')}
     >
-      {isVolunteeringActive && (
-        <SummarySubSection title="Bénévolat" shouldShowDivider={false} isNew>
-          <SummaryDescriptionList
-            descriptions={[
-              {
-                title: 'Lien vers votre page organisation JeVeuxAider.gouv.fr',
-                text: venue.volunteeringUrl || 'Non renseigné',
-              },
-            ]}
-          />
-        </SummarySubSection>
-      )}
+      <SummarySubSection title="Bénévolat" shouldShowDivider={false} isNew>
+        <SummaryDescriptionList
+          descriptions={[
+            {
+              title: 'Lien vers votre page organisation JeVeuxAider.gouv.fr',
+              text: venue.volunteeringUrl || 'Non renseigné',
+            },
+          ]}
+        />
+      </SummarySubSection>
       <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
         <div className={styles['opentopublic-label']}>
           Accueil du public dans la structure :{' '}

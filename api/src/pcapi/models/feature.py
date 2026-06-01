@@ -150,7 +150,6 @@ class FeatureToggle(enum.Enum):
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
-    WIP_VOLUNTEERING = "Active la fonctionnalité de bénévolat"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
         "Génère les filtres en fonction du statut pour la liste des offres du portail pro"
@@ -226,7 +225,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFER_RECOMMENDATION_PRO,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
-    FeatureToggle.WIP_VOLUNTEERING,
     # Please keep alphabetic order
 )
 

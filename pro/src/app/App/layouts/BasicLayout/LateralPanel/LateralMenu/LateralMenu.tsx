@@ -10,7 +10,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
@@ -43,8 +42,7 @@ interface SideNavLinksProps {
 }
 
 const generateNavItems = (
-  selectedPartnerVenue: GetVenueResponseModel,
-  isVolunteeringActive?: boolean
+  selectedPartnerVenue: GetVenueResponseModel
 ): NavItem[] => {
   const hasSeenVolunteeringSection =
     localStorageManager.getItem(
@@ -83,8 +81,7 @@ const generateNavItems = (
             group: 'main' as const,
             title: 'Page sur l’application',
             to: `/partenaire/page-partenaire`,
-            showNotification:
-              isVolunteeringActive && !hasSeenVolunteeringSection,
+            showNotification: !hasSeenVolunteeringSection,
           },
         ]
       : []),
@@ -153,13 +150,11 @@ const generateNavItems = (
 }
 
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
-
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const navItems = generateNavItems(selectedPartnerVenue, isVolunteeringActive)
+  const navItems = generateNavItems(selectedPartnerVenue)
 
   return (
     <div

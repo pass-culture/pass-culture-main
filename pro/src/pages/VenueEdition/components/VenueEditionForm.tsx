@@ -7,7 +7,6 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { getActivities } from '@/commons/mappings/mappings'
@@ -47,7 +46,6 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { syncVenueWithData } = useSyncVenueCache()
-  const isVolunteeringActive = useActiveFeature('WIP_VOLUNTEERING')
 
   const navigate = useNavigate()
   const snackBar = useSnackBar()
@@ -163,53 +161,51 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations">
             <MandatoryInfo />
-            {isVolunteeringActive && (
-              <FormLayout.SubSection
-                title="Bénévolat"
-                isNew
-                description={
-                  <>
-                    Proposez des missions de bénévolat au sein du service{' '}
-                    <span className={styles['volunteering-link']}>
-                      <Button
-                        as="a"
-                        variant={ButtonVariant.TERTIARY}
-                        isExternal
-                        opensInNewTab
-                        to="https://www.jeveuxaider.gouv.fr/"
-                        color={ButtonColor.NEUTRAL}
-                        size={ButtonSize.SMALL}
-                        label={'JeVeuxAider.gouv.fr'}
-                      />
-                    </span>{' '}
-                    et permettez aux jeunes de s’engager à vos côtés.
-                  </>
-                }
-              >
-                <FormLayout.Row>
-                  <TextInput
-                    {...methods.register('volunteeringUrl')}
-                    name="volunteeringUrl"
-                    label="URL de votre page JeVeuxAider.gouv.fr"
-                    description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
-                    error={methods.formState.errors.volunteeringUrl?.message}
-                    onBlur={(event) => {
-                      const value = event.target.value
-                      const error = getVolunteeringUrlError(value)
-                      if (value.trim() && error) {
-                        methods.setError('volunteeringUrl', {
-                          type: 'manual',
-                          message: error,
-                        })
-                        logEvent(Events.VENUE_FORM_VOLUNTEERING_URL_ERROR, {
-                          volunteeringUrl: value,
-                        })
-                      }
-                    }}
-                  />
-                </FormLayout.Row>
-              </FormLayout.SubSection>
-            )}
+            <FormLayout.SubSection
+              title="Bénévolat"
+              isNew
+              description={
+                <>
+                  Proposez des missions de bénévolat au sein du service{' '}
+                  <span className={styles['volunteering-link']}>
+                    <Button
+                      as="a"
+                      variant={ButtonVariant.TERTIARY}
+                      isExternal
+                      opensInNewTab
+                      to="https://www.jeveuxaider.gouv.fr/"
+                      color={ButtonColor.NEUTRAL}
+                      size={ButtonSize.SMALL}
+                      label={'JeVeuxAider.gouv.fr'}
+                    />
+                  </span>{' '}
+                  et permettez aux jeunes de s’engager à vos côtés.
+                </>
+              }
+            >
+              <FormLayout.Row>
+                <TextInput
+                  {...methods.register('volunteeringUrl')}
+                  name="volunteeringUrl"
+                  label="URL de votre page JeVeuxAider.gouv.fr"
+                  description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
+                  error={methods.formState.errors.volunteeringUrl?.message}
+                  onBlur={(event) => {
+                    const value = event.target.value
+                    const error = getVolunteeringUrlError(value)
+                    if (value.trim() && error) {
+                      methods.setError('volunteeringUrl', {
+                        type: 'manual',
+                        message: error,
+                      })
+                      logEvent(Events.VENUE_FORM_VOLUNTEERING_URL_ERROR, {
+                        volunteeringUrl: value,
+                      })
+                    }
+                  }}
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
 
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
