@@ -265,6 +265,126 @@ class CulturalSurveyQuestionsTest:
                         },
                     ],
                 },
+                {
+                    "id": "LIVRES",
+                    "title": f"Quels types de livres veux-tu qu’on te propose{u_nbsp}?",
+                    "answers": [
+                        {
+                            "id": "MANGAS",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Mangas ou BD",
+                        },
+                        {
+                            "id": "ROMANCE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Romance",
+                        },
+                        {
+                            "id": "FANTASY",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Fantasy ou SF",
+                        },
+                        {
+                            "id": "THRILLER",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Thriller ou Polar",
+                        },
+                        {
+                            "id": "ROMANS",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Romans ou Classiques",
+                        },
+                        {
+                            "id": "SOCIETE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Société ou Actualités",
+                        },
+                        {
+                            "id": "PHILOSOPHIE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Philo ou Psycho",
+                        },
+                        {
+                            "id": "CULTURE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Culture, Arts ou Sport",
+                        },
+                        {
+                            "id": "HISTOIRE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Histoire ou Voyages",
+                        },
+                        {
+                            "id": "LIVRES_AUCUN",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Aucun",
+                        },
+                    ],
+                },
+                {
+                    "id": "MUSIQUES",
+                    "title": f"Quels types de musique veux-tu qu’on te propose{u_nbsp}?",
+                    "answers": [
+                        {
+                            "id": "RAP",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Rap ou RnB",
+                        },
+                        {
+                            "id": "POP",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Pop rock ou Variétés",
+                        },
+                        {
+                            "id": "ELECTRO",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Electro ou Techno",
+                        },
+                        {
+                            "id": "METAL",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Hard-rock ou Metal",
+                        },
+                        {
+                            "id": "FILMS",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Films ou Spectacles",
+                        },
+                        {
+                            "id": "JAZZ",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Jazz ou Musique du monde",
+                        },
+                        {
+                            "id": "CLASSIQUE",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Classique",
+                        },
+                        {
+                            "id": "MUSIQUES_AUCUN",
+                            "sub_question": None,
+                            "subtitle": None,
+                            "title": "Aucun",
+                        },
+                    ],
+                },
             ]
         }
 

@@ -2755,7 +2755,25 @@
                     "PROJECTION_LIVRE",
                     "PROJECTION_CONFERENCE",
                     "PROJECTION_JEU",
-                    "PROJECTION_AUTRE"
+                    "PROJECTION_AUTRE",
+                    "MANGAS",
+                    "ROMANCE",
+                    "FANTASY",
+                    "THRILLER",
+                    "ROMANS",
+                    "SOCIETE",
+                    "PHILOSOPHIE",
+                    "CULTURE",
+                    "HISTOIRE",
+                    "LIVRES_AUCUN",
+                    "RAP",
+                    "POP",
+                    "ELECTRO",
+                    "METAL",
+                    "FILMS",
+                    "JAZZ",
+                    "CLASSIQUE",
+                    "MUSIQUES_AUCUN"
                 ],
                 "title": "CulturalSurveyAnswerEnum",
                 "type": "string"
@@ -2808,7 +2826,9 @@
                     "FESTIVALS",
                     "SPECTACLES",
                     "ACTIVITES",
-                    "PROJECTIONS"
+                    "PROJECTIONS",
+                    "LIVRES",
+                    "MUSIQUES"
                 ],
                 "title": "CulturalSurveyQuestionEnum",
                 "type": "string"

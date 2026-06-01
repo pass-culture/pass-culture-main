@@ -164,99 +164,123 @@ PROJECTION_FESTIVAL = CulturalSurveyAnswer(
     title="Aller à un festival",
     subtitle="Musique, cinéma, littéraire...",
 )
-
-
 PROJECTION_CINEMA = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_CINEMA,
     title="Aller au cinéma",
 )
-
 PROJECTION_VISITE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_VISITE,
     title="Faire des visites",
     subtitle="Une exposition, un monument...",
 )
-
 PROJECTION_CONCERT = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_CONCERT,
     title="Participer à un concert",
 )
-
-
 PROJECTION_CD_VINYLE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_CD_VINYLE,
     title="Écouter des CDs ou des vinyls",
 )
-
-
 PROJECTION_SPECTACLE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_SPECTACLE,
     title="Voir un spectacle",
     subtitle="Pièce de théâtre, cirque, humour...",
 )
-
-
 PROJECTION_ACTIVITE_ARTISTIQUE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_ACTIVITE_ARTISTIQUE,
     title="Faire une activité artistique",
     subtitle="Dessin, danse, théâtre, musique...",
 )
-
-
 PROJECTION_LIVRE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_LIVRE,
     title="Lire des livres",
 )
-
-
 PROJECTION_CONFERENCE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_CONFERENCE,
     title="Assister à des conférences ou des rencontres",
 )
-
 PROJECTION_JEU = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_JEU,
     title="Faire des jeux en solo ou en duo",
     subtitle="Escape games, jeux vidéo...",
 )
-
 PROJECTION_AUTRE = CulturalSurveyAnswer(
     id=CulturalSurveyAnswerEnum.PROJECTION_AUTRE,
     title="Autre",
 )
 
-ALL_CULTURAL_SURVEY_ANSWERS = (
-    FESTIVAL,
-    SPECTACLE,
-    BIBLIOTHEQUE,
-    EVENEMENT_JEU,
-    CONCERT,
-    CINEMA,
-    MUSEE,
-    CONFERENCE,
-    COURS,
-    SANS_SORTIES,
-    FESTIVAL_MUSIQUE,
-    FESTIVAL_AVANT_PREMIERE,
-    FESTIVAL_SPECTACLE,
-    FESTIVAL_LIVRE,
-    FESTIVAL_CINEMA,
-    FESTIVAL_AUTRE,
-    SPECTACLE_HUMOUR,
-    SPECTACLE_THEATRE,
-    SPECTACLE_RUE,
-    SPECTACLE_OPERA,
-    SPECTACLE_CIRQUE,
-    SPECTACLE_DANSE,
-    SPECTACLE_AUTRE,
-    MATERIEL_ART_CREATIF,
-    PODCAST,
-    LIVRE,
-    JOUE_INSTRUMENT,
-    PRESSE_EN_LIGNE,
-    JEU_VIDEO,
-    FILM_DOMICILE,
-    SANS_ACTIVITES,
+MANGAS = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.MANGAS,
+    title="Mangas ou BD",
+)
+ROMANCE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.ROMANCE,
+    title="Romance",
+)
+FANTASY = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.FANTASY,
+    title="Fantasy ou SF",
+)
+THRILLER = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.THRILLER,
+    title="Thriller ou Polar",
+)
+ROMANS = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.ROMANS,
+    title="Romans ou Classiques",
+)
+SOCIETE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.SOCIETE,
+    title="Société ou Actualités",
+)
+PHILOSOPHIE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.PHILOSOPHIE,
+    title="Philo ou Psycho",
+)
+CULTURE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.CULTURE,
+    title="Culture, Arts ou Sport",
+)
+HISTOIRE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.HISTOIRE,
+    title="Histoire ou Voyages",
+)
+LIVRES_AUCUN = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.LIVRES_AUCUN,
+    title="Aucun",
+)
+
+RAP = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.RAP,
+    title="Rap ou RnB",
+)
+POP = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.POP,
+    title="Pop rock ou Variétés",
+)
+ELECTRO = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.ELECTRO,
+    title="Electro ou Techno",
+)
+METAL = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.METAL,
+    title="Hard-rock ou Metal",
+)
+FILMS = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.FILMS,
+    title="Films ou Spectacles",
+)
+JAZZ = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.JAZZ,
+    title="Jazz ou Musique du monde",
+)
+CLASSIQUE = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.CLASSIQUE,
+    title="Classique",
+)
+MUSIQUES_AUCUN = CulturalSurveyAnswer(
+    id=CulturalSurveyAnswerEnum.MUSIQUES_AUCUN,
+    title="Aucun",
 )
 
 
@@ -312,6 +336,28 @@ PROJECTION_ANSWERS = [
     PROJECTION_JEU,
     PROJECTION_AUTRE,
 ]
+LIVRES_ANSWERS = [
+    MANGAS,
+    ROMANCE,
+    FANTASY,
+    THRILLER,
+    ROMANS,
+    SOCIETE,
+    PHILOSOPHIE,
+    CULTURE,
+    HISTOIRE,
+    LIVRES_AUCUN,
+]
+MUSIQUES_ANSWERS = [
+    RAP,
+    POP,
+    ELECTRO,
+    METAL,
+    FILMS,
+    JAZZ,
+    CLASSIQUE,
+    MUSIQUES_AUCUN,
+]
 
 
 SORTIES = CulturalSurveyQuestion(
@@ -344,10 +390,24 @@ PROJECTIONS = CulturalSurveyQuestion(
     answers=PROJECTION_ANSWERS,
 )
 
+LIVRES = CulturalSurveyQuestion(
+    id=CulturalSurveyQuestionEnum.LIVRES,
+    title=f"Quels types de livres veux-tu qu’on te propose{u_nbsp}?",
+    answers=LIVRES_ANSWERS,
+)
+
+MUSIQUES = CulturalSurveyQuestion(
+    id=CulturalSurveyQuestionEnum.MUSIQUES,
+    title=f"Quels types de musique veux-tu qu’on te propose{u_nbsp}?",
+    answers=MUSIQUES_ANSWERS,
+)
+
 ALL_CULTURAL_SURVEY_QUESTIONS = [
     SORTIES,
     FESTIVALS,
     SPECTACLES,
     ACTIVITES,
     PROJECTIONS,
+    LIVRES,
+    MUSIQUES,
 ]
