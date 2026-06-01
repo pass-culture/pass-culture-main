@@ -276,7 +276,8 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
         .options(
-            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer),
         )
     )
     offerer_address = (

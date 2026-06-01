@@ -53,13 +53,13 @@ class Returns200Test:
     num_queries += 1  # 2 offerer
     num_queries += 1  # 3 user_offerer
     num_queries += 1  # 4 offer+stock+offererAddress+Address+mediaton+venue
-    num_queries += 1  # 5 available stock (date comparison)
-    num_queries += 1  # 6 select offer
-    num_queries += 1  # 7 offerer_confidence
+    num_queries += 1  # 5 artists
+    num_queries += 1  # 6 available stock (date comparison)
+    num_queries += 1  # 7 select offer
     num_queries += 1  # 8 offerer_confidence
-    num_queries += 1  # 9 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 10 update offer
-    num_queries += 1  # 11 artists
+    num_queries += 1  # 9 offerer_confidence
+    num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 11 update offer
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
@@ -81,7 +81,7 @@ class Returns200Test:
 
         client = client.with_session_auth("user@example.com")
         offer_id = stock.offerId
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.patch("/offers/publish", json={"id": offer_id})
 
         assert response.status_code == 200
@@ -122,7 +122,7 @@ class Returns200Test:
         client = client.with_session_auth("user@example.com")
         publication_date = now_datetime_with_tz.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -171,7 +171,7 @@ class Returns200Test:
         ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
 
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -224,7 +224,7 @@ class Returns200Test:
         ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
 
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={
@@ -276,7 +276,7 @@ class Returns200Test:
         ) + datetime.timedelta(days=31)
         offer_id = stock.offerId
 
-        with assert_num_queries(self.num_queries, expire_session=False):
+        with assert_num_queries(self.num_queries):
             response = client.patch(
                 "/offers/publish",
                 json={

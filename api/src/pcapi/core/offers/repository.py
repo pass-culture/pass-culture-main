@@ -1365,7 +1365,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
         .options(
             sa_orm.joinedload(models.Offer.highlight_requests).joinedload(highlights_models.HighlightRequest.highlight)
         )
-        .options(sa_orm.joinedload(models.Offer.venue))
+        .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress))
         .options(sa_orm.joinedload(models.Offer.metaData))
         .options(
             sa_orm.selectinload(models.Offer.artistOfferLinks)
