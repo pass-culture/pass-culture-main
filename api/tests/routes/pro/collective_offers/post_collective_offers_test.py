@@ -12,7 +12,6 @@ from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import testing as brevo_testing
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils.phone_number import ParsedPhoneNumber
@@ -101,28 +100,7 @@ def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
 
 
 class Returns200Test:
-    def test_create_collective_offer(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-        data = base_offer_payload(venue=venue)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        assert response.status_code == 201
-
-        offer_id = response.json["id"]
-        offer = db.session.get(models.CollectiveOffer, offer_id)
-
-        assert_offer_values(offer, data, user, offerer)
-
-        # 2 requests (for 2 bookingEmail) for Brevo
-        assert len(brevo_testing.brevo_requests) == 3
-
-    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-    def test_create_collective_offer_with_ff(self, client, clear_redis):
+    def test_create_collective_offer(self, client, clear_redis):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user

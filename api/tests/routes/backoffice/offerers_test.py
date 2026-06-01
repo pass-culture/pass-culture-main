@@ -408,24 +408,7 @@ class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
     indexation_reason = NotImplemented
     default_form_data = {"comment": "Test"}
 
-    def test_should_update_brevo_contacts(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(
-            validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
-        )
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        users_offerer = offerers_factories.UserOffererFactory.create_batch(2, offerer=offerer)
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=self.default_form_data)
-        assert response.status_code == 303
-
-        assert {brevo_request["email"] for brevo_request in testing.brevo_requests} == {
-            venue.bookingEmail,
-            users_offerer[0].user.email,
-            users_offerer[1].user.email,
-        }
-
-    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-    def test_should_update_brevo_contacts_with_ff(self, authenticated_client, clear_redis):
+    def test_should_update_brevo_contacts(self, authenticated_client, clear_redis):
         offerer = offerers_factories.OffererFactory(
             validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
         )
@@ -660,107 +643,6 @@ class DeleteOffererTest(PostEndpointHelper):
 
 
 class UpdateOffererTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.update_offerer"
-    endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
-
-    def test_update_offerer(self, legit_user, authenticated_client):
-        offerer_to_edit = offerers_factories.OffererFactory()
-        venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer_to_edit)
-        users_offerer = offerers_factories.UserOffererFactory.create_batch(2, offerer=offerer_to_edit)
-
-        old_name = offerer_to_edit.name
-        new_name = "Librairie bretonne"
-
-        base_form = {
-            "name": new_name,
-            "tags": [tag.id for tag in offerer_to_edit.tags],
-        }
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_edit.id, form=base_form)
-        assert response.status_code == 303
-
-        # Test redirection
-        expected_url = url_for("backoffice_web.offerer.get", offerer_id=offerer_to_edit.id)
-        assert response.location == expected_url
-
-        # Test region update
-        response = authenticated_client.get(expected_url)
-
-        # Test history
-        history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
-        history_response = authenticated_client.get(history_url)
-
-        offerer_to_edit = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
-        assert offerer_to_edit.name == new_name
-
-        assert len(offerer_to_edit.action_history) == 1
-        assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert offerer_to_edit.action_history[0].authorUser == legit_user
-        assert set(offerer_to_edit.action_history[0].extraData["modified_info"].keys()) == {"name"}
-
-        history_rows = html_parser.extract_table_rows(history_response.data)
-        assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == "Modification des informations"
-        assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
-
-        assert len(testing.brevo_requests) == 4
-        assert {brevo_request["email"] for brevo_request in testing.brevo_requests} == {
-            venues[0].bookingEmail,
-            venues[1].bookingEmail,
-            users_offerer[0].user.email,
-            users_offerer[1].user.email,
-        }
-
-    def test_update_offerer_tags(self, legit_user, authenticated_client):
-        offerer_to_edit = offerers_factories.OffererFactory()
-        tag1 = offerers_factories.OffererTagFactory(label="Premier tag")
-        tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
-        tag3 = offerers_factories.OffererTagFactory(label="Troisième tag")
-        offerers_factories.OffererTagMappingFactory(tagId=tag1.id, offererId=offerer_to_edit.id)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer_to_edit)
-
-        base_form = {
-            "name": offerer_to_edit.name,
-            "tags": [tag2.id, tag3.id],
-        }
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_edit.id, form=base_form)
-        assert response.status_code == 303
-
-        # Test history
-        history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
-        history_response = authenticated_client.get(history_url)
-
-        db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
-
-        history_rows = html_parser.extract_table_rows(history_response.data)
-        assert len(history_rows) == 1
-        assert history_rows[0]["Type"] == "Modification des informations"
-        assert history_rows[0]["Auteur"] == legit_user.full_name
-        assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
-
-        assert len(testing.brevo_requests) == 1
-        assert testing.brevo_requests[0]["email"] == venue.bookingEmail
-
-    def test_update_offerer_empty_name(self, legit_user, authenticated_client):
-        offerer = offerers_factories.OffererFactory(name="Original")
-
-        base_form = {
-            "name": "",
-            "tags": [],
-        }
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=base_form)
-        assert response.status_code == 400
-        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
-
-        assert offerer.name == "Original"
-        assert len(offerer.action_history) == 0
-
-
-@pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-class UpdateOffererWithFFTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.update_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY

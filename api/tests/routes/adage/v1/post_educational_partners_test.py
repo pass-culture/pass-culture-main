@@ -48,9 +48,7 @@ def test_post_educational_partners_with_unknown_venue(client: TestClient):
     assert db.session.query(offerers_models.Venue).count() == 0
 
 
-@mock.patch("pcapi.core.external.beamer.tasks.update_beamer_pro_attributes_task.delay", return_value=None)
-@mock.patch("pcapi.tasks.brevo_tasks.update_brevo_pro_attributes_task.delay", return_value=None)
-def test_post_educational_partners_venue_now_has_adage_id(mocked_beamer, mocked_brevo, client: TestClient):
+def test_post_educational_partners_venue_now_has_adage_id(client: TestClient):
     venue = offerers_factories.VenueFactory(adageId=None, managingOfferer__allowedOnAdage=False)
     venue_with_adage_id = offerers_factories.VenueFactory(adageId="999", managingOfferer=venue.managingOfferer)
     venue_without_adage_id = offerers_factories.VenueFactory(adageId=None, managingOfferer=venue.managingOfferer)

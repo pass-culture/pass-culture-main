@@ -104,20 +104,7 @@ def test_email_should_not_be_blacklisted_in_brevo_by_default():
     assert brevo_testing.brevo_requests[0].get("emailBlacklisted") is False
 
 
-def test_update_external_pro_user():
-    user = ProFactory()
-    assert user.email  # preload the user to avoid duplicated queries
-
-    with assert_no_duplicated_queries():
-        update_external_user(user)
-
-    assert len(batch_testing.requests) == 0
-    assert len(brevo_testing.brevo_requests) == 1
-    assert brevo_testing.brevo_requests[0].get("use_pro_subaccount") is True
-
-
-@pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-def test_update_external_pro_user_with_ff(clear_redis):
+def test_update_external_pro_user_with(clear_redis):
     user = ProFactory()
     assert user.email  # preload the user to avoid duplicated queries
 

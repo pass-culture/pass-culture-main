@@ -214,50 +214,7 @@ class SuspendAccountTest:
         assert brevo_testing.brevo_requests[0]["email"] == user.email
         assert brevo_testing.brevo_requests[0]["action"] == "delete"
 
-    def test_suspend_beneficiary(self):
-        user = users_factories.BeneficiaryGrant18Factory()
-        users_factories.NativeUserSessionFactory(user=user)
-        cancellable_booking = bookings_factories.BookingFactory(user=user)
-        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
-        confirmed_booking = bookings_factories.BookingFactory(
-            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
-        )
-        used_booking = bookings_factories.UsedBookingFactory(user=user)
-        author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
-        comment = "Dossier n°12345"
-        old_password_hash = user.password
-
-        users_api.suspend_account(user, reason=reason, actor=author, comment=comment, is_backoffice_action=True)
-
-        db.session.refresh(user)
-
-        assert not user.isActive
-        assert user.password == old_password_hash
-        assert user.suspension_reason == reason
-        assert _datetime_within_last_5sec(user.suspension_date)
-
-        assert cancellable_booking.status is BookingStatus.CANCELLED
-        assert confirmed_booking.status is BookingStatus.CONFIRMED
-        assert used_booking.status is BookingStatus.USED
-        assert db.session.query(users_models.NativeUserSession).count() == 0
-
-        history = db.session.query(history_models.ActionHistory).filter_by(userId=user.id).all()
-        assert len(history) == 1
-        _assert_user_action_history_as_expected(
-            history[0], user, author, history_models.ActionType.USER_SUSPENDED, reason, comment
-        )
-
-        assert len(brevo_testing.brevo_requests) == 2
-        # update venue attributes after booking is canceled
-        assert brevo_testing.brevo_requests[0]["email"] == cancellable_booking.venue.bookingEmail
-        assert len(brevo_testing.brevo_requests[0]["attributes"]) > 0
-        # delete suspended user contact
-        assert brevo_testing.brevo_requests[1]["email"] == user.email
-        assert brevo_testing.brevo_requests[1]["action"] == "delete"
-
-    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
-    def test_suspend_beneficiary_with_ff(self, clear_redis):
+    def test_suspend_beneficiary(self, clear_redis):
         user = users_factories.BeneficiaryGrant18Factory()
         users_factories.NativeUserSessionFactory(user=user)
         cancellable_booking = bookings_factories.BookingFactory(user=user)
