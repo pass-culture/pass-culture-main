@@ -11,8 +11,6 @@ from pcapi.core.external.batch.models import BatchEvent
 from pcapi.core.external.batch.utils import format_date
 from pcapi.core.external.batch.utils import shorten_for_batch
 from pcapi.core.mails.transactional.utils import format_price
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks import batch_tasks as batch_cloud_tasks
 from pcapi.utils.transaction_manager import on_commit
 
 
@@ -50,16 +48,8 @@ def _format_offer_attributes(offer: offers_models.Offer) -> dict:
 def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit) -> None:
     event_name = BatchEvent.USER_DEPOSIT_ACTIVATED
     event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
@@ -72,74 +62,42 @@ def track_account_recredited(user_id: int, deposit: finance_models.Deposit, depo
         "deposits_count": deposit_count,
         "deposit_expiration_date": format_date(deposit.expirationDate),
     }
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_identity_check_started_event(user_id: int, fraud_check_type: subscription_models.FraudCheckType) -> None:
     event_name = BatchEvent.USER_IDENTITY_CHECK_STARTED
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(
+        event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
+    )
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_ubble_ko_event(user_id: int, reason_code: subscription_models.FraudReasonCode) -> None:
     event_name = BatchEvent.HAS_UBBLE_KO_STATUS
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(
+        event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
+    )
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
     formatted_offer_attributes = _format_offer_attributes(offer)
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(
+        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
+    )
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = BatchEvent.HAS_BOOKED_OFFER
     formatted_offer_attributes = _format_offer_attributes(offer)
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(
+        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
+    )
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def track_booking_cancellation(booking: bookings_models.Booking) -> None:
@@ -158,44 +116,24 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
         "offer_price": booking.total_amount,
         "formatted_offer_price": format_price(booking.total_amount, user),
     }
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=event_payload, user_id=user.id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=event_payload, user_id=user.id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
 
 
 def send_users_reminders_for_offer(user_ids: list[int], offer: offers_models.Offer) -> None:
     event_name = BatchEvent.FUTURE_OFFER_ACTIVATED
     formatted_offer_attributes = _format_offer_attributes(offer)
 
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        trigger_events_v2: list[serialization.TrackBatchEventRequestV2] = []
-        for user_id in user_ids:
-            trigger_events_v2.append(
-                serialization.TrackBatchEventRequestV2(
-                    event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-                )
+    trigger_events: list[serialization.TrackBatchEventRequest] = []
+    for user_id in user_ids:
+        trigger_events.append(
+            serialization.TrackBatchEventRequest(
+                event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
             )
+        )
 
-        payload_v2 = serialization.TrackBatchEventsRequestV2(trigger_events=trigger_events_v2)
-        on_commit(partial(batch_tasks.track_event_bulk_task.delay, payload_v2.model_dump()))
-    else:
-        trigger_events: list[serialization.TrackBatchEventRequest] = []
-        for user_id in user_ids:
-            trigger_events.append(
-                serialization.TrackBatchEventRequest(
-                    event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
-                )
-            )
-
-        payload = serialization.TrackBatchEventsRequest(trigger_events=trigger_events)
-        on_commit(partial(batch_cloud_tasks.track_event_bulk_task.delay, payload))
+    payload = serialization.TrackBatchEventsRequest(trigger_events=trigger_events)
+    on_commit(partial(batch_tasks.track_event_bulk_task.delay, payload.model_dump()))
 
 
 def track_has_received_bonus(user_id: int) -> None:
@@ -203,13 +141,5 @@ def track_has_received_bonus(user_id: int) -> None:
     event_payload = {
         "has_received_bonus": True,
     }
-    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH.is_active():
-        payload_v2 = serialization.TrackBatchEventRequestV2(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_tasks.track_event_task.delay, payload_v2.model_dump()))
-    else:
-        payload = serialization.TrackBatchEventRequest(
-            event_name=event_name, event_payload=event_payload, user_id=user_id
-        )
-        on_commit(partial(batch_cloud_tasks.track_event_task.delay, payload))
+    payload = serialization.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload.model_dump()))
