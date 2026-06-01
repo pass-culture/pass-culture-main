@@ -232,16 +232,16 @@ class AutocompleteBoUsersTest(AutocompleteTestBase):
             ("Hugo", {"Léa Hugo", "Hugo Admin"}),
             ("Hugo A", {"Hugo Admin"}),
             ("Pro", set()),
-            ("1234", set()),
-            ("12345", {"Louise Admin"}),
+            ("123456", set()),
+            ("1234567", {"Louise Admin"}),
         ],
     )
     def test_autocomplete_bo_users(self, authenticated_client, search_query, expected_texts):
         users_factories.AdminFactory(firstName="Léa", lastName="Hugo")
         users_factories.AdminFactory(firstName="Léo", lastName="Admin")
         users_factories.AdminFactory(firstName="Hugo", lastName="Admin")
-        users_factories.AdminFactory(id=12345, firstName="Louise", lastName="Admin")
-        users_factories.UserFactory(id=1234, firstName="Léo", lastName="Hugo")
+        users_factories.AdminFactory(id=1234567, firstName="Louise", lastName="Admin")
+        users_factories.UserFactory(id=123456, firstName="Léo", lastName="Hugo")
         users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
@@ -256,21 +256,22 @@ class AutocompletePublicUsersTest(AutocompleteTestBase):
             ("", set()),
             ("1", set()),
             ("L", set()),
-            ("Le", {"Léa Hugo (100)", "Léo Jeune (200)"}),
-            ("Léa", {"Léa Hugo (100)"}),
-            ("Hugo", {"Léa Hugo (100)", "Hugo Jeune (300)"}),
-            ("Hugo J", {"Hugo Jeune (300)"}),
+            ("Le", {"Léa Hugo (100000)", "Léo Jeune (200000)"}),
+            ("Léa", {"Léa Hugo (100000)"}),
+            ("Hugo", {"Léa Hugo (100000)", "Hugo Jeune (300000)"}),
+            ("Hugo J", {"Hugo Jeune (300000)"}),
             ("Pro", set()),
-            ("1234", set()),
-            ("12345", {"Louise Jeune (12345)"}),
+            ("123456", set()),
+            ("1234567", {"Louise Jeune (1234567)"}),
         ],
     )
     def test_autocomplete_public_users(self, authenticated_client, search_query, expected_texts):
-        users_factories.UnderageBeneficiaryFactory(id=100, firstName="Léa", lastName="Hugo")
-        users_factories.FreeBeneficiaryFactory(id=200, firstName="Léo", lastName="Jeune")
-        users_factories.UserFactory(id=300, firstName="Hugo", lastName="Jeune")
-        users_factories.BeneficiaryFactory(id=12345, firstName="Louise", lastName="Jeune")
-        users_factories.AdminFactory(id=1234, firstName="Léo", lastName="Hugo")
+        # Large ids to avoid interference with legit_user.id
+        users_factories.UnderageBeneficiaryFactory(id=100000, firstName="Léa", lastName="Hugo")
+        users_factories.FreeBeneficiaryFactory(id=200000, firstName="Léo", lastName="Jeune")
+        users_factories.UserFactory(id=300000, firstName="Hugo", lastName="Jeune")
+        users_factories.BeneficiaryFactory(id=1234567, firstName="Louise", lastName="Jeune")
+        users_factories.AdminFactory(id=123456, firstName="Léo", lastName="Hugo")
         users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
