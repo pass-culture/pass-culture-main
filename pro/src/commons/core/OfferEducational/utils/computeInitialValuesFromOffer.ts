@@ -74,13 +74,81 @@ const getInitialVenueId = (
   return getDefaultEducationalValues().venueId
 }
 
+type CollectiveOffer =
+  | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel
+
+const getContactOptions = (
+  offer: CollectiveOffer
+): OfferEducationalFormValues['contactOptions'] => {
+  if (!isCollectiveOfferTemplate(offer)) {
+    return { email: false, phone: false, form: false }
+  }
+  return {
+    email: Boolean(offer.contactEmail),
+    phone: Boolean(offer.contactPhone),
+    form: Boolean(offer.contactForm || offer.contactUrl),
+  }
+}
+
+const getContactFormType = (
+  offer: CollectiveOffer
+): OfferEducationalFormValues['contactFormType'] => {
+  if (!isCollectiveOfferTemplate(offer)) {
+    return undefined
+  }
+  return offer.contactUrl ? 'url' : 'form'
+}
+
+const getAddressAutocompleteFields = (
+  offer: CollectiveOffer,
+  isVenueAddress: boolean | undefined | null
+) => {
+  const offerAddress = offer.location?.location
+  if (
+    offer.location?.locationType === CollectiveLocationType.ADDRESS &&
+    !isVenueAddress &&
+    !offerAddress?.isManualEdition
+  ) {
+    const autocomplete = `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`
+    return {
+      addressAutocomplete: autocomplete,
+      'search-addressAutocomplete': autocomplete,
+    }
+  }
+  return { addressAutocomplete: '', 'search-addressAutocomplete': '' }
+}
+
+const getTemplateDateFields = (
+  offer: CollectiveOffer,
+  defaultValues: ReturnType<typeof getDefaultEducationalValues>
+): Pick<
+  OfferEducationalFormValues,
+  'beginningDate' | 'endingDate' | 'hour'
+> => {
+  if (isCollectiveOfferTemplate(offer) && offer.dates) {
+    return {
+      beginningDate: formatShortDateForInput(
+        toDateStrippedOfTimezone(offer.dates.start)
+      ),
+      endingDate: formatShortDateForInput(
+        toDateStrippedOfTimezone(offer.dates.end)
+      ),
+      hour: formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start)),
+    }
+  }
+  return {
+    beginningDate: defaultValues.beginningDate,
+    endingDate: defaultValues.endingDate,
+    hour: defaultValues.hour,
+  }
+}
+
 export const computeInitialValuesFromOffer = (
   offerer: GetEducationalOffererResponseModel | null,
   isTemplate: boolean,
   venues: VenueListItemResponseModel[],
-  offer?:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel,
+  offer?: CollectiveOffer,
   venueIdQueryParam?: string | null,
   isMarseilleEnabled?: boolean
 ): OfferEducationalFormValues => {
@@ -170,15 +238,9 @@ export const computeInitialValuesFromOffer = (
 
   const permanentOrSpecificDates = offer.dates ? 'specific_dates' : 'permanent'
 
-  const getDateType = isCollectiveOfferTemplate(offer)
+  const datesType = isCollectiveOfferTemplate(offer)
     ? permanentOrSpecificDates
     : undefined
-
-  let contactFormType: OfferEducationalFormValues['contactFormType']
-
-  if (isCollectiveOfferTemplate(offer)) {
-    contactFormType = offer.contactUrl ? 'url' : 'form'
-  }
 
   return {
     title: offer.name,
@@ -216,15 +278,7 @@ export const computeInitialValuesFromOffer = (
     longitude: address?.longitude.toString(),
     banId: address?.banId,
     coords: `${address?.latitude}, ${address?.longitude}`,
-    // if offer location is a specific address selected with address API we should fill address autocomplete fields
-    ...(offer.location?.locationType === CollectiveLocationType.ADDRESS &&
-    !isVenueAddress &&
-    !offerAddress?.isManualEdition
-      ? {
-          addressAutocomplete: `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
-          'search-addressAutocomplete': `${offerAddress?.street} ${offerAddress?.postalCode} ${offerAddress?.city}`,
-        }
-      : { addressAutocomplete: '', 'search-addressAutocomplete': '' }),
+    ...getAddressAutocompleteFields(offer, isVenueAddress),
     priceDetail:
       isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail
@@ -236,32 +290,11 @@ export const computeInitialValuesFromOffer = (
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id.toString() || '',
     isTemplate: Boolean(offer.isTemplate),
-    beginningDate:
-      isCollectiveOfferTemplate(offer) && offer.dates
-        ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.start))
-        : defaultEducationalFormValues.beginningDate,
-    endingDate:
-      isCollectiveOfferTemplate(offer) && offer.dates
-        ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.end))
-        : defaultEducationalFormValues.endingDate,
-    hour:
-      isCollectiveOfferTemplate(offer) && offer.dates
-        ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
-        : defaultEducationalFormValues.hour,
-    datesType: getDateType,
+    ...getTemplateDateFields(offer, defaultEducationalFormValues),
+    datesType,
     formats: offer.formats,
-    contactOptions: isCollectiveOfferTemplate(offer)
-      ? {
-          email: Boolean(offer.contactEmail),
-          phone: Boolean(offer.contactPhone),
-          form: Boolean(offer.contactForm || offer.contactUrl),
-        }
-      : {
-          email: false,
-          phone: false,
-          form: false,
-        },
-    contactFormType,
+    contactOptions: getContactOptions(offer),
+    contactFormType: getContactFormType(offer),
     contactUrl:
       isCollectiveOfferTemplate(offer) && offer.contactUrl
         ? offer.contactUrl

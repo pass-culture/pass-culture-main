@@ -36,7 +36,7 @@ if (!isAdageIframe) {
       }
       a = o.getElementsByTagName('head')[0]
       tmpl = o.createElement('template')
-      tmpl.setAttribute('data-purpose', 'hotjar')
+      tmpl.dataset.purpose = 'hotjar'
       r = o.createElement('script')
       r.async = 1
       r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
