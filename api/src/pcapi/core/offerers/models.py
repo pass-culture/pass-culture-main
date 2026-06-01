@@ -766,10 +766,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             return None
         return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
 
-    @property
-    def isReleased(self) -> bool:
-        return self.managingOfferer.isActive and self.managingOfferer.isValidated
-
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")

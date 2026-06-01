@@ -1884,7 +1884,7 @@ def has_venue_at_least_one_bookable_offer(venue: models.Venue) -> bool:
     if not feature.FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
         return True
 
-    if not venue.is_eligible_for_search or not venue.isReleased:
+    if not venue.is_eligible_for_search:
         return False
 
     at_least_one_eligible_offer_query = (
