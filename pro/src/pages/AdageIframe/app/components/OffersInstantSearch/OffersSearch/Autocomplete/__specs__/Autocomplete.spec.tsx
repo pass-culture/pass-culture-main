@@ -246,16 +246,19 @@ describe('Autocomplete', () => {
     const searchButton = await screen.findByRole('button', {
       name: 'Rechercher',
     })
+    const dialogElement = screen.getByTestId('dialog')
+
+    await userEvent.type(inputElement, 'test query')
 
     await userEvent.click(searchButton)
 
-    await userEvent.click(inputElement)
-
-    const clearButton = screen.getByText('Effacer')
-
-    await userEvent.click(clearButton)
+    await userEvent.clear(inputElement)
 
     await userEvent.click(inputElement)
+
+    await userEvent.click(screen.getByText('Effacer'))
+
+    expect(dialogElement).not.toHaveAttribute('open')
   })
 
   it('should disable saved history when cookies are disabled', async () => {

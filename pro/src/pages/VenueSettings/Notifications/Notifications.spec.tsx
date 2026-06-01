@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -62,37 +62,5 @@ describe('Notifications', () => {
     await userEvent.type(emailField, 'new@test.com')
 
     expect(emailField).toHaveValue('new@test.com')
-  })
-
-  describe('when the venue is not virtual', () => {
-    it('should render the email field as enabled', async () => {
-      renderNotifications({ isVirtual: false })
-
-      expect(await screen.findByLabelText('Adresse email')).not.toBeDisabled()
-    })
-
-    it('should render the tips banner', async () => {
-      renderNotifications({ isVirtual: false })
-
-      expect(await screen.findByText(/à toutes vos offres/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when the venue is virtual', () => {
-    it('should render the email field as disabled', async () => {
-      renderNotifications({ isVirtual: true })
-
-      expect(await screen.findByLabelText('Adresse email')).toBeDisabled()
-    })
-
-    it('should not render the tips banner', async () => {
-      renderNotifications({ isVirtual: true })
-
-      await waitFor(() => {
-        expect(
-          screen.queryByText(/à toutes vos offres/)
-        ).not.toBeInTheDocument()
-      })
-    })
   })
 })

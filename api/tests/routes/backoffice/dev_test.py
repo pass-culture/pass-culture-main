@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 from flask import url_for
 
 from pcapi import settings
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -252,10 +254,12 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
     endpoint = "backoffice_web.dev.delete_user"
     needed_permission = None
 
-    def test_sso_user_deletion(self, authenticated_client):
+    def test_user_deletion(self, authenticated_client):
         user = users_factories.UserFactory()
         users_factories.SingleSignOnFactory(user=user)
         users_factories.TrustedDeviceFactory(user=user)
+        users_factories.LoginDeviceHistoryFactory(user=user)
+        users_factories.GdprUserAnonymizationFactory(user=user)
 
         response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
 
@@ -295,3 +299,92 @@ class ComponentsTest(GetEndpointWithoutPermissionHelper):
     def test_returns_user_data_without_bo_component_page(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
         assert response.status_code == 404
+
+
+class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.generate_offer"
+    needed_permission = None
+
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=False)
+    def test_returns_not_found_if_generation_disabled(self, authenticated_client):
+        form = {"name": "Test Offer", "price": 14.2}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 404
+
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=True)
+    def test_regular_offer_creation(self, authenticated_client):
+        form = {"name": "Test Offer", "price": 13.4, "subcategory_id": "SEANCE_CINE"}
+
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+
+        assert response.status_code == 200
+        offer_id = response.request.path.rsplit("/")[-1]
+        offer = db.session.query(offers_models.Offer).get(offer_id)
+        assert offer.subcategoryId == "SEANCE_CINE"
+        assert offer.description in html_parser.content_as_text(response.data)
+        assert offer.publicationDatetime is not None
+        assert offer.name == "Test Offer"
+
+
+class OfferGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.get_generated_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = None
+
+    def test_offer_data(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        response = authenticated_client.get(url_for(self.endpoint, offer_id=offer.id))
+
+        assert response.status_code == 200
+        assert offer.description in html_parser.content_as_text(response.data)
+
+    @pytest.mark.settings(LOCAL_WEBAPP_URL=None)
+    def test_contains_link_to_app(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        response = authenticated_client.get(url_for(self.endpoint, offer_id=offer.id))
+
+        response_text = html_parser.content_as_text(response.data)
+        assert response.status_code == 200
+        assert "Aller sur l'offre sur l'app" in response_text
+        assert "Aller sur l'offre sur l'app locale" not in response_text
+
+    @pytest.mark.settings(LOCAL_WEBAPP_URL="https://link.to.app")
+    def test_contains_link_to_local_app(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        response = authenticated_client.get(url_for(self.endpoint, offer_id=offer.id))
+
+        response_text = html_parser.content_as_text(response.data)
+        assert response.status_code == 200
+        assert "Aller sur l'offre sur l'app" in response_text
+        assert "Aller sur l'offre sur l'app locale" in response_text
+
+
+class OfferGenerationFormGetRouteTest(GetEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.get_generate_offer_form"
+
+    def test_get(self, authenticated_client):
+        response = authenticated_client.get(self.path)
+        assert response.status_code == 200
+        assert "Générateur d'offres de test" in html_parser.content_as_text(response.data)
+
+
+class OfferDeactivationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
+    endpoint = "backoffice_web.dev.deactivate_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = None
+
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=False)
+    def test_settings_not_enabled(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={}, follow_redirects=True)
+        assert response.status_code == 404
+
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=True)
+    def test_regular_offer_deactivation(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        assert offer.publicationDatetime is not None
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={}, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert "Offre désactivée avec succès" in html_parser.extract_alerts(response.data)
+        assert offer.publicationDatetime is None

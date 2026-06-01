@@ -17,6 +17,7 @@ type ManadgedVenueItemProps = {
   selectedVenuesIds: number[]
   setSelectedVenuesIds: (ids: number[]) => void
   venuesForPricingPoint: ManagedVenue[]
+  hasError?: boolean
 }
 
 export function ManadgedVenueItem({
@@ -26,6 +27,7 @@ export function ManadgedVenueItem({
   selectedVenuesIds,
   setSelectedVenuesIds,
   venuesForPricingPoint,
+  hasError,
 }: ManadgedVenueItemProps) {
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenue | null>(null)
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
@@ -56,6 +58,7 @@ export function ManadgedVenueItem({
         name={venue.id.toString()}
         checked={selectedVenuesIds.indexOf(venue.id) >= 0}
         onChange={(e) => handleVenueChange(e, venue.id)}
+        hasError={hasError}
       />
       {!venue.hasPricingPoint && (
         <DialogBuilder

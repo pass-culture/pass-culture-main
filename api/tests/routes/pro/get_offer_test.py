@@ -198,7 +198,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "location": {
-                "label": venue.publicName,
+                "label": None,
                 "id": offer.offererAddress.address.id,
                 "banId": offer.offererAddress.address.banId,
                 "departmentCode": offer.offererAddress.address.departmentCode,
@@ -228,7 +228,6 @@ class Returns200Test:
                 "postalCode": venue.offererAddress.address.postalCode,
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
-                "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             },
             "videoData": {
                 "videoDuration": None,
@@ -376,7 +375,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         if is_venue_location:
             location = offerers_factories.OfferLocationFactory(
-                venue=venue, address=venue.offererAddress.address, label=venue.publicName
+                venue=venue, address=venue.offererAddress.address, label=None
             )
         else:
             location = offerers_factories.OfferLocationFactory(venue=venue)

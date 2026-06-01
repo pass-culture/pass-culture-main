@@ -233,7 +233,7 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch highlight requests
     success_num_queries += 1  # fetch cultural outreach
     success_num_queries += 1  # fetch user
-    success_num_queries += 1  # fetch offerer
+    success_num_queries += 2  # fetch offerer + selectinload on eductional_domain
     success_num_queries += 1  # check national program (?)
     success_num_queries += 1  # check venue has collective offers (?)
     success_num_queries += 1  # check offer regarding offer status (?)

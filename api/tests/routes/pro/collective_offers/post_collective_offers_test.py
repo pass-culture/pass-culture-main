@@ -1,12 +1,14 @@
 from unittest.mock import patch
 
 import pytest
+from flask import current_app
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -118,6 +120,29 @@ class Returns200Test:
 
         # 2 requests (for 2 bookingEmail) for Brevo
         assert len(brevo_testing.brevo_requests) == 3
+
+    @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
+    def test_create_collective_offer_with_ff(self, client, clear_redis):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+        data = base_offer_payload(venue=venue)
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+
+        offer_id = response.json["id"]
+        offer = db.session.get(models.CollectiveOffer, offer_id)
+
+        assert_offer_values(offer, data, user, offerer)
+
+        assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {
+            user.email,
+            *offer.bookingEmails,
+        }
 
     def test_create_collective_offer_allowed_one_adage(self, client):
         # offerer is allowed on adage but has no venue with adageId

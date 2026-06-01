@@ -1,0 +1,690 @@
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
+
+import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
+import { defaultDMSApplicationForEACV2 } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
+import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
+
+import * as utils from './commons/utils'
+import { HomepageVariant, type OffersCardVariant } from './components/types'
+import { Homepage } from './Homepage'
+
+vi.mock('@/components/CollectiveDmsTimeline/CollectiveDmsTimeline', () => ({
+  CollectiveDmsTimeline: () => <div>timeline DMS</div>,
+}))
+
+vi.mock('./components/PartnerPageCard/PartnerPageCard', () => ({
+  PartnerPageCard: () => <div>page partenaire</div>,
+}))
+
+vi.mock('./components/IncomeCard/IncomeCard', () => ({
+  IncomeCard: () => <div>Remboursement</div>,
+}))
+
+vi.mock('./components/WebinarCard/WebinarCard', () => ({
+  WebinarCard: ({ variant }: { variant: HomepageVariant }) => {
+    const variantText =
+      variant === HomepageVariant.INDIVIDUAL ? 'individuelle' : 'collective'
+    return <div>Participer à nos webinaires sur la part {variantText} !</div>
+  },
+}))
+
+vi.mock('./components/VenueValidationBanner/VenueValidationBanner', () => ({
+  VenueValidationBanner: () => <div>Homologation</div>,
+}))
+
+vi.mock('./components/NewsletterCard/NewsletterCard', () => ({
+  NewsletterCard: () => <div>Newsletter</div>,
+}))
+
+vi.mock('./components/StatsCard/StatsCard', () => ({
+  StatsCard: () => <div>Les statistiques sur l'individuel</div>,
+}))
+
+vi.mock('./components/OffersEmptyStateCard/OffersEmptyStateCard', () => ({
+  OffersEmptyStateCard: ({ variant }: { variant: OffersCardVariant }) => {
+    const variantText = variant === 'INDIVIDUAL' ? 'individuelle' : 'collective'
+    return <div>créer une offre {variantText}</div>
+  },
+}))
+
+vi.mock(
+  './components/CollectiveOffersCardsContainer/CollectiveOffersCardsContainer',
+  () => ({
+    CollectiveOffersCardsContainer: () => (
+      <>
+        <div>gestion des offres - vitrines</div>
+        <div>gestion des offres - réservables</div>
+      </>
+    ),
+  })
+)
+
+vi.mock('./components/IndividualOffersCard/IndividualOffersCard', () => ({
+  IndividualOffersCard: () => <div>Activités sur vos offres individuelles</div>,
+}))
+
+vi.mock('./components/EditoCard/EditoCard', () => ({
+  EditoCard: () => (
+    <div>Comment valoriser vos offres auprès du jeune public</div>
+  ),
+}))
+
+const homepageRoutes = [
+  {
+    path: '/',
+    Component: PartnerLayout,
+    children: [
+      {
+        path: 'accueil',
+        element: <Homepage />,
+        handle: { title: 'Espace acteurs culturels' },
+      },
+    ],
+  },
+]
+
+const renderHomepage = (
+  venueOverrides?: Partial<GetVenueResponseModel>,
+  options?: RenderWithProvidersOptions
+) => {
+  const user = sharedCurrentUserFactory()
+  const defaultVenue = makeGetVenueResponseModel({
+    id: 1,
+    managingOffererId: 1,
+    name: 'Club Dorothy',
+  })
+  const { storeOverrides, ...restOptions } = options ?? {}
+  return renderWithProviders(null, {
+    routes: homepageRoutes,
+    initialRouterEntries: ['/accueil'],
+    user,
+    ...restOptions,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedPartnerVenue: {
+          ...defaultVenue,
+          ...venueOverrides,
+        },
+      },
+      ...storeOverrides,
+    },
+  })
+}
+
+describe('Homepage', () => {
+  it('should display the selected venue public name in the title', () => {
+    renderHomepage({ hasNonDraftOffers: true })
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Votre espace Nom public de la structure'
+    )
+  })
+
+  describe('venue validation banner', () => {
+    it('should not be displayed when the venue is validated', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        isValidated: true,
+      })
+
+      expect(screen.queryByText('Homologation')).not.toBeInTheDocument()
+    })
+
+    it('should be displayed if the venue is not validated', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        isValidated: false,
+      })
+
+      expect(screen.getByText('Homologation')).toBeVisible()
+    })
+  })
+
+  describe('Tabs', () => {
+    it.each`
+      scenario | allowedOnAdage | hasNonDraftOffers | hasCollectiveDMS | shouldDisplayTabs
+      ${1}     | ${true}        | ${true}           | ${true}          | ${true}
+      ${2}     | ${true}        | ${true}           | ${false}         | ${true}
+      ${3}     | ${false}       | ${true}           | ${true}          | ${true}
+      ${4}     | ${false}       | ${true}           | ${false}         | ${false}
+      ${5}     | ${false}       | ${false}          | ${true}          | ${false}
+      ${6}     | ${true}        | ${false}          | ${false}         | ${false}
+    `(
+      'should display tabs: $shouldDisplayTabs on scenario $scenario',
+      ({
+        allowedOnAdage,
+        hasNonDraftOffers,
+        hasCollectiveDMS,
+        shouldDisplayTabs,
+      }) => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          allowedOnAdage,
+          hasNonDraftOffers,
+          lastCollectiveDmsApplication: hasCollectiveDMS
+            ? defaultDMSApplicationForEACV2
+            : null,
+        })
+
+        if (shouldDisplayTabs) {
+          expect(screen.getByRole('tablist')).toBeVisible()
+        } else {
+          expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
+        }
+      }
+    )
+
+    it('should render without accessibility violation', async () => {
+      const { container } = renderHomepage({
+        ...defaultGetVenueResponseModel,
+        allowedOnAdage: true,
+        hasNonDraftOffers: true,
+      })
+
+      expect(
+        await axe(container, {
+          rules: { 'aria-allowed-attr': { enabled: false } },
+        })
+      ).toHaveNoViolations()
+    })
+
+    it('should display the corresponding panel when click on a given tab', async () => {
+      const user = userEvent.setup()
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        allowedOnAdage: true,
+        hasNonDraftOffers: true,
+      })
+
+      await user.click(screen.getByRole('tab', { name: /Collectif/ }))
+      expect(
+        screen.getByRole('tabpanel', { description: /part collective/ })
+      ).toBeVisible()
+      expect(
+        screen.queryByRole('tabpanel', { description: /part individuelle/ })
+      ).not.toBeInTheDocument()
+
+      await user.click(screen.getByRole('tab', { name: /Individuel/ }))
+      expect(
+        screen.queryByRole('tabpanel', { description: /part collective/ })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('tabpanel', { description: /part individuelle/ })
+      ).toBeVisible()
+    })
+
+    describe('initial tab', () => {
+      it('when venue has both tabs > should ask for initial tab on load and save the visited tab on tab change', async () => {
+        vi.spyOn(utils, 'getInitialTab').mockReturnValue('tab-individual')
+        vi.spyOn(utils, 'onNewTabSelected')
+
+        const user = userEvent.setup()
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          allowedOnAdage: true,
+          hasNonDraftOffers: true,
+        })
+
+        expect(utils.getInitialTab).toHaveBeenCalledOnce()
+        expect(
+          screen.getByRole('tabpanel', { description: /part individuelle/ })
+        ).toBeVisible()
+
+        expect(utils.onNewTabSelected).not.toHaveBeenCalled()
+
+        await user.click(screen.getByRole('tab', { name: /Collectif/ }))
+        expect(utils.onNewTabSelected).toHaveBeenCalledWith(
+          'tab-collective',
+          defaultGetVenueResponseModel.id
+        )
+      })
+
+      it.each`
+        scenario             | hasIndividual | hasCollective | initialTab
+        ${'only collective'} | ${false}      | ${true}       | ${'tab-collective'}
+        ${'only individual'} | ${true}       | ${false}      | ${'tab-individual'}
+      `(
+        'when other scenarii > should handle the $scenario case.',
+        ({ hasIndividual, hasCollective, initialTab }) => {
+          vi.spyOn(utils, 'getInitialTab').mockReturnValue(initialTab)
+          vi.spyOn(utils, 'onNewTabSelected')
+
+          renderHomepage({
+            ...defaultGetVenueResponseModel,
+            allowedOnAdage: hasCollective,
+            hasNonDraftOffers: hasIndividual,
+          })
+
+          expect(utils.getInitialTab).toHaveBeenCalledExactlyOnceWith(
+            defaultGetVenueResponseModel.id,
+            hasIndividual,
+            hasCollective
+          )
+          expect(screen.queryByRole('tab')).not.toBeInTheDocument()
+          // It's not the Homepage component's role to save the first computed value
+          // it's done in tabManagement module
+          expect(utils.onNewTabSelected).not.toHaveBeenCalled()
+        }
+      )
+    })
+
+    it('should display onboarding offers choice when venue has no tab', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        allowedOnAdage: false,
+        hasNonDraftOffers: false,
+      })
+
+      expect(
+        screen.getByRole('heading', {
+          level: 2,
+          name: 'Diffusez votre première offre et pilotez ici votre activité !',
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('link', {
+          name: 'Commencer la création d’offre sur l’application mobile',
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('button', {
+          name: 'Commencer la création d’offre sur ADAGE',
+        })
+      ).toBeVisible()
+      expect(
+        screen.queryByText('Je le ferai plus tard')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('individual panel', () => {
+    /**
+     * TODO (mdesquilbet-pass, 2026-02-18): replace text content assertions
+     * by mocking components - when all modules are created
+     */
+    beforeEach(() => {
+      vi.spyOn(utils, 'getInitialTab').mockReturnValue('tab-individual')
+    })
+
+    describe('income module', () => {
+      it('should be displayed if the venue has non free offers', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          hasNonDraftOffers: true,
+          hasNonFreeOffers: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(/Remboursement/)
+      })
+
+      it("should not be displayed if the venue doesn't have non free offers", () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          hasNonDraftOffers: true,
+          hasNonFreeOffers: false,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
+    })
+
+    describe('webinar module', () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      it('should be displayed until the 30th day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          dateCreated,
+          hasNonDraftOffers: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part individuelle !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          dateCreated,
+          hasNonDraftOffers: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /indiv/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part individuelle !/
+        )
+      })
+    })
+
+    it('should always have the mandatory modules', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        hasNonDraftOffers: true,
+      })
+
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/page partenaire/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent('Newsletter')
+
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Comment valoriser vos offres auprès du jeune public/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Les statistiques sur l'individuel/)
+
+      expect(
+        screen.getByRole('tabpanel', { description: /indiv/ })
+      ).toHaveTextContent(/Activités sur vos offres individuelles/)
+    })
+  })
+
+  describe('collective panel', () => {
+    describe('collective DMS timeline', () => {
+      it('should be displayed when venue has a collective DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/timeline DMS/)
+      })
+
+      it('should not be displayed when venue has not a collective DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: null,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/timeline DMS/)
+      })
+    })
+
+    describe('individual offers modules', () => {
+      it('should be displayed when venue has a refused DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: {
+            ...defaultDMSApplicationForEACV2,
+            state: DMSApplicationstatus.REFUSE,
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/créer une offre individuelle/)
+      })
+
+      it('should be displayed when venue has a "sans suite" DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: {
+            ...defaultDMSApplicationForEACV2,
+            state: DMSApplicationstatus.SANS_SUITE,
+          },
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/créer une offre individuelle/)
+      })
+
+      it('should not be displayed when venue has a pending DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/créer une offre individuelle/)
+      })
+
+      it('should not be displayed when venue has no DMS application', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          lastCollectiveDmsApplication: null,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/créer une offre individuelle/)
+      })
+    })
+
+    describe('income module', () => {
+      it('should be displayed if the venue has non free offers', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          hasNonFreeOffers: true,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/Remboursement/)
+      })
+
+      it("should not be displayed if the venue doesn't have non free offers", () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          hasNonFreeOffers: false,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
+
+      it('should not be displayed when the venue is not allowed on adage', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          hasNonFreeOffers: false,
+          allowedOnAdage: false,
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Remboursement/)
+      })
+    })
+
+    describe('mandatory modules', () => {
+      it('should always have the mandatory modules when allowed on adage', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/gestion des offres - réservables/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(/gestion des offres - vitrines/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent('page partenaire')
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent('Newsletter')
+      })
+
+      it('should not have the mandatory modules when venue is not allowed on adage', () => {
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          allowedOnAdage: false,
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Activités vos offres vitrines/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(/Activités vos offres réservables/)
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent('page partenaire')
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent('Newsletter')
+      })
+    })
+
+    describe('webinar module', () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
+
+      afterEach(() => {
+        vi.useRealTimers()
+      })
+
+      it('should be displayed until the 30th day of adage inscription date', () => {
+        const adageInscriptionDate = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(adageInscriptionDate)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          adageInscriptionDate,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation when venue has no adage inscription date', () => {
+        const adageInscriptionDate = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(adageInscriptionDate)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          adageInscriptionDate,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should be displayed until the 30th day of venue creation when venue has no adage inscription date', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 30)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed after the 30th day of venue creation when venue has no adage inscription date', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: true,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+
+      it('should not be displayed when venue is not allowed on adage', () => {
+        const dateCreated = '2026-02-16T12:31:53.443732Z'
+        const today = new Date(dateCreated)
+        today.setDate(today.getDate() + 40)
+        vi.setSystemTime(today)
+        renderHomepage({
+          ...defaultGetVenueResponseModel,
+          dateCreated,
+          adageInscriptionDate: null,
+          allowedOnAdage: false,
+          lastCollectiveDmsApplication: defaultDMSApplicationForEACV2,
+        })
+
+        expect(
+          screen.getByRole('tabpanel', { description: /collective/ })
+        ).not.toHaveTextContent(
+          /Participer à nos webinaires sur la part collective !/
+        )
+      })
+    })
+  })
+})

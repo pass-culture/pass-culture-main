@@ -44,7 +44,7 @@ class QuotientFamilialApplicationTest:
                     "last_name": "LEFEBVRE",
                     "first_names": ["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
                     "birth_date": datetime.date(1982, 12, 27),
-                    "gender": users_models.GenderEnum.F.value,
+                    "gender": users_models.GenderEnum.M.value,
                     "birth_country_cog_code": "99243",
                     "birth_city_cog_code": "08480",
                 },
@@ -58,13 +58,14 @@ class QuotientFamilialApplicationTest:
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        householder_data = with_18_child_quotient_familial["data"]["allocataires"][0]
         assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
             custodian=bonus_schemas.Person(
                 last_name="LEFEBVRE",
                 common_name=None,
                 first_names=["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
                 birth_date=datetime.date(1982, 12, 27),
-                gender=users_models.GenderEnum.F,
+                gender=users_models.GenderEnum.M,
                 birth_country_cog_code="99243",
                 birth_city_cog_code="08480",
             ),
@@ -76,15 +77,108 @@ class QuotientFamilialApplicationTest:
                 computation_year=2024,
                 computation_month=12,
             ),
-            children=[
-                bonus_schemas.QuotientFamilialChild(
-                    last_name="LEFEBVRE",
+            householders=[
+                bonus_schemas.QuotientFamilialPerson(
+                    last_name=householder_data["nom_naissance"],
                     common_name=None,
-                    first_names=["LEO"],
-                    birth_date=eighteen_years_ago.isoformat(),
+                    first_names=householder_data["prenoms"].split(),
+                    birth_date=householder_data["date_naissance"],
                     gender=users_models.GenderEnum.M,
                 )
             ],
+            children=[
+                bonus_schemas.QuotientFamilialPerson(
+                    last_name="LEFEBVRE",
+                    common_name=None,
+                    first_names=["LEO"],
+                    birth_date=eighteen_years_ago,
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            http_status_code=200,
+        )
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+        # Ensure that a Batch notification is triggered
+        assert push_testing.requests == [
+            {
+                "can_be_asynchronously_retried": True,
+                "user_id": user.id,
+                "event_name": batch_models.BatchEvent.HAS_RECEIVED_BONUS.value,
+                "event_payload": {"has_received_bonus": True},
+            }
+        ]
+        update_external_user_mock.assert_called_once_with(user)
+
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONUS_GRANTED.value.__dict__
+
+    @patch("pcapi.core.external.attributes.api.update_external_user")
+    def test_apply_for_quotient_familial_bonus_as_householder(self, update_external_user_mock):
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        without_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        without_child_quotient_familial["data"]["enfants"] = []
+        without_child_quotient_familial["data"]["allocataires"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        householder_data = without_child_quotient_familial["data"]["allocataires"][0]
+        last_name = householder_data["nom_naissance"]
+        first_names = householder_data["prenoms"]
+        birth_date = datetime.date.fromisoformat(householder_data["date_naissance"])
+        user = users_factories.BeneficiaryFactory(
+            lastName=last_name, firstName=first_names, validatedBirthDate=birth_date
+        )
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent={
+                "custodian": {
+                    "last_name": householder_data["nom_naissance"],
+                    "first_names": householder_data["prenoms"].split(),
+                    "birth_date": householder_data["date_naissance"],
+                    "gender": users_models.GenderEnum.M.value,
+                    "birth_country_cog_code": "99243",
+                    "birth_city_cog_code": "08480",
+                },
+                "quotient_familial": None,
+            },
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=without_child_quotient_familial)
+
+            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
+            custodian=bonus_schemas.Person(
+                last_name=householder_data["nom_naissance"],
+                common_name=None,
+                first_names=householder_data["prenoms"].split(),
+                birth_date=householder_data["date_naissance"],
+                gender=users_models.GenderEnum.M,
+                birth_country_cog_code="99243",
+                birth_city_cog_code="08480",
+            ),
+            quotient_familial=bonus_schemas.QuotientFamilialContent(
+                provider="CNAF",
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
+                year=2023,
+                month=6,
+                computation_year=2024,
+                computation_month=12,
+            ),
+            householders=[
+                bonus_schemas.QuotientFamilialPerson(
+                    last_name=householder_data["nom_naissance"],
+                    common_name=None,
+                    first_names=householder_data["prenoms"].split(),
+                    birth_date=eighteen_years_ago,
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            children=[],
             http_status_code=200,
         )
         assert finance_models.RecreditType.BONUS_CREDIT in [

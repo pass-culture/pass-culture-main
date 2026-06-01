@@ -82,7 +82,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == searched_id
         assert rows[0]["Nom de l'offre"] == collective_offer_templates[0].name
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offer_templates[0].formats])
         assert rows[0]["Entité juridique"] == collective_offer_templates[0].venue.managingOfferer.name
@@ -99,7 +99,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert len(rows) == 2
         assert rows[0]["ID"] == str(collective_offer_templates[1].id)
         assert rows[0]["Nom de l'offre"] == collective_offer_templates[1].name
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Entité juridique"] == collective_offer_templates[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offer_templates[1].venue.name
@@ -144,7 +144,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
-        assert rows[0]["État"] == "• Rejetée Date erronée"
+        assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offer_templates):
         template = collective_offer_templates[2]
@@ -311,7 +311,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Validée" in badges
+        assert "Validée" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
 
@@ -366,7 +366,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Rejetée" in badges
+        assert "Rejetée" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Raison de rejet"] == "Description manquante"
@@ -464,7 +464,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "• Validée"
+        assert row[0]["État"] == "Validée"
 
         assert collective_offer_template_to_validate.isActive is True
         assert collective_offer_template_to_validate.lastValidationType == OfferValidationType.MANUAL
@@ -513,7 +513,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         assert "Seules les offres collectives vitrine en attente peuvent être validées" in response.data.decode("utf-8")
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "• Rejetée Date erronée"
+        assert row[0]["État"] == "Rejetée Date erronée"
 
 
 class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
@@ -560,7 +560,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         assert response.status_code == 200
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "• Rejetée Date erronée"
+        assert row[0]["État"] == "Rejetée Date erronée"
 
         assert collective_offer_template_to_reject.isActive is False
         assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
@@ -612,7 +612,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         assert "Seules les offres collectives vitrine en attente peuvent être rejetées" in response.data.decode("utf-8")
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
-        assert row[0]["État"] == "• Validée"
+        assert row[0]["État"] == "Validée"
 
 
 class RejectCollectiveOfferTemplateFormTest(GetEndpointHelper):

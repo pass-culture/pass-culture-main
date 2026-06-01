@@ -832,16 +832,15 @@ def format_badge(text: str, category: str = "primary", icon: str | None = None) 
 
 
 def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, with_badge: bool = False) -> str:
-    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match status:
         case offer_mixin.OfferValidationStatus.DRAFT:
-            return format_badge(f"{prefix}Nouvelle", "info") if with_badge else "Nouvelle"
+            return format_badge("Nouvelle", "info") if with_badge else "Nouvelle"
         case offer_mixin.OfferValidationStatus.PENDING:
-            return format_badge(f"{prefix}En attente", "warning") if with_badge else "En attente"
+            return format_badge("En attente", "warning") if with_badge else "En attente"
         case offer_mixin.OfferValidationStatus.APPROVED:
-            return format_badge(f"{prefix}Validée", "success") if with_badge else "Validée"
+            return format_badge("Validée", "success") if with_badge else "Validée"
         case offer_mixin.OfferValidationStatus.REJECTED:
-            return format_badge(f"{prefix}Rejetée", "danger") if with_badge else "Rejetée"
+            return format_badge("Rejetée", "danger") if with_badge else "Rejetée"
         case _:
             return status.value
 
@@ -849,20 +848,17 @@ def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, wi
 def format_product_cgu_compatibility_status(
     cgu_compatibility: offers_models.GcuCompatibilityType, provider_name: str | None, with_badge: bool = False
 ) -> str:
-    prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match cgu_compatibility:
         case offers_models.GcuCompatibilityType.COMPATIBLE:
-            return format_badge(f"{prefix}Compatible", "success") if with_badge else "Compatible"
+            return format_badge("Compatible", "success") if with_badge else "Compatible"
         case offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
             return (
-                format_badge(f"{prefix}Incompatible (Fraude & Conformité)", "danger")
+                format_badge("Incompatible (Fraude & Conformité)", "danger")
                 if with_badge
                 else "Incompatible (Fraude & Conformité)"
             )
         case offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
-            return (
-                format_badge(f"{prefix}Incompatible (Provider)", "danger") if with_badge else "Incompatible (Provider)"
-            )
+            return format_badge("Incompatible (Provider)", "danger") if with_badge else "Incompatible (Provider)"
         case _:
             return cgu_compatibility.value
 
@@ -2256,7 +2252,10 @@ ACTIVITY_MAPPING = {
 }
 
 
-def format_activity(activity: offerers_models.Activity) -> str:
+# TODO(pro-activation): remove None activity once all are filled
+def format_activity(activity: offerers_models.Activity | None) -> str:
+    if not activity:
+        return ACTIVITY_MAPPING[offerers_models.Activity.OTHER]
     return ACTIVITY_MAPPING.get(activity, activity.name)
 
 

@@ -1,5 +1,7 @@
 import click
 
+import pcapi.utils.cron as cron_decorators
+from pcapi.core.external.attributes import queue
 from pcapi.utils.blueprint import Blueprint
 
 from .update_brevo_batch_attributes import update_brevo_and_batch_loop
@@ -23,3 +25,9 @@ def update_brevo_and_batch_users(chunk_size: int, min_id: int, max_id: int, sync
 @click.option("--start-index", type=int, default=0, help="start index for resume (emails sorted alphabetically)")
 def update_brevo_pro(start_index: int) -> None:
     update_brevo_pro_attributes(start_index=start_index)
+
+
+@blueprint.cli.command("update_pro_attributes")
+@cron_decorators.log_cron
+def update_pro_attributes() -> None:
+    queue.update_pro_attributes()

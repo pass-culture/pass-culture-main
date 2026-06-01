@@ -819,6 +819,9 @@ class CollectiveOffer(
                     case CollectiveBookingStatus.USED:
                         status = CollectiveOfferDisplayedStatus.ENDED
 
+                    case CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+                        status = CollectiveOfferDisplayedStatus.ENDED
+
                     case CollectiveBookingStatus.REIMBURSED:
                         status = CollectiveOfferDisplayedStatus.REIMBURSED
 

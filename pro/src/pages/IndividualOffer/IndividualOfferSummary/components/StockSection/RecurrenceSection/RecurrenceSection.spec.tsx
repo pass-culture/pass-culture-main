@@ -32,6 +32,13 @@ describe('StockEventSection', () => {
     }
 
     render(<RecurrenceSection stocksStats={stocksStats} departementCode="" />)
+
+    expect(screen.getByText(/Nombre de dates/)).toBeInTheDocument()
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText(/Période concernée/)).toBeInTheDocument()
+    expect(screen.getByText('le 01/01/2021')).toBeInTheDocument()
+    expect(screen.getByText(/Capacité totale/)).toBeInTheDocument()
+    expect(screen.getByText('637 places')).toBeInTheDocument()
   })
 
   it("displays 0 when remainingQuantity is 0 but not 'Illimitée'", () => {

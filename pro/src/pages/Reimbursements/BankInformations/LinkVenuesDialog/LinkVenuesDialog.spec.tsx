@@ -248,6 +248,37 @@ describe('LinkVenueDialog', () => {
     expect(screen.getByRole('checkbox', { name: venueName })).toBeDisabled()
   })
 
+  it('should not select venues attached to another bank account when clicking on select all checkbox', async () => {
+    const managedVenues = [
+      {
+        ...defaultManagedVenue,
+        id: 1,
+        commonName: 'Lieu 1',
+        hasPricingPoint: true,
+      },
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        commonName: 'Lieu 2',
+        hasPricingPoint: true,
+        bankAccountId: 999,
+      },
+    ]
+
+    renderLinkVenuesDialog(
+      1,
+      { ...defaultBankAccount, linkedVenues: [] },
+      managedVenues
+    )
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+    )
+
+    expect(screen.getByRole('checkbox', { name: 'Lieu 1' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: 'Lieu 2' })).not.toBeChecked()
+  })
+
   it('should be able to unlink a venue already attached to the same bank account', async () => {
     const venueName = 'Mon super lieu'
     const venues = [
@@ -316,6 +347,33 @@ describe('LinkVenueDialog', () => {
       { venuesIds: ['Erreur de validation'] },
       expect.any(Function)
     )
+  })
+
+  it('should display the venuesIds error message when linkVenueToBankAccount returns 400', async () => {
+    const errorMessage =
+      'Une ou plusieurs structures sélectionnées sont déjà rattachées à un autre compte bancaire.'
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+      new ApiError('', 400, 'Bad Request', {
+        venuesIds: [errorMessage],
+      })
+    )
+
+    const managedVenues = [
+      defaultManagedVenue,
+      {
+        ...defaultManagedVenue,
+        id: 2,
+        hasPricingPoint: true,
+        commonName: 'Lieu 2',
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Lieu 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(await screen.findByText(errorMessage)).toBeInTheDocument()
   })
 
   it('should display error snackbar when linkVenueToBankAccount fails with a non-400 ApiError', async () => {

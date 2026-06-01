@@ -198,11 +198,11 @@ def update_down_revision(
 
 def update_alembic_version_conflict_detection_file(
     git_root: pathlib.Path,
-    heads_on_local: dict[str, str],
+    heads_to_apply: dict[str, str],
 ) -> None:
     lines = []
-    for branch in sorted(heads_on_local, reverse=True):  # pre, post
-        lines.append(f"{heads_on_local[branch]} ({branch}) (head)")
+    for branch in sorted(heads_to_apply, reverse=True):  # pre, post
+        lines.append(f"{heads_to_apply[branch]} ({branch}) (head)")
     path = git_root / ALEMBIC_VERSION_CONFLICT_DETECTION_PATH
     path.write_text("\n".join(lines) + "\n")
 
@@ -260,7 +260,12 @@ def main() -> None:
                 new_down_revision=heads_on_master[alembic_branch],
             )
             commands.append(f"git add {revision_file.path.relative_to(cwd)};")
-    update_alembic_version_conflict_detection_file(git_root, heads_on_local)
+
+    pre_to_apply = heads_on_local["pre"] if first_revisions["pre"] else heads_on_master["pre"]
+    post_to_apply = heads_on_local["post"] if first_revisions["post"] else heads_on_master["post"]
+    heads_to_apply = {"pre": pre_to_apply, "post": post_to_apply}
+    update_alembic_version_conflict_detection_file(git_root, heads_to_apply)
+
     local_conflict_detection_path = (git_root / ALEMBIC_VERSION_CONFLICT_DETECTION_PATH).relative_to(cwd)
     commands.append(f"git add {local_conflict_detection_path};")
 

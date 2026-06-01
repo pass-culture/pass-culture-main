@@ -62,7 +62,9 @@ describe('OfferEducationalStock', () => {
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-    screen.getByText('Indiquez le prix et la date de votre offre')
+    expect(
+      screen.getByText('Indiquez le prix et la date de votre offre')
+    ).toBeInTheDocument()
   })
 
   it('should render for offer imported with a public api', () => {

@@ -111,7 +111,7 @@ def _build_api_quotient_familial_response(
     )
 
 
-def _build_api_enfants_response(child: bonus_schemas.QuotientFamilialChild) -> api_particulier.QuotientFamilialPerson:
+def _build_api_enfants_response(child: bonus_schemas.QuotientFamilialPerson) -> api_particulier.QuotientFamilialPerson:
     return api_particulier.QuotientFamilialPerson(
         nom_naissance=child.last_name,
         nom_usage=child.common_name,

@@ -15,6 +15,7 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
@@ -43,7 +44,11 @@ export const LinkVenuesDialog = ({
   const [showUnlinkDialog, setShowUnlinkDialog] = useState<boolean>(false)
 
   const availableManagedVenuesIds = managedVenues
-    .filter((venue) => venue.hasPricingPoint)
+    .filter(
+      (venue) =>
+        venue.hasPricingPoint &&
+        (!venue.bankAccountId || venue.bankAccountId === selectedBankAccount.id)
+    )
     .map((venue) => venue.id)
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
@@ -52,7 +57,17 @@ export const LinkVenuesDialog = ({
     (venue) => venue.id
   )
 
-  const [selectedVenuesIds, setSelectedVenuesIds] = useState(initialVenuesIds)
+  const methods = useForm<{ venuesIds: number[] }>({
+    defaultValues: { venuesIds: initialVenuesIds },
+  })
+
+  const selectedVenuesIds = methods.watch('venuesIds')
+  const venuesIdsError = methods.formState.errors.venuesIds?.message
+
+  const setSelectedVenuesIds = (ids: number[]) => {
+    methods.setValue('venuesIds', ids, { shouldDirty: true })
+    methods.clearErrors('venuesIds')
+  }
 
   const allVenuesSelected = availableManagedVenuesIds.every((venueId) =>
     selectedVenuesIds.includes(venueId)
@@ -68,17 +83,15 @@ export const LinkVenuesDialog = ({
     }
   }
 
-  const handleSubmit = async (hasUnchecked = false) => {
-    if (isEqual(selectedVenuesIds, initialVenuesIds)) {
+  const submitVenuesIds = async (venuesIds: number[], hasUnchecked = false) => {
+    if (isEqual(venuesIds, initialVenuesIds)) {
       closeDialog(false)
       return
     }
 
     try {
       await apiNew.linkVenueToBankAccount({
-        body: {
-          venuesIds: selectedVenuesIds,
-        },
+        body: { venuesIds },
         path: {
           offerer_id: offererId,
           bank_account_id: selectedBankAccount.id,
@@ -100,16 +113,14 @@ export const LinkVenuesDialog = ({
     }
   }
 
-  const onSubmit = async () => {
-    const hasUnlinked = !initialVenuesIds.every((id) =>
-      selectedVenuesIds.includes(id)
-    )
-    hasUnlinked ? setShowUnlinkDialog(true) : await handleSubmit()
+  const onSubmit = async ({ venuesIds }: { venuesIds: number[] }) => {
+    const hasUnlinked = !initialVenuesIds.every((id) => venuesIds.includes(id))
+    if (hasUnlinked) {
+      setShowUnlinkDialog(true)
+    } else {
+      await submitVenuesIds(venuesIds)
+    }
   }
-
-  const methods = useForm({
-    defaultValues: {},
-  })
 
   const hasVenuesWithoutPricingPoint = managedVenues.some(
     (venue) => !venue.hasPricingPoint
@@ -148,56 +159,60 @@ export const LinkVenuesDialog = ({
             onSubmit={methods.handleSubmit(onSubmit)}
             className={styles['dialog-form']}
           >
-            <div className={styles['dialog-checkboxes']}>
-              <div className={styles['dialog-select-all']}>
-                <Checkbox
-                  checked={allVenuesSelected}
-                  indeterminate={
-                    selectedVenuesIds.length >= 1 && !allVenuesSelected
-                  }
-                  onChange={() => {
-                    setSelectedVenuesIds(
-                      allVenuesSelected
-                        ? []
-                        : [
-                            ...new Set([
-                              ...availableManagedVenuesIds,
-                              ...initialVenuesIds,
-                            ]),
-                          ]
-                    )
-                  }}
-                  label={
-                    allVenuesSelected
-                      ? 'Tout désélectionner'
-                      : 'Tout sélectionner'
-                  }
-                />
-                <span className={styles['dialog-select-all-count']}>
-                  {selectedVenuesIds.length}{' '}
-                  {pluralizeFr(
-                    selectedVenuesIds.length,
-                    'structure sélectionnée',
-                    'structures sélectionnées'
-                  )}
-                </span>
-              </div>
-
-              {managedVenues.map((venue) => {
-                return (
-                  <ManadgedVenueItem
-                    venue={venue}
-                    key={venue.id}
-                    updateBankAccountVenuePricingPoint={
-                      updateBankAccountVenuePricingPoint
+            <div className={styles['dialog-checkboxes-section']}>
+              <div className={styles['dialog-checkboxes']}>
+                <div className={styles['dialog-select-all']}>
+                  <Checkbox
+                    checked={allVenuesSelected}
+                    indeterminate={
+                      selectedVenuesIds.length >= 1 && !allVenuesSelected
                     }
-                    selectedBankAccount={selectedBankAccount}
-                    selectedVenuesIds={selectedVenuesIds}
-                    setSelectedVenuesIds={setSelectedVenuesIds}
-                    venuesForPricingPoint={venuesForPricingPoint}
+                    onChange={() => {
+                      setSelectedVenuesIds(
+                        allVenuesSelected
+                          ? []
+                          : [
+                              ...new Set([
+                                ...availableManagedVenuesIds,
+                                ...initialVenuesIds,
+                              ]),
+                            ]
+                      )
+                    }}
+                    label={
+                      allVenuesSelected
+                        ? 'Tout désélectionner'
+                        : 'Tout sélectionner'
+                    }
                   />
-                )
-              })}
+                  <span className={styles['dialog-select-all-count']}>
+                    {selectedVenuesIds.length}{' '}
+                    {pluralizeFr(
+                      selectedVenuesIds.length,
+                      'structure sélectionnée',
+                      'structures sélectionnées'
+                    )}
+                  </span>
+                </div>
+
+                {managedVenues.map((venue) => {
+                  return (
+                    <ManadgedVenueItem
+                      venue={venue}
+                      key={venue.id}
+                      updateBankAccountVenuePricingPoint={
+                        updateBankAccountVenuePricingPoint
+                      }
+                      selectedBankAccount={selectedBankAccount}
+                      selectedVenuesIds={selectedVenuesIds}
+                      setSelectedVenuesIds={setSelectedVenuesIds}
+                      venuesForPricingPoint={venuesForPricingPoint}
+                      hasError={Boolean(venuesIdsError)}
+                    />
+                  )
+                })}
+              </div>
+              <FieldFooter error={venuesIdsError} />
             </div>
             <DialogBuilder.Footer>
               <div className={styles['dialog-actions']}>
@@ -239,7 +254,7 @@ export const LinkVenuesDialog = ({
         title="Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire"
         onConfirm={() => {
           setShowUnlinkDialog(false)
-          void handleSubmit(true)
+          submitVenuesIds(methods.getValues('venuesIds'), true)
         }}
         confirmText="Confirmer"
         cancelText="Retour"

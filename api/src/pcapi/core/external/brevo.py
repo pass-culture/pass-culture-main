@@ -87,7 +87,9 @@ class BrevoAttributes(Enum):
     USER_ID = "USER_ID"
     USER_IS_ATTACHED = "USER_IS_ATTACHED"
     USER_IS_CREATOR = "USER_IS_CREATOR"
+    VENUE_ACTIVITY = "VENUE_ACTIVITY"
     VENUE_COUNT = "VENUE_COUNT"
+    VENUE_CULTURAL_DOMAINS = "VENUE_CULTURAL_DOMAINS"
     VENUE_LABEL = "VENUE_LABEL"
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
@@ -256,7 +258,9 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         BrevoAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         BrevoAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         BrevoAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        BrevoAttributes.VENUE_ACTIVITY.value: _get_attr(attributes, "venues_activities", format_list),
         BrevoAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        BrevoAttributes.VENUE_CULTURAL_DOMAINS.value: _get_attr(attributes, "venues_cultural_domains", format_list),
         BrevoAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
         BrevoAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         BrevoAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
@@ -294,7 +298,9 @@ def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
         BrevoAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         BrevoAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         BrevoAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        BrevoAttributes.VENUE_ACTIVITY.value: _get_attr(attributes, "venues_activities", format_list),
         BrevoAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        BrevoAttributes.VENUE_CULTURAL_DOMAINS.value: _get_attr(attributes, "venues_cultural_domains", format_list),
         BrevoAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
         BrevoAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         BrevoAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),

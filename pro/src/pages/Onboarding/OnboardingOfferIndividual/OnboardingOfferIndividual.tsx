@@ -43,13 +43,6 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     .filter(({ status }) => status === OfferStatus.DRAFT)
     .slice(0, MAX_DRAFT_TO_DISPLAY)
 
-  const physicalVenue = selectedOfferer?.managedVenues?.filter(
-    ({ isVirtual }) => !isVirtual
-  )[0]
-
-  // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
-  const synchronizedLink = physicalVenue ? `/parametres` : '/onboarding'
-
   return (
     <OnboardingLayout
       mainHeading="Offre à destination des jeunes"
@@ -76,7 +69,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
             />
 
             <CardLink
-              to={synchronizedLink}
+              to="/parametres"
               icon={connectStrokeIcon}
               label="Automatiquement"
               description="(via mon logiciel de stocks)"

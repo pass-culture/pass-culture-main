@@ -109,7 +109,7 @@ def _get_user_quotient_familial_response(
     MONTHS_IN_A_YEAR = 12
     api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
     cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
-    all_quotient_familial_responses = []
+    all_quotient_familial_responses: list[api_particulier.QuotientFamilialResponse] = []
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = seventeenth_birthday + relativedelta(months=month_offset)
         if at_date < cutoff_month:
@@ -123,7 +123,9 @@ def _get_user_quotient_familial_response(
         all_quotient_familial_responses.append(quotient_familial_at_date)
 
     quotients_familial_with_user = [
-        qf for qf in all_quotient_familial_responses if _is_user_part_of_tax_household(user, qf.data.enfants)
+        qf
+        for qf in all_quotient_familial_responses
+        if _is_user_part_of_tax_household(user, qf.data.enfants, qf.data.allocataires)
     ]
     if quotients_familial_with_user:
         relevant_qf_responses = quotients_familial_with_user
@@ -137,17 +139,16 @@ def _get_user_quotient_familial_response(
 
 
 def _is_user_part_of_tax_household(
-    user: users_models.User, tax_household_children: list[api_particulier.QuotientFamilialPerson]
+    user: users_models.User,
+    tax_household_children: list[api_particulier.QuotientFamilialPerson],
+    tax_householders: list[api_particulier.QuotientFamilialPerson],
 ) -> bool:
     for child in tax_household_children:
-        has_first_name_match = _does_names_match(user.firstName, child.prenoms)
-        has_last_name_match = _does_names_match(user.lastName, child.nom_naissance) or _does_names_match(
-            user.lastName, child.nom_usage
-        )
-        has_birth_day_match = user.validatedBirthDate == child.date_naissance
-        has_gender_match = user.gender == child.sexe
+        if _does_user_match_person(user, child):
+            return True
 
-        if has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match:
+    for householder in tax_householders:
+        if _does_user_match_person(user, householder):
             return True
 
     return False
@@ -159,10 +160,21 @@ def _does_names_match(name_1: str | None, name_2: str | None) -> bool:
     return clean_accents(name_1).upper() in clean_accents(name_2).upper()
 
 
+def _does_user_match_person(user: users_models.User, person: api_particulier.QuotientFamilialPerson) -> bool:
+    has_first_name_match = _does_names_match(user.firstName, person.prenoms)
+    has_last_name_match = _does_names_match(user.lastName, person.nom_naissance) or _does_names_match(
+        user.lastName, person.nom_usage
+    )
+    has_birth_day_match = user.validatedBirthDate == person.date_naissance
+    has_gender_match = user.gender == person.sexe
+
+    return has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match
+
+
 def _get_credit_bonus_status(
     user: users_models.User, quotient_familial_data: api_particulier.QuotientFamilialData
 ) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
-    if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants):
+    if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants, quotient_familial_data.allocataires):
         return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
 
     if quotient_familial_data.quotient_familial.valeur > bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD:
@@ -200,8 +212,20 @@ def _update_bonus_fraud_check_content(
         )
         fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
 
+        tax_householders = [
+            bonus_schemas.QuotientFamilialPerson(
+                last_name=householder.nom_naissance,
+                common_name=householder.nom_usage,
+                first_names=householder.prenoms.split(" ") if householder.prenoms else [],
+                birth_date=householder.date_naissance,
+                gender=householder.sexe,
+            )
+            for householder in quotient_familial_data.allocataires
+        ]
+        fraud_check.resultContent["householders"] = [householder.model_dump() for householder in tax_householders]
+
         tax_household_children = [
-            bonus_schemas.QuotientFamilialChild(
+            bonus_schemas.QuotientFamilialPerson(
                 last_name=child.nom_naissance,
                 common_name=child.nom_usage,
                 first_names=child.prenoms.split(" ") if child.prenoms else [],

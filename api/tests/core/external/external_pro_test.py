@@ -22,12 +22,15 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-# 1 query on user table with joinedload
-# 1 query on venue table with joinedload
+# 2 queries on user table with joinedload + selectinload on educational_domains
+# 2 queries on venue table with joinedload + selectinload on educational_domains
 # 2 extra SQL queries: select exists on offer and booking tables
 # 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
-# 1 check if the venue is concerned with marseille_en_grand
-EXPECTED_PRO_ATTR_NUM_QUERIES = 6
+# 1 check if the venue relates to marseille_en_grand
+EXPECTED_PRO_ATTR_NUM_QUERIES = 8
+
+# Only one venue, the query on venues will not trigger the selectinload for educational_domains
+EXPECTED_PRO_ATTR_SINGLE_VENUE_NUM_QUERIES = EXPECTED_PRO_ATTR_NUM_QUERIES - 1
 
 
 def _build_params(subs, perman, draft, accep, offer, bookable, booking, attach, colloff, tploff, megoff):
@@ -317,7 +320,7 @@ def test_update_external_pro_user_attributes(
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
     user = ProFactory()
 
-    _check_user_without_validated_offerer(user)
+    _check_user_without_validated_offerer(user, 2)
 
 
 @pytest.mark.parametrize(
@@ -327,15 +330,15 @@ def test_update_external_non_attached_pro_user_attributes(offerer_factory):
     user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer_factory())
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bookingEmail=user_offerer.user.email)
 
-    _check_user_without_validated_offerer(user_offerer.user)
+    _check_user_without_validated_offerer(user_offerer.user, 3)
 
 
-def _check_user_without_validated_offerer(user):
+def _check_user_without_validated_offerer(user, num_queries):
     email = user.email
 
     # no booking or offer to check without offerer
-    # only 2 queries: user and venue
-    with assert_num_queries(2):
+    # only 3 queries: user, venue and collective domains
+    with assert_num_queries(num_queries):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -381,7 +384,7 @@ def test_update_external_pro_booking_email_attributes():
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    with assert_num_queries(EXPECTED_PRO_ATTR_SINGLE_VENUE_NUM_QUERIES):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -427,7 +430,7 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    with assert_num_queries(EXPECTED_PRO_ATTR_SINGLE_VENUE_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is True
     assert attributes.has_banner_url is True
@@ -448,7 +451,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    with assert_num_queries(EXPECTED_PRO_ATTR_SINGLE_VENUE_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
@@ -468,7 +471,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    with assert_num_queries(EXPECTED_PRO_ATTR_SINGLE_VENUE_NUM_QUERIES):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True

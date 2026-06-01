@@ -72,15 +72,12 @@ export async function login(
     isMultiVenue?: boolean
     password?: string
     setCookieConsent?: boolean
-    // TODO (igabriele, 2026-04-16): Delete this prop once `WIP_ENABLE_NEW_PRO_HOME` FF is enabled and removed.
-    withNewProHome?: boolean
   }
 ): Promise<void> {
-  const { isMultiVenue, password, setCookieConsent, withNewProHome } = {
+  const { isMultiVenue, password, setCookieConsent } = {
     isMultiVenue: false,
     password: DEFAULT_PASSWORD,
     setCookieConsent: true,
-    withNewProHome: false,
     ...options,
   }
 
@@ -103,9 +100,7 @@ export async function login(
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: withNewProHome
-          ? /^Votre espace /
-          : 'Bienvenue sur votre espace partenaire',
+        name: /^Votre espace /,
       })
     ).toBeVisible()
   }

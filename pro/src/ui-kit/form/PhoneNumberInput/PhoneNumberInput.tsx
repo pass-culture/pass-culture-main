@@ -82,6 +82,7 @@ export const PhoneNumberInput = forwardRef<
     },
     ref
   ) => {
+    const countryCodeSelectId = useId()
     const formatId = useId()
     const inputId = useId()
     const errorId = useId()
@@ -205,10 +206,14 @@ export const PhoneNumberInput = forwardRef<
           )}
         </div>
         <div className={styles['phone-number-inpus']}>
-          <label htmlFor="countryCode" className={styles['visually-hidden']}>
+          <label
+            htmlFor={countryCodeSelectId}
+            className={styles['visually-hidden']}
+          >
             Indicatif téléphonique
           </label>
           <CountryCodeSelect
+            id={countryCodeSelectId}
             disabled={Boolean(disabled)}
             options={countryCodeSelectOptions}
             className={styles['country-code-select']}

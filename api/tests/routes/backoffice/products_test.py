@@ -146,7 +146,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert "Offres non liées" in buttons
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Compatible" in badges
+        assert "Compatible" in badges
 
         product_offer = html_parser.extract_table_rows(response.data, table_id="offers-table")
         assert product_offer[0]["ID"] == str(linked_offer.id)

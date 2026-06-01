@@ -564,6 +564,15 @@ def create_collective_offers_with_different_displayed_status(
             "bookingFactory": educational_factories.UsedCollectiveBookingFactory,
             "confirmationDate": four_weeks_ago - timedelta(hours=1),
         },
+        # with a pending reimbursed booking
+        "Lomé": {
+            "bookingLimitDatetime": four_weeks_ago,
+            "startDatetime": four_weeks_ago,
+            "endDatetime": four_weeks_ago,
+            "bookingFactory": educational_factories.PendingReimbursementCollectiveBookingFactory,
+            "confirmationDate": four_weeks_ago - timedelta(hours=1),
+        },
+        # with a reimbursed booking
         "Luxembourg": {
             "bookingLimitDatetime": four_weeks_ago,
             "startDatetime": four_weeks_ago,

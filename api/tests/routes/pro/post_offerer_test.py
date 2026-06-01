@@ -1,12 +1,14 @@
 import json
 
 import pytest
+from flask import current_app
 
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.testing as users_testing
+from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -148,6 +150,29 @@ def test_when_no_address_is_provided(client):
     assert response.json["siren"] == "418166096"
     assert response.json["name"] == "MINISTERE DE LA CULTURE"
     assert len(users_testing.brevo_requests) == 1
+
+
+@pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
+def test_when_no_address_is_provided_with_ff(client, clear_redis):
+    pro = users_factories.ProFactory(
+        lastConnectionDate=date_utils.get_naive_utc_now(),
+    )
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "postalCode": "93100",
+        "city": "Montreuil",
+        "latitude": 48,
+        "longitude": 2,
+    }
+
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
+
+    assert response.status_code == 201
+    assert response.json["siren"] == "418166096"
+    assert response.json["name"] == "MINISTERE DE LA CULTURE"
+    assert current_app.redis_client.smembers(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE) == {pro.email}
 
 
 def test_use_offerer_name_retrieved_from_sirene_api(client):

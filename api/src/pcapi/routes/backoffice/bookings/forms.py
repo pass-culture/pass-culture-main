@@ -158,13 +158,14 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("offerer")
         self._fields.move_to_end("venue")
         self._fields.move_to_end("institution")
+        self._fields.move_to_end("ministry")
         self._fields.move_to_end("formats")
         self._fields.move_to_end("status")
         self._fields.move_to_end("cashflow_batches")
         self._fields.move_to_end("has_incident")
 
     def is_empty(self) -> bool:
-        return super().is_empty() and not self.institution.data and not self.formats.data
+        return super().is_empty() and not self.institution.data and not self.ministry.data and not self.formats.data
 
     institution = fields.PCTomSelectField(
         "Établissement",
@@ -172,6 +173,9 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_institutions",
+    )
+    ministry = fields.PCSelectMultipleField(
+        "Ministère", choices=utils.choices_from_enum(educational_models.Ministry), field_list_compatibility=True
     )
     formats = fields.PCSelectMultipleField(
         "Formats", choices=utils.choices_from_enum(EacFormat), field_list_compatibility=True

@@ -26,7 +26,7 @@ def generate_app_link(path: str, params: dict | None) -> str:
 
 
 def offer_app_link(offer_id: int, utm: str | None = None) -> str:
-    base = f"{settings.WEBAPP_V2_URL}/offer/{offer_id}"
+    base = f"{settings.WEBAPP_V2_URL}/offre/{offer_id}"
     if utm:
         return f"{base}?{utm}"
     return base

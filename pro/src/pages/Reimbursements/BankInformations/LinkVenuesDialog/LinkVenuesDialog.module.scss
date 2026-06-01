@@ -23,11 +23,15 @@
     margin-bottom: var(--size-spacing-xl);
   }
 
-  &-checkboxes {
-    height: rem.torem(200px);
-    overflow-y: auto;
-    margin-bottom: var(--size-spacing-xl);
+  &-checkboxes-section {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+  }
+
+  &-checkboxes {
+    max-height: rem.torem(200px);
+    overflow-y: auto;
   }
 
   &-select-all {

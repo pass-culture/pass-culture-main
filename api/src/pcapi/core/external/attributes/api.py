@@ -1,3 +1,4 @@
+import logging
 from collections import Counter
 from collections import defaultdict
 from datetime import datetime
@@ -30,6 +31,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import on_commit
 
+
+logger = logging.getLogger(__name__)
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
@@ -75,25 +78,34 @@ def update_external_user(
 def update_external_pro(email: str | None) -> None:
     # Call this function instead of update_external_user in actions which are only available for pro
     # ex. updating a venue, in which bookingEmail is not a User parameter
+    from pcapi.core.external.attributes.queue import add_email_to_async_pro_attributes_update
     from pcapi.core.external.beamer.tasks import update_beamer_pro_attributes_task
     from pcapi.tasks.brevo_tasks import update_brevo_pro_attributes_task
     from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
-        now = date_utils.get_naive_utc_now()
-        on_commit(
-            partial(
-                update_brevo_pro_attributes_task.delay,
-                payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
-            ),
-        )
-        if FeatureToggle.ENABLE_BEAMER.is_active():
+        if FeatureToggle.WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES.is_active():
             on_commit(
                 partial(
-                    update_beamer_pro_attributes_task.delay,
+                    add_email_to_async_pro_attributes_update,
+                    email,
+                ),
+            )
+        else:
+            now = date_utils.get_naive_utc_now()
+            on_commit(
+                partial(
+                    update_brevo_pro_attributes_task.delay,
                     payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
                 ),
             )
+            if FeatureToggle.ENABLE_BEAMER.is_active():
+                on_commit(
+                    partial(
+                        update_beamer_pro_attributes_task.delay,
+                        payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
+                    ),
+                )
 
 
 def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
@@ -190,6 +202,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 # Fetch useful information on all venues managed by these offerers
                 joinedload(offerers_models.Offerer.managedVenues)
                 .load_only(
+                    offerers_models.Venue.activity,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
                     offerers_models.Venue.venueTypeCode,
@@ -203,6 +216,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                     .load_only(offerers_models.OffererAddress.id)
                     .joinedload(offerers_models.OffererAddress.address)
                     .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
+                    sa.orm.selectinload(offerers_models.Venue.collectiveDomains),
                 ),
             ),
         )
@@ -275,6 +289,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         )
         .options(
             load_only(
+                offerers_models.Venue.activity,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
                 offerers_models.Venue.venueTypeCode,
@@ -296,6 +311,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             .load_only(offerers_models.OffererAddress.id)
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(geography_models.Address.departmentCode, geography_models.Address.postalCode),
+            sa.orm.selectinload(offerers_models.Venue.collectiveDomains),
         )
         .all()
     )
@@ -357,6 +373,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         marketing_email_subscription=marketing_email_subscription,
         offerers_names=offerers_names,
         offerers_tags=offerers_tags,
+        venues_activities={venue.activity.name for venue in all_venues if venue.activity},
+        venues_cultural_domains={domain.name for venue in all_venues for domain in venue.collectiveDomains if domain},
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types=venues_types,

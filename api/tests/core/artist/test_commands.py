@@ -1,5 +1,6 @@
 import logging
 import uuid
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -14,6 +15,7 @@ from pcapi.connectors.big_query.queries.artist import ArtistScoresModel
 from pcapi.connectors.big_query.queries.artist import DeltaAction
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
+from pcapi.core import search
 from pcapi.core.artist import commands
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.artist.factories import ArtistProductLinkFactory
@@ -257,7 +259,10 @@ class ComputeArtistsMostRelevantImageTest:
 
 class UpdateArtistScoresTest:
     @patch("pcapi.connectors.big_query.queries.artist.ArtistScoresQuery.execute")
-    def test_run_scores_update_updates_existing_and_ignores_missing(self, mock_query, caplog):
+    @patch("pcapi.core.search.async_index_artist_ids")
+    def test_run_scores_update_updates_existing_and_ignores_missing(
+        self, mock_async_index_artist_ids, mock_query, caplog
+    ):
         artist = ArtistFactory(app_search_score=0.0, pro_search_score=0.0)
         fake_bq_data = [
             ArtistScoresModel(id=artist.id, app_search_score=8.5, pro_search_score=9.0),
@@ -274,6 +279,13 @@ class UpdateArtistScoresTest:
         assert db.session.query(Artist).count() == 1
         assert "Skipping scores update for missing artist" in caplog.text
         assert "Finished artist scores update" in caplog.text
+        mock_async_index_artist_ids.assert_has_calls(
+            [
+                call([artist.id], reason=search.IndexationReason.ARTIST_EDITION),
+                call(["unknown-id-123"], reason=search.IndexationReason.ARTIST_EDITION),
+            ],
+            any_order=True,
+        )
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistScoresQuery.execute")
     def test_batch_transaction_failure_triggers_individual_retry_success(self, mock_bq_execute, caplog):

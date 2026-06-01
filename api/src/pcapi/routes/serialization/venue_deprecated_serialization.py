@@ -28,7 +28,6 @@ class VenueListItemResponseModel(HttpBodyModel):
     name: str
     offererName: str
     publicName: str
-    isVirtual: bool  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     bookingEmail: str | None
     withdrawalDetails: str | None
     siret: str | None
@@ -63,7 +62,6 @@ class VenueListItemResponseModel(HttpBodyModel):
             "location": cls.build_address(venue),
             "isCaledonian": venue.is_caledonian,
             "isActive": venue.managingOfferer.isActive,
-            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             "isValidated": venue.managingOfferer.isValidated,
             "bankAccountStatus": venue_finance_serialize.parse_venue_bank_account_status(venue),
             "hasNonFreeOffers": venue.id in venues_with_non_free_offers,

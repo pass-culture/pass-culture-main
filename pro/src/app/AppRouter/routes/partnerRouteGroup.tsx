@@ -2,10 +2,7 @@ import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { PartnerLayout } from '@/layouts/PartnerLayout/PartnerLayout'
 
 import type { CustomRouteGroup } from '../types'
-import {
-  isNewHomepageEnabled,
-  mustBeOnboardedWithSelectedPartnerVenue,
-} from '../utils'
+import { mustBeOnboardedWithSelectedPartnerVenue } from '../utils'
 
 export const partnerRouteGroup: CustomRouteGroup = {
   path: '',
@@ -14,10 +11,7 @@ export const partnerRouteGroup: CustomRouteGroup = {
   children: [
     {
       path: 'accueil',
-      lazy: () =>
-        isNewHomepageEnabled()
-          ? import('@/pages/Homepage/NewHomepage')
-          : import('@/pages/Homepage/Homepage'),
+      lazy: () => import('@/pages/Homepage/Homepage'),
       handle: {
         title: 'Espace acteurs culturels',
       },

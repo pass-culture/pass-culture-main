@@ -13,6 +13,7 @@ import pcapi.core.reminders.models as reminders_models
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors.big_query.importer.offer_quality import OfferQualityImporter
 from pcapi.connectors.big_query.queries.offer_quality import OfferQualityModel
+from pcapi.core import search
 from pcapi.models import db
 from pcapi.utils.date import timedelta
 
@@ -89,7 +90,10 @@ class OfferCommandsTest:
 
 class UpdateOfferQualityTest:
     @mock.patch("pcapi.connectors.big_query.queries.offer_quality.OfferQualityQuery.execute")
-    def test_run_scores_update_updates_existing_and_ignores_missing(self, mock_query, caplog):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_run_scores_update_updates_existing_and_ignores_missing(
+        self, mock_async_index_offer_ids, mock_query, caplog
+    ):
         offer_no_score = offers_factories.OfferFactory()
         offer_with_score = offers_factories.OfferFactory()
         offers_factories.OfferQualityFactory(offer=offer_with_score, completionScore=5.0)
@@ -113,6 +117,13 @@ class UpdateOfferQualityTest:
         assert db.session.query(offers_models.OfferQuality).count() == 2
         assert "Skipping scores update for missing offer" in caplog.text
         assert "Finished offer quality scores update" in caplog.text
+        mock_async_index_offer_ids.assert_has_calls(
+            [
+                mock.call([offer_no_score.id], reason=search.IndexationReason.OFFER_UPDATE),
+                mock.call([offer_with_score.id], reason=search.IndexationReason.OFFER_UPDATE),
+            ],
+            any_order=True,
+        )
 
     @mock.patch("pcapi.connectors.big_query.queries.offer_quality.OfferQualityQuery.execute")
     def test_run_offer_quality_update_batch_failure_retries_individually(self, mock_bq_execute, caplog):

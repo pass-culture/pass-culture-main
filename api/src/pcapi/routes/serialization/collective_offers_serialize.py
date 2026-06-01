@@ -9,6 +9,7 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -67,13 +68,10 @@ class GetCollectiveOfferLocationModelV2(HttpBodyModel):
         venue = offer.venue
 
         if oa is not None:
-            is_venue_location = venue.offererAddress.addressId == oa.addressId and (
-                oa.label is None or oa.label == venue.publicName
-            )
-
+            is_venue_location = is_venue_address(oa, venue)
             location = address_serialize.LocationResponseModelV2.build(
                 offerer_address=oa,
-                label=venue.publicName if is_venue_location else oa.label,
+                label=None if is_venue_location else oa.label,
                 is_venue_location=is_venue_location,
             )
 

@@ -30,7 +30,6 @@ from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
@@ -191,7 +190,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["EAN / Allociné ID"] == offers[0].product.ean
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == ""
         assert rows[0]["Dép."] == offers[0].offererAddress.address.departmentCode
@@ -255,7 +254,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == "22/02/2022"
         assert rows[0]["Dép."] == offers[1].offererAddress.address.departmentCode
@@ -815,13 +814,13 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
-    def test_list_offers_by_venue_type(self, authenticated_client):
-        offer = offers_factories.OfferFactory(venue__venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
+    def test_list_offers_by_venue_activity(self, authenticated_client):
+        offer = offers_factories.OfferFactory(venue__activity=offerers_models.Activity.BOOKSTORE)
         offers_factories.OfferFactory()
         query_args = {
-            "search-0-search_field": "VENUE_TYPE",
+            "search-0-search_field": "ACTIVITY",
             "search-0-operator": "IN",
-            "search-0-venue_type": offer.venue.venueTypeCode.name,
+            "search-0-activity": offer.venue.activity.name,
         }
         with assert_num_queries(self.expected_num_queries_with_results):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -895,7 +894,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
-        assert rows[0]["État"] == "• Rejetée"
+        assert rows[0]["État"] == "Rejetée"
 
     def test_list_offers_by_four_filters(self, authenticated_client, criteria, offers):
         criterion_id = criteria[1].id
@@ -1010,7 +1009,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
         assert rows[0]["Score data"] == "50"
-        assert rows[0]["Prédiction de validité"] == "À rejeter Prédiction générée par IA • À vérifier"
+        assert rows[0]["Prédiction de validité"] == "À rejeter Prédiction générée par IA À vérifier"
 
         # Check tooltip associated with "Score data"
         tooltips = html_parser.get_soup(response.data).find_all(
@@ -1772,7 +1771,7 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == "22"  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_edit.offererAddress.address.departmentCode  # Département
@@ -2397,7 +2396,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
         assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
@@ -2496,7 +2495,7 @@ class QualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer.offererAddress.address.departmentCode  # Département
@@ -2653,7 +2652,7 @@ class DisqualifyCulturalOutreachTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer.offererAddress.address.departmentCode  # Département
@@ -2808,7 +2807,7 @@ class PendingOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• En attente"  # État
+        assert cells[next(i)] == "En attente"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
         assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
@@ -2914,7 +2913,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Rejetée"  # État
+        assert cells[next(i)] == "Rejetée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dernière validation
         assert cells[next(i)] == offer_to_reject.offererAddress.address.departmentCode  # Département
@@ -4253,7 +4252,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_activate.offererAddress.address.departmentCode  # Département
@@ -4347,7 +4346,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
         assert cells[next(i)] == ""  # Pondération
-        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == "Validée"  # État
         assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[next(i)] == ""  # Dernière validation
         assert cells[next(i)] == offer_to_deactivate.offererAddress.address.departmentCode  # Département
@@ -4475,7 +4474,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
         assert descriptions["Statut"] == "Épuisée"
         assert descriptions["Score data"] == "55"
-        assert descriptions["Prédiction de validité"] == "À valider Prédiction générée par IA • À vérifier"
+        assert descriptions["Prédiction de validité"] == "À valider Prédiction générée par IA À vérifier"
         assert descriptions["Raison de score faible"] == "Prix Sous-catégorie Description de l'offre"
         assert descriptions["Entité juridique"].startswith("Le Petit Rintintin Management")
         assert descriptions["Partenaire culturel"].startswith("Le Petit Rintintin")
@@ -4494,7 +4493,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Resync. Algolia" in buttons
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Validée" in badges
+        assert "Validée" in badges
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -4638,7 +4637,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert accessibility_badges["Handicap visuel"] is False
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Validée" in badges
+        assert "Validée" in badges
 
         buttons = html_parser.extract(response.data, "button")
         assert "Resync. Algolia" in buttons

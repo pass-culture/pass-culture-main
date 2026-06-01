@@ -181,6 +181,7 @@ tables_to_clean: list[type[Model]] = [
     users_models.UserAccountUpdateRequest,
     users_models.User,
     users_models.UserSession,
+    users_models.NativeUserSession,
     geography_models.IrisFrance,
     providers_models.Provider,
     offerers_models.VenueLabel,

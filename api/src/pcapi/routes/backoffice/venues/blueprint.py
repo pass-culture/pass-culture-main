@@ -132,8 +132,8 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
                 department_codes += regions_utils.get_department_codes_for_region(region)
             base_query = base_query.filter(geography_models.Address.departmentCode.in_(department_codes))
 
-    if form.type.data:
-        base_query = base_query.filter(offerers_models.Venue.venueTypeCode.in_(form.type.data))
+    if form.activity.data:
+        base_query = base_query.filter(offerers_models.Venue.activity.in_(form.activity.data))
 
     if form.criteria.data:
         base_query = base_query.outerjoin(offerers_models.Venue.criteria).filter(

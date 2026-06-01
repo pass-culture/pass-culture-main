@@ -2178,38 +2178,6 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
-    def test_create_commercial_gesture_incident_from_one_booking_with_deposit_balance(
-        self, legit_user, authenticated_client
-    ):
-        booking = bookings_factories.CancelledBookingFactory()
-
-        object_ids = str(booking.id)
-        total_amount = 11
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={
-                "total_amount": total_amount,
-                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
-                "comment": "Commentaire facultatif",
-                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
-                "object_ids": object_ids,
-            },
-            headers={"hx-request": "true"},
-        )
-
-        assert response.status_code == 200
-        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
-        assert cells[2] == str(booking.id)
-
-        assert db.session.query(finance_models.FinanceIncident).count() == 0
-        assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
-
-        alerts = flash.get_htmx_flash_messages(authenticated_client)
-        assert (
-            "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation."
-            in alerts["warning"]
-        )
-
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 

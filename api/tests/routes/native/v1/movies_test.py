@@ -26,7 +26,6 @@ class MovieCalendarTest:
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            offer__venue__offererAddress__label="Cinéma Parisien",
             beginningDatetime=datetime.now() + timedelta(hours=1),
         )
         today = date.today()
@@ -60,7 +59,7 @@ class MovieCalendarTest:
                             "stockId": stock.id,
                         }
                     ],
-                    "label": stock.offer.offererAddress.label,
+                    "label": stock.offer.venue.publicName,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "bookability": "BOOKABLE",
@@ -78,7 +77,7 @@ class MovieCalendarTest:
                     "address": f"{address.street}, {address.postalCode} {address.city}",
                     "distance": 0.0,
                     "dayScreenings": [],
-                    "label": stock.offer.offererAddress.label,
+                    "label": stock.offer.venue.publicName,
                     "nextScreening": {
                         "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                         "bookability": "BOOKABLE",
@@ -416,7 +415,6 @@ class MovieCalendarForUserTest:
         stock = offers_factories.EventStockFactory(
             offer__product=product,
             offer__venue__offererAddress__address=address,
-            offer__venue__offererAddress__label="Cinéma Parisien",
             beginningDatetime=datetime.now() + timedelta(hours=1),
         )
         today = date.today()
@@ -454,7 +452,7 @@ class MovieCalendarForUserTest:
                                 "stockId": stock.id,
                             }
                         ],
-                        "label": stock.offer.offererAddress.label,
+                        "label": stock.offer.venue.publicName,
                         "nextScreening": {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                             "bookability": "BOOKABLE",
@@ -472,7 +470,7 @@ class MovieCalendarForUserTest:
                         "address": f"{address.street}, {address.postalCode} {address.city}",
                         "distance": 0.0,
                         "dayScreenings": [],
-                        "label": stock.offer.offererAddress.label,
+                        "label": stock.offer.venue.publicName,
                         "nextScreening": {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                             "bookability": "BOOKABLE",

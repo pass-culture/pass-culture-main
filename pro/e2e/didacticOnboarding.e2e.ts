@@ -41,10 +41,11 @@ test.describe('Didactic Onboarding feature', () => {
       page.getByText('Où souhaitez-vous diffuser votre première offre ?')
     ).toBeVisible()
 
-    await page.pause()
     await page.getByRole('button', { name: 'Je le ferai plus tard' }).click()
     await expect(
-      page.getByText('Bienvenue sur votre espace partenaire')
+      page.getByText(
+        'Diffusez votre première offre et pilotez ici votre activité !'
+      )
     ).toBeVisible()
 
     // I should be able to navigate without being redirected to onboarding
@@ -255,8 +256,6 @@ test.describe('Didactic Onboarding feature', () => {
 
     await page.getByRole('button', { name: 'Plus tard' }).click()
 
-    await expect(
-      page.getByText('Bienvenue sur votre espace partenaire')
-    ).toBeVisible()
+    await expect(page.getByText('Votre espace Mon Lieu')).toBeVisible()
   })
 })

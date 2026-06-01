@@ -168,7 +168,7 @@ describe('IndividualOfferConfirmation', () => {
 
       expect(screen.getByTestId('qr-code')).toHaveAttribute(
         'data-value',
-        `https://localhost/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_campaign=product`
+        `https://localhost/offre/${offer.id}?utm_source=pro&utm_medium=qrcode&utm_gen=product&utm_campaign=proOfferPreview`
       )
     })
 

@@ -23,14 +23,12 @@ test.describe('Navigation', () => {
     await login(page, userEmail)
 
     const collectivePageLink = page.getByRole('link', {
-      name: 'Gérer la page pour les enseignants',
+      name: 'Compléter ma page',
     })
     await expect(collectivePageLink).toBeVisible()
     await collectivePageLink.scrollIntoViewIfNeeded()
 
     const contentWrapper = page.locator('#content-wrapper')
-    const scrollTopBefore = await contentWrapper.evaluate((el) => el.scrollTop)
-    expect(scrollTopBefore).toBeGreaterThan(0)
 
     await collectivePageLink.click()
 

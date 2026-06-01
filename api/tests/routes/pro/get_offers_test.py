@@ -448,7 +448,7 @@ class Returns200Test:
                     "inseeCode": venue.offererAddress.address.inseeCode,
                     "isVenueLocation": True,
                     "isManualEdition": venue.offererAddress.address.isManualEdition,
-                    "label": venue.publicName,
+                    "label": None,
                     "latitude": float(venue.offererAddress.address.latitude),
                     "longitude": float(venue.offererAddress.address.longitude),
                     "postalCode": venue.offererAddress.address.postalCode,

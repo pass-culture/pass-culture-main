@@ -6,8 +6,19 @@ import {
 } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
-import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
+import type { CollectiveDataFormValues } from '../type'
 import { extractInitialValuesFromVenue } from './extractInitialValuesFromVenue'
+
+const COLLECTIVE_DATA_FORM_INITIAL_VALUES: CollectiveDataFormValues = {
+  collectiveDescription: '',
+  collectiveStudents: [],
+  collectiveWebsite: '',
+  collectivePhone: '',
+  collectiveEmail: '',
+  collectiveDomains: [],
+  collectiveLegalStatus: '',
+  collectiveInterventionArea: [],
+}
 
 describe('extractInitialValuesFromVenue', () => {
   it('should extract initial values', () => {

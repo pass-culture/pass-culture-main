@@ -1,0 +1,75 @@
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% extends "layouts/connected.html" %}
+{% import "components/clipboard.html" as clipboard %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h1>Générateur d'offres de test</h1>
+    <div class="col">
+      <div class="card">
+        {% if offer %}
+          <div class="card-body">
+            <div class="d-flex flex-row justify-content-start">
+              <h5 class="card-title">
+                {{ offer.name }}
+              </h5>
+            </div>
+            <div>
+              <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">
+                <div class="mb-1">
+                  <span class="fw-bold">Offer ID :</span> {{ offer.id }}
+                </div>
+              </a>
+              {% if link_to_app %}
+                <a href="{{ link_to_app }}"
+                   target="_blank">
+                  <div class="mb-1">
+                    <span class="fw-bold">Aller sur l'offre sur l'app</span>
+                    <span class="ms-1">{{ clipboard.copy_to_clipboard(link_to_app, "Copier le lien") }}</span>
+                  </div>
+                </a>
+              {% endif %}
+              {% if link_to_local_app %}
+                <a href="{{ link_to_local_app }}"
+                   target="_blank">
+                  <div class="mb-1">
+                    <span class="fw-bold">Aller sur l'offre sur l'app locale (pour l'équipe dev)</span>
+                  </div>
+                </a>
+              {% endif %}
+              <div class="mb-1">
+                <span class="fw-bold">Partenaire culturel :</span> {{ offer.venue.name }}
+              </div>
+              {{ build_modal_form("deactivate-offer", url_for("backoffice_web.dev.deactivate_offer", offer_id=offer.id) , deactivate_offer_form, "Désactiver l'offre", "Désactiver l'offre", "Valider") }}
+            </div>
+            <hr>
+            <div class="d-flex justify-content-start">
+              <div class="d-flex flex-column">
+                <p class="my-1">
+                  <span class="fw-bold">Catégorie</span>
+                  {{ offer.subcategoryId | format_offer_category }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Sous-catégorie</span>
+                  {{ offer.subcategoryId | format_offer_subcategory }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Statut</span>
+                  {{ offer.status | format_offer_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Description</span>
+                  {{ offer.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="card-body">
+            <p class="card-text">Générer une offre.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <div>{{ build_modal_form("generate-offer", dst, form, "Générer une nouvelle offre", "Générer une nouvelle offre", "Générer") }}</div>
+  </div>
+{% endblock page %}

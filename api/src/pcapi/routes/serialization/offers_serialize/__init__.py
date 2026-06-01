@@ -199,7 +199,7 @@ def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationRes
     is_venue_location = False
     if is_venue_address(offer.offererAddress, offer.venue):
         is_venue_location = True
-        label = offer.venue.publicName
+        label = None
     return LocationResponseModel(
         **retrieve_address_info_from_oa(offer.offererAddress),
         label=label,
@@ -397,7 +397,6 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     departementCode: str | None
     id: int
-    isVirtual: bool  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None

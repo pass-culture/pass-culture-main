@@ -109,7 +109,6 @@ describe('CollectiveDataEdition', () => {
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       const emailField = screen.getByLabelText(/Email/)
-      const domainsField = screen.getByLabelText('Domaines artistiques')
       const interventionAreaField = screen.getByLabelText('Département(s)')
       const statusField = screen.getByLabelText(/Statut/)
 
@@ -118,9 +117,12 @@ describe('CollectiveDataEdition', () => {
       expect(websiteField).toBeInTheDocument()
       expect(phoneField).toBeInTheDocument()
       expect(emailField).toBeInTheDocument()
-      expect(domainsField).toBeInTheDocument()
       expect(interventionAreaField).toBeInTheDocument()
       expect(statusField).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Centre culturel pluridisciplinaire')
+      ).toBeInTheDocument()
     })
 
     it('should display dms timeline if venue has dms application and ff active', async () => {
@@ -320,20 +322,26 @@ describe('CollectiveDataEdition', () => {
       expect(emailField).toHaveValue('toto@domain.com')
       expect(statusField).toHaveValue('1')
 
-      await userEvent.click(
-        await screen.findByLabelText('Domaines artistiques')
-      )
-      await waitFor(async () =>
-        expect(
-          await screen.findAllByRole('checkbox', { checked: true })
-        ).toHaveLength(1)
-      )
+      expect(await screen.findByText('domain 1')).toBeInTheDocument()
     })
 
-    it('should not call educational partner if venue has no siret and no collective data', async () => {
-      renderCollectiveDataEdition()
+    it('should render form without siret or collective data', async () => {
+      renderCollectiveDataEdition({
+        hasAdageId: false,
+        collectiveDomains: [],
+        collectiveDescription: '',
+        collectiveEmail: '',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: null,
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: null,
+      })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
     })
   })
 })

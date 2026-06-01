@@ -4,6 +4,7 @@ import wtforms
 from dateutil.relativedelta import relativedelta
 from flask_wtf import FlaskForm
 
+from pcapi.core.categories import subcategories
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -166,4 +167,19 @@ class QuotientFamilialConfigurationForm(utils.PCForm):
     gender = fields.PCSelectField(
         "Genre de l'enfant",
         choices=[(users_models.GenderEnum.F.value, "Femme"), (users_models.GenderEnum.M.value, "Homme")],
+    )
+
+
+class OfferGeneratorForm(utils.PCForm):
+    name = fields.PCStringField("Nom de l'offre")
+    price = fields.PCDecimalField(
+        "Prix de l'offre",
+        validators=[
+            wtforms.validators.DataRequired("Information obligatoire"),
+        ],
+    )
+    subcategory_id = fields.PCSelectField(
+        "Sous-catégorie",
+        choices=[(subcategories.SEANCE_CINE.id, subcategories.SEANCE_CINE.app_label)],
+        default=subcategories.SEANCE_CINE.id,
     )

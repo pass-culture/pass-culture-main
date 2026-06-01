@@ -554,6 +554,15 @@ def test_serialize_offer_with_product_chronicles_count():
     assert serialized["offer"]["chroniclesCount"] == 1
 
 
+def test_serialize_offer_with_completion_score():
+    offer = offers_factories.OfferFactory()
+    offers_factories.OfferQualityFactory(offer=offer, completionScore=1.2)
+
+    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["completionScore"] == 1.2
+
+
 def test_serialize_venue():
     venue = offerers_factories.VenueFactory(
         activity=offerers_models.Activity.ART_GALLERY,

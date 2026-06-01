@@ -111,7 +111,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
                     offerer_id=venue.managingOffererId,
                     venue_id=venue.id,
                     address_id=venue.offererAddress.addressId,
-                    label=venue.publicName,
+                    label=None,
                 )
         return super()._create(model_class, *args, **kwargs)
 
@@ -313,6 +313,9 @@ class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
     class Meta:
         model = models.CollectiveBooking
 
+    class Params:
+        ministry = models.Ministry.EDUCATION_NATIONALE
+
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
     dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=2))
     offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
@@ -331,7 +334,7 @@ class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
     confirmationDate: factory.declarations.BaseDeclaration | None = factory.LazyFunction(
         lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
     )
-    educationalDeposit = factory.LazyAttribute(lambda booking: _get_booking_deposit(booking))
+    educationalDeposit = factory.LazyAttribute(lambda booking: _get_booking_deposit(booking, booking.ministry))
 
 
 def _get_booking_year(booking: models.CollectiveBooking) -> models.EducationalYear | None:
@@ -339,7 +342,9 @@ def _get_booking_year(booking: models.CollectiveBooking) -> models.EducationalYe
     return create_educational_year(start_datetime)
 
 
-def _get_booking_deposit(booking: models.CollectiveBooking) -> models.EducationalDeposit | None:
+def _get_booking_deposit(
+    booking: models.CollectiveBooking, ministry: models.Ministry
+) -> models.EducationalDeposit | None:
     if booking.confirmationDate is None:
         return None
 
@@ -347,7 +352,9 @@ def _get_booking_deposit(booking: models.CollectiveBooking) -> models.Educationa
     year = booking.educationalYear
     period = utils.get_educational_year_full_period(year)
 
-    return EducationalDepositFactory.create(educationalInstitution=institution, educationalYear=year, period=period)
+    return EducationalDepositFactory.create(
+        educationalInstitution=institution, educationalYear=year, period=period, ministry=ministry
+    )
 
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
