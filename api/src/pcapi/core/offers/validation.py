@@ -406,8 +406,10 @@ def check_image(
 
 
 def check_validation_status(offer: models.Offer) -> None:
-    if offer.validation == models.OfferValidationStatus.REJECTED:
-        raise exceptions.OfferException({"global": ["Les offres refusées ne sont pas modifiables"]})
+    if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
+        raise exceptions.OfferException(
+            {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
+        )
 
 
 def check_offer_can_have_activation_codes(offer: models.Offer) -> None:

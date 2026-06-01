@@ -1085,9 +1085,14 @@ class Returns400Test:
                 },
             ),
             (
+                {"validation": OfferValidationStatus.PENDING},
+                {"visualDisabilityCompliant": True},
+                {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]},
+            ),
+            (
                 {"validation": OfferValidationStatus.REJECTED},
                 {"visualDisabilityCompliant": True},
-                {"global": ["Les offres refusées ne sont pas modifiables"]},
+                {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]},
             ),
             (
                 {

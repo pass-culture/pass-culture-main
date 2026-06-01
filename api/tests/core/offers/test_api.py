@@ -372,16 +372,22 @@ class CreateStockTest:
         # Then
         assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
 
+    @pytest.mark.parametrize(
+        "validation_status", [models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED]
+    )
     @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    def test_create_stock_for_rejected_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.REJECTED)
+    def test_create_stock_for_non_editable_offer_fails(
+        self, mocked_send_first_venue_approved_offer_email_to_pro, validation_status
+    ):
+        offer = factories.ThingOfferFactory(validation=validation_status)
 
         with pytest.raises(exceptions.OfferException) as error:
             api.create_stock(offer=offer, price=10, quantity=7)
 
-        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
         assert db.session.query(models.Stock).count() == 0
-
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
@@ -782,21 +788,24 @@ class EditStockTest:
         # Then
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
+    @pytest.mark.parametrize(
+        "validation_status", [models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED]
+    )
     @mock.patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
-    def test_edit_stock_of_rejected_offer_fails(
-        self,
-        mocked_send_first_venue_approved_offer_email_to_pro,
+    def test_edit_stock_of_non_editable_offer_fails(
+        self, mocked_send_first_venue_approved_offer_email_to_pro, validation_status
     ):
-        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.REJECTED)
+        offer = factories.ThingOfferFactory(validation=validation_status)
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
         with pytest.raises(exceptions.OfferException) as error:
             api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
-        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
         existing_stock = db.session.query(models.Stock).one()
         assert existing_stock.price == 10
-
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
     @time_machine.travel("2023-10-20 17:00:00", tick=False)
@@ -1045,6 +1054,21 @@ class DeleteStockTest:
             api.delete_stock(stock)
         stock = db.session.query(models.Stock).one()
         assert not stock.isSoftDeleted
+
+    @pytest.mark.parametrize(
+        "validation_status", [models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED]
+    )
+    def test_delete_stock_of_non_editable_offer_fails(self, validation_status):
+        offer = factories.EventOfferFactory(validation=validation_status)
+        stock = factories.EventStockFactory(offer=offer)
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.delete_stock(stock)
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        assert db.session.query(models.Stock).count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1951,15 +1975,21 @@ class UpdateOfferTest:
         assert offer.isDuo is False
         assert offer.audioDisabilityCompliant is True
 
-    def test_update_rejected_offer_fails(self):
-        pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.REJECTED)
+    @pytest.mark.parametrize(
+        "validation_status", [models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED]
+    )
+    def test_update_non_editable_offer_fails(self, validation_status):
+        offer = factories.OfferFactory(name="Soliloquy", validation=validation_status)
         body = offers_schemas.UpdateOffer(name="Monologue")
-        with pytest.raises(exceptions.OfferException) as error:
-            api.update_offer(pending_offer, body)
 
-        assert error.value.errors == {"global": ["Les offres refusées ne sont pas modifiables"]}
-        pending_offer = db.session.query(models.Offer).one()
-        assert pending_offer.name == "Soliloquy"
+        with pytest.raises(exceptions.OfferException) as error:
+            api.update_offer(offer, body)
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        offer = db.session.query(models.Offer).one()
+        assert offer.name == "Soliloquy"
 
     def test_success_on_updating_id_at_provider(self):
         provider = providers_factories.PublicApiProviderFactory()
@@ -4640,6 +4670,20 @@ class EditPriceCategoryTest:
             "`aHÇaVaBugguer` is already taken by another offer price category"
         ]
 
+    @pytest.mark.parametrize(
+        "validation_status", [models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED]
+    )
+    def test_edit_price_category_on_non_editable_offer_fails(self, validation_status):
+        offer = factories.EventOfferFactory(validation=validation_status)
+        price_category = factories.PriceCategoryFactory(offer=offer)
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.edit_price_category(price_category.offer, price_category, label="New Label")
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class ReplacePriceCategoriesTest:
@@ -4732,13 +4776,11 @@ class ReplacePriceCategoriesTest:
 
         assert error.value.errors["global"] == ["Cannot delete price categories on non-draft offers"]
 
-    def test_cannot_delete_price_category_on_pending_offer(self):
-        offer = factories.EventOfferFactory(validation=OfferValidationStatus.PENDING)
+    def test_cannot_delete_price_category_on_non_draft_offer(self):
+        offer = factories.EventOfferFactory(validation=OfferValidationStatus.APPROVED)
         factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(
-                label="Pending Offer Price Category", venue=offer.venue
-            ),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Offer Price Category", venue=offer.venue),
         )
         inputs: list[offers_schemas.PriceCategoryInput] = []
 
@@ -4747,16 +4789,19 @@ class ReplacePriceCategoriesTest:
 
         assert error.value.errors["global"] == ["Cannot delete price categories on non-draft offers"]
 
-    def test_cannot_modify_rejected_offer(self):
-        offer = factories.EventOfferFactory(validation=OfferValidationStatus.REJECTED)
+    @pytest.mark.parametrize("validation_status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def test_cannot_modify_non_editable_offer(self, validation_status):
+        offer = factories.EventOfferFactory(validation=validation_status)
         inputs: list[offers_schemas.PriceCategoryInput] = [
-            {"label": "New", "price": Decimal("10.00")},
+            {"label": "Category A", "price": Decimal("10.00")},
         ]
 
         with pytest.raises(exceptions.OfferException) as error:
             api.replace_offer_price_categories(offer, inputs)
 
-        assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
     def test_reuses_existing_label(self):
         offer = factories.EventOfferFactory()
