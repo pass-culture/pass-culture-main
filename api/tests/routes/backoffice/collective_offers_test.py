@@ -167,7 +167,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == collective_offers[0].name
         assert rows[0]["Créateur de l'offre"] == collective_offers[0].author.full_name
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=1)).strftime(
             "%d/%m/%Y"
@@ -215,7 +215,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(collective_offers[1].id)
         assert rows[0]["Nom de l'offre"] == collective_offers[1].name
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[1].formats])
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert (
             rows[0]["Date de l'évènement"]
@@ -715,7 +715,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offer.id}
-        assert rows[0]["État"] == "• Validée"
+        assert rows[0]["État"] == "Validée"
 
     def test_list_collective_offers_by_each_status(self, authenticated_client):
         offer_by_status = {}
@@ -805,7 +805,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-        assert rows[0]["État"] == "• Rejetée Date erronée"
+        assert rows[0]["État"] == "Rejetée Date erronée"
 
     def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId
@@ -1119,7 +1119,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
             id=f"collective-offer-row-{collective_offer_to_validate.id}",
         )
         assert cells[2] == str(collective_offer_to_validate.id)
-        assert cells[6] == "• Validée"
+        assert cells[6] == "Validée"
 
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_validated(self, legit_user, authenticated_client):
@@ -1351,7 +1351,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
 
         cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer_to_reject.id}")
         assert cells[2] == str(collective_offer_to_reject.id)
-        assert cells[6] == "• Rejetée Tarif erroné"
+        assert cells[6] == "Rejetée Tarif erroné"
 
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
@@ -1423,7 +1423,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             assert collective_offer.validation is OfferValidationStatus.APPROVED
             cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
-            assert cells[6] == "• Validée"
+            assert cells[6] == "Validée"
 
         assert len(mails_testing.outbox) == 3
 
@@ -1535,7 +1535,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.rejectionReason == reason
             cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
-            assert "• Rejetée" in cells[6]
+            assert "Rejetée" in cells[6]
 
         assert len(mails_testing.outbox) == 3
 
@@ -1879,7 +1879,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract_badges(response.data)
-        assert "• Validée" in badges
+        assert "Validée" in badges
         assert "Cinéma Provider" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
