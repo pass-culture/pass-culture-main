@@ -1786,30 +1786,31 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
 def _get_editable_stock(offer_id: int) -> set[int]:
     raw_stock_ids = (
         db.session.query(offers_models.Stock.id)
-        .join(bookings_models.Booking, offers_models.Stock.bookings)
         .join(offers_models.Offer, offers_models.Stock.offer)
         .filter(
             offers_models.Offer.isEvent,
             offers_models.Stock.offerId == offer_id,
-            bookings_models.Booking.status.in_(
-                (
-                    bookings_models.BookingStatus.CONFIRMED,
-                    bookings_models.BookingStatus.USED,
+            # Fast parrallel subqueries with EXISTS are faster than a single flat query which iterates on bookings
+            sa.select(1)
+            .select_from(bookings_models.Booking)
+            .where(
+                bookings_models.Booking.stockId == offers_models.Stock.id,
+                bookings_models.Booking.status.in_(
+                    (bookings_models.BookingStatus.CONFIRMED, bookings_models.BookingStatus.USED)
                 ),
-            ),
-            offers_models.Stock.id.not_in(
-                db.session.query(offers_models.Stock.offerId)
-                .join(bookings_models.Booking, offers_models.Stock.bookings)
-                .join(finance_models.Pricing, bookings_models.Booking.pricings)
-                .filter(
+            )
+            .exists(),
+            sa.not_(
+                sa.select(1)
+                .select_from(bookings_models.Booking)
+                .join(bookings_models.Booking.pricings)
+                .where(
+                    bookings_models.Booking.stockId == offers_models.Stock.id,
                     finance_models.Pricing.status.in_(
-                        (
-                            finance_models.PricingStatus.PROCESSED,
-                            finance_models.PricingStatus.INVOICED,
-                        )
+                        (finance_models.PricingStatus.PROCESSED, finance_models.PricingStatus.INVOICED)
                     ),
-                    offers_models.Stock.offerId == offer_id,
-                ),
+                )
+                .exists()
             ),
         )
     )
