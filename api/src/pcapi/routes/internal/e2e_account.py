@@ -31,7 +31,6 @@ def generate_account() -> tuple[dict, int]:
         credit=form.credit.data,
         id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
         step=users_generator.GeneratedSubscriptionStep[form.step.data],
-        transition_17_18=form.transition_17_18.data,
         date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
         postal_code=form.postal_code.data,
     )

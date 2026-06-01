@@ -94,7 +94,6 @@ class UserGeneratorForm(utils.PCForm):
         ],
     )
     postal_code = fields.PCOptPostalCodeField("Code postal")
-    transition_17_18 = fields.PCCheckboxField("Transition 17-18")
 
     def validate(self, extra_validators: dict | None = None) -> bool:
         # Ensure that we have either age exclusive or birth_date.
@@ -107,11 +106,6 @@ class UserGeneratorForm(utils.PCForm):
         # Ensure that credit is handled only if the generated user is a beneficiary
         if self.credit.data is not None and self.step.data != GeneratedSubscriptionStep.BENEFICIARY.name:
             self.credit.errors.append("L'utilisateur généré doit être bénéficiaire pour pouvoir préciser son crédit")
-            return False
-
-        # Ensure that if transition_17_18 is set neither birth_date nor age are sete
-        if (self.age.data is not None or self.birth_date.data is not None) and self.transition_17_18.data == True:
-            self.transition_17_18.errors.append("Si la Transition 17-18 est cochée, l'âge est fixé à 18 ans")
             return False
 
         return is_valid
