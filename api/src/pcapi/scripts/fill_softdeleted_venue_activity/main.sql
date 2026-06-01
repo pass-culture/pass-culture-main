@@ -1,0 +1,1 @@
+UPDATE venue SET activity='OTHER' WHERE "isSoftDeleted" = true AND (activity IS NULL or activity = 'NOT_ASSIGNED');
