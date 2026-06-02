@@ -15,7 +15,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
-NOT_FOUND_CUSTODIAN = bonus_schemas.Person(
+APPLICATION_NOT_FOUND = bonus_schemas.Person(
     last_name="dupont",
     common_name=None,
     first_names=["alexis"],
@@ -23,6 +23,15 @@ NOT_FOUND_CUSTODIAN = bonus_schemas.Person(
     gender=users_models.GenderEnum.F,
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
+)
+PERSON_NOT_FOUND = bonus_schemas.Person(
+    last_name="a_very_very_very_very_very_very_very_very_very_very_ver_very_very_very_very_very_long_name",
+    common_name=None,
+    first_names=["877khkshkq+"],
+    birth_date=datetime.date(1982, 12, 7),
+    gender=users_models.GenderEnum.F,
+    birth_country_cog_code="B&543",
+    birth_city_cog_code="AAAAA",
 )
 CUSTODIAN_WITH_CHILDREN = bonus_schemas.Person(
     last_name="lefebvre",
@@ -52,7 +61,9 @@ def get_and_mock_quotient_familial(
         raise ValueError("Mocked API Response calls must have a defined http_status_code")
 
     if mock_config.http_status_code == 404:
-        mocked_custodian = NOT_FOUND_CUSTODIAN
+        mocked_custodian = APPLICATION_NOT_FOUND
+    elif mock_config.http_status_code == 422:
+        mocked_custodian = PERSON_NOT_FOUND
     else:
         mocked_custodian = CUSTODIAN_WITH_CHILDREN
     api_particulier_response = api_particulier.get_quotient_familial(mocked_custodian)
@@ -93,9 +104,12 @@ def _inject_mock_config(
         )
 
     if mock_config.children:
-        api_particulier_response.data.enfants = [_build_api_enfants_response(child) for child in mock_config.children]
-    else:
-        api_particulier_response.data.enfants = []
+        api_particulier_response.data.enfants = [_build_api_person_response(child) for child in mock_config.children]
+
+    if mock_config.householders:
+        api_particulier_response.data.allocataires = [
+            _build_api_person_response(householder) for householder in mock_config.householders
+        ]
 
 
 def _build_api_quotient_familial_response(
@@ -111,11 +125,11 @@ def _build_api_quotient_familial_response(
     )
 
 
-def _build_api_enfants_response(child: bonus_schemas.QuotientFamilialPerson) -> api_particulier.QuotientFamilialPerson:
+def _build_api_person_response(person: bonus_schemas.QuotientFamilialPerson) -> api_particulier.QuotientFamilialPerson:
     return api_particulier.QuotientFamilialPerson(
-        nom_naissance=child.last_name,
-        nom_usage=child.common_name,
-        prenoms=" ".join(child.first_names),
-        date_naissance=child.birth_date,
-        sexe=child.gender,
+        nom_naissance=person.last_name,
+        nom_usage=person.common_name,
+        prenoms=" ".join(person.first_names),
+        date_naissance=person.birth_date,
+        sexe=person.gender,
     )

@@ -19,6 +19,7 @@ from pcapi.core.offers import generator as offers_generator
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
@@ -79,28 +80,69 @@ def create_ubble_fraud_check(user: users_models.User, form: forms.UbbleConfigura
     db.session.add(ubble_fraud_check)
 
 
-def create_qf_fraud_check(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
+def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
+    mock_type = form.mock_type.data
+    result_content = None
+    user_qf_person = bonus_schemas.QuotientFamilialPerson(
+        last_name=user.lastName,
+        first_names=[user.firstName] if user.firstName else [],
+        birth_date=user.validatedBirthDate,
+        gender=user.gender,
+    )
+
+    if mock_type == forms.QFMockType.OK.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=200,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
+            ),
+            children=[user_qf_person],
+        ).model_dump()
+
+    elif mock_type == forms.QFMockType.HOUSEHOLDER_OK.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=200,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
+            ),
+            householders=[user_qf_person],
+            children=[],
+        ).model_dump()
+
+    elif mock_type == forms.QFMockType.NOT_IN_TAX_HOUSEHOLD.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=200,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
+            ),
+        ).model_dump()
+
+    elif mock_type == forms.QFMockType.QUOTIENT_FAMILIAL_TOO_HIGH.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=200,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD + 1
+            ),
+            children=[user_qf_person],
+        ).model_dump()
+
+    elif mock_type == forms.QFMockType.APPLICATION_NOT_FOUND.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=404,
+        ).model_dump()
+
+    elif mock_type == forms.QFMockType.PERSON_NOT_FOUND.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=422,
+        ).model_dump()
+
     quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
         eligibilityType=user.eligibility,
         type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
         thirdPartyId=f"qf-bonus-credit-config-{user.id}",
         status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
-        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-            http_status_code=form.https_status_code.data,
-            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
-                value=form.quotient_familial_value.data
-            ),
-            children=[
-                bonus_schemas.QuotientFamilialPerson(
-                    last_name=form.last_name.data,
-                    common_name=form.common_name.data,
-                    first_names=[first_name.strip() for first_name in form.first_names.data.split(",")],
-                    birth_date=form.birth_date.data,
-                    gender=users_models.GenderEnum(form.gender.data),
-                )
-            ],
-        ).model_dump(),
+        resultContent=result_content,
     )
     db.session.add(quotient_familial_config_fraud_check)
 
@@ -158,16 +200,10 @@ def get_generated_user() -> response_utils.BackofficeResponse:
         birth_date = user.dateOfBirth.date() if user.dateOfBirth else None
         id_document_number = f"{user.id:012}"
         ubble_form = forms.UbbleConfigurationForm(birth_date=birth_date, id_document_number=id_document_number)
-
-        quotient_familial_form = forms.QuotientFamilialConfigurationForm(
-            last_name=user.lastName,
-            first_names=user.firstName,
-            birth_date=user.validatedBirthDate,
-            gender=user.gender.value if user.gender else None,
-        )
     else:
         ubble_form = forms.UbbleConfigurationForm()
-        quotient_familial_form = forms.QuotientFamilialConfigurationForm()
+
+    quotient_familial_form = forms.QuotientFamilialConfigurationForm()
 
     return render_template(
         "dev/users_generator.html",
@@ -363,7 +399,7 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
 
-    create_qf_fraud_check(user, form)
+    create_qf_fraud_check_mock(user, form)
     db.session.flush()
 
     flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")

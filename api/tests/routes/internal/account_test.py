@@ -118,13 +118,6 @@ class E2EAccountQFConfigTest:
         user = users_factories.BeneficiaryFactory()
         response = auth_client.post(
             f"/e2e/account/{user.id}/quotient_familial",
-            json={
-                "first_names": ["Pierre", "Paul"],
-                "gender": "M.",
-                "https_status_code": 200,
-                "last_name": "Jean",
-                "quotient_familial_value": 700,
-                "birth_date": "2020-01-01",
-            },
+            json={"mock_type": "OK"},
         )
         assert response.status_code == 200, response.json
