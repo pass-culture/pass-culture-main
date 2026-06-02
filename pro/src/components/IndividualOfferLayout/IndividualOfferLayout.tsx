@@ -9,7 +9,6 @@ import {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -20,7 +19,6 @@ import fullTrashIcon from '@/icons/full-trash.svg'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferHeadlineCard } from './components/OfferHeadlineCard/OfferHeadlineCard'
-import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
 import { OfferHighlightCard } from './components/OfferHighlightCard/OfferHighlightCard'
 import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
 import { OfferRecommendationCard } from './components/OfferRecommendationCard/OfferRecommendationCard'
@@ -40,9 +38,6 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const isOfferRecommendationEnabled = useActiveFeature(
-    'WIP_OFFER_RECOMMENDATION_PRO'
-  )
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -132,41 +127,30 @@ export const IndividualOfferLayout = ({
       )}
       {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
         <div className={styles['banner-container']}>
-          {isOfferRecommendationEnabled ? (
-            <>
-              {(shouldDisplayRecommendationCard ||
-                shouldDisplayHighlightCard ||
-                shouldDisplayHeadlineCard) && (
-                <h2 className={styles['banner-container-title']}>
-                  Mises en avant de votre offre
-                </h2>
-              )}
-              <div className={styles['cards-container']}>
-                {shouldDisplayRecommendationCard && (
-                  <OfferRecommendationCard offerId={offer.id} />
-                )}
-                {shouldDisplayHighlightCard && (
-                  <OfferHighlightCard
-                    offerId={offer.id}
-                    highlightRequests={offer.highlightRequests}
-                  />
-                )}
-                {shouldDisplayHeadlineCard && (
-                  <OfferHeadlineCard
-                    offerId={offer.id}
-                    hasThumb={!!offer.thumbUrl}
-                  />
-                )}
-              </div>
-            </>
-          ) : (
-            shouldDisplayHighlightCard && (
-              <OfferHighlightBanner
+          {(shouldDisplayRecommendationCard ||
+            shouldDisplayHighlightCard ||
+            shouldDisplayHeadlineCard) && (
+            <h2 className={styles['banner-container-title']}>
+              Mises en avant de votre offre
+            </h2>
+          )}
+          <div className={styles['cards-container']}>
+            {shouldDisplayRecommendationCard && (
+              <OfferRecommendationCard offerId={offer.id} />
+            )}
+            {shouldDisplayHighlightCard && (
+              <OfferHighlightCard
                 offerId={offer.id}
                 highlightRequests={offer.highlightRequests}
               />
-            )
-          )}
+            )}
+            {shouldDisplayHeadlineCard && (
+              <OfferHeadlineCard
+                offerId={offer.id}
+                hasThumb={!!offer.thumbUrl}
+              />
+            )}
+          </div>
         </div>
       )}
 

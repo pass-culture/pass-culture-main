@@ -144,7 +144,7 @@ describe('IndividualOfferLayout', () => {
       expect(screen.getByText(/offer name/)).toBeInTheDocument()
     })
 
-    it('should display status and button in edition', () => {
+    it('should display status and button in edition', async () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
 
       const props = {
@@ -158,7 +158,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props })
 
       expect(
-        screen.getByRole('button', { name: 'Modifier' })
+        await screen.findByRole('button', { name: 'Modifier' })
       ).toBeInTheDocument()
       expect(screen.getByText('publiée')).toBeInTheDocument()
     })
@@ -179,7 +179,7 @@ describe('IndividualOfferLayout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display offer name title in readonly', () => {
+    it('should not display offer name title in readonly', async () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
 
       const offer = getIndividualOfferFactory({
@@ -189,11 +189,12 @@ describe('IndividualOfferLayout', () => {
       })
 
       renderIndividualOfferLayout({ props: { offer } })
-
-      expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+      })
     })
 
-    it('should display offer name title in edition', () => {
+    it('should display offer name title in edition', async () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
 
       const offer = getIndividualOfferFactory({
@@ -204,7 +205,7 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props: { offer } })
 
-      expect(screen.getByText(/offer name/)).toBeInTheDocument()
+      expect(await screen.findByText(/offer name/)).toBeInTheDocument()
     })
 
     it('should display provider banner', () => {
@@ -394,15 +395,17 @@ describe('IndividualOfferLayout', () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     })
 
-    it('should call getOfferEnhancementCardsVisibility with the offer', () => {
+    it('should call getOfferEnhancementCardsVisibility with the offer', async () => {
       const offer = getIndividualOfferFactory({ id: 99 })
 
       renderIndividualOfferLayout({ props: { offer } })
 
-      expect(getOfferEnhancementCardsVisibility).toHaveBeenCalledWith(offer)
+      await waitFor(() => {
+        expect(getOfferEnhancementCardsVisibility).toHaveBeenCalledWith(offer)
+      })
     })
 
-    it('should not allow access to publication dates edition when offer is synchronized with a provider', () => {
+    it('should not allow access to publication dates edition when offer is synchronized with a provider', async () => {
       const props = {
         offer: {
           ...nonEventOffer,
@@ -413,13 +416,13 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props })
 
-      expect(screen.getByText('publiée')).toBeInTheDocument()
+      expect(await screen.findByText('publiée')).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Modifier' })
       ).not.toBeInTheDocument()
     })
 
-    it('should display status but not let activate offer when offer is synchronized with a provider', () => {
+    it('should display status but not let activate offer when offer is synchronized with a provider', async () => {
       const props = {
         offer: {
           ...nonEventOffer,
@@ -429,88 +432,69 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props })
 
-      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(await screen.findByTestId('status')).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Mettre en pause' })
       ).not.toBeInTheDocument()
     })
 
-    it('should display status but not let activate offer when offer is rejected', () => {
+    it('should display status but not let activate offer when offer is rejected', async () => {
       const offer = getIndividualOfferFactory({
         status: OfferStatus.REJECTED,
       })
 
       renderIndividualOfferLayout({ props: { offer } })
 
-      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(await screen.findByTestId('status')).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Mettre en pause' })
       ).not.toBeInTheDocument()
     })
 
-    describe('when WIP_OFFER_RECOMMENDATION_PRO flag is active', () => {
-      it('should display the enhancement cards', async () => {
-        const offer = getIndividualOfferFactory()
+    it('should display the enhancement cards', async () => {
+      const offer = getIndividualOfferFactory()
 
-        renderIndividualOfferLayout({
-          props: { offer },
-          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
-        })
-
-        await waitFor(() => {
-          expect(
-            screen.getByRole('button', { name: 'Ajouter une recommandation' })
-          ).toBeInTheDocument()
-
-          expect(
-            screen.queryByRole('button', {
-              name: 'Relier l’offre à un temps fort',
-            })
-          ).toBeInTheDocument()
-          expect(
-            screen.getByRole('button', { name: 'Mettre l’offre à la une' })
-          ).toBeInTheDocument()
-        })
+      renderIndividualOfferLayout({
+        props: { offer },
       })
-      it('should not display the enhancement cards', () => {
-        const offer = getIndividualOfferFactory()
 
-        vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-          shouldDisplayRecommendationCard: false,
-          shouldDisplayHighlightCard: false,
-          shouldDisplayHeadlineCard: false,
-        })
-
-        renderIndividualOfferLayout({
-          props: { offer },
-          options: { features: ['WIP_OFFER_RECOMMENDATION_PRO'] },
-        })
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: 'Ajouter une recommandation' })
+        ).toBeInTheDocument()
 
         expect(
-          screen.queryByRole('button', { name: 'Ajouter une recommandation' })
-        ).not.toBeInTheDocument()
+          screen.queryByRole('button', {
+            name: 'Relier l’offre à un temps fort',
+          })
+        ).toBeInTheDocument()
         expect(
-          screen.queryByRole('button', { name: 'Choisir un temps fort' })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('button', { name: 'Mettre l’offre à la une' })
-        ).not.toBeInTheDocument()
-      })
-    })
-
-    describe('when WIP_OFFER_RECOMMENDATION_PRO flag is inactive', () => {
-      it('should display the highlight banner', () => {
-        const offer = getIndividualOfferFactory()
-
-        renderIndividualOfferLayout({
-          props: { offer },
-          options: { features: [] },
-        })
-
-        expect(
-          screen.getByRole('button', { name: 'Choisir un temps fort' })
+          screen.getByRole('button', { name: 'Mettre l’offre à la une' })
         ).toBeInTheDocument()
       })
+    })
+    it('should not display the enhancement cards', () => {
+      const offer = getIndividualOfferFactory()
+
+      vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
+        shouldDisplayRecommendationCard: false,
+        shouldDisplayHighlightCard: false,
+        shouldDisplayHeadlineCard: false,
+      })
+
+      renderIndividualOfferLayout({
+        props: { offer },
+      })
+
+      expect(
+        screen.queryByRole('button', { name: 'Ajouter une recommandation' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre l’offre à la une' })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -519,7 +503,7 @@ describe('IndividualOfferLayout', () => {
       vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
     })
 
-    it('should not display publication date when it is passed', () => {
+    it('should not display publication date when it is passed', async () => {
       const offer = getIndividualOfferFactory({
         publicationDate: '2021-01-01T00:00:00.000Z',
         status: OfferStatus.INACTIVE,
@@ -527,12 +511,14 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props: { offer } })
 
-      expect(
-        screen.queryByText(/Publication prévue le/)
-      ).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Publication prévue le/)
+        ).not.toBeInTheDocument()
+      })
     })
 
-    it('should show the update publication button', () => {
+    it('should show the update publication button', async () => {
       const options = {
         initialRouterEntries: ['/offre/creation'],
       }
@@ -546,7 +532,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ options, props })
 
       expect(
-        screen.getByRole('button', { name: 'Modifier' })
+        await screen.findByRole('button', { name: 'Modifier' })
       ).toBeInTheDocument()
     })
   })
