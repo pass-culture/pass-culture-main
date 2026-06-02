@@ -2,7 +2,10 @@ import { render } from '@testing-library/react'
 
 import { initReCaptchaScript } from '../recaptcha'
 
-vi.mock('../config', () => ({ RECAPTCHA_SITE_KEY: 'recaptcha-site-key' }))
+vi.mock('../config', async (importOriginal) => ({
+  ...(await importOriginal()),
+  RECAPTCHA_SITE_KEY: 'recaptcha-site-key',
+}))
 
 describe('initReCaptchaScript', () => {
   beforeEach(() => {

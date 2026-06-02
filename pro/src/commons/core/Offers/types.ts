@@ -1,5 +1,5 @@
 import type { EacFormat } from '@/apiClient/adage'
-import type { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import type { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import type { CropParams } from '@/commons/utils/imageUploadTypes'
 
 import type { ALL_FORMATS } from './constants'

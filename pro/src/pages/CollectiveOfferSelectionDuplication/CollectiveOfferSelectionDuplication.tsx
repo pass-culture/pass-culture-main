@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
@@ -74,17 +74,19 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, name],
     () =>
-      api.getCollectiveOfferTemplates(
-        name,
-        offererId,
-        status,
-        venueId,
-        periodBeginningDate,
-        periodEndingDate,
-        format,
-        locationType,
-        offererAddressId
-      ),
+      apiNew.getCollectiveOfferTemplates({
+        query: {
+          name,
+          offererId,
+          status,
+          venueId,
+          periodBeginningDate,
+          periodEndingDate,
+          format,
+          locationType,
+          offererAddressId,
+        },
+      }),
     {
       onError: () => {
         snackBar.error(GET_DATA_ERROR_MESSAGE)
