@@ -11,8 +11,8 @@ import { useInstantSearch } from 'react-instantsearch'
 import { useSearchParams } from 'react-router'
 import useSWRMutation from 'swr/mutation'
 
-import { AdageFrontRoles, type TrackingFilterBody } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles, type TrackingFilterBody } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { LOG_TRACKING_FILTER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
@@ -93,7 +93,7 @@ export const OffersSearch = ({
       options: {
         arg: TrackingFilterBody
       }
-    ) => apiAdage.logTrackingFilter(options.arg)
+    ) => apiAdageNew.logTrackingFilter({ body: options.arg })
   )
 
   const { data: educationalDomains, error: educationalDomainsApiError } =
@@ -163,7 +163,7 @@ export const OffersSearch = ({
         await logTrackingFilter({
           iframeFrom: location.pathname,
           resultNumber: nbHits,
-          queryId: queryId ?? null,
+          queryId: queryId ?? undefined,
           filterValues,
         })
       }

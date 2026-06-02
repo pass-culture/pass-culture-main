@@ -2,9 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
 
-import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
+import {
+  AdageFrontRoles,
+  type AuthenticatedResponse,
+} from '@/apiClient/adage/new'
 import { api } from '@/apiClient/api'
-import { StudentLevels } from '@/apiClient/v1'
+import { StudentLevels } from '@/apiClient/v1/new'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -93,7 +96,7 @@ vi.mock('@/apiClient/api', () => ({
       { id: 3, name: 'Arts' },
     ]),
   },
-  apiAdage: {
+  apiAdageNew: {
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
     logTrackingFilter: vi.fn(),
   },
@@ -184,23 +187,19 @@ describe('offersSearch component', () => {
   })
 
   it('should call algolia with requested query and uai all', async () => {
-    // Given
     renderOffersSearchComponent(props, user)
     const launchSearchButton = screen.getByRole('button', {
       name: 'Rechercher',
     })
 
-    // When
     const textInput = screen.getByRole('searchbox', { name: 'Rechercher' })
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
 
-    // Then
     expect(refineSearch).toHaveBeenCalledWith('Paris')
   })
 
   it('should call algolia with requested query and uai associatedToInstitution', async () => {
-    // Given
     renderOffersSearchComponent(props, {
       ...user,
       uai: 'associatedToInstitution',
@@ -209,33 +208,27 @@ describe('offersSearch component', () => {
       name: 'Rechercher',
     })
 
-    // When
     const textInput = screen.getByRole('searchbox', { name: 'Rechercher' })
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
 
-    // Then
     expect(refineSearch).toHaveBeenCalledWith('Paris')
   })
 
   it('should display localisation filter with default state by default', async () => {
-    // Given
-    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    renderOffersSearchComponent(props, { ...user, departmentCode: '' })
 
-    // When
     const localisationFilter = screen.getByRole('button', {
       name: 'Localisation des partenaires',
     })
     await userEvent.click(localisationFilter)
 
-    // Then
     expect(
       screen.getByText('Dans quelle zone géographique')
     ).toBeInTheDocument()
   })
   it('should display localisation filter with departments options if user has selected departement filter', async () => {
-    // Given
-    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    renderOffersSearchComponent(props, { ...user, departmentCode: '' })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -259,15 +252,13 @@ describe('offersSearch component', () => {
       })
     )
 
-    // Then
     expect(
       screen.getByRole('checkbox', { name: '01 - Ain' })
     ).toBeInTheDocument()
   })
 
   it('should display academies filter with departments options if user has selected academy filter', async () => {
-    // Given
-    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    renderOffersSearchComponent(props, { ...user, departmentCode: '' })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -291,13 +282,11 @@ describe('offersSearch component', () => {
       })
     )
 
-    // Then
     expect(screen.getByRole('checkbox', { name: 'Amiens' })).toBeInTheDocument()
   })
 
   it('should display radius input filter if user has selected around me filter', async () => {
-    // Given
-    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    renderOffersSearchComponent(props, { ...user, departmentCode: '' })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -313,16 +302,15 @@ describe('offersSearch component', () => {
       })[1]
     )
 
-    // Then
     expect(setGeoRadiusMock).toHaveBeenCalled()
   })
 
   it('should not let user select the geoloc filter if they have an invalid location', async () => {
     renderOffersSearchComponent(props, {
       ...user,
-      departmentCode: null,
+      departmentCode: '',
       lat: 0,
-      lon: null,
+      lon: undefined,
     })
     await userEvent.click(
       screen.getByRole('button', {

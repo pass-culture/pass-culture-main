@@ -5,8 +5,8 @@ import type {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import strokeArticleIcon from '@/icons/stroke-article.svg'
 import strokeInfoIcon from '@/icons/stroke-info.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
@@ -55,12 +55,14 @@ export const AdageOffer = ({
     const sourceValue = params.get('source')
     const queryId = state?.queryId
 
-    apiAdage.logConsultOffer({
-      iframeFrom: pathname,
-      offerId: offer.id,
-      playlistId,
-      ...(queryId !== undefined && { queryId }),
-      ...(sourceValue && { source: sourceValue }),
+    apiAdageNew.logConsultOffer({
+      body: {
+        iframeFrom: pathname,
+        offerId: offer.id,
+        playlistId,
+        ...(queryId !== undefined && { queryId }),
+        ...(sourceValue && { source: sourceValue }),
+      },
     })
   }
 

@@ -3,12 +3,13 @@ import useSWR from 'swr'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
-import { api } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+  GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
@@ -20,24 +21,56 @@ import styles from './AdagePreviewLayout.module.scss'
 import adageBurger from './assets/adage-burger.svg'
 import adageLogo from './assets/adage-logo.png'
 
+// TODO (mdesquilbet, 2026-06-02): remove DeepNonNullable and removeNulls when adage offers are migrated to pydantic v2
+
+type DeepNonNullable<T> = T extends null
+  ? never
+  : T extends Array<infer U>
+    ? DeepNonNullable<U>[]
+    : // biome-ignore lint/suspicious/noExplicitAny: `unknown` breaks recursive type inference on nested objects
+      T extends Record<string, any>
+      ? { [K in keyof T]: DeepNonNullable<T[K]> }
+      : T
+
+function removeNulls<T>(val: T): DeepNonNullable<T> {
+  if (val === null) {
+    return undefined as DeepNonNullable<T>
+  }
+  if (!val || typeof val !== 'object') {
+    return val as DeepNonNullable<T>
+  }
+  if (Array.isArray(val)) {
+    return val.map(removeNulls) as DeepNonNullable<T>
+  }
+  return Object.fromEntries(
+    Object.entries(val)
+      .filter(([_, v]) => v !== null)
+      .map(([k, v]) => [k, removeNulls(v)])
+  ) as DeepNonNullable<T>
+}
+
 type AdagePreviewLayoutProps = {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
 }
 
-export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
-  const { data: venue, isLoading } = useSWR(
+export const AdagePreviewLayout = ({
+  offer: offerProp,
+}: AdagePreviewLayoutProps) => {
+  const offer = removeNulls(offerProp)
+  const { data: venueData, isLoading } = useSWR(
     [GET_VENUE_QUERY_KEY, String(offer.venue.id)],
-    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+    ([, venueIdParam]) =>
+      apiNew.getVenue({ path: { venue_id: Number(venueIdParam) } })
   )
-
   if (isLoading) {
     return <Spinner />
   }
-  if (!venue) {
+  if (!venueData) {
     return
   }
+  const venue = removeNulls<GetVenueResponseModel>(venueData)
 
   const isBookable = isCollectiveOffer(offer) && offer.collectiveStock
 

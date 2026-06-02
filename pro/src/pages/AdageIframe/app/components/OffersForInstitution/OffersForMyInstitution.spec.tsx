@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -13,7 +13,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { OffersForMyInstitution } from './OffersForMyInstitution'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getCollectiveOffersForMyInstitution: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),
     saveRedactorPreferences: vi.fn(),
@@ -45,7 +45,7 @@ const budgetResponse = {
 describe('OffersInstitutionList', () => {
   it('should display no result page', async () => {
     vi.spyOn(
-      apiAdage,
+      apiAdageNew,
       'getCollectiveOffersForMyInstitution'
     ).mockResolvedValueOnce({ collectiveOffers: [] })
 
@@ -60,7 +60,7 @@ describe('OffersInstitutionList', () => {
 
   it('should display list of offers for my institution', async () => {
     vi.spyOn(
-      apiAdage,
+      apiAdageNew,
       'getCollectiveOffersForMyInstitution'
     ).mockResolvedValueOnce({ collectiveOffers: [defaultCollectiveOffer] })
 
@@ -73,7 +73,7 @@ describe('OffersInstitutionList', () => {
 
   it('should show an offer card', async () => {
     vi.spyOn(
-      apiAdage,
+      apiAdageNew,
       'getCollectiveOffersForMyInstitution'
     ).mockResolvedValueOnce({ collectiveOffers: [defaultCollectiveOffer] })
 
@@ -88,7 +88,7 @@ describe('OffersInstitutionList', () => {
   describe('budget banner', () => {
     it('should display budget exhaustion banner when institution has no budget to spend', async () => {
       vi.spyOn(
-        apiAdage,
+        apiAdageNew,
         'getEducationalInstitutionWithBudget'
       ).mockResolvedValueOnce(budgetResponse)
       renderOffersForMyInstitution(defaultAdageUser)
@@ -107,7 +107,7 @@ describe('OffersInstitutionList', () => {
 
     it('should not display budget exhaustion banner when institution has budget to spend', async () => {
       vi.spyOn(
-        apiAdage,
+        apiAdageNew,
         'getEducationalInstitutionWithBudget'
       ).mockResolvedValueOnce({ ...budgetResponse, budget: 1000 })
       renderOffersForMyInstitution(defaultAdageUser)

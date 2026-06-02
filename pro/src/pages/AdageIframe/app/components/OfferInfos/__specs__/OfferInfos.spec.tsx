@@ -1,8 +1,11 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import {
+  AdageFrontRoles,
+  type AuthenticatedResponse,
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -17,7 +20,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { OfferInfos } from '../OfferInfos'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
     logConsultOffer: vi.fn(),
@@ -153,7 +156,7 @@ describe('OfferInfos', () => {
     })
 
     const fetchOfferSpy = vi
-      .spyOn(apiAdage, 'getCollectiveOfferTemplate')
+      .spyOn(apiAdageNew, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
 
     renderOfferInfos()
@@ -164,7 +167,7 @@ describe('OfferInfos', () => {
       screen.getByRole('heading', { name: defaultCollectiveTemplateOffer.name })
     ).toBeInTheDocument()
 
-    expect(fetchOfferSpy).toHaveBeenCalledWith(1)
+    expect(fetchOfferSpy).toHaveBeenCalledWith({ path: { offer_id: 1 } })
   })
 
   it('should render the new offer info page sections', () => {
@@ -194,11 +197,11 @@ describe('OfferInfos', () => {
     })
 
     const fetchOfferTemplateSpy = vi
-      .spyOn(apiAdage, 'getCollectiveOfferTemplate')
+      .spyOn(apiAdageNew, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
 
     const fetchOfferSpy = vi
-      .spyOn(apiAdage, 'getCollectiveOffer')
+      .spyOn(apiAdageNew, 'getCollectiveOffer')
       .mockResolvedValueOnce(defaultCollectiveOffer)
 
     renderOfferInfos()
@@ -207,6 +210,6 @@ describe('OfferInfos', () => {
 
     expect(fetchOfferTemplateSpy).not.toHaveBeenCalled()
 
-    expect(fetchOfferSpy).toHaveBeenCalledWith(1)
+    expect(fetchOfferSpy).toHaveBeenCalledWith({ path: { offer_id: 1 } })
   })
 })

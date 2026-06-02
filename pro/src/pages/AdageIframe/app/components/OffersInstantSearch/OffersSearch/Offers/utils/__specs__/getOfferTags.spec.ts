@@ -3,7 +3,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   StudentLevels,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -147,7 +147,7 @@ describe('getOfferTags', () => {
     }
     const tags = getOfferTags(
       offer,
-      { ...adageUser, lat: null, lon: null },
+      { ...adageUser, lat: undefined, lon: undefined },
       false
     ).map((tag) => tag.text)
 

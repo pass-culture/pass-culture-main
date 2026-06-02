@@ -1,10 +1,10 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   defaultGetVenue,
@@ -30,7 +30,7 @@ function renderAdagePreviewLayout(
 
 describe('AdagePreviewLayout', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
     })
   })

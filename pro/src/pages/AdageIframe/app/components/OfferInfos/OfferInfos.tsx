@@ -1,8 +1,8 @@
 import { useLocation, useParams, useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -41,7 +41,10 @@ export const OfferInfos = () => {
     shouldFetchTemplateOffer
       ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, Number(offerId)]
       : null,
-    ([, offerIdParam]) => apiAdage.getCollectiveOfferTemplate(offerIdParam)
+    ([, offerIdParam]) =>
+      apiAdageNew.getCollectiveOfferTemplate({
+        path: { offer_id: offerIdParam },
+      })
   )
 
   const shouldFetchBookableOffer = !isOfferTemplate && !state?.offer && offerId
@@ -49,7 +52,10 @@ export const OfferInfos = () => {
     shouldFetchBookableOffer
       ? [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offerId)]
       : null,
-    ([, offerIdParam]) => apiAdage.getCollectiveOffer(offerIdParam)
+    ([, offerIdParam]) =>
+      apiAdageNew.getCollectiveOffer({
+        path: { offer_id: offerIdParam },
+      })
   )
 
   const offer = state?.offer ?? templateOffer ?? bookableOffer

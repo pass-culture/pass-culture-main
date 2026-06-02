@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { sub } from 'date-fns'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { OfferContactFormEnum } from '@/apiClient/v1'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -68,7 +68,7 @@ describe('CollectiveOfferConfirmation', () => {
       success: snackBarSuccess,
     }))
 
-    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
   })
 
   it('should render selection duplication page', async () => {

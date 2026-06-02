@@ -1,4 +1,4 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/adage'
+import type { CollectiveOfferResponseModel } from '@/apiClient/adage/new'
 
 export function getBookableOfferStockPrice(
   offer: CollectiveOfferResponseModel

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import useSWR from 'swr'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY,
@@ -33,7 +33,7 @@ export const OffersForMyInstitution = () => {
 
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
-    () => apiAdage.getCollectiveOffersForMyInstitution(),
+    () => apiAdageNew.getCollectiveOffersForMyInstitution(),
     { fallbackData: { collectiveOffers: [] } }
   )
 
@@ -41,7 +41,7 @@ export const OffersForMyInstitution = () => {
     adageUser.role !== AdageFrontRoles.READONLY
       ? GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY
       : null,
-    () => apiAdage.getEducationalInstitutionWithBudget()
+    () => apiAdageNew.getEducationalInstitutionWithBudget()
   )
   const budget = educationalInstitutionBudget.data?.budget
 

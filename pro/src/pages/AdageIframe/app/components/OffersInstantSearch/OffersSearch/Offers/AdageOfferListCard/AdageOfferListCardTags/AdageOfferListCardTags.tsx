@@ -2,7 +2,7 @@ import type {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import { Tag } from '@/design-system/Tag/Tag'
 
 import { getOfferTags } from '../../utils/getOfferTags'

@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -18,7 +18,7 @@ const venue = {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getVenueById: vi.fn(() => {
       return venue
     }),
@@ -60,7 +60,7 @@ describe('OffersInstantSearch', () => {
     }
     window.location = mockLocation as string & Location
 
-    vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
+    vi.spyOn(apiAdageNew, 'getVenueById').mockRejectedValueOnce(null)
 
     renderOffersInstantSearch()
 
@@ -76,7 +76,7 @@ describe('OffersInstantSearch', () => {
     }
     window.location = mockLocation as string & Location
 
-    vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValueOnce(null)
+    vi.spyOn(apiAdageNew, 'getVenueBySiret').mockRejectedValueOnce(null)
 
     renderOffersInstantSearch()
 

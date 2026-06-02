@@ -1,6 +1,6 @@
 import useSWR, { useSWRConfig } from 'swr'
 
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
@@ -11,7 +11,7 @@ import { OffersFavoritesNoResult } from './OffersFavoritesNoResult/OffersFavorit
 export const OffersFavorites = () => {
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_FAVORITES],
-    () => apiAdage.getCollectiveFavorites(),
+    () => apiAdageNew.getCollectiveFavorites(),
     { fallbackData: { favoritesTemplate: [] } }
   )
   const { mutate } = useSWRConfig()

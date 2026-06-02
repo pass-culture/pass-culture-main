@@ -5,8 +5,8 @@ import { expect } from 'vitest'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -47,7 +47,7 @@ function renderAdageOffer({
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     logConsultOffer: vi.fn(),
   },
 }))
@@ -91,13 +91,13 @@ describe('AdageOffer', () => {
 
     renderAdageOffer({ offer: defaultCollectiveOffer })
 
-    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+      body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,
         queryId: 123,
-      })
-    )
+      }),
+    })
   })
 
   it('should call tracker with source when coming from a shareLink', () => {
@@ -108,13 +108,13 @@ describe('AdageOffer', () => {
 
     renderAdageOffer({ offer: defaultCollectiveOffer })
 
-    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+      body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,
         source: 'shareLink',
-      })
-    )
+      }),
+    })
   })
 
   it('should call tracker with playlistId when coming from a discovery', () => {
@@ -125,12 +125,12 @@ describe('AdageOffer', () => {
       playlistId: 42,
     })
 
-    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+      body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,
         playlistId: 42,
-      })
-    )
+      }),
+    })
   })
 })

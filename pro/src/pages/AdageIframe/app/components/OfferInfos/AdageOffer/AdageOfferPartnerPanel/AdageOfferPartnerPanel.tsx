@@ -1,7 +1,7 @@
 import type {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import {
   computeDistanceInMeters,
   humanizeDistance,

@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { useId } from 'react'
 import { Configure } from 'react-instantsearch'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -74,7 +74,7 @@ const venue = {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getVenueById: vi.fn(() => {
       return venue
     }),
@@ -131,7 +131,7 @@ const renderApp = (options?: RenderWithProvidersOptions) => {
 describe('app', () => {
   describe('when is authenticated', () => {
     beforeEach(() => {
-      vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
+      vi.spyOn(apiAdageNew, 'authenticate').mockResolvedValue({
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
@@ -186,7 +186,7 @@ describe('app', () => {
     })
 
     it('should add geo location filter when user has latitude and longitude', async () => {
-      vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+      vi.spyOn(apiAdageNew, 'authenticate').mockResolvedValueOnce({
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
@@ -214,7 +214,7 @@ describe('app', () => {
 
   describe('when is not authenticated', () => {
     beforeEach(() => {
-      vi.spyOn(apiAdage, 'authenticate').mockRejectedValue(
+      vi.spyOn(apiAdageNew, 'authenticate').mockRejectedValue(
         'Authentication failed'
       )
     })

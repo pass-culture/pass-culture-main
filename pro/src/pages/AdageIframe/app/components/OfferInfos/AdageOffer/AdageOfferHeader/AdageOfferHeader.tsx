@@ -3,7 +3,7 @@ import {
   type AuthenticatedResponse,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeLocationIcon from '@/icons/stroke-location.svg'
