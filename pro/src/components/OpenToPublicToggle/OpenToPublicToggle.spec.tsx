@@ -57,11 +57,11 @@ describe('OpenToPublicToggle', () => {
     })
 
     const description = await screen.findByText('This is a description')
-    expect(description).toBeInTheDocument()
+    expect(description).toBeVisible()
 
     const noRadio = await screen.findByRole('radio', { name: LABELS.no.label })
     await userEvent.click(noRadio)
-    expect(description).toBeInTheDocument()
+    expect(description).toBeVisible()
   })
 
   it('should call onChange when a radio button is clicked', async () => {
