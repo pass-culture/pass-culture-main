@@ -185,18 +185,8 @@ describe('IndividualOfferConfirmation', () => {
   })
 
   describe('enhancement cards section', () => {
-    it('should not display the cards section when the WIP_OFFER_RECOMMENDATION_PRO feature flag is off', () => {
-      renderOffer(contextOverride)
-
-      expect(
-        screen.queryByRole('heading', {
-          name: /Allez plus loin et optimisez votre offre/,
-        })
-      ).not.toBeInTheDocument()
-    })
-
     it('should display the three cards for an active event offer', async () => {
-      renderOffer(contextOverride, ['WIP_OFFER_RECOMMENDATION_PRO'])
+      renderOffer(contextOverride)
 
       expect(
         screen.getByRole('heading', {
@@ -222,7 +212,7 @@ describe('IndividualOfferConfirmation', () => {
         shouldDisplayHighlightCard: false,
         shouldDisplayHeadlineCard: false,
       })
-      renderOffer(contextOverride, ['WIP_OFFER_RECOMMENDATION_PRO'])
+      renderOffer(contextOverride)
 
       expect(
         screen.queryByRole('heading', {

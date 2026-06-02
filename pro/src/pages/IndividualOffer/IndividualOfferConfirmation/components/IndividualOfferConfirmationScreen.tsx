@@ -11,7 +11,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
@@ -35,10 +34,6 @@ export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const navigate = useNavigate()
-
-  const isOfferRecommendationEnabled = useActiveFeature(
-    'WIP_OFFER_RECOMMENDATION_PRO'
-  )
 
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
@@ -70,10 +65,9 @@ export const IndividualOfferConfirmationScreen = ({
   } = getOfferEnhancementCardsVisibility(offer)
 
   const shouldDisplayCardsSection =
-    isOfferRecommendationEnabled &&
-    (shouldDisplayRecommendationCard ||
-      shouldDisplayHighlightCard ||
-      shouldDisplayHeadlineCard)
+    shouldDisplayRecommendationCard ||
+    shouldDisplayHighlightCard ||
+    shouldDisplayHeadlineCard
 
   return (
     <div className={styles['container']}>
