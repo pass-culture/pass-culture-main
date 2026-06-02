@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useSWR, { type SWRResponse } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { CancelablePromise } from '@/apiClient/compat'
 import type {
-  CancelablePromise,
   GetIndividualOfferWithAddressResponseModel,
   HighlightResponseModel,
   ShortHighlightResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -26,7 +26,7 @@ vi.mock('swr', async (importOriginal) => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getHighlights: vi.fn(),
     postHighlightRequestOffer: vi.fn(),
   },
@@ -95,8 +95,10 @@ function renderOfferHighlightForm({
 
 describe('OfferHighlightForm', () => {
   const useSWRMock = vi.mocked(useSWR)
-  const getHighlightsMock = vi.mocked(api.getHighlights)
-  const postHighlightRequestOfferMock = vi.mocked(api.postHighlightRequestOffer)
+  const getHighlightsMock = vi.mocked(apiNew.getHighlights)
+  const postHighlightRequestOfferMock = vi.mocked(
+    apiNew.postHighlightRequestOffer
+  )
 
   beforeEach(() => {
     getHighlightsMock.mockResolvedValue(mockedHighlights)
@@ -195,8 +197,9 @@ describe('OfferHighlightForm', () => {
     })
     await userEvent.click(submitButton)
 
-    expect(postHighlightRequestOfferMock).toHaveBeenCalledWith(1, {
-      highlight_ids: [1],
+    expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
+      path: { offer_id: 1 },
+      body: { highlight_ids: [1] },
     })
     expect(mockLogEvent).toBeCalledWith(
       EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
@@ -260,7 +263,7 @@ describe('OfferHighlightForm', () => {
   })
 
   it('should call notify.error', async () => {
-    vi.spyOn(api, 'postHighlightRequestOffer').mockRejectedValueOnce('Error')
+    vi.spyOn(apiNew, 'postHighlightRequestOffer').mockRejectedValueOnce('Error')
     renderOfferHighlightForm({ offerId: 1 })
 
     const checkbox = await screen.findByText(mockedHighlights[0].name)
