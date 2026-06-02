@@ -325,6 +325,8 @@ def update_offer(
     offerer_address: offerers_models.OffererAddress | None = None,
     is_from_private_api: bool = False,
 ) -> models.Offer:
+    validation.check_validation_status(offer)
+
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
     fields.pop("artistOfferLinks", None)
@@ -488,7 +490,6 @@ def update_offer(
         duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
         validation.check_duration_minutes(duration_minutes, is_from_private_api)
 
-    validation.check_validation_status(offer)
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
     if offer.is_soft_deleted():

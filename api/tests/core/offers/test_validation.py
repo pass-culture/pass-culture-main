@@ -330,14 +330,17 @@ class CheckStockCanBeCreatedForOfferTest:
 
 
 class CheckStockIsDeletableTest:
-    def test_rejected_offer(self):
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+    @pytest.mark.parametrize("validation_status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def test_non_editable_offer(self, validation_status):
+        offer = offers_factories.OfferFactory(validation=validation_status)
         stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_deletable(stock)
 
-        assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
     def test_recently_begun_event_stock(self):
         recently = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -378,14 +381,17 @@ class CheckStockIsUpdatableTest:
 
         validation.check_stock_is_updatable(stock)
 
-    def test_rejected_offer(self):
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+    @pytest.mark.parametrize("validation_status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def test_non_editable_offer(self, validation_status):
+        offer = offers_factories.OfferFactory(validation=validation_status)
         stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_updatable(stock)
 
-        assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
     def test_offer_from_non_allocine_provider(self):
         provider = providers_factories.PublicApiProviderFactory()
@@ -412,6 +418,25 @@ class CheckStockIsUpdatableTest:
             beginningDatetime=recently, offer__validation=OfferValidationStatus.DRAFT
         )
         validation.check_stock_is_updatable(stock)
+
+
+class CheckPriceCategoryIsUpdatableTest:
+    def test_approved_offer(self):
+        price_category = offers_factories.PriceCategoryFactory()
+
+        validation.check_price_category_is_updatable(price_category)
+
+    @pytest.mark.parametrize("validation_status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def test_non_editable_offer(self, validation_status):
+        offer = offers_factories.EventOfferFactory(validation=validation_status)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
+
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_price_category_is_updatable(price_category)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
 
 class CheckImageTest:
@@ -509,20 +534,23 @@ class CheckImageTest:
 class CheckValidationStatusTest:
     @pytest.mark.parametrize(
         "validation_status",
-        [OfferValidationStatus.APPROVED, OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING],
+        [OfferValidationStatus.APPROVED, OfferValidationStatus.DRAFT],
     )
-    def test_approved_offer(self, validation_status):
+    def test_editable_offer(self, validation_status):
         offer = offers_factories.OfferFactory(validation=validation_status)
 
         validation.check_validation_status(offer)
 
-    def test_rejected_offer(self):
-        rejected_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+    @pytest.mark.parametrize("validation_status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
+    def test_non_editable_offer(self, validation_status):
+        offer = offers_factories.OfferFactory(validation=validation_status)
 
         with pytest.raises(exceptions.OfferException) as error:
-            validation.check_validation_status(rejected_offer)
+            validation.check_validation_status(offer)
 
-        assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
 
 class CheckOfferWithdrawalTest:
