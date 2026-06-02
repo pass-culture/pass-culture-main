@@ -3,8 +3,8 @@ import type { JSX } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { ShortHighlightResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_HIGHLIGHTS_QUERY_KEY,
@@ -46,7 +46,7 @@ export function OfferHighlightForm({
 
   const highlightQuery = useSWR(
     [GET_HIGHLIGHTS_QUERY_KEY],
-    () => api.getHighlights(),
+    () => apiNew.getHighlights(),
     { fallbackData: [] }
   )
 
@@ -64,8 +64,11 @@ export function OfferHighlightForm({
     try {
       await mutate(
         [GET_OFFER_QUERY_KEY, offerId],
-        await api.postHighlightRequestOffer(offerId, {
-          highlight_ids: values.highlightIds,
+        await apiNew.postHighlightRequestOffer({
+          path: { offer_id: offerId },
+          body: {
+            highlight_ids: values.highlightIds,
+          },
         }),
         { revalidate: false }
       )
