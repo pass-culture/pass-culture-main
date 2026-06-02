@@ -1738,6 +1738,7 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
             sa_orm.joinedload(offers_models.Offer.compliance),
             sa_orm.joinedload(offers_models.Offer.metaData),
             sa_orm.joinedload(offers_models.Offer.proAdvice),
+            sa_orm.joinedload(offers_models.Offer.culturalOutreach),
         )
     )
     offer = offer_query.one_or_none()

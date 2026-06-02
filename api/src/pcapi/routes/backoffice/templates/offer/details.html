@@ -135,6 +135,11 @@
               {{ offer.extraData.diffusionVersion }}
             {% endcall %}
           {% endif %}
+          {% if offer.culturalOutreach %}
+            {% call description_detail_horizontal("Action de médiation") %}
+              {{ offer.culturalOutreach.status | format_cultural_outreach_status }}
+            {% endcall %}
+          {% endif %}
           {% call description_detail_horizontal("Description") %}
             {{ offer.description | empty_string_if_null | nl2br }}
           {% endcall %}
