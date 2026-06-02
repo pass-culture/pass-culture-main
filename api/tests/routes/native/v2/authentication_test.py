@@ -1,7 +1,9 @@
 import copy
+import hashlib
 import logging
 import uuid
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -497,6 +499,57 @@ class RefreshAccessTokenTest:
             )
             .count()
         )
+
+    def test_with_valid_email(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(
+            identity=str(user.id),
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
+        )
+
+        users_factories.NativeUserSessionFactory(
+            user=user,
+            refreshToken=decode_token(token)["jti"],
+            deviceId=self.device_info["deviceId"],
+        )
+
+        response = client.with_explicit_token(token).post(
+            "/native/v2/refresh_access_token", json={"device_info": self.device_info}
+        )
+
+        assert response.status_code == 200
+        access_token = response.json.get("accessToken")
+        assert access_token
+        assert db.session.query(NativeUserSession).count() == 1
+        assert (
+            db.session.query(NativeUserSession)
+            .filter(
+                NativeUserSession.accessToken == decode_token(access_token)["jti"],
+                NativeUserSession.refreshToken == decode_token(token)["jti"],
+            )
+            .count()
+        ) == 0
+
+    def test_with_invalid_email(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(
+            identity=str(user.id),
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"email_hash": hashlib.sha256(b"invalid@invalid").hexdigest()}},
+        )
+
+        users_factories.NativeUserSessionFactory(
+            user=user,
+            refreshToken=decode_token(token)["jti"],
+            deviceId=self.device_info["deviceId"],
+        )
+
+        response = client.with_explicit_token(token).post(
+            "/native/v2/refresh_access_token", json={"device_info": self.device_info}
+        )
+
+        assert response.status_code == 401
 
 
 class SSOSigninTest:

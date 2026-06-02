@@ -1,4 +1,5 @@
 import logging
+from hashlib import sha256
 
 from flask import g
 from flask import request
@@ -73,6 +74,11 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
 @spectree_serialize(response_model=authentication.RefreshResponseV2, api=blueprint.api, on_error_statuses=[401])
 @atomic()
 def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResponseV2:
+    # TODO remove when PC-42051 is in prod
+    if email_hash := g.jwt.data.user_claims.get("email_hash", None):
+        if email_hash != sha256(current_user.email.encode()).hexdigest():
+            _raise_forbidden(current_user.id)
+
     # TODO rpa : after removing `v1/refresh_access_token` move that code in authenticated_with_refresh_token
     if g.jwt.data.sub.isdigit():  # after 07/2027 this condition will always be True
         native_user_session = (
