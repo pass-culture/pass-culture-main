@@ -1417,7 +1417,7 @@ class RefreshTest:
         token = create_refresh_token(
             identity=str(user.id),
             expires_delta=timedelta(seconds=30),
-            additional_claims={"email_hash": hashlib.sha256(user.email.encode()).hexdigest()},
+            additional_claims={"user_claims": {"email_hash": hashlib.sha256(user.email.encode()).hexdigest()}},
         )
 
         response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
