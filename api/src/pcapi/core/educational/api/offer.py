@@ -233,6 +233,7 @@ def create_collective_offer(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
+        additionalDetails=offer_data.additional_details,
         domains=educational_domains,
         nationalProgramId=national_program_id,
         durationMinutes=offer_data.duration_minutes,

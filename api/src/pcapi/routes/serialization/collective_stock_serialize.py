@@ -5,8 +5,11 @@ from datetime import timezone
 import pydantic as pydantic_v2
 
 from pcapi import settings
+from pcapi.core.educational import constants
 from pcapi.core.educational import models
+from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.serialization.exceptions import PydanticError
 
 
@@ -63,8 +66,10 @@ def validate_end_datetime(end_datetime: datetime | None, info: pydantic_v2.Valid
 
 
 def validate_price_detail(educational_price_detail: str | None) -> str | None:
-    if educational_price_detail and len(educational_price_detail) > 1000:
-        raise PydanticError("Le détail du prix ne doit pas excéder 1000 caractères.")
+    if educational_price_detail and len(educational_price_detail) > constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH:
+        raise PydanticError(
+            f"Le détail du prix ne doit pas excéder {constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH} caractères."
+        )
     return educational_price_detail
 
 
@@ -89,6 +94,16 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     )
     numberOfTickets: typing.Annotated[int | None, pydantic_v2.AfterValidator(validate_number_of_tickets)] = None
     educationalPriceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_price_detail(self) -> typing.Self:
+        if (
+            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "educationalPriceDetail" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="educationalPriceDetail", msg="Ce champ ne peut pas être édité")
+
+        return self
 
 
 class CollectiveAdditionalFeeResponseModel(HttpBodyModel):

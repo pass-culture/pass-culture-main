@@ -6,6 +6,7 @@ import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationMode
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferBodyModel = {
+  additionalDetails?: (string | null);
   audioDisabilityCompliant: boolean;
   bookingEmails: Array<string>;
   contactEmail?: (string | null);

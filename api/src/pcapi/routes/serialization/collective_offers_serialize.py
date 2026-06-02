@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 
 import pydantic as pydantic_v2
+from pydantic.json_schema import SkipJsonSchema
 from spectree.models import BaseFile
 
 from pcapi.core.categories.models import EacFormat
@@ -10,6 +11,7 @@ from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
+from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -544,10 +546,23 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
     template_id: int | None = None
     national_program_id: int | None = None
     formats: list[EacFormat] = pydantic_v2.Field(min_length=1)
+    additional_details: str | None = pydantic_v2.Field(
+        max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None
+    )
 
     @pydantic_v2.field_validator("contact_phone", mode="after")
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_additional_details(self) -> typing.Self:
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "additional_details" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être présent")
+
+        return self
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
@@ -555,6 +570,8 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     contact_url: pydantic_v2.AnyHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
+    # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
+    additional_details: SkipJsonSchema[str | None] = pydantic_v2.Field(default=None, exclude=True)
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):
@@ -582,6 +599,9 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int | None = None
     national_program_id: int | None = None
     formats: list[EacFormat] | None = pydantic_v2.Field(min_length=1, default=None)
+    additional_details: str | None = pydantic_v2.Field(
+        max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None
+    )
 
     NON_NULLABLE_FIELDS: typing.ClassVar = (
         "booking_emails",
@@ -607,12 +627,24 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     def validate_contact_phone(cls, phone_number: str | None) -> str | None:
         return utils.validate_phone_number_nullable(phone_number)
 
+    @pydantic_v2.model_validator(mode="after")
+    def validate_additional_details(self) -> typing.Self:
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "additional_details" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="additionalDetails", msg="Ce champ ne peut pas être édité")
+
+        return self
+
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     price_detail: str | None = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None)
     dates: PatchDateRangeModel | None = None
     contact_url: str | None = None
     contact_form: models.OfferContactFormEnum | None = None
+    # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
+    additional_details: SkipJsonSchema[str | None] = pydantic_v2.Field(default=None, exclude=True)
 
     @pydantic_v2.model_validator(mode="after")
     def validate_contact_fields(self) -> typing.Self:

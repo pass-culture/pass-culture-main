@@ -1,12 +1,9 @@
 import datetime
-import typing
 from math import isfinite
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import alias_generators
-from pydantic_core import InitErrorDetails
-from pydantic_core import ValidationError
 
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import format_into_utc_date

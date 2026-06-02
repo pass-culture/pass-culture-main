@@ -49,7 +49,9 @@ def auth_client_fixture(client, user_offerer):
 PATCH_NULLABLE_FIELDS = [
     field.alias
     for field_name, field in PatchCollectiveOfferBodyModel.model_fields.items()
-    if field_name not in PatchCollectiveOfferBodyModel.NON_NULLABLE_FIELDS
+    # TODO (jcicurel-pass, 2026-06-02): remove additional_details clause and test_additional_details_none
+    # when the FF WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is deleted
+    if field_name not in PatchCollectiveOfferBodyModel.NON_NULLABLE_FIELDS and field_name != "additional_details"
 ]
 
 
@@ -157,20 +159,14 @@ class Returns200Test:
         assert len(educational_testing.adage_requests) == 0
 
     def test_patch_collective_offer_update_student_level_college_6(self, client):
-        # Given
         offer = educational_factories.CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         data = {"students": ["Collège - 6e"]}
 
-        # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 200
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
@@ -432,6 +428,26 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert getattr(offer, field) == None
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details(self, auth_client, venue):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, additionalDetails="some details")
+
+        data = {"additionalDetails": "some new details"}
+        response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert offer.additionalDetails == "some new details"
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details_none(self, auth_client, venue):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, additionalDetails="some details")
+
+        data = {"additionalDetails": None}
+        response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert offer.additionalDetails is None
 
 
 class Returns400Test:
@@ -847,6 +863,17 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
+    def test_update_additional_details_ff_off(self, auth_client, venue):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
+
+        data = {"additionalDetails": "test"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"additionalDetails": ["Ce champ ne peut pas être édité"]}
 
 
 class Returns403Test:
