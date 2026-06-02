@@ -54,7 +54,7 @@ describe('Desk', () => {
       expect(input).toHaveValue('ZERRZ')
     })
 
-    it('updates character counter', async () => {
+    it('extracts token from QR code content with prefix', async () => {
       vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
@@ -62,12 +62,13 @@ describe('Desk', () => {
       const user = userEvent.setup()
       renderDesk()
 
-      expect(screen.getByText('0/6')).toBeInTheDocument()
-
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
-      await user.type(input, 'AA')
+      await user.type(input, 'PASSCULTURE:v3,TOKEN:AAAAAA')
 
-      expect(screen.getByText('2/6')).toBeInTheDocument()
+      expect(input).toHaveValue('AAAAAA')
+      expect(apiNew.getBookingByToken).toHaveBeenCalledWith({
+        path: { token: 'AAAAAA' },
+      })
     })
 
     it('calls API and displays booking details when token valid', async () => {

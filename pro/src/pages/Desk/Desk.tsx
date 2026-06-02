@@ -157,7 +157,6 @@ export const Desk = (): JSX.Element => {
                 autoComplete="off"
                 required
                 requiredIndicator="explicit"
-                maxCharactersCount={6}
                 error={errors?.token?.message}
               />
 
