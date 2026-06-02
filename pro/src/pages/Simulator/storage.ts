@@ -22,23 +22,6 @@ export const tryRestoreSiretFromStorage = (
   return siretStoredData
 }
 
-export const saveOpenToPublicToStorage = (siret: string) => {
-  localStorageManager.setItem(LOCAL_STORAGE_KEY.SIMULATOR_OPEN_TO_PUBLIC, siret)
-}
-
-export const tryRestoreOpenToPublicFromStorage = (
-  setOpenToPublic: (siret: string) => void
-): string | undefined => {
-  const openToPublicStoredData = localStorageManager.getItem(
-    LOCAL_STORAGE_KEY.SIMULATOR_OPEN_TO_PUBLIC
-  )
-  if (openToPublicStoredData === null) {
-    return
-  }
-  setOpenToPublic(openToPublicStoredData)
-  return openToPublicStoredData
-}
-
 export const saveTargetCustomerToStorage = (
   targetCustomer: TargetCustomerObject
 ) => {

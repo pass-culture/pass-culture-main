@@ -134,6 +134,8 @@ test.describe('Pre signup pages', () => {
 
     await page.getByRole('button', { name: 'Continuer' }).click()
 
+    await page.pause()
+
     await expect(
       page
         .getByRole('alert')
@@ -143,26 +145,6 @@ test.describe('Pre signup pages', () => {
     await mockSiretCheck(page)
 
     await page.getByLabel(/Numéro de SIRET/).fill('11111111111111')
-
-    await page.getByRole('button', { name: 'Continuer' }).click()
-
-    await expect(
-      page.getByRole('heading', {
-        name: 'Accueil du public',
-      })
-    ).toBeVisible()
-
-    await checkAccessibility(page)
-
-    await page.getByRole('button', { name: 'Continuer' }).click()
-
-    await expect(
-      page
-        .getByRole('alert')
-        .filter({ hasText: 'Veuillez sélectionner une option' })
-    ).toBeVisible()
-
-    await page.getByRole('radio', { name: /Oui/ }).click()
 
     await page.getByRole('button', { name: 'Continuer' }).click()
 

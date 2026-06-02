@@ -1,4 +1,3 @@
-import { openToPublicValidationSchema } from 'components/OpenToPublicToggle/validationSchema'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
@@ -84,77 +83,78 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
     getActivities('NOT_OPEN_TO_PUBLIC')
   )
 
-  return yup
-    .object()
-    .shape({
-      description: yup.string(),
-      isAccessibilityAppliedOnAllOffers: yup.boolean().default(true).defined(),
-      accessibility: yup
-        .object()
-        .when('isOpenToPublic', {
-          is: 'true',
-          then: (schema) =>
-            schema.test({
-              name: 'is-one-true',
-              message:
-                'Veuillez sélectionner au moins un critère d’accessibilité',
-              test: isOneTrue,
-            }),
-        })
-        .shape({
-          mental: yup.boolean().nullable().default(null),
-          audio: yup.boolean().nullable().default(null),
-          visual: yup.boolean().nullable().default(null),
-          motor: yup.boolean().nullable().default(null),
-          none: yup.boolean().nullable().default(null),
-        }),
-      email: yup.string().nullable().test(emailSchema),
-      phoneNumber: phoneNumberSchema(),
-      webSite: yup
-        .string()
-        .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-        .nullable(),
-      openingHours: yup
-        .object()
-        .nullable()
-        .when('isOpenToPublic', {
-          is: 'true',
-          then: (schema) => schema.shape(openingHoursSchemaShape),
-        }),
-      activity: yup
-        .mixed<ActivityOpenToPublicType | ActivityNotOpenToPublicType>()
-        .nullable()
-        .when(['isOpenToPublic'], {
-          is: (open: string) => open === 'true',
-          then: (schema) =>
-            schema
-              .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
-              .required('Veuillez renseigner ce champ'),
-        })
-        .when(['isOpenToPublic'], {
-          is: (open: string) => open === 'false',
-          then: (schema) =>
-            schema
-              .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
-              .required('Veuillez renseigner ce champ'),
-        }),
-      culturalDomains: yup
-        .array()
-        .of(yup.string().required())
-        .when('isOpenToPublic', {
-          is: (open: string) => open === 'false',
-          then: (schema) =>
-            schema
-              .required(
-                'Veuillez sélectionner un ou plusieurs domaines d’activité'
-              )
-              .min(
-                1,
-                'Veuillez sélectionner un ou plusieurs domaines d’activité'
-              ),
-          otherwise: (schema) => schema,
-        }),
-      volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
-    })
-    .concat(openToPublicValidationSchema)
+  return yup.object().shape({
+    description: yup.string(),
+    isAccessibilityAppliedOnAllOffers: yup.boolean().default(true).defined(),
+    accessibility: yup
+      .object()
+      .when('isOpenToPublic', {
+        is: 'true',
+        then: (schema) =>
+          schema.test({
+            name: 'is-one-true',
+            message:
+              'Veuillez sélectionner au moins un critère d’accessibilité',
+            test: isOneTrue,
+          }),
+      })
+      .shape({
+        mental: yup.boolean().nullable().default(null),
+        audio: yup.boolean().nullable().default(null),
+        visual: yup.boolean().nullable().default(null),
+        motor: yup.boolean().nullable().default(null),
+        none: yup.boolean().nullable().default(null),
+      }),
+    email: yup.string().nullable().test(emailSchema),
+    phoneNumber: phoneNumberSchema(),
+    isOpenToPublic: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner ce champ'),
+    webSite: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .nullable(),
+    openingHours: yup
+      .object()
+      .nullable()
+      .when('isOpenToPublic', {
+        is: 'true',
+        then: (schema) => schema.shape(openingHoursSchemaShape),
+      }),
+    activity: yup
+      .mixed<ActivityOpenToPublicType | ActivityNotOpenToPublicType>()
+      .nullable()
+      .when(['isOpenToPublic'], {
+        is: (open: string) => open === 'true',
+        then: (schema) =>
+          schema
+            .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
+            .required('Veuillez renseigner ce champ'),
+      })
+      .when(['isOpenToPublic'], {
+        is: (open: string) => open === 'false',
+        then: (schema) =>
+          schema
+            .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
+            .required('Veuillez renseigner ce champ'),
+      }),
+    culturalDomains: yup
+      .array()
+      .of(yup.string().required())
+      .when('isOpenToPublic', {
+        is: (open: string) => open === 'false',
+        then: (schema) =>
+          schema
+            .required(
+              'Veuillez sélectionner un ou plusieurs domaines d’activité'
+            )
+            .min(
+              1,
+              'Veuillez sélectionner un ou plusieurs domaines d’activité'
+            ),
+        otherwise: (schema) => schema,
+      }),
+    volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
+  })
 }
