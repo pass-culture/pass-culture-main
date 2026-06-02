@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { noop } from 'commons/utils/noop'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -16,6 +17,8 @@ const contextValue = {
     educational: undefined,
   },
   setTargetCustomer: vi.fn(),
+  openToPublic: null,
+  setOpenToPublic: noop,
 }
 const renderSimulatorSiret = () => {
   return renderWithProviders(
@@ -49,7 +52,7 @@ describe('<SimulatorSiret />', () => {
 
     expect(setSiretMock).toHaveBeenCalled()
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/inscription/preparation/activite'
+      '/inscription/preparation/accueil-public'
     )
   })
 })

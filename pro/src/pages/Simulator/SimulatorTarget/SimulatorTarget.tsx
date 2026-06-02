@@ -114,8 +114,8 @@ export const SimulatorTarget = (): JSX.Element => {
                 label="Retour"
               />
               <BubbleStepper
-                page={3}
-                total={3}
+                page={4}
+                total={4}
                 className={commonStyles['action-bar-stepper']}
               />
               <Button type="submit" label="Continuer" />

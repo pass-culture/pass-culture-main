@@ -14,13 +14,13 @@ export const SimulatorActivity = (): JSX.Element => {
       <div className={commonStyles['action-bar']}>
         <Button
           as="a"
-          to="/inscription/preparation/siret"
+          to="/inscription/preparation/accueil-public"
           variant={ButtonVariant.SECONDARY}
           label="Retour"
         />
         <BubbleStepper
-          page={2}
-          total={3}
+          page={3}
+          total={4}
           className={commonStyles['action-bar-stepper']}
         />
         <Button

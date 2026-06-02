@@ -1,3 +1,4 @@
+import { openToPublicValidationSchema } from 'components/OpenToPublicToggle/validationSchema'
 import * as yup from 'yup'
 
 import { checkCoords } from '@/commons/utils/coords'
@@ -22,26 +23,28 @@ export const validationSchema = (shouldHandleNotDiffusibleOfferer: boolean) => {
       }),
   }
 
-  return yup.object().shape({
-    siret: yup.string().required(),
-    name: yup.string().when([], (_, schema) => {
-      if (shouldHandleNotDiffusibleOfferer) {
-        return schema.nullable()
-      }
-      return schema.required()
-    }),
-    publicName: yup
-      .string()
-      .when([], (_, schema) => {
+  return yup
+    .object()
+    .shape({
+      siret: yup.string().required(),
+      name: yup.string().when([], (_, schema) => {
         if (shouldHandleNotDiffusibleOfferer) {
-          return schema.required(
-            'Veuillez renseigner un nom public pour votre structure'
-          )
+          return schema.nullable()
         }
-        return schema
-      })
-      .nullable(),
-    isOpenToPublic: yup.string().required('Veuillez sélectionner une option'),
-    ...extendedAddressValidationSchema,
-  })
+        return schema.required()
+      }),
+      publicName: yup
+        .string()
+        .when([], (_, schema) => {
+          if (shouldHandleNotDiffusibleOfferer) {
+            return schema.required(
+              'Veuillez renseigner un nom public pour votre structure'
+            )
+          }
+          return schema
+        })
+        .nullable(),
+      ...extendedAddressValidationSchema,
+    })
+    .concat(openToPublicValidationSchema)
 }
