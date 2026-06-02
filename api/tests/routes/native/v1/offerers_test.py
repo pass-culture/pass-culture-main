@@ -330,3 +330,15 @@ class VenueProAdvicesTest:
             response = client.get("/native/v1/venue/1/advices", params=params)
 
         assert response.status_code == 400
+
+    def test_does_not_return_unpublished_offer_advice(self, client):
+        offer = offers_factories.OfferFactory(
+            publicationDatetime=datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
+        )
+        venue_id = offer.venue.id
+        offers_factories.ProAdviceFactory(offer=offer)
+        with assert_num_queries(1):
+            response = client.get(f"/native/v1/venue/{venue_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json == {"proAdvices": [], "nbResults": 0}

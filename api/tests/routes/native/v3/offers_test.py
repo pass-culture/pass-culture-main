@@ -378,6 +378,13 @@ class OffersV3Test:
             response = client.get(f"/native/v3/offer/{offer_id}")
             assert response.status_code == 404
 
+    def test_get_unpublished_offer_returns_404(self, client):
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime(2099, 1, 1))
+        offer_id = offer.id
+        with assert_num_queries(3):
+            response = client.get(f"/native/v3/offer/{offer_id}")
+        assert response.status_code == 404
+
     def test_get_closed_offerer_offer(self, client):
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerers_factories.ClosedOffererFactory())
         offers_factories.EventStockFactory(offer=offer)

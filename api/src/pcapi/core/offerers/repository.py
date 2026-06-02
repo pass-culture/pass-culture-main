@@ -1210,13 +1210,24 @@ def get_venue_headline_offer(venue_id: int) -> offers_models.Offer:
 
 
 def get_venue_pro_advices_count(venue_id: int) -> int:
-    return db.session.scalar(sa.select(sa.func.count()).where(offers_models.ProAdvice.venueId == venue_id)) or 0
+    return (
+        db.session.scalar(
+            sa.select(sa.func.count())
+            .select_from(offers_models.ProAdvice)
+            .join(offers_models.ProAdvice.offer)
+            .where(offers_models.ProAdvice.venueId == venue_id)
+            .where(offers_models.Offer.isPublished)
+        )
+        or 0
+    )
 
 
 def get_venue_pro_advices(venue_id: int, offset: int, limit: int | None) -> list[offers_models.ProAdvice]:
     pro_advices_query = (
         sa.select(offers_models.ProAdvice)
+        .join(offers_models.ProAdvice.offer)
         .where(offers_models.ProAdvice.venueId == venue_id)
+        .where(offers_models.Offer.isPublished)
         .order_by(offers_models.ProAdvice.updatedAt.desc())
     )
     pro_advices_query = pro_advices_query.offset(offset)
