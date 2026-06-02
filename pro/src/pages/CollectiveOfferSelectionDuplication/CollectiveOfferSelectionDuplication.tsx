@@ -33,6 +33,8 @@ type SearchFormValues = {
   searchQuery: string
 }
 
+const MAX_DISPLAYED_OFFERS = 5
+
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
@@ -96,6 +98,10 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   const [isCreatingNewOffer, setIsCreatingNewOffer] = useState(false)
 
+  const offerCountText = offers
+    ? `${offers.length} ${pluralizeFr(offers.length, 'offre vitrine trouvée', 'offres vitrine trouvées')}`
+    : null
+
   const handleOfferCardSelected = async (offerId: number) => {
     setIsCreatingNewOffer(true)
 
@@ -124,8 +130,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
             <form
               className={styles['search-input-container']}
               aria-labelledby="search-filter"
-              onSubmit={handleSubmitSearch(() => {
-                setSearchedOfferName(form.watch('searchQuery'))
+              onSubmit={handleSubmitSearch(({ searchQuery }) => {
+                setSearchedOfferName(searchQuery)
               })}
             >
               <SearchInput
@@ -145,45 +151,29 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <SkeletonLoader />
             ) : (
               <>
-                <p className={styles['visually-hidden']} role="status">
-                  {offers && (
-                    <>
-                      {offers.length}{' '}
-                      {pluralizeFr(
-                        offers.length,
-                        'offre vitrine trouvée',
-                        'offres vitrine trouvées'
-                      )}
-                    </>
-                  )}
-                </p>
+                <output className={styles['visually-hidden']}>
+                  {offerCountText}
+                </output>
 
                 <p className={styles['legend']}>
                   {searchedOfferName.length === 0
                     ? 'Les dernières offres vitrines créées'
-                    : offers && (
-                        <>
-                          {offers.length}{' '}
-                          {pluralizeFr(
-                            offers.length,
-                            'offre vitrine',
-                            'offres vitrine'
-                          )}
-                        </>
-                      )}
+                    : offerCountText}
                 </p>
                 <ul className={styles['list']}>
-                  {(offers || []).slice(0, 5).map((offer) => (
-                    <li key={offer.id}>
-                      <CardLink
-                        label={offer.name}
-                        description={offer.venue.name}
-                        onClick={() => {
-                          handleOfferCardSelected(offer.id)
-                        }}
-                      />
-                    </li>
-                  ))}
+                  {(offers ?? [])
+                    .slice(0, MAX_DISPLAYED_OFFERS)
+                    .map((offer) => (
+                      <li key={offer.id}>
+                        <CardLink
+                          label={offer.name}
+                          description={offer.venue.name}
+                          onClick={() => {
+                            handleOfferCardSelected(offer.id)
+                          }}
+                        />
+                      </li>
+                    ))}
                 </ul>
 
                 {offers && offers.length < 1 && (
