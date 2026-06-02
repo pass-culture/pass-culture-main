@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { VenueResponse } from '@/apiClient/adage'
+import type { VenueResponse } from '@/apiClient/adage/new'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '@/pages/AdageIframe/app/components/OffersInstantSearch/utils'
 
 interface SearchFormValuesWithQuery {

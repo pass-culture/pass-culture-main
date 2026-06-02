@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { AdageFrontRoles, StudentLevels } from '@/apiClient/adage'
-import { CollectiveLocationType } from '@/apiClient/v1'
+import { AdageFrontRoles, StudentLevels } from '@/apiClient/adage/new'
+import { CollectiveLocationType } from '@/apiClient/v1/new'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,

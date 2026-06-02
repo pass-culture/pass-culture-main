@@ -5,13 +5,13 @@ import * as instantSearch from 'react-instantsearch'
 import {
   AdageFrontRoles,
   type AuthenticatedResponse,
-  CancelablePromise,
   type CollectiveOfferResponseModel,
   EacFormat,
   type ListCollectiveOfferTemplateResponseModel,
   StudentLevels,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
+import { CancelablePromise } from '@/apiClient/compat'
 import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultCollectiveOffer,
@@ -37,7 +37,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferTemplates: vi.fn(),
@@ -160,7 +160,7 @@ describe('offers', () => {
   beforeEach(() => {
     adageUser = {
       role: AdageFrontRoles.REDACTOR,
-      preferences: { feedback_form_closed: null },
+      preferences: { feedback_form_closed: undefined },
     }
 
     offerInParis = defaultCollectiveOffer
@@ -249,7 +249,7 @@ describe('offers', () => {
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {
     // Given
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInParis, offerInCayenne],
     })
 
@@ -267,7 +267,7 @@ describe('offers', () => {
   it('should remove previous rendered offers on results update', async () => {
     const { rerender } = renderOffers(offersProps, adageUser)
 
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [otherOffer],
     })
 
@@ -304,7 +304,7 @@ describe('offers', () => {
 
   it('should show a loader while waiting for response', async () => {
     // Given
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates')
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates')
       .mockImplementationOnce(
         () =>
           new CancelablePromise<ListCollectiveOfferTemplateResponseModel>(
@@ -356,7 +356,10 @@ describe('offers', () => {
 
     it('when no offers', async () => {
       // Given
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockResolvedValueOnce({
         collectiveOffers: [],
       })
       // When
@@ -372,9 +375,10 @@ describe('offers', () => {
     })
 
     it('when offers are not found', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockRejectedValueOnce(
-        'Offre inconnue'
-      )
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockRejectedValueOnce('Offre inconnue')
 
       renderOffers(offersProps, adageUser)
 
@@ -389,7 +393,10 @@ describe('offers', () => {
 
   describe('load more button', () => {
     it('should not show diffuse help', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockResolvedValueOnce({
         collectiveOffers: [offerInParis, offerInCayenne],
       })
 
@@ -406,7 +413,10 @@ describe('offers', () => {
         new Date('2025-08-15T00:00:00Z').getTime()
       )
 
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockResolvedValueOnce({
         collectiveOffers: [offerInParis, offerInCayenne],
       })
 
@@ -419,7 +429,10 @@ describe('offers', () => {
     })
 
     it('should hide diffuse help before the filters were applied at least once', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockResolvedValueOnce({
         collectiveOffers: [offerInParis, offerInCayenne],
       })
 
@@ -430,7 +443,10 @@ describe('offers', () => {
     })
 
     it('should display back to top button if filters are not visible', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+      vi.spyOn(
+        apiAdageNew,
+        'getCollectiveOfferTemplates'
+      ).mockResolvedValueOnce({
         collectiveOffers: [offerInParis, offerInCayenne],
       })
       renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
@@ -443,7 +459,7 @@ describe('offers', () => {
   })
 
   it('should show the offer cards', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInParis, offerInCayenne],
     })
     renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
@@ -459,7 +475,7 @@ describe('offers', () => {
   })
 
   it('should enable grid vue on toggle click', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInParis, offerInCayenne],
     })
     renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
@@ -477,8 +493,10 @@ describe('offers', () => {
   })
 
   it('should change to grid vue when breakpoint active', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+    vi.spyOn(apiAdageNew, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInParis
+    )
+    vi.spyOn(apiAdageNew, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
     renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
@@ -490,7 +508,7 @@ describe('offers', () => {
   })
 
   it('should trigger a log event when clicking the offer when the offers are in list mode', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [otherOffer],
     })
 
@@ -510,11 +528,11 @@ describe('offers', () => {
     })
     await userEvent.click(link)
 
-    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+    expect(apiAdageNew.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
   })
 
   it('should trigger a log event when clicking the offer when the offers are in grid mode', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [otherOffer],
     })
 
@@ -536,7 +554,7 @@ describe('offers', () => {
     })
     await userEvent.click(link)
 
-    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+    expect(apiAdageNew.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
   })
 
   it('should call tracker when clicking on toggle button view', async () => {
@@ -548,7 +566,7 @@ describe('offers', () => {
         removeListener: vi.fn(),
       }),
     })
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
+    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInCayenne, offerInParis],
     })
     renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
@@ -558,8 +576,8 @@ describe('offers', () => {
 
     await userEvent.click(toggleButtonView)
 
-    expect(apiAdage.logOfferListViewSwitch).toHaveBeenCalledWith(
-      expect.objectContaining({ iframeFrom: '/', source: 'list' })
-    )
+    expect(apiAdageNew.logOfferListViewSwitch).toHaveBeenCalledWith({
+      body: expect.objectContaining({ iframeFrom: '/', source: 'list' }),
+    })
   })
 })

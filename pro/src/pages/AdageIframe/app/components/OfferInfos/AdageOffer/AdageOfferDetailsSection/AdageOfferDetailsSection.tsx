@@ -1,7 +1,7 @@
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import { Markdown } from '@/components/Markdown/Markdown'
 import { Tag } from '@/design-system/Tag/Tag'
 

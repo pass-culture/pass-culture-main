@@ -2,7 +2,7 @@ import {
   AdageFrontRoles,
   type AuthenticatedResponse,
   type CollectiveOfferResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import {
   getDateTimeToFrenchText,
   toDateStrippedOfTimezone,

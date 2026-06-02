@@ -12,8 +12,8 @@ import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   VenueResponse,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -99,8 +99,8 @@ export const Offers = ({
     hitsIds.length > 0
       ? [GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY, ...hitsIds]
       : null,
-    ([, ...offererIdParam]) =>
-      apiAdage.getCollectiveOfferTemplates(offererIdParam)
+    ([, ...hitsIds]) =>
+      apiAdageNew.getCollectiveOfferTemplates({ query: { ids: hitsIds } })
   )
 
   const fetchedOffers = data?.collectiveOffers ?? []
@@ -114,10 +114,12 @@ export const Offers = ({
 
   useEffect(() => {
     if (isMobileScreen !== undefined) {
-      apiAdage.logOfferListViewSwitch({
-        iframeFrom: location.pathname,
-        source: adageViewType,
-        isMobile: isMobileScreen,
+      apiAdageNew.logOfferListViewSwitch({
+        body: {
+          iframeFrom: location.pathname,
+          source: adageViewType,
+          isMobile: isMobileScreen,
+        },
       })
     }
   }, [isMobileScreen, adageViewType, location.pathname])
@@ -152,10 +154,12 @@ export const Offers = ({
     const source = button.id === 'list' ? 'grid' : 'list'
     dispatch(setSearchView(viewType))
     if (adageViewType !== viewType) {
-      apiAdage.logOfferListViewSwitch({
-        iframeFrom: location.pathname,
-        source,
-        isMobile: isMobileScreen,
+      apiAdageNew.logOfferListViewSwitch({
+        body: {
+          iframeFrom: location.pathname,
+          source,
+          isMobile: isMobileScreen,
+        },
       })
     }
   }
@@ -167,20 +171,24 @@ export const Offers = ({
       return
     }
 
-    apiAdage.logOfferTemplateDetailsButtonClick({
-      iframeFrom: location.pathname,
-      offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
-      queryId: results?.queryID,
-      isFromNoResult: isInSuggestions,
-      vueType: adageViewType,
+    apiAdageNew.logOfferTemplateDetailsButtonClick({
+      body: {
+        iframeFrom: location.pathname,
+        offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
+        queryId: results?.queryID,
+        isFromNoResult: isInSuggestions,
+        vueType: adageViewType,
+      },
     })
   }
 
   const logOpenHighlightBanner = (bannerName: string) => {
-    apiAdage.logOpenHighlightBanner({
-      iframeFrom: location.pathname,
-      queryId: results.queryID,
-      banner: bannerName,
+    apiAdageNew.logOpenHighlightBanner({
+      body: {
+        iframeFrom: location.pathname,
+        queryId: results.queryID,
+        banner: bannerName,
+      },
     })
   }
 

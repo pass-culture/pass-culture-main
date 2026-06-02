@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
+import { CollectiveLocationType, EacFormat } from '@/apiClient/adage/new'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
@@ -19,7 +19,7 @@ const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     getAcademies: vi.fn(),
   },
 }))
@@ -195,7 +195,7 @@ describe('OfferFilters', () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.NONE, {
       ...defaultAdageUser,
       lat: 10,
-      lon: null,
+      lon: undefined,
     })
 
     expect(

@@ -1,9 +1,10 @@
+import type { GetCollectiveOfferLocationModel as GetCollectiveOfferLocationModelOld } from '@/apiClient/adage'
 import {
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   type GetCollectiveOfferLocationModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
@@ -19,7 +20,9 @@ export type AdageOfferInfoSectionProps = {
 }
 
 export function getLocation(
-  location: GetCollectiveOfferLocationModel,
+  location:
+    | GetCollectiveOfferLocationModel
+    | GetCollectiveOfferLocationModelOld,
   header: boolean = false
 ): JSX.Element | string {
   if (location.locationType === CollectiveLocationType.TO_BE_DEFINED) {

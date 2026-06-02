@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
-import { CollectiveLocationType } from '@/apiClient/adage'
+import { CollectiveLocationType } from '@/apiClient/adage/new'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
@@ -132,7 +132,6 @@ describe('AdageOfferInfoSection', () => {
   })
 
   it.each([
-    null,
     undefined,
     '',
   ])('should not display comment section when location type is to be defined and comment is empty', (comment) => {

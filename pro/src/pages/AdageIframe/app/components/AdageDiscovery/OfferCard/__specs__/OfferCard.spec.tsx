@@ -5,7 +5,7 @@ import * as router from 'react-router'
 import {
   type AuthenticatedResponse,
   CollectiveLocationType,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,

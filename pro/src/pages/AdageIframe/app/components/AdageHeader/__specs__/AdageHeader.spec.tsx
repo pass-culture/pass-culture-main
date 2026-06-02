@@ -1,8 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { AdageHeaderLink } from '@/apiClient/adage/models/AdageHeaderLink'
+import {
+  AdageFrontRoles,
+  type AuthenticatedResponse,
+} from '@/apiClient/adage/new'
 import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'

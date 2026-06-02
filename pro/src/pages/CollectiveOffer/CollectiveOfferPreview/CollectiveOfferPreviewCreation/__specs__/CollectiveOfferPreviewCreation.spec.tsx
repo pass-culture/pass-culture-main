@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
@@ -38,9 +38,12 @@ vi.mock('react-router', async () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
+    patchCollectiveOfferPublication: vi.fn(),
+    getVenue: vi.fn(),
+  },
+  apiNew: {
     listEducationalOfferers: vi.fn(),
     getVenue: vi.fn(),
-    patchCollectiveOfferPublication: vi.fn(),
   },
 }))
 
@@ -88,8 +91,9 @@ describe('CollectiveOfferPreviewCreation', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
 
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
 

@@ -8,8 +8,7 @@ import {
   type CollectiveOfferTemplateResponseModel,
   EacFormat,
   type EducationalInstitutionBudgetResponseModel,
-} from '@/apiClient/adage'
-import { StudentLevels } from '@/apiClient/v1'
+} from '@/apiClient/adage/new'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
@@ -17,6 +16,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateHomeResponseModel,
   type CollectiveStockHomeResponseModel,
+  StudentLevels,
 } from '@/apiClient/v1/new'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
