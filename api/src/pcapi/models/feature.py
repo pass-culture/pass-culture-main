@@ -104,6 +104,9 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
     )
+    SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des séries d'évènements via les tables BigQuery fournies par l'équipe Data"
+    )
     SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
     )
