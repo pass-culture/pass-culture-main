@@ -9,11 +9,13 @@ export const Simulator = (): JSX.Element => {
   const location = useLocation()
   const stepTitles: Record<string, string> = {
     '/inscription/preparation/siret':
-      'Préparation de l’inscription - Étape 1 sur 3',
+      'Préparation de l’inscription - Étape 1 sur 4',
+    '/inscription/preparation/accueil-public':
+      'Préparation de l’inscription - Étape 2 sur 4',
     '/inscription/preparation/activite':
-      'Préparation de l’inscription - Étape 2 sur 3',
+      'Préparation de l’inscription - Étape 3 sur 4',
     '/inscription/preparation/publics':
-      'Préparation de l’inscription - Étape 3 sur 3',
+      'Préparation de l’inscription - Étape 4 sur 4',
   }
   return (
     <FullPageLayout>

@@ -13,6 +13,8 @@ interface SimulatorContextValues {
   setSiret: (siret: string) => void
   targetCustomer: TargetCustomerObject | null
   setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
+  openToPublic: string | null
+  setOpenToPublic: (openToPublic: string) => void
 }
 
 export const SimulatorContext = createContext<SimulatorContextValues>({
@@ -23,6 +25,8 @@ export const SimulatorContext = createContext<SimulatorContextValues>({
     educational: undefined,
   },
   setTargetCustomer: () => noop,
+  openToPublic: null,
+  setOpenToPublic: () => noop,
 })
 
 export const useSimulatorContext = () => {
@@ -37,20 +41,23 @@ export function SimulatorContextProvider({
   children,
 }: Readonly<SimulatorContextProviderProps>) {
   const [siret, setSiret] = useState<string>()
+  const [openToPublic, setOpenToPublic] = useState<string | null>(null)
 
   const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
     individual: undefined,
     educational: undefined,
   })
 
-  const contextValues = useMemo(
+  const contextValues: SimulatorContextValues = useMemo(
     () => ({
       siret,
       setSiret,
       targetCustomer,
       setTargetCustomer,
+      openToPublic,
+      setOpenToPublic,
     }),
-    [siret, targetCustomer]
+    [siret, targetCustomer, openToPublic]
   )
 
   return (
