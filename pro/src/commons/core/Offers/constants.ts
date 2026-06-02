@@ -49,7 +49,6 @@ export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
 
 export const DEFAULT_SEARCH_FILTERS: IndividualOffersFilters = {
   nameOrIsbn: undefined,
-  offererId: undefined,
   venueId: undefined,
   categoryId: undefined,
   status: undefined,

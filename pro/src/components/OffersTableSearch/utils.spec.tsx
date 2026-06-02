@@ -26,7 +26,6 @@ const renderStoredFilterConfigHook = (venueId = 1) => {
 const MOCKED_FILTERS: IndividualOffersFilters | CollectiveSearchFiltersParams =
   {
     nameOrIsbn: 'nameOrIsbn',
-    offererId: 1,
     venueId: 2,
     categoryId: 'categoryId',
     creationMode: 'creationMode',

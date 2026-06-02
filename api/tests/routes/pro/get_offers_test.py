@@ -56,7 +56,6 @@ class Returns200Test:
             assert response.status_code == 200
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=venue.id,
             category_id=None,
@@ -82,7 +81,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=None,
             category_id=None,
@@ -90,34 +88,6 @@ class Returns200Test:
             period_beginning_date=None,
             period_ending_date=None,
             status=OfferStatus.ACTIVE,
-            creation_mode=None,
-            offerer_address_id=None,
-        )
-
-    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
-    def should_filter_offers_by_given_offerer_id(self, mocked_get_capped_offers, client):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        offerer_id = offerer.id
-        authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
-            assert response.status_code == 200
-
-        mocked_get_capped_offers.assert_called_once_with(
-            user_id=pro.id,
-            offerer_id=offerer_id,
-            offers_limit=101,
-            venue_id=None,
-            category_id=None,
-            name_keywords_or_ean=None,
-            period_beginning_date=None,
-            period_ending_date=None,
-            status=None,
             creation_mode=None,
             offerer_address_id=None,
         )
@@ -136,7 +106,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=None,
             category_id=None,
@@ -162,7 +131,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=None,
             category_id=None,
@@ -187,10 +155,9 @@ class Returns200Test:
         )
 
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
-        offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
 
-        response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
+        response = authenticated_client.get(f"/offers?venueId={venue.id}&periodBeginningDate=2024-10-10")
 
         if dp == "974":
             assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
@@ -210,10 +177,9 @@ class Returns200Test:
         )
 
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
-        offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
 
-        response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
+        response = authenticated_client.get(f"/offers?venueId={venue.id}&periodEndingDate=2024-10-9")
 
         if dp == "971":
             assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
@@ -234,7 +200,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=None,
             category_id=None,
@@ -260,7 +225,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            offerer_id=None,
             offers_limit=101,
             venue_id=None,
             category_id="LIVRE",
@@ -632,10 +596,10 @@ class Returns200Test:
             publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
 
-        offerer_id = offerer.id
+        venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
+            response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
 
         assert response.json == [
@@ -696,10 +660,10 @@ class Returns200Test:
             offererAddress=None,
             publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
         )
-        offerer_id = offerer.id
+        venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
-            response = authenticated_client.get(f"/offers?offererId={offerer_id}")
+            response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
         assert response.json == [
             {

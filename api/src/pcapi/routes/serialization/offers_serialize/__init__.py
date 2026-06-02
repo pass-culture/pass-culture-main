@@ -289,7 +289,6 @@ class ListOffersQueryModel(BaseModel):
     # by the pro front for individual and collective search and most of the logic
     # is shared on the offer search page
     name_or_ean: str | None = Field(alias="nameOrIsbn")
-    offerer_id: int | None
     status: OfferStatus | None
     venue_id: int | None
     categoryId: str | None
