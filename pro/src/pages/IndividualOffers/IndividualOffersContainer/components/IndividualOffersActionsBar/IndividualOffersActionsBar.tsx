@@ -67,7 +67,6 @@ const updateIndividualOffersStatus = async (
     creationMode: apiFilters.creationMode,
     isActive: isActive,
     nameOrIsbn: apiFilters.nameOrIsbn,
-    offererId: apiFilters.offererId,
     periodBeginningDate: apiFilters.periodBeginningDate,
     periodEndingDate: apiFilters.periodEndingDate,
     status: apiFilters.status,

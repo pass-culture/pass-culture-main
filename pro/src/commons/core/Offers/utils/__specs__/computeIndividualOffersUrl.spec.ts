@@ -14,7 +14,6 @@ describe('computeIndividualOffersUrl', () => {
   it('should build proper query given offers filters', () => {
     const value = computeIndividualOffersUrl({
       nameOrIsbn: 'test',
-      offererId: 42,
       venueId: 17,
       categoryId: 'CINEMA',
       status: OfferStatus.ACTIVE,
@@ -25,7 +24,7 @@ describe('computeIndividualOffersUrl', () => {
     })
 
     expect(value).toBe(
-      '/offres?page=2&nom-ou-isbn=test&structure=42&lieu=17&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
+      '/offres?page=2&nom-ou-isbn=test&lieu=17&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'
     )
   })
 })

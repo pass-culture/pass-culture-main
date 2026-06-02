@@ -290,21 +290,17 @@ class GetCappedOffersForFiltersTest:
             assert offer_for_requested_venue.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
-        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(
+        def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_it(
             self,
         ):
             # given
             pro = users_factories.ProFactory()
-            offer_for_requested_offerer = factories.OfferFactory()
+            offer = factories.OfferFactory()
             # offer for other offerer
             factories.OfferFactory()
 
             # When
-            offers = repository.get_capped_offers_for_filters(
-                user_id=pro.id,
-                offers_limit=10,
-                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
-            )
+            offers = repository.get_capped_offers_for_filters(user_id=pro.id, offers_limit=10, venue_id=offer.venue.id)
 
             # then
             assert len(offers) == 0
@@ -315,9 +311,7 @@ class GetCappedOffersForFiltersTest:
             pro = users_factories.ProFactory()
             pro_attachment_to_requested_offerer = offerers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_other_offerer = offerers_factories.UserOffererFactory(user=pro)
-            offer_for_requested_offerer = factories.OfferFactory(
-                venue__managingOfferer=pro_attachment_to_requested_offerer.offerer
-            )
+            offer = factories.OfferFactory(venue__managingOfferer=pro_attachment_to_requested_offerer.offerer)
             # offer for other offerer
             factories.OfferFactory(venue__managingOfferer=pro_attachment_to_other_offerer.offerer)
 
@@ -325,12 +319,12 @@ class GetCappedOffersForFiltersTest:
             offers = repository.get_capped_offers_for_filters(
                 user_id=pro.id,
                 offers_limit=10,
-                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
+                venue_id=offer.venue.id,
             )
 
             # then
             assert len(offers) == 1
-            assert offer_for_requested_offerer.id == offers[0].id
+            assert offer.id == offers[0].id
 
     class NameOrIsbnFilterTest:
         @pytest.mark.usefixtures("db_session")

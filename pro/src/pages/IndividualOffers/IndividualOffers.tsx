@@ -60,9 +60,6 @@ export const IndividualOffers = () => {
       audience?: Audience
     }
   ) => {
-    // TODO (igabriele, 2026-05-07): Delete this line once `offererId` is removed and `venueId` made mandatory in `ListOffersQueryModel`
-    delete filters.offererId
-
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 

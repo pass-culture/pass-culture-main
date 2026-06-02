@@ -4078,10 +4078,6 @@ export type ListOffersQueryModel = {
      */
     offererAddressId?: number;
     /**
-     * Offererid
-     */
-    offererId?: number;
-    /**
      * Periodbeginningdate
      */
     periodBeginningDate?: string;
@@ -9034,10 +9030,6 @@ export type getOffersData = {
          * Nameorisbn
          */
         nameOrIsbn?: string;
-        /**
-         * Offererid
-         */
-        offererId?: number;
         status?: OfferStatus;
         /**
          * Venueid

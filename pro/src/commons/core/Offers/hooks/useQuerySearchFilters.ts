@@ -10,7 +10,6 @@ import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/ty
 import type { CollectiveSearchFiltersParams } from '../types'
 
 const NUMERIC_INDIVIDUAL_FIELDS = [
-  'offererId',
   'venueId',
   'offererAddressId',
 ] as const satisfies ReadonlyArray<keyof ListOffersQueryModel>

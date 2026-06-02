@@ -1646,7 +1646,6 @@ export class DefaultService {
   /**
    * list_offers <GET>
    * @param nameOrIsbn
-   * @param offererId
    * @param status
    * @param venueId
    * @param categoryId
@@ -1659,7 +1658,6 @@ export class DefaultService {
    */
   public listOffers(
     nameOrIsbn?: string | null,
-    offererId?: number | null,
     status?: OfferStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
@@ -1673,7 +1671,6 @@ export class DefaultService {
       url: '/offers',
       query: {
         'nameOrIsbn': nameOrIsbn,
-        'offererId': offererId,
         'status': status,
         'venueId': venueId,
         'categoryId': categoryId,
