@@ -121,6 +121,22 @@ class Returns200Test:
         # 2 requests (for 2 bookingEmail) for Brevo
         assert len(brevo_testing.brevo_requests) == 3
 
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "additionalDetails": "details",
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+        offer_id = response.json["id"]
+        offer = db.session.get(models.CollectiveOffer, offer_id)
+        assert offer.additionalDetails == "details"
+
     @pytest.mark.features(WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES=True)
     def test_create_collective_offer_with_ff(self, client, clear_redis):
         venue = offerers_factories.VenueFactory()
@@ -673,6 +689,21 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
+    def test_additional_details(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "additionalDetails": "details",
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"additionalDetails": ["Ce champ ne peut pas être présent"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
 

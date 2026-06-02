@@ -6,6 +6,7 @@ import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationMode
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 export type PatchCollectiveOfferBodyModel = {
+  additionalDetails?: (string | null);
   audioDisabilityCompliant?: (boolean | null);
   bookingEmails?: (Array<string> | null);
   contactEmail?: (string | null);

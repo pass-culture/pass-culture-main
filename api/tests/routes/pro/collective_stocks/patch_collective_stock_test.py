@@ -765,3 +765,17 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": [error]}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_price_detail_not_editable(self, client):
+        stock = educational_factories.CollectiveStockFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        payload = {"educationalPriceDetail": "details"}
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"educationalPriceDetail": ["Ce champ ne peut pas être édité"]}

@@ -4803,6 +4803,10 @@ export type PatchCollectiveOfferArchiveBodyModel = {
  */
 export type PatchCollectiveOfferBodyModel = {
     /**
+     * Additionaldetails
+     */
+    additionalDetails?: string | null;
+    /**
      * Audiodisabilitycompliant
      */
     audioDisabilityCompliant?: boolean | null;
@@ -5133,6 +5137,10 @@ export enum PhoneValidationStatusType {
  * PostCollectiveOfferBodyModel
  */
 export type PostCollectiveOfferBodyModel = {
+    /**
+     * Additionaldetails
+     */
+    additionalDetails?: string | null;
     /**
      * Audiodisabilitycompliant
      */
