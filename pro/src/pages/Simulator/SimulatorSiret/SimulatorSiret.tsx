@@ -28,7 +28,7 @@ export const SimulatorSiret = (): JSX.Element => {
   const onSiretChecked = (formValues: SiretInputFormValues) => {
     saveSiretToStorage(formValues.siret)
     setSiret(formValues.siret)
-    navigate('/inscription/preparation/activite')
+    navigate('/inscription/preparation/accueil-public')
   }
 
   const submitElement = (isSubmitting: boolean): JSX.Element => (

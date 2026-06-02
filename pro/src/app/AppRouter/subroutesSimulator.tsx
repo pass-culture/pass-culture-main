@@ -18,6 +18,17 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
+    lazy: () =>
+      import('@/pages/Simulator/SimulatorOpenToPublic/SimulatorOpenToPublic'),
+
+    loader: noop,
+    path: '/inscription/preparation/accueil-public',
+    handle: {
+      title: 'Accueil du public',
+    },
+    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
+  },
+  {
     lazy: () => import('@/pages/Simulator/SimulatorActivity/SimulatorActivity'),
 
     loader: noop,
