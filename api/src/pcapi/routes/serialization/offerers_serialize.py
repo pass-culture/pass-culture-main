@@ -158,11 +158,17 @@ class GetOfferersNamesResponseModel(HttpBodyModel):
     def build(
         cls, offerers_names: Iterable, offerers_names_with_pending_validation: Iterable
     ) -> "GetOfferersNamesResponseModel":
-        validated = [GetOffererNameResponseModel(id=o.id, name=o.name, validated=True) for o in offerers_names]
-        pending = [
-            GetOffererNameResponseModel(id=o.id, name=o.name, validated=False)
-            for o in offerers_names_with_pending_validation
-        ]
+        validated = sorted(
+            [GetOffererNameResponseModel(id=o.id, name=o.name, validated=True) for o in offerers_names],
+            key=lambda o: o.name,
+        )
+        pending = sorted(
+            [
+                GetOffererNameResponseModel(id=o.id, name=o.name, validated=False)
+                for o in offerers_names_with_pending_validation
+            ],
+            key=lambda o: o.name,
+        )
         return cls(
             offerers_names=validated + pending,
         )
