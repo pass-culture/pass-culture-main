@@ -6,8 +6,8 @@ import pytest
 import time_machine
 
 from pcapi import settings
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import testing as adage_api_testing
+from pcapi.core.educational import factories
+from pcapi.core.educational import testing
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -28,11 +28,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
-        educational_factories.EducationalYearFactory(
-            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
-        )
+        factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
 
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -82,10 +80,8 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_start_datetime_same_day(self, client):
-        educational_factories.EducationalYearFactory(
-            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
-        )
-        stock = educational_factories.CollectiveStockFactory(
+        factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18, 18, 22, 12),
             price=1200,
             numberOfTickets=32,
@@ -125,10 +121,8 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
-        educational_factories.EducationalYearFactory(
-            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
-        )
-        stock = educational_factories.CollectiveStockFactory(
+        factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             endDatetime=datetime(2022, 1, 25),
             price=1200,
@@ -156,19 +150,19 @@ class Return200Test:
         assert edited_stock.numberOfTickets == 32
         assert edited_stock.priceDetail == "Détail du prix"
 
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_with_pending_booking(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+        booking = factories.PendingCollectiveBookingFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
@@ -197,20 +191,20 @@ class Return200Test:
             **serialize_collective_booking(edited_booking).dict(),
             updatedFields=["price", "numberOfTickets", "educationalPriceDetail"],
         )
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
+        assert testing.adage_requests[0]["sent_data"] == expected_payload
+        assert testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+        factories.PendingCollectiveBookingFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
@@ -221,25 +215,25 @@ class Return200Test:
         client.with_session_auth("user@example.com")
         client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
-        assert len(adage_api_testing.adage_requests) == 0
+        assert len(testing.adage_requests) == 0
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_update_booking_educational_year(self, client):
-        educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+        educational_year_2021_2022 = factories.EducationalYearFactory(
             beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
         )
-        educational_year_2022_2023 = educational_factories.EducationalYearFactory(
+        educational_year_2022_2023 = factories.EducationalYearFactory(
             beginningDate=datetime(2022, 9, 1), expirationDate=datetime(2023, 8, 31)
         )
-        collective_stock = educational_factories.CollectiveStockFactory(
+        collective_stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        collective_booking = educational_factories.CollectiveBookingFactory(
+        collective_booking = factories.CollectiveBookingFactory(
             educationalYear=educational_year_2021_2022,
             collectiveStock=collective_stock,
             status=CollectiveBookingStatus.PENDING,
@@ -261,10 +255,10 @@ class Return200Test:
 
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
         now = date_utils.get_naive_utc_now()
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
         )
-        booking = educational_factories.CollectiveBookingFactory(
+        booking = factories.CollectiveBookingFactory(
             collectiveStock=stock,
             status=CollectiveBookingStatus.CANCELLED,
             cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
@@ -289,9 +283,7 @@ class Return200Test:
 
 class Return403Test:
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory()
-        )
+        stock = factories.CollectiveStockFactory(collectiveOffer__provider=providers_factories.ProviderFactory())
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -308,7 +300,7 @@ class Return403Test:
 class Return404Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
         )
@@ -342,7 +334,7 @@ class Return404Test:
 class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -367,7 +359,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -392,7 +384,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -417,7 +409,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
@@ -435,7 +427,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, client):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
@@ -453,7 +445,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_startDatetime_has_been_set_to_none(self, client):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -468,7 +460,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_endDatetime_has_been_set_to_none(self, client):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -483,7 +475,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -507,7 +499,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -534,7 +526,7 @@ class Return400Test:
     def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -561,17 +553,13 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_endDatetime_in_different_educational_year(self, client):
-        educational_factories.EducationalYearFactory(
-            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
-        )
-        educational_factories.EducationalYearFactory(
-            beginningDate="2022-09-01T22:00:00Z", expirationDate="2023-07-31T22:00:00Z"
-        )
+        factories.EducationalYearFactory(beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z")
+        factories.EducationalYearFactory(beginningDate="2022-09-01T22:00:00Z", expirationDate="2023-07-31T22:00:00Z")
 
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
 
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -615,7 +603,7 @@ class Return400Test:
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2021, 12, 19)
 
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -655,13 +643,11 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_endDatetime_with_no_educational_year(self, client):
-        educational_factories.EducationalYearFactory(
-            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
-        )
+        factories.EducationalYearFactory(beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z")
         startDatetime = datetime(2021, 12, 18)
         endDatetime = datetime(2022, 12, 19)
 
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=startDatetime,
             endDatetime=endDatetime,
             price=1200,
@@ -703,8 +689,8 @@ class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_endDatetime_before_stock_startDatetime(self, client):
         start = datetime.now(timezone.utc) + timedelta(days=10)
-        educational_factories.create_educational_year(date_time=start)
-        stock = educational_factories.CollectiveStockFactory(startDatetime=start, endDatetime=start)
+        factories.create_educational_year(date_time=start)
+        stock = factories.CollectiveStockFactory(startDatetime=start, endDatetime=start)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -732,7 +718,7 @@ class Return400Test:
         ),
     )
     def should_not_accept_payload_with_price_error(self, client, price_value, error):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -754,7 +740,7 @@ class Return400Test:
         ),
     )
     def should_not_accept_payload_with_number_of_tickets_error(self, client, number_of_tickets_value, error):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
@@ -768,7 +754,7 @@ class Return400Test:
 
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_price_detail_not_editable(self, client):
-        stock = educational_factories.CollectiveStockFactory()
+        stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )

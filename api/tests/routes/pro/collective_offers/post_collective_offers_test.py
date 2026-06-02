@@ -4,10 +4,10 @@ import pytest
 from flask import current_app
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import factories
 from pcapi.core.educational import models
-from pcapi.core.educational import testing as educational_testing
+from pcapi.core.educational import testing
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -30,15 +30,13 @@ def base_offer_payload(
     add_domain_to_program=True,
 ) -> dict:
     if domain_ids is None:
-        domain_ids = [educational_factories.EducationalDomainFactory().id]
+        domain_ids = [factories.EducationalDomainFactory().id]
 
     if not national_program_id and domain_ids:
-        national_program_id = educational_factories.NationalProgramFactory().id
+        national_program_id = factories.NationalProgramFactory().id
 
     if national_program_id and add_domain_to_program:
-        educational_factories.DomainToNationalProgramFactory(
-            nationalProgramId=national_program_id, domainId=domain_ids[0]
-        )
+        factories.DomainToNationalProgramFactory(nationalProgramId=national_program_id, domainId=domain_ids[0])
 
     if formats is None:
         formats = [EacFormat.CONCERT.value]
@@ -107,9 +105,7 @@ class Returns200Test:
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
 
         data = base_offer_payload(venue=venue)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -144,9 +140,7 @@ class Returns200Test:
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
 
         data = base_offer_payload(venue=venue)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -182,8 +176,7 @@ class Returns200Test:
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
 
         data = {**base_offer_payload(venue=venue), "students": ["Collège - 6e"]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -199,8 +192,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -214,26 +206,21 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"students": ["Ce niveau ('ECOLES_MARSEILLE_MATERNELLE') n'est pas encore autorisé"]}
 
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_CREATE_BOOKABLE_OFFER)
     def test_create_collective_offer_with_allowed_collective_offer_template(self, client, status):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        collective_offer_template = educational_factories.create_collective_offer_template_by_status(
-            status, venue=venue
-        )
+        collective_offer_template = factories.create_collective_offer_template_by_status(status, venue=venue)
 
         data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
@@ -251,9 +238,7 @@ class Returns200Test:
                 "location": {"isVenueLocation": True},
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -276,9 +261,7 @@ class Returns200Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -297,12 +280,10 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -327,9 +308,7 @@ class Returns200Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -341,16 +320,15 @@ class Returns200Test:
     def test_from_template_with_inactive_national_program(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        template = factories.CollectiveOfferTemplateFactory(venue=venue)
 
-        national_program = educational_factories.NationalProgramFactory(isActive=False)
-        domain = educational_factories.EducationalDomainFactory()
+        national_program = factories.NationalProgramFactory(isActive=False)
+        domain = factories.EducationalDomainFactory()
+
         data = base_offer_payload(
             venue=venue, national_program_id=national_program.id, domain_ids=[domain.id], template_id=template.id
         )
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -360,10 +338,11 @@ class Returns200Test:
     def test_from_template_with_invalid_national_program(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        template = factories.CollectiveOfferTemplateFactory(venue=venue)
 
-        national_program = educational_factories.NationalProgramFactory()
-        domain = educational_factories.EducationalDomainFactory()
+        national_program = factories.NationalProgramFactory()
+        domain = factories.EducationalDomainFactory()
+
         data = base_offer_payload(
             venue=venue,
             national_program_id=national_program.id,
@@ -371,9 +350,7 @@ class Returns200Test:
             template_id=template.id,
             add_domain_to_program=False,
         )
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
@@ -384,14 +361,14 @@ class Returns200Test:
 class Returns403Test:
     def test_create_collective_offer_cannot_create_educational(self, client):
         def raise_ac(*args, **kwargs):
-            raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
+            raise exceptions.CulturalPartnerNotFoundException("pouet")
 
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = base_offer_payload(venue=venue)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
+        with patch(testing.PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 403
@@ -419,8 +396,7 @@ class Returns400Test:
 
         data = base_offer_payload(venue=venue)
         data["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+        response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -434,8 +410,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "bookingEmails": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -446,8 +421,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "contactEmail": ""}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"contactEmail": ["Saisissez un email valide"]}
@@ -458,8 +432,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "contactEmail": "test@test."}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"contactEmail": ["Saisissez un email valide"]}
@@ -470,8 +443,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "formats": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"formats": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -482,8 +454,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "domains": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"domains": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -494,8 +465,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "description": "too_long" * 200}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -508,8 +478,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {**base_offer_payload(venue=venue), "location": None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"location": ["Format incorrect"]}
@@ -527,9 +496,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -546,12 +513,10 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDED COMMENT",
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -572,9 +537,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -595,9 +558,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
@@ -615,9 +576,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
@@ -639,12 +598,10 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
@@ -668,7 +625,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": {**educational_testing.ADDRESS_DICT, field_name: field_value},
+                "location": {**testing.ADDRESS_DICT, field_name: field_value},
             },
         }
         response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
@@ -715,55 +672,42 @@ class Returns404Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = base_offer_payload(venue=venue)
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+        response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_create_collective_offer_with_unknown_domain(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        domain = educational_factories.EducationalDomainFactory()
+        domain = factories.EducationalDomainFactory()
 
-        # When
         data = base_offer_payload(venue=venue, domain_ids=[0, domain.id], add_domain_to_program=False)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
         assert response.status_code == 404
         assert response.json == {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}
 
     def test_create_collective_offer_with_unknown_national_program(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = base_offer_payload(venue=venue, national_program_id=-1, add_domain_to_program=False)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
 
     def test_create_collective_offer_with_inactive_national_program(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        national_program = factories.NationalProgramFactory(isActive=False)
 
-        national_program = educational_factories.NationalProgramFactory(isActive=False)
         data = base_offer_payload(venue=venue, national_program_id=national_program.id)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
@@ -771,49 +715,38 @@ class Returns404Test:
     def test_create_collective_offer_with_invalid_national_program(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        national_program = factories.NationalProgramFactory()
+        domain = factories.EducationalDomainFactory()
 
-        national_program = educational_factories.NationalProgramFactory()
-        domain = educational_factories.EducationalDomainFactory()
         data = base_offer_payload(
             venue=venue, national_program_id=national_program.id, domain_ids=[domain.id], add_domain_to_program=False
         )
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_create_collective_offer_with_no_collective_offer_template(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = base_offer_payload(venue=venue, template_id=1234567890)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        # Then
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
 
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_CREATE_BOOKABLE_OFFER)
+    @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_CREATE_BOOKABLE_OFFER)
     def test_create_collective_offer_with_not_allowed_collective_offer_template(self, client, status):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        collective_offer_template = educational_factories.create_collective_offer_template_by_status(
-            status, venue=venue
-        )
+        collective_offer_template = factories.create_collective_offer_template_by_status(status, venue=venue)
 
         data = base_offer_payload(venue=venue, template_id=collective_offer_template.id)
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 403
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_FORBIDDEN_ACTION"}
@@ -824,9 +757,7 @@ class Returns404Test:
 
         data = base_offer_payload(venue=venue)
         data["venueId"] = 0
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
