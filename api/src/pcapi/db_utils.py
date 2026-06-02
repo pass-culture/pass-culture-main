@@ -24,6 +24,7 @@ from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import models as artist_models
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
+from pcapi.core.event_series import models as event_series_models
 from pcapi.core.operations import models as operations_models
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import Model
@@ -77,6 +78,8 @@ tables_to_clean: list[type[Model]] = [
     artist_models.ArtistAlias,
     artist_models.ArtistProductLink,
     artist_models.ArtistOfferLink,
+    event_series_models.EventSeries,
+    event_series_models.EventSeriesOfferLink,
     chronicles_models.ProductChronicle,
     chronicles_models.OfferChronicle,
     chronicles_models.Chronicle,
