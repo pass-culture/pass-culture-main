@@ -46,6 +46,16 @@ test.describe('Desk (Guichet)', () => {
     expect(a11yResults.violations).toHaveLength(0)
   })
 
+  test('should extract token from QR code scan with prefix', async ({
+    authenticatedPage: page,
+    deskData,
+  }) => {
+    const tokenInput = page.getByLabel('Contremarque')
+    await tokenInput.fill(`PASSCULTURE:v3,TOKEN:${deskData.tokenUsed}`)
+
+    await expect(tokenInput).toHaveValue(deskData.tokenUsed)
+  })
+
   test('should decline a non-valid countermark', async ({
     authenticatedPage: page,
   }) => {
