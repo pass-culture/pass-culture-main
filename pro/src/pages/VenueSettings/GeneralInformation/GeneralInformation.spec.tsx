@@ -180,7 +180,7 @@ describe('GeneralInformation', () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
       const toggle = screen.getByRole('group', {
-        name: 'Accueillez-vous du public dans votre structure ?',
+        name: "Disposez-vous d'un lieu ouvert au public ?",
       })
 
       await waitFor(() => {
@@ -207,7 +207,7 @@ describe('GeneralInformation', () => {
         activity: DisplayableActivity.FESTIVAL,
       })
 
-      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+      await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
 
       expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
       const activitySelect = screen.getByRole('combobox', {
@@ -223,7 +223,7 @@ describe('GeneralInformation', () => {
         activity: DisplayableActivity.CULTURAL_CENTRE,
       })
 
-      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+      await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
 
       const activitySelect = screen.getByRole('combobox', {
         name: /Activité principale/,
@@ -238,7 +238,7 @@ describe('GeneralInformation', () => {
         activity: null,
       })
 
-      await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+      await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
 
       const activitySelect = screen.getByRole('combobox', {
         name: /Activité principale/,
@@ -249,7 +249,7 @@ describe('GeneralInformation', () => {
     it('switching to "Oui" should show address section', async () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
-      await userEvent.click(await screen.findByRole('radio', { name: 'Oui' }))
+      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
 
       expect(screen.getByTestId('address-fields')).toBeInTheDocument()
     })
