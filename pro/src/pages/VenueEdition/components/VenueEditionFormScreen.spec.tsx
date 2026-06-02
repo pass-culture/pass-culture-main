@@ -684,7 +684,7 @@ describe('VenueEditionFormScreen', () => {
       renderForm({ ...baseVenue, isOpenToPublic: false })
 
       const toggle = screen.getByRole('group', {
-        name: 'Accueillez-vous du public dans votre structure ?',
+        name: "Disposez-vous d'un lieu ouvert au public ?",
       })
 
       await waitFor(() => {
@@ -700,7 +700,7 @@ describe('VenueEditionFormScreen', () => {
         isOpenToPublic: false,
       })
 
-      await userEvent.click(screen.getByRole('radio', { name: 'Oui' }))
+      await userEvent.click(screen.getByRole('radio', { name: /Oui/ }))
       await userEvent.selectOptions(
         screen.getByRole('combobox', { name: /Activité principale/ }),
         screen.getByRole('option', {
@@ -840,9 +840,9 @@ describe('VenueEditionFormScreen', () => {
         })
         await userEvent.click(visualAccessibilityCheckbox)
         expect(visualAccessibilityCheckbox).toBeChecked()
-        const noRadio = await screen.findByRole('radio', { name: 'Non' })
+        const noRadio = await screen.findByRole('radio', { name: /Non/ })
         await userEvent.click(noRadio)
-        const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+        const yesRadio = await screen.findByRole('radio', { name: /Oui/ })
         await userEvent.click(yesRadio)
         visualAccessibilityCheckbox = screen.getByRole('checkbox', {
           name: 'Moteur',

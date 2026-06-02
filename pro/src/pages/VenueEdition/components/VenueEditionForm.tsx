@@ -211,9 +211,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.Row>
                 <OpenToPublicToggle
                   onChange={toggleOpenToPublic}
-                  radioDescriptions={{
-                    yes: 'Votre adresse postale sera visible',
-                  }}
                   isOpenToPublic={methods.watch('isOpenToPublic')}
                 />
               </FormLayout.Row>

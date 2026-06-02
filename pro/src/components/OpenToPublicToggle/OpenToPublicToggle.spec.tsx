@@ -31,12 +31,10 @@ function renderOpenToPublicToggle(
 
 const LABELS = {
   yes: {
-    label: 'Oui',
-    description: 'Votre adresse postale sera visible.',
+    label: /Oui/,
   },
   no: {
-    label: 'Non',
-    description: 'Votre adresse postale ne sera pas visible.',
+    label: /Non/,
   },
 }
 
@@ -53,45 +51,17 @@ describe('OpenToPublicToggle', () => {
     expect(noRadio).toBeInTheDocument()
   })
 
-  it('should display a description based on the selected radio button', async () => {
-    renderOpenToPublicToggle('true')
-
-    const yesDescription = await screen.findByText(LABELS.yes.description)
-    expect(yesDescription).toBeInTheDocument()
-  })
-
-  it('should use custom radio descriptions for yes', async () => {
-    const onChange = vi.fn()
-
-    const customRadioDescriptions = {
-      yes: 'Custom yes description',
-      no: 'Custom no description',
-    }
-
+  it('should display a description if provided', async () => {
     renderOpenToPublicToggle('true', {
-      radioDescriptions: customRadioDescriptions,
-      onChange,
+      overrideDescription: 'This is a description',
     })
 
-    const yesDescription = await screen.findByText(customRadioDescriptions.yes)
-    expect(yesDescription).toBeInTheDocument()
-  })
+    const description = await screen.findByText('This is a description')
+    expect(description).toBeInTheDocument()
 
-  it('should use custom radio descriptions for no', async () => {
-    const onChange = vi.fn()
-
-    const customRadioDescriptions = {
-      yes: 'Custom yes description',
-      no: 'Custom no description',
-    }
-
-    renderOpenToPublicToggle('false', {
-      radioDescriptions: customRadioDescriptions,
-      onChange,
-    })
-
-    const yesDescription = await screen.findByText(customRadioDescriptions.no)
-    expect(yesDescription).toBeInTheDocument()
+    const noRadio = await screen.findByRole('radio', { name: LABELS.no.label })
+    await userEvent.click(noRadio)
+    expect(description).toBeInTheDocument()
   })
 
   it('should call onChange when a radio button is clicked', async () => {

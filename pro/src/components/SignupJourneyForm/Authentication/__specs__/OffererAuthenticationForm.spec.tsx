@@ -209,8 +209,8 @@ describe('OffererAuthenticationForm', () => {
       contextValue: contextValue,
     })
 
-    const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
-    const noRadio = await screen.findByRole('radio', { name: 'Non' })
+    const yesRadio = await screen.findByRole('radio', { name: /Oui/ })
+    const noRadio = await screen.findByRole('radio', { name: /Non/ })
 
     expect(yesRadio).toBeInTheDocument()
     expect(noRadio).toBeInTheDocument()
@@ -236,7 +236,7 @@ describe('OffererAuthenticationForm', () => {
       },
     })
 
-    await userEvent.click(await screen.findByRole('radio', { name: 'Non' }))
+    await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
 
     await waitFor(() => {
       const addressField = screen.queryByLabelText(/Adresse postale/)
@@ -256,8 +256,8 @@ describe('OffererAuthenticationForm', () => {
       },
     })
 
-    const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
-    const noRadio = await screen.findByRole('radio', { name: 'Non' })
+    const yesRadio = await screen.findByRole('radio', { name: /Oui/ })
+    const noRadio = await screen.findByRole('radio', { name: /Non/ })
 
     expect(noRadio).not.toBeChecked()
     await userEvent.click(yesRadio)

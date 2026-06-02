@@ -1,10 +1,6 @@
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 
 export interface OpenToPublicToggleProps {
-  radioDescriptions?: {
-    yes?: string
-    no?: string
-  }
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   isOpenToPublic?: string | null
   error?: string
@@ -12,54 +8,33 @@ export interface OpenToPublicToggleProps {
   overrideDescription?: string
 }
 
-const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
-  {
-    yes: 'Votre adresse postale sera visible.',
-    no: 'Votre adresse postale ne sera pas visible.',
-  }
-
 export const OpenToPublicToggle = ({
-  radioDescriptions = {},
   onChange,
   isOpenToPublic,
   error,
-  showDescription = true,
   overrideDescription,
 }: OpenToPublicToggleProps): JSX.Element => {
-  const finalRadioDescriptions = {
-    ...DEFAULT_RADIO_DESCRIPTIONS,
-    ...radioDescriptions,
-  }
-
-  const radioDescriptionWhenNotOpenToPublic =
-    isOpenToPublic === 'false' ? finalRadioDescriptions.no : ''
-
-  const description =
-    isOpenToPublic === 'true'
-      ? finalRadioDescriptions.yes
-      : radioDescriptionWhenNotOpenToPublic
-
   return (
     <RadioButtonGroup
       name="isOpenToPublic"
-      label="Accueillez-vous du public dans votre structure ?"
-      {...(showDescription || overrideDescription
-        ? { description: overrideDescription || description }
-        : {})}
+      label="Disposez-vous d'un lieu ouvert au public ?"
+      {...(overrideDescription ? { description: overrideDescription } : {})}
       variant="detailed"
-      sizing="hug"
       error={error}
       options={[
         {
-          label: 'Oui',
+          label: "Oui, j'ai un lieu fixe ouvert au public",
+          description:
+            'Le public se rend dans un local à ma disposition : salle, boutique, musée, cinéma…',
           value: 'true',
         },
         {
-          label: 'Non',
+          label: "Non, je n'ai pas de lieu fixe ouvert au public",
+          description:
+            "J'interviens en ligne, chez des tiers ou de façon ponctuelle : cinéma itinérant, spectacles...",
           value: 'false',
         },
       ]}
-      display="horizontal"
       onChange={onChange}
       checkedOption={isOpenToPublic?.toString()}
     />

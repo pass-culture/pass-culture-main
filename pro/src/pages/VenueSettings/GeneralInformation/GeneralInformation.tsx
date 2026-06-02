@@ -141,9 +141,6 @@ const GeneralInformation = () => {
               <FormLayout.Row mdSpaceAfter>
                 <OpenToPublicToggle
                   onChange={toggleOpenToPublic}
-                  radioDescriptions={{
-                    yes: 'Votre adresse postale sera visible',
-                  }}
                   isOpenToPublic={form.watch('isOpenToPublic')}
                 />
               </FormLayout.Row>
