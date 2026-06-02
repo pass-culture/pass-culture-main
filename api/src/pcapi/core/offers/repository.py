@@ -472,6 +472,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
         .filter(
             models.Offer.id.in_(offer_ids),
             models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
         )
     )
 
@@ -607,6 +608,7 @@ def get_product_pro_advices_count(product_id: int) -> int:
         .join(models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
         .where(models.Offer.productId == product_id)
+        .where(models.Offer.isPublished)
         .where(offerers_models.Offerer.isValidated)
     )
     return db.session.scalar(query) or 0
@@ -663,11 +665,16 @@ def get_pro_advices(
         )
 
     if not product_id:
-        query = query.where(models.ProAdvice.offerId == offer_id)
+        query = (
+            query.join(models.ProAdvice.offer)
+            .where(models.ProAdvice.offerId == offer_id)
+            .where(models.Offer.isPublished)
+        )
     else:
         query = (
             query.join(models.ProAdvice.offer)
             .where(models.Offer.productId == product_id)
+            .where(models.Offer.isPublished)
             .order_by(models.ProAdvice.updatedAt.desc())
             .offset(offset)
         )

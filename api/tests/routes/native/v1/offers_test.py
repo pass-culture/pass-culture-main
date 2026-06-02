@@ -381,6 +381,13 @@ class OffersTest:
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 404
 
+    def test_get_unpublished_offer_returns_404(self, client):
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime(2099, 1, 1))
+        offer_id = offer.id
+        with assert_num_queries(3):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+        assert response.status_code == 404
+
     def should_have_metadata_describing_the_offer(self, client):
         offer = offers_factories.ThingOfferFactory()
 
@@ -2206,3 +2213,16 @@ class GetProAdvicesTest:
             response = client.get("/native/v1/offer/1/advices", params=params)
 
         assert response.status_code == 400
+
+    def test_does_not_return_unpublished_offer_advice(self, client):
+        offer = offers_factories.OfferFactory(
+            publicationDatetime=datetime(2099, 1, 1),
+        )
+        offers_factories.ProAdviceFactory(offer=offer)
+        offer_id = offer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/advices")
+
+        assert response.status_code == 200
+        assert response.json == {"proAdvices": [], "nbResults": 0}
