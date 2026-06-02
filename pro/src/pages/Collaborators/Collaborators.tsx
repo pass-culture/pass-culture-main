@@ -9,14 +9,12 @@ import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { OffererMemberStatus } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { useCurrentUserPermissions } from '@/commons/auth/useCurrentUserPermissions'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import {
-  ensureOffererNames,
-  ensureSelectedAdminOfferer,
-} from '@/commons/store/user/selectors'
+import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -43,18 +41,14 @@ const Collaborators = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
+  const userPermissions = useCurrentUserPermissions()
 
   const offererId = selectedAdminOfferer.id
-
-  const offererNames = useAppSelector(ensureOffererNames)
-  const isSelectedOffererValidated = offererNames.some(
-    (offerer) => offerer.validated && offerer.id === offererId
-  )
 
   const { data } = useSWR(
     [GET_MEMBERS_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      !offererIdParam || !isSelectedOffererValidated
+      !offererIdParam || !userPermissions.isSelectedAdminOffererAssociated
         ? null
         : apiNew.getOffererMembers({ path: { offerer_id: offererIdParam } }),
     { fallbackData: null }
