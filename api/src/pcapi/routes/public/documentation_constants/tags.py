@@ -46,9 +46,6 @@ COLLECTIVE_OFFER_ATTRIBUTES = Tag(name="Collective Offer Attributes")
 # COLLECTIVE BOOKINGS ADAGE MOCK
 COLLECTIVE_ADAGE_MOCK = Tag(name="Adage Mock (Collective Bookings)")
 
-# COLLECTIVE OFFERS --- Deprecated
-DEPRECATED_COLLECTIVE_VENUES = Tag(name="[DEPRECATED] Collective venues")
-
 
 OPEN_API_TAGS = [
     # PROVIDERS
@@ -77,8 +74,3 @@ OPEN_API_TAGS = [
 
 # DEPRECATED APIS
 DEPRECATED_BOOKING_TOKEN = Tag(name="[Dépréciée] API Contremarque")
-
-
-DEPRECATED_COLLECTIVE_TAGS = [
-    DEPRECATED_COLLECTIVE_VENUES,
-]
