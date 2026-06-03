@@ -30,7 +30,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_collective_offer_displayed_status
-from pcapi.routes.backoffice.filters import format_date
+from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
@@ -1889,10 +1889,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Ajuster le prix" in buttons
         # details
         # info
-        assert descriptions["Date de l'évènement"] == f"{start_date:%d/%m/%Y} → {end_date:%d/%m/%Y}"
-        assert descriptions["Date limite de réservation"] == format_date(
-            data=collective_booking.collectiveStock.bookingLimitDatetime,
-            strformat="%d/%m/%Y à %Hh%M",
+        assert descriptions["Date de l'évènement"] == f"{format_date_time(start_date)} → {format_date_time(end_date)}"
+        assert descriptions["Date limite de réservation"] == format_date_time(
+            collective_booking.collectiveStock.bookingLimitDatetime
         )
         assert descriptions["Lieu"] == "À déterminer"
         assert descriptions["Participants"] == f"{collective_booking.collectiveStock.numberOfTickets} personnes"
@@ -1930,13 +1929,11 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert descriptions["UAI"] == collective_booking.collectiveStock.collectiveOffer.institution.institutionId
         assert descriptions["Département de l'établissement"] == "Paris (75)"
         # section 4
-        assert descriptions["Date de création"] == format_date(
-            data=collective_booking.collectiveStock.collectiveOffer.dateCreated,
-            strformat="%d/%m/%Y à %Hh%M",
+        assert descriptions["Date de création"] == format_date_time(
+            collective_booking.collectiveStock.collectiveOffer.dateCreated
         )
-        assert descriptions["Date de dernière validation"] == format_date(
-            data=collective_booking.collectiveStock.collectiveOffer.lastValidationDate,
-            strformat="%d/%m/%Y à %Hh%M",
+        assert descriptions["Date de dernière validation"] == format_date_time(
+            collective_booking.collectiveStock.collectiveOffer.lastValidationDate
         )
         assert "Utilisateur de la dernière validation" not in descriptions
 
@@ -2004,7 +2001,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Utilisateur de la dernière validation"] == legit_user.full_name
-        assert descriptions["Date de dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
+        assert descriptions["Date de dernière validation"] == format_date_time(validation_date)
 
     def test_get_rejected_offer(self, legit_user, authenticated_client):
         event_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -2024,7 +2021,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Utilisateur de la dernière validation"] == legit_user.full_name
-        assert descriptions["Date de dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
+        assert descriptions["Date de dernière validation"] == format_date_time(validation_date)
         assert descriptions["Raison de rejet"] == "Description manquante"
 
     def test_collective_offer_with_offerer_confidence_rule(self, authenticated_client):

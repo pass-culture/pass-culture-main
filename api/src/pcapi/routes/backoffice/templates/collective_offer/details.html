@@ -86,13 +86,13 @@
         <div class="flex-grow-1">
           {% if collective_stock %}
             {% call description_detail_horizontal("Date de l'évènement") %}
-              {% set start_date = collective_offer.start | format_date("%d/%m/%Y", collective_offer.address) %}
-              {% set end_date = collective_offer.end | format_date("%d/%m/%Y", collective_offer.address) %}
+              {% set start_date = collective_offer.start | format_date_time(collective_offer.address) %}
+              {% set end_date = collective_offer.end | format_date_time(collective_offer.address) %}
               {{ start_date }}
               {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
             {% endcall %}
             {% call description_detail_horizontal("Date limite de réservation") %}
-              {{ collective_stock.bookingLimitDatetime | format_date_time }}
+              {{ collective_stock.bookingLimitDatetime | format_date_time(collective_offer.address) }}
             {% endcall %}
           {% endif %}
           {% if collective_offer.locationType %}
