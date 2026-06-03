@@ -17,7 +17,7 @@ MappedWeekdayOpeningHours = typing.Mapping[offerers_models.Weekday, schemas.Open
 
 
 def get_venue_openings_hours_updates(
-    opening_hours: schemas.WeekdayOpeningHoursTimespans | schemas.WeekdayOpeningHoursTimespansV2,
+    opening_hours: schemas.WeekdayOpeningHoursTimespans,
 ) -> MappedWeekdayOpeningHours:
     updates = opening_hours.dict(exclude_unset=True) if opening_hours else {}
     return {offerers_models.Weekday[weekday]: timespans for weekday, timespans in updates.items()}
@@ -39,6 +39,8 @@ def upsert_venue_opening_hours(venue: offerers_models.Venue, opening_hours: Mapp
     """
     for weekday, timespan in opening_hours.items():
         venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
-        venue_opening_hours.timespan = timespan_str_to_numrange(timespan) if timespan else None
+        venue_opening_hours.timespan = (
+            timespan_str_to_numrange(typing.cast(list[tuple[str, str]], timespan)) if timespan else None
+        )
         db.session.add(venue_opening_hours)
     db.session.flush()

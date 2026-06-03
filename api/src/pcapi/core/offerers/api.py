@@ -131,9 +131,7 @@ def update_venue(
     location_modifications: dict,
     author: users_models.User,
     *,
-    opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans
-    | opening_hours_schemas.WeekdayOpeningHoursTimespansV2
-    | None = None,
+    opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
     contact_data: offerers_schemas.VenueContactModelV2 | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,

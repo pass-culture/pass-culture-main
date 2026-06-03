@@ -414,7 +414,7 @@ export {
   type VideoData,
   type VideoMetatdataQueryModel,
   type VisualDisabilityModelV2,
-  type WeekdayOpeningHoursTimespansV2,
+  type WeekdayOpeningHoursTimespans,
   WithdrawalTypeEnum,
   type deleteCollectiveOffersByOfferIdImageData,
   type deleteCollectiveOffersByOfferIdImageError,

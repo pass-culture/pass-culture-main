@@ -1407,7 +1407,7 @@ export type EditVenueBodyModel = {
      * Name
      */
     name?: string | null;
-    openingHours?: WeekdayOpeningHoursTimespansV2 | null;
+    openingHours?: WeekdayOpeningHoursTimespans | null;
     /**
      * Postalcode
      */
@@ -3617,7 +3617,7 @@ export type GetVenueResponseModel = {
      * Name
      */
     name: string;
-    openingHours: WeekdayOpeningHoursTimespansV2 | null;
+    openingHours: WeekdayOpeningHoursTimespans | null;
     pricingPoint: GetVenuePricingPointResponseModel | null;
     /**
      * Publicname
@@ -6764,9 +6764,9 @@ export type VisualDisabilityModelV2 = {
 };
 
 /**
- * WeekdayOpeningHoursTimespansV2
+ * WeekdayOpeningHoursTimespans
  */
-export type WeekdayOpeningHoursTimespansV2 = {
+export type WeekdayOpeningHoursTimespans = {
     /**
      * Friday
      */

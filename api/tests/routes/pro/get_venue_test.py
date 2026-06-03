@@ -182,7 +182,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
-            "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
+            "openingHours": opening_hours_api.format_opening_hours(venue.openingHours).model_dump(),
             "publicName": venue.publicName,
             "siret": venue.siret,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,

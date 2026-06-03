@@ -1,4 +1,4 @@
-import type { WeekdayOpeningHoursTimespansV2 } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 import { areOpeningHoursEmpty } from '@/pages/VenueEdition/commons/areOpeningHoursEmpty'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
@@ -8,13 +8,13 @@ import { OpeningHoursReadOnlyHours } from './OpeningHoursReadOnlyHours/OpeningHo
 export const OpeningHoursReadOnly = ({
   openingHours,
 }: {
-  openingHours?: WeekdayOpeningHoursTimespansV2 | null
+  openingHours?: WeekdayOpeningHoursTimespans | null
 }) => {
   const orderedFilledDays = OPENING_HOURS_DAYS.map((d) => ({
     day: d,
     openingHours: openingHours?.[d],
   })) satisfies {
-    openingHours: WeekdayOpeningHoursTimespansV2['MONDAY']
+    openingHours: WeekdayOpeningHoursTimespans['MONDAY']
     day: string
   }[]
 

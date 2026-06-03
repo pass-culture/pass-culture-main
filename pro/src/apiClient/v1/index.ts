@@ -286,7 +286,7 @@ export type { VenueStatsDataModel } from './models/VenueStatsDataModel';
 export type { VideoData } from './models/VideoData';
 export type { VideoMetatdataQueryModel } from './models/VideoMetatdataQueryModel';
 export type { VisualDisabilityModelV2 } from './models/VisualDisabilityModelV2';
-export type { WeekdayOpeningHoursTimespansV2 } from './models/WeekdayOpeningHoursTimespansV2';
+export type { WeekdayOpeningHoursTimespans } from './models/WeekdayOpeningHoursTimespans';
 export { WithdrawalTypeEnum } from './models/WithdrawalTypeEnum';
 
 export { DefaultService } from './services/DefaultService';

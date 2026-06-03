@@ -14,7 +14,7 @@ import type { LocationResponseModelV2 } from './LocationResponseModelV2';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModelV2 } from './VenueContactModelV2';
-import type { WeekdayOpeningHoursTimespansV2 } from './WeekdayOpeningHoursTimespansV2';
+import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type GetVenueResponseModel = {
   activity: (DisplayableActivity | null);
   adageInscriptionDate: (string | null);
@@ -57,7 +57,7 @@ export type GetVenueResponseModel = {
   mentalDisabilityCompliant: (boolean | null);
   motorDisabilityCompliant: (boolean | null);
   name: string;
-  openingHours: (WeekdayOpeningHoursTimespansV2 | null);
+  openingHours: (WeekdayOpeningHoursTimespans | null);
   pricingPoint: (GetVenuePricingPointResponseModel | null);
   publicName: string;
   siret: (string | null);

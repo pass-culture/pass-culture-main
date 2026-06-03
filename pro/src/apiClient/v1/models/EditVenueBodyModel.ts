@@ -5,7 +5,7 @@
 import type { ActivityNotOpenToPublic } from './ActivityNotOpenToPublic';
 import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
 import type { VenueContactModelV2 } from './VenueContactModelV2';
-import type { WeekdayOpeningHoursTimespansV2 } from './WeekdayOpeningHoursTimespansV2';
+import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type EditVenueBodyModel = {
   activity?: (ActivityOpenToPublic | ActivityNotOpenToPublic | null);
   audioDisabilityCompliant?: (boolean | null);
@@ -25,7 +25,7 @@ export type EditVenueBodyModel = {
   mentalDisabilityCompliant?: (boolean | null);
   motorDisabilityCompliant?: (boolean | null);
   name?: (string | null);
-  openingHours?: (WeekdayOpeningHoursTimespansV2 | null);
+  openingHours?: (WeekdayOpeningHoursTimespans | null);
   postalCode?: (string | null);
   publicName?: (string | null);
   siret?: (string | null);

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type WeekdayOpeningHoursTimespansV2 = {
+export type WeekdayOpeningHoursTimespans = {
   FRIDAY?: (Array<Array<string>> | null);
   MONDAY?: (Array<Array<string>> | null);
   SATURDAY?: (Array<Array<string>> | null);
