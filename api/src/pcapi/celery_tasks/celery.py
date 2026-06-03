@@ -2,6 +2,8 @@ from celery import Celery
 from celery import Task
 from flask import Flask
 
+from pcapi.celery_tasks import metrics  # noqa: F401
+
 
 def celery_init_app(app: Flask, *, task_with_app_context: bool = True) -> Celery:
     # Should be ok to only override the __call__ method
