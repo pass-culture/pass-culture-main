@@ -48,3 +48,5 @@ export const IMAGE_RESIZING_URL = import.meta.env.VITE_IMAGE_RESIZING_URL || ''
 export const ASSETS_BUCKET_URL = import.meta.env.VITE_ASSETS_BUCKET_URL || ''
 export const VITE_ADAGE_SURVEY_SATISFACTION_URL =
   import.meta.env.VITE_ADAGE_SURVEY_SATISFACTION_URL || ''
+
+export const VITE_APP_VERSION = import.meta.env.VITE_APP_VERSION || ''
