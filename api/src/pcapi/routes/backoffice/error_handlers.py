@@ -1,5 +1,5 @@
 from flask import Response
-from flask import current_app as app
+from flask import current_app
 from flask import redirect
 from flask import request
 from flask import url_for
@@ -10,7 +10,7 @@ from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 
 
-@app.errorhandler(access_control.UnauthenticatedUserError)
+@current_app.errorhandler(access_control.UnauthenticatedUserError)
 def unauthenticated_user_handler(error: access_control.UnauthenticatedUserError) -> response_utils.BackofficeResponse:
     query_path = request.path
     if request.query_string:

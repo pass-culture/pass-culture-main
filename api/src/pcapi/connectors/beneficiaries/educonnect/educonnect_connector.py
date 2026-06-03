@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from os import path
 
-from flask import current_app as app
+from flask import current_app
 from saml2 import BINDING_HTTP_POST
 from saml2 import xmldsig
 from saml2.client import Saml2Client
@@ -88,7 +88,7 @@ def get_login_redirect_url(user: users_models.User) -> str:
         "Sending saml login request with educonnect request_id = %s", saml_request_id, extra={"user_id": user.id}
     )
     key = build_saml_request_id_key(saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    current_app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     redirect_url = next(header[1] for header in info["headers"] if header[0] == "Location")
     return redirect_url
@@ -151,7 +151,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     assert user.dateOfBirth  # helps mypy
     mocked_saml_request_id = f"saml-request-id_perf-test_{user.id}"
     key = build_saml_request_id_key(mocked_saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    current_app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     return users_factories.EduconnectUserFactory.create(
         birth_date=user.dateOfBirth.date(),
