@@ -10,7 +10,6 @@ def install_routes(app: Flask) -> None:
     from .endpoints import national_programs
     from .endpoints import offers
     from .endpoints import students_levels
-    from .endpoints import venues
 
     if not settings.IS_PROD:
         # do not import this route when inside production environment.

@@ -38,23 +38,3 @@ public_api_schema = ExtendedSpecTree(
     servers=_servers,
     humanize_operation_id=True,
 )
-
-deprecated_collective_public_api_schema = ExtendedSpecTree(
-    "flask",
-    title="DEPRECATED",
-    MODE="strict",
-    before=serialization_utils.before_handler,
-    PATH="/deprecated_collective",
-    tags=tags.DEPRECATED_COLLECTIVE_TAGS,
-    security_schemes=[
-        SecurityScheme(
-            name=API_KEY_AUTH_NAME,
-            data=SecuritySchemeData.parse_obj(
-                {"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
-            ),
-        ),
-    ],
-    servers=_servers,
-    humanize_operation_id=True,
-    version="0.1",
-)
