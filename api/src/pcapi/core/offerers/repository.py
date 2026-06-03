@@ -197,19 +197,6 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
             sa.select(models.Venue)
             .join(models.Venue.managingOfferer)
             .options(
-                sa_orm.load_only(
-                    models.Venue.activity,
-                    models.Venue.bannerUrl,
-                    models.Venue.description,
-                    models.Venue.isPermanent,
-                    models.Venue.isOpenToPublic,
-                    models.Venue.name,
-                    models.Venue.publicName,
-                    models.Venue.volunteeringUrl,
-                    models.Venue.withdrawalDetails,
-                )
-            )
-            .options(
                 sa_orm.joinedload(models.Venue.accessibilityProvider).load_only(
                     models.AccessibilityProvider.externalAccessibilityData,
                     models.AccessibilityProvider.externalAccessibilityId,
