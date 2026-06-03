@@ -1451,10 +1451,6 @@ export type EditVenueCollectiveDataBodyModel = {
      */
     activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null;
     /**
-     * Collectiveaccessinformation
-     */
-    collectiveAccessInformation?: string | null;
-    /**
      * Collectivedescription
      */
     collectiveDescription?: string | null;

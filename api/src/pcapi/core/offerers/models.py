@@ -439,7 +439,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     collectiveNetwork: sa_orm.Mapped[list[str] | None] = sa_orm.mapped_column(
         MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
     )
-    collectiveAccessInformation: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     collectivePhone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     collectiveEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 

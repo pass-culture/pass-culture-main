@@ -71,7 +71,6 @@ class EditVenueCollectiveDataBodyModel(HttpBodyModel):
     collectiveInterventionArea: list[str] | None = None
     collectiveLegalStatus: int | None = None
     collectiveNetwork: list[str] | None = None
-    collectiveAccessInformation: str | None = pydantic_v2.Field(None, max_length=500)
     collectivePhone: str | None = pydantic_v2.Field(None, max_length=50)
     collectiveEmail: str | None = pydantic_v2.Field(None, max_length=150)
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None = None
