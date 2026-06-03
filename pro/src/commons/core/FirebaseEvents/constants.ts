@@ -38,7 +38,6 @@ export enum Events {
   SIGNUP_FORM_ABORT = 'signupFormAbort',
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   DELETE_DRAFT_OFFER = 'DeleteDraftOffer',
-  CLICKED_EAC_DMS_TIMELINE = 'hasClickedEacDmsTimeline',
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
   CLICKED_ADD_IMAGE = 'hasClickedAddImage',
