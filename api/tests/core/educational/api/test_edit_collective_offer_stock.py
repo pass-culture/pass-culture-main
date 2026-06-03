@@ -34,7 +34,7 @@ class EditCollectiveOfferStocksTest:
             startDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
             endDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
             bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5, hours=16),
-            totalPrice=1500,
+            price=1500,
             numberOfTickets=35,
         )
 
@@ -200,7 +200,7 @@ class EditCollectiveOfferStocksTest:
             factories.CollectiveStockFactory(collectiveOffer=offer)
 
         price = offer.collectiveStock.price
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(price=price + 100)
 
         educational_api_stock.edit_collective_stock(
             stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
@@ -244,7 +244,7 @@ class EditCollectiveOfferStocksTest:
 
         new_price = offer.collectiveStock.price - 100
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            totalPrice=new_price, educationalPriceDetail="yes", numberOfTickets=1200
+            price=new_price, priceDetail="yes", numberOfTickets=1200
         )
         educational_api_stock.edit_collective_stock(
             stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
@@ -259,7 +259,7 @@ class EditCollectiveOfferStocksTest:
 
         new_price = offer.collectiveStock.price - 100
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            totalPrice=new_price, educationalPriceDetail="yes", numberOfTickets=1200
+            price=new_price, priceDetail="yes", numberOfTickets=1200
         )
         educational_api_stock.edit_collective_stock(
             stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
@@ -320,7 +320,7 @@ class ReturnErrorTest:
             factories.CollectiveStockFactory(collectiveOffer=offer)
 
         price = offer.collectiveStock.price
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(price=price + 100)
 
         with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
             educational_api_stock.edit_collective_stock(
@@ -330,7 +330,7 @@ class ReturnErrorTest:
     def test_cannot_increase_price_ended(self):
         offer = factories.EndedCollectiveOfferConfirmedBookingFactory()
         price = offer.collectiveStock.price
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(totalPrice=price + 100)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(price=price + 100)
 
         with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
             educational_api_stock.edit_collective_stock(
@@ -375,8 +375,8 @@ class ReturnErrorTest:
             factories.CollectiveStockFactory(collectiveOffer=offer)
 
         changes = [
-            {"totalPrice": offer.collectiveStock.price - 100},
-            {"educationalPriceDetail": "yes"},
+            {"price": offer.collectiveStock.price - 100},
+            {"priceDetail": "yes"},
             {"numberOfTickets": 1200},
         ]
         for change in changes:

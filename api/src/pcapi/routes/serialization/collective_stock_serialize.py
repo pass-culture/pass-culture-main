@@ -65,12 +65,12 @@ def validate_end_datetime(end_datetime: datetime | None, info: pydantic_v2.Valid
     return end_datetime
 
 
-def validate_price_detail(educational_price_detail: str | None) -> str | None:
-    if educational_price_detail and len(educational_price_detail) > constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH:
+def validate_price_detail(price_detail: str | None) -> str | None:
+    if price_detail and len(price_detail) > constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH:
         raise PydanticError(
             f"Le détail du prix ne doit pas excéder {constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH} caractères."
         )
-    return educational_price_detail
+    return price_detail
 
 
 class CollectiveStockCreationBodyModel(HttpBodyModel):
@@ -78,9 +78,9 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     startDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_start_datetime)]
     endDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_end_datetime)]
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
-    totalPrice: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
+    price: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
     numberOfTickets: typing.Annotated[int, pydantic_v2.AfterValidator(validate_number_of_tickets)]
-    educationalPriceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)]
+    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)]
 
 
 class CollectiveStockEditionBodyModel(HttpBodyModel):
@@ -89,19 +89,17 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     bookingLimitDatetime: typing.Annotated[
         datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
     ] = None
-    price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(
-        alias="totalPrice", default=None
-    )
+    price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(default=None)
     numberOfTickets: typing.Annotated[int | None, pydantic_v2.AfterValidator(validate_number_of_tickets)] = None
-    educationalPriceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
 
     @pydantic_v2.model_validator(mode="after")
     def validate_price_detail(self) -> typing.Self:
         if (
             feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "educationalPriceDetail" in self.model_fields_set
+            and "priceDetail" in self.model_fields_set
         ):
-            raise_error_from_location(None, loc="educationalPriceDetail", msg="Ce champ ne peut pas être édité")
+            raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
 
         return self
 
@@ -122,4 +120,4 @@ class CollectiveStockResponseModel(HttpBodyModel):
     collectiveAdditionalFees: list[CollectiveAdditionalFeeResponseModel]
     numberOfTickets: int
     numberOfTeachers: int
-    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
+    priceDetail: str | None

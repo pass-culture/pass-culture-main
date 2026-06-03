@@ -37,9 +37,9 @@ class CreateCollectiveOfferStocksTest:
             startDatetime=start_date,
             endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
-            totalPrice=1200,
+            price=1200,
             numberOfTickets=35,
-            educationalPriceDetail="hello",
+            priceDetail="hello",
         )
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
@@ -63,9 +63,9 @@ class CreateCollectiveOfferStocksTest:
             startDatetime=start_date,
             endDatetime=start_date,
             bookingLimitDatetime=start_date,
-            totalPrice=1200,
+            price=1200,
             numberOfTickets=35,
-            educationalPriceDetail="hello",
+            priceDetail="hello",
         )
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
@@ -87,9 +87,9 @@ class CreateCollectiveOfferStocksTest:
             startDatetime=start_date,
             endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
+            price=1500,
             numberOfTickets=38,
-            educationalPriceDetail="hello",
+            priceDetail="hello",
         )
 
         with pytest.raises(exceptions.EducationalException) as error:

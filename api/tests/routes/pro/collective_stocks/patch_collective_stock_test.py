@@ -46,9 +46,9 @@ class Return200Test:
             "startDatetime": "2022-01-17T22:00:00Z",
             "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-            "totalPrice": 1500,
+            "price": 1500,
             "numberOfTickets": 38,
-            "educationalPriceDetail": "Nouvelle description du prix",
+            "priceDetail": "Nouvelle description du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -75,7 +75,7 @@ class Return200Test:
             "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
             "numberOfTeachers": 5,
-            "educationalPriceDetail": "Nouvelle description du prix",
+            "priceDetail": "Nouvelle description du prix",
         }
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -116,7 +116,7 @@ class Return200Test:
             "collectiveAdditionalFees": [],
             "numberOfTickets": 32,
             "numberOfTeachers": 5,
-            "educationalPriceDetail": "Détail du prix",
+            "priceDetail": "Détail du prix",
         }
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -136,7 +136,7 @@ class Return200Test:
 
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
-            "totalPrice": 1500,
+            "price": 1500,
         }
 
         client.with_session_auth("user@example.com")
@@ -169,9 +169,9 @@ class Return200Test:
         )
 
         stock_edition_payload = {
-            "totalPrice": 1500,
+            "price": 1500,
             "numberOfTickets": 38,
-            "educationalPriceDetail": "Nouvelle description du prix",
+            "priceDetail": "Nouvelle description du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -189,7 +189,7 @@ class Return200Test:
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(edited_booking).dict(),
-            updatedFields=["price", "numberOfTickets", "educationalPriceDetail"],
+            updatedFields=["price", "numberOfTickets", "priceDetail"],
         )
         assert testing.adage_requests[0]["sent_data"] == expected_payload
         assert testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
@@ -288,7 +288,7 @@ class Return403Test:
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        stock_edition_payload = {"totalPrice": 1500}
+        stock_edition_payload = {"price": 1500}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
@@ -310,7 +310,7 @@ class Return404Test:
 
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
-            "totalPrice": 1500,
+            "price": 1500,
         }
 
         client.with_session_auth("user@example.com")
@@ -372,7 +372,7 @@ class Return400Test:
 
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
-            "totalPrice": -10,
+            "price": -10,
         }
 
         client.with_session_auth("user@example.com")
@@ -415,9 +415,7 @@ class Return400Test:
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        stock_edition_payload = {
-            "numberOfTickets": None,
-        }
+        stock_edition_payload = {"numberOfTickets": None}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
@@ -426,22 +424,20 @@ class Return400Test:
         assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être nul."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, client):
+    def should_not_allow_stock_edition_when_price_has_been_set_to_none(self, client):
         stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        stock_edition_payload = {
-            "totalPrice": None,
-        }
+        stock_edition_payload = {"price": None}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         assert response.status_code == 400
-        assert response.json == {"totalPrice": ["Le prix ne peut pas être nul."]}
+        assert response.json == {"price": ["Le prix ne peut pas être nul."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_startDatetime_has_been_set_to_none(self, client):
@@ -488,14 +484,14 @@ class Return400Test:
         )
 
         stock_edition_payload = {
-            "educationalPriceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
+            "priceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
         }
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         assert response.status_code == 400
-        assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
+        assert response.json == {"priceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
@@ -723,12 +719,12 @@ class Return400Test:
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        stock_edition_payload = {"totalPrice": price_value}
+        stock_edition_payload = {"price": price_value}
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         assert response.status_code == 400
-        assert response.json == {"totalPrice": [error]}
+        assert response.json == {"price": [error]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.parametrize(
@@ -759,9 +755,9 @@ class Return400Test:
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        payload = {"educationalPriceDetail": "details"}
+        payload = {"priceDetail": "details"}
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"educationalPriceDetail": ["Ce champ ne peut pas être édité"]}
+        assert response.json == {"priceDetail": ["Ce champ ne peut pas être édité"]}
