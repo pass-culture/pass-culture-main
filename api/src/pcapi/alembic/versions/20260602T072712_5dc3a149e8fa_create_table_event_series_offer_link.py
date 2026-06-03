@@ -22,7 +22,6 @@ def upgrade() -> None:
         sa.Column("dateModified", sa.DateTime(), nullable=False, onupdate=sa.func.now(), server_default=sa.func.now()),
         sa.PrimaryKeyConstraint("id"),
         sa.ForeignKeyConstraint(["eventSeriesId"], ["event_series.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["offerId"], ["offer.id"], ondelete="CASCADE"),
         sa.UniqueConstraint("offerId", name="unique_offer_id_constraint"),
         if_not_exists=True,
     )
