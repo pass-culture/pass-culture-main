@@ -3,68 +3,73 @@
 Voici le backend de l'application pass Culture; il est lancé via `docker compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
 
-## Installation
+## Installation du backend
 
-### MacOS
+Trois options sont possibles pour développer le backend : 100% Docker, 50% Docker et 0% Docker.
 
-Le gestionnaire de paquet recommandé est [Homebrew](https://brew.sh/).
+Ces environnements de développement sont listés du plus clé en main au plus "manuel".
 
-```sh
-brew install coreutils libxmlsec1 weasyprint ozeias/postgresql/postgis@15 redis uv
+### Installation et lancement via Docker
 
-brew services start redis
-brew services start postgresql@15
+- [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
+- [docker compose (inclus avec Docker Desktop)](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
+
+#### Lancement des applications
+
+- `pc start-backend` pour build l'image docker `pc start-backend --fast` pour ne pas les rebuild et juste les lancer
+- Il faut remplacer `start-backend` par `start-proxy-backend` en fonction de la présence d'un proxy sur l'ordinateur
+- `pc restart-backend` rebuildera l'image en supprimant les données de la sandbox
+
+Pour peupler la base de données, le script `pc` exécutera `flask` dans l'image docker, par exemple `pc sandbox -n industrial`.
+
+#### Connexion aux bases de données lancées par Docker
+
+Il est possible de se connecter aux bases de données lancées via docker compose en utilisant les informations ci-dessous
+
+- _pc-postgres_
+  - user : pass_culture
+  - password : passq
+  - port : 5434
+  - database : pass_culture
+
+- _pc-postgres-test_
+  - user : pytest
+  - password : pytest
+  - port : 5433
+  - database : pass_culture
+
+#### Troubleshooting
+
+Si la commande `pc start-backend` renvoie une erreur de type
+
+```
+PermissionError: [Errno 13] Permission denied: '/usr/src/app/src/pcapi/connectors/beneficiaries/educonnect/files/public.cert'
 ```
 
-### Linux
+Cela peut venir du mode rootless de Docker.
+Essayer de [désinstaller le rootless](https://docs.docker.com/engine/security/rootless/troubleshoot/#uninstall) et de faire tourner docker en mode `Defaut`.
 
-L'installation de PostGIS 15 peut demander une configuration en amont :
+### Installation des dépendances et services systèmes via Docker, lancement sans Docker
 
-- pour Ubuntu il faut configurer le repo apt de [postgresql](https://www.postgresql.org/download/linux/ubuntu/)
-
-```sh
-sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 postgresql-15-postgis-3 uv
-
-sudo systemctl enable redis
-sudo systemctl enable postgresql
-```
-
-### Installation commune
-
-#### Natif sans docker
-
-Il faut se positionner dans le dossier `pass-culture-main/api/` et pas à la racine `pass-culture-main/`.
-
-uv est le gestionnaire de paquets python, pour ajouter une dépendance il faut mettre à jour le fichier de lock.
-L'activation de l'environnement virtuel se fait avec la commande `source .venv/bin/activate`.
+PostgreSQL et Redis sont lancés par docker compose.
 
 ```sh
-uv sync
-
-psql postgres <<EOF
-  CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
-  CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
-EOF
-
-source .venv/bin/activate  # activation de l'environnement virtuel
-pc setup-no-docker         # créera les tables PostgreSQL et le fichier .env.local.secret
+cd pass-culture-main
+sed 's|@postgres/|@localhost:5434/|g; s|@postgres-test/|@localhost:5433/|g' env_file >> api/.env.local.secret
+docker compose -f docker-compose-backend.yml up --detach postgres postgres-test redis
 ```
 
-> !NOTE  
-> Pour passer du setup natif au setup docker, il faut commenter les lignes ajoutées dans le .env.local.secret
-> Notamment les champs : `DATABASE_URL`, `DATABASE_URL_TEST` et `FLASK_IP`
-
-##### Lancement de l'application
+#### Lancement de l'application
 
 - Soit via python
 
-```shell
-$ source .venv/bin/activate  # avant chaque commande
+```sh
+source .venv/bin/activate  # avant chaque commande
 
 # dans des terminaux différents, sans le script pc
-$ python src/pcapi/app.py
-$ python src/pcapi/backoffice_app.py
-$ celery -A pcapi.celery_tasks.celery_worker worker \
+python src/pcapi/app.py
+python src/pcapi/backoffice_app.py
+celery -A pcapi.celery_tasks.celery_worker worker \
   -Q "celery.external_calls.priority,celery.internal_calls.priority,celery.internal_calls.default,celery.external_calls.default" \
   --loglevel=INFO --pool=solo
 ```
@@ -86,47 +91,49 @@ pc reset-db-no-docker
 pc reset-db-test-no-docker
 ```
 
-#### Installation via Docker
+### Installation et lancement sans Docker
 
-- [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
-- [docker compose (inclus avec Docker Desktop)](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
+uv est le gestionnaire de paquets python, pour ajouter une dépendance il faut mettre à jour le fichier de lock.
+L'activation de l'environnement virtuel se fait avec la commande `source .venv/bin/activate`.
 
-Pour lancer les serveurs, ces commandes peuvent être utilisées :
+D'abord, il faut installer les dépendances systèmes.
 
-- `pc start-backend` pour build l'image docker `pc start-backend --fast` pour ne pas les rebuild et juste les lancer
-- Il faut remplacer `start-backend` par `start-proxy-backend` en fonction de la présence d'un proxy sur l'ordinateur
-- `pc restart-backend` rebuildera l'image en supprimant les données de la sandbox
+```sh
+# --- macOS ---
+# vous devez installer PostgreSQL 15 et postgis 3 via https://postgresapp.com/downloads.html
+brew install coreutils libxmlsec1 weasyprint redis uv
+brew services start redis
+# --- macOS ---
 
-Pour peupler la base de données, le script `pc` exécutera `flask` dans l'image docker, par exemple `pc sandbox -n industrial`.
+# --- Ubuntu ---
+# vous devez configurer le dépôt distant https://www.postgresql.org/download/linux/ubuntu/
+sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 postgresql-15-postgis-3 uv
+sudo systemctl enable redis
+sudo systemctl enable postgresql
+# --- Ubuntu ---
 
-##### Connexion aux bases de données lancées par Docker
+# --- Commun ---
+psql postgres <<EOF
+  CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
+  CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
+EOF
 
-Il est possible de se connecter aux bases de données lancées via docker compose en utilisant les informations ci-dessous
-
-- _pc-postgres_
-  - user : pass_culture
-  - password : passq
-  - port : 5434
-  - database : pass_culture
-
-- _pc-postgres-test_
-  - user : pytest
-  - password : pytest
-  - port : 5433
-  - database : pass_culture
-
-##### Troubleshooting
-
-Si la commande `pc start-backend` renvoie une erreur de type
-
-```
-PermissionError: [Errno 13] Permission denied: '/usr/src/app/src/pcapi/connectors/beneficiaries/educonnect/files/public.cert'
+cd pass-culture-main/api
+uv sync
+source .venv/bin/activate
+pc setup-no-docker         # créera les tables PostgreSQL et le fichier .env.local.secret
+# --- Commun ---
 ```
 
-Cela peut venir du mode rootless de Docker.
-Essayer de [désinstaller le rootless](https://docs.docker.com/engine/security/rootless/troubleshoot/#uninstall) et de faire tourner docker en mode `Defaut`.
+> !NOTE  
+> Pour passer du setup natif au setup docker, il faut commenter les lignes ajoutées dans le .env.local.secret
+> Notamment les champs : `DATABASE_URL`, `DATABASE_URL_TEST` et `FLASK_IP`
 
-### Installer les CLI pour se connecter à l'infrastructure
+#### Lancement de l'application
+
+Voir comment lancer les applications depuis le setup avec le lancement des services systèmes via Docker. Les deux options python/pc sont identiques.
+
+## Installer les CLI pour se connecter à l'infrastructure
 
 - [kubectl](https://kubectl.docs.kubernetes.io/installation/kubectl/)
 - [gcloud](https://cloud.google.com/sdk/docs/install)
@@ -158,7 +165,8 @@ Pour ça, via Docker:
 
 ## Tests
 
-Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose
+Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose, et ce indépendamment de la manière
+de lancer le backend.
 
 ### 1. Lancement des tests depuis la ligne de commande dans l'environnement uv
 
@@ -179,7 +187,7 @@ pc test-backoffice # pour lancer tous les tests du backoffice
 pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
 ```
 
-#### Troubleshoot
+#### Troubleshooting
 
 Si les tests ne se lancent pas avec Docker, il faut recréer la base de données de tests et relancer le cache redis
 
