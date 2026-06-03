@@ -306,6 +306,7 @@ def get_pro_anonymization_eligibility() -> users_serializers.ProAnonymizationEli
 
 
 @private_api.route("/users/cookies", methods=["POST"])
+@atomic()
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def cookies_consent(body: CookieConsentRequest) -> None:
     logger.info(

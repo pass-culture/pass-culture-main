@@ -129,6 +129,7 @@ def get_venues(query: venue_serialize.VenueListQueryModel) -> venue_deprecated_s
 
 
 @private_api.route("/lite/venues", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=venue_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
 def get_venues_lite() -> venue_serialize.GetVenueListLiteResponseModel:
@@ -327,6 +328,7 @@ def get_offers_statistics(venue_id: int) -> venue_serialize.GetOffersStatsRespon
 
 
 @private_api.route("/venues/<int:venue_id>/locations", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     on_success_status=200,
