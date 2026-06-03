@@ -9,7 +9,7 @@ import typing
 import click
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from flask import current_app as app
+from flask import current_app
 
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
@@ -224,7 +224,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
         logger.error("Rollback and delete redis lock before restarting push_invoices")
         db.session.rollback()
         time.sleep(5)
-        app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        current_app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, handler)
