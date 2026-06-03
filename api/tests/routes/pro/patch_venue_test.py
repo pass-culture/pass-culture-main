@@ -1513,7 +1513,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "openingHours.MONDAY": [
+            "openingHours.MONDAY.0": [
                 "Value error, opening hours start (10:00) cannot be after end (08:00), nor can they be equal",
             ]
         }
@@ -1534,7 +1534,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {
-            "openingHours.MONDAY": [
+            "openingHours.MONDAY.0": [
                 "Value error, opening hours start (10:00) cannot be after end (10:00), nor can they be equal",
             ]
         }

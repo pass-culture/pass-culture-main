@@ -117,7 +117,7 @@ class GetVenueResponseModel(HttpBodyModel):
     hasActiveIndividualOffer: bool
     is_caledonian: bool
     isOnboarded: bool
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
     isValidated: bool
     allowedOnAdage: bool
     bankAccountStatus: venue_finance_serialize.SimplifiedBankAccountStatus | None
@@ -148,7 +148,7 @@ class GetVenueResponseModel(HttpBodyModel):
             )
             external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
 
-        opening_hours = opening_hours_api.format_opening_hours_v2(venue.openingHours)
+        opening_hours = opening_hours_api.format_opening_hours(venue.openingHours)
 
         banner_meta = None
         if venue.bannerUrl:
@@ -293,7 +293,7 @@ class EditVenueBodyModel(HttpBodyModel):
     isManualEdition: bool | None = None
     description: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_DESCRIPTION_MAX_LENGTH, default=None)
     contact: offerers_schemas.VenueContactModelV2 | None = None
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespansV2 | None = None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None
     isOpenToPublic: bool | None = None
     volunteeringUrl: typing.Annotated[HttpUrlString, pydantic_v2.AfterValidator(validate_volunteering_url)] | None = (
         None

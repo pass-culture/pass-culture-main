@@ -1,10 +1,6 @@
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
-from pcapi.core.opening_hours import api
-from pcapi.core.opening_hours import schemas
-from pcapi.models import db
 from pcapi.utils.date import numranges_to_timespan_str
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -28,74 +24,3 @@ def validate_timespans(fetched_timespans, expected_timespans):
     # remove unused argument and canonize string representation
     fetched_timespans = timespan_str_to_numrange(numranges_to_timespan_str(fetched_timespans))
     assert fetched_timespans == timespan_str_to_numrange(expected_timespans)
-
-
-class UpsertOpeningHoursTest:
-    def test_create_one_weekday_with_one_timespan(self, venue):
-        opening_hours = schemas.WeekdayOpeningHoursTimespans(MONDAY=[["10:00", "18:00"]])
-        api.upsert_opening_hours(venue, opening_hours=opening_hours)
-
-        assert db.session.query(offerers_models.OpeningHours).count() == 1
-
-        oh = db.session.query(offerers_models.OpeningHours).first()
-        assert oh.weekday == offerers_models.Weekday.MONDAY
-
-        validate_timespans(oh.timespan, opening_hours.MONDAY)
-
-    def test_create_many_weekdays_with_some_timespans(self, venue):
-        opening_hours = schemas.WeekdayOpeningHoursTimespans(
-            MONDAY=[["10:00", "18:00"]],
-            WEDNESDAY=[["11:00", "12:30"], ["14:00", "19:00"]],
-            FRIDAY=[["12:00", "20:00"]],
-        )
-        api.upsert_opening_hours(venue, opening_hours=opening_hours)
-
-        filtered_opening_hours = {
-            weekday: timespans for weekday, timespans in opening_hours.dict().items() if timespans
-        }
-
-        found = db.session.query(offerers_models.OpeningHours).count()
-        expected = len(list(filtered_opening_hours.values()))
-        assert found == expected
-
-        weekdays = {oh.weekday.value for oh in db.session.query(offerers_models.OpeningHours)}
-        assert weekdays == set(filtered_opening_hours.keys())
-
-        for raw_weekday, timespans in filtered_opening_hours.items():
-            weekday = offerers_models.Weekday[raw_weekday]
-            oh = db.session.query(offerers_models.OpeningHours).filter_by(weekday=weekday).first()
-            validate_timespans(oh.timespan, timespans)
-
-    def test_create_one_weekday_with_opening_hours_erases_all_existing_ones(self, venue):
-        # should all be deleted
-        offerers_factories.OpeningHoursFactory(venue=venue, weekday=offerers_models.Weekday.MONDAY)
-        offerers_factories.OpeningHoursFactory(venue=venue, weekday=offerers_models.Weekday.SATURDAY)
-        offerers_factories.OpeningHoursFactory(venue=venue, weekday=offerers_models.Weekday.SUNDAY)
-
-        opening_hours = schemas.WeekdayOpeningHoursTimespans(MONDAY=[["10:00", "18:00"]])
-        api.upsert_opening_hours(venue, opening_hours=opening_hours)
-
-        assert db.session.query(offerers_models.OpeningHours).count() == 1
-
-        oh = db.session.query(offerers_models.OpeningHours).first()
-        assert oh.weekday == offerers_models.Weekday.MONDAY
-        validate_timespans(oh.timespan, opening_hours.MONDAY)
-
-    def test_upsert_opening_hours_without_timespans_is_ok_but_creates_nothing(self, venue):
-        api.upsert_opening_hours(venue, opening_hours=schemas.WeekdayOpeningHoursTimespans(TUESDAY=None))
-        assert db.session.query(offerers_models.OpeningHours).count() == 0
-
-    def test_upsert_opening_hours_with_some_missing_timespans_is_ok(self, venue):
-        opening_hours = schemas.WeekdayOpeningHoursTimespans(MONDAY=[["10:00", "18:00"]], THURSDAY=None)
-        api.upsert_opening_hours(venue, opening_hours=opening_hours)
-
-        assert db.session.query(offerers_models.OpeningHours).count() == 1
-
-        oh = db.session.query(offerers_models.OpeningHours).first()
-        assert oh.weekday == offerers_models.Weekday.MONDAY
-
-        validate_timespans(oh.timespan, opening_hours.MONDAY)
-
-    def test_null_opening_hours_is_valid_but_creates_nothing(self, venue):
-        api.upsert_opening_hours(venue, opening_hours=None)
-        assert db.session.query(offerers_models.OpeningHours).count() == 0

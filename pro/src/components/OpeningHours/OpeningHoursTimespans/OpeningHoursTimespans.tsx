@@ -3,7 +3,7 @@ import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import type { WeekdayOpeningHoursTimespansV2 } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -20,13 +20,13 @@ export function OpeningHoursTimespans({
   dayFrenchName,
   hasErrorBecauseOfEmptyOpeningHours,
 }: {
-  weekDay: keyof WeekdayOpeningHoursTimespansV2
+  weekDay: keyof WeekdayOpeningHoursTimespans
   hasTimespans: boolean
   dayFrenchName: string
   hasErrorBecauseOfEmptyOpeningHours: boolean
 }) {
   const form = useFormContext<{
-    openingHours: WeekdayOpeningHoursTimespansV2 | null
+    openingHours: WeekdayOpeningHoursTimespans | null
   }>()
 
   const timespans = useFieldArray({
