@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "project": [
+    "src/**/*.{ts,tsx,js,jsx}",
+    "e2e/**/*.{ts,tsx,js,jsx}",
+    "scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+    "config/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+    ".storybook/**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  ],
+  "ignore": ["src/apiClient/**"],
+  "ignoreFiles": [
+    "scripts/customRequest.ts",
+    "scripts/format_generated_index_exports.js",
+    "scripts/sanitize_enum_keys.js"
+  ],
+  "ignoreDependencies": ["openapi-typescript-codegen"],
+  "ignoreUnresolved": ["typescript-plugin-css-modules"],
+  "ignoreIssues": {
+    "e2e/**": ["exports", "types", "enumMembers", "duplicates"]
+  },
+  "rules": {
+    "duplicates": "off",
+    "enumMembers": "warn"
+  },
+  "playwright": {
+    "config": "config/playwright.config.ts"
+  },
+  "storybook": {
+    "config": ".storybook/main.ts"
+  },
+  "openapi-ts": {
+    "config": [
+      "config/openapi-ts.v1.config.ts",
+      "config/openapi-ts.adage.config.ts"
+    ]
+  }
+}

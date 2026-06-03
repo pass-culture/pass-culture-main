@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/react-vite'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import { DescriptionList } from '@/ui-kit/DescriptionList/DescriptionList'
