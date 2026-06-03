@@ -1,5 +1,5 @@
+import datetime
 import typing
-from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -26,10 +26,10 @@ class EventSeriesOfferLink(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], viewonly=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
-    dateModified: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    dateModified: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, onupdate=sa.func.now(), server_default=sa.func.now()
     )
 
@@ -42,10 +42,10 @@ class EventSeries(Model):
     name = sa_orm.mapped_column(sa.Text, nullable=False)
     description = sa_orm.mapped_column(sa.Text, nullable=True)
     mediationUuid = sa_orm.mapped_column(sa.Text, nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
-    dateModified: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+    dateModified: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, onupdate=sa.func.now(), server_default=sa.func.now()
     )
 
