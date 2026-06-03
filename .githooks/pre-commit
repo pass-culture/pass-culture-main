@@ -23,6 +23,14 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]; then
     echo "Looking for dead code..."
     yarn lint:dead-code
+    DEAD_CODE_EXIT_CODE=$?
+    if [ $DEAD_CODE_EXIT_CODE -ne 0 ]; then
+      echo "Fixing dead code errors..."
+      yarn lint:dead-code:fix
+      echo "✅ dead code fixed"
+    else
+      echo "✅ dead code all good"
+    fi
 
     echo "Running Linter..."
     yarn lint:js:fix $STAGED_FILES
