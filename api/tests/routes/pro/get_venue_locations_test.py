@@ -103,7 +103,10 @@ class Return404Test:
         client = client.with_session_auth(email=pro.email)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue_id = venue.id
-        with assert_num_queries(2):
+        num_queries = 1  # select user
+        num_queries += 1  # check user has access to venues
+        num_queries += 2  # rollback x 2
+        with assert_num_queries(num_queries):
             response = client.get(
                 f"/venues/{venue_id}/locations", params={"withOffersOption": "INDIVIDUAL_OFFERS_ONLY"}
             )
