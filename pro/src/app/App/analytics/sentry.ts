@@ -14,15 +14,14 @@ import {
   ENVIRONMENT_NAME,
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
+  VITE_APP_VERSION,
 } from '@/commons/utils/config'
-
-import config from '../../../../package.json'
 
 export const initializeSentry = () => {
   Sentry.init({
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
-    release: config.version,
+    release: VITE_APP_VERSION,
     integrations: [
       reactRouterV7BrowserTracingIntegration({
         useEffect: useEffect,
