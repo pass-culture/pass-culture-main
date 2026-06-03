@@ -42,7 +42,6 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 class UpdateAllOffersActiveStatusPayload(BaseModelV2):
     is_active: bool
     user_id: int
-    offerer_id: int | None
     venue_id: int | None
     name_or_ean: str | None
     category_id: str | None
