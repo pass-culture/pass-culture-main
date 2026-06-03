@@ -26,9 +26,9 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     start = stock_data.startDatetime
     end = stock_data.endDatetime
     booking_limit_datetime = stock_data.bookingLimitDatetime
-    total_price = stock_data.totalPrice
+    price = decimal.Decimal(stock_data.price)
     number_of_tickets = stock_data.numberOfTickets
-    educational_price_detail = stock_data.educationalPriceDetail
+    price_detail = stock_data.priceDetail
 
     validation.check_start_and_end_dates_in_same_educational_year(start, end)
 
@@ -44,7 +44,6 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     if booking_limit_datetime is None:
         booking_limit_datetime = start
 
-    price = decimal.Decimal(total_price)
     collective_stock = models.CollectiveStock(
         collectiveOffer=collective_offer,
         startDatetime=start,
@@ -55,14 +54,14 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         servicePrice=price,
         numberOfTickets=number_of_tickets,
         numberOfTeachers=0,
-        priceDetail=educational_price_detail,
+        priceDetail=price_detail,
     )
     db.session.add(collective_stock)
 
     # when we receive priceDetail, also write to offer additionalDetails
     # long term, the priceDetail field will be removed
-    if not collective_offer.additionalDetails and educational_price_detail:
-        collective_offer.additionalDetails = educational_price_detail
+    if not collective_offer.additionalDetails and price_detail:
+        collective_offer.additionalDetails = price_detail
 
     db.session.flush()
 
@@ -145,7 +144,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
-    if "numberOfTickets" in stock_data or "educationalPriceDetail" in stock_data:
+    if "numberOfTickets" in stock_data or "priceDetail" in stock_data:
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
         )
@@ -208,7 +207,7 @@ def _extract_updatable_fields_from_stock_data(
         "bookingLimitDatetime": booking_limit_datetime,
         "price": decimal.Decimal(price) if price is not None else None,
         "numberOfTickets": stock_data.get("numberOfTickets"),
-        "priceDetail": stock_data.get("educationalPriceDetail"),
+        "priceDetail": stock_data.get("priceDetail"),
     }
 
     return updatable_fields
