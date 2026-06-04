@@ -9,6 +9,9 @@
   </a>
 </div>
 
+> "Et tant que vous aurez, en quoi que ce soit, honte de vous, vous ne sauriez être des nôtres."
+> F. Nietzsche
+
 ---
 Le repo `main` contient les 4 projets suivants :
 
