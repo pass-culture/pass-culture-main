@@ -58,7 +58,7 @@
     "classnames": "2.5.1",
     "date-fns": "4.2.1",
     "date-fns-tz": "3.2.0",
-    "dompurify": "3.4.5",
+    "dompurify": "3.4.7",
     "downshift": "9.3.3",
     "libphonenumber-js": "1.13.2",
     "lodash.invert": "4.3.0",
