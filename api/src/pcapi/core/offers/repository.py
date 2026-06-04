@@ -423,7 +423,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue._bannerUrl,
                 offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.state,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
