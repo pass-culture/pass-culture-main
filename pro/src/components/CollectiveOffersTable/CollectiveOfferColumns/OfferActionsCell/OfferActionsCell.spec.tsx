@@ -75,6 +75,8 @@ vi.mock('@/apiClient/api', () => ({
     getCollectiveOfferTemplate: vi.fn(),
     patchCollectiveOffersArchive: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
+    patchCollectiveOffersTemplateArchive: vi.fn(),
+    cancelCollectiveOfferBooking: vi.fn(),
   },
 }))
 vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
@@ -557,6 +559,86 @@ describe('OfferActionsCells', () => {
     )
   })
 
+  it('should cancel booking on button press', async () => {
+    renderOfferActionsCell({
+      offer: collectiveOfferFactory({
+        id: 200,
+        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Annuler la réservation' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler la réservation' })
+    )
+
+    expect(apiNew.cancelCollectiveOfferBooking).toHaveBeenCalledWith({
+      path: { offer_id: 200 },
+    })
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+    )
+  })
+
+  it('should show NO_BOOKING error notification when cancellation fails with NO_BOOKING code', async () => {
+    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce({
+      message: 'error',
+      name: 'ApiError',
+      body: { code: 'NO_BOOKING' },
+    })
+
+    renderOfferActionsCell({
+      offer: collectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Annuler la réservation' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler la réservation' })
+    )
+
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+    )
+  })
+
+  it('should show error notification when cancellation fails', async () => {
+    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+      new Error('fail')
+    )
+
+    renderOfferActionsCell({
+      offer: collectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Annuler la réservation' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler la réservation' })
+    )
+
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’annulation de la réservation.'
+    )
+  })
+
   it('should show error notification when archiving fails', async () => {
     vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
       new Error('fail')
@@ -565,6 +647,55 @@ describe('OfferActionsCells', () => {
     renderOfferActionsCell({
       offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByText('Archiver'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Archiver l’offre' })
+    )
+
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’archivage de l’offre'
+    )
+  })
+  it('should archive a template offer on click on the action', async () => {
+    renderOfferActionsCell({
+      offer: collectiveOfferTemplateFactory({
+        id: 200,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByText('Archiver'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Archiver l’offre' })
+    )
+
+    expect(apiNew.patchCollectiveOffersTemplateArchive).toHaveBeenCalledWith({
+      body: { ids: [200] },
+    })
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Une offre a bien été archivée'
+    )
+  })
+
+  it('should show error notification when template offer archiving fails', async () => {
+    vi.spyOn(
+      apiNew,
+      'patchCollectiveOffersTemplateArchive'
+    ).mockRejectedValueOnce(new Error('fail'))
+
+    renderOfferActionsCell({
+      offer: collectiveOfferTemplateFactory({
+        id: 200,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
       }),
     })
 
