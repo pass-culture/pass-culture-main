@@ -2,7 +2,10 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
-import type { CollectiveStockCreationBodyModel } from '@/apiClient/v1/new'
+import type {
+  CollectiveStockCreationBodyModel,
+  CollectiveStockResponseModel,
+} from '@/apiClient/v1/new'
 import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferCollectiveStockFactory,
@@ -75,7 +78,7 @@ describe('CollectiveOfferStockCreation', () => {
   it('should render collective offer stock form from template', async () => {
     vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
       getCollectiveOfferTemplateFactory({
-        educationalPriceDetail: 'Details from template',
+        priceDetail: 'Details from template',
       })
     )
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', {
@@ -90,7 +93,7 @@ describe('CollectiveOfferStockCreation', () => {
     expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
     expect(OfferEducationalStock).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        initialStock: { educationalPriceDetail: 'Details from template' },
+        initialStock: { priceDetail: 'Details from template' },
       }),
       undefined
     )
@@ -157,12 +160,9 @@ describe('CollectiveOfferStockCreation', () => {
   it('on submit : should call creation endpoint if no stock exists yet on offer', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({ collectiveStock: null })
-    const collectiveStock: Record<string, any> =
+    const collectiveStock: Partial<CollectiveStockResponseModel> =
       getCollectiveOfferCollectiveStockFactory()
     delete collectiveStock.id
-    // TODO (mdesquilbet, 2026-05-29): clean when totalPrice will be renamed
-    collectiveStock.totalPrice = collectiveStock.price
-    delete collectiveStock.price
     setSubmitResponse(collectiveStock)
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
 

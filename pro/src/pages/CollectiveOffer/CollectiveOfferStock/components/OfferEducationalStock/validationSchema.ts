@@ -51,7 +51,7 @@ export const generateValidationSchema = (
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
-  let totalPriceValidation = yup
+  let priceValidation = yup
     .number()
     .nullable()
     .transform((value) => (Number.isNaN(value) ? null : value))
@@ -60,7 +60,7 @@ export const generateValidationSchema = (
     .required('Le prix total TTC est obligatoire')
 
   if (canEditDiscount && !canEditDetails && initialPrice) {
-    totalPriceValidation = totalPriceValidation.max(
+    priceValidation = priceValidation.max(
       initialPrice,
       'Vous ne pouvez pas définir un prix plus élevé.'
     )
@@ -129,7 +129,7 @@ export const generateValidationSchema = (
       .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
       .nullable()
       .required('Le nombre de participants est obligatoire'),
-    totalPrice: totalPriceValidation,
+    price: priceValidation,
     bookingLimitDate: yup
       .string()
       .required('La date limite de réservation est obligatoire')
@@ -150,7 +150,7 @@ export const generateValidationSchema = (
                 !canEditDetails || isBookingDateAfterNow(bookingLimitDate)
             ),
       }),
-    educationalPriceDetail: yup
+    priceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
       .max(MAX_PRICE_DETAILS_LENGTH),

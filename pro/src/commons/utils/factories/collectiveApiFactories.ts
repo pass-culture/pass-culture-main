@@ -181,7 +181,7 @@ export const getCollectiveOfferCollectiveStockFactory = (
     startDatetime: add(Date.now(), { days: 2 }).toISOString(),
     endDatetime: add(Date.now(), { days: 3 }).toISOString(),
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
-    educationalPriceDetail: 'detail',
+    priceDetail: 'detail',
     numberOfTickets: 10,
     numberOfTeachers: 1,
     ...customGetCollectiveOfferCollectiveStock,
@@ -218,7 +218,7 @@ export const getCollectiveOfferTemplateFactory = (
   },
   contactForm: null,
   contactUrl: null,
-  educationalPriceDetail: null,
+  priceDetail: null,
   ...customCollectiveOfferTemplate,
 })
 

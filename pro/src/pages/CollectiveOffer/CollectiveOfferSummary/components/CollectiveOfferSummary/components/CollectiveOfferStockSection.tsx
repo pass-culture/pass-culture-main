@@ -59,7 +59,7 @@ export const CollectiveOfferStockSection = ({
           { title: TOTAL_PRICE_LABEL, text: `${stock?.price}€` },
           {
             title: 'Informations sur le prix',
-            text: stock?.educationalPriceDetail || DEFAULT_RECAP_VALUE,
+            text: stock?.priceDetail || DEFAULT_RECAP_VALUE,
           },
         ]}
       />

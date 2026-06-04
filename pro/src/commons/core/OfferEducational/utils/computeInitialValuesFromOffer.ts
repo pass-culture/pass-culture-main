@@ -280,8 +280,8 @@ export const computeInitialValuesFromOffer = (
     coords: `${address?.latitude}, ${address?.longitude}`,
     ...getAddressAutocompleteFields(offer, isVenueAddress),
     priceDetail:
-      isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
-        ? offer.educationalPriceDetail
+      isCollectiveOfferTemplate(offer) && offer.priceDetail
+        ? offer.priceDetail
         : defaultEducationalFormValues.priceDetail,
     imageUrl: offer.imageUrl || defaultEducationalFormValues.imageUrl,
     imageCredit: offer.imageCredit || defaultEducationalFormValues.imageCredit,

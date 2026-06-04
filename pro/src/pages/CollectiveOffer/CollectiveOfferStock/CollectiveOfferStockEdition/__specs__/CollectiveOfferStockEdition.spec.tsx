@@ -128,7 +128,7 @@ describe('CollectiveOfferStockEdition', () => {
 
   it('should display field errors on API error with status 400', async () => {
     const error = new ApiError('', 400, 'Bad Request', {
-      totalPrice: ['Le prix est invalide'],
+      price: ['Le prix est invalide'],
     })
     vi.spyOn(apiNew, 'editCollectiveStock').mockRejectedValueOnce(error)
 

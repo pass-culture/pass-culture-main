@@ -14,9 +14,7 @@ export const CollectiveOfferPriceSection = ({
   return (
     <SummarySubSection title="Prix">
       <SummaryDescriptionList
-        descriptions={[
-          { text: offer.educationalPriceDetail || DEFAULT_RECAP_VALUE },
-        ]}
+        descriptions={[{ text: offer.priceDetail || DEFAULT_RECAP_VALUE }]}
       />
     </SummarySubSection>
   )

@@ -15,8 +15,8 @@ describe('validationSchema', () => {
     bookingLimitDate: '2050-08-31',
     eventTime: '14:00',
     numberOfTickets: 56,
-    educationalPriceDetail: 'Détails sur le prix',
-    totalPrice: 1500,
+    priceDetail: 'Détails sur le prix',
+    price: 1500,
   }
 
   it.each([
@@ -32,9 +32,9 @@ describe('validationSchema', () => {
         'La date de fin est obligatoire',
         'L’horaire est obligatoire',
         'Le nombre de participants est obligatoire',
+        'L’information sur le prix est obligatoire',
         'Le prix total TTC est obligatoire',
         'La date limite de réservation est obligatoire',
-        'L’information sur le prix est obligatoire',
       ],
     },
     {
@@ -127,7 +127,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        totalPrice: -1,
+        price: -1,
       },
       expectedErrors: ['Nombre positif attendu'],
     },
@@ -139,7 +139,7 @@ describe('validationSchema', () => {
       ],
       formValues: {
         ...values,
-        totalPrice: 60001,
+        price: 60001,
       },
       expectedErrors: ['Le prix ne doit pas dépasser 60 000€'],
     },
@@ -178,34 +178,34 @@ describe('validationSchema', () => {
       expectedErrors: [],
     },
     {
-      description: 'totalPrice: can be increased',
+      description: 'price: can be increased',
       offerAllowedActions: [
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
       ],
       formValues: {
         ...values,
-        totalPrice: 100,
+        price: 100,
       },
       expectedErrors: [],
       initialPrice: 10,
     },
     {
-      description: 'totalPrice: cannot be increased',
+      description: 'price: cannot be increased',
       offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
       formValues: {
         ...values,
-        totalPrice: 100,
+        price: 100,
       },
       expectedErrors: ['Vous ne pouvez pas définir un prix plus élevé.'],
       initialPrice: 10,
     },
     {
-      description: 'totalPrice: can decreased',
+      description: 'price: can decreased',
       offerAllowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
       formValues: {
         ...values,
-        totalPrice: 100,
+        price: 100,
       },
       expectedErrors: [],
       initialPrice: 200,

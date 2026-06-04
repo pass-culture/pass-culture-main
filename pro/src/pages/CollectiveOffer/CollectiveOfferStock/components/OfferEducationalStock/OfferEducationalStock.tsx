@@ -72,9 +72,9 @@ export const OfferEducationalStock = ({
     startDatetime,
     endDatetime,
     bookingLimitDatetime,
-    educationalPriceDetail,
+    priceDetail,
     numberOfTickets,
-    price: totalPrice,
+    price,
   } = initialStock
 
   const initialDatesValues = extractFormDates(
@@ -85,12 +85,12 @@ export const OfferEducationalStock = ({
   const form = useForm<CollectiveOfferStockFormValues>({
     defaultValues: {
       numberOfTickets,
-      totalPrice,
-      educationalPriceDetail: educationalPriceDetail ?? '',
+      price,
+      priceDetail: priceDetail ?? '',
       ...initialDatesValues,
     },
     resolver: yupResolver(
-      generateValidationSchema(allowedActions, totalPrice ?? null)
+      generateValidationSchema(allowedActions, price ?? null)
     ),
     mode: 'onSubmit',
   })
@@ -98,22 +98,18 @@ export const OfferEducationalStock = ({
   const postForm = async (formValues: CollectiveOfferStockFormValues) => {
     setIsLoading(true)
     try {
-      const {
-        educationalPriceDetail,
-        totalPrice,
-        numberOfTickets,
-        ...dateFormValues
-      } = formValues
+      const { priceDetail, price, numberOfTickets, ...dateFormValues } =
+        formValues
 
       const updatedStock: Partial<CollectiveStockCreationBodyModel> = {}
       const dirtyKeys = new Set(Object.keys(form.formState.dirtyFields))
       const shouldSaveAllFields = !initialStock.id
 
-      if (shouldSaveAllFields || dirtyKeys.has('educationalPriceDetail')) {
-        updatedStock.educationalPriceDetail = educationalPriceDetail
+      if (shouldSaveAllFields || dirtyKeys.has('priceDetail')) {
+        updatedStock.priceDetail = priceDetail
       }
-      if (shouldSaveAllFields || dirtyKeys.has('totalPrice')) {
-        updatedStock.totalPrice = totalPrice
+      if (shouldSaveAllFields || dirtyKeys.has('price')) {
+        updatedStock.price = price
       }
       if (shouldSaveAllFields || dirtyKeys.has('numberOfTickets')) {
         updatedStock.numberOfTickets = numberOfTickets
@@ -187,9 +183,9 @@ export const OfferEducationalStock = ({
                   disabled={!canEditDiscount}
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_PRICE_DETAILS_LENGTH}
-                  {...form.register('educationalPriceDetail')}
+                  {...form.register('priceDetail')}
                   description={PRICE_DETAIL_PLACEHOLDER}
-                  error={form.formState.errors.educationalPriceDetail?.message}
+                  error={form.formState.errors.priceDetail?.message}
                   requiredIndicator="symbol"
                   required
                 />
