@@ -68,8 +68,6 @@ on:
         required: true
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
-      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER:
-        required: false
       PASSCULTURE_GITHUB_ACTION_APP_ID:
         required: true
         description: "Github Application ID to use to clone other repos"
@@ -94,18 +92,37 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: "Deploy API"
-        if: ${{ inputs.deploy_api && inputs.is_new_infra }}
-        uses: ./.github/actions/deploy-api-new-infra
+      - name: Install Argo Workflows CLI 
+        uses: pass-culture/common-workflows/actions/setup-argo@v1.0.0
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
         with:
-          environment: ${{ inputs.environment_short_name }}
-          app_version: ${{ inputs.app_version }}
-          workload_identity_provider: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
-          workflow_cluster_name: ${{ inputs.workflow_cluster_name }}
+          version: v0.4.0
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: "Authentification to Google"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
           service_account: ${{ vars.PCAPI_CD_SERVICE_ACCOUNT }}
-          workflow_project_id: ${{ inputs.workflow_project_id }}
-          app_cluster_name: ${{ inputs.app_cluster_name }}
-          app_project_id: ${{ inputs.app_project_id }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        with:
+          cluster_name: ${{ inputs.workflow_cluster_name }}
+          project_id: ${{ inputs.workflow_project_id }}
+          location: ${{ inputs.location }}
+          use_dns_based_endpoint: true
+
+      - name: "Deploy pcapi"
+        shell: bash
+        env:
+          PCAPI_ENVIRONMENT_SHORT_NAME: ${{ inputs.environment_short_name }}
+          PCAPI_VERSION: ${{ inputs.app_version }}
+        run: |
+          passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
@@ -156,148 +173,6 @@ jobs:
       ENV: ${{ inputs.environment }}
       VERSION: ${{ inputs.app_version }}
       continue_on_error: ${{ inputs.continue_on_error }}
-
-  apply-algolia-config-old-infra:
-    name: "apply Algolia settings"
-    needs: deploy-api
-    if: |
-      inputs.apply_algolia_config == true &&
-      !inputs.is_new_infra &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
-    permissions:
-      id-token: write
-      contents: read
-    runs-on: ubuntu-22.04
-    continue-on-error: ${{ inputs.continue_on_error }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: "Authentification to Google"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-      - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: github-token
-        with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: |
-            pc-connect
-            pc-firestore-cli
-          permission-contents: read
-
-      - name: "Get secrets"
-        id: "secrets"
-        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
-        with:
-          secrets: |-
-            DEPLOYMENT_SA:passculture-metier-ehp/pcapi-${{ inputs.environment }}_deploy-service-account
-            DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
-
-      - name: "Authentification to Google"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
-          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
-
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@46bfbcb2f617bd3dcc034e974ef6ffbe6106d3cb # pc-k8s-connect/v0.3.1
-        with:
-          cluster_scope: ${{ inputs.cluster_scope }}
-          cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.github-token.outputs.token }}
-
-      - name: "Configure algolia"
-        id: "set_algolia_settings"
-        env:
-          ENV: ${{ inputs.environment }}
-        run: |
-          DATE=$(date +%Y%m%d-%H%M%S)
-          export DATE
-          JOB_NAME="set-algolia-settings-${DATE}"
-
-          IMAGE=$(kubectl -n "$ENV" get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.containers[0].image}')
-          export IMAGE
-          SERVICE_ACCOUNT_NAME=$(kubectl -n "$ENV" get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.serviceAccountName}')
-          export SERVICE_ACCOUNT_NAME
-          echo "Creating Job ${JOB_NAME} with image ${IMAGE}"
-
-          envsubst < .github/workflows/templates/algolia-settings-job.yaml | kubectl -n "$ENV" apply -f -
-
-          kubectl -n "$ENV" wait --for=condition=complete --timeout=1800s "job/${JOB_NAME}"
-          echo "Job ${JOB_NAME} completed successfully"
-          kubectl -n "$ENV" logs "job/${JOB_NAME}"
-
-  apply-algolia-config:
-    name: "apply Algolia settings"
-    needs: deploy-api
-    if: |
-      inputs.apply_algolia_config == true &&
-      inputs.is_new_infra &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
-    permissions:
-      id-token: write
-      contents: read
-    runs-on: ubuntu-22.04
-    continue-on-error: ${{ inputs.continue_on_error }}
-    environment:
-      name: pcapi-${{ inputs.environment_short_name }}
-      deployment: false
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: "Authentification to Google with SA infra"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.PCAPI_CD_SERVICE_ACCOUNT }}
-
-      - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: github-token
-        with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: |
-            pc-connect
-            pc-firestore-cli
-          permission-contents: read
-
-      - name: Authenticate to GKE cluster
-        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
-        with:
-          cluster_name: ${{ inputs.app_cluster_name }}
-          project_id: ${{ inputs.app_project_id }}
-          location: ${{ inputs.location }}
-          namespace: pcapi-${{ inputs.environment_short_name }}
-          use_dns_based_endpoint: true
-
-      - name: "Configure algolia"
-        id: "set_algolia_settings"
-        env:
-          ENV: ${{ inputs.environment_short_name }}
-          NS: pcapi-${{ inputs.environment_short_name }}
-        run: |
-          DATE=$(date +%Y%m%d-%H%M%S)
-          export DATE
-          JOB_NAME="set-algolia-settings-${DATE}"
-
-          IMAGE=$(kubectl -n "$NS" get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.containers[0].image}')
-          export IMAGE
-          SERVICE_ACCOUNT_NAME=$(kubectl -n "$NS" get pods -l role=api --field-selector=status.phase==Running -o jsonpath='{.items[0].spec.serviceAccountName}')
-          export SERVICE_ACCOUNT_NAME
-          echo "Creating Job ${JOB_NAME} with image ${IMAGE}"
-
-          envsubst < .github/workflows/templates/algolia-settings-job.yaml | kubectl -n "$NS" apply -f -
-
-          kubectl -n "$NS" wait --for=condition=complete --timeout=1800s "job/${JOB_NAME}"
-          echo "Job ${JOB_NAME} completed successfully"
-          kubectl -n "$NS" logs "job/${JOB_NAME}"
 
   deploys-outcome:
     needs:
