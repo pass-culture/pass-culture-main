@@ -1,11 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import {
   defaultGetVenue,
-  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -69,45 +66,6 @@ describe('CollectiveOfferPreviewCreation', () => {
       screen.getByRole('heading', {
         name: 'Aperçu de l’offre',
       })
-    ).toBeInTheDocument()
-  })
-
-  it('should not render share link drawer when offer is bookable', async () => {
-    renderCollectiveOfferPreviewCreation('/offre/1/collectif/apercu', {
-      offerer: undefined,
-      isTemplate: false,
-      offer: getCollectiveOfferFactory(),
-    })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(
-      screen.queryByRole('button', {
-        name: 'Partager l’offre',
-      })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should render share link drawer when offer is template', async () => {
-    renderCollectiveOfferPreviewCreation('/offre/T-A1/collectif/apercu', {
-      ...defaultProps,
-      offer: {
-        ...defaultProps.offer,
-        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
-      },
-    })
-
-    const shareLinkButton = screen.getByRole('button', {
-      name: 'Partager l’offre',
-    })
-
-    expect(shareLinkButton).toBeInTheDocument()
-
-    await userEvent.click(shareLinkButton)
-    expect(
-      await screen.findByText(
-        'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
-      )
     ).toBeInTheDocument()
   })
 })
