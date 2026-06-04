@@ -153,16 +153,33 @@ def create_eac_offers_by_period(deposits: list[educational_models.EducationalDep
         else:
             confirmation_date = now
 
+        if deposit.amount > 0:
+            price = 1000
+            service_price = 800
+            additional_fee = 100
+        else:
+            price = 0
+            service_price = 0
+            additional_fee = 0
+
         educational_factories.ConfirmedCollectiveBookingFactory(
             educationalInstitution=institution,
             educationalYear=year,
             educationalDeposit=deposit,
             confirmationDate=confirmation_date,
-            collectiveStock__price=1000 if deposit.amount > 0 else 0,
+            collectiveStock__price=price,
+            collectiveStock__servicePrice=service_price,
+            collectiveStock__collectiveAdditionalFees=[
+                educational_factories.CollectiveAdditionalFeeFactory(amount=additional_fee),
+                educational_factories.CollectiveAdditionalFeeCustomFactory(amount=additional_fee),
+            ]
+            if additional_fee
+            else [],
             collectiveStock__startDatetime=year.expirationDate - timedelta(days=15),
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__collectiveOffer__institution=institution,
             collectiveStock__collectiveOffer__name=f"Offre confirmée pour l'UAI {institution.institutionId}",
+            collectiveStock__collectiveOffer__additionalDetails="Quelques informations pratiques",
         )
 
 
