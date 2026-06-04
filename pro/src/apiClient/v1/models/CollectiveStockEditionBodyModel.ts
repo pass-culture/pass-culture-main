@@ -4,10 +4,10 @@
 /* eslint-disable */
 export type CollectiveStockEditionBodyModel = {
   bookingLimitDatetime?: (string | null);
-  educationalPriceDetail?: (string | null);
   endDatetime?: (string | null);
   numberOfTickets?: (number | null);
+  price?: (number | null);
+  priceDetail?: (string | null);
   startDatetime?: (string | null);
-  totalPrice?: (number | null);
 };
 

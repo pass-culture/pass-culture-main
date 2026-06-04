@@ -6,12 +6,12 @@ import type { CollectiveAdditionalFeeResponseModel } from './CollectiveAdditiona
 export type CollectiveStockResponseModel = {
   bookingLimitDatetime: string;
   collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponseModel>;
-  educationalPriceDetail: (string | null);
   endDatetime: string;
   id: number;
   numberOfTeachers: number;
   numberOfTickets: number;
   price: number;
+  priceDetail: (string | null);
   servicePrice: (number | null);
   startDatetime: string;
 };
