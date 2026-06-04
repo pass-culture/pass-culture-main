@@ -31,7 +31,7 @@ export const applyVenueDefaultsToFormValues = (
       isVenueLocation: true,
       id: selectedVenue?.location?.id.toString() ?? '',
       isManualEdition: false,
-      label: venue.name,
+      label: venue.publicName,
     },
   }
 

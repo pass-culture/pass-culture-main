@@ -70,7 +70,9 @@ export function AdageOfferPartnerPanel({
         )}
 
         <div>
-          <p className={styles['partner-panel-info-name']}>{venue.name}</p>
+          <p className={styles['partner-panel-info-name']}>
+            {venue.publicName}
+          </p>
           {venue.adageId && !isPreview && (
             <Button
               as="a"

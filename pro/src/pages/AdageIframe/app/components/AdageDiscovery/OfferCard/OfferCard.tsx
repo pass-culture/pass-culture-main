@@ -92,7 +92,9 @@ export const OfferCardComponent = ({
         </div>
 
         <div className="offer-venue">
-          <div className={styles['offer-venue-name']}>{offer.venue.name}</div>
+          <div className={styles['offer-venue-name']}>
+            {offer.venue.publicName}
+          </div>
           {offer.venue.coordinates.latitude &&
             offer.venue.coordinates.longitude &&
             (adageUser.lat || adageUser.lat === 0) &&

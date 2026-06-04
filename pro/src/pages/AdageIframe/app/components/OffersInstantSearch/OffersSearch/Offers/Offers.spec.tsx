@@ -528,7 +528,7 @@ describe('offers', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {
-      name: 'Un autre titre Un autre lieu',
+      name: 'Un autre titre Le Petit Rintintin 33',
     })
 
     link.addEventListener('click', (e) => {

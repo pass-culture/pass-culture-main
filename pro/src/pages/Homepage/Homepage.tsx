@@ -168,7 +168,7 @@ export const Homepage = (): JSX.Element => {
             )}
             <PartnerPageCard
               venueId={selectedPartnerVenue.id}
-              venueName={selectedPartnerVenue.name}
+              venueName={selectedPartnerVenue.publicName}
               venueBannerUrl={selectedPartnerVenue.bannerUrl}
               venueBannerMeta={selectedPartnerVenue.bannerMeta}
               variant={HomepageVariant.INDIVIDUAL}
@@ -232,7 +232,7 @@ export const Homepage = (): JSX.Element => {
                 )}
                 <PartnerPageCard
                   venueId={selectedPartnerVenue.id}
-                  venueName={selectedPartnerVenue.name}
+                  venueName={selectedPartnerVenue.publicName}
                   venueBannerUrl={selectedPartnerVenue.bannerUrl}
                   venueBannerMeta={selectedPartnerVenue.bannerMeta}
                   variant={HomepageVariant.COLLECTIVE}
