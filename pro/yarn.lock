@@ -4848,10 +4848,10 @@ storybook-addon-remix-react-router@6.1.0:
     compare-versions "^6.0.0"
     react-inspector "9.0.0"
 
-storybook@10.4.0:
-  version "10.4.0"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-10.4.0.tgz#1cb5efdfef2c901e1507b854cccb3c10e46aa118"
-  integrity sha512-zrtctbVa6xEXCXuE3vsiR0At31zLOtzj8QudN/GaBJLZl0Z2DfF1rDPtTxdAbAp11M2J/7JVHaTIQKXauQPbmg==
+storybook@10.4.1:
+  version "10.4.1"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-10.4.1.tgz#5cd7d11fd16bb7c0ae61b883d65cebe909290820"
+  integrity sha512-V1Zd2e+gBFufqAQVZ1JR8KLqALsEZ3JYSBnWwQbKa6zCfWWanR6AFMyuOkLt2gZOgGp3h2Riuz88pGNVTQSG0A==
   dependencies:
     "@storybook/global" "^5.0.0"
     "@storybook/icons" "^2.0.2"
