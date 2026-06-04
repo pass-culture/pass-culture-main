@@ -309,10 +309,6 @@ describe('Homepage', () => {
   })
 
   describe('individual panel', () => {
-    /**
-     * TODO (mdesquilbet-pass, 2026-02-18): replace text content assertions
-     * by mocking components - when all modules are created
-     */
     beforeEach(() => {
       vi.spyOn(utils, 'getInitialTab').mockReturnValue('tab-individual')
     })
