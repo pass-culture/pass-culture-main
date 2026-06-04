@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
@@ -65,10 +65,6 @@ const renderOfferActionsCell = (
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    patchCollectiveOffersArchive: vi.fn(),
-    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
-  },
   apiNew: {
     getCollectiveOffer: vi.fn(),
     duplicateCollectiveOffer: vi.fn(),
@@ -77,6 +73,8 @@ vi.mock('@/apiClient/api', () => ({
     listEducationalOfferers: vi.fn(),
     getVenues: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
+    patchCollectiveOffersArchive: vi.fn(),
+    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
   },
 }))
 vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
@@ -134,7 +132,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Archiver l’offre' })
     )
 
-    expect(api.patchCollectiveOffersArchive).toHaveBeenCalledTimes(1)
+    expect(apiNew.patchCollectiveOffersArchive).toHaveBeenCalledTimes(1)
   })
 
   it('should show action buttons when action is allowed on bookable offer', async () => {
@@ -238,7 +236,7 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Dupliquer'))
-      expect(snackBarError).toBeCalledWith(
+      expect(snackBarError).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la récupération de votre offre'
       )
     })
@@ -515,7 +513,7 @@ describe('OfferActionsCells', () => {
 
   it('should show error notification if toggling template active state fails', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValueOnce(new Error('fail'))
 
@@ -539,7 +537,7 @@ describe('OfferActionsCells', () => {
 
   it('should show error notification if toggling template to active state fails', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValueOnce(new Error('fail'))
 
@@ -560,7 +558,7 @@ describe('OfferActionsCells', () => {
   })
 
   it('should show error notification when archiving fails', async () => {
-    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
       new Error('fail')
     )
 
