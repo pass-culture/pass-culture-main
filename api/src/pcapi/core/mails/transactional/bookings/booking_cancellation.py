@@ -4,49 +4,14 @@ from flask import render_template
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.mails import models
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
 
-from .booking_cancellation_by_beneficiary import send_booking_cancellation_by_beneficiary_email
-from .booking_cancellation_by_beneficiary_to_pro import send_booking_cancellation_by_beneficiary_to_pro_email
-from .booking_cancellation_by_pro_to_beneficiary import send_booking_cancellation_by_pro_to_beneficiary_email
-
 
 logger = logging.getLogger(__name__)
-
-
-def send_booking_cancellation_emails_to_user_and_offerer(
-    booking: Booking,
-    reason: BookingCancellationReasons | None,
-    rejected_by_fraud_action: bool = False,
-) -> None:
-    """TODO (tcoudray-pass, 18/05/26) Remove this function (see https://passculture.atlassian.net/browse/PC-41900)"""
-    if reason is None:
-        logger.error(
-            "Booking cancellation email sending failed because no reason was given",
-            extra={"booking_id": booking.id},
-        )
-    elif reason == BookingCancellationReasons.BENEFICIARY:
-        send_booking_cancellation_by_beneficiary_email(booking)
-        send_booking_cancellation_by_beneficiary_to_pro_email(booking)
-    elif reason == BookingCancellationReasons.OFFERER:
-        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
-    elif reason == BookingCancellationReasons.OFFERER_CLOSED:
-        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        # Do not notify pro for every booking: an email is already sent to all attached users for closure
-    elif reason in (
-        BookingCancellationReasons.FRAUD,
-        BookingCancellationReasons.FRAUD_INAPPROPRIATE,
-        BookingCancellationReasons.FRAUD_SUSPICION,
-    ):
-        if rejected_by_fraud_action:
-            send_booking_cancellation_by_pro_to_beneficiary_email(booking, rejected_by_fraud_action)
-        send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking) -> None:

@@ -802,7 +802,8 @@ def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booki
     """
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
-    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    transactional_mails.send_booking_cancellation_by_beneficiary_email(booking)
+    transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def cancel_booking_by_offerer(booking: models.Booking) -> None:
@@ -815,7 +816,8 @@ def cancel_booking_by_offerer(booking: models.Booking) -> None:
     """
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
-    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+    transactional_mails.send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
     transactional_notifications.send_cancel_booking_notification(booking_ids=[booking.id])
 
 
@@ -867,7 +869,7 @@ def cancel_booking_for_fraud(booking: models.Booking, reason: users_constants.Su
     if not cancelled:
         return
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id, "reason": reason.value})
-    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def cancel_booking_on_user_requested_account_suspension(booking: models.Booking) -> None:
@@ -887,7 +889,8 @@ def cancel_booking_on_user_requested_account_suspension(booking: models.Booking)
         "Cancelled booking on user-requested account suspension",
         extra={"booking": booking.id},
     )
-    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    transactional_mails.send_booking_cancellation_by_beneficiary_email(booking)
+    transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | None = None) -> None:
@@ -898,7 +901,7 @@ def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | N
         - (DB) Cancel booking uniterally if external cancellatio has failed
         - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
         of that it was a cancellation caused by offerer closing
-        - (Async task) Send email to offerer and beneficiary -> TODO (tcoudray-pass, 18/05/26) : Remove because it wont trigger any mailing (https://passculture.atlassian.net/browse/PC-41898)
+        - (Async task) Send email to beneficiary only, as pro already received an email
     """
     validation.check_booking_can_be_cancelled(booking)
     try:
@@ -914,7 +917,7 @@ def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | N
     if not cancelled:
         return
     logger.info("Cancelled booking on closed offerer", extra={"booking": booking.id})
-    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
 
 
 def mark_as_used(booking: models.Booking, validation_author_type: models.BookingValidationAuthorType) -> None:

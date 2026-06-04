@@ -3,6 +3,7 @@ import decimal
 import logging
 import os
 import pathlib
+from dataclasses import asdict
 from datetime import UTC
 from datetime import date
 from datetime import datetime
@@ -46,6 +47,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as push_testing
+from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -3069,10 +3071,7 @@ class AddCriterionToOffersTest:
 @pytest.mark.usefixtures("db_session")
 class RejectInappropriateProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
-    def test_should_reject_product_with_inappropriate_content(
-        self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
-    ):
+    def test_should_reject_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
         # Given
         ean_1 = Fake.ean13()
         ean_2 = Fake.ean13()
@@ -3122,13 +3121,9 @@ class RejectInappropriateProductTest:
         }
         assert db.session.query(users_models.Favorite).count() == 1  # product 2
         assert all(booking.isCancelled is True for booking in bookings if booking.stock.offer.product.id == product1)
-        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
+        assert len(mails_testing.outbox) == 0
 
-    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
-    def test_should_reject_product_with_inappropriate_content_and_send_email(
-        self, mocked_send_booking_cancellation_emails_to_user_and_offerer
-    ):
-        # Given
+    def test_should_reject_product_with_inappropriate_content_and_send_email(self):
         ean_1 = Fake.ean13()
         ean_2 = Fake.ean13()
         provider = providers_factories.PublicApiProviderFactory()
@@ -3139,9 +3134,9 @@ class RejectInappropriateProductTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id, ean=ean_2, lastProvider=provider
         )
         offers = {
-            factories.OfferFactory(product=product1),
-            factories.OfferFactory(product=product1),
-            factories.OfferFactory(product=product2),
+            factories.OfferFactory(product=product1, bookingEmail="whatever@example.com"),
+            factories.OfferFactory(product=product1, bookingEmail="whatever@example.com"),
+            factories.OfferFactory(product=product2, bookingEmail="whatever@example.com"),
         }
         user = users_factories.UserFactory()
 
@@ -3152,17 +3147,14 @@ class RejectInappropriateProductTest:
         assert db.session.query(users_models.Favorite).count() == len(offers)
         assert db.session.query(bookings_models.Booking).count() == len(offers)
 
-        # When
         api.reject_inappropriate_products([ean_1], user)
 
-        # Then
-        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
+        assert len(mails_testing.outbox) == 2
+        for mail in mails_testing.outbox:
+            assert mail["template"] == asdict(TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value)
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
-    def test_update_should_not_override_fraud_incompatibility(
-        self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
-    ):
+    def test_update_should_not_override_fraud_incompatibility(self, mocked_async_index_offer_ids):
         # Given
         ean = Fake.ean13()
         provider = providers_factories.PublicApiProviderFactory()
@@ -3182,7 +3174,7 @@ class RejectInappropriateProductTest:
         product = db.session.query(models.Product).filter(models.Product.ean == ean).one()
         assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
-        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
+        assert len(mails_testing.outbox) == 0
 
 
 @pytest.fixture(name="offer_matching_one_validation_rule")
