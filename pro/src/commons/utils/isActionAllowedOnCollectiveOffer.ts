@@ -1,44 +1,25 @@
 import {
   CollectiveOfferAllowedAction,
-  type CollectiveOfferResponseModel as CollectiveOfferResponseModelOld,
+  type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
-  type CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelOld,
-  type GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelOld,
-  type GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelOld,
-} from '@/apiClient/v1'
-import type {
-  CollectiveOfferResponseModel as CollectiveOfferResponseModelNew,
-  CollectiveOfferTemplateResponseModel as CollectiveOfferTemplateResponseModelNew,
-  GetCollectiveOfferResponseModel as GetCollectiveOfferResponseModelNew,
-  GetCollectiveOfferTemplateResponseModel as GetCollectiveOfferTemplateResponseModelNew,
+  type CollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1/new'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 
-type CollectiveOfferResponseModel =
-  | CollectiveOfferResponseModelOld
-  | CollectiveOfferResponseModelNew
-type CollectiveOfferTemplateResponseModel =
-  | CollectiveOfferTemplateResponseModelOld
-  | CollectiveOfferTemplateResponseModelNew
-type GetCollectiveOfferResponseModel =
-  | GetCollectiveOfferResponseModelOld
-  | GetCollectiveOfferResponseModelNew
-type GetCollectiveOfferTemplateResponseModel =
-  | GetCollectiveOfferTemplateResponseModelOld
-  | GetCollectiveOfferTemplateResponseModelNew
+type AnyCollectiveOffer =
+  | GetCollectiveOfferResponseModel
+  | GetCollectiveOfferTemplateResponseModel
+  | CollectiveOfferResponseModel
+  | CollectiveOfferTemplateResponseModel
 
 export function isActionAllowedOnCollectiveOffer(
-  offer:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel
-    | CollectiveOfferTemplateResponseModel,
+  offer: AnyCollectiveOffer,
   action: CollectiveOfferAllowedAction | CollectiveOfferTemplateAllowedAction
 ) {
   if (isCollectiveOfferBookable(offer)) {
-    return (offer.allowedActions as CollectiveOfferAllowedAction[]).includes(
-      action as CollectiveOfferAllowedAction
-    )
+    return offer.allowedActions.includes(action as CollectiveOfferAllowedAction)
   }
   return (
     offer.allowedActions as CollectiveOfferTemplateAllowedAction[]
@@ -71,13 +52,7 @@ export function isCollectiveOfferDetailsEditable(
   )
 }
 
-export function isCollectiveOfferSelectable(
-  offer:
-    | CollectiveOfferResponseModel
-    | CollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
-) {
+export function isCollectiveOfferSelectable(offer: AnyCollectiveOffer) {
   return offer.allowedActions.some((action) =>
     [
       CollectiveOfferAllowedAction.CAN_ARCHIVE,
@@ -101,13 +76,7 @@ export function isCollectiveStockEditable(
   )
 }
 
-export function isCollectiveOfferEditable(
-  offer:
-    | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel
-    | CollectiveOfferTemplateResponseModel
-) {
+export function isCollectiveOfferEditable(offer: AnyCollectiveOffer) {
   return offer.allowedActions.some((action) =>
     [
       CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
