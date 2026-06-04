@@ -45,7 +45,7 @@ export const PartnerPageCard = ({
     venueBannerUrl,
     venueBannerMeta
   )
-  const venuePreviewLink = `${WEBAPP_URL}/partenaire`
+  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const baseVenueEditionLink = `/partenaire`
   const venueEditionLink =
     variant === HomepageVariant.INDIVIDUAL
