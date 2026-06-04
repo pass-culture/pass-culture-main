@@ -19,6 +19,8 @@ const contextValue = {
   setTargetCustomer: vi.fn(),
   openToPublic: null,
   setOpenToPublic: noop,
+  activity: undefined,
+  setActivity: vi.fn(),
 }
 const renderSimulatorSiret = () => {
   return renderWithProviders(

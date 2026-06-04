@@ -1,9 +1,67 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
+import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
+import { getActivities } from 'commons/mappings/mappings'
+import { buildSelectOptions } from 'commons/utils/buildSelectOptions'
+import { activityValidator } from 'commons/utils/yup/activity'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { useSimulatorContext } from 'pages/Simulator/SimulatorContext'
+import {
+  saveActivityToStorage,
+  tryRestoreActivityFromStorage,
+} from 'pages/Simulator/storage'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
+import { Select } from 'ui-kit/form/Select/Select'
+import * as yup from 'yup'
+
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
+export interface SimulatorActivity {
+  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+}
+
 export const SimulatorActivity = (): JSX.Element => {
+  const { activity, setActivity, openToPublic } = useSimulatorContext()
+  const navigate = useNavigate()
+
+  const mainActivityOptions =
+    openToPublic === 'true'
+      ? buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
+      : buildSelectOptions(getActivities('NOT_OPEN_TO_PUBLIC'))
+
+  const methods = useForm<SimulatorActivity>({
+    defaultValues: { activity: activity },
+    resolver: yupResolver<SimulatorActivity, unknown, unknown>(
+      yup.object().shape({
+        activity: activityValidator(openToPublic !== 'true').required(
+          'Veuillez sélectionner une activité principale'
+        ),
+      })
+    ),
+  })
+
+  useEffect(() => {
+    try {
+      const data = tryRestoreActivityFromStorage(setActivity)
+      methods.reset({ activity: data })
+    } catch {
+      // Nothing to do
+    }
+  }, [setActivity])
+
+  const onSubmit = (formValues: SimulatorActivity) => {
+    if (formValues.activity !== undefined) {
+      setActivity(formValues.activity)
+      saveActivityToStorage(formValues.activity)
+      navigate('/inscription/preparation/publics')
+    }
+  }
+
   return (
     <>
       <div className={commonStyles['content']}>
@@ -11,24 +69,39 @@ export const SimulatorActivity = (): JSX.Element => {
           Quelle est votre activité principale ?
         </h1>
       </div>
-      <div className={commonStyles['action-bar']}>
-        <Button
-          as="a"
-          to="/inscription/preparation/accueil-public"
-          variant={ButtonVariant.SECONDARY}
-          label="Retour"
-        />
-        <BubbleStepper
-          page={3}
-          total={4}
-          className={commonStyles['action-bar-stepper']}
-        />
-        <Button
-          as="a"
-          to="/inscription/preparation/publics"
-          label="Continuer"
-        />
-      </div>
+      <FormLayout>
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <FormLayout.Row mdSpaceAfter>
+            <Select
+              options={[
+                {
+                  value: '',
+                  label: 'Sélectionnez votre activité principale',
+                },
+                ...mainActivityOptions,
+              ]}
+              {...methods.register('activity')}
+              error={methods.formState.errors.activity?.message}
+              label="Activité principale"
+              required
+            />
+          </FormLayout.Row>
+          <div className={commonStyles['action-bar']}>
+            <Button
+              as="a"
+              to="/inscription/preparation/accueil-public"
+              variant={ButtonVariant.SECONDARY}
+              label="Retour"
+            />
+            <BubbleStepper
+              page={3}
+              total={4}
+              className={commonStyles['action-bar-stepper']}
+            />
+            <Button type="submit" label="Continuer" />
+          </div>
+        </form>
+      </FormLayout>
     </>
   )
 }

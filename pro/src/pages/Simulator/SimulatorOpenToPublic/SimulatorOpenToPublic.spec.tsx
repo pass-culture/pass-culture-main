@@ -18,6 +18,8 @@ const contextValue = {
   setTargetCustomer: vi.fn(),
   openToPublic: null,
   setOpenToPublic: mockSetOpenToPublic,
+  activity: undefined,
+  setActivity: vi.fn(),
 }
 const renderSimulatorOpenToPublic = () => {
   return renderWithProviders(
