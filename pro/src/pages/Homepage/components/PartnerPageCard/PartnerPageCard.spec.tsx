@@ -32,7 +32,7 @@ vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
 const baseVenue = makeGetVenueResponseModel({
   id: 1,
   managingOffererId: 1,
-  name: 'Club Dorothy',
+  publicName: 'Club Dorothy',
 })
 
 const renderPartnerPageCard = (
@@ -46,7 +46,7 @@ const renderPartnerPageCard = (
   return renderWithProviders(
     <PartnerPageCard
       venueId={venue.id}
-      venueName={venue.name}
+      venueName={venue.publicName}
       venueBannerUrl={venue.bannerUrl}
       venueBannerMeta={venue.bannerMeta}
       variant={variant}

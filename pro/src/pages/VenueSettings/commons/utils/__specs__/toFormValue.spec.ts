@@ -19,7 +19,6 @@ describe('toFormValues', () => {
         ...venue,
         location: {
           id: 978,
-          //id: 1012,
           isVenueLocation: false,
           city: 'Montpellier',
           street: '79 Quai du Palladium',

@@ -170,7 +170,7 @@ export const computeInitialValuesFromOffer = (
         locationType: CollectiveLocationType.ADDRESS,
         location: {
           isManualEdition: false,
-          label: defaultVenue.name,
+          label: defaultVenue.publicName,
           isVenueLocation: true,
           id: defaultVenue.location?.id.toString() ?? '',
         },
