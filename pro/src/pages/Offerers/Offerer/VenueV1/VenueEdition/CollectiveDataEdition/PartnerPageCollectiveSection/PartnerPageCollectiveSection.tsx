@@ -140,7 +140,7 @@ function AdageInformations({
   tagText,
   variant,
   description,
-}: AdageInformationsProps) {
+}: Readonly<AdageInformationsProps>) {
   return (
     <section className={styles['details']}>
       <div>
