@@ -37,44 +37,41 @@ export default defineConfig(({ mode }) => {
       root: '.',
       globals: true,
       environment: 'jsdom',
-      setupFiles: [
-        './src/vitest.polyfills.ts',
-        'allure-vitest/setup',
-        './src/vitest.setup.ts',
-      ],
-      reporters: process.env.GITHUB_ACTIONS
-        ? ['verbose', 'github-actions']
-        : [
-            'verbose',
-            {
-              onTestRunEnd: ((testModules) => {
-                // Reporter to print slowest tests
-                const tests = testModules
-                  .flatMap((m) => [...m.children.allTests()])
-                  .filter((t) => (t.diagnostic()?.duration ?? 0) >= 1000)
-                tests.sort(
-                  (x, y) =>
-                    (x.diagnostic()?.duration ?? 0) -
-                    (y.diagnostic()?.duration ?? 0)
-                )
-                tests.reverse()
-                if (tests.length > 1) {
-                  console.info('Slow tests')
-                  console.info(
-                    Object.fromEntries(
-                      tests.map((t) => {
-                        const date = new Date(t.diagnostic()?.duration ?? 0)
-                        return [
-                          `${t.module.moduleId} | ${t.fullName}`,
-                          `${date.getMilliseconds()}ms`,
-                        ]
-                      })
-                    )
+      setupFiles: ['./src/vitest.polyfills.ts', './src/vitest.setup.ts'],
+      reporters:
+        process.env.GITHUB_ACTIONS === 'true'
+          ? []
+          : [
+              'verbose',
+              {
+                onTestRunEnd: ((testModules) => {
+                  // Reporter to print slowest tests
+                  const tests = testModules
+                    .flatMap((m) => [...m.children.allTests()])
+                    .filter((t) => (t.diagnostic()?.duration ?? 0) >= 1000)
+                  tests.sort(
+                    (x, y) =>
+                      (x.diagnostic()?.duration ?? 0) -
+                      (y.diagnostic()?.duration ?? 0)
                   )
-                }
-              }) satisfies VerboseReporter['onTestRunEnd'],
-            },
-          ],
+                  tests.reverse()
+                  if (tests.length > 1) {
+                    console.info('Slow tests')
+                    console.info(
+                      Object.fromEntries(
+                        tests.map((t) => {
+                          const date = new Date(t.diagnostic()?.duration ?? 0)
+                          return [
+                            `${t.module.moduleId} | ${t.fullName}`,
+                            `${date.getMilliseconds()}ms`,
+                          ]
+                        })
+                      )
+                    )
+                  }
+                }) satisfies VerboseReporter['onTestRunEnd'],
+              },
+            ],
       mockReset: true,
       restoreMocks: true,
       cacheDir: '.vitest_cache',

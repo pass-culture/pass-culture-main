@@ -48,9 +48,7 @@ docs-build/
 # Script for VSCode local debugging
 /api/src/pcapi/scripts/local_debug_script.py
 
-# Allure Report
-allure-results/
-allure-report/
+
 
 # Ignore accidental root yarn lockfile
 /yarn.lock
