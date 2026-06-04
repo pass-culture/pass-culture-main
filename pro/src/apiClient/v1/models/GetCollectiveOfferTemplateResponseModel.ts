@@ -26,7 +26,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   displayedStatus: CollectiveOfferDisplayedStatus;
   domains: Array<OfferDomain>;
   durationMinutes: (number | null);
-  educationalPriceDetail: (string | null);
   formats: Array<EacFormat>;
   id: number;
   imageCredit: (string | null);
@@ -38,6 +37,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   motorDisabilityCompliant: (boolean | null);
   name: string;
   nationalProgram: (NationalProgramResponseModel | null);
+  priceDetail: (string | null);
   students: Array<StudentLevels>;
   venue: GetCollectiveOfferVenueResponseModel;
   visualDisabilityCompliant: (boolean | null);

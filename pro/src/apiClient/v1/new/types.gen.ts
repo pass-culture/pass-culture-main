@@ -831,10 +831,6 @@ export type CollectiveStockCreationBodyModel = {
      */
     bookingLimitDatetime: string | null;
     /**
-     * Educationalpricedetail
-     */
-    educationalPriceDetail: string | null;
-    /**
      * Enddatetime
      */
     endDatetime: string;
@@ -847,13 +843,17 @@ export type CollectiveStockCreationBodyModel = {
      */
     offerId: number;
     /**
+     * Price
+     */
+    price: number;
+    /**
+     * Pricedetail
+     */
+    priceDetail: string | null;
+    /**
      * Startdatetime
      */
     startDatetime: string;
-    /**
-     * Totalprice
-     */
-    totalPrice: number;
 };
 
 /**
@@ -865,10 +865,6 @@ export type CollectiveStockEditionBodyModel = {
      */
     bookingLimitDatetime?: string | null;
     /**
-     * Educationalpricedetail
-     */
-    educationalPriceDetail?: string | null;
-    /**
      * Enddatetime
      */
     endDatetime?: string | null;
@@ -877,13 +873,17 @@ export type CollectiveStockEditionBodyModel = {
      */
     numberOfTickets?: number | null;
     /**
+     * Price
+     */
+    price?: number | null;
+    /**
+     * Pricedetail
+     */
+    priceDetail?: string | null;
+    /**
      * Startdatetime
      */
     startDatetime?: string | null;
-    /**
-     * Totalprice
-     */
-    totalPrice?: number | null;
 };
 
 /**
@@ -925,10 +925,6 @@ export type CollectiveStockResponseModel = {
      */
     collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponseModel>;
     /**
-     * Educationalpricedetail
-     */
-    educationalPriceDetail: string | null;
-    /**
      * Enddatetime
      */
     endDatetime: string;
@@ -948,6 +944,10 @@ export type CollectiveStockResponseModel = {
      * Price
      */
     price: number;
+    /**
+     * Pricedetail
+     */
+    priceDetail: string | null;
     /**
      * Serviceprice
      */
@@ -2024,10 +2024,6 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
      */
     collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponseModel>;
     /**
-     * Educationalpricedetail
-     */
-    educationalPriceDetail: string | null;
-    /**
      * Enddatetime
      */
     endDatetime: string;
@@ -2047,6 +2043,10 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
      * Price
      */
     price: number;
+    /**
+     * Pricedetail
+     */
+    priceDetail: string | null;
     /**
      * Serviceprice
      */
@@ -2286,10 +2286,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
      */
     durationMinutes: number | null;
     /**
-     * Educationalpricedetail
-     */
-    educationalPriceDetail: string | null;
-    /**
      * Formats
      */
     formats: Array<EacFormat>;
@@ -2327,6 +2323,10 @@ export type GetCollectiveOfferTemplateResponseModel = {
      */
     name: string;
     nationalProgram: NationalProgramResponseModel | null;
+    /**
+     * Pricedetail
+     */
+    priceDetail: string | null;
     /**
      * Students
      */
