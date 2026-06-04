@@ -21,6 +21,7 @@ from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
 from pcapi.core.external_bookings.api import send_booking_notification_to_external_service
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.repository import get_provider_by_local_class
 
@@ -149,7 +150,7 @@ class BookEventTicketTest:
                 "offer_price": 1010,
                 "price_category_id": stock.priceCategoryId,
                 "price_category_id_at_provider": None,
-                "price_category_label": "Tarif unique",
+                "price_category_label": DEFAULT_PRICE_LABEL,
                 "stock_id": stock.id,
                 "stock_id_at_provider": "roi_des_forêts!",
                 "user_birth_date": user.dateOfBirth.strftime("%Y-%m-%d"),

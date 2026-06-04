@@ -11,6 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.search import models as search_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -32,16 +33,6 @@ def _create_offerer() -> offerers_models.Offerer:
     offerer = offerers_factories.OffererFactory.build(siren=new_siren, name=f"Structure TEST - {fake.company()}")
     db.session.add(offerer)
     return offerer
-
-
-def _get_price_category_label(venue: offerers_models.Venue) -> offers_models.PriceCategoryLabel:
-    label = (
-        db.session.query(offers_models.PriceCategoryLabel)
-        .filter(offers_models.PriceCategoryLabel.venueId == venue.id)
-        .filter(offers_models.PriceCategoryLabel.label == "Tarif unique")
-        .first()
-    )
-    return label or offers_factories.PriceCategoryLabelFactory.create(venue=venue)
 
 
 def _create_cinema_offer(venue: offerers_models.Venue, offer_name: str, price: decimal.Decimal) -> offers_models.Offer:
@@ -74,10 +65,7 @@ def _create_cinema_offer(venue: offerers_models.Venue, offer_name: str, price: d
         offer=offer,
     )
     db.session.add(offer_metadata)
-    price_category_label = _get_price_category_label(venue)
-    price_category = offers_factories.PriceCategoryFactory(
-        offer=offer, priceCategoryLabel=price_category_label, price=price
-    )
+    price_category = offers_factories.PriceCategoryFactory(offer=offer, label=DEFAULT_PRICE_LABEL, price=price)
 
     for daydelta in range(0, 20, 4):
         day = datetime.date.today() + datetime.timedelta(days=daydelta)

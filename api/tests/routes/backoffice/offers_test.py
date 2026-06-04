@@ -3399,12 +3399,12 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert offer.venueId == destination_venue.id
-        assert gold_stock.priceCategory.priceCategoryLabel.venue == destination_venue
-        assert gold_stock.priceCategory.priceCategoryLabel != gold_label
+        assert gold_stock.priceCategory.priceCategoryLabel is None
+        assert gold_stock.priceCategory.label == gold_label.label
         assert gold_label.venue == source_venue
-        assert silver_stock.priceCategory.priceCategoryLabel.venue == destination_venue
-        assert silver_stock.priceCategory.priceCategoryLabel == destination_silver_label
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 4
+        assert silver_stock.priceCategory.priceCategoryLabel is None
+        assert silver_stock.priceCategory.label == destination_silver_label.label
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 3
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_sould_move_event_offerer_address(
@@ -4066,7 +4066,7 @@ class EditOfferStockTest(PostEndpointHelper):
             offer__subcategoryId=subcategories.CONFERENCE.id,
             price=decimal.Decimal("123.45"),
         )
-        label = price_category.priceCategoryLabel.label
+        label = price_category.label
         offer = price_category.offer
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
@@ -4089,7 +4089,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
         assert price_category.price == decimal.Decimal("50.1")
-        assert price_category.priceCategoryLabel.label == label
+        assert price_category.label == label
         assert stock_to_edit.priceCategory == price_category
 
     def test_offer_stock_edit_with_price_category_with_multiple_stocks(self, authenticated_client):
@@ -4097,7 +4097,7 @@ class EditOfferStockTest(PostEndpointHelper):
             offer__subcategoryId=subcategories.CONFERENCE.id,
             price=decimal.Decimal("123.45"),
         )
-        label = price_category.priceCategoryLabel.label
+        label = price_category.label
         offer = price_category.offer
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
@@ -4126,12 +4126,12 @@ class EditOfferStockTest(PostEndpointHelper):
         assert booking_to_edit.amount == decimal.Decimal("50.1")
         assert stock_to_edit.priceCategory != price_category
         assert stock_to_edit.priceCategory.price == decimal.Decimal("50.1")
-        assert stock_to_edit.priceCategory.priceCategoryLabel.label == expected_label
+        assert stock_to_edit.priceCategory.label == expected_label
 
         assert other_stock.price == decimal.Decimal("123.45")
         assert other_stock.priceCategory == price_category
         assert other_stock.priceCategory.price == decimal.Decimal("123.45")
-        assert other_stock.priceCategory.priceCategoryLabel.label == label
+        assert other_stock.priceCategory.label == label
 
 
 class DownloadBookingsCSVTest(GetEndpointHelper):
@@ -4932,18 +4932,10 @@ class GetOfferDetailsTest(GetEndpointHelper):
     ):
         venue = venue_factory()
         offer = offers_factories.EventOfferFactory(venue=venue)
-        price_gold = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="OR", price=66.6, priceCategoryLabel__venue=venue
-        )
-        price_silver = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="ARGENT", price=42, priceCategoryLabel__venue=venue
-        )
-        price_bronze = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="BRONZE", price=13, priceCategoryLabel__venue=venue
-        )
-        price_free = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="GRATUIT", price=0, priceCategoryLabel__venue=venue
-        )
+        price_gold = offers_factories.PriceCategoryFactory(offer=offer, label="OR", price=66.6)
+        price_silver = offers_factories.PriceCategoryFactory(offer=offer, label="ARGENT", price=42)
+        price_bronze = offers_factories.PriceCategoryFactory(offer=offer, label="BRONZE", price=13)
+        price_free = offers_factories.PriceCategoryFactory(offer=offer, label="GRATUIT", price=0)
 
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_gold)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_silver)

@@ -38,12 +38,10 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         price_category_1 = offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Carré d'or", venue=venue_provider.venue
-            ),
+            label="Carré d'or",
             price=decimal.Decimal("30"),
         )
-        price_category_2 = offers_factories.PriceCategoryFactory(
+        price_category_2 = offers_factories.PriceCategoryWithPriceCategoryLabelFactory(
             offer=event,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
                 label="Triangle d'argent", venue=venue_provider.venue
@@ -72,16 +70,12 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         # should not appear in result
         offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Carré d'or", venue=venue_provider.venue
-            ),
+            label="Carré d'or",
             price=decimal.Decimal("30"),
         )
         offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Triangle d'argent", venue=venue_provider.venue
-            ),
+            label="Triangle d'argent",
             price=decimal.Decimal("15"),
             idAtProvider="silver_triangle",
         )
@@ -89,17 +83,13 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         # expected in result
         price_category_3 = offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Cercle de bronze", venue=venue_provider.venue
-            ),
+            label="Cercle de bronze",
             price=decimal.Decimal("10"),
             idAtProvider="bronze_circle",
         )
         price_category_4 = offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Hexagone en chocolat", venue=venue_provider.venue
-            ),
+            label="Hexagone en chocolat",
             price=decimal.Decimal("5"),
             idAtProvider="chocolate_hexagon",
         )

@@ -77,10 +77,7 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, label="Already exists")
 
         data = {
             "priceCategories": [
@@ -94,7 +91,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert db.session.query(offers_models.PriceCategory).count() == 3
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 3
 
     def test_stock_price_update(self, client):
         offer = offers_factories.EventOfferFactory()

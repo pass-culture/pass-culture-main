@@ -134,7 +134,6 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
         num_queries += 1  # select price_category
-        num_queries += 1  # select price_category_label
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 200

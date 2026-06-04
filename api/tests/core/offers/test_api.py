@@ -4803,18 +4803,6 @@ class ReplacePriceCategoriesTest:
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
         ]
 
-    def test_reuses_existing_label(self):
-        offer = factories.EventOfferFactory()
-        existing_label = factories.PriceCategoryLabelFactory(label="Shared Label", venue=offer.venue)
-        inputs: list[offers_schemas.PriceCategoryInput] = [
-            {"label": "Shared Label", "price": Decimal("10.00")},
-        ]
-
-        result = api.replace_offer_price_categories(offer, inputs)
-
-        assert len(result.priceCategories) == 1
-        assert result.priceCategories[0].priceCategoryLabel.id == existing_label.id
-
     def test_stock_price_updated_when_price_category_price_changes(self):
         offer = factories.EventOfferFactory()
         price_category = factories.PriceCategoryFactory(
@@ -5415,12 +5403,18 @@ class DeleteOffersAndAllRelatedObjectsTest:
         shared_label = factories.PriceCategoryLabelFactory(label="Tarif partagé", venue=venue)
         unique_label = factories.PriceCategoryLabelFactory(label="Tarif non partagé", venue=venue)
         offer = factories.EventOfferFactory(venue=venue)
-        category_1 = factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=10)
-        category_2 = factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=20)
+        category_1 = factories.PriceCategoryWithPriceCategoryLabelFactory(
+            offer=offer, priceCategoryLabel=shared_label, price=10
+        )
+        category_2 = factories.PriceCategoryWithPriceCategoryLabelFactory(
+            offer=offer, priceCategoryLabel=unique_label, price=20
+        )
         factories.EventStockFactory(offer=offer, priceCategory=category_1)
         factories.EventStockFactory(offer=offer, priceCategory=category_2)
         other_offer = factories.EventOfferFactory(venue=venue)
-        other_category = factories.PriceCategoryFactory(offer=other_offer, priceCategoryLabel=shared_label, price=30)
+        other_category = factories.PriceCategoryWithPriceCategoryLabelFactory(
+            offer=other_offer, priceCategoryLabel=shared_label, price=30
+        )
         other_stock = factories.EventStockFactory(offer=other_offer, priceCategory=other_category)
         stock_with_wrong_category = factories.EventStockFactory(offer__venue=venue, priceCategory=category_1)
 
@@ -5434,7 +5428,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
         assert_offers_have_been_completely_cleaned([offer_id])
 
         assert len(other_offer.priceCategories) == 1
-        assert other_offer.priceCategories[0].priceCategoryLabel.label == "Tarif partagé"
+        assert other_offer.priceCategories[0].label == "Tarif partagé"
         assert other_stock.priceCategory == other_category
         assert stock_with_wrong_category.priceCategory == category_1
         assert category_1.offer == stock_with_wrong_category.offer

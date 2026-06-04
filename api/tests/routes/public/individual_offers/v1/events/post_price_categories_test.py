@@ -159,6 +159,25 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
+    # TODO (prouzet, 2026-06-04) Remove this test method along with PriceCategoryLabel
+    def test_should_raise_400_because_of_existing_price_category_with_price_category_label(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        payload = self._get_base_payload()
+
+        offers_factories.PriceCategoryWithPriceCategoryLabelFactory(
+            offer=offer,
+            price=decimal.Decimal("25"),
+            priceCategoryLabel__label="carre or",
+        )
+
+        response = self.make_request(plain_api_key, {"event_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "priceCategories": ["The price category carre or already exists"],
+        }
+
     def test_should_raise_400_because_of_existing_price_categories(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -167,7 +186,7 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
         offers_factories.PriceCategoryFactory(
             offer=offer,
             price=decimal.Decimal("25"),
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="carre or"),
+            label="carre or",
         )
 
         response = self.make_request(plain_api_key, {"event_id": offer.id}, json_body=payload)

@@ -1720,7 +1720,7 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
             ),
             sa_orm.selectinload(offers_models.Offer.stocks)  # avoid cartesian product which causes OOM
             .joinedload(offers_models.Stock.priceCategory)
-            .load_only(offers_models.PriceCategory.price)
+            .load_only(offers_models.PriceCategory.price, offers_models.PriceCategory._label)
             .joinedload(offers_models.PriceCategory.priceCategoryLabel)
             .load_only(offers_models.PriceCategoryLabel.label),
             sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
@@ -1837,15 +1837,10 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
         db.session.add(stock.priceCategory)
         return False
 
-    new_price_category_label = offers_models.PriceCategoryLabel(
-        label=f"{stock.priceCategory.priceCategoryLabel.label} - Revalorisation du {datetime.date.today().strftime('%d/%m/%Y')}",
-        venue=stock.priceCategory.priceCategoryLabel.venue,
-    )
-    db.session.add(new_price_category_label)
     new_price_category = offers_models.PriceCategory(
         offerId=stock.offerId,
         price=decimal.Decimal(new_price),
-        priceCategoryLabel=new_price_category_label,
+        label=f"{stock.priceCategory.label} - Revalorisation du {datetime.date.today().strftime('%d/%m/%Y')}",
     )
     db.session.add(new_price_category)
     stock.priceCategory = new_price_category

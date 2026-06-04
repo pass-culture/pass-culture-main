@@ -1189,15 +1189,9 @@ class GetBookingsTest:
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
-        assert (
-            response.json["ended_bookings"][0]["stock"]["priceCategoryLabel"]
-            == stock.priceCategory.priceCategoryLabel.label
-        )
+        assert response.json["ended_bookings"][0]["stock"]["priceCategoryLabel"] == stock.priceCategory.label
         assert response.json["ended_bookings"][0]["stock"]["price"] == stock.price * 100
-        assert (
-            response.json["ongoing_bookings"][0]["stock"]["priceCategoryLabel"]
-            == stock.priceCategory.priceCategoryLabel.label
-        )
+        assert response.json["ongoing_bookings"][0]["stock"]["priceCategoryLabel"] == stock.priceCategory.label
         assert response.json["ongoing_bookings"][0]["stock"]["price"] == stock.price * 100
 
     def test_get_free_bookings_in_subcategory(self, client):

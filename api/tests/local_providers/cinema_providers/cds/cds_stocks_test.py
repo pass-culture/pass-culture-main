@@ -18,7 +18,6 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
 from pcapi.core.offers.models import Stock
@@ -232,7 +231,6 @@ class CDSStocksTest:
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -283,10 +281,8 @@ class CDSStocksTest:
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
         assert created_stocks[1].features == []
 
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "pass Culture"
+        assert all(category.label == "pass Culture" for category in created_price_categories)
+        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -325,7 +321,6 @@ class CDSStocksTest:
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -371,10 +366,8 @@ class CDSStocksTest:
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
         assert created_stocks[1].features == []
 
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "pass Culture"
+        assert all(category.label == "pass Culture" for category in created_price_categories)
+        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -410,7 +403,6 @@ class CDSStocksTest:
 
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -418,10 +410,8 @@ class CDSStocksTest:
 
         assert created_stocks[1].idAtProviders == f"51%{venue_provider.venueId}%CDS#2"
 
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "pass Culture"
+        assert all(category.label == "pass Culture" for category in created_price_categories)
+        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -493,7 +483,6 @@ class CDSStocksTest:
 
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
@@ -505,10 +494,8 @@ class CDSStocksTest:
         assert created_stocks[1].idAtProviders == f"51%{venue_provider.venueId}%CDS#2"
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)  # Nothing should have changed
 
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "pass Culture"
+        assert all(category.label == "pass Culture" for category in created_price_categories)
+        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -544,10 +531,8 @@ class CDSStocksTest:
         created_offer = db.session.query(Offer).one()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_labels = db.session.query(PriceCategoryLabel).order_by(PriceCategoryLabel.label).all()
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
-        assert len(created_price_category_labels) == 2
 
         assert created_offer.name == "Coupez !"
         assert created_offer.product
@@ -568,7 +553,7 @@ class CDSStocksTest:
         assert created_stocks[0].beginningDatetime == datetime(2022, 6, 20, 9)
 
         assert created_price_categories[0].price == 5.0
-        assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
+        assert created_price_categories[0].label == "Diffusion 2D"
 
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
@@ -579,10 +564,7 @@ class CDSStocksTest:
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
 
         assert created_price_categories[1].price == 6.5
-        assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
-
-        assert created_price_category_labels[0].label == "Diffusion 2D"
-        assert created_price_category_labels[1].label == "Diffusion 3D"
+        assert created_price_categories[1].label == "Diffusion 3D"
 
         assert cds_stocks.erroredObjects == 0
         assert cds_stocks.erroredThumbs == 0
@@ -622,7 +604,6 @@ class CDSStocksTest:
         created_offer = db.session.query(Offer).one()
         created_stock = db.session.query(Stock).one()
         created_price_category = db.session.query(PriceCategory).one()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
 
         should_apply_movie_festival_rate_mock.assert_called_with(
             created_offer.id,
@@ -633,9 +614,8 @@ class CDSStocksTest:
         assert created_stock.priceCategory == created_price_category
 
         assert created_price_category.price == 4.0
-        assert created_price_category.priceCategoryLabel == created_price_category_label
-
-        assert created_price_category_label.label == "My awesome festival"
+        assert created_price_category.label == "My awesome festival"
+        assert created_price_category.priceCategoryLabel is None
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_venue_movies")
@@ -663,7 +643,6 @@ class CDSStocksTest:
         # Then
         created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == Decimal("6.9")
-        assert db.session.query(PriceCategoryLabel).count() == 1
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_movie_poster")

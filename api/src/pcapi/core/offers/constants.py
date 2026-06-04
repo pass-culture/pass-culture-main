@@ -21,3 +21,5 @@ CURRENCY_NAME_MAPPING: typing.Final = {
     CurrencyEnum.EUR: "euros",
     CurrencyEnum.XPF: "francs Pacifique",
 }
+
+DEFAULT_PRICE_LABEL = "Tarif unique"

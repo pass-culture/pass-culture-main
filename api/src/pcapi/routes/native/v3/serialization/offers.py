@@ -74,7 +74,7 @@ class OfferStockResponse(HttpBodyModel):
         price = convert_to_cent(stock.price)
         price_category_label = None
         if price_category := stock.priceCategory:
-            price_category_label = price_category.priceCategoryLabel.label
+            price_category_label = price_category.label
 
         remaining_quantity = stock.remainingQuantity if stock.remainingQuantity != "unlimited" else None
 

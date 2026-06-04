@@ -154,10 +154,8 @@ class Returns200Test:
 
     def test_edit_one_event_stock_created_with_price_category(self, client, caplog):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
-        old_price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=offer.venue)
-        new_price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__venue=offer.venue, price=25
-        )
+        old_price_category = offers_factories.PriceCategoryFactory(offer=offer)
+        new_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=25)
         existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=old_price_category)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -537,11 +535,9 @@ class Returns400Test:
 
     def test_cannot_update_event_stock_with_price_higher_than_300_euros(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
-        positive_price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="positive_price", price=10
-        )
+        positive_price_category = offers_factories.PriceCategoryFactory(offer=offer, label="positive_price", price=10)
         too_high_price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
+            offer=offer, label="too_high_price_category", price=310
         )
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         existing_stock = offers_factories.EventStockFactory(

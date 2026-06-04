@@ -53,8 +53,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             price=decimal.Decimal("88.99"),
-            priceCategoryLabel__label="carre or",
-            priceCategoryLabel__venue=offer.venue,
+            label="carre or",
         )
 
         return offer, price_category
@@ -83,8 +82,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         free_price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             price=decimal.Decimal("0"),
-            priceCategoryLabel__label="gratuit",
-            priceCategoryLabel__venue=venue_provider.venue,
+            label="gratuit",
         )
 
         next_week = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)

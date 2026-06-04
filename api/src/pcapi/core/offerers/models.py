@@ -446,10 +446,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "CollectivePlaylist", foreign_keys="CollectivePlaylist.venueId", back_populates="venue"
     )
 
-    priceCategoriesLabel: sa_orm.Mapped[list["offers_models.PriceCategoryLabel"]] = sa_orm.relationship(
-        "PriceCategoryLabel", foreign_keys="PriceCategoryLabel.venueId", back_populates="venue"
-    )
-
     registration: sa_orm.Mapped["VenueRegistration | None"] = sa_orm.relationship(
         "VenueRegistration", foreign_keys="VenueRegistration.venueId", back_populates="venue", uselist=False
     )

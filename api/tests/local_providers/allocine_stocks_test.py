@@ -14,6 +14,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import db
 
@@ -192,7 +193,7 @@ class UpdateObjectsTest:
         for created_stock in created_stocks:
             assert created_stock.price == decimal.Decimal("4.0")
             assert created_stock.priceCategory.price == decimal.Decimal("4.0")
-            assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+            assert created_stock.priceCategory.label == "My awesome festival"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -321,7 +322,6 @@ class UpdateObjectsTest:
         created_offer = db.session.query(offers_models.Offer).order_by("name").all()
         created_stock = db.session.query(offers_models.Stock).order_by("beginningDatetime").all()
         created_price_category = db.session.query(offers_models.PriceCategory).all()
-        created_price_category_label = db.session.query(offers_models.PriceCategoryLabel).one()
 
         unique_offer = created_offer[0]
 
@@ -362,7 +362,8 @@ class UpdateObjectsTest:
 
         assert first_price_category.offerId == unique_offer.id
         assert first_price_category.price == 10
-        assert first_price_category.priceCategoryLabel == created_price_category_label
+        assert first_price_category.label is not None
+        assert first_price_category.priceCategoryLabel is None
 
         assert allocine_stocks_provider.erroredObjects == 0
         assert allocine_stocks_provider.erroredThumbs == 0
@@ -474,7 +475,7 @@ class UpdateObjectsTest:
             assert mock_poster_get_allocine.call_count == 2
             assert len(created_offer) == 2
             assert len(created_price_categories) == 2
-            assert len(created_price_categories_labels) == 2
+            assert len(created_price_categories_labels) == 0
             assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue1.id).count() == 1
             assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 6
@@ -512,7 +513,7 @@ class UpdateObjectsTest:
             first_stock.quantity = 100
             first_stock.price = 20
             first_stock.priceCategory = offers_models.PriceCategory(
-                price=20, offer=first_stock.offer, priceCategoryLabel=first_stock.priceCategory.priceCategoryLabel
+                price=20, offer=first_stock.offer, label=first_stock.priceCategory.label
             )
 
             second_stock = created_stocks[1]
@@ -533,13 +534,13 @@ class UpdateObjectsTest:
             assert first_stock.quantity == 100
             assert first_stock.price == 20
             assert first_stock.priceCategory.price == 20
-            assert first_stock.priceCategory.label == "Tarif unique"
+            assert first_stock.priceCategory.label == DEFAULT_PRICE_LABEL
             assert first_stock.bookingLimitDatetime == datetime(2023, 12, 18, 13, 0)
 
             assert second_stock.quantity is None
             assert second_stock.price == 10
             assert second_stock.priceCategory.price == 10
-            assert second_stock.priceCategory.label == "Tarif unique"
+            assert second_stock.priceCategory.label == DEFAULT_PRICE_LABEL
             assert second_stock.bookingLimitDatetime == datetime(2023, 12, 4, 14, 30)
 
     @pytest.mark.usefixtures("db_session")
@@ -607,7 +608,7 @@ class UpdateObjectsTest:
             )
             offers_factories.PriceCategoryFactory(offer=offer, price=allocine_venue_provider.price)
             newest_price_category = offers_factories.PriceCategoryFactory(
-                offer=offer, price=allocine_venue_provider.price, priceCategoryLabel__label="Nouveau tarif"
+                offer=offer, price=allocine_venue_provider.price, label="Nouveau tarif"
             )
 
             # When
@@ -652,7 +653,7 @@ class UpdateObjectsTest:
             )
 
             manually_created_price_category = offers_factories.PriceCategoryFactory(
-                offer=offer, price=decimal.Decimal("10.1"), priceCategoryLabel__label="price should not change"
+                offer=offer, price=decimal.Decimal("10.1"), label="price should not change"
             )
             stock_with_unchanging_price = offers_factories.EventStockFactory(
                 offer=offer,

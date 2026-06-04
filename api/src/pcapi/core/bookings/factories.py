@@ -28,9 +28,7 @@ class BookingFactory(BaseFactory):
     deposit = factory.LazyAttribute(lambda o: o.user.deposit)
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
-    priceCategoryLabel = factory.Maybe(
-        "stock.priceCategory", factory.SelfAttribute("stock.priceCategory.priceCategoryLabel.label"), None
-    )
+    priceCategoryLabel = factory.Maybe("stock.priceCategory", factory.SelfAttribute("stock.priceCategory.label"), None)
 
     @factory.lazy_attribute
     def usedRecreditType(

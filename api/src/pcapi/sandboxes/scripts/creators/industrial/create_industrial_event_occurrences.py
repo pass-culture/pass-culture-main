@@ -6,7 +6,6 @@ from datetime import timedelta
 
 import pcapi.utils.date as date_utils
 from pcapi.core.categories import subcategories
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models.event_occurence import EventOccurrence
@@ -67,11 +66,7 @@ def create_industrial_event_occurrences(
                 price_category = price_categories[price]
             else:
                 price_category = offers_factories.PriceCategoryFactory.create(
-                    offer=event_offer_with_occurrences,
-                    price=price,
-                    priceCategoryLabel=offers_api.get_or_create_label(
-                        f"Tarif {index}", event_offer_with_occurrences.venue
-                    ),
+                    offer=event_offer_with_occurrences, price=price, label=f"Tarif {index}"
                 )
                 price_categories[price] = price_category
 

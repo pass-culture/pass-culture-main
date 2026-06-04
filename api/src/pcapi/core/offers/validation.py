@@ -870,8 +870,13 @@ def check_for_duplicated_price_categories(
     existing_price_category = (
         db.session.query(models.PriceCategory)
         .filter_by(offerId=offer_id)
-        .join(models.PriceCategoryLabel)
-        .filter(sa.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
+        .outerjoin(models.PriceCategoryLabel)
+        .filter(
+            sa.func.ROW(
+                sa.func.coalesce(models.PriceCategory._label, models.PriceCategoryLabel.label),
+                models.PriceCategory.price,
+            ).in_(new_labels_and_prices)
+        )
         .first()
     )
 
