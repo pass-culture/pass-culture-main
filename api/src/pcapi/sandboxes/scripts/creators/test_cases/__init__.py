@@ -473,6 +473,8 @@ def create_artists() -> None:
 
     _create_multi_artists_offer(venue)
     _create_library_with_writers()
+    _create_multi_category_artist(venue)
+    _create_artist_without_offers()
 
 
 def _create_offers_for_artist(
@@ -564,6 +566,48 @@ def _create_library_with_writers() -> None:
             )
 
             offers_factories.StockFactory.create(offer=offer)
+
+
+def _create_multi_category_artist(venue: offerers_models.Venue) -> None:
+    """QA edge case: artist with offers in several categories.
+
+    The artist page should display one playlist per category, in the expected order.
+    """
+    artist = artist_factories.ArtistFactory.create(
+        name="Charles Aznavour",
+        description="auteur-compositeur-interprète et acteur franco-arménien",
+        biography=(
+            "Charles Aznavour, né le 22 mai 1924 à Paris et mort le 1er octobre 2018, est un"
+            " auteur-compositeur-interprète et acteur franco-arménien. Auteur de plus de mille"
+            " chansons en plusieurs langues et présent dans plus de soixante films, il est l'une"
+            " des figures les plus emblématiques de la chanson française du XXe siècle."
+        ),
+        wikidata_id="Q170348",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Charles_Aznavour",
+    )
+    _create_offers_for_artist(
+        venue, artist, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ArtistType.PERFORMER, count=3
+    )
+    _create_offers_for_artist(
+        venue, artist, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
+    )
+    _create_offers_for_artist(venue, artist, subcategories.SEANCE_CINE.id, ArtistType.FILM_ACTOR, count=2)
+    _create_offers_for_artist(venue, artist, subcategories.LIVRE_PAPIER.id, ArtistType.AUTHOR, count=2)
+
+
+def _create_artist_without_offers() -> None:
+    """QA edge case: artist exists but has no offer.
+
+    The artist page should show the bio but display no category playlist.
+    """
+    artist_factories.ArtistFactory.create(
+        name="Artiste sans offre",
+        description="cas limite QA — artiste sans aucune offre liée",
+        biography=(
+            "Cet artiste est volontairement dépourvu d'offres afin de valider que la page artiste"
+            " n'affiche aucune playlist de catégorie lorsque aucune œuvre n'est rattachée."
+        ),
+    )
 
 
 @log_func_duration
