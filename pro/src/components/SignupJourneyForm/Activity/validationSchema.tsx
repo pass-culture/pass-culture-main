@@ -1,33 +1,17 @@
+import { activityValidator } from 'commons/utils/yup/activity'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
-import { getActivities } from '@/commons/mappings/mappings'
-import { objectKeys } from '@/commons/utils/object'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 
 export const validationSchema = (
   notOpenToPublic: boolean
 ): ObjectSchema<ActivityFormValues> => {
-  const activityTypeValuesOpenToPublic = objectKeys(
-    getActivities('OPEN_TO_PUBLIC')
-  )
-  const activityTypeValuesNotOpenToPublic = objectKeys(
-    getActivities('NOT_OPEN_TO_PUBLIC')
-  )
-
-  const activityValidator = notOpenToPublic
-    ? yup
-        .mixed<ActivityNotOpenToPublicType>()
-        .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
-    : yup
-        .mixed<ActivityOpenToPublicType>()
-        .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
-
   return yup.object().shape({
-    activity: activityValidator.required(
+    activity: activityValidator(notOpenToPublic).required(
       'Veuillez sélectionner une activité principale'
     ),
 

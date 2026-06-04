@@ -1,3 +1,5 @@
+import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
+import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
 import type React from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
 
@@ -15,6 +17,10 @@ interface SimulatorContextValues {
   setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
   openToPublic: string | null
   setOpenToPublic: (openToPublic: string) => void
+  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  setActivity: (
+    activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  ) => void
 }
 
 export const SimulatorContext = createContext<SimulatorContextValues>({
@@ -27,6 +33,8 @@ export const SimulatorContext = createContext<SimulatorContextValues>({
   setTargetCustomer: () => noop,
   openToPublic: null,
   setOpenToPublic: () => noop,
+  activity: undefined,
+  setActivity: () => noop,
 })
 
 export const useSimulatorContext = () => {
@@ -42,7 +50,9 @@ export function SimulatorContextProvider({
 }: Readonly<SimulatorContextProviderProps>) {
   const [siret, setSiret] = useState<string>()
   const [openToPublic, setOpenToPublic] = useState<string | null>(null)
-
+  const [activity, setActivity] = useState<
+    ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  >()
   const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
     individual: undefined,
     educational: undefined,
@@ -56,6 +66,8 @@ export function SimulatorContextProvider({
       setTargetCustomer,
       openToPublic,
       setOpenToPublic,
+      activity,
+      setActivity,
     }),
     [siret, targetCustomer, openToPublic]
   )

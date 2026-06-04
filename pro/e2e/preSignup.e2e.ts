@@ -174,7 +174,14 @@ test.describe('Pre signup pages', () => {
 
     await checkAccessibility(page)
 
-    await page.getByRole('link', { name: 'Continuer' }).click()
+    await page.getByRole('button', { name: 'Continuer' }).click()
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'Activité non valide' })
+    ).toBeVisible()
+
+    await page.getByLabel(/Activité principale/).selectOption('Festival')
+
+    await page.getByRole('button', { name: 'Continuer' }).click()
 
     await expect(
       page.getByRole('heading', {
