@@ -113,7 +113,7 @@ class Returns200Test:
         assert response.json["contactPhone"] == offer_ctx.offer.contactPhone
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["formats"] == ["Concert"]
-        assert response.json["educationalPriceDetail"] == "pouet"
+        assert response.json["priceDetail"] == "pouet"
         assert response.json["nationalProgram"] == {
             "id": payload_ctx.national_program.id,
             "name": payload_ctx.national_program.name,

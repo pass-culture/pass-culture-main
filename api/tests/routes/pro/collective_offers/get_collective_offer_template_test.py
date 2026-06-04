@@ -43,7 +43,7 @@ class Returns200Test:
         }
         assert "stock" not in response_json
         assert "dateCreated" in response_json
-        assert "educationalPriceDetail" in response_json
+        assert "priceDetail" in response_json
         assert response_json["imageCredit"] is None
         assert response_json["imageUrl"] is None
         assert response_json["name"] == offer.name

@@ -139,7 +139,7 @@ class Returns200Test:
                 "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),
                 "price": 100.0,
                 "numberOfTickets": 25,
-                "educationalPriceDetail": offer.collectiveStock.priceDetail,
+                "priceDetail": offer.collectiveStock.priceDetail,
                 "numberOfTeachers": offer.collectiveStock.numberOfTeachers,
                 "servicePrice": offer.collectiveStock.servicePrice,
                 "collectiveAdditionalFees": [

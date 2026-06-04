@@ -263,7 +263,7 @@ class GetCollectiveOfferBaseResponseModel(HttpBodyModel):
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
+    priceDetail: str | None
     isTemplate: bool = True
     contactUrl: str | None
     contactForm: models.OfferContactFormEnum | None
@@ -323,7 +323,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(HttpBodyModel):
     servicePrice: float | None
     numberOfTickets: int
     numberOfTeachers: int
-    priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
+    priceDetail: str | None
     collectiveAdditionalFees: list[collective_stock_serialize.CollectiveAdditionalFeeResponseModel]
 
 

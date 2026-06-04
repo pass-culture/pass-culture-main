@@ -64,7 +64,7 @@ class Returns200Test:
             "bookingEmails": offer.bookingEmails,
             "collectiveStock": {
                 "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
-                "educationalPriceDetail": stock.priceDetail,
+                "priceDetail": stock.priceDetail,
                 "endDatetime": format_into_utc_date(stock.endDatetime),
                 "id": stock.id,
                 "numberOfTickets": stock.numberOfTickets,
