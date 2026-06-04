@@ -1,9 +1,6 @@
-import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
-import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import { Button } from '@/design-system/Button/Button'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
@@ -12,7 +9,6 @@ import {
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { PreviewHeader } from '../components/PreviewHeader'
-import styles from './CollectiveOfferPreviewEdition.module.scss'
 
 export const CollectiveOfferPreviewEdition = ({
   offer,
@@ -21,18 +17,9 @@ export const CollectiveOfferPreviewEdition = ({
     ? `/offre/T-${offer.id}/collectif/recapitulatif`
     : `/offre/${offer.id}/collectif/recapitulatif`
 
-  const canShareOffer = isActionAllowedOnCollectiveOffer(
-    offer,
-    CollectiveOfferTemplateAllowedAction.CAN_SHARE
-  )
-
   return (
-    <BasicLayout mainHeading="Aperçu de l’offre" isStickyActionBarInChild>
-      {isCollectiveOfferTemplate(offer) && canShareOffer && (
-        <div className={styles['share-link-drawer']}>
-          <ShareLinkDrawer offerId={offer.id} />
-        </div>
-      )}
+    <BasicLayout isStickyActionBarInChild>
+      <MainHeading mainHeading="Aperçu de l’offre" />
       <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
