@@ -161,7 +161,6 @@ class BoostStocksTest:
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_label = db.session.query(PriceCategoryLabel).one()
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
@@ -227,10 +226,8 @@ class BoostStocksTest:
         assert created_price_categories[1].price == decimal.Decimal("6.00")
         assert created_price_categories[2].price == decimal.Decimal("12.00")
 
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "PASS CULTURE"
+        assert all(category.label == "PASS CULTURE" for category in created_price_categories)
+        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinema_attr_adapter.call_count == 1
 
@@ -259,9 +256,9 @@ class BoostStocksTest:
         created_offer = db.session.query(Offer).order_by(Offer.id).one()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_labels = db.session.query(PriceCategoryLabel).order_by(PriceCategoryLabel.label).all()
+        created_price_category_labels = db.session.query(PriceCategoryLabel).all()
         assert len(created_price_categories) == 2
-        assert len(created_price_category_labels) == 2
+        assert len(created_price_category_labels) == 0
 
         assert created_offer.name == "Produit allociné 1"
         assert created_offer.product == self._get_product_by_allocine_id(263242)
@@ -292,11 +289,11 @@ class BoostStocksTest:
 
         assert created_price_categories[0].price == decimal.Decimal("6.9")
         assert created_price_categories[0].label == "PASS CULTURE"
-        assert created_price_categories[0].priceCategoryLabel == created_price_category_labels[0]
+        assert created_price_categories[0].priceCategoryLabel is None
 
         assert created_price_categories[1].price == 18.0
         assert created_price_categories[1].label == "PASS CULTURE 1"
-        assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
+        assert created_price_categories[1].priceCategoryLabel is None
 
         assert get_cinema_attr_adapter.call_count == 1
 
@@ -321,7 +318,7 @@ class BoostStocksTest:
 
         created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
-        assert db.session.query(PriceCategoryLabel).count() == 1
+        assert db.session.query(PriceCategoryLabel).count() == 0
 
         assert get_cinema_attr_adapter.call_count == 2
 
@@ -428,7 +425,7 @@ class BoostStocksTest:
 
         assert stock.price == decimal.Decimal("4.0")
         assert stock.priceCategory.price == decimal.Decimal("4.0")
-        assert stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+        assert stock.priceCategory.label == "My awesome festival"
         should_apply_movie_festival_rate_mock.assert_called_with(stock.offer.id, stock.beginningDatetime.date())
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])

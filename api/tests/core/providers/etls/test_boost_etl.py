@@ -470,7 +470,7 @@ class BoostExtractTransformLoadProcessTest:
             beginningDatetime=datetime.datetime(2023, 9, 25, 7, 30),
             bookingLimitDatetime=datetime.datetime(2023, 9, 25, 7, 30),
             offer=offer_1,
-            priceCategory__priceCategoryLabel__label="PCU",
+            priceCategory__label="PCU",
             priceCategory__price=Decimal("5.0"),
             price=Decimal("5.0"),
             lastProvider=venue_provider.provider,
@@ -640,6 +640,6 @@ class BoostExtractTransformLoadProcessTest:
 
         created_price_category = db.session.query(offers_models.PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
 
         assert get_cinema_attr_adapter.call_count == 2

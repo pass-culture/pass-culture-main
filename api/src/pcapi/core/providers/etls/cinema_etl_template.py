@@ -161,14 +161,9 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         """
         products_with_poster: list[tuple[offers_models.Product, str]] = []
         offers_ids = set()
-        price_category_labels_by_label = {
-            price_category_label.label: price_category_label
-            for price_category_label in self.venue_provider.venue.priceCategoriesLabel
-        }
-
         for loadable_movie in loadable_movies:
             with atomic():
-                offer, product_with_poster = self._load_movie_and_stocks(loadable_movie, price_category_labels_by_label)
+                offer, product_with_poster = self._load_movie_and_stocks(loadable_movie)
 
             offers_ids.add(offer.id)
             if product_with_poster:
@@ -177,9 +172,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         return offers_ids, products_with_poster
 
     def _load_movie_and_stocks(
-        self,
-        loadable_movie: LoadableMovie,
-        price_category_labels_by_label: dict[str, offers_models.PriceCategoryLabel],
+        self, loadable_movie: LoadableMovie
     ) -> tuple[offers_models.Offer, tuple[offers_models.Product, str] | None]:
         """
         This method does 3 things :
@@ -293,17 +286,8 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             label_price_key = f"{stock_data['price_label']}-{stock_data['price']}"
 
             if label_price_key not in price_categories_by_label_price:  # create missing price category
-                if stock_data["price_label"] not in price_category_labels_by_label:
-                    # create missing price category label
-                    price_category_label = offers_models.PriceCategoryLabel(
-                        venue=self.venue_provider.venue,
-                        label=stock_data["price_label"],
-                    )
-                    db.session.add(price_category_label)
-                    price_category_labels_by_label[stock_data["price_label"]] = price_category_label
-
                 price_category = offers_models.PriceCategory(
-                    priceCategoryLabel=price_category_labels_by_label[stock_data["price_label"]],
+                    label=stock_data["price_label"],
                     price=stock_data["price"],
                     offer=offer,
                 )

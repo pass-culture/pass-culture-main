@@ -71,7 +71,7 @@ class OfferStockResponseGetterDict(GetterDict):
 
         if key == "priceCategoryLabel":
             if price_category := stock.priceCategory:
-                return price_category.priceCategoryLabel.label
+                return price_category.label
             return None
 
         return super().get(key, default)

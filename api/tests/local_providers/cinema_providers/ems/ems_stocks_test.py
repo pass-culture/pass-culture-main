@@ -116,7 +116,7 @@ class EMSStocksTest:
 
         assert created_stock.price == Decimal("4.0")
         assert created_stock.priceCategory.price == Decimal("4.0")
-        assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
+        assert created_stock.priceCategory.label == "My awesome festival"
 
     @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
     def should_fill_and_create_offer_and_stock_information_for_each_movie_based_on_product(
@@ -579,16 +579,13 @@ class EMSStocksTest:
             .all()
         )
         created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter_by(venueId=venue.id)
-            .order_by(offers_models.PriceCategoryLabel.id)
-            .all()
+            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
         )
 
         assert len(created_offers) == 1
         assert len(created_stocks) == 1
         assert len(created_price_categories) == 1
-        assert len(created_price_categories_labels) == 1
+        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue
@@ -642,16 +639,13 @@ class EMSStocksTest:
             .all()
         )
         created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter_by(venueId=venue.id)
-            .order_by(offers_models.PriceCategoryLabel.id)
-            .all()
+            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
         )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 2
+        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Spider-Man : Across the Spider-Verse"
         assert created_offers[0].venue == venue_provider.venue
@@ -738,16 +732,13 @@ class EMSStocksTest:
             .all()
         )
         created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter_by(venueId=venue.id)
-            .order_by(offers_models.PriceCategoryLabel.id)
-            .all()
+            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
         )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 2
+        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
@@ -798,16 +789,13 @@ class EMSStocksTest:
             .all()
         )
         created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter_by(venueId=venue.id)
-            .order_by(offers_models.PriceCategoryLabel.id)
-            .all()
+            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
         )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 1
+        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue

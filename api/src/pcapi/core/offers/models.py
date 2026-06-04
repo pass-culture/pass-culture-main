@@ -1707,9 +1707,7 @@ class PriceCategoryLabel(PcObject, Model):
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
-        "Venue", foreign_keys=[venueId], back_populates="priceCategoriesLabel"
-    )
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1731,8 +1729,10 @@ class PriceCategory(PcObject, Model):
     price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
-    priceCategoryLabelId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=False
+    # TODO (prouzet, 2026-06-04) Rename field into label when removing PriceCategoryLabel class
+    _label: sa_orm.Mapped[str | None] = sa_orm.mapped_column("label", sa.Text, nullable=True)
+    priceCategoryLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=True
     )
     priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa_orm.relationship(
         "PriceCategoryLabel", foreign_keys=[priceCategoryLabelId], back_populates="priceCategories"
@@ -1748,11 +1748,25 @@ class PriceCategory(PcObject, Model):
             "idAtProvider",
             name="unique_offer_id_id_at_provider",
         ),
+        # TODO (prouzet, 2026-06-04) Remove this constraint along with PriceCategoryLabel class
+        sa.CheckConstraint(
+            '(label IS NOT NULL) OR ("priceCategoryLabelId" IS NOT NULL)',
+            name="check_has_label_or_price_category_label",
+        ),
     )
 
     @property
     def label(self) -> str:
+        # TODO (prouzet, 2026-06-04) Remove this property along with PriceCategoryLabel class
+        if self._label is not None:
+            return self._label
         return self.priceCategoryLabel.label
+
+    @label.setter
+    def label(self, value: str | None) -> None:
+        # TODO (prouzet, 2026-06-04) Remove this setter along with PriceCategoryLabel class
+        self._label = value
+        self.priceCategoryLabelId = None
 
 
 class TiteliveGtlType(enum.Enum):

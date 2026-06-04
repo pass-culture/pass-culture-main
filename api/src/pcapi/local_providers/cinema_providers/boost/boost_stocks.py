@@ -56,12 +56,6 @@ class BoostStocks(LocalProvider):
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.attributs: list[boost_serializers.CinemaAttribut] = self._boost_api_client.get_cinemas_attributs()
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._boost_api_client.get_showtimes())
-        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
-            .all()
-        )
-
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
         self.provider = venue_provider.provider
 
@@ -223,21 +217,10 @@ class BoostStocks(LocalProvider):
             None,
         )
         if not price_category:
-            price_category_label = self.get_or_create_price_category_label(price_label)
-            price_category = offers_models.PriceCategory(
-                price=price, priceCategoryLabel=price_category_label, offer=self.last_offer
-            )
+            price_category = offers_models.PriceCategory(price=price, label=price_label, offer=self.last_offer)
             price_categories.append(price_category)
 
         return price_category
-
-    def get_or_create_price_category_label(self, price_label: str) -> offers_models.PriceCategoryLabel:
-        price_category_label = next((label for label in self.price_category_labels if label.label == price_label), None)
-        if not price_category_label:
-            price_category_label = offers_models.PriceCategoryLabel(label=price_label, venue=self.venue)
-            self.price_category_labels.append(price_category_label)
-
-        return price_category_label
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl

@@ -421,11 +421,9 @@ class DeleteVenueTest:
         offers_factories.EventStockFactory(offer__venue=venue_to_delete)
 
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)
-        price_category_label = offers_factories.PriceCategoryLabelFactory(label="otherLabel", venue=other_venue)
         offers_factories.ActivationCodeFactory(stock=stock)
         stock_with_another_venue = offers_factories.EventStockFactory(
-            offer__venue=other_venue,
-            priceCategory__priceCategoryLabel=price_category_label,
+            offer__venue=other_venue, priceCategory__label="otherLabel"
         )
         offers_factories.ActivationCodeFactory(stock=stock_with_another_venue)
 
@@ -435,8 +433,7 @@ class DeleteVenueTest:
         assert db.session.query(offers_models.Offer).count() == 1
         assert db.session.query(offers_models.Stock).count() == 1
         assert db.session.query(offers_models.ActivationCode).count() == 1
-        assert db.session.query(offers_models.PriceCategory).count() == 1
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
+        assert db.session.query(offers_models.PriceCategory).one().label == "otherLabel"
 
     def test_delete_venue_should_remove_collective_offers_stocks_and_templates(self):
         venue_to_delete = offerers_factories.VenueFactory()
@@ -1204,7 +1201,6 @@ class DeleteOffererTest:
         assert db.session.query(offers_models.Stock).count() == 2
         assert db.session.query(offers_models.ActivationCode).count() == 1
         assert db.session.query(offers_models.PriceCategory).count() == 1
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_offerer(self):
         # Given

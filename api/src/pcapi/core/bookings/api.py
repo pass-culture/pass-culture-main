@@ -331,7 +331,7 @@ def _book_offer(
             token=repository.generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
-            priceCategoryLabel=(stock.priceCategory.priceCategoryLabel.label if stock.priceCategory else None),
+            priceCategoryLabel=(stock.priceCategory.label if stock.priceCategory else None),
             status=models.BookingStatus.CONFIRMED,
             depositId=(
                 beneficiary.deposit.id if (beneficiary.has_active_deposit and beneficiary.deposit is not None) else None

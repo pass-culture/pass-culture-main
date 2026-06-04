@@ -140,7 +140,7 @@ class BookingStockResponse(HttpBodyModel):
             features=stock.features,
             offer=BookingOfferResponse.build(stock.offer),
             price=convert_to_cent(stock.price),
-            price_category_label=price_category.priceCategoryLabel.label if price_category else None,
+            price_category_label=price_category.label if price_category else None,
         )
 
 

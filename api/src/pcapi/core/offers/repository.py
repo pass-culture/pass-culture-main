@@ -1547,10 +1547,6 @@ def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | N
     return query
 
 
-def get_venue_price_category_labels(venue_id: int) -> list[models.PriceCategoryLabel]:
-    return db.session.query(models.PriceCategoryLabel).filter(models.PriceCategoryLabel.venueId == venue_id).all()
-
-
 def get_offer_by_venue_and_movie_uuid(venue_id: int, movie_uuid: str) -> models.Offer | None:
     return (
         db.session.query(models.Offer)

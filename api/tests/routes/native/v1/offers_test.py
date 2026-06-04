@@ -83,7 +83,7 @@ class OffersTest:
             offer=offer,
             price=12.34,
             quantity=2,
-            priceCategory__priceCategoryLabel__label="bookable",
+            priceCategory__label="bookable",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
@@ -104,7 +104,7 @@ class OffersTest:
             offer=offer,
             price=45.67,
             beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
-            priceCategory__priceCategoryLabel__label="expired",
+            priceCategory__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.ICE.value,
@@ -114,7 +114,7 @@ class OffersTest:
             offer=offer,
             price=89.00,
             quantity=1,
-            priceCategory__priceCategoryLabel__label="exhausted",
+            priceCategory__label="exhausted",
             features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
 
@@ -560,7 +560,7 @@ class OffersV2Test:
             offer=offer,
             price=12.34,
             quantity=2,
-            priceCategory__priceCategoryLabel__label="bookable",
+            priceCategory__label="bookable",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
@@ -581,7 +581,7 @@ class OffersV2Test:
             offer=offer,
             price=45.67,
             beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
-            priceCategory__priceCategoryLabel__label="expired",
+            priceCategory__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.ICE.value,
@@ -591,7 +591,7 @@ class OffersV2Test:
             offer=offer,
             price=89.00,
             quantity=1,
-            priceCategory__priceCategoryLabel__label="exhausted",
+            priceCategory__label="exhausted",
             features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
 
@@ -1446,7 +1446,7 @@ class OffersStocksV2Test:
             offer=offer,
             price=12.34,
             quantity=2,
-            priceCategory__priceCategoryLabel__label="bookable",
+            priceCategory__label="bookable",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
@@ -1467,7 +1467,7 @@ class OffersStocksV2Test:
             offer=offer,
             price=45.67,
             beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
-            priceCategory__priceCategoryLabel__label="expired",
+            priceCategory__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
                 cinema_providers_constants.ShowtimeFeatures.ICE.value,
@@ -1477,7 +1477,7 @@ class OffersStocksV2Test:
             offer=offer,
             price=89.00,
             quantity=1,
-            priceCategory__priceCategoryLabel__label="exhausted",
+            priceCategory__label="exhausted",
             features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
 

@@ -3,6 +3,7 @@ import datetime
 import pytest
 import time_machine
 from sqlalchemy import exc as sa_exc
+from sqlalchemy.exc import IntegrityError
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
@@ -1049,3 +1050,35 @@ class ArtistOfferLinkTest:
         db.session.add(artist_link_empty)
         with pytest.raises(sa_exc.IntegrityError):
             db.session.flush()
+
+
+class PriceCategoryTest:
+    """
+    Test transition from PriceCategoryLabel to PriceCategory.label
+    """
+
+    def test_get_label_from_self(self):
+        price_category = factories.PriceCategoryFactory(label="Test 1")
+        assert price_category.label == "Test 1"
+
+        price_category = factories.PriceCategoryWithPriceCategoryLabelFactory(
+            label="Test 2", priceCategoryLabel__label="Test 3"
+        )
+        assert price_category.label == "Test 2"
+
+    def test_get_label_from_legacy_table(self):
+        price_category = factories.PriceCategoryWithPriceCategoryLabelFactory(priceCategoryLabel__label="Test 4")
+        assert price_category.label == "Test 4"
+
+    def test_set_label(self):
+        price_category = factories.PriceCategoryWithPriceCategoryLabelFactory(priceCategoryLabel__label="Original")
+
+        price_category.label = "Test 5"
+
+        assert price_category.label == "Test 5"
+        assert price_category._label == "Test 5"
+        assert price_category.priceCategoryLabel is None
+
+    def test_check_has_label_or_price_category_label(self):
+        with pytest.raises(IntegrityError):
+            factories.PriceCategoryFactory(label=None)

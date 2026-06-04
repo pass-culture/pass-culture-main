@@ -16,6 +16,7 @@ from pcapi.core.categories.genres import show
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.models import db
@@ -333,7 +334,7 @@ class PriceCategoryLabelFactory(BaseFactory[models.PriceCategoryLabel]):
     class Meta:
         model = models.PriceCategoryLabel
 
-    label = "Tarif unique"
+    label = DEFAULT_PRICE_LABEL
     venue = factory.SubFactory(offerers_factories.VenueFactory)
 
     @classmethod
@@ -359,6 +360,11 @@ class PriceCategoryFactory(BaseFactory):
 
     price = decimal.Decimal("10.1")
     offer = factory.SubFactory(EventOfferFactory)
+    label: str | None = DEFAULT_PRICE_LABEL
+
+
+class PriceCategoryWithPriceCategoryLabelFactory(PriceCategoryFactory):
+    label = None
     priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory, venue=factory.SelfAttribute("..offer.venue"))
 
 
@@ -409,7 +415,6 @@ class EventStockFactory(StockFactory):
         PriceCategoryFactory,
         offer=factory.SelfAttribute("..offer"),
         price=factory.SelfAttribute("..price"),
-        priceCategoryLabel__venue=factory.SelfAttribute("..offer.venue"),
     )
 
 

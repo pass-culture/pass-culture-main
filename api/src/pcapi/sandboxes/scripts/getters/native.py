@@ -9,6 +9,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
@@ -48,16 +49,6 @@ def create_offerer() -> offerers_models.Offerer:
     return offerer
 
 
-def _get_price_category_label(venue: offerers_models.Venue) -> offers_models.PriceCategoryLabel:
-    labels = (
-        db.session.query(offers_models.PriceCategoryLabel)
-        .filter(offers_models.PriceCategoryLabel.venueId == venue.id)
-        .filter(offers_models.PriceCategoryLabel.label == "Tarif unique")
-        .all()
-    )
-    return labels[0] if len(labels) > 0 else offers_factories.PriceCategoryLabelFactory.create(venue=venue)
-
-
 def _create_cinema_offer(venue: offerers_models.Venue) -> offers_models.Offer:
     product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.SEANCE_CINE.id,
@@ -86,9 +77,8 @@ def _create_cinema_offer(venue: offerers_models.Venue) -> offers_models.Offer:
         offer=offer,
     )
     db.session.add(offer_metadata)
-    price_category_label = _get_price_category_label(venue)
     price_category = offers_factories.PriceCategoryFactory(
-        offer=offer, priceCategoryLabel=price_category_label, price=decimal.Decimal("5.70")
+        offer=offer, label=DEFAULT_PRICE_LABEL, price=decimal.Decimal("5.70")
     )
 
     for daydelta in range(0, 20, 4):

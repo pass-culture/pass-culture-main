@@ -1778,13 +1778,6 @@ def batch_delete_stocks(
         _delete_stock(stock, author_id, user_connect_as)
 
 
-def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
-    price_category_label = db.session.query(models.PriceCategoryLabel).filter_by(label=label, venue=venue).one_or_none()
-    if not price_category_label:
-        return models.PriceCategoryLabel(label=label, venue=venue)
-    return price_category_label
-
-
 def create_price_category(
     offer: models.Offer,
     label: str,
@@ -1796,10 +1789,7 @@ def create_price_category(
     if id_at_provider is not None:
         validation.check_can_input_id_at_provider_for_this_price_category(offer.id, id_at_provider)
 
-    price_category_label = get_or_create_label(label, offer.venue)
-    created_price_category = models.PriceCategory(
-        offer=offer, price=price, priceCategoryLabel=price_category_label, idAtProvider=id_at_provider
-    )
+    created_price_category = models.PriceCategory(offer=offer, price=price, label=label, idAtProvider=id_at_provider)
     db.session.add(created_price_category)
     db.session.flush()
     return created_price_category
@@ -1821,8 +1811,7 @@ def edit_price_category(
         price_category.price = price
 
     if label is not UNCHANGED and label != price_category.label:
-        price_category_label = get_or_create_label(label, offer.venue)
-        price_category.priceCategoryLabel = price_category_label
+        price_category.label = label
 
     if id_at_provider is not UNCHANGED and id_at_provider != price_category.idAtProvider:
         if id_at_provider is not None:
@@ -1991,21 +1980,6 @@ def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     return venues_choices
 
 
-def _get_or_create_same_price_category_label(
-    venue: offerers_models.Venue, source_price_category_label: offers_models.PriceCategoryLabel
-) -> offers_models.PriceCategoryLabel:
-    try:
-        # Use label which already exists when found, otherwise unique_label_venue constraint would cause exception
-        return next(filter(lambda pcl: pcl.label == source_price_category_label.label, venue.priceCategoriesLabel))
-    except StopIteration:
-        # Copy price category label from source to destination venue
-        new_price_category_label = offers_models.PriceCategoryLabel(
-            venue=venue, label=source_price_category_label.label
-        )
-        db.session.add(new_price_category_label)
-        return new_price_category_label
-
-
 # WARNING: this is WIP, do not use it yet
 def move_offer(
     offer: models.Offer,
@@ -2034,14 +2008,6 @@ def move_offer(
     )
     bookings = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(bookings_ids))
 
-    # After offer is moved, price categories must remain linked to labels defined for the related venue.
-    # Extra SQL queries to avoid multiplying the number of rows in case of many labels
-    db.session.flush()
-    original_price_category_labels = {price_category.priceCategoryLabel for price_category in offer.priceCategories}
-    labels_mapping = {
-        price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
-        for price_category_label in original_price_category_labels
-    }
     db.session.flush()
     with transaction():
         if offer.offererAddress:
@@ -2088,9 +2054,11 @@ def move_offer(
         offer.venue = destination_venue
         db.session.add(offer)
 
+        # TODO (prouzet, 2026-06-04) Remove this block along with PriceCategoryLabel class
         for price_category in offer.priceCategories:
-            price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
-            db.session.add(price_category)
+            if price_category.priceCategoryLabel:
+                price_category.label = price_category.priceCategoryLabel.label
+                db.session.add(price_category)
 
         while updated_bookings := bookings.update({"venueId": destination_venue.id}, synchronize_session=False):
             logger.info("Updated %d bookings for offer %d", updated_bookings, offer_id)
@@ -2155,13 +2123,6 @@ def move_event_offer(
         .all()
     )
 
-    # After offer is moved, price categories must remain linked to labels defined for the related venue.
-    # Extra SQL queries to avoid multiplying the number of rows in case of many labels
-    original_price_category_labels = {price_category.priceCategoryLabel for price_category in offer.priceCategories}
-    labels_mapping = {
-        price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
-        for price_category_label in original_price_category_labels
-    }
     with transaction():
         if move_offer_address:
             offer.offererAddress = offerers_api.get_or_create_offer_location(
@@ -2213,9 +2174,11 @@ def move_event_offer(
         offer.venue = destination_venue
         db.session.add(offer)
 
+        # TODO (prouzet, 2026-06-04) Remove this block along with PriceCategoryLabel class
         for price_category in offer.priceCategories:
-            price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
-            db.session.add(price_category)
+            if price_category.priceCategoryLabel:
+                price_category.label = price_category.priceCategoryLabel.label
+                db.session.add(price_category)
 
         for booking in bookings:
             assert not booking.is_pending_reimbursement_or_reimbursed
@@ -2905,9 +2868,7 @@ def replace_offer_price_categories(
                     {"price_category_id": ["Le tarif avec l'id {} n'existe pas".format(price_category_id)]}
                 )
             existing_price_category = existing_price_categories_by_id[price_category_id]
-            existing_price_category.priceCategoryLabel = get_or_create_label(
-                synced_price_category_input["label"], offer.venue
-            )
+            existing_price_category.label = synced_price_category_input["label"]
             existing_price_category.price = synced_price_category_input["price"]
             synced_price_categories.append(existing_price_category)
             for stock in existing_price_category.stocks:
@@ -2916,7 +2877,7 @@ def replace_offer_price_categories(
         else:
             synced_price_categories.append(
                 models.PriceCategory(
-                    priceCategoryLabel=get_or_create_label(synced_price_category_input["label"], offer.venue),
+                    label=synced_price_category_input["label"],
                     price=synced_price_category_input["price"],
                 )
             )

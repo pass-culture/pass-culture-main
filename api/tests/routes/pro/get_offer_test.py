@@ -142,7 +142,7 @@ class Returns200Test:
             dateModifiedAtLastProvider=now,
             beginningDatetime=now + timedelta(hours=1),
             bookingLimitDatetime=now + timedelta(hours=1),
-            priceCategory__priceCategoryLabel__label="Au pied du mur",
+            priceCategory__label="Au pied du mur",
         )
         venue = offer.venue
         offerer = venue.managingOfferer
@@ -321,12 +321,8 @@ class Returns200Test:
     def test_price_category_has_stocks_reflects_stock_presence(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
-        price_category_with_stock = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="Tarif avec stock"
-        )
-        price_category_without_stock = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="Tarif sans Stock"
-        )
+        price_category_with_stock = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif avec stock")
+        price_category_without_stock = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif sans Stock")
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category_with_stock)
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)

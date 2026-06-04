@@ -30,9 +30,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
 
     def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.Stock]:
         event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=event, price=12.34, priceCategoryLabel__label="carre or"
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event, price=12.34, label="carre or")
         two_weeks_from_now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
             weeks=2
         )
@@ -83,9 +81,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         offer = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
         offer_id = offer.id
         offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, price=12.34, priceCategoryLabel__label="carre or"
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=12.34, label="carre or")
         two_weeks_from_now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
             weeks=2
         )
@@ -98,9 +94,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
             beginningDatetime=two_weeks_from_now,
             idAtProviders=stock1_id_at_provider,
         )
-        not_booked_price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, price=299.99, priceCategoryLabel__label="ultra vip"
-        )
+        not_booked_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=299.99, label="ultra vip")
         stock2_id_at_provider = "2ezz982915c2a74b9302e546"
         stock_without_booking = offers_factories.EventStockFactory(
             offer=offer,

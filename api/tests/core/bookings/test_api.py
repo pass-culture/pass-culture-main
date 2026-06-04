@@ -44,6 +44,7 @@ from pcapi.core.external_bookings import factories as external_bookings_factorie
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.providers.clients.cinema_client import Ticket
 from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -333,7 +334,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate == two_days_after_booking
-        assert booking.priceCategoryLabel == "Tarif unique"
+        assert booking.priceCategoryLabel == DEFAULT_PRICE_LABEL
 
     def test_book_stock_with_unlimited_quantity(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory()

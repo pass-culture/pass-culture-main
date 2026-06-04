@@ -13,6 +13,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
@@ -54,7 +55,6 @@ class AllocineStocks(LocalProvider):
         self.price = allocine_venue_provider.price
         self.movie: allocine_serializers.AllocineMovie
         self.showtimes: list[allocine_serializers.AllocineShowtime]
-        self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
         self.provider = allocine_venue_provider.provider
 
@@ -188,7 +188,7 @@ class AllocineStocks(LocalProvider):
                 allocine_stock.price = self.price
                 allocine_stock.priceCategory = self.get_or_create_allocine_price_category(self.price, allocine_stock)
 
-            if allocine_stock.priceCategory.label == "Tarif unique":
+            if allocine_stock.priceCategory.label == DEFAULT_PRICE_LABEL:
                 allocine_stock.price = self.price
                 allocine_stock.priceCategory.price = self.price
 
@@ -213,11 +213,9 @@ class AllocineStocks(LocalProvider):
         if price_category:
             return price_category
 
-        price_category_label = self.label
-        if custom_label:
-            price_category_label = offers_api.get_or_create_label(custom_label, self.venue)
-
-        price_category = offers_models.PriceCategory(priceCategoryLabel=price_category_label, price=price, offer=offer)
+        price_category = offers_models.PriceCategory(
+            label=custom_label or DEFAULT_PRICE_LABEL, price=price, offer=offer
+        )
         self.price_categories_by_offer[offer].insert(0, price_category)
         return price_category
 

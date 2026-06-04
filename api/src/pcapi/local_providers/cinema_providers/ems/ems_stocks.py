@@ -52,11 +52,6 @@ class EMSStocks:
         self.provider = venue_provider.provider
         self.poster_urls_map: dict[str, str | None] = {}
         self.created_offers: set[offers_models.Offer] = set()
-        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
-            .all()
-        )
 
     def synchronize(self) -> None:
         for event in self.site.events:
@@ -240,20 +235,9 @@ class EMSStocks:
                 if offer_price_category.price == price and offer_price_category.label == price_label:
                     return offer_price_category
 
-            price_category_label = self.get_or_create_price_category_label(price_label)
-            price_category = offers_models.PriceCategory(
-                price=price, priceCategoryLabel=price_category_label, offer=stock.offer
-            )
+            price_category = offers_models.PriceCategory(price=price, label=price_label, offer=stock.offer)
 
             return price_category
-
-    def get_or_create_price_category_label(self, price_label: str) -> offers_models.PriceCategoryLabel:
-        price_category_label = next((label for label in self.price_category_labels if label.label == price_label), None)
-        if not price_category_label:
-            price_category_label = offers_models.PriceCategoryLabel(label=price_label, venue=self.venue)
-            self.price_category_labels.append(price_category_label)
-
-        return price_category_label
 
 
 def _build_session_uuid_for_stock(movie_id: str, venue_id: int, session_id: str) -> str:

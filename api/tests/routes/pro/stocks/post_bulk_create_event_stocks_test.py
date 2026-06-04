@@ -21,10 +21,8 @@ class Returns201Test:
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client, caplog):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        first_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 1", venue=offer.venue)
-        second_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 2", venue=offer.venue)
-        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=first_label, price=20)
-        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=second_label, price=30)
+        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=20)
+        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 2", price=30)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
 
         stock_data = {
@@ -57,7 +55,6 @@ class Returns201Test:
         created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.price).all()
         assert len(created_stocks) == 3
         assert db.session.query(offers_models.PriceCategory).count() == 2
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Tarif 1"
@@ -83,10 +80,8 @@ class Returns201Test:
     def test_create_event_stocks_with_multi_price(self, mocked_async_index_offer_ids, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        shared_label = offers_factories.PriceCategoryLabelFactory(label="Shared", venue=offer.venue)
-        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
-        unique_label = offers_factories.PriceCategoryLabelFactory(label="unique", venue=offer.venue)
-        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=30)
+        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Shared", price=20)
+        second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="unique", price=30)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         beginning_later = date_utils.get_naive_utc_now() + relativedelta(days=11)
 
@@ -116,7 +111,6 @@ class Returns201Test:
         created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.price).all()
         assert len(created_stocks) == 3
         assert db.session.query(offers_models.PriceCategory).count() == 2
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 2
         assert created_stocks[0].price == 20
         assert created_stocks[0].priceCategory.price == 20
         assert created_stocks[0].priceCategory.label == "Shared"
@@ -309,7 +303,7 @@ class Returns400Test:
     def test_cannot_create_event_stock_with_price_higher_than_300_euros(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         too_high_price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
+            offer=offer, label="too_high_price_category", price=310
         )
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)

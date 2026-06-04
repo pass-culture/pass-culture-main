@@ -171,7 +171,7 @@ class BookingStockResponseV2(HttpBodyModel):
             beginning_datetime=stock.beginningDatetime,
             features=stock.features,
             offer=stock.offer,
-            price_category_label=stock.priceCategory.priceCategoryLabel.label if stock.priceCategory else None,
+            price_category_label=stock.priceCategory.label if stock.priceCategory else None,
             price=convert_to_cent(stock.price),
         )
 
