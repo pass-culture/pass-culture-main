@@ -10,7 +10,7 @@ describe('CollectiveOfferPriceSection', () => {
       <CollectiveOfferPriceSection
         offer={{
           ...getCollectiveOfferTemplateFactory(),
-          educationalPriceDetail: 'Le détail du prix',
+          priceDetail: 'Le détail du prix',
         }}
       />
     )

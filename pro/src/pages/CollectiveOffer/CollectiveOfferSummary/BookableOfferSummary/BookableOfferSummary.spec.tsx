@@ -79,7 +79,7 @@ describe('BookableOfferSummary', () => {
         startDatetime: '2023-12-21T10:00:00Z',
         endDatetime: '2023-12-21T10:00:00Z',
         bookingLimitDatetime: '2023-12-31T22:59:59Z',
-        educationalPriceDetail: 'detail',
+        priceDetail: 'detail',
       },
       allowedActions: [
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -150,7 +150,7 @@ describe('BookableOfferSummary', () => {
           bookingLimitDatetime: '2023-12-21T10:00:00Z',
           startDatetime: '2023-12-21T10:00:00Z',
           endDatetime: '2023-12-21T10:00:00Z',
-          educationalPriceDetail: 'detail',
+          priceDetail: 'detail',
         },
       }),
     }
@@ -215,7 +215,7 @@ describe('BookableOfferSummary', () => {
           startDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
           endDatetime: '2023-12-22T10:00:00Z', // 11:00 in Paris (UTC+1)
           bookingLimitDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
-          educationalPriceDetail: 'detail',
+          priceDetail: 'detail',
         },
       }),
     }

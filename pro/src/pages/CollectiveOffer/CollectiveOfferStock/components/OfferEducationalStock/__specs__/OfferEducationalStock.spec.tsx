@@ -39,7 +39,7 @@ describe('OfferEducationalStock', () => {
         bookingLimitDatetime: '2022-02-10T00:00',
         numberOfTickets: 10,
         price: 100,
-        educationalPriceDetail: 'Détail du prix',
+        priceDetail: 'Détail du prix',
       },
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -104,7 +104,7 @@ describe('OfferEducationalStock', () => {
         bookingLimitDatetime: new Date().toISOString(),
         numberOfTickets: 10,
         price: 100,
-        educationalPriceDetail: 'Détail du prix',
+        priceDetail: 'Détail du prix',
       },
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -201,7 +201,7 @@ describe('OfferEducationalStock', () => {
         startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
         numberOfTickets: 10,
         price: 100,
-        educationalPriceDetail: 'Détail du prix',
+        priceDetail: 'Détail du prix',
       },
       departementCode: '75',
     }
@@ -222,8 +222,8 @@ describe('OfferEducationalStock', () => {
       endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
       bookingLimitDatetime: `${today}T21:59:59Z`,
       numberOfTickets: 10,
-      totalPrice: 100,
-      educationalPriceDetail: 'Détail du prix',
+      price: 100,
+      priceDetail: 'Détail du prix',
     })
   })
 
@@ -241,7 +241,7 @@ describe('OfferEducationalStock', () => {
         bookingLimitDatetime: tomorrow,
         numberOfTickets: 10,
         price: 100,
-        educationalPriceDetail: 'Détail du prix',
+        priceDetail: 'Détail du prix',
       },
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
@@ -259,7 +259,7 @@ describe('OfferEducationalStock', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
     expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
-      educationalPriceDetail: 'Nouveau contenu',
+      priceDetail: 'Nouveau contenu',
     })
   })
 })

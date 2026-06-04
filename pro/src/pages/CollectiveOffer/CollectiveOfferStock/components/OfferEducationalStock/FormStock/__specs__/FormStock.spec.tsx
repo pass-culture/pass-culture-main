@@ -33,10 +33,7 @@ function renderFormStock({
     const form = useForm<CollectiveOfferStockFormValues>({
       defaultValues: initialValues,
       resolver: yupResolver(
-        generateValidationSchema(
-          allowedActions,
-          initialValues.totalPrice ?? null
-        )
+        generateValidationSchema(allowedActions, initialValues.price ?? null)
       ),
       mode: 'onTouched',
     })
@@ -74,7 +71,7 @@ describe('FormStock', () => {
       endDate: '',
       eventTime: '',
       bookingLimitDate: '',
-      educationalPriceDetail: '',
+      priceDetail: '',
     }
 
     allowedActions = [
@@ -201,7 +198,7 @@ describe('FormStock', () => {
 
   it('should not allow price to be greater than initial value', async () => {
     renderFormStock({
-      initialValues: { ...initialValues, totalPrice: 1000 },
+      initialValues: { ...initialValues, price: 1000 },
       onSubmit,
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
     })

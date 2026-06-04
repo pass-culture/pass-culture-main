@@ -33,11 +33,11 @@ function isComplete(
 ): stock is CollectiveStockCreationBodyModel {
   const allKeys: (keyof CollectiveStockCreationBodyModel)[] = [
     'bookingLimitDatetime',
-    'educationalPriceDetail',
+    'priceDetail',
     'endDatetime',
     'numberOfTickets',
     'startDatetime',
-    'totalPrice',
+    'price',
   ]
   return allKeys.every((key) => key in stock && stock[key] !== undefined)
 }
@@ -91,9 +91,8 @@ export const CollectiveOfferStockCreation = ({
     }
   }
 
-  if (!offer.collectiveStock && offerFromTemplate?.educationalPriceDetail) {
-    initialStock.educationalPriceDetail =
-      offerFromTemplate.educationalPriceDetail
+  if (!offer.collectiveStock && offerFromTemplate?.priceDetail) {
+    initialStock.priceDetail = offerFromTemplate.priceDetail
   }
 
   const departementCode = offer.venue.departementCode ?? ''

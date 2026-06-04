@@ -105,8 +105,8 @@ export const FormStock = ({
       <TextInput
         disabled={!canEditDiscount}
         label={`${TOTAL_PRICE_LABEL} (en €)`}
-        {...register('totalPrice')}
-        error={formState.errors.totalPrice?.message}
+        {...register('price')}
+        error={formState.errors.price?.message}
         step={0.01} // allow user to enter a price with cents
         min={0}
         type="number"
