@@ -89,7 +89,7 @@ def read_file(user_id: str, file_name: str, *, access_key: str, secret_key: str)
             "Downloaded from Outscale", extra={"user_id": user_id, "file_name": file_name, "access_key": access_key[:4]}
         )
     except ClientError as e:
-        logger.exception(
+        logger.warning(
             "Failed to download file from Outscale bucket",
             extra={
                 "original_error_msg": str(e),
@@ -98,6 +98,7 @@ def read_file(user_id: str, file_name: str, *, access_key: str, secret_key: str)
                 "error_message": e.response["Error"]["Message"],
                 "error_type": e.response["Error"].get("Type"),
             },
+            exc_info=True,
         )
         return None
 
