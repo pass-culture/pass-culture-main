@@ -217,6 +217,11 @@ class CollectiveAdditionalFeeFactory(BaseFactory[models.CollectiveAdditionalFee]
     amount = 50
 
 
+class CollectiveAdditionalFeeCustomFactory(CollectiveAdditionalFeeFactory):
+    type = models.CollectiveAdditionalFeeType.OTHER
+    label = "A custom fee"
+
+
 class EducationalYearFactory(BaseFactory[models.EducationalYear]):
     class Meta:
         model = models.EducationalYear
