@@ -57,7 +57,7 @@ dependencies = [
   # required by schwifty, upgraded manually because of setuptools
   "pycountry ==26.2.16",
   "pydantic[email]==2.13.4",
-  "pyjwt[crypto] ==2.12.1",
+  "pyjwt[crypto]==2.13.0",
   "pyopenssl==26.2.0",
   "pypdf==6.12.2",
   "pyproj ==3.7.2",
