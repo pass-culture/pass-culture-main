@@ -31,7 +31,7 @@ export const HelpDropdownMenu = () => {
       </DropdownItem>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() => logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES)}
+        onSelect={() => logEvent(Events.CLICKED_NEW_EVOLUTIONS)}
       >
         <Link
           target="_blank"
@@ -42,7 +42,7 @@ export const HelpDropdownMenu = () => {
       </DropdownItem>
       <DropdownItem
         icon={fullLinkIcon}
-        onSelect={() => logEvent(Events.CLICKED_NEW_EVOLUTIONS)}
+        onSelect={() => logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES)}
       >
         <Link
           target="_blank"

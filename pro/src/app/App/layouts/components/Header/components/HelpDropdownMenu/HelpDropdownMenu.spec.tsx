@@ -67,9 +67,7 @@ describe('HelpDropdownMenu', () => {
         screen.getByRole('menuitem', { name: 'Découvrir les nouveautés' })
       )
 
-      expect(mockLogEvent).toHaveBeenCalledWith(
-        Events.CLICKED_BEST_PRACTICES_STUDIES
-      )
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NEW_EVOLUTIONS)
     })
 
     it('should track best practices and studies click', async () => {
@@ -82,7 +80,9 @@ describe('HelpDropdownMenu', () => {
         screen.getByRole('menuitem', { name: 'Bonnes pratiques et études' })
       )
 
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_NEW_EVOLUTIONS)
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_BEST_PRACTICES_STUDIES
+      )
     })
   })
 })
