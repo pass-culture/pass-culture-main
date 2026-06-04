@@ -21,6 +21,7 @@ from pcapi.models import db
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.features(SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES=True)
 class UpdateEventSeriesFromDeltaTest:
     @patch("pcapi.connectors.big_query.queries.event_series.EventSeriesDeltaQuery.execute")
     def test_updates_and_creates_event_series(self, mock_event_series_delta_query):
@@ -141,3 +142,64 @@ class UpdateEventSeriesFromDeltaTest:
         db.session.refresh(series2)
         assert series1.name == "New Name 1"
         assert series2.name == "New Name 2"
+
+    @patch("pcapi.core.event_series.commands.EventSeriesPreIngestionChecksQuery.execute")
+    @patch("pcapi.core.event_series.commands.EventSeriesImporter.run_delta_update")
+    @patch("pcapi.core.event_series.commands.EventSeriesOfferLinkImporter.run_delta_update")
+    def test_update_command_skips_ingestion_when_not_ready(
+        self,
+        mock_link_importer,
+        mock_series_importer,
+        mock_pre_checks,
+        run_command,
+        caplog,
+    ):
+        from pcapi.connectors.big_query.queries.event_series import EventSeriesPreIngestionChecksModel
+
+        mock_pre_checks.return_value = iter([EventSeriesPreIngestionChecksModel(ready_for_ingestion=False)])
+
+        with caplog.at_level(logging.WARNING):
+            run_command("update_event_series_from_delta")
+
+        assert "not ready to be ingested" in caplog.text
+        mock_series_importer.assert_not_called()
+        mock_link_importer.assert_not_called()
+
+    @patch("pcapi.core.event_series.commands.EventSeriesPreIngestionChecksQuery.execute")
+    @patch("pcapi.core.event_series.commands.EventSeriesImporter.run_delta_update")
+    @patch("pcapi.core.event_series.commands.EventSeriesOfferLinkImporter.run_delta_update")
+    def test_update_command_skips_ingestion_when_no_checks_found(
+        self,
+        mock_link_importer,
+        mock_series_importer,
+        mock_pre_checks,
+        run_command,
+        caplog,
+    ):
+        mock_pre_checks.return_value = iter([])
+
+        with caplog.at_level(logging.WARNING):
+            run_command("update_event_series_from_delta")
+
+        assert "not ready to be ingested" in caplog.text
+        mock_series_importer.assert_not_called()
+        mock_link_importer.assert_not_called()
+
+    @patch("pcapi.core.event_series.commands.EventSeriesPreIngestionChecksQuery.execute")
+    @patch("pcapi.core.event_series.commands.EventSeriesImporter.run_delta_update")
+    @patch("pcapi.core.event_series.commands.EventSeriesOfferLinkImporter.run_delta_update")
+    def test_update_command_proceeds_when_ready(
+        self,
+        mock_link_importer,
+        mock_series_importer,
+        mock_pre_checks,
+        run_command,
+    ):
+        from pcapi.connectors.big_query.queries.event_series import EventSeriesPreIngestionChecksModel
+
+        mock_pre_checks.return_value = iter([EventSeriesPreIngestionChecksModel(ready_for_ingestion=True)])
+
+        run_command("update_event_series_from_delta", "--batch-size", "50")
+
+        mock_series_importer.assert_called_once_with(50)
+        mock_link_importer.assert_called_once_with(50)
