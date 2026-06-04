@@ -752,16 +752,6 @@ def get_offerer_with_bank_accounts(offerer_id: int) -> models.Offerer | None:
     - Linked venues to its bank accounts (possibly none and only current ones)
     - Managed venues by the offerer (possibly none)
     """
-    venue_has_offers_subquery = db.session.query(
-        sa.select(1)
-        .select_from(offers_models.Offer)
-        .where(
-            offers_models.Offer.venueId == models.Venue.id,
-            offers_models.Offer.isActive,
-        )
-        .correlate(models.Venue)
-        .exists()
-    ).scalar_subquery()
 
     return (
         db.session.query(models.Offerer)
@@ -783,7 +773,6 @@ def get_offerer_with_bank_accounts(offerer_id: int) -> models.Offerer | None:
             models.Venue,
             sa.and_(
                 models.Offerer.id == models.Venue.managingOffererId,
-                venue_has_offers_subquery,
             ),
         )
         .outerjoin(
