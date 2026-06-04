@@ -63,3 +63,17 @@ class EventSeriesOfferLinkDeltaQuery(BaseQuery):
         offer_id;
     """
     model = DeltaEventSeriesOfferLinkModel
+
+
+class EventSeriesPreIngestionChecksModel(BaseModelV2):
+    ready_for_ingestion: bool
+
+
+class EventSeriesPreIngestionChecksQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            ready_for_ingestion
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.event_series_pre_ingestion_checks`
+    """
+    model = EventSeriesPreIngestionChecksModel
