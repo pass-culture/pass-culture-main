@@ -48,7 +48,6 @@ from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
@@ -1472,11 +1471,11 @@ def reject_inappropriate_products(
 
         if send_booking_cancellation_emails:
             for booking in bookings:
-                transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-                    booking,
-                    reason=BookingCancellationReasons.FRAUD_INAPPROPRIATE,
-                    rejected_by_fraud_action=rejected_by_fraud_action,
-                )
+                if rejected_by_fraud_action:
+                    transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(
+                        booking, rejected_by_fraud_action
+                    )
+                transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
     logger.info(
         "Rejected inappropriate products",
