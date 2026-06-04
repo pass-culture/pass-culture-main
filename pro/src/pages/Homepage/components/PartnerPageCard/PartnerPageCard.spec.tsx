@@ -174,7 +174,7 @@ describe('PartnerPageCard', () => {
 
       expect(
         screen.getByRole('link', { name: /Voir ma page/ })
-      ).toHaveAttribute('href', `https://mon-url-de-base/partenaire`)
+      ).toHaveAttribute('href', `https://mon-url-de-base/lieu/1`)
     })
   })
 
