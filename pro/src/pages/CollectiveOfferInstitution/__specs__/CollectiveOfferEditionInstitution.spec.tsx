@@ -7,14 +7,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferEditionInstitution } from '../CollectiveOfferEditionInstitution'
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    getEducationalInstitutions: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
-  },
-}))
-
 const renderCollectiveOfferEditionInstitution = (
   path: string,
   storeOverride?: any

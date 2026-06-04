@@ -1,17 +1,13 @@
-import { act, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
-  ApiError,
-  CancelablePromise,
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
   type EducationalRedactors,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { DEFAULT_INSTITUTION_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import {
@@ -38,33 +34,12 @@ import {
 } from './CollectiveOfferInstitution'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getAutocompleteEducationalRedactorsForUai: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
     patchCollectiveOffersEducationalInstitution: vi.fn(),
   },
 }))
-
-class Deferred<T> {
-  promise: CancelablePromise<T>
-  resolve!: (value: T | PromiseLike<T>) => void
-  reject!: ({
-    status,
-    message,
-    name,
-  }: {
-    status: number
-    message: string
-    name: string
-  }) => void
-
-  constructor() {
-    this.promise = new CancelablePromise<T>((resolve, reject) => {
-      this.resolve = resolve
-      this.reject = reject
-    })
-  }
-}
 
 vi.mock('use-debounce', async () => ({
   ...(await vi.importActual('use-debounce')),
@@ -211,11 +186,11 @@ describe('CollectiveOfferInstitution', () => {
   it('should submit the form with right data', async () => {
     const resultingOffer = getCollectiveOfferFactory()
     vi.spyOn(
-      api,
+      apiNew,
       'patchCollectiveOffersEducationalInstitution'
     ).mockResolvedValueOnce(resultingOffer)
 
-    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+    vi.spyOn(apiNew, 'getAutocompleteEducationalRedactorsForUai')
       .mockResolvedValueOnce([]) // redactors preloading
       .mockResolvedValueOnce([
         {
@@ -233,7 +208,9 @@ describe('CollectiveOfferInstitution', () => {
     await userEvent.type(institutionInput, 'Collège Institution 1')
 
     await userEvent.keyboard('{ArrowDown}{Enter}')
-    expect(api.getAutocompleteEducationalRedactorsForUai).toHaveBeenCalledOnce()
+    expect(
+      apiNew.getAutocompleteEducationalRedactorsForUai
+    ).toHaveBeenCalledOnce()
 
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
 
@@ -245,13 +222,16 @@ describe('CollectiveOfferInstitution', () => {
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
     )
     expect(
-      api.patchCollectiveOffersEducationalInstitution
+      apiNew.patchCollectiveOffersEducationalInstitution
     ).toHaveBeenCalledTimes(1)
     expect(
-      api.patchCollectiveOffersEducationalInstitution
-    ).toHaveBeenCalledWith(1, {
-      educationalInstitutionId: 12,
-      teacherEmail: 'compte.test@education.gouv.fr',
+      apiNew.patchCollectiveOffersEducationalInstitution
+    ).toHaveBeenCalledWith({
+      path: { offer_id: 1 },
+      body: {
+        educationalInstitutionId: 12,
+        teacherEmail: 'compte.test@education.gouv.fr',
+      },
     })
     expect(props.onSuccess).toHaveBeenCalledWith({
       offerId: offerId.toString(),
@@ -263,7 +243,7 @@ describe('CollectiveOfferInstitution', () => {
 
   it('should display an error when the institution could not be saved', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'patchCollectiveOffersEducationalInstitution'
     ).mockRejectedValueOnce(new Error('Ooops'))
 
@@ -283,7 +263,7 @@ describe('CollectiveOfferInstitution', () => {
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
     )
     expect(
-      api.patchCollectiveOffersEducationalInstitution
+      apiNew.patchCollectiveOffersEducationalInstitution
     ).toHaveBeenCalledTimes(1)
     await waitFor(() =>
       expect(snackBarError).toHaveBeenNthCalledWith(1, SENT_DATA_ERROR_MESSAGE)
@@ -328,7 +308,7 @@ describe('CollectiveOfferInstitution', () => {
   it('should clear teacher suggestion when clearing teacher input', async () => {
     renderInstitutionStep(props)
 
-    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+    vi.spyOn(apiNew, 'getAutocompleteEducationalRedactorsForUai')
       .mockResolvedValueOnce([]) // redactors preloading
       .mockResolvedValueOnce([
         {
@@ -361,7 +341,7 @@ describe('CollectiveOfferInstitution', () => {
 
   it('should clear teacher suggestion when clearing institution', async () => {
     renderInstitutionStep(props)
-    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+    vi.spyOn(apiNew, 'getAutocompleteEducationalRedactorsForUai')
       .mockResolvedValueOnce([]) // redactors preloading
       .mockResolvedValueOnce([
         {
@@ -432,11 +412,11 @@ describe('CollectiveOfferInstitution', () => {
           postalCode: '91000',
         },
       }
-      vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+      vi.spyOn(apiNew, 'getCollectiveOfferRequest').mockResolvedValueOnce(
         collectiveRequest
       )
 
-      vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+      vi.spyOn(apiNew, 'getAutocompleteEducationalRedactorsForUai')
         .mockResolvedValueOnce([]) // redactors preloading
         .mockResolvedValueOnce([
           {
@@ -473,7 +453,7 @@ describe('CollectiveOfferInstitution', () => {
     })
 
     it('should display default institution error message when institution input is not empty but institution is null', async () => {
-      vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      vi.spyOn(apiNew, 'patchCollectiveOffersEducationalInstitution')
       renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
@@ -489,7 +469,7 @@ describe('CollectiveOfferInstitution', () => {
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
       expect(
-        api.patchCollectiveOffersEducationalInstitution
+        apiNew.patchCollectiveOffersEducationalInstitution
       ).not.toHaveBeenCalled()
 
       expect(
@@ -498,7 +478,7 @@ describe('CollectiveOfferInstitution', () => {
     })
 
     it('should display teacher generic error message when teacher input is not empty but teacherEmail is null', async () => {
-      vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      vi.spyOn(apiNew, 'patchCollectiveOffersEducationalInstitution')
       renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
@@ -524,20 +504,15 @@ describe('CollectiveOfferInstitution', () => {
 
     it('should display institution specific error message when receiving an api error with form keys', async () => {
       vi.spyOn(
-        api,
+        apiNew,
         'patchCollectiveOffersEducationalInstitution'
-      ).mockRejectedValueOnce(
-        new ApiError(
-          {} as ApiRequestOptions,
-          {
-            status: 400,
-            body: {
-              educationalInstitution: [INSTITUTION_GENERIC_ERROR_MESSAGE],
-            },
-          } as ApiResult,
-          ''
-        )
-      )
+      ).mockRejectedValueOnce({
+        message: '',
+        name: 'ApiError',
+        body: {
+          educationalInstitution: [INSTITUTION_GENERIC_ERROR_MESSAGE],
+        },
+      })
       renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
@@ -548,27 +523,24 @@ describe('CollectiveOfferInstitution', () => {
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
-      expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
+      expect(
+        apiNew.patchCollectiveOffersEducationalInstitution
+      ).toHaveBeenCalled()
 
       expect(screen.getByText(INSTITUTION_GENERIC_ERROR_MESSAGE)).toBeVisible()
     })
 
     it('should display teacher specific error message when receiving an api error with form keys', async () => {
       vi.spyOn(
-        api,
+        apiNew,
         'patchCollectiveOffersEducationalInstitution'
-      ).mockRejectedValueOnce(
-        new ApiError(
-          {} as ApiRequestOptions,
-          {
-            status: 400,
-            body: {
-              teacherEmail: [REDACTOR_GENERIC_ERROR_MESSAGE],
-            },
-          } as ApiResult,
-          ''
-        )
-      )
+      ).mockRejectedValueOnce({
+        message: '',
+        name: 'ApiError',
+        body: {
+          teacherEmail: [REDACTOR_GENERIC_ERROR_MESSAGE],
+        },
+      })
       renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
@@ -579,7 +551,9 @@ describe('CollectiveOfferInstitution', () => {
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
-      expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
+      expect(
+        apiNew.patchCollectiveOffersEducationalInstitution
+      ).toHaveBeenCalled()
 
       expect(screen.getByText(REDACTOR_GENERIC_ERROR_MESSAGE)).toBeVisible()
     })
@@ -610,7 +584,7 @@ describe('CollectiveOfferInstitution', () => {
     renderInstitutionStep({ ...props, mode: Mode.CREATION })
 
     vi.spyOn(
-      api,
+      apiNew,
       'getAutocompleteEducationalRedactorsForUai'
     ).mockResolvedValueOnce([
       {
@@ -679,15 +653,16 @@ describe('CollectiveOfferInstitution', () => {
     it('should preload redactors when institution is selected', async () => {
       const resultingOffer = getCollectiveOfferFactory()
       vi.spyOn(
-        api,
+        apiNew,
         'patchCollectiveOffersEducationalInstitution'
       ).mockResolvedValueOnce(resultingOffer)
 
-      const deferred = new Deferred<EducationalRedactors>()
-      vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-        .mockImplementationOnce(
-          (_uai: string, _candidate: string) => deferred.promise
-        ) // redactors preloading
+      let resolvePreload!: (value: EducationalRedactors) => void
+      const preloadPromise = new Promise<EducationalRedactors>((resolve) => {
+        resolvePreload = resolve
+      })
+      vi.spyOn(apiNew, 'getAutocompleteEducationalRedactorsForUai')
+        .mockImplementationOnce(() => preloadPromise) // redactors preloading
         .mockResolvedValueOnce([
           {
             email: 'compte.test@education.gouv.fr',
@@ -705,7 +680,7 @@ describe('CollectiveOfferInstitution', () => {
 
       await userEvent.keyboard('{ArrowDown}{Enter}')
       expect(
-        api.getAutocompleteEducationalRedactorsForUai
+        apiNew.getAutocompleteEducationalRedactorsForUai
       ).toHaveBeenCalledOnce()
 
       const teacherInput = screen.getByLabelText(
@@ -713,7 +688,7 @@ describe('CollectiveOfferInstitution', () => {
       )
       expect(teacherInput).toBeDisabled()
 
-      await act(async () => await deferred.resolve([]))
+      resolvePreload([])
 
       await waitFor(() => {
         expect(teacherInput).toBeEnabled()
@@ -722,7 +697,7 @@ describe('CollectiveOfferInstitution', () => {
 
     it('should handle 404 Not Found error when fetching redactors', async () => {
       vi.spyOn(
-        api,
+        apiNew,
         'getAutocompleteEducationalRedactorsForUai'
       ).mockRejectedValueOnce({
         status: 404,
@@ -740,7 +715,7 @@ describe('CollectiveOfferInstitution', () => {
 
       await userEvent.keyboard('{ArrowDown}{Enter}')
       expect(
-        api.getAutocompleteEducationalRedactorsForUai
+        apiNew.getAutocompleteEducationalRedactorsForUai
       ).toHaveBeenCalledOnce()
 
       const teacherInput = screen.getByLabelText(
@@ -756,7 +731,7 @@ describe('CollectiveOfferInstitution', () => {
 
     it('should display an error if redactors fetching fails', async () => {
       vi.spyOn(
-        api,
+        apiNew,
         'getAutocompleteEducationalRedactorsForUai'
       ).mockRejectedValueOnce(new Error('Ooops'))
 
@@ -769,7 +744,7 @@ describe('CollectiveOfferInstitution', () => {
 
       await userEvent.keyboard('{ArrowDown}{Enter}')
       expect(
-        api.getAutocompleteEducationalRedactorsForUai
+        apiNew.getAutocompleteEducationalRedactorsForUai
       ).toHaveBeenCalledOnce()
 
       const teacherInput = screen.getByLabelText(

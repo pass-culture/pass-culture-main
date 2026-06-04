@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
@@ -12,7 +12,7 @@ import {
   type EducationalRedactor,
   type GetCollectiveOfferResponseModel,
   type PatchCollectiveOfferEducationalInstitution,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
@@ -122,7 +122,8 @@ export const CollectiveOfferInstitutionScreen = ({
       requestId
         ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
         : null,
-    ([, id]) => api.getCollectiveOfferRequest(Number(id))
+    ([, id]) =>
+      apiNew.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
   )
 
   const manualFormValidation = (
@@ -170,9 +171,12 @@ export const CollectiveOfferInstitutionScreen = ({
 
     try {
       const collectiveOffer =
-        await api.patchCollectiveOffersEducationalInstitution(offer.id, {
-          educationalInstitutionId: Number(values.educationalInstitution),
-          teacherEmail,
+        await apiNew.patchCollectiveOffersEducationalInstitution({
+          path: { offer_id: offer.id },
+          body: {
+            educationalInstitutionId: Number(values.educationalInstitution),
+            teacherEmail,
+          },
         })
       onSuccess({
         offerId: offer.id.toString(),
@@ -244,10 +248,9 @@ export const CollectiveOfferInstitutionScreen = ({
     async ([, institutionUai]) => {
       try {
         if (institutionUai) {
-          await api.getAutocompleteEducationalRedactorsForUai(
-            institutionUai,
-            'preload'
-          )
+          await apiNew.getAutocompleteEducationalRedactorsForUai({
+            query: { uai: institutionUai, candidate: 'preload' },
+          })
         }
       } catch (error) {
         if (isErrorAPIError(error) && error.status === 404) {
@@ -306,10 +309,12 @@ export const CollectiveOfferInstitutionScreen = ({
     }
 
     try {
-      const payload = await api.getAutocompleteEducationalRedactorsForUai(
-        selectedInstitution.institutionId,
-        searchTeacherValue
-      )
+      const payload = await apiNew.getAutocompleteEducationalRedactorsForUai({
+        query: {
+          uai: selectedInstitution.institutionId,
+          candidate: searchTeacherValue,
+        },
+      })
       setTeachersOptions(
         payload.map(
           ({ name, surname, email }: EducationalRedactor): TeacherOption => ({
