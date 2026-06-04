@@ -3,12 +3,12 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -81,7 +81,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       return
     }
     try {
-      await api.cancelCollectiveOfferBooking(offer.id)
+      await apiNew.cancelCollectiveOfferBooking({
+        path: { offer_id: offer.id },
+      })
       await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
       setIsCancelBookingModalOpen(false)
       snackBar.success(
@@ -132,7 +134,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       return
     }
     try {
-      await api.patchCollectiveOffersArchive({ ids: [offer.id] })
+      await apiNew.patchCollectiveOffersArchive({ body: { ids: [offer.id] } })
       await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
 
       setIsArchiveModalOpen(false)

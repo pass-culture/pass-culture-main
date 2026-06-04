@@ -1,4 +1,4 @@
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1/new'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import {
   type Contact,

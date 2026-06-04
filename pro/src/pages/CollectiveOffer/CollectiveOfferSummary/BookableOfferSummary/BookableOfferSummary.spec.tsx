@@ -1,12 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -27,7 +27,7 @@ import {
 } from './BookableOfferSummary'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchCollectiveOffersArchive: vi.fn(),
     cancelCollectiveOfferBooking: vi.fn(),
   },
@@ -270,7 +270,7 @@ describe('BookableOfferSummary', () => {
 
   it('should call the API to archive the offer when confirming in the modal', async () => {
     const mockPatchCollectiveOffersArchive = vi
-      .spyOn(api, 'patchCollectiveOffersArchive')
+      .spyOn(apiNew, 'patchCollectiveOffersArchive')
       .mockResolvedValueOnce()
 
     renderBookableOfferSummary(props)
@@ -289,7 +289,7 @@ describe('BookableOfferSummary', () => {
 
     await waitFor(() => {
       expect(mockPatchCollectiveOffersArchive).toHaveBeenCalledWith({
-        ids: [props.offer.id],
+        body: { ids: [props.offer.id] },
       })
     })
 
@@ -300,7 +300,7 @@ describe('BookableOfferSummary', () => {
 
   it('should open the confirmation modal and call the API when confirming cancellation', async () => {
     const mockCancelCollectiveOfferBooking = vi
-      .spyOn(api, 'cancelCollectiveOfferBooking')
+      .spyOn(apiNew, 'cancelCollectiveOfferBooking')
       .mockResolvedValueOnce()
 
     renderBookableOfferSummary(props)
@@ -324,9 +324,9 @@ describe('BookableOfferSummary', () => {
     )
 
     await waitFor(() => {
-      expect(mockCancelCollectiveOfferBooking).toHaveBeenCalledWith(
-        props.offer.id
-      )
+      expect(mockCancelCollectiveOfferBooking).toHaveBeenCalledWith({
+        path: { offer_id: props.offer.id },
+      })
     })
 
     expect(
@@ -335,7 +335,7 @@ describe('BookableOfferSummary', () => {
   })
 
   it('should display an error notification if the cancellation API fails', async () => {
-    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
       new Error('Erreur API')
     )
 
