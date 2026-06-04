@@ -8,14 +8,6 @@ import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/Collective
 
 import { CollectiveOfferCreationInstitution } from '../CollectiveOfferCreationInstitution'
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    getEducationalInstitutions: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
-  },
-}))
-
 const renderCollectiveOfferCreationInstitution = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps,

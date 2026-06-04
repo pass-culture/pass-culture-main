@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
