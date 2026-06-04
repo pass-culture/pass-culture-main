@@ -1025,7 +1025,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @hybrid_property
     def isReleased(self) -> bool:
         offerer = self.venue.managingOfferer
-        return self.isPublished and offerer.isActive and offerer.isValidated and not self.venue.is_closed
+        return self.isPublished and offerer.isActive and offerer.isValidated
 
     @isReleased.inplace.expression
     @classmethod

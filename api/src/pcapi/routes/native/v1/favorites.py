@@ -73,7 +73,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[serial
             )
             .options(
                 sa_orm.joinedload(Offer.venue)
-                .load_only(Venue.publicName, Venue.name, Venue.state)
+                .load_only(Venue.publicName, Venue.name)
                 .options(sa_orm.joinedload(Venue.offererAddress).load_only().joinedload(OffererAddress.address))
                 .options(
                     sa_orm.joinedload(Venue.managingOfferer).load_only(
