@@ -151,8 +151,8 @@ def cancel_booking(booking_id: int) -> None:
         .filter(Booking.id == booking_id, Booking.userId == current_user.id)
     )
     try:
-        bookings_api.cancel_booking_by_beneficiary(current_user, booking)
-    except bookings_exceptions.BookingIsCancelled:
+        bookings_api.cancel_booking_by_beneficiary(booking)
+    except bookings_exceptions.BookingIsAlreadyCancelled:
         # Do not raise an error, to avoid showing an error in case double-click => double call
         # Booking is cancelled so a success status is ok
         return

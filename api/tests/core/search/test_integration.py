@@ -29,7 +29,7 @@ def test_offer_indexation_on_booking_cycle(app, clear_redis):
     search.index_offers_in_queue()
     assert offer.id not in search_testing.search_store["offers"]
 
-    bookings_api.cancel_booking_by_beneficiary(beneficiary, booking)
+    bookings_api.cancel_booking_by_beneficiary(booking)
     search.index_offers_in_queue()
     assert offer.id in search_testing.search_store["offers"]
 

@@ -337,18 +337,12 @@ def cancel_booking_by_token(token: str) -> None:
         raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
-        bookings_validation.check_booking_can_be_cancelled(booking)
-        if booking.stock.offer.isEvent:
-            bookings_validation.check_booking_cancellation_limit_date(booking)
+        bookings_api.cancel_booking_by_offerer(booking)
     except exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError({"payment": "This booking has been reimbursed"})
     except exceptions.BookingIsAlreadyUsed:
         raise api_errors.ResourceGoneError({"booking": "This booking has been validated"})
     except exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError({"booking": "This booking has already been cancelled"})
-    except exceptions.BookingIsNotConfirmed as exc:
-        raise api_errors.ForbiddenError({"booking": str(exc)})
     except exceptions.CannotCancelConfirmedBooking:
         raise api_errors.ForbiddenError({"booking": "This booking cannot be cancelled anymore"})
-
-    bookings_api.cancel_booking_by_offerer(booking)

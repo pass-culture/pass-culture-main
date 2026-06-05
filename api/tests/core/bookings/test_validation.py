@@ -346,7 +346,7 @@ class InsufficientFundsSQLCheckTest:
         self._expire_deposit(user)
 
         # They should be able to cancel their booking.
-        api.cancel_booking_by_beneficiary(user, booking_to_cancel)
+        api.cancel_booking_by_beneficiary(booking_to_cancel)
         assert booking_to_cancel.status is BookingStatus.CANCELLED
 
     def test_user_can_book_a_free_offer_even_if_expired_deposit(self):
@@ -459,65 +459,6 @@ class CheckIsUsableTest:
         # When
         with pytest.raises(exceptions.BookingIsNotConfirmed):
             validation.check_is_usable(booking)
-
-
-@pytest.mark.usefixtures("db_session")
-class CheckBeneficiaryCanCancelBookingTest:
-    def test_can_cancel(self):
-        booking = factories.BookingFactory()
-        validation.check_beneficiary_can_cancel_booking(booking.user, booking)  # should not raise
-
-    def test_can_cancel_if_event_is_in_a_long_time(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=10),
-        )
-        validation.check_beneficiary_can_cancel_booking(booking.user, booking)  # should not raise
-
-    def test_raise_if_not_the_benficiary(self):
-        booking = factories.BookingFactory()
-        other_user = users_factories.UserFactory()
-        with pytest.raises(exceptions.BookingDoesntExist):
-            validation.check_beneficiary_can_cancel_booking(other_user, booking)
-
-    def test_raise_if_already_used(self):
-        booking = factories.UsedBookingFactory()
-        with pytest.raises(exceptions.BookingIsAlreadyUsed):
-            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-
-    def test_raise_if_event_too_close(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=1),
-        )
-        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'évènement"
-        ]
-
-    def test_raise_if_booked_long_ago(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=10),
-            dateCreated=date_utils.get_naive_utc_now() - timedelta(days=2),
-        )
-        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'évènement"
-        ]
-
-    def test_raise_if_event_too_close_and_booked_long_ago(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=1),
-            dateCreated=date_utils.get_naive_utc_now() - timedelta(days=2),
-        )
-        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir "
-            "réservée et moins de 48h avant le début de l'évènement"
-        ]
 
 
 @pytest.mark.usefixtures("db_session")
