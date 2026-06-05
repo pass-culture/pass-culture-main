@@ -1,0 +1,12 @@
+# https://support.atlassian.com/jira-cloud-administration/docs/link-github-workflows-and-deployments-to-jira-issues/#Map-your-deployment-environments
+
+deployments:
+  environmentMapping:
+    development:
+      - pullrequest
+    testing:
+      - testing
+    staging:
+      - staging
+    production:
+      - production
