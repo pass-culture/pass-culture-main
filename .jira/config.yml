@@ -3,10 +3,10 @@
 deployments:
   environmentMapping:
     development:
-      - pullrequest
+      - "pullrequest"
     testing:
-      - testing
+      - "testing"
     staging:
-      - staging
+      - "staging"
     production:
-      - production
+      - "production"
