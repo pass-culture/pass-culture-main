@@ -125,7 +125,7 @@
              class="link-primary"
              data-bs-toggle="tooltip"
              data-bs-placement="top"
-             data-bs-title="{{ incident.status | format_finance_incident_status }}">{{ incident.kind | format_finance_incident_type_str }} ({{ incident.id }})</a>
+             data-bs-title="{{ incident.status | format_finance_incident_status }}">{{ incident.kind | format_finance_incident_type }} ({{ incident.id }})</a>
           {{ incident.status | format_finance_incident_status_badge }}
         {% endfor %}
       {% endcall %}
