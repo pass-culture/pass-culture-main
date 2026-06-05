@@ -7418,6 +7418,54 @@
                 "title": "SigninResponseV2",
                 "type": "object"
             },
+            "SimilarArtistItem": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "SimilarArtistItem",
+                "type": "object"
+            },
+            "SimilarArtistsResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "artists": {
+                        "items": {
+                            "$ref": "#/components/schemas/SimilarArtistItem"
+                        },
+                        "title": "Artists",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "artists"
+                ],
+                "title": "SimilarArtistsResponse",
+                "type": "object"
+            },
             "SimilarOffersRequestQuery": {
                 "additionalProperties": false,
                 "properties": {
@@ -9915,6 +9963,53 @@
                     }
                 },
                 "summary": "get_artist <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/artists/{artist_id}/similar": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_artists_{artist_id}_similar",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "artist_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SimilarArtistsResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_similar_artists <GET>",
                 "tags": []
             }
         },
