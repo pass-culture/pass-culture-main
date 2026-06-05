@@ -188,6 +188,7 @@ class Activity(enum.Enum):
     """
 
     ART_GALLERY = "ART_GALLERY"
+    # TODO (lmaubert 2026-06): Remove 'ART_SCHOOL', split into 'ARTISTIC_PRACTICE' and 'HIGHER_EDUCATION_INSTITUTION'
     ART_SCHOOL = "ART_SCHOOL"
     ARTISTIC_COMPANY = "ARTISTIC_COMPANY"
     ARTISTIC_PRACTICE = "ARTISTIC_PRACTICE"
@@ -205,13 +206,13 @@ class Activity(enum.Enum):
     # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
     GAMES_CENTRE = "GAMES_CENTRE"
     HERITAGE_SITE = "HERITAGE_SITE"
+    HIGHER_EDUCATION_INSTITUTION = "HIGHER_EDUCATION_INSTITUTION"
     LIBRARY = "LIBRARY"
     MUNICIPALITY_CULTURAL_DEPARTMENT = "MUNICIPALITY_CULTURAL_DEPARTMENT"
     MUSEUM = "MUSEUM"
     MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
     # TODO: (lmaubert 2026-01): Remove 'NOT_ASSIGNED' that was used for non-ERP structures (is_open_to_public=False) in a previous version
     NOT_ASSIGNED = "NOT_ASSIGNED"
-    # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
     OTHER = "OTHER"
     PERFORMANCE_HALL = "PERFORMANCE_HALL"
     # TODO (lmaubert 2026-02): Remove 'PRESS', replaced by 'PRESS_OR_MEDIA'
@@ -221,7 +222,9 @@ class Activity(enum.Enum):
     PUBLISHING_HOUSE = "PUBLISHING_HOUSE"
     RADIO_OR_MUSIC_STREAMING = "RADIO_OR_MUSIC_STREAMING"
     RECORD_STORE = "RECORD_STORE"
+    # TODO (lmaubert 2026-06): Remove 'SCIENCE_CENTRE', replaced by 'SCIENTIFIC_CULTURE'
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    SCIENTIFIC_CULTURE = "SCIENTIFIC_CULTURE"
     # TODO (lmaubert 2026-02): Remove 'STREAMING_PLATFORM', split into two different activities
     STREAMING_PLATFORM = "STREAMING_PLATFORM"
     TELEVISION_OR_VIDEO_STREAMING = "TELEVISION_OR_VIDEO_STREAMING"
@@ -235,6 +238,8 @@ DEPRECATED_ACTIVITIES = {
     Activity.NOT_ASSIGNED,
     Activity.PRESS,
     Activity.STREAMING_PLATFORM,
+    Activity.ART_SCHOOL,
+    Activity.SCIENCE_CENTRE,
 }
 
 
@@ -246,7 +251,6 @@ ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
         if x.name
         in (
             "ART_GALLERY",
-            "ART_SCHOOL",
             "ARTS_CENTRE",
             "ARTISTIC_PRACTICE",
             "BOOKSTORE",
@@ -257,6 +261,7 @@ ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "DISTRIBUTION_STORE",
             "FESTIVAL",
             "HERITAGE_SITE",
+            "HIGHER_EDUCATION_INSTITUTION",
             "LIBRARY",
             "MUSEUM",
             "MUSIC_INSTRUMENT_STORE",
@@ -264,7 +269,7 @@ ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "PERFORMANCE_HALL",
             "PUBLISHING_HOUSE",
             "RECORD_STORE",
-            "SCIENCE_CENTRE",
+            "SCIENTIFIC_CULTURE",
             "TOURIST_INFORMATION_CENTRE",
         )
     },
@@ -283,12 +288,14 @@ ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "CULTURAL_MEDIATION",
             "FESTIVAL",
             "HERITAGE_SITE",
+            "HIGHER_EDUCATION_INSTITUTION",
             "MUNICIPALITY_CULTURAL_DEPARTMENT",
             "OTHER",
             "PRESS_OR_MEDIA",
             "PRODUCTION_OR_PROMOTION_COMPANY",
             "PUBLISHING_HOUSE",
             "RADIO_OR_MUSIC_STREAMING",
+            "SCIENTIFIC_CULTURE",
             "TELEVISION_OR_VIDEO_STREAMING",
             "TRAVELLING_CINEMA",
         )

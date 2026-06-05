@@ -49,6 +49,8 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
     offerers_models.Activity.ARTISTIC_PRACTICE.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
     offerers_models.Activity.MUNICIPALITY_CULTURAL_DEPARTMENT.name: offerers_schemas.VenueTypeCode.OTHER,
     offerers_models.Activity.PUBLISHING_HOUSE.name: offerers_schemas.VenueTypeCode.OTHER,
+    offerers_models.Activity.HIGHER_EDUCATION_INSTITUTION.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
+    offerers_models.Activity.SCIENTIFIC_CULTURE.name: offerers_schemas.VenueTypeCode.SCIENTIFIC_CULTURE,
 }
 
 
