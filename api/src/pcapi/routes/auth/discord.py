@@ -32,7 +32,9 @@ logger = logging.getLogger(__name__)
 
 ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
 GENERIC_ASSOCIATION_ERROR = "Impossible d'associer ton compte Discord. Contacte le support pour plus d'informations."
-GENERIC_AUTHENTICATION_ERROR = "La connexion a ton compte pass Culture a échoué. Réessaye ou contacte le support pour plus d'informations."
+GENERIC_AUTHENTICATION_ERROR = (
+    "La connexion a ton compte pass Culture a échoué. Réessaye ou contacte le support pour plus d'informations."
+)
 
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
@@ -65,7 +67,9 @@ def discord_call_back() -> Response | str:
     try:
         access_token = discord_connector.retrieve_access_token(code)
     except requests.exceptions.HTTPError:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}Une erreur s'est produite. Tu peux réessayer ou contacter le support.")
+        return redirect_with_error(
+            f"{ERROR_STRING_PREFIX}Une erreur s'est produite. Tu peux réessayer ou contacter le support."
+        )
 
     if not access_token or not user_id:
         return redirect_with_error(f"{ERROR_STRING_PREFIX}session invalide ou expirée")
@@ -132,7 +136,7 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
             logger.info("User %s is underage and not allowed to access Discord", user.id)
             raise users_exceptions.UserNotEligible()
         raise users_exceptions.UserNotAllowed()
-    
+
     db.session.add(discord_user)
     db.session.flush()
 
