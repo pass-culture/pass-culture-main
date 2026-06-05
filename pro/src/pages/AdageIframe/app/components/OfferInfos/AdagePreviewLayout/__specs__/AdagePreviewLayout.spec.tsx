@@ -1,9 +1,10 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { apiNew } from '@/apiClient/api'
-import type {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+import {
+  EacFormat,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1/new'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
@@ -59,5 +60,25 @@ describe('AdagePreviewLayout', () => {
     expect(
       screen.getByRole('heading', { name: 'My test name bookable' })
     ).toBeInTheDocument()
+  })
+
+  it('should handle all offer input fields types', async () => {
+    renderAdagePreviewLayout(
+      getCollectiveOfferFactory({
+        name: 'My test name bookable',
+        domains: [{ id: 23, name: 'My test domain' }],
+        formats: [EacFormat.ATELIER_DE_PRATIQUE],
+        contactEmail: null,
+      })
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.getByRole('heading', { name: 'My test name bookable' })
+    ).toBeVisible()
+    expect(screen.getByText('My test domain')).toBeVisible()
+    expect(screen.getByText(EacFormat.ATELIER_DE_PRATIQUE)).toBeVisible()
+    expect(screen.queryByText('email')).not.toBeInTheDocument()
   })
 })

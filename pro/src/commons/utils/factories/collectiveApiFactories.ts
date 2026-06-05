@@ -96,7 +96,6 @@ export const collectiveOfferTemplateFactory = (
 
 const sharedCollectiveOfferData = {
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-  isTemplate: true,
   name: 'Offre de test',
   bookingEmails: ['toto@example.com'],
   contactEmail: 'toto@example.com',
