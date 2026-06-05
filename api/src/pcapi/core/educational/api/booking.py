@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import logging
 from functools import partial
 
@@ -361,26 +360,15 @@ def uncancel_collective_booking(collective_booking: models.CollectiveBooking) ->
     )
 
 
-def notify_reimburse_collective_booking(
-    collective_booking: models.CollectiveBooking,
-    reason: str,
-    value: decimal.Decimal | None = None,
-    details: str = "",
-) -> None:
-    price = collective_booking.collectiveStock.price
-    value = value or price
-    if value > price:
-        raise ValueError(
-            f"Collective booking {collective_booking.id} is priced at {price}. We cannot reimburse more than that."
-        )
+def notify_reimburse_collective_booking(collective_booking: models.CollectiveBooking, reason: str) -> None:
     on_commit(
         partial(
             adage_client.notify_reimburse_collective_booking,
             data=collective_booking_serialize.serialize_reimbursement_notification(
                 collective_booking=collective_booking,
                 reason=reason,
-                value=value,
-                details=details,
+                value=collective_booking.collectiveStock.price,
+                details="",
             ),
         ),
     )
