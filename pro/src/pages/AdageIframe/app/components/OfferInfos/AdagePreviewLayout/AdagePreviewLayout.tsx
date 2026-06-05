@@ -11,7 +11,10 @@ import type {
   GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
+import {
+  isCollectiveOffer,
+  isCollectiveOfferTemplate,
+} from '@/commons/core/OfferEducational/types'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -71,6 +74,7 @@ export const AdagePreviewLayout = ({
   const venue = removeNulls<GetVenueResponseModel>(venueData)
 
   const isBookable = isCollectiveOffer(offer) && offer.collectiveStock
+  const isTemplate = isCollectiveOfferTemplate(offer)
 
   const offerForAdage:
     | CollectiveOfferTemplateResponseModel
@@ -89,7 +93,7 @@ export const AdagePreviewLayout = ({
       address: venue.location?.street,
       departmentCode: venue.location?.departmentCode,
     },
-    isTemplate: !isCollectiveOffer(offer),
+    isTemplate,
     ...(isBookable && {
       teacher: offer.teacher,
       educationalInstitution: {
@@ -103,8 +107,10 @@ export const AdagePreviewLayout = ({
         ...offer.collectiveStock,
         price: Number(offer.collectiveStock?.price) * 100,
         id: Number(offer.collectiveStock?.id),
+        educationalPriceDetail: offer.collectiveStock?.priceDetail,
       },
     }),
+    ...(isTemplate && { educationalPriceDetail: offer.priceDetail }),
   }
 
   return (
