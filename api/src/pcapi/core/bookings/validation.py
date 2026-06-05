@@ -103,16 +103,6 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
         raise exceptions.PhysicalExpenseLimitHasBeenReached(int(domains_credit.physical.initial))
 
 
-def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
-    if booking.userId != user.id:
-        raise exceptions.BookingDoesntExist()
-    if booking.isCancelled:
-        raise exceptions.BookingIsCancelled()
-    if booking.is_used_or_reimbursed:
-        raise exceptions.BookingIsAlreadyUsed()
-    check_booking_cancellation_limit_date(booking)
-
-
 def check_booking_can_be_cancelled(booking: Booking) -> None:
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()

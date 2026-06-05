@@ -50,7 +50,6 @@ from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CAN
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.tasks import BookingAction
 from pcapi.core.search.models import IndexationReason
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.models import db
@@ -100,7 +99,7 @@ class BookOfferConcurrencyTest:
             )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                api.cancel_booking_by_beneficiary(booking.user, booking)
+                api.cancel_booking_by_beneficiary(booking)
 
         assert db.session.query(models.Booking).filter().count() == 1
         assert db.session.query(models.Booking).filter(models.Booking.status == BookingStatus.CANCELLED).count() == 0
@@ -1142,9 +1141,8 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com", offer__lastProvider=provider)
         booking = bookings_factories.BookingFactory.create_batch(20, stock=stock)[0]
         bookings_factories.ExternalBookingFactory(booking=booking, barcode="HELLO!")
-        user = booking.user
-        with assert_no_duplicated_queries():
-            api.cancel_booking_by_beneficiary(user, booking)
+
+        api.cancel_booking_by_beneficiary(booking)
 
         mocked_cancel_tickets.assert_called_once_with(["HELLO!"], provider=provider, stock=stock)
         # cancellation can trigger more than one request to Batch
@@ -1177,7 +1175,7 @@ class CancelByBeneficiaryTest:
         )
         booking = bookings_factories.BookingFactory(stock=stock)
 
-        api.cancel_booking_by_beneficiary(booking.user, booking)
+        api.cancel_booking_by_beneficiary(booking)
 
         updated_booking = db.session.query(models.Booking).filter().one()
 
@@ -1222,7 +1220,7 @@ class CancelByBeneficiaryTest:
 
         mocked_task.side_effect = Exception("Something wrong happened")
 
-        api.cancel_booking_by_beneficiary(booking.user, booking)
+        api.cancel_booking_by_beneficiary(booking)
 
         updated_booking = db.session.query(models.Booking).filter().one()
 
@@ -1235,7 +1233,7 @@ class CancelByBeneficiaryTest:
         booking = bookings_factories.BookingFactory()
         initial_quantity = booking.stock.dnBookedQuantity
 
-        api.cancel_booking_by_beneficiary(booking.user, booking)
+        api.cancel_booking_by_beneficiary(booking)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
@@ -1243,8 +1241,8 @@ class CancelByBeneficiaryTest:
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
-        with pytest.raises(exceptions.BookingIsCancelled):
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
+            api.cancel_booking_by_beneficiary(booking)
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
@@ -1253,7 +1251,7 @@ class CancelByBeneficiaryTest:
         booking = bookings_factories.UsedBookingFactory()
 
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+            api.cancel_booking_by_beneficiary(booking)
         assert booking.status is not BookingStatus.CANCELLED
 
     def test_raise_if_event_too_close(self):
@@ -1262,7 +1260,7 @@ class CancelByBeneficiaryTest:
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+            api.cancel_booking_by_beneficiary(booking)
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
@@ -1278,7 +1276,7 @@ class CancelByBeneficiaryTest:
             dateCreated=booking_date_too_long_ago_to_cancel_booking,
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+            api.cancel_booking_by_beneficiary(booking)
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
@@ -1294,21 +1292,13 @@ class CancelByBeneficiaryTest:
             dateCreated=booking_date_too_long_ago_to_cancel_booking,
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+            api.cancel_booking_by_beneficiary(booking)
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir "
             "réservée et moins de 48h avant le début de l'évènement"
         ]
-
-    def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
-        booking = bookings_factories.BookingFactory()
-        other_beneficiary = users_factories.BeneficiaryGrant18Factory()
-        with pytest.raises(exceptions.BookingDoesntExist):
-            api.cancel_booking_by_beneficiary(other_beneficiary, booking)
-        assert booking.status is not BookingStatus.CANCELLED
-        assert not booking.cancellationReason
 
     def test_raise_external_booking_error_if_trying_to_cancel_with_external_server_error(self, requests_mock):
         external_url = "https://book_my_offer.com"
@@ -1334,7 +1324,7 @@ class CancelByBeneficiaryTest:
         )
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            api.cancel_booking_by_beneficiary(booking.user, booking)
+            api.cancel_booking_by_beneficiary(booking)
 
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
@@ -1362,7 +1352,7 @@ class CancelByBeneficiaryTest:
             status_code=409,
         )
 
-        assert api.cancel_booking_by_beneficiary(booking.user, booking) is None
+        assert api.cancel_booking_by_beneficiary(booking) is None
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY

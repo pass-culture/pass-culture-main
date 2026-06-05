@@ -822,14 +822,15 @@ def _cancel_bookings_from_stock(
     return cancelled_bookings
 
 
-def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booking) -> None:
+def cancel_booking_by_beneficiary(booking: models.Booking) -> None:
     """
     What it does :
-        - (Check) Check user can cancel booking -> TODO: (tcoudray-pass, 18/05/26) Remplacer par check_booking_can_be_cancelled (https://passculture.atlassian.net/browse/PC-41897)
+        - (Check) Check booking can be cancelled
         - Call _cancel_booking
         - (Async task) Send email to offerer
     """
-    validation.check_beneficiary_can_cancel_booking(user, booking)
+    validation.check_booking_can_be_cancelled(booking)
+    validation.check_booking_cancellation_limit_date(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
     transactional_mails.send_booking_cancellation_by_beneficiary_email(booking)
     transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
@@ -844,6 +845,7 @@ def cancel_booking_by_offerer(booking: models.Booking) -> None:
         - (Async task) Send email to beneficiary
     """
     validation.check_booking_can_be_cancelled(booking)
+    validation.check_booking_cancellation_limit_date(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
     transactional_mails.send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)

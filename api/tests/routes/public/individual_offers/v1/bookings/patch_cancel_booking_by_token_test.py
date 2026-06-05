@@ -28,7 +28,7 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
             ean="1234567890123",
         )
         past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
-        product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
+        product_stock = offers_factories.StockFactory(offer=offer)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
