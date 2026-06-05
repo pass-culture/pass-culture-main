@@ -67,7 +67,7 @@ def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task)
 def test_recovery_ignores_recent_quotient_familial_application(mocked_apply_for_qf_task):
     twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
     subscription_factories.BonusFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago + relativedelta(seconds=1)
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago + relativedelta(minutes=1)
     )
 
     tasks.recover_started_quotient_familial_application()
