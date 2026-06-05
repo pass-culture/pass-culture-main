@@ -10,7 +10,7 @@
 </div>
 
 > "Et tant que vous aurez, en quoi que ce soit, honte de vous, vous ne sauriez être des nôtres."
-> F. Nietzsche
+> F. Nietzsche, _Le gai savoir, livre 3_
 
 ---
 Le repo `main` contient les 4 projets suivants :
