@@ -66,10 +66,11 @@
       {% for booking_finance_incident in collective_booking.incidents | sort(attribute="incidentId", reverse=True) %}
         {% set incident = booking_finance_incident.incident %}
         <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=incident.id) }}"
+           class="link-primary incident-link"
            data-bs-toggle="tooltip"
            data-bs-placement="top"
            data-bs-title="{{ incident.status | format_finance_incident_status }}">
-          {{ incident.status | format_finance_incident_status_badge(text=incident.kind | format_finance_incident_type_str) }}
+          {{ incident.kind | format_finance_incident_type }} ({{ incident.id }})
         </a>
       {% endfor %}
     </td>

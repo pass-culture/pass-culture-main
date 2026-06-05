@@ -1954,37 +1954,24 @@ def format_finance_incident_nature_badge(is_partial: bool) -> str:
     return format_badge("Total", "secondary")
 
 
-def format_finance_incident_status_badge(
-    incident_status: finance_models.IncidentStatus, text: str | None = None
-) -> str:
+def format_finance_incident_status_badge(incident_status: finance_models.IncidentStatus) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
-            return format_badge(text or "Créé", "secondary")
+            return format_badge("Créé", "secondary")
         case finance_models.IncidentStatus.CANCELLED:
-            return format_badge(text or "Annulé", "danger")
+            return format_badge("Annulé", "danger")
         case finance_models.IncidentStatus.VALIDATED:
-            return format_badge(text or "Validé", "success")
+            return format_badge("Validé", "success")
         case finance_models.IncidentStatus.INVOICED:
-            return format_badge(text or "Terminé", "success")
-
-
-def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
-    match incident_kind:
-        case finance_models.IncidentType.OVERPAYMENT:
-            return "Trop Perçu"
-        case finance_models.IncidentType.COMMERCIAL_GESTURE:
-            return "Geste Commercial"
-        case _:
-            return incident_kind.value
+            return format_badge("Terminé", "success")
 
 
 def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> str:
-    kind_str = format_finance_incident_type_str(incident_kind)
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
-            return format_badge(kind_str, "warning")
+            return "Trop Perçu"
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
-            return format_badge(kind_str, "success")
+            return "Geste Commercial"
         case _:
             return incident_kind.value
 
@@ -2386,7 +2373,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
-    app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
     app.jinja_env.filters["format_ministry"] = format_ministry
     app.jinja_env.filters["format_notice_type"] = format_notice_type
     app.jinja_env.filters["format_notice_status_motivation"] = format_notice_status_motivation
