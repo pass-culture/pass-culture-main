@@ -702,7 +702,7 @@ describe('VenueEditionFormScreen', () => {
       await userEvent.selectOptions(
         screen.getByRole('combobox', { name: /Activité principale/ }),
         screen.getByRole('option', {
-          name: 'Centre culturel pluridisciplinaire',
+          name: 'Lieu culturel pluridisciplinaire (tiers-lieu, friche, etc…)',
         })
       )
       await userEvent.click(screen.getByText(/Enregistrer/))

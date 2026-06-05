@@ -1,16 +1,18 @@
 export const _ActivityOpenToPublicMappings = {
   ART_GALLERY: 'Galerie d’art',
-  ART_SCHOOL: 'Conservatoire ou école d’arts',
   ARTISTIC_PRACTICE: 'Pratique ou enseignement artistique',
-  ARTS_CENTRE: 'Centre d’arts',
+  ARTS_CENTRE: 'Centre d’arts ou FRAC',
   BOOKSTORE: 'Librairie',
   CINEMA: 'Cinéma',
   COMMUNITY_CENTRE: 'Centre socio-culturel',
   CREATIVE_ARTS_STORE: 'Magasin d’arts créatifs',
-  CULTURAL_CENTRE: 'Centre culturel pluridisciplinaire',
+  CULTURAL_CENTRE:
+    'Lieu culturel pluridisciplinaire (tiers-lieu, friche, etc…)',
   DISTRIBUTION_STORE: 'Magasin de distribution de produits culturels',
   FESTIVAL: 'Festival',
   HERITAGE_SITE: 'Activité patrimoniale, historique ou touristique',
+  HIGHER_EDUCATION_INSTITUTION:
+    'Enseignement supérieur (arts, architecture, etc…)',
   LIBRARY: 'Bibliothèque ou médiathèque',
   MUSEUM: 'Musée',
   MUSIC_INSTRUMENT_STORE: 'Magasin d’instruments de musique',
@@ -18,7 +20,7 @@ export const _ActivityOpenToPublicMappings = {
   PERFORMANCE_HALL: 'Salle de spectacles',
   PUBLISHING_HOUSE: 'Maison d’édition',
   RECORD_STORE: 'Disquaire',
-  SCIENCE_CENTRE: 'Centre de culture scientifique, technique et industrielle',
+  SCIENTIFIC_CULTURE: 'Culture scientifique',
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
 }
 

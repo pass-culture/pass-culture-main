@@ -121,7 +121,9 @@ describe('CollectiveDataEdition', () => {
       expect(statusField).toBeInTheDocument()
 
       expect(
-        screen.getByText('Centre culturel pluridisciplinaire')
+        screen.getByText(
+          'Lieu culturel pluridisciplinaire (tiers-lieu, friche, etc…)'
+        )
       ).toBeInTheDocument()
     })
 
