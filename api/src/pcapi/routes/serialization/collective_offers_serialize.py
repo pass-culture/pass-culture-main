@@ -1,3 +1,4 @@
+import logging
 import typing
 from datetime import date
 from datetime import datetime
@@ -22,6 +23,9 @@ from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
+
+
+logger = logging.getLogger(__name__)
 
 
 ### GET all collective offers models
@@ -645,6 +649,16 @@ class AttachImageFormModel(HttpBodyModel):
     cropping_rect_y: float
     cropping_rect_height: float
     cropping_rect_width: float
+
+    @classmethod
+    def model_validate(cls, *args: typing.Any, **kwargs: typing.Any) -> typing.Self:
+        try:
+            result = super().model_validate(*args, **kwargs)
+        except pydantic_v2.ValidationError:
+            logger.warning("Error during AttachImageFormModel validation", exc_info=True)
+            raise
+
+        return result
 
 
 class AttachImageResponseModel(HttpBodyModel):
