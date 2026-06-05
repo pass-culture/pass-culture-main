@@ -2,8 +2,9 @@ name: 2 [CI] Close stale issues and PRs
 
 on:
   schedule:
-    # “At 7:22 UTC on every day-of-week from Monday through Friday.”
-    - cron: "22 7 * * 1-5"
+    # “At 08:22 on every day-of-week from Monday through Friday.”
+    - cron: '22 8 * * 1-5'
+      timezone: "Europe/Paris"
   workflow_dispatch:
 
 permissions:

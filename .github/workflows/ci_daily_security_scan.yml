@@ -1,8 +1,10 @@
 name: 3 [CI] Daily Security scan
 
 on:
-  schedule: 
-    - cron: 12 8 * * *
+  schedule:
+    # “At 09:12”
+    - cron: '12 9 * * *'
+      timezone: "Europe/Paris"
   workflow_dispatch:
 
 jobs:
