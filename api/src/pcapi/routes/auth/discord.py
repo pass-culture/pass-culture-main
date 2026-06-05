@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
 GENERIC_ASSOCIATION_ERROR = "Impossible d'associer ton compte Discord. Contacte le support pour plus d'informations."
+GENERIC_AUTHENTICATION_ERROR = "La connexion a ton compte pass Culture a échoué. Réessaye ou contacte le support pour plus d'informations."
 
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
@@ -46,11 +47,25 @@ def discord_signin() -> str:
     return render_template("discord_signin_disabled.html")
 
 
-@blueprint.auth_blueprint.route("/discord/success", methods=["GET"])
-@atomic()
-def discord_success() -> Response | str:
-    access_token = request.args.get("access_token")
-    user_id = request.args.get("user_id")
+@blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
+def discord_call_back() -> Response | str:
+    code = request.args.get("code")
+    state = request.args.get("state")
+
+    if not code:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}code non récupéré")
+    if not state:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}état de la requête non récupéré")
+
+    try:
+        user_id = str(discord_connector.verify_state(state))
+    except (jwt.PyJWTError, KeyError):
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}lien invalide ou expiré")
+
+    try:
+        access_token = discord_connector.retrieve_access_token(code)
+    except requests.exceptions.HTTPError:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}Une erreur s'est produite. Tu peux réessayer ou contacter le support.")
 
     if not access_token or not user_id:
         return redirect_with_error(f"{ERROR_STRING_PREFIX}session invalide ou expirée")
@@ -92,36 +107,6 @@ def discord_success() -> Response | str:
     return redirect(discord_connector.DISCORD_HOME_URI, code=303)
 
 
-@blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
-def discord_call_back() -> Response | str:
-    code = request.args.get("code")
-    state = request.args.get("state")
-
-    if not code:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}code non récupéré")
-    if not state:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}état de la requête non récupéré")
-
-    try:
-        user_id = discord_connector.verify_state(state)
-    except (jwt.PyJWTError, KeyError):
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}lien invalide ou expiré")
-
-    try:
-        access_token = discord_connector.retrieve_access_token(code)
-    except requests.exceptions.HTTPError as error:
-        error_message = ""
-        if error.response:
-            error_message = error.response.json().get("error_description")
-            if not error_message:
-                error_message = error.response.text
-        error_message += "Tu peux réessayer ou contacter le support."
-        return redirect_with_error(ERROR_STRING_PREFIX + error_message)
-
-    auth_success_url = flask.url_for("auth.discord_success", access_token=access_token, user_id=user_id)
-    return redirect(auth_success_url, code=303)
-
-
 def update_discord_user(user_id: str, discord_id: str) -> None:
     already_linked_user: user_models.DiscordUser | None = (
         db.session.query(user_models.DiscordUser).filter_by(discordId=discord_id).first()
@@ -138,8 +123,6 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
 
     discord_user.hasAccess = bool(user.is_beneficiary and user.age and user.age >= 17)
     logger.info("Discord user %s has access: %s", discord_user.discordId, discord_user.hasAccess)
-    db.session.add(discord_user)
-    db.session.flush()
 
     if not discord_user.hasAccess:
         if not user.is_beneficiary:
@@ -149,6 +132,9 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
             logger.info("User %s is underage and not allowed to access Discord", user.id)
             raise users_exceptions.UserNotEligible()
         raise users_exceptions.UserNotAllowed()
+    
+    db.session.add(discord_user)
+    db.session.flush()
 
     discord_user.discordId = discord_id
 
@@ -183,19 +169,19 @@ def discord_signin_post() -> Response | str:
     try:
         user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)
     except users_exceptions.UnvalidatedAccount:
-        form.error_message = "L'email n'a pas été validé. Valide ton compte sur le pass Culture pour continuer"
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
         return render_template("discord_signin.html", form=form)
 
     except users_exceptions.CredentialsException:
-        form.error_message = "Identifiant ou Mot de passe incorrect"
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
         return render_template("discord_signin.html", form=form)
 
     if user.account_state.is_deleted:
-        form.error_message = "Le compte a été supprimé"
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
         return render_template("discord_signin.html", form=form)
 
     if user.account_state == user_models.AccountState.ANONYMIZED:
-        form.error_message = "Le compte a été anonymisé"
+        form.error_message = GENERIC_AUTHENTICATION_ERROR
         return render_template("discord_signin.html", form=form)
 
     url_redirection = discord_connector.build_discord_redirection_uri(user.id)
