@@ -614,12 +614,14 @@ def _check_image(image_as_bytes: bytes) -> None:
             min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
         )
     except offers_exceptions.UnacceptedFileType:
+        logger.warning("Error on collective offer image upload", exc_info=True)
         raise ApiErrors(
             errors={
                 "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"]
             }
         )
     except offers_exceptions.ImageTooSmall:
+        logger.warning("Error on collective offer image upload", exc_info=True)
         raise ApiErrors(
             errors={
                 "imageFile": [
@@ -710,7 +712,7 @@ def attach_offer_template_image(
             credit=form.credit,
         )
     except UnidentifiedImageError:
-        logger.warning("Error on collective offer template image upload", exc_info=True)
+        logger.warning("Error on collective offer image upload", exc_info=True)
         raise ApiErrors({"image": "Impossible d'identifier l'image"}, status_code=400)
 
     return collective_offers_serialize.AttachImageResponseModel.model_validate(offer)
