@@ -43,9 +43,7 @@ function removeNulls<T>(val: T): DeepNonNullable<T> {
     return val.map(removeNulls) as DeepNonNullable<T>
   }
   return Object.fromEntries(
-    Object.entries(val)
-      .filter(([_, v]) => v !== null)
-      .map(([k, v]) => [k, removeNulls(v)])
+    Object.entries(val).map(([k, v]) => [k, removeNulls(v)])
   ) as DeepNonNullable<T>
 }
 
