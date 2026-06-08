@@ -4,7 +4,7 @@ import { type ReactNode, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -67,12 +67,14 @@ export const UserReviewDialog = ({
         )
       }
 
-      await api.submitUserReview({
-        offererId: selectedOffererId,
-        location: location.pathname,
-        pageTitle: document.title,
-        userSatisfaction: formValues.userSatisfaction,
-        userComment: formValues.userComment,
+      await apiNew.submitUserReview({
+        body: {
+          offererId: selectedOffererId,
+          location: location.pathname,
+          pageTitle: document.title,
+          userSatisfaction: formValues.userSatisfaction,
+          userComment: formValues.userComment,
+        },
       })
       setDisplayConfirmation(true)
     } catch (e) {
