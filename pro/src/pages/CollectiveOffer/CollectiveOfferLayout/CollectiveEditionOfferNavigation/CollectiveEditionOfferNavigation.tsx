@@ -3,13 +3,13 @@ import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
@@ -76,10 +76,12 @@ export const CollectiveEditionOfferNavigation = ({
     }
     try {
       if (isTemplate) {
-        await api.patchCollectiveOffersTemplateArchive({ ids: [offerId] })
+        await apiNew.patchCollectiveOffersTemplateArchive({
+          body: { ids: [offerId] },
+        })
         await mutate([GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId])
       } else {
-        await api.patchCollectiveOffersArchive({ ids: [offerId] })
+        await apiNew.patchCollectiveOffersArchive({ body: { ids: [offerId] } })
         await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offerId])
       }
 
