@@ -1,6 +1,7 @@
-import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
-
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
@@ -26,27 +27,27 @@ export const tryRestoreSiretFromStorage = (
 }
 
 export const saveActivityToStorage = (
-  activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  activity: ActivityOpenToPublic | ActivityNotOpenToPublic
 ) => {
   localStorageManager.setItem(LOCAL_STORAGE_KEY.SIMULATOR_ACTIVITY, activity)
 }
 
 export const tryRestoreActivityFromStorage = (
   setActivity: (
-    activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+    activity: ActivityOpenToPublic | ActivityNotOpenToPublic
   ) => void
-): ActivityOpenToPublicType | ActivityNotOpenToPublicType | undefined => {
+): ActivityOpenToPublic | ActivityNotOpenToPublic | undefined => {
   const activityStoredData = localStorageManager.getItem(
     LOCAL_STORAGE_KEY.SIMULATOR_ACTIVITY
   )
   if (activityStoredData === null) {
     return
   }
-  const acivityStored = activityStoredData as
-    | ActivityOpenToPublicType
-    | ActivityNotOpenToPublicType
-  setActivity(acivityStored)
-  return acivityStored
+  const activityStored = activityStoredData as
+    | ActivityOpenToPublic
+    | ActivityNotOpenToPublic
+  setActivity(activityStored)
+  return activityStored
 }
 
 export const saveOpenToPublicToStorage = (openToPublic: string) => {

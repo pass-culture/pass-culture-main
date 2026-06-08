@@ -1,6 +1,6 @@
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { toStringOrNull } from '@/commons/utils/toStringOrNull'
@@ -26,7 +26,9 @@ export const ActivitySubSection = () => {
             ? [
                 {
                   title: 'Activité',
-                  text: getActivityLabel(selectedPartnerVenue.activity),
+                  text: DisplayableActivityMap.get(
+                    selectedPartnerVenue.activity
+                  ),
                 },
               ]
             : []),

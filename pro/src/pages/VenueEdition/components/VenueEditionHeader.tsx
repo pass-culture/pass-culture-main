@@ -6,7 +6,7 @@ import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImag
 import { buildInitialVenueImageValues } from '@/commons/core/Venue/utils/buildInitialVenueImageValues'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
@@ -77,7 +77,7 @@ export const VenueEditionHeader = ({
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
           <div className={styles['venue-type']}>
-            {venue.activity && getActivityLabel(venue.activity)}
+            {venue.activity && DisplayableActivityMap.get(venue.activity)}
           </div>
           <h2 className={styles['venue-name']}>{venue.publicName}</h2>
         </div>

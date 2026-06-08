@@ -1,8 +1,10 @@
-import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
 import type React from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
 
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { noop } from '@/commons/utils/noop'
 
 import type { SimulatorTargetCustomerFormValues } from './SimulatorTarget/validationSchema'
@@ -17,9 +19,9 @@ interface SimulatorContextValues {
   setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
   openToPublic: string | null
   setOpenToPublic: (openToPublic: string) => void
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
   setActivity: (
-    activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+    activity: ActivityOpenToPublic | ActivityNotOpenToPublic
   ) => void
 }
 
@@ -51,7 +53,7 @@ export function SimulatorContextProvider({
   const [siret, setSiret] = useState<string>()
   const [openToPublic, setOpenToPublic] = useState<string | null>(null)
   const [activity, setActivity] = useState<
-    ActivityOpenToPublicType | ActivityNotOpenToPublicType
+    ActivityOpenToPublic | ActivityNotOpenToPublic
   >()
   const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
     individual: undefined,
