@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5715b432e91814bc6ab6725ff10abf3b81d5f8d1
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5715b432e91814bc6ab6725ff10abf3b81d5f8d1
 
       - name: "OpenID Connect Authentication"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -121,7 +121,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5715b432e91814bc6ab6725ff10abf3b81d5f8d1
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
