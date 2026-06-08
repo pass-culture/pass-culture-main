@@ -687,7 +687,7 @@ class AttachImageFormModel(HttpBodyModel):
         try:
             result = super().model_validate(*args, **kwargs)
         except pydantic_v2.ValidationError:
-            logger.warning("Error during AttachImageFormModel validation", exc_info=True)
+            logger.exception("Error during AttachImageFormModel validation")
             raise
 
         return result
