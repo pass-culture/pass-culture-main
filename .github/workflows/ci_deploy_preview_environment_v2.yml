@@ -9,8 +9,7 @@ jobs:
     name: Deploy Preview Environment API
     runs-on: ubuntu-22.04
     environment:
-      # TODO: rename the environment
-      name: pcapi-preview-bootstrapper
+      name: pcapi-preview
       deployment: true
     permissions:
       id-token: write
