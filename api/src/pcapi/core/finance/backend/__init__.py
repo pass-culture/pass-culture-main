@@ -60,7 +60,7 @@ def push_invoice_debt_cancellation(invoice_id: int, old_bank_account_id: int, ba
     invoice_external_type = ExternalType.ACR if invoice.reference.startswith("A") else ExternalType.ADR
     invoice_description = f"REC_{invoice.reference} - Changement BA de {old_bank_account_id} à {bank_account_id}"
     settlements_nb = len(invoice.settlements)
-    reference_suffix = "_A" + (str(settlements_nb) if settlements_nb > 1 else "")
+    reference_suffix = "_R" * (settlements_nb - 1) + "_A"
 
     payload = InvoicePayload.build(
         invoice=invoice,
@@ -84,7 +84,7 @@ def push_invoice_debt_recreation(invoice_id: int, old_bank_account_id: int, bank
     invoice_external_type = ExternalType.ADR if invoice.reference.startswith("A") else ExternalType.ACR
     invoice_description = f"REC_{invoice.reference} - Changement BA de {old_bank_account_id} à {bank_account_id}"
     settlements_nb = len(invoice.settlements)
-    reference_suffix = "_R" + (str(settlements_nb) if settlements_nb > 1 else "")
+    reference_suffix = "_R" * settlements_nb
 
     payload = InvoicePayload.build(
         invoice=invoice,

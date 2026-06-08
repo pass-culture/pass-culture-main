@@ -163,7 +163,7 @@ class DummyFinanceBackendTest:
         assert (
             InvoicePayload(
                 invoice_id=invoice.id,
-                reference=invoice.reference + "_A2",
+                reference=invoice.reference + "_R_A",
                 bank_account_id=str(older_bank_account.id),
                 invoice_date=now,
                 description=f"REC_{invoice.reference} - Changement BA de {older_bank_account.id} à {new_bank_account.id}",
