@@ -885,28 +885,16 @@ def edit_stock(
         validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
-        if (
-            # bookingLimitDatetime can be set to any datetime through the public API.
-            # However, the pro routes and the client frontend treats it as a... date with a default time part.
-            # Which means that a stock update will include the default time, and the backend
-            # will try to update the bookingLimitDatetime, which could trigger some unexpected validation errors
-            booking_limit_datetime is not None
-            and stock.bookingLimitDatetime is not None
-            and booking_limit_datetime.date() == stock.bookingLimitDatetime.date()
-        ):
-            # nothing to do
-            pass
-        else:
-            modifications["bookingLimitDatetime"] = booking_limit_datetime
-            if booking_limit_datetime:
-                validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
-                    stock.offer,
-                    booking_limit_datetime,
-                )
-            validation.check_activation_codes_expiration_datetime_on_stock_edition(
-                stock.activationCodes,
+        modifications["bookingLimitDatetime"] = booking_limit_datetime
+        if booking_limit_datetime:
+            validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+                stock.offer,
                 booking_limit_datetime,
             )
+        validation.check_activation_codes_expiration_datetime_on_stock_edition(
+            stock.activationCodes,
+            booking_limit_datetime,
+        )
 
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
         modifications["beginningDatetime"] = beginning_datetime
@@ -981,8 +969,8 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
 
     existing_stocks = {stock.id: stock for stock in offer.activeStocks if not stock.offer.isEvent}
 
-    stock_inputs_to_create = [stock_input for stock_input in stock_inputs if stock_input["id"] is None]
-    stock_inputs_to_update = [stock_input for stock_input in stock_inputs if stock_input["id"] is not None]
+    stock_inputs_to_create = [stock_input for stock_input in stock_inputs if stock_input.get("id") is None]
+    stock_inputs_to_update = [stock_input for stock_input in stock_inputs if stock_input.get("id") is not None]
     for stock_input in stock_inputs_to_update:
         if stock_input["id"] not in existing_stocks:
             raise exceptions.OfferException({"global": "Trying to update a non-existing stock."})
@@ -1001,11 +989,22 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
     for stock_input in stock_inputs_to_update:
         assert stock_input["id"]
         stock_to_edit = existing_stocks[stock_input["id"]]
+        # Workaround to avoid updating bookingLimitDatetime if the date has not changed, because the time part can be different when created via public api
+        booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = stock_input.get(
+            "booking_limit_datetime", UNCHANGED
+        )
+        if (
+            booking_limit_datetime
+            and stock_to_edit.bookingLimitDatetime
+            and booking_limit_datetime != UNCHANGED
+            and stock_to_edit.bookingLimitDatetime.date() == booking_limit_datetime.date()
+        ):
+            booking_limit_datetime = UNCHANGED
         edit_stock(
             stock_to_edit,
-            booking_limit_datetime=stock_input["booking_limit_datetime"],
-            price=stock_input["price"],
-            quantity=stock_input["quantity"],
+            booking_limit_datetime=booking_limit_datetime,
+            price=stock_input.get("price", UNCHANGED),
+            quantity=stock_input.get("quantity", UNCHANGED),
         )
 
     for stock_id in stock_ids_to_delete:
