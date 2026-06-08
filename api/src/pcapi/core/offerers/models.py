@@ -669,7 +669,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         return (
             self.managingOfferer.isActive
             and self.managingOfferer.isValidated
-            and (bool(self.hasAtLeastOneBookableOffer) or bool(self.volunteeringUrl))
+            and (bool(self.volunteeringUrl) or self.hasAtLeastOneBookableOffer)
         )
 
     @property
