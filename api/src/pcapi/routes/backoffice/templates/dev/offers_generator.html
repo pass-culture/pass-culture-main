@@ -9,9 +9,7 @@
         {% if offer %}
           <div class="card-body">
             <div class="d-flex flex-row justify-content-start">
-              <h5 class="card-title">
-                {{ offer.name }}
-              </h5>
+              <h5 class="card-title">{{ offer.name }}</h5>
             </div>
             <div>
               <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">
