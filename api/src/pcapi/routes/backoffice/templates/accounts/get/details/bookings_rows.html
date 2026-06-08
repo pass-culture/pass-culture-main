@@ -33,6 +33,7 @@
         </div>
       </div>
     </td>
+    <td>{{ links.build_individual_booking_details_link(booking.id) }}</td>
     <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
     <td>{{ links.build_offer_name_to_details_link(booking.stock.offer) }}</td>
     <td>{{ links.build_offer_webapp_link(booking.stock.offer) }}</td>
@@ -45,9 +46,7 @@
     {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
       <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
     {% endif %}
-    <td>
-      {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
-    </td>
+    <td>{{ booking.token }}</td>
     <td>{{ booking.stock.offer.withdrawalType | format_withdrawal_type }}</td>
   </tr>
   <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
