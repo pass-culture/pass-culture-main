@@ -6,6 +6,7 @@ from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import api as bonus_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
@@ -55,6 +56,76 @@ class StagingQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
+    def test_mock_householder_eligible_quotient_familial(self, requests_mock):
+        user = users_factories.BeneficiaryFactory()
+        config_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                http_status_code=200,
+                quotient_familial=bonus_schemas.QuotientFamilialContent(
+                    provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
+                ),
+                householders=[
+                    bonus_schemas.QuotientFamilialPerson(
+                        last_name=user.lastName,
+                        common_name=None,
+                        first_names=[user.firstName],
+                        birth_date=user.validatedBirthDate,
+                        gender=users_models.GenderEnum.M,
+                    )
+                ],
+            ).model_dump(),
+        )
+        qf_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+
+        bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
+
+        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert qf_fraud_check.source_data().quotient_familial == config_fraud_check.source_data().quotient_familial
+        assert qf_fraud_check.source_data().householders == config_fraud_check.source_data().householders
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+    def test_mock_not_in_tax_household(self, requests_mock):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                http_status_code=200,
+                quotient_familial=bonus_schemas.QuotientFamilialContent(
+                    provider="CNAF", value=123, year=2023, month=6, computation_year=2024, computation_month=12
+                ),
+            ).model_dump(),
+        )
+        qf_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+
+        bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
+
+        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert qf_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
     def test_mock_quotient_familial_too_high(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
@@ -94,7 +165,7 @@ class StagingQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
-    def test_custodian_not_found(self, requests_mock):
+    def test_mock_application_not_found(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -118,8 +189,45 @@ class StagingQuotientFamilialTest:
 
         bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
 
+        query_string = requests_mock.request_history[0].qs
+        assert query_string["nomNaissance"] == [staging_api.APPLICATION_NOT_FOUND.last_name.upper()]
+
         assert qf_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert qf_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+    def test_mock_person_not_found(self, requests_mock):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                http_status_code=422,
+            ),
+        )
+        qf_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        requests_mock.get(
+            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+            json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
+            status_code=422,
+        )
+
+        bonus_api.apply_for_quotient_familial_bonus(qf_fraud_check)
+
+        query_string = requests_mock.request_history[0].qs
+        assert query_string["codeCogInseePaysNaissance"] == [staging_api.PERSON_NOT_FOUND.birth_country_cog_code]
+
+        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert qf_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits

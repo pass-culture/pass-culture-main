@@ -7,7 +7,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.dev import forms as dev_forms
-from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check
+from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_ubble_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
 from pcapi.routes.internal.auth import api_key_required
@@ -75,6 +75,6 @@ def configure_api_quotient_familial_response(user_id: int) -> tuple[dict, int]:
         transaction_manager.mark_transaction_as_invalid()
         return form.errors, 400
 
-    create_qf_fraud_check(user, form)
+    create_qf_fraud_check_mock(user, form)
 
     return {}, 200

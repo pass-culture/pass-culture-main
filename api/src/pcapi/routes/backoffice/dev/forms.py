@@ -1,4 +1,5 @@
 import datetime
+import enum
 
 import wtforms
 from dateutil.relativedelta import relativedelta
@@ -6,9 +7,7 @@ from flask_wtf import FlaskForm
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.conf import GRANTED_DEPOSIT_AMOUNT_18_v2
-from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
-from pcapi.core.users import models as users_models
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
 from pcapi.routes.backoffice.forms import fields
@@ -153,20 +152,27 @@ class UbbleConfigurationForm(utils.PCForm):
     )
 
 
+class QFMockType(enum.Enum):
+    OK = "OK"
+    HOUSEHOLDER_OK = "HOUSEHOLDER_OK"
+    NOT_IN_TAX_HOUSEHOLD = "CHILD_NOT_IN_TAX_HOUSEHOLD"
+    QUOTIENT_FAMILIAL_TOO_HIGH = "QUOTIENT_FAMILIAL_TOO_HIGH"
+    APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
+    PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+
+
 class QuotientFamilialConfigurationForm(utils.PCForm):
-    https_status_code = fields.PCSelectField(
-        "Parent trouvé", choices=[(200, "Parent trouvé"), (404, "Parent non-trouvé")], default=200
-    )
-    quotient_familial_value = fields.PCIntegerField(
-        "Valeur du Quotient Familial", default=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
-    )
-    last_name = fields.PCStringField("Nom de famille de l'enfant")
-    common_name = fields.PCOptStringField("Nom d'usage")
-    first_names = fields.PCStringField("Prénoms de l'enfant, séparés par une virgule")
-    birth_date = fields.PCDateField("Date de naissance")
-    gender = fields.PCSelectField(
-        "Genre de l'enfant",
-        choices=[(users_models.GenderEnum.F.value, "Femme"), (users_models.GenderEnum.M.value, "Homme")],
+    mock_type = fields.PCSelectField(
+        "Type de mock",
+        choices=[
+            (QFMockType.OK.value, "Ok cas courant"),
+            (QFMockType.HOUSEHOLDER_OK.value, "Ok émancipé"),
+            (QFMockType.NOT_IN_TAX_HOUSEHOLD.value, "Pas associé au dossier demandé"),
+            (QFMockType.QUOTIENT_FAMILIAL_TOO_HIGH.value, "Quotient familial trop élevé"),
+            (QFMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
+            (QFMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
+        ],
+        default=QFMockType.OK.value,
     )
 
 

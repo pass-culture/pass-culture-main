@@ -54,7 +54,7 @@ QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
                 nom_naissance="LEFEBVRE",
                 prenoms="ALEXIS GÉRÔME JEAN-PHILIPPE",
                 date_naissance=date(1982, 12, 27),
-                sexe=users_models.GenderEnum.F,
+                sexe=users_models.GenderEnum.M,
             )
         ],
         enfants=[
