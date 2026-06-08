@@ -2,17 +2,14 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
-  ApiError,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -86,7 +83,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
       templateOffer
     )
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({ id: props.offerId })
     )
 
@@ -109,13 +106,13 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should log event when clicking "Dupliquer" button', async () => {
-    vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'duplicateCollectiveOffer').mockResolvedValueOnce(
       // Simuler la nouvelle offre dupliquée
       getCollectiveOfferFactory({
         id: 999,
       })
     )
-    vi.spyOn(api, 'attachOfferImage').mockResolvedValueOnce({
+    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValueOnce({
       imageUrl: 'my url',
     })
 
@@ -254,9 +251,7 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should show an error notification when the duplication failed', async () => {
-    vi.spyOn(apiNew, 'createCollectiveOffer').mockRejectedValueOnce(
-      new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
-    )
+    vi.spyOn(apiNew, 'createCollectiveOffer').mockRejectedValueOnce({})
 
     renderCollectiveEditingOfferNavigation({
       ...props,
@@ -379,9 +374,10 @@ describe('CollectiveEditionOfferNavigation', () => {
       },
     })
 
-    vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(
-      {}
-    )
+    vi.spyOn(
+      apiNew,
+      'patchCollectiveOffersTemplateArchive'
+    ).mockRejectedValueOnce({})
 
     const archiveButton = screen.getByRole('button', {
       name: 'Archiver',
