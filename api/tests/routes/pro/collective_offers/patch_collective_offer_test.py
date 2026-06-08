@@ -429,7 +429,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def test_patch_offer_with_empty_name(self, app, client):
+    def test_patch_offer_with_empty_name(self, client):
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -439,7 +439,7 @@ class Returns400Test:
 
         assert response.status_code == 400
 
-    def test_patch_offer_with_null_name(self, app, client):
+    def test_patch_offer_with_null_name(self, client):
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -474,7 +474,7 @@ class Returns400Test:
 
         assert response.status_code == 400
 
-    def test_patch_offer_with_none_domain(self, app, client):
+    def test_patch_offer_with_none_domain(self, client):
         offer = factories.CollectiveOfferFactory(educational_domains=None)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -817,6 +817,18 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"additionalDetails": ["Ce champ ne peut pas être édité"]}
 
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details_error(self, auth_client, venue):
+        offer = factories.PublishedCollectiveOfferFactory(venue=venue)
+
+        data = {"additionalDetails": "too_long" * 150}
+        response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "additionalDetails": ["Cette chaîne de caractères doit avoir une taille maximum de 1000 caractères"]
+        }
+
 
 class Returns403Test:
     def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
@@ -917,39 +929,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"offer": "This collective offer status does not allow editing details"}
 
-
-class Returns404Test:
-    def when_user_is_not_attached_to_offerer(self, app, client):
-        offer = factories.CollectiveOfferFactory(name="Old name")
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
-
-        data = {"name": "New name"}
-        client = client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
-        assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
-
-    def test_returns_404_if_offer_does_not_exist(self, app, client):
-        users_factories.UserFactory(email="user@example.com")
-
-        response = client.with_session_auth("user@example.com").patch("/collective/offers/123456789", json={})
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
-
-    def test_patch_offer_with_unknown_educational_domain(self, app, client):
-        offer = factories.CollectiveOfferFactory(educational_domains=None)
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        data = {"domains": [0]}
-        client = client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 404
-        assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
-
     def test_edit_collective_offer_with_offerer_unregister_in_adage(self, client):
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -961,6 +940,39 @@ class Returns404Test:
 
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
+
+
+class Returns404Test:
+    def when_user_is_not_attached_to_offerer(self, client):
+        offer = factories.CollectiveOfferFactory(name="Old name")
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+        data = {"name": "New name"}
+        client = client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+        assert db.session.get(models.CollectiveOffer, offer.id).name == "Old name"
+
+    def test_returns_404_if_offer_does_not_exist(self, client):
+        users_factories.UserFactory(email="user@example.com")
+
+        response = client.with_session_auth("user@example.com").patch("/collective/offers/123456789", json={})
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_patch_offer_with_unknown_educational_domain(self, client):
+        offer = factories.CollectiveOfferFactory(educational_domains=None)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"domains": [0]}
+        client = client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
 
     def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
         offerer = offerers_factories.OffererFactory()

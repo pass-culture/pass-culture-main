@@ -663,6 +663,20 @@ class Returns400Test:
         assert response.json == {"additionalDetails": ["Ce champ ne peut pas être présent"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_details_error(self, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {**base_offer_payload(venue=venue), "additionalDetails": "too_long" * 150}
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "additionalDetails": ["Cette chaîne de caractères doit avoir une taille maximum de 1000 caractères"]
+        }
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
 
 class Returns404Test:
     def test_create_collective_offer_random_user(self, client):
