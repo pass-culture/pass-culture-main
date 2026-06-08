@@ -7,7 +7,7 @@ import {
   type GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import * as useEducationalDomainsModule from '@/commons/hooks/swr/useEducationalDomains'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -61,7 +61,7 @@ describe('ActivitySubSection', () => {
     })
 
     expect(
-      screen.queryByText(getActivityLabel(DisplayableActivity.OTHER))
+      screen.queryByText(DisplayableActivityMap.get('OTHER') ?? '')
     ).not.toBeInTheDocument()
     expect(screen.getByText(/Description/)).toBeVisible()
     expect(screen.getByText('Non renseignée')).toBeVisible()

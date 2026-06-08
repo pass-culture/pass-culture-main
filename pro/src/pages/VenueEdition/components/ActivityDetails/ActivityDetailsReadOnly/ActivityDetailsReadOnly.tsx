@@ -1,6 +1,6 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
@@ -26,7 +26,7 @@ export const ActivityDetailsReadOnly = ({
           ? [
               {
                 title: 'Activité',
-                text: getActivityLabel(venue.activity),
+                text: DisplayableActivityMap.get(venue.activity),
               },
             ]
           : []),

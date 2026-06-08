@@ -1,3 +1,7 @@
+import {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { getVolunteeringUrlError } from '../getVolunteeringUrlError'
@@ -21,7 +25,7 @@ describe('VenueEditionForm validationSchema', () => {
     isOpenToPublic: 'true',
     openingHours: null,
     description: 'description',
-    activity: 'ART_GALLERY',
+    activity: ActivityOpenToPublic.ART_GALLERY,
     volunteeringUrl: null,
   }
 
@@ -118,7 +122,7 @@ describe('VenueEditionForm validationSchema', () => {
       formValues: {
         ...defaultValues,
         isOpenToPublic: 'false',
-        activity: 'PRESS_OR_MEDIA',
+        activity: ActivityNotOpenToPublic.PRESS_OR_MEDIA,
         openingHours: {
           MONDAY: null,
         },

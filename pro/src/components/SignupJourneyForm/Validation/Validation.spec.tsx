@@ -3,7 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import { type PostOffererResponseModel, Target } from '@/apiClient/v1/new'
+import {
+  ActivityOpenToPublic,
+  type PostOffererResponseModel,
+  Target,
+} from '@/apiClient/v1/new'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -181,7 +185,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        activity: 'MUSEUM',
+        activity: ActivityOpenToPublic.MUSEUM,
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -212,7 +216,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        activity: 'MUSEUM',
+        activity: ActivityOpenToPublic.MUSEUM,
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -252,7 +256,7 @@ describe('ValidationScreen', () => {
         {
           ...contextValue,
           activity: {
-            activity: 'MUSEUM',
+            activity: ActivityOpenToPublic.MUSEUM,
             socialUrls: ['url1'],
             targetCustomer: Target.EDUCATIONAL,
             phoneNumber: '',
@@ -291,7 +295,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -338,7 +342,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -495,7 +499,7 @@ describe('ValidationScreen', () => {
 
     it('should send other activity comment if activity is OTHER', async () => {
       if (contextValue.activity) {
-        contextValue.activity.activity = 'OTHER'
+        contextValue.activity.activity = ActivityOpenToPublic.OTHER
         contextValue.activity.otherActivityComment = 'urbex en pleine nature'
       }
       vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
@@ -561,7 +565,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -614,7 +618,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',

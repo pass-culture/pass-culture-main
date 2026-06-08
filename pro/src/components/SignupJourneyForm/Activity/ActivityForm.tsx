@@ -1,12 +1,15 @@
 import { useMemo } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
-import { getActivities } from '@/commons/mappings/mappings'
-import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { toSelectOptions } from '@/commons/mappings/helpers'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -28,7 +31,7 @@ interface SocialUrl {
 }
 
 export interface ActivityFormValues {
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
   otherActivityComment?: string
   socialUrls: SocialUrl[]
   targetCustomer: {
@@ -56,8 +59,8 @@ export const ActivityForm = (): JSX.Element => {
 
   const mainActivityOptions =
     offerer?.isOpenToPublic === 'true'
-      ? buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
-      : buildSelectOptions(getActivities('NOT_OPEN_TO_PUBLIC'))
+      ? toSelectOptions(ActivityOpenToPublicMap)
+      : toSelectOptions(ActivityNotOpenToPublicMap)
 
   const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
     return educationalDomains.length === 0 ||

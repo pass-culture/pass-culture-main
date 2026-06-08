@@ -3,10 +3,15 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { getActivities } from '@/commons/mappings/mappings'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { objectKeys } from '@/commons/utils/object'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -107,14 +112,15 @@ const GeneralInformation = () => {
       resetOpeningHoursAndAccessibility()
     }
 
-    const activityKeys = objectKeys(
-      getActivities(
-        isOpenToPublicValue === 'true' ? 'OPEN_TO_PUBLIC' : 'NOT_OPEN_TO_PUBLIC'
-      )
-    )
-    const isInitialActivityValid = formContext.activity
-      ? activityKeys.includes(formContext.activity)
-      : false
+    const isInitialActivityValid =
+      formContext.activity != null &&
+      (isOpenToPublicValue === 'true'
+        ? getMapKeys(ActivityOpenToPublicMap).includes(
+            formContext.activity as ActivityOpenToPublic
+          )
+        : getMapKeys(ActivityNotOpenToPublicMap).includes(
+            formContext.activity as ActivityNotOpenToPublic
+          ))
 
     if (isInitialActivityValid) {
       form.setValue('activity', formContext.activity)

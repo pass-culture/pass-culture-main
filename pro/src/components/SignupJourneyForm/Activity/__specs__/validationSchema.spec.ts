@@ -1,3 +1,4 @@
+import { ActivityOpenToPublic } from '@/apiClient/v1/new'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 
@@ -5,7 +6,7 @@ import { validationSchema } from '../validationSchema'
 
 describe('Activity validationSchema', () => {
   const validFormValues: ActivityFormValues = {
-    activity: 'MUSEUM',
+    activity: ActivityOpenToPublic.MUSEUM,
     socialUrls: [{ url: 'https://passculture.pro' }],
     targetCustomer: {
       individual: true,
@@ -115,7 +116,7 @@ describe('Activity validationSchema', () => {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        activity: 'ART_GALLERY',
+        activity: ActivityOpenToPublic.ART_GALLERY,
       },
       expectedErrors: [],
       notOpenToPublic: false,
@@ -124,7 +125,7 @@ describe('Activity validationSchema', () => {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        activity: 'FESTIVAL',
+        activity: ActivityOpenToPublic.FESTIVAL,
       },
       expectedErrors: [],
       notOpenToPublic: true,

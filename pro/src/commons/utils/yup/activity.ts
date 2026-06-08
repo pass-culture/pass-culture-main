@@ -1,22 +1,25 @@
-import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
-import { getActivities } from 'commons/mappings/mappings'
 import * as yup from 'yup'
 
-import { objectKeys } from '../object'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { getMapKeys } from '@/commons/mappings/helpers'
 
-const activityTypeValuesOpenToPublic = objectKeys(
-  getActivities('OPEN_TO_PUBLIC')
-)
-const activityTypeValuesNotOpenToPublic = objectKeys(
-  getActivities('NOT_OPEN_TO_PUBLIC')
-)
+const activityTypeValuesOpenToPublic = getMapKeys(
+  ActivityOpenToPublicMap
+) as ActivityOpenToPublic[]
+const activityTypeValuesNotOpenToPublic = getMapKeys(
+  ActivityNotOpenToPublicMap
+) as ActivityNotOpenToPublic[]
 
 export const activityValidator = (notOpenToPublic: boolean) =>
   notOpenToPublic
     ? yup
-        .mixed<ActivityNotOpenToPublicType>()
+        .mixed<ActivityNotOpenToPublic>()
         .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
     : yup
-        .mixed<ActivityOpenToPublicType>()
+        .mixed<ActivityOpenToPublic>()
         .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')

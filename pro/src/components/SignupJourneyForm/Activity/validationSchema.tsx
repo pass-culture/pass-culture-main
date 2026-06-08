@@ -2,8 +2,10 @@ import { activityValidator } from 'commons/utils/yup/activity'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 
@@ -16,7 +18,7 @@ export const validationSchema = (
     ),
 
     otherActivityComment: yup.string().when('activity', {
-      is: (activity: ActivityOpenToPublicType | ActivityNotOpenToPublicType) =>
+      is: (activity: ActivityOpenToPublic | ActivityNotOpenToPublic) =>
         activity === 'OTHER',
       then: (schema) =>
         schema.required('Veuillez préciser votre type d’activité'),

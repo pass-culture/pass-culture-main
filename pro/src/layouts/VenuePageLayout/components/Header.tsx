@@ -6,7 +6,7 @@ import { buildInitialVenueImageValues } from '@/commons/core/Venue/utils/buildIn
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -81,7 +81,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         <div className={styles['venue-details-main']}>
           <div className={styles['venue-type']}>
             {selectedPartnerVenue.activity &&
-              getActivityLabel(selectedPartnerVenue.activity)}
+              DisplayableActivityMap.get(selectedPartnerVenue.activity)}
           </div>
           <h2 className={styles['venue-name']}>
             {selectedPartnerVenue.publicName}

@@ -11,7 +11,7 @@ import {
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -105,7 +105,7 @@ describe('Header', () => {
 
     expect(screen.getByText('Nom public de la structure 1')).toBeInTheDocument()
     expect(
-      screen.getByText(getActivityLabel(DisplayableActivity.FESTIVAL))
+      screen.getByText(DisplayableActivityMap.get('FESTIVAL') ?? '')
     ).toBeInTheDocument()
   })
 
@@ -113,7 +113,7 @@ describe('Header', () => {
     renderHeader('partnerPage', { activity: null })
 
     expect(
-      screen.queryByText(getActivityLabel(DisplayableActivity.OTHER))
+      screen.queryByText(DisplayableActivityMap.get('OTHER') ?? '')
     ).not.toBeInTheDocument()
   })
 

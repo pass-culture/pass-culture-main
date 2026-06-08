@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -45,7 +45,10 @@ export const CollectiveDataEditionReadOnly = () => {
               ? [
                   {
                     title: 'Activité',
-                    text: getActivityLabel(selectedPartnerVenue.activity),
+                    text:
+                      DisplayableActivityMap.get(
+                        selectedPartnerVenue.activity
+                      ) ?? '',
                   },
                 ]
               : []),

@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import {
-  type ActivityNotOpenToPublic,
-  type ActivityOpenToPublic,
-  Target,
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
 } from '@/apiClient/v1/new'
+import { Target } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -28,7 +28,7 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { ensureCurrentUser } from '@/commons/store/user/selectors'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
@@ -119,7 +119,7 @@ export const Validation = (): JSX.Element | undefined => {
     return
   }
 
-  const activityLabel = getActivityLabel(activity.activity)
+  const activityLabel = DisplayableActivityMap.get(activity.activity) ?? ''
 
   const onSubmit = async () => {
     setLoading(true)

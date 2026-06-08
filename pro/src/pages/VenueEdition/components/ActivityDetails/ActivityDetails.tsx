@@ -1,10 +1,13 @@
 import { useFormContext } from 'react-hook-form'
 
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
-import { getActivities } from '@/commons/mappings/mappings'
-import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { toSelectOptions } from '@/commons/mappings/helpers'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
@@ -13,7 +16,7 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { defaultCulturalDomain } from './activityDomainsHelper'
 
 interface ActivityFormFields {
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
   isOpenToPublic: string
   culturalDomains?: string[]
   description?: string
@@ -31,6 +34,11 @@ export const ActivityDetails = () => {
     educationalDomains
   )
 
+  const activityOptions =
+    watch('isOpenToPublic') === 'true'
+      ? toSelectOptions(ActivityOpenToPublicMap)
+      : toSelectOptions(ActivityNotOpenToPublicMap)
+
   return (
     <>
       <FormLayout.Row key={watch('activity')} mdSpaceAfter>
@@ -45,13 +53,7 @@ export const ActivityDetails = () => {
                   },
                 ]
               : []),
-            ...buildSelectOptions(
-              getActivities(
-                watch('isOpenToPublic') === 'true'
-                  ? 'OPEN_TO_PUBLIC'
-                  : 'NOT_OPEN_TO_PUBLIC'
-              )
-            ),
+            ...activityOptions,
           ]}
           label="Activité principale"
           error={formState.errors.activity?.message}

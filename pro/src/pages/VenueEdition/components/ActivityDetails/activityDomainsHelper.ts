@@ -4,12 +4,14 @@ import type {
   EducationalDomainsResponseModel,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 
 interface ActivityFormFields {
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
   isOpenToPublic: string
   culturalDomains?: string[]
   description?: string

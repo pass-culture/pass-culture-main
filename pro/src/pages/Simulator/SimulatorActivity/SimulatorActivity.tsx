@@ -1,8 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import type { ActivityNotOpenToPublicType } from 'commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from 'commons/mappings/ActivityOpenToPublic'
-import { getActivities } from 'commons/mappings/mappings'
-import { buildSelectOptions } from 'commons/utils/buildSelectOptions'
 import { activityValidator } from 'commons/utils/yup/activity'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useSimulatorContext } from 'pages/Simulator/SimulatorContext'
@@ -16,13 +12,20 @@ import { useNavigate } from 'react-router'
 import { Select } from 'ui-kit/form/Select/Select'
 import * as yup from 'yup'
 
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { toSelectOptions } from '@/commons/mappings/helpers'
 import { BubbleStepper } from '@/components/BubbleStepper/BubbleStepper'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
 export interface SimulatorActivity {
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
 }
 
 export const SimulatorActivity = (): JSX.Element => {
@@ -31,8 +34,8 @@ export const SimulatorActivity = (): JSX.Element => {
 
   const mainActivityOptions =
     openToPublic === 'true'
-      ? buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
-      : buildSelectOptions(getActivities('NOT_OPEN_TO_PUBLIC'))
+      ? toSelectOptions(ActivityOpenToPublicMap)
+      : toSelectOptions(ActivityNotOpenToPublicMap)
 
   const methods = useForm<SimulatorActivity>({
     defaultValues: { activity: activity },

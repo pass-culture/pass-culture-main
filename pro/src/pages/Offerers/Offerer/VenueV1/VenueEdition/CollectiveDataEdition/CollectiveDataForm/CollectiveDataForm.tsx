@@ -3,11 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import {
-  type ActivityNotOpenToPublic,
-  type ActivityOpenToPublic,
-  StudentLevels,
-} from '@/apiClient/v1/new'
+import { StudentLevels } from '@/apiClient/v1/new'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
@@ -18,7 +14,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -88,9 +84,7 @@ export const CollectiveDataForm = ({
         path: { venue_id: selectedPartnerVenue.id },
         body: {
           ...values,
-          activity: values.activity as
-            | ActivityOpenToPublic
-            | ActivityNotOpenToPublic,
+          activity: values.activity,
           collectiveDomains: values.collectiveDomains?.map(Number),
           collectiveLegalStatus: values.collectiveLegalStatus
             ? Number(values.collectiveLegalStatus)
@@ -163,7 +157,9 @@ export const CollectiveDataForm = ({
                   <DefinitionList.Term>Activité</DefinitionList.Term>
                   <DefinitionList.Definition>
                     {selectedPartnerVenue.activity
-                      ? getActivityLabel(selectedPartnerVenue.activity)
+                      ? DisplayableActivityMap.get(
+                          selectedPartnerVenue.activity
+                        )
                       : 'Non renseignée'}
                   </DefinitionList.Definition>
                 </DefinitionList.Row>
