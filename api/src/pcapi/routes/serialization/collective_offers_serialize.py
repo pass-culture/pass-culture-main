@@ -551,7 +551,7 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
     national_program_id: int | None = None
     formats: list[EacFormat] = pydantic_v2.Field(min_length=1)
     additional_details: str | None = pydantic_v2.Field(
-        max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None
+        max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH, default=None
     )
 
     @pydantic_v2.field_validator("contact_phone", mode="after")
@@ -604,7 +604,7 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     national_program_id: int | None = None
     formats: list[EacFormat] | None = pydantic_v2.Field(min_length=1, default=None)
     additional_details: str | None = pydantic_v2.Field(
-        max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH, default=None
+        max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH, default=None
     )
 
     NON_NULLABLE_FIELDS: typing.ClassVar = (
