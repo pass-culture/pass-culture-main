@@ -1,4 +1,4 @@
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1/new'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
