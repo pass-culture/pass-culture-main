@@ -21,7 +21,7 @@ type TimePickerProps = {
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
-  label?: string
+  label: string
   required?: boolean
   error?: string
   suggestedTimeList?: SuggestedTimeList

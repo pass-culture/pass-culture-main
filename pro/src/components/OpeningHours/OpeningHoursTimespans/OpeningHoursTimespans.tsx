@@ -60,7 +60,8 @@ export function OpeningHoursTimespans({
         <div className={styles['timespan-inputs']}>
           <TimePicker
             required
-            isLabelHidden={i === 1}
+            isLabelHidden
+            label="Ouvre à"
             className={styles['time-picker']}
             {...form.register(`openingHours.${weekDay}.${i}.0`)}
             error={
@@ -74,7 +75,8 @@ export function OpeningHoursTimespans({
           <TimePicker
             required
             className={styles['time-picker']}
-            isLabelHidden={i === 1}
+            isLabelHidden
+            label="Ferme à"
             {...form.register(`openingHours.${weekDay}.${i}.1`)}
             error={
               form.formState.errors.openingHours?.[weekDay]?.[i]?.[1]?.message
