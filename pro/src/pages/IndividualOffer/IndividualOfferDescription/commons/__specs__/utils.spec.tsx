@@ -7,13 +7,11 @@ import {
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
+  getOfferVenueFactory,
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
-import {
-  makeGetVenueResponseModel,
-  offerVenueFactory,
-} from '@/commons/utils/factories/venueFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
@@ -263,7 +261,7 @@ describe('getInitialValuesFromOffer', () => {
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      venue: offerVenueFactory({ id: 6 }),
+      venue: getOfferVenueFactory({ id: 6 }),
       visualDisabilityCompliant: false,
     })
     const subcategories = [
@@ -328,7 +326,7 @@ describe('getInitialValuesFromOffer', () => {
       durationMinutes: 90,
       productId: 456,
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      venue: offerVenueFactory({ id: 7 }),
+      venue: getOfferVenueFactory({ id: 7 }),
       extraData: {},
     })
     const subcategories = [
@@ -491,7 +489,7 @@ describe('getFormReadOnlyFields', () => {
 describe('getAccessibilityFormValuesFromOffer', () => {
   it('should coerce all flags to false and set none as true when flags are all false, null or undefined', () => {
     const offer = getIndividualOfferFactory({
-      audioDisabilityCompliant: null,
+      audioDisabilityCompliant: undefined,
       mentalDisabilityCompliant: undefined,
       motorDisabilityCompliant: false,
       visualDisabilityCompliant: false,

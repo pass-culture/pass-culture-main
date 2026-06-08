@@ -31,7 +31,7 @@ describe('isOfferSynchronizedViaAllocine', () => {
     expect(
       isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
-          lastProvider: null,
+          lastProvider: undefined,
         })
       )
     ).toBe(false)

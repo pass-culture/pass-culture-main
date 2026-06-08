@@ -13,7 +13,7 @@ describe('isOfferSynchronized', () => {
 
   it('should return false when lastProvider is null', () => {
     const offer = getIndividualOfferFactory({
-      lastProvider: null,
+      lastProvider: undefined,
     })
 
     expect(isOfferSynchronized(offer)).toBe(false)

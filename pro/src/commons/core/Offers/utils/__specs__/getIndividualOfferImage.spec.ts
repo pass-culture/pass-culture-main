@@ -26,7 +26,7 @@ describe('getIndividualOfferImage', () => {
     {
       activeMediation: {
         thumbUrl: 'https://image.url',
-        credit: null,
+        credit: undefined,
       },
       expectedImage: {
         url: 'https://image.url',

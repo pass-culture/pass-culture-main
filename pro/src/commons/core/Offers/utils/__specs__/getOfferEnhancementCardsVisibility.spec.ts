@@ -58,7 +58,7 @@ describe('getOfferEnhancementCardsVisibility', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       productId: 12,
-      thumbUrl: null,
+      thumbUrl: undefined,
     })
 
     const result = getOfferEnhancementCardsVisibility(offer)
