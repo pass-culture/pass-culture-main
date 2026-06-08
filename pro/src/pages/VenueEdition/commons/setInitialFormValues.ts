@@ -28,17 +28,12 @@ export const setInitialFormValues = (
   }
 }
 
-function normalizeOpeningHoursForForm(
+const normalizeOpeningHoursForForm = (
   venue: GetVenueResponseModel
-): VenueEditionFormValues['openingHours'] {
-  if (!venue.openingHours) {
-    return Object.fromEntries(OPENING_HOURS_DAYS.map((day) => [day, []]))
-  }
-
-  return Object.fromEntries(
+): VenueEditionFormValues['openingHours'] =>
+  Object.fromEntries(
     OPENING_HOURS_DAYS.map((day) => [day, venue.openingHours?.[day] ?? []])
   )
-}
 
 function setAccessibilityNone(venue: GetVenueResponseModel): boolean {
   // for now just acceslibre
