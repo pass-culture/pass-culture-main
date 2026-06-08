@@ -32,6 +32,16 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       echo "✅ dead code all good"
     fi
 
+    echo "Looking for code used only in tests..."
+    yarn lint:dead-code:production
+    TEST_ONLY_EXIT_CODE=$?
+    if [ $TEST_ONLY_EXIT_CODE -ne 0 ]; then
+      echo "❌ Please fix code used only in tests first "
+      exit 1
+    else
+      echo "✅ test-only imports are all good"
+    fi
+
     echo "Running Linter..."
     yarn lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
