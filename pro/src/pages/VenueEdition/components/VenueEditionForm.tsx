@@ -272,6 +272,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   label="Adresse email"
                   type="email"
                   description="Format : email@exemple.com"
+                  autoComplete="email"
                   {...methods.register('email')}
                   error={methods.formState.errors.email?.message}
                 />
