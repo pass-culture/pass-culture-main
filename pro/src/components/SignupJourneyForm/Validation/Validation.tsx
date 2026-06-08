@@ -2,13 +2,12 @@ import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   type ActivityNotOpenToPublic,
   type ActivityOpenToPublic,
-  type SaveNewOnboardingDataQueryModel,
   Target,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -128,34 +127,36 @@ export const Validation = (): JSX.Element | undefined => {
       /* istanbul ignore next: ENV dependant */
       const token = await getReCaptchaToken('saveNewOnboardingData')
 
-      const data: SaveNewOnboardingDataQueryModel = {
-        isOpenToPublic: offerer.isOpenToPublic === 'true',
-        publicName: offerer.publicName || null,
-        siret: offerer.siret.replaceAll(' ', ''),
-        culturalDomains: activity.culturalDomains,
-        activity: activity.activity as
-          | ActivityOpenToPublic
-          | ActivityNotOpenToPublic,
-        otherActivityComment: activity.otherActivityComment || null,
-        webPresence: activity.socialUrls.join(', '),
-        target:
-          /* istanbul ignore next: the form validation already handles this */
-          activity.targetCustomer ?? Target.EDUCATIONAL,
-        createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
-        phoneNumber: activity.phoneNumber,
-        address: {
-          banId: offerer.banId || null,
-          longitude: offerer.longitude ?? 0,
-          latitude: offerer.latitude ?? 0,
-          city: offerer.city,
-          postalCode: offerer.postalCode,
-          inseeCode: offerer.inseeCode,
-          street: offerer.street,
-          isManualEdition: !offerer.banId,
+      const data = {
+        body: {
+          isOpenToPublic: offerer.isOpenToPublic === 'true',
+          publicName: offerer.publicName || null,
+          siret: offerer.siret.replaceAll(' ', ''),
+          culturalDomains: activity.culturalDomains,
+          activity: activity.activity as
+            | ActivityOpenToPublic
+            | ActivityNotOpenToPublic,
+          otherActivityComment: activity.otherActivityComment || null,
+          webPresence: activity.socialUrls.join(', '),
+          target:
+            /* istanbul ignore next: the form validation already handles this */
+            activity.targetCustomer ?? Target.EDUCATIONAL,
+          createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
+          phoneNumber: activity.phoneNumber,
+          address: {
+            banId: offerer.banId || null,
+            longitude: offerer.longitude ?? 0,
+            latitude: offerer.latitude ?? 0,
+            city: offerer.city,
+            postalCode: offerer.postalCode,
+            inseeCode: offerer.inseeCode,
+            street: offerer.street,
+            isManualEdition: !offerer.banId,
+          },
+          token,
         },
-        token,
       }
-      const createdOfferer = await api.saveNewOnboardingData(data)
+      const createdOfferer = await apiNew.saveNewOnboardingData(data)
 
       cleanSignupJourneyStorage()
 
