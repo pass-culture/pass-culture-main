@@ -5,9 +5,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  hello-world:
-    name: Hello World
-    runs-on: ubuntu-latest
+  deploy-preview-environment:
+    name: Deploy Preview Environment API
+    runs-on: ubuntu-22.04
+    environment:
+      # TODO: rename the environment
+      name: pcapi-preview-bootstrapper
+      deployment: true
+    permissions:
+      id-token: write
+      contents: read
+    # continue-on-error: ${{ inputs.continue_on_error }}
     steps:
-      - name: Say hello
-        run: echo "Hello, World!"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: v0.4.0
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: Authentification to Google
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          service_account: ${{ vars.PCAPI_PREVIEW_CD_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        with:
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          project_id: ${{ vars.PROJECT_ID }}
+          location: ${{ vars.LOCATION }}
+          use_dns_based_endpoint: true
+
+      - name: Hello World
+        shell: bash
+        env:
+          PCAPI_ENVIRONMENT_SHORT_NAME: tst
+          PCAPI_VERSION: 1.0.0
+        run: |
+          # passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
+          run: echo "Deploying PCAPI version ${PCAPI_VERSION} to environment ${PCAPI_ENVIRONMENT_SHORT_NAME}"
