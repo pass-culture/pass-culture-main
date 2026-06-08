@@ -6,9 +6,9 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import factories
 from pcapi.core.educational import models
-from pcapi.core.educational import testing as educational_testing
+from pcapi.core.educational import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
@@ -37,7 +37,7 @@ def build_offer_context(offer=None, offer_kwargs=None):
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     if not offer:
-        offer = educational_factories.CollectiveOfferTemplateFactory(**({"venue": venue} | (offer_kwargs or {})))
+        offer = factories.CollectiveOfferTemplateFactory(**({"venue": venue} | (offer_kwargs or {})))
 
     return OfferContext(user_offerer=user_offerer, venue=venue, offer=offer)
 
@@ -66,10 +66,10 @@ def build_template_end(template_start=None):
 
 
 def build_payload_context():
-    national_program = educational_factories.NationalProgramFactory()
+    national_program = factories.NationalProgramFactory()
     template_start = build_template_start()
     template_end = build_template_end(template_start)
-    domain = educational_factories.EducationalDomainFactory(name="Danse", nationalPrograms=[national_program])
+    domain = factories.EducationalDomainFactory(name="Danse", nationalPrograms=[national_program])
     return PayloadContext(
         national_program=national_program,
         template_start=template_start,
@@ -104,8 +104,7 @@ class Returns200Test:
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload_ctx.payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload_ctx.payload)
 
         assert response.status_code == 200
         assert response.json["name"] == "New name"
@@ -145,9 +144,7 @@ class Returns200Test:
                 "end": format_into_utc_date(payload_ctx.template_end),
             },
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
 
@@ -160,9 +157,8 @@ class Returns200Test:
         assert offer.dateRange.lower
         assert offer.dateRange.upper
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={})
-            assert response.status_code == 200
+        response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={})
+        assert response.status_code == 200
 
         updated_offer = (
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
@@ -180,9 +176,8 @@ class Returns200Test:
         assert offer.dateRange.lower
         assert offer.dateRange.upper
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={"dates": None})
-            assert response.status_code == 200
+        response = pro_client.patch(f"/collective/offers-template/{offer.id}", json={"dates": None})
+        assert response.status_code == 200
 
         updated_offer = (
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
@@ -198,11 +193,10 @@ class Returns200Test:
         assert offer.dateRange.lower
         assert offer.dateRange.upper
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(
-                f"/collective/offers-template/{offer.id}", json={"contactPhone": None, "dates": None}
-            )
-            assert response.status_code == 200
+        response = pro_client.patch(
+            f"/collective/offers-template/{offer.id}", json={"contactPhone": None, "dates": None}
+        )
+        assert response.status_code == 200
 
         updated_offer = (
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
@@ -213,28 +207,24 @@ class Returns200Test:
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(
-                f"/collective/offers-template/{offer_ctx.offer.id}", json={"contactPhone": None}
-            )
-            assert response.status_code == 200
+        response = pro_client.patch(f"/collective/offers-template/{offer_ctx.offer.id}", json={"contactPhone": None})
+        assert response.status_code == 200
 
     def test_with_email_phone_and_url_contact(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
         offer = offer_ctx.offer
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(
-                f"/collective/offers-template/{offer.id}",
-                json={
-                    "contactEmail": "a@b.com",
-                    "contactPhone": "0101010101",
-                    "contactUrl": "http://localhost/",
-                    "contactForm": None,
-                },
-            )
-            assert response.status_code == 200
+        response = pro_client.patch(
+            f"/collective/offers-template/{offer.id}",
+            json={
+                "contactEmail": "a@b.com",
+                "contactPhone": "0101010101",
+                "contactUrl": "http://localhost/",
+                "contactForm": None,
+            },
+        )
+        assert response.status_code == 200
 
         updated_offer = (
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
@@ -250,12 +240,11 @@ class Returns200Test:
         offer = offer_ctx.offer
         now = date_utils.get_naive_utc_now()
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(
-                f"/collective/offers-template/{offer.id}",
-                json={"dates": {"start": now.isoformat(), "end": now.isoformat()}},
-            )
-            assert response.status_code == 200
+        response = pro_client.patch(
+            f"/collective/offers-template/{offer.id}",
+            json={"dates": {"start": now.isoformat(), "end": now.isoformat()}},
+        )
+        assert response.status_code == 200
 
         updated_offer = (
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer.id).one()
@@ -274,29 +263,25 @@ class Returns200Test:
         payload["contactUrl"] = None
         payload["contactForm"] = None
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         assert response.json["contactForm"] is None
         assert response.json["contactUrl"] is None
 
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_ALLOWING_EDIT_DETAILS_TEMPLATE)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS_TEMPLATE)
     def test_patch_collective_offer_allowed_action(self, client, status):
-        offer = educational_factories.create_collective_offer_template_by_status(status)
+        offer = factories.create_collective_offer_template_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {"name": "New name", "description": "Ma super description"}
         auth_client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
-            assert response.status_code == 200
+        response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        assert response.status_code == 200
 
-            db.session.refresh(offer)
-            assert offer.name == "New name"
-            assert offer.description == "Ma super description"
+        db.session.refresh(offer)
+        assert offer.name == "New name"
+        assert offer.description == "Ma super description"
 
     def test_location_address_venue(self, client):
         offer_ctx = build_offer_context()
@@ -311,8 +296,7 @@ class Returns200Test:
                 "location": {"isVenueLocation": True},
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -337,8 +321,7 @@ class Returns200Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -358,11 +341,10 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -389,8 +371,7 @@ class Returns200Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -420,8 +401,7 @@ class Returns200Test:
                 "location": {"isVenueLocation": True},
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -435,14 +415,13 @@ class Returns200Test:
         assert offer.locationComment is None
 
     def test_national_program_unchanged(self, client):
-        program = educational_factories.NationalProgramFactory()
+        program = factories.NationalProgramFactory()
         offer_ctx = build_offer_context(offer_kwargs={"nationalProgram": program})
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
         payload = {"name": "hello"}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -451,14 +430,13 @@ class Returns200Test:
         assert offer.nationalProgramId == program.id
 
     def test_national_program_set_none(self, client):
-        program = educational_factories.NationalProgramFactory()
+        program = factories.NationalProgramFactory()
         offer_ctx = build_offer_context(offer_kwargs={"nationalProgram": program})
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
         payload = {"nationalProgramId": None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -467,15 +445,14 @@ class Returns200Test:
         assert offer.nationalProgramId is None
 
     def test_national_program_valid_update_program(self, client):
-        new_program = educational_factories.NationalProgramFactory()
-        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        new_program = factories.NationalProgramFactory()
+        current_domain = factories.EducationalDomainFactory(nationalPrograms=[new_program])
         offer_ctx = build_offer_context(offer_kwargs={"educational_domains": [current_domain]})
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
         payload = {"nationalProgramId": new_program.id}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -485,9 +462,9 @@ class Returns200Test:
         assert [domain.id for domain in offer.domains] == [current_domain.id]
 
     def test_national_program_valid_update_domains(self, client):
-        current_program = educational_factories.NationalProgramFactory()
-        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
-        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        current_program = factories.NationalProgramFactory()
+        current_domain = factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_domain = factories.EducationalDomainFactory(nationalPrograms=[current_program])
         offer_ctx = build_offer_context(
             offer_kwargs={"educational_domains": [current_domain], "nationalProgram": current_program}
         )
@@ -495,8 +472,7 @@ class Returns200Test:
         offer_id = offer_ctx.offer.id
 
         payload = {"domains": [new_domain.id]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -506,10 +482,10 @@ class Returns200Test:
         assert [domain.id for domain in offer.domains] == [new_domain.id]
 
     def test_national_program_valid_update_domains_and_program(self, client):
-        current_program = educational_factories.NationalProgramFactory()
-        current_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[current_program])
-        new_program = educational_factories.NationalProgramFactory()
-        new_domain = educational_factories.EducationalDomainFactory(nationalPrograms=[new_program])
+        current_program = factories.NationalProgramFactory()
+        current_domain = factories.EducationalDomainFactory(nationalPrograms=[current_program])
+        new_program = factories.NationalProgramFactory()
+        new_domain = factories.EducationalDomainFactory(nationalPrograms=[new_program])
         offer_ctx = build_offer_context(
             offer_kwargs={"educational_domains": [current_domain], "nationalProgram": current_program}
         )
@@ -517,8 +493,7 @@ class Returns200Test:
         offer_id = offer_ctx.offer.id
 
         payload = {"domains": [new_domain.id], "nationalProgramId": new_program.id}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         offer = (
@@ -535,8 +510,7 @@ class Returns200Test:
         offer_id = offer_ctx.offer.id
 
         payload = {field: None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 200
         assert getattr(offer_ctx.offer, field) == None
@@ -550,8 +524,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"name": " "}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"name": ["Cette chaîne de caractères doit avoir une taille minimum de 1 caractères"]}
@@ -563,8 +536,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"formats": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"formats": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -576,9 +548,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"domains": []}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"domains": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -590,68 +560,62 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"nationalProgramId": -1}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
 
     def test_inactive_national_program(self, client):
-        program = educational_factories.NationalProgramFactory(isActive=False)
-        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        program = factories.NationalProgramFactory(isActive=False)
+        domain = factories.EducationalDomainFactory(nationalPrograms=[program])
         offer_ctx = build_offer_context(offer_kwargs={"domains": [domain]})
 
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
         data = {"nationalProgramId": program.id}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}
 
     def test_invalid_national_program_update_program(self, client):
-        program = educational_factories.NationalProgramFactory()
-        domain = educational_factories.EducationalDomainFactory()
+        program = factories.NationalProgramFactory()
+        domain = factories.EducationalDomainFactory()
         offer_ctx = build_offer_context(offer_kwargs={"domains": [domain]})
 
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
         data = {"nationalProgramId": program.id}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_invalid_national_program_update_domains(self, client):
-        program = educational_factories.NationalProgramFactory()
-        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        program = factories.NationalProgramFactory()
+        domain = factories.EducationalDomainFactory(nationalPrograms=[program])
         offer_ctx = build_offer_context(offer_kwargs={"domains": [domain], "nationalProgram": program})
 
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
-        data = {"domains": [educational_factories.EducationalDomainFactory().id]}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        data = {"domains": [factories.EducationalDomainFactory().id]}
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
     def test_invalid_national_program_update_domains_and_program(self, client):
-        program = educational_factories.NationalProgramFactory()
-        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[program])
+        program = factories.NationalProgramFactory()
+        domain = factories.EducationalDomainFactory(nationalPrograms=[program])
         offer_ctx = build_offer_context(offer_kwargs={"domains": [domain], "nationalProgram": program})
 
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
         data = {
-            "domains": [educational_factories.EducationalDomainFactory().id],
-            "nationalProgramId": educational_factories.NationalProgramFactory().id,
+            "domains": [factories.EducationalDomainFactory().id],
+            "nationalProgramId": factories.NationalProgramFactory().id,
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
@@ -669,10 +633,7 @@ class Returns400Test:
         payload["contactUrl"] = None
         payload["contactForm"] = None
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert "contact[all]" in response.json
@@ -688,10 +649,7 @@ class Returns400Test:
         payload["contactUrl"] = "https://example.com/contact"
         payload["contactForm"] = models.OfferContactFormEnum.FORM.value
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"": ["contactUrl et contactForm ne peuvent pas être remplis en même temps"]}
@@ -705,8 +663,7 @@ class Returns400Test:
         payload = payload_ctx.payload
 
         payload["bookingEmails"] = ["test@testmail.com", "test@test", "test"]
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -726,8 +683,7 @@ class Returns400Test:
             **payload,
             "bookingEmails": [f"test{i}@testmail.com" for i in range(1, 8)],
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {
@@ -740,8 +696,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"bookingEmails": []}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
@@ -755,8 +710,7 @@ class Returns400Test:
         payload = payload_ctx.payload
 
         payload["description"] = "too_long" * 200
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -775,8 +729,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -792,11 +745,10 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -815,8 +767,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"location.location": ["location est requis pour cette valeur de locationType"]}
@@ -834,8 +785,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -857,8 +807,7 @@ class Returns400Test:
                 "location": None,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"interventionArea": ["interventionArea doit contenir des départements valides"]}
@@ -873,11 +822,10 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             },
         }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -902,12 +850,10 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "location": educational_testing.ADDRESS_DICT,
+                "location": testing.ADDRESS_DICT,
             }
         }
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
@@ -920,8 +866,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {field: None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {field: ["Ce champ ne peut pas être null"]}
@@ -932,8 +877,7 @@ class Returns400Test:
         offer_id = offer_ctx.offer.id
 
         data = {"contactPhone": "123"}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
         assert response.json == {"contactPhone": ["Numéro de téléphone invalide"]}
@@ -1016,24 +960,24 @@ class InvalidDatesTest:
         assert "dates.end" in response.json
 
     def send_request(self, pro_client, offer_id, dates):
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            return pro_client.patch(f"/collective/offers-template/{offer_id}", json={"dates": dates})
+
+        return pro_client.patch(f"/collective/offers-template/{offer_id}", json={"dates": dates})
 
 
 class Returns403Test:
-    @pytest.mark.parametrize("status", educational_testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE)
+    @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS_TEMPLATE)
     def test_patch_collective_offer_unallowed_action(self, client, status):
-        offer = educational_factories.create_collective_offer_template_by_status(status)
+        offer = factories.create_collective_offer_template_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         previous_name = offer.name
         previous_description = offer.description
+
         data = {"name": "New name", "description": "Ma super description"}
         auth_client = client.with_session_auth("user@example.com")
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
-            assert response.status_code == 403
-            assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
+        response = auth_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        assert response.status_code == 403
+        assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
 
         db.session.refresh(offer)
         assert offer.name == previous_name
@@ -1047,9 +991,7 @@ class Returns403Test:
 
         unrelated_venue = offerers_factories.VenueFactory()
         data = {"venueId": unrelated_venue.id}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
@@ -1061,8 +1003,7 @@ class Returns403Test:
         offer_id = offer_ctx.offer.id
 
         data = {"name": "Update some random field"}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
+        with patch(testing.PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 403
@@ -1071,7 +1012,7 @@ class Returns403Test:
 
 class Returns404Test:
     def test_user_is_not_attached_to_offerer(self, client):
-        offer = educational_factories.CollectiveOfferTemplateFactory(name="Old name")
+        offer = factories.CollectiveOfferTemplateFactory(name="Old name")
         offer_ctx = build_offer_context(offer=offer)
 
         pro_client = build_pro_client(client, offer_ctx.user)
@@ -1098,9 +1039,7 @@ class Returns404Test:
         offer_id = offer_ctx.offer.id
 
         data = {"domains": [0]}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
@@ -1112,9 +1051,7 @@ class Returns404Test:
         offer_id = offer_ctx.offer.id
 
         data = {"venueId": 0}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
+        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 404
         assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
