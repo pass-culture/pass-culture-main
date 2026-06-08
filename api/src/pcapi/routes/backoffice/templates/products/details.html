@@ -103,6 +103,12 @@
             {% call description_detail_horizontal("Description") %}
               {{ product.description | empty_string_if_null | nl2br }}
             {% endcall %}
+            {% set artists = product.artistLinks | map(attribute="artist") | sort(attribute="name") %}
+            {% if artists %}
+              {% call description_detail_horizontal("Artiste" + (artists | length | pluralize) + " associé" + (artists | length | pluralize)) %}
+                {% for artist in artists %}<div>{{ links.build_artist_details_link(artist, text_attr="name") }}</div>{% endfor %}
+              {% endcall %}
+            {% endif %}
           </div>
           <div class="flex-shrink-1">
             {% if product.images["recto"] %}
