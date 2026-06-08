@@ -849,7 +849,7 @@ export type CollectiveStockCreationBodyModel = {
     /**
      * Pricedetail
      */
-    priceDetail: string | null;
+    priceDetail?: string | null;
     /**
      * Startdatetime
      */

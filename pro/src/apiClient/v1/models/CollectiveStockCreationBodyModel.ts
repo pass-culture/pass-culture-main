@@ -8,7 +8,7 @@ export type CollectiveStockCreationBodyModel = {
   numberOfTickets: number;
   offerId: number;
   price: number;
-  priceDetail: (string | null);
+  priceDetail?: (string | null);
   startDatetime: string;
 };
 
