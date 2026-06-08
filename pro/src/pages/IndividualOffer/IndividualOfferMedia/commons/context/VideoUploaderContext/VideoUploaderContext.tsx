@@ -8,18 +8,21 @@ import {
   useState,
 } from 'react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferResponseModel, VideoData } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  VideoData,
+} from '@/apiClient/v1/new'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
-  setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
+  setVideoUrl: Dispatch<SetStateAction<string | undefined>>
   videoData?: VideoData
-  handleVideoOnSubmit: () => Promise<GetIndividualOfferResponseModel>
+  handleVideoOnSubmit: () => Promise<GetIndividualOfferWithAddressResponseModel>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
-  videoUrl?: string | null
+  videoUrl?: string
   offerId?: number
 }
 
@@ -62,7 +65,9 @@ export function VideoUploaderContextProvider({
     async ({ onSuccess, onError }: onVideoUploadProps) => {
       if (videoUrl) {
         try {
-          const response = await api.getOfferVideoMetadata(videoUrl)
+          const response = await apiNew.getOfferVideoMetadata({
+            query: { videoUrl },
+          })
           setVideoData(response)
           onSuccess()
         } catch (error) {
@@ -80,8 +85,11 @@ export function VideoUploaderContextProvider({
   }, [])
 
   const handleVideoOnSubmit = useCallback(async () => {
-    return await api.patchOffer(offerId, {
-      videoUrl: videoUrl ?? '',
+    return await apiNew.patchOffer({
+      path: { offer_id: offerId },
+      body: {
+        videoUrl: videoUrl ?? '',
+      },
     })
   }, [videoUrl, offerId])
 

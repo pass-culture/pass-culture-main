@@ -167,13 +167,14 @@ describe('IndividualOfferSummary:serializer', () => {
 })
 
 describe('serializeArtist', () => {
+  const extraData = {
+    author: 'Offer author',
+    performer: 'Offer performer',
+    stageDirector: 'Offer stageDirector',
+  }
   it('should get data from extraData when offer is product based', () => {
     const offer = getIndividualOfferFactory({
-      extraData: {
-        author: 'Offer author',
-        performer: 'Offer performer',
-        stageDirector: 'Offer stageDirector',
-      },
+      extraData,
       artistOfferLinks: [
         {
           artistId: '1',
@@ -187,7 +188,7 @@ describe('serializeArtist', () => {
 
     const result = serializeArtist(
       offer,
-      offer.extraData.author,
+      extraData.author,
       defaultValue,
       ArtistType.AUTHOR
     )
@@ -197,11 +198,7 @@ describe('serializeArtist', () => {
 
   it('should get data from artistOfferLink when offer is not product based', () => {
     const offer = getIndividualOfferFactory({
-      extraData: {
-        author: 'Offer author',
-        performer: 'Offer performer',
-        stageDirector: 'Offer stageDirector',
-      },
+      extraData,
       artistOfferLinks: [
         {
           artistId: '1',
@@ -215,7 +212,7 @@ describe('serializeArtist', () => {
 
     const result = serializeArtist(
       offer,
-      offer.extraData.author,
+      extraData.author,
       defaultValue,
       ArtistType.AUTHOR
     )
@@ -225,11 +222,7 @@ describe('serializeArtist', () => {
 
   it('should fallback to default value when artist are not found', () => {
     const offer = getIndividualOfferFactory({
-      extraData: {
-        author: 'Offer author',
-        performer: 'Offer performer',
-        stageDirector: 'Offer stageDirector',
-      },
+      extraData,
       artistOfferLinks: [],
       productId: undefined,
     })
@@ -237,7 +230,7 @@ describe('serializeArtist', () => {
 
     const result = serializeArtist(
       offer,
-      offer.extraData.author,
+      extraData.author,
       defaultValue,
       ArtistType.AUTHOR
     )

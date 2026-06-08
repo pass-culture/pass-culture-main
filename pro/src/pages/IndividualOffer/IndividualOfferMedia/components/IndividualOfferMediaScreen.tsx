@@ -31,7 +31,7 @@ import { useVideoUploaderContext } from '../commons/context/VideoUploaderContext
 import styles from './IndividualOfferMediaScreen.module.scss'
 import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTips'
 
-export type IndividualOfferMediaScreenProps = {
+type IndividualOfferMediaScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
 

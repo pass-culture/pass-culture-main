@@ -3,7 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -25,10 +26,7 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
-import {
-  IndividualOfferMediaScreen,
-  type IndividualOfferMediaScreenProps,
-} from './IndividualOfferMediaScreen'
+import { IndividualOfferMediaScreen } from './IndividualOfferMediaScreen'
 
 vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
   getImageDimensions: vi.fn((file) => {
@@ -60,7 +58,7 @@ const renderIndividualOfferMediaScreen = async ({
   props = {},
   mode = OFFER_WIZARD_MODE.CREATION,
 }: {
-  props?: Partial<IndividualOfferMediaScreenProps>
+  props?: { offer?: GetIndividualOfferWithAddressResponseModel }
   mode?: OFFER_WIZARD_MODE
 } = {}) => {
   const finalOffer = getIndividualOfferFactory(props.offer)
@@ -98,7 +96,7 @@ const mockLogEvent = vi.fn()
 const mockHandleImageOnSubmit = vi.fn()
 const mockNavigate = vi.fn()
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchOffer: vi.fn(),
     getOfferVideoMetadata: vi.fn(),
   },
@@ -285,11 +283,11 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen()
 
       await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
-      expect(api.patchOffer).not.toHaveBeenCalled()
+      expect(apiNew.patchOffer).not.toHaveBeenCalled()
     })
 
     it('should call the patch offer api when the video url has changed', async () => {
-      vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+      vi.spyOn(apiNew, 'getOfferVideoMetadata').mockResolvedValue({
         videoDuration: 3,
         videoThumbnailUrl: 'http://youtube.image.com',
         videoTitle: 'Ma super vidéo',
@@ -300,8 +298,11 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit()
-      expect(api.patchOffer).toHaveBeenCalledWith(knownOffer.id, {
-        videoUrl: MOCK_DATA.videoUrl,
+      expect(apiNew.patchOffer).toHaveBeenCalledWith({
+        path: { offer_id: knownOffer.id },
+        body: {
+          videoUrl: MOCK_DATA.videoUrl,
+        },
       })
     })
 
@@ -317,8 +318,11 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit({ text: '' })
-      expect(api.patchOffer).toHaveBeenCalledWith(knownOffer.id, {
-        videoUrl: '',
+      expect(apiNew.patchOffer).toHaveBeenCalledWith({
+        path: { offer_id: knownOffer.id },
+        body: {
+          videoUrl: '',
+        },
       })
     })
   })
@@ -404,7 +408,7 @@ describe('IndividualOfferMediaScreen', () => {
       })
 
       it('should log error when video upload fail in api', async () => {
-        vi.spyOn(api, 'patchOffer').mockRejectedValue("c'est cassé")
+        vi.spyOn(apiNew, 'patchOffer').mockRejectedValue("c'est cassé")
         const mode = OFFER_WIZARD_MODE.EDITION
         const knownOffer = getIndividualOfferFactory()
         await renderIndividualOfferMediaScreen({

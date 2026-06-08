@@ -711,7 +711,7 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        location: null,
+        location: undefined,
       })
       const contextValues = {
         offer: {

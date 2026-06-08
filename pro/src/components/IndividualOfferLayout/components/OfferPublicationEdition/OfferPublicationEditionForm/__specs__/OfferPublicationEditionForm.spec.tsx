@@ -24,8 +24,8 @@ describe('OfferPublicationEditionForm', () => {
   it('should render the form', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        publicationDatetime: null,
-        bookingAllowedDatetime: null,
+        publicationDatetime: undefined,
+        bookingAllowedDatetime: undefined,
       }),
       onSubmit: () => {},
     })
@@ -46,8 +46,10 @@ describe('OfferPublicationEditionForm', () => {
   it('should disable the form if the pause toggle is on', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        publicationDatetime: null,
-        bookingAllowedDatetime: null,
+        // TODO (tpommellet): To remove once the OfferPublicationEditionForm has been migrated to the new offer model.
+        // Currently, the component still reads the legacy (`@/apiClient/v1`) offer model and detects a paused offer via `publicationDatetime === null`
+        publicationDatetime: null as unknown as undefined,
+        bookingAllowedDatetime: undefined,
       }),
       onSubmit: () => {},
     })
@@ -76,7 +78,7 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: publicationDateFomatted,
-        bookingAllowedDatetime: null,
+        bookingAllowedDatetime: undefined,
       }),
       onSubmit: () => {},
     })
@@ -102,7 +104,7 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: bookingAllowedDateFormatted,
-        bookingAllowedDatetime: null,
+        bookingAllowedDatetime: undefined,
       }),
       onSubmit: () => {},
     })

@@ -205,7 +205,7 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       props: {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
-          lastProvider: null,
+          lastProvider: undefined,
         }),
       },
     })
