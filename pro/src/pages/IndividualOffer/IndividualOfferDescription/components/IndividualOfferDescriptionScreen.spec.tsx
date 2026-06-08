@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   ArtistType,
   OfferStatus,
@@ -45,8 +45,10 @@ vi.mock('@/apiClient/api', () => ({
     getMusicTypes: vi.fn(),
     createOffer: vi.fn(),
     patchOffer: vi.fn(),
-    getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
+  },
+  apiNew: {
+    getProductByEan: vi.fn(),
   },
 }))
 
@@ -670,7 +672,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -700,7 +702,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
