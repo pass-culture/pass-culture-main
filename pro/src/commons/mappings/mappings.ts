@@ -1,8 +1,10 @@
 // Back-End Model Enums
 
-import { ActivityNotOpenToPublic } from '@/apiClient/v1/models/ActivityNotOpenToPublic'
-import { ActivityOpenToPublic } from '@/apiClient/v1/models/ActivityOpenToPublic'
-import { DisplayableActivity } from '@/apiClient/v1/models/DisplayableActivity'
+import {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+  DisplayableActivity,
+} from '@/apiClient/v1/new'
 
 import { _ActivityNotOpenToPublicMappings } from './ActivityNotOpenToPublic'
 import { _ActivityOpenToPublicMappings } from './ActivityOpenToPublic'
