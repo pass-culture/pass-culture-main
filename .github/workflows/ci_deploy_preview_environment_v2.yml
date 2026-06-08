@@ -1,6 +1,7 @@
-name: Deploy Preview Environment v2
+name: 0 [CD] Deploy Preview Environment v2
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
