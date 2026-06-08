@@ -80,7 +80,23 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
     price: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
     numberOfTickets: typing.Annotated[int, pydantic_v2.AfterValidator(validate_number_of_tickets)]
-    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)]
+    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_price_detail(self) -> typing.Self:
+        if (
+            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "priceDetail" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être présent")
+
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "priceDetail" not in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="priceDetail", msg="Ce champ est requis")
+
+        return self
 
 
 class CollectiveStockEditionBodyModel(HttpBodyModel):
