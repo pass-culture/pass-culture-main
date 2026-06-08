@@ -1,10 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { ApiError } from '@/apiClient/adage'
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
+import { ApiError } from '@/apiClient/compat'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -65,7 +64,7 @@ describe('ModalVideo', () => {
   })
 
   it('should display api error', async () => {
-    vi.spyOn(api, 'getOfferVideoMetadata').mockRejectedValue(
+    vi.spyOn(apiNew, 'getOfferVideoMetadata').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -108,7 +107,7 @@ describe('ModalVideo', () => {
   })
 
   it('should get video meta data on click on "Ajouter"', async () => {
-    vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferVideoMetadata').mockResolvedValue({
       videoDuration: 3,
       videoThumbnailUrl: 'http://youtube.image.com',
       videoTitle: 'Ma super vidéo',
@@ -141,6 +140,6 @@ describe('ModalVideo', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }))
 
-    expect(api.getOfferVideoMetadata).toHaveBeenCalled()
+    expect(apiNew.getOfferVideoMetadata).toHaveBeenCalled()
   })
 })
