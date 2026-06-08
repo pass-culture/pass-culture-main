@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import { VenueEditionForm } from './VenueEditionForm'

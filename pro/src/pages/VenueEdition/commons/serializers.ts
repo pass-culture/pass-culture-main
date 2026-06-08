@@ -2,7 +2,7 @@ import type {
   ActivityOpenToPublic,
   EditVenueBodyModel,
   WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'

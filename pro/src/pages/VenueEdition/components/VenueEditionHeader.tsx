@@ -1,5 +1,5 @@
-import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
@@ -40,7 +40,7 @@ export const VenueEditionHeader = ({
 
   const handleOnImageDelete = async () => {
     try {
-      await api.deleteVenueBanner(venue.id)
+      await apiNew.deleteVenueBanner({ path: { venue_id: venue.id } })
       setImageValues(buildInitialVenueImageValues(null, null))
       await syncVenue(venue.id)
 

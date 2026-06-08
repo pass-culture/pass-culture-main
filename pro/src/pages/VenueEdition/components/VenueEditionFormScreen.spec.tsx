@@ -6,7 +6,7 @@ import { expect, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   ApiError,
   DisplayableActivity,
@@ -57,7 +57,7 @@ function renderForm(
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
     editVenue: vi.fn(),
@@ -462,7 +462,7 @@ describe('VenueEditionFormScreen', () => {
 
     it('should display an error when the venue could not be updated', async () => {
       renderForm(baseVenue)
-      vi.spyOn(api, 'editVenue').mockRejectedValue(
+      vi.spyOn(apiNew, 'editVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -497,20 +497,20 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should not send opening hours if the field was not filled, and if there were no opening hours already added previously', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
 
       renderForm({ ...baseVenue, openingHours: null })
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(editVenueSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.not.objectContaining({ openingHours: expect.anything() })
-      )
+      expect(editVenueSpy).toHaveBeenCalledWith({
+        path: { venue_id: expect.anything() },
+        body: expect.not.objectContaining({ openingHours: expect.anything() }),
+      })
     })
 
     it('should send opening hours if the field was not filled, but the openingHours already existed', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
       renderForm({
         ...baseVenue,
         openingHours: {
@@ -547,21 +547,21 @@ describe('VenueEditionFormScreen', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(editVenueSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
+      expect(editVenueSpy).toHaveBeenCalledWith({
+        path: { venue_id: expect.anything() },
+        body: expect.objectContaining({
           openingHours: expect.objectContaining({
             MONDAY: [
               ['08:00', '12:00'],
               ['13:00', '19:00'],
             ],
           }),
-        })
-      )
+        }),
+      })
     })
 
     it('should let the actor submit then when synchronized with acceslibre even if accessibility was never set', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
       renderForm({
         ...baseVenue,
         audioDisabilityCompliant: null,
@@ -577,7 +577,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should let the actor submit with volunteering url', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
       renderForm({
         ...baseVenue,
       })
@@ -591,13 +591,13 @@ describe('VenueEditionFormScreen', () => {
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(editVenueSpy).toHaveBeenCalledWith(
-        1,
-        expect.objectContaining({
+      expect(editVenueSpy).toHaveBeenCalledWith({
+        path: { venue_id: 1 },
+        body: expect.objectContaining({
           volunteeringUrl:
             'https://www.jeveuxaider.gouv.fr/organisations/exemple',
-        })
-      )
+        }),
+      })
     })
 
     it('should log an event when the user submit an invalid volunteering url', async () => {
@@ -621,7 +621,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should not let the actor submit then when not synchronized with acceslibre if accessibility was never set', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
       renderForm({
         ...baseVenue,
         audioDisabilityCompliant: null,
@@ -691,7 +691,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should pass the isOpenToPublic value to the API', async () => {
-      const editVenueSpy = vi.spyOn(api, 'editVenue')
+      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
 
       renderForm({
         ...baseVenue,
@@ -707,10 +707,10 @@ describe('VenueEditionFormScreen', () => {
       )
       await userEvent.click(screen.getByText(/Enregistrer/))
 
-      expect(editVenueSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({ isOpenToPublic: true })
-      )
+      expect(editVenueSpy).toHaveBeenCalledWith({
+        path: { venue_id: expect.anything() },
+        body: expect.objectContaining({ isOpenToPublic: true }),
+      })
     })
 
     describe('when the venue is not open to public', () => {
@@ -735,7 +735,7 @@ describe('VenueEditionFormScreen', () => {
       })
 
       it('should not produce an error when accessibility is not filled nor externally defined on submit form', async () => {
-        const editVenueSpy = vi.spyOn(api, 'editVenue')
+        const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
         renderForm({
           ...baseVenue,
           audioDisabilityCompliant: null,

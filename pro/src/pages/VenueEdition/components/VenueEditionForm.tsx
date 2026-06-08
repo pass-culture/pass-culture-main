@@ -2,9 +2,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -71,14 +71,14 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
-      const updatedVenue = await api.editVenue(
-        venue.id,
-        serializeEditVenueBodyModel(
+      const updatedVenue = await apiNew.editVenue({
+        path: { venue_id: venue.id },
+        body: serializeEditVenueBodyModel(
           values,
           !venue.siret,
           venue.openingHours !== null
-        )
-      )
+        ),
+      })
 
       await syncVenueWithData(venue.id, updatedVenue)
 
