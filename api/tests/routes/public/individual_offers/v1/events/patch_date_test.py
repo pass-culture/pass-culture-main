@@ -489,3 +489,26 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
         assert response.json == expected_response_json
+
+    def test_reproduce_bug_update_stock_dates(self):
+
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
+
+        stock = offers_factories.EventStockFactory(
+            offer=event,
+            quantity=10,
+            beginningDatetime=datetime.datetime(2026, 6, 27, 14, 0, 0),
+        )
+
+        payload = {
+            "beginningDatetime": "2026-06-27T12:00:00.000Z",
+            "bookingLimitDatetime": "2026-06-27T12:00:00.000Z",
+            "quantity": 50,
+        }
+
+        response = self.make_request(
+            plain_api_key, path_params={"offer_id": stock.offerId, "stock_id": stock.id}, json_body=payload
+        )
+
+        assert response.status_code == 200
