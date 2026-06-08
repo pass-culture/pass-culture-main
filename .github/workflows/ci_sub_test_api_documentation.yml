@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5715b432e91814bc6ab6725ff10abf3b81d5f8d1
       - name: "Build documentation"
         run: |
           set -e

@@ -36,7 +36,7 @@ jobs:
         with:
           node-version-file: "pro/package.json"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5715b432e91814bc6ab6725ff10abf3b81d5f8d1
 
       - name: Setup firebase
         env:
