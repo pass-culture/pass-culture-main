@@ -5,10 +5,8 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import { ApiError, type GetVenueResponseModel } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { api, apiNew } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -54,7 +52,7 @@ describe('CollectiveDataEdition', () => {
   const snackBarSuccess = vi.fn()
 
   beforeEach(() => {
-    vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [
         {
           id: 1,
@@ -70,7 +68,7 @@ describe('CollectiveDataEdition', () => {
       { id: 1, name: 'domain 1', nationalPrograms: [] },
       { id: 2, name: 'domain 2', nationalPrograms: [] },
     ])
-    vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValue({
+    vi.spyOn(apiNew, 'editVenueCollectiveData').mockResolvedValue({
       ...defaultGetVenue,
     })
 
@@ -260,8 +258,8 @@ describe('CollectiveDataEdition', () => {
 
   describe('submit', () => {
     it('should display error toast when adapter call failed', async () => {
-      vi.spyOn(api, 'editVenueCollectiveData').mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+      vi.spyOn(apiNew, 'editVenueCollectiveData').mockRejectedValueOnce(
+        new Error('Server error')
       )
       renderCollectiveDataEdition()
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -20,11 +20,11 @@ export const CollectiveDataEdition = () => {
 
   const educationalStatusesQuery = useSWR(
     [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
-    () => api.getVenuesEducationalStatuses()
+    () => apiNew.getVenuesEducationalStatuses()
   )
 
   const statuses: SelectOption[] =
-    educationalStatusesQuery.data?.statuses.map((status) => ({
+    educationalStatusesQuery.data?.statuses?.map((status) => ({
       value: status.id.toString(),
       label: status.name,
     })) ?? []

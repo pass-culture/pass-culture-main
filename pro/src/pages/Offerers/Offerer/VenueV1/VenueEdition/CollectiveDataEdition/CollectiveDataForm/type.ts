@@ -1,4 +1,4 @@
-import type { StudentLevels } from '@/apiClient/v1'
+import type { StudentLevels } from '@/apiClient/v1/new'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 
