@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
@@ -27,6 +27,9 @@ vi.mock('@/apiClient/api', () => ({
     getOfferer: vi.fn(),
     signout: vi.fn(),
   },
+  apiNew: {
+    listOfferersNames: vi.fn(),
+  },
 }))
 
 describe('initializeUser', () => {
@@ -39,7 +42,7 @@ describe('initializeUser', () => {
   })
 
   it('should use saved venue id from localStorage when present and valid', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -85,7 +88,7 @@ describe('initializeUser', () => {
   })
 
   it('should auto-select venue when user has only one venue', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -120,7 +123,7 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when user has multiple venues and no localStorage selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -155,7 +158,7 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when user has no venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -178,7 +181,7 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when no offerers and no venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -205,7 +208,7 @@ describe('initializeUser', () => {
   })
 
   it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -241,7 +244,7 @@ describe('initializeUser', () => {
   })
 
   it('should unset venue and set admin offerer when newOffererId has multiple venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -280,7 +283,7 @@ describe('initializeUser', () => {
   })
 
   it('should set admin offerer from newOffererId even when venue is not selected', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
@@ -306,7 +309,7 @@ describe('initializeUser', () => {
   })
 
   it('should ignore invalid venue id from localStorage and return early', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -339,7 +342,7 @@ describe('initializeUser', () => {
   })
 
   it('should get the venue id from URL params for backoffice switcher', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -380,7 +383,7 @@ describe('initializeUser', () => {
   })
 
   it('should keep the admin offerer from localStorage independently from the partner venue selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
@@ -430,7 +433,7 @@ describe('error handling', () => {
 
   it('should logout when getOfferer rejects with non-403 error', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
     vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
@@ -468,7 +471,7 @@ describe('error handling', () => {
   })
 
   it('should dispatch logout when initialization fails before selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    vi.spyOn(apiNew, 'listOfferersNames').mockRejectedValue(new Error())
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
     vi.spyOn(api, 'signout').mockResolvedValue()
 

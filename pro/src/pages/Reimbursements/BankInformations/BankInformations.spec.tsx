@@ -267,7 +267,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,

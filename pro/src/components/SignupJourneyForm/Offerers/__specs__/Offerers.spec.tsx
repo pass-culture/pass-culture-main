@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   ApiError,
   type VenueOfOffererFromSiretResponseModel,
@@ -70,6 +70,8 @@ vi.mock('@/apiClient/api', () => ({
     getOfferer: vi.fn(),
     getVenues: vi.fn(),
     getVenuesOfOffererFromSiret: vi.fn(),
+  },
+  apiNew: {
     listOfferersNames: vi.fn(),
   },
 }))
@@ -416,7 +418,7 @@ describe('screens:SignupJourney::Offerers', () => {
       )
       await renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
+      vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'getVenues').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'getOfferer').mockResolvedValue(expect.anything())
 

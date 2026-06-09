@@ -31,10 +31,10 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     signout: vi.fn(),
-    listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
   },
   apiNew: {
+    listOfferersNames: vi.fn(),
     signin: vi.fn(),
   },
 }))
@@ -90,7 +90,7 @@ describe('SignIn', () => {
     } as unknown as HTMLScriptElement)
     vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
