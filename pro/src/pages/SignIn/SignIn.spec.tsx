@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
 import type { SharedLoginUserResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -30,11 +30,11 @@ import { SignIn } from './SignIn'
 vi.mock('@/apiClient/api', () => ({
   api: {
     signout: vi.fn(),
-    getOfferer: vi.fn(),
   },
   apiNew: {
     listOfferersNames: vi.fn(),
     getProfile: vi.fn(),
+    getOfferer: vi.fn(),
     signin: vi.fn(),
   },
 }))
@@ -105,7 +105,7 @@ describe('SignIn', () => {
       ],
     })
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
   })

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
@@ -77,9 +77,9 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
         nextSelectedPartnerVenue = await apiNew.getVenue({
           path: { venue_id: nextSelectedPartnerVenueId },
         })
-        nextSelectedOfferer = await api.getOfferer(
-          nextSelectedPartnerVenue.managingOfferer.id
-        )
+        nextSelectedOfferer = await apiNew.getOfferer({
+          path: { offerer_id: nextSelectedPartnerVenue.managingOfferer.id },
+        })
       }
 
       if (
