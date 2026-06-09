@@ -5,11 +5,9 @@ import styles from './VenueFormActionBar.module.scss'
 
 export interface VenueFormActionBarProps {
   isSubmitting?: boolean
-  disableFormSubmission?: boolean
 }
 
 export const VenueFormActionBar = ({
-  disableFormSubmission,
   isSubmitting = false,
 }: VenueFormActionBarProps) => {
   return (
@@ -25,7 +23,6 @@ export const VenueFormActionBar = ({
       <Button
         type="submit"
         isLoading={isSubmitting}
-        disabled={disableFormSubmission}
         label="Enregistrer"
         fullWidth
       />

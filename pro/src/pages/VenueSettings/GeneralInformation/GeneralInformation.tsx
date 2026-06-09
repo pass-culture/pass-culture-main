@@ -36,7 +36,6 @@ const GeneralInformation = () => {
     isCaledonian: venue.isCaledonian,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
-    isOpenToPublic: venue.isOpenToPublic.toString(),
     activity: venue.activity as VenueSettingsFormValues['activity'],
   }
 
@@ -59,9 +58,12 @@ const GeneralInformation = () => {
     register,
     setValue,
     watch,
+
     clearErrors,
     formState: { isDirty, isSubmitting, isSubmitted, errors, disabled },
   } = form
+
+  console.log(errors)
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')

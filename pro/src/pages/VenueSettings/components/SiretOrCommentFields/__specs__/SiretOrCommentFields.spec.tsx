@@ -31,7 +31,6 @@ const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
   isCaledonian: false,
   withSiret: true,
   siren: '123456789',
-  isOpenToPublic: 'true',
   activity: 'someActivity' as VenueSettingsFormValues['activity'],
 }
 

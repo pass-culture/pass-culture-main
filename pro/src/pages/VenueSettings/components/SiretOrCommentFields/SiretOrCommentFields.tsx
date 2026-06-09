@@ -18,15 +18,12 @@ import type {
   VenueSettingsFormValues,
 } from '../../commons/types'
 
-export type SiretOrCommentFieldsProps = {
-  setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
+export interface SiretOrCommentFieldsProps {
   formContext: VenueSettingsFormContext
 }
-
 export const SiretOrCommentFields = ({
-  setIsFieldNameFrozen,
   formContext,
-}: SiretOrCommentFieldsProps): JSX.Element => {
+}: Readonly<SiretOrCommentFieldsProps>) => {
   const {
     setValue,
     setError,
@@ -47,7 +44,6 @@ export const SiretOrCommentFields = ({
       !validSiretLength(cleanSiret) ||
       !isSiretStartingWithSiren(cleanSiret, formContext.siren)
     ) {
-      setIsFieldNameFrozen?.(false)
       return
     }
 
@@ -64,18 +60,15 @@ export const SiretOrCommentFields = ({
 
       /* istanbul ignore next: DEBT, TO FIX */
       const address = `${response.location?.street} ${response.location?.postalCode} ${response.location?.city}`
-      setIsFieldNameFrozen?.(
-        response !== undefined && response.siret.length > 0
-      )
       setValue('name', response?.name ?? '')
 
       setValue('addressAutocomplete', address)
-      setValue('street', response.location?.street ?? '')
-      setValue('postalCode', response.location?.postalCode ?? '')
-      setValue('city', response.location?.city ?? '')
-      setValue('latitude', response.location?.latitude.toString() ?? '')
-      setValue('longitude', response.location?.longitude.toString() ?? '')
-      setValue('inseeCode', response.location?.inseeCode ?? '')
+      setValue('street', response.location?.street ?? null)
+      setValue('postalCode', response.location?.postalCode ?? null)
+      setValue('city', response.location?.city ?? null)
+      setValue('latitude', response.location?.latitude.toString() ?? null)
+      setValue('longitude', response.location?.longitude.toString() ?? null)
+      setValue('inseeCode', response.location?.inseeCode ?? null)
     } catch (_e) {
       if (isError(_e)) {
         setError('siret', {
@@ -90,10 +83,6 @@ export const SiretOrCommentFields = ({
     setValue('siret', unhumanizeRidet(ridet || '', false, false), {
       shouldDirty: true,
     })
-
-    if (!errors.siret?.message) {
-      setIsFieldNameFrozen?.(false)
-    }
   }
 
   return (

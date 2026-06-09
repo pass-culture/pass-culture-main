@@ -16,7 +16,7 @@ export const toBody = (
 
   if ('name' in formValues) {
     payload.banId = formValues.banId
-    payload.city = removeQuotes(formValues.city)
+    payload.city = formValues.city ? removeQuotes(formValues.city) : null
     payload.comment = formValues.comment
     payload.latitude = Number(formValues.latitude)
     payload.longitude = Number(formValues.longitude)
@@ -24,7 +24,7 @@ export const toBody = (
     payload.postalCode = formValues.postalCode
     payload.inseeCode = formValues.inseeCode
     payload.publicName = formValues.publicName
-    payload.street = removeQuotes(formValues.street?.trim() ?? '')
+    payload.street = formValues.street ? removeQuotes(formValues.street) : null
     payload.siret = formContext.isCaledonian
       ? unhumanizeRidet(formValues.siret, true, true)
       : unhumanizeSiret(formValues.siret)

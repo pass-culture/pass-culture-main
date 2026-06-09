@@ -52,7 +52,8 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
         siren=data.siren,
         name=data.name if data.diffusible else None,
         apeCode=data.ape_code,
-        location=address,
+        # location=address,
+        location=None,
         isDiffusible=data.diffusible,
     )
 

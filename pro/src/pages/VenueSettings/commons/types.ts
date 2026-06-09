@@ -1,4 +1,3 @@
-import type { FlatAddressFormValues } from '@/commons/core/shared/types'
 import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 
@@ -6,11 +5,10 @@ export type VenueSettingsFormContext = {
   isCaledonian: boolean
   siren: string | null
   withSiret: boolean
-  isOpenToPublic?: string
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
 }
 
-export interface VenueSettingsFormValues extends FlatAddressFormValues {
+export interface VenueSettingsFormValues {
   comment: string
   name: string
   publicName: string
@@ -23,4 +21,14 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
   culturalDomains?: string[]
   description?: string
+  'search-addressAutocomplete': string | null
+  addressAutocomplete: string | null
+  banId: string | null
+  street: string | null
+  postalCode: string | null
+  inseeCode: string | null
+  city: string | null
+  coords: string | null
+  latitude: string | null
+  longitude: string | null
 }

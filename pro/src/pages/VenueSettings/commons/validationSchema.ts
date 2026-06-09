@@ -20,18 +20,26 @@ export const venueSettingsValidationSchema = yup
         }
         return schema
       }),
-    street: yup
-      .string()
-      .trim()
-      .required('Veuillez renseigner une adresse postale'),
-    postalCode: yup
-      .string()
-      .trim()
-      .required('Veuillez renseigner un code postal')
-      .min(5, 'Veuillez renseigner un code postal valide')
-      .max(5, 'Veuillez renseigner un code postal valide'),
-
-    city: yup.string().trim().required('Veuillez renseigner une ville'),
+    street: yup.string().when('isOpenToPublic', {
+      is: 'true',
+      then: (schema) =>
+        schema.trim().required('Veuillez renseigner une adresse postale'),
+      otherwise: (schema) => schema.nullable(),
+    }),
+    postalCode: yup.string().when('isOpenToPublic', {
+      is: 'true',
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner un code postal')
+          .min(5, 'Veuillez renseigner un code postal valide')
+          .max(5, 'Veuillez renseigner un code postal valide'),
+      otherwise: (schema) => schema.nullable(),
+    }),
+    city: yup.string().when('isOpenToPublic', {
+      is: 'true',
+      then: (schema) => schema.trim().required('Veuillez renseigner une ville'),
+      otherwise: (schema) => schema.nullable(),
+    }),
     coords: yup
       .string()
       .trim()
@@ -47,6 +55,7 @@ export const venueSettingsValidationSchema = yup
         return schema
       }),
     bookingEmail: yup.string().test(emailSchema),
+    isOpenToPublic: yup.string(),
     name: yup
       .string()
       .required(`Veuillez renseigner la raison sociale de votre lieu`),
