@@ -10,27 +10,20 @@ interface FormContactProps {
   disableForm: boolean
 }
 
-/**
- * TODO (mdesquilbet-pass, 12/06/2026)
- *
- * Remove this component and rename FormContactNew
- * when cleaning `WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS` FF
- *
- * @deprecated will be removed after WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS clean
- *               (use FormContactNew instead)
- */
-export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
+export const FormContactNew = ({
+  disableForm,
+}: FormContactProps): JSX.Element => {
   const { register, getFieldState } = useFormContext()
 
   return (
     <FormLayout.Section title="Comment les enseignants peuvent-ils vous contacter ?">
       <FormLayout.Row className={styles['phone-number-row']}>
         <PhoneNumberInput
-          {...register('phone')}
-          name="phone"
+          {...register('contactPhone')}
+          name="contactPhone"
           label="Téléphone"
           disabled={disableForm}
-          error={getFieldState('phone').error?.message}
+          error={getFieldState('contactPhone').error?.message}
         />
       </FormLayout.Row>
       <FormLayout.Row>
