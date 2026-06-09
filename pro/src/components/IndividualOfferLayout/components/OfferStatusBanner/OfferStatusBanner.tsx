@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { CGU_URL } from '@/commons/utils/config'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   getStocksResponseFactory,

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,

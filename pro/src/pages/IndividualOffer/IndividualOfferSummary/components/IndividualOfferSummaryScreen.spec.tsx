@@ -9,14 +9,13 @@ import {
   ApiError,
   CancelablePromise,
   type GetIndividualOfferResponseModel,
-  OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity, OfferStatus } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,

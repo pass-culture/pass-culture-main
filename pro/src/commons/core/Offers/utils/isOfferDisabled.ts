@@ -2,7 +2,7 @@ import type {
   GetIndividualOfferResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 
 export const isOfferDisabled = (
   offer: GetIndividualOfferResponseModel | ListOffersOfferResponseModel
