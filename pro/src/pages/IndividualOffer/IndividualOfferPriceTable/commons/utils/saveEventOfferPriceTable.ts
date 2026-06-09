@@ -2,7 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,

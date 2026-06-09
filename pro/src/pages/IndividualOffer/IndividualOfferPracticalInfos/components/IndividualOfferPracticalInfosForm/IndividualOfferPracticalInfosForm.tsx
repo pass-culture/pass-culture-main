@@ -1,11 +1,11 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
-  type GetIndividualOfferWithAddressResponseModel,
   type GetOfferStockResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'

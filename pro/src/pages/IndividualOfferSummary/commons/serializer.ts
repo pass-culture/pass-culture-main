@@ -1,12 +1,12 @@
 import {
   ArtistType,
   type CategoryResponseModel,
-  type GetIndividualOfferResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
   type GetMusicTypesResponse,
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 
 function stringifyArtist(
@@ -24,8 +24,8 @@ function stringifyArtist(
 }
 
 export function serializeArtist(
-  offer: GetIndividualOfferResponseModel,
-  artistExtraData: string,
+  offer: GetIndividualOfferWithAddressResponseModel,
+  artistExtraData: string | undefined,
   defaultValue: string,
   artistType: ArtistType
 ) {
@@ -39,7 +39,7 @@ export function serializeArtist(
 }
 
 const getMusicData = (
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferWithAddressResponseModel,
   musicTypes?: GetMusicTypesResponse,
   gtl_id?: string
 ): {
@@ -47,6 +47,8 @@ const getMusicData = (
   musicSubTypeName?: string
   gtl_id?: string
 } => {
+  const extraData = offer.extraData as OfferExtraData | undefined
+
   return {
     musicTypeName:
       (musicTypes ?? []).length === 0
@@ -54,12 +56,12 @@ const getMusicData = (
         : musicTypes?.find(
             (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
           )?.label,
-    gtl_id: offer.extraData?.gtl_id,
+    gtl_id: extraData?.gtl_id,
   }
 }
 
 const serializerOfferSubCategoryFields = (
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferWithAddressResponseModel,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
@@ -92,17 +94,19 @@ const serializerOfferSubCategoryFields = (
       durationMinutes: '',
     }
   }
+  const extraData = offer.extraData as OfferExtraData | undefined
+
   const showType = showOptionsTree.find(
-    (item) => item.code === Number.parseInt(offer.extraData?.showType, 10)
+    (item) => item.code === Number.parseInt(extraData?.showType ?? '', 10)
   )
   const showSubType = showType?.children.find(
-    (item) => item.code === Number.parseInt(offer.extraData?.showSubType, 10)
+    (item) => item.code === Number.parseInt(extraData?.showSubType ?? '', 10)
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(
     offer,
     musicTypes,
-    offer.extraData?.gtl_id
+    extraData?.gtl_id
   )
 
   const defaultValue = (fieldName: string) =>
@@ -110,13 +114,13 @@ const serializerOfferSubCategoryFields = (
   return {
     author: serializeArtist(
       offer,
-      offer.extraData?.author,
+      extraData?.author,
       defaultValue('author'),
       ArtistType.AUTHOR
     ),
     stageDirector: serializeArtist(
       offer,
-      offer.extraData?.stageDirector,
+      extraData?.stageDirector,
       defaultValue('stageDirector'),
       ArtistType.STAGE_DIRECTOR
     ),
@@ -125,15 +129,15 @@ const serializerOfferSubCategoryFields = (
     gtl_id: gtl_id,
     showTypeName: showType?.label || defaultValue('showType'),
     showSubTypeName: showSubType?.label || defaultValue('showSubType'),
-    speaker: offer.extraData?.speaker || defaultValue('speaker'),
-    visa: offer.extraData?.visa || defaultValue('visa'),
+    speaker: extraData?.speaker || defaultValue('speaker'),
+    visa: extraData?.visa || defaultValue('visa'),
     performer: serializeArtist(
       offer,
-      offer.extraData?.performer,
+      extraData?.performer,
       defaultValue('performer'),
       ArtistType.PERFORMER
     ),
-    ean: offer.extraData?.ean || defaultValue('ean'),
+    ean: extraData?.ean || defaultValue('ean'),
     durationMinutes:
       offer.durationMinutes?.toString() || defaultValue('durationMinutes'),
   }

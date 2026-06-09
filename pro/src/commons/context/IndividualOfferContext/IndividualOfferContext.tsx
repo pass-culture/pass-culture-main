@@ -3,17 +3,18 @@ import { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -75,7 +76,7 @@ export const IndividualOfferContextProvider = ({
     offerId && offerIdAsString !== 'creation'
       ? [GET_OFFER_QUERY_KEY, Number(offerId)]
       : null,
-    ([, offerIdParam]) => api.getOffer(offerIdParam),
+    ([, offerIdParam]) => apiNew.getOffer({ path: { offer_id: offerIdParam } }),
     {
       onError: (error, key) => {
         if (error.status === 404) {
@@ -88,7 +89,8 @@ export const IndividualOfferContextProvider = ({
     }
   )
   const offer = offerQuery.data
-  const offerEan = offer?.extraData?.ean
+  const extraData = offer?.extraData as OfferExtraData | undefined
+  const offerEan = extraData?.ean
 
   //  Get the offer on the venue with the same EAN if it exists
   const publishedOfferWithSameEANQuery = useSWR(
@@ -99,7 +101,10 @@ export const IndividualOfferContextProvider = ({
           offerEan,
         ]
       : null,
-    ([, venueId, ean]) => api.getActiveVenueOfferByEan(venueId, ean),
+    ([, venueId, ean]) =>
+      apiNew.getActiveVenueOfferByEan({
+        path: { venue_id: venueId, ean },
+      }),
     {
       onError: (error) => {
         if (error.status === 404) {
@@ -112,7 +117,7 @@ export const IndividualOfferContextProvider = ({
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    () => api.getCategories(),
+    () => apiNew.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
   )
 

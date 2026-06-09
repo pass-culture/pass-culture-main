@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,

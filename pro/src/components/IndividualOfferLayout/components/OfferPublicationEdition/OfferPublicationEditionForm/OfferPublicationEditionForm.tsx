@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { format, isAfter } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FORMAT_HH_mm, formatShortDateForInput } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'

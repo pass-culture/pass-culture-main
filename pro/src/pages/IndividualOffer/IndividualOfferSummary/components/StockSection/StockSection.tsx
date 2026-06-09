@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   GET_STOCKS_EVENT_STATS_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,

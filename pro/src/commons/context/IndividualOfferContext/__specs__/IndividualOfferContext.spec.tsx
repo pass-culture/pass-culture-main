@@ -4,16 +4,18 @@ import { Provider } from 'react-redux'
 import { useParams } from 'react-router'
 import { SWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import { configureTestStore } from '@/commons/store/testUtils'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { apiNew } from '@/apiClient/api'
 import {
-  makeGetVenueResponseModel,
-  offerVenueFactory,
-} from '@/commons/utils/factories/venueFactories'
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
+import { configureTestStore } from '@/commons/store/testUtils'
+import {
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
+} from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
@@ -78,12 +80,12 @@ describe('IndividualOfferContextProvider', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(api, 'getActiveVenueOfferByEan')
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(apiNew, 'getActiveVenueOfferByEan')
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
       categories: MOCKED_CATEGORIES,
       subcategories: MOCKED_SUBCATEGORIES,
     })
-    vi.spyOn(api, 'getOffer')
+    vi.spyOn(apiNew, 'getOffer')
   })
 
   describe.each([
@@ -97,9 +99,9 @@ describe('IndividualOfferContextProvider', () => {
     it('should call the expected api endpoints and return the expected context values', async () => {
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(api.getOffer).not.toHaveBeenCalled()
-      expect(api.getCategories).toHaveBeenCalledOnce()
-      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled()
+      expect(apiNew.getOffer).not.toHaveBeenCalled()
+      expect(apiNew.getCategories).toHaveBeenCalledOnce()
+      expect(apiNew.getActiveVenueOfferByEan).not.toHaveBeenCalled()
 
       expect(result.current.categories.length).toBeGreaterThan(0)
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
@@ -131,15 +133,17 @@ describe('IndividualOfferContextProvider', () => {
       vi.mocked(useParams).mockReturnValue({
         offerId: '1',
       })
-      vi.spyOn(api, 'getOffer').mockResolvedValue(offerBase)
+      vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offerBase)
     })
 
     it('should call the expected api endpoints and return the expected context values', async () => {
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
-      expect(api.getCategories).toHaveBeenCalledOnce()
-      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled() // because `offerBase` doesn't meet EAN check criteria
+      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+        path: { offer_id: 1 },
+      })
+      expect(apiNew.getCategories).toHaveBeenCalledOnce()
+      expect(apiNew.getActiveVenueOfferByEan).not.toHaveBeenCalled() // because `offerBase` doesn't meet EAN check criteria
 
       expect(result.current.categories.length).toBeGreaterThan(0)
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
@@ -150,7 +154,7 @@ describe('IndividualOfferContextProvider', () => {
     })
 
     it('should redirect to an error page when the offer does not exist', async () => {
-      vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+      vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
         status: 404,
       })
 
@@ -162,40 +166,48 @@ describe('IndividualOfferContextProvider', () => {
     })
 
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to true when there is one', async () => {
-      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
+      vi.spyOn(apiNew, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
         extraData: { ean: 2 },
         productId: 3,
-        venue: offerVenueFactory({ id: 4 }),
+        venue: getOfferVenueFactory({ id: 4 }),
       })
-      vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+      vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
         ...offerBase,
         id: 5,
       })
 
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
-      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith(4, 2)
+      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+        path: { offer_id: 1 },
+      })
+      expect(apiNew.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith({
+        path: { venue_id: 4, ean: 2 },
+      })
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(true)
     })
 
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to false when there is none', async () => {
-      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
+      vi.spyOn(apiNew, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
         extraData: { ean: 2 },
         productId: 3,
-        venue: offerVenueFactory({ id: 4 }),
+        venue: getOfferVenueFactory({ id: 4 }),
       })
-      vi.spyOn(api, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
+      vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
         new ApiError({} as ApiRequestOptions, { status: 404 } as ApiResult, '')
       )
 
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
-      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledWith(4, 2)
+      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+        path: { offer_id: 1 },
+      })
+      expect(apiNew.getActiveVenueOfferByEan).toHaveBeenCalledWith({
+        path: { venue_id: 4, ean: 2 },
+      })
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
     })

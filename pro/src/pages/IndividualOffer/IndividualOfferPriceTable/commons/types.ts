@@ -1,9 +1,9 @@
 import type {
   CreatePriceCategoryModel,
   EditPriceCategoryModel,
-  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import type { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 export type PriceTableEntryModel = Partial<

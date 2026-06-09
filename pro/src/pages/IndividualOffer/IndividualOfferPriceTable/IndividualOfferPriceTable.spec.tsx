@@ -21,7 +21,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   MOCKED_CATEGORIES,

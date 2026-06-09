@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
