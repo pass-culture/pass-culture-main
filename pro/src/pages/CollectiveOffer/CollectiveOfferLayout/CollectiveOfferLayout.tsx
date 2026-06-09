@@ -11,7 +11,10 @@ import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Tag } from '@/design-system/Tag/Tag'
-import { getActiveStep } from '@/pages/CollectiveOffer/CollectiveOfferLayout/utils/getActiveStep'
+import {
+  getCollectiveOfferActiveStep,
+  getCollectiveOfferTemplateActiveStep,
+} from '@/pages/CollectiveOffer/CollectiveOfferLayout/utils/getActiveStep'
 
 import styles from './CollectiveOfferLayout.module.scss'
 import { CollectiveOfferCreationNavigation } from './CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
@@ -54,7 +57,6 @@ export const CollectiveOfferLayout = ({
     return "Modifier l'offre"
   }
 
-  const activeStep = getActiveStep(location.pathname)
   const offerId = offerIdFromParams?.includes('T-')
     ? Number(offerIdFromParams.split('T-')[1])
     : Number(offerIdFromParams)
@@ -79,21 +81,23 @@ export const CollectiveOfferLayout = ({
           {isCollectiveOffer &&
             (isCreation ? (
               <CollectiveOfferCreationNavigation
-                activeStep={activeStep}
+                activeStep={getCollectiveOfferActiveStep(location.pathname)}
                 offerId={offerId}
                 requestId={requestId}
                 offer={offer}
               />
             ) : (
               <CollectiveOfferEditionNavigation
-                activeStep={activeStep}
+                activeStep={getCollectiveOfferActiveStep(location.pathname)}
                 offerId={offerId}
               />
             ))}
           {isOfferTemplate &&
             (isCreation ? (
               <CollectiveOfferTemplateCreationNavigation
-                activeStep={activeStep}
+                activeStep={getCollectiveOfferTemplateActiveStep(
+                  location.pathname
+                )}
                 offerId={offerId}
                 offer={offer}
               />

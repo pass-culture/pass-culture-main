@@ -1,6 +1,7 @@
-import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
+import { CollectiveOfferStep } from '../CollectiveOfferNavigation/constants'
+import { CollectiveOfferTemplateStep } from '../CollectiveOfferTemplateNavigation/constants'
 
-export const getActiveStep = (
+export const getCollectiveOfferActiveStep = (
   locationPathname: string
 ): CollectiveOfferStep => {
   if (locationPathname.includes('stocks')) {
@@ -20,4 +21,18 @@ export const getActiveStep = (
   }
 
   return CollectiveOfferStep.DETAILS
+}
+
+export const getCollectiveOfferTemplateActiveStep = (
+  locationPathname: string
+): CollectiveOfferTemplateStep => {
+  if (locationPathname.includes('recapitulatif')) {
+    return CollectiveOfferTemplateStep.SUMMARY
+  }
+
+  if (locationPathname.includes('apercu')) {
+    return CollectiveOfferTemplateStep.PREVIEW
+  }
+
+  return CollectiveOfferTemplateStep.DETAILS
 }

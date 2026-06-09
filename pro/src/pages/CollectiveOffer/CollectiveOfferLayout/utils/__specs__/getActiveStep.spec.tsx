@@ -1,17 +1,39 @@
-import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
-import { getActiveStep } from '../getActiveStep'
+import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/constants'
+import {
+  getCollectiveOfferActiveStep,
+  getCollectiveOfferTemplateActiveStep,
+} from '../getActiveStep'
 
-describe('getActiveStep', () => {
-  it('getActiveStep', () => {
-    expect(getActiveStep('/blablabla/stocks')).toBe(CollectiveOfferStep.STOCKS)
-    expect(getActiveStep('/blablabla/etablissement')).toBe(
+describe('getCollectiveOfferActiveStep', () => {
+  it('getCollectiveOfferActiveStep', () => {
+    expect(getCollectiveOfferActiveStep('/blablabla/stocks')).toBe(
+      CollectiveOfferStep.STOCKS
+    )
+    expect(getCollectiveOfferActiveStep('/blablabla/etablissement')).toBe(
       CollectiveOfferStep.INSTITUTION
     )
-    expect(getActiveStep('/blablabla/recapitulatif')).toBe(
+    expect(getCollectiveOfferActiveStep('/blablabla/recapitulatif')).toBe(
       CollectiveOfferStep.SUMMARY
     )
-    expect(getActiveStep('/blablabla/apercu')).toBe(CollectiveOfferStep.PREVIEW)
+    expect(getCollectiveOfferActiveStep('/blablabla/apercu')).toBe(
+      CollectiveOfferStep.PREVIEW
+    )
+    expect(getCollectiveOfferActiveStep('/blablabla')).toBe(
+      CollectiveOfferStep.DETAILS
+    )
+  })
+})
 
-    expect(getActiveStep('/blablabla')).toBe(CollectiveOfferStep.DETAILS)
+describe('getCollectiveOfferTemplateActiveStep', () => {
+  it('getCollectiveOfferTemplateActiveStep', () => {
+    expect(
+      getCollectiveOfferTemplateActiveStep('/blablabla/recapitulatif')
+    ).toBe(CollectiveOfferStep.SUMMARY)
+    expect(getCollectiveOfferTemplateActiveStep('/blablabla/apercu')).toBe(
+      CollectiveOfferStep.PREVIEW
+    )
+    expect(getCollectiveOfferTemplateActiveStep('/blablabla')).toBe(
+      CollectiveOfferStep.DETAILS
+    )
   })
 })

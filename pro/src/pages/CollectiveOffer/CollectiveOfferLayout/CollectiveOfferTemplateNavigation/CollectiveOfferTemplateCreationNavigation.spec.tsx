@@ -5,11 +5,11 @@ import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
 import {
   CollectiveOfferTemplateCreationNavigation,
   type CollectiveOfferTemplateCreationNavigationProps,
 } from './CollectiveOfferTemplateCreationNavigation'
+import { CollectiveOfferTemplateStep } from './constants'
 
 const renderCollectiveOfferNavigation = (
   props: CollectiveOfferTemplateCreationNavigationProps
@@ -19,7 +19,7 @@ const renderCollectiveOfferNavigation = (
 describe('<CollectiveOfferTemplateCreationNavigation />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.DETAILS,
+      activeStep: CollectiveOfferTemplateStep.DETAILS,
     })
 
     expect(await axe(container)).toHaveNoViolations()
@@ -29,7 +29,7 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
       offerId: offer.id,
-      activeStep: CollectiveOfferStep.SUMMARY,
+      activeStep: CollectiveOfferTemplateStep.SUMMARY,
       offer,
     })
 
@@ -49,7 +49,7 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
       offerId: offer.id,
-      activeStep: CollectiveOfferStep.CONFIRMATION,
+      activeStep: CollectiveOfferTemplateStep.CONFIRMATION,
       offer,
     })
     const links = screen.queryAllByRole('link')
@@ -63,7 +63,7 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     renderCollectiveOfferNavigation({
       offerId: offer.id,
       offer,
-      activeStep: CollectiveOfferStep.DETAILS,
+      activeStep: CollectiveOfferTemplateStep.DETAILS,
     })
 
     expect(
