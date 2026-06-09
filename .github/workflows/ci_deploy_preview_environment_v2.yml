@@ -50,6 +50,6 @@ jobs:
           PULL_REQUEST_ID: 1234567890
           PCAPI_IMAGE_TAG: b28a52a0a3d875d45107
         run: |
-          passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" --log --wait
+          passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}"
           # argo submit --from <workflow_template_name> --namespace <namespace> --parameters --log --wait
           # run: echo "Deploying PCAPI version ${PCAPI_VERSION} to environment ${PCAPI_ENVIRONMENT_SHORT_NAME}"
