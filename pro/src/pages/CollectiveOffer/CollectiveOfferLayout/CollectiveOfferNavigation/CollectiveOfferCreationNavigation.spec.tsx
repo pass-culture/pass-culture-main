@@ -7,8 +7,8 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   CollectiveOfferCreationNavigation,
   type CollectiveOfferCreationNavigationProps,
-  CollectiveOfferStep,
 } from '../CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
+import { CollectiveOfferStep } from './constants'
 
 const renderCollectiveOfferNavigation = (
   props: CollectiveOfferCreationNavigationProps

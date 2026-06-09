@@ -4,8 +4,8 @@ import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferStep } from './CollectiveOfferCreationNavigation'
 import { CollectiveOfferEditionNavigation } from './CollectiveOfferEditionNavigation'
+import { CollectiveOfferStep } from './constants'
 
 describe('<CollectiveOfferEditionNavigation />', () => {
   it('should render without accessibility violations', async () => {
