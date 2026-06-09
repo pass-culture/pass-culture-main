@@ -4,7 +4,7 @@ import type { SWRResponse } from 'swr'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import type { GetOffererNameResponseModel } from '@/apiClient/v1'
+import type { GetOffererNameResponseModel } from '@/apiClient/v1/new'
 import * as useOffererNamesQueryModule from '@/commons/hooks/swr/useOffererNamesQuery'
 import {
   defaultGetOffererResponseModel,

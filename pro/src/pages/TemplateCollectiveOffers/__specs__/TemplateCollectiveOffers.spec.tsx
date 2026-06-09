@@ -85,7 +85,7 @@ describe('TemplateCollectiveOffers', () => {
     vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue(
       offersRecap
     )
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({

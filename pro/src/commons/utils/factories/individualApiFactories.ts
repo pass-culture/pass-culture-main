@@ -8,7 +8,6 @@ import {
   BookingRecapStatus,
   type CategoryResponseModel,
   type GetBookingResponse,
-  type GetOffererNameResponseModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
   type GetOfferStockResponseModel,
@@ -23,6 +22,7 @@ import {
 import {
   DisplayableActivity,
   type GetIndividualOfferWithAddressResponseModel,
+  type GetOffererNameResponseModel,
   type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
   type GetOfferManagingOffererResponseModel,
   type GetOfferVenueResponseModel,

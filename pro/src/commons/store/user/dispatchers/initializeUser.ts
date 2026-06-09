@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import {
@@ -45,7 +45,7 @@ export const initializeUser = createAsyncThunk<
   AppThunkApiConfig
 >('user/initializeUser', async ({ newOffererId, user }, { dispatch }) => {
   try {
-    const offererNamesResponse = await api.listOfferersNames()
+    const offererNamesResponse = await apiNew.listOfferersNames()
     const venuesResponse = await api.getVenuesLite()
     const offererNames = offererNamesResponse.offerersNames
     const allVenues = venuesResponse.venues.concat(

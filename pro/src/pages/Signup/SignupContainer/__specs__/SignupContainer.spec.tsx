@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
 import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -30,6 +30,8 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     signupPro: vi.fn(),
+  },
+  apiNew: {
     listOfferersNames: vi.fn(),
   },
 }))
@@ -64,7 +66,7 @@ describe('Signup', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,

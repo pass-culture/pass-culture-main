@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -26,11 +26,13 @@ vi.mock('@firebase/remote-config', () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    listOfferersNames: vi.fn(),
     canOffererCreateEducationalOffer: vi.fn(),
     getCollectiveOfferTemplates: vi.fn(),
     getVenue: vi.fn(),
     getCategories: vi.fn(),
+  },
+  apiNew: {
+    listOfferersNames: vi.fn(),
   },
 }))
 
@@ -75,7 +77,7 @@ const renderOfferTypes = (venueOverrides?: Partial<GetVenueResponseModel>) => {
 
 describe('OfferType', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,

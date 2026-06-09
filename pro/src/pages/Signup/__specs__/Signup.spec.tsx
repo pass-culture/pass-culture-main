@@ -13,8 +13,10 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),
-    listOfferersNames: vi.fn(),
     getSirenInfo: vi.fn(),
+  },
+  apiNew: {
+    listOfferersNames: vi.fn(),
   },
 }))
 

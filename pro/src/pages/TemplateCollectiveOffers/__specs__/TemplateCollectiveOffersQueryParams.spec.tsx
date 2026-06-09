@@ -55,12 +55,12 @@ vi.mock('@/apiClient/api', () => {
   return {
     api: {
       getOfferer: vi.fn(),
-      listOfferersNames: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
     },
     apiNew: {
       getVenueAddresses: vi.fn(),
       getCollectiveOfferTemplates: vi.fn(),
+      listOfferersNames: vi.fn(),
     },
   }
 })
@@ -125,7 +125,7 @@ describe('route TemplateCollectiveOffers', () => {
       offersRecap
     )
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
