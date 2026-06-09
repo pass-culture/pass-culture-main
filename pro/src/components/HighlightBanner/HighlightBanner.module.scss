@@ -10,20 +10,9 @@
   padding: var(--size-spacing-xl);
   position: relative;
 
-  .icon {
-    width: rem.torem(32px);
-  }
-
   .title {
     width: 85%;
     color: var(--color-text-brand-primary);
-  }
-
-  .informations {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 70%;
   }
 
   .description {
@@ -33,29 +22,11 @@
     height: max-content;
   }
 
-  .infos {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-l);
-    padding: var(--size-spacing-xxl) var(--size-spacing-xl);
-  }
-
   .container {
     @include fonts.title1;
 
     max-width: calc(100% - 350px);
     gap: var(--size-spacing-l);
-  }
-
-  .data {
-    display: flex;
-  }
-
-  .header {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--size-spacing-s);
-    width: 100%;
   }
 
   .close {

@@ -2164,7 +2164,7 @@
   resolved "https://registry.yarnpkg.com/@types/mdx/-/mdx-2.0.13.tgz#68f6877043d377092890ff5b298152b0a21671bd"
   integrity sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==
 
-"@types/node@*", "@types/node@^25.9.1":
+"@types/node@*", "@types/node@25.9.1":
   version "25.9.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-25.9.1.tgz#3bda556db500ae4319c08e7fc9ab94f19013ba0b"
   integrity sha512-xfrlY7UD5rMJk3ZVJP8BNzS28J36YJg+xp+LPXV1TdWxr8uMH5A860QNxYDGQe/ylDSgjxE52Q9VnO7p75tJxg==
@@ -2699,10 +2699,10 @@ check-error@^2.1.1:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-2.1.3.tgz#2427361117b70cca8dc89680ead32b157019caf5"
   integrity sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA==
 
-check-unused-css@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/check-unused-css/-/check-unused-css-0.4.0.tgz#a7c1101feb53ef026a6d2e1060887009fe47042a"
-  integrity sha512-WrxDEbuGcJTPFNGXLxwzYJl3GSnnztIOesYZSOr07mpoow+H+LEq8amiPXZuGqrlcOjceX2GKlgB8Lt5P4GvOA==
+check-unused-css@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/check-unused-css/-/check-unused-css-0.5.0.tgz#63355cd2157843c7e9fa809d0fa8c8e78dab3fc5"
+  integrity sha512-jE7/QE14Uwd/9+d5amPSKERlwUjkV5b2ZJ16esOKL3BlD0aguHqNWokyhI6cXZxFDCOaSbH+wN3DcSPAMKf0Hw==
   dependencies:
     "@typescript-eslint/typescript-estree" "^8.58.2"
     css-selector-parser "^3.3.0"
@@ -3850,7 +3850,7 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-knip@^6.15.0:
+knip@6.15.0:
   version "6.15.0"
   resolved "https://registry.yarnpkg.com/knip/-/knip-6.15.0.tgz#b0feb5be6582a309e15e0f47a55afed100fc006d"
   integrity sha512-uBaKFEGcu/HG4EY2gWFBMr+fBF43Jftoc2riJX51TKME1Z46C8UQIbNEusenYbEWihphxe2PY0Kns0yPvPYz4A==
@@ -5362,7 +5362,7 @@ type-fest@^2.19.0:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
   integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
 
-typescript@^6.0.3:
+typescript@6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.3.tgz#90251dc007916e972786cb94d74d15b185577d21"
   integrity sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==
