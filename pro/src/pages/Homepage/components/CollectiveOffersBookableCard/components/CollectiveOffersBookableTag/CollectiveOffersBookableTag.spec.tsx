@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { buildCollectiveStock } from '@/commons/utils/factories/adageFactories'
 
 import { CollectiveOffersBookableTag } from './CollectiveOffersBookableTag'

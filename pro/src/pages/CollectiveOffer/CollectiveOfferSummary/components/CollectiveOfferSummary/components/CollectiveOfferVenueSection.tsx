@@ -1,4 +1,4 @@
-import type { GetCollectiveOfferVenueResponseModel } from '@/apiClient/v1'
+import type { GetCollectiveOfferVenueResponseModel } from '@/apiClient/v1/new'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 

@@ -1,7 +1,7 @@
 import type {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   type Description,
   SummaryDescriptionList,

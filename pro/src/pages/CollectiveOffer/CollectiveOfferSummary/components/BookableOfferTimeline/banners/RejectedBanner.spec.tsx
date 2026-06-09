@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as duplicateBookableOffer from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'

@@ -4,7 +4,7 @@ import { differenceInCalendarDays, format } from 'date-fns'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import {

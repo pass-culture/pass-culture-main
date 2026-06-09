@@ -1,9 +1,9 @@
-import type {
-  CollectiveRevenue,
-  IndividualRevenue,
-  TotalRevenue,
-} from '@/apiClient/v1'
-import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
+import {
+  type CollectiveRevenue,
+  type IndividualRevenue,
+  SimplifiedBankAccountStatus,
+  type TotalRevenue,
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
