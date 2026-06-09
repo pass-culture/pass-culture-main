@@ -4041,22 +4041,37 @@ class GetUserPendingAndValidatedOffererTest:
 
 
 class CloseVenueTest:
+    """Test the overall behaviour
+
+    Each step has its own function with its own detailed unit tests.
+    No need to test every details twice.
+    """
+
     def test_open_venue_becomes_closed(self):
-        venue = offerers_factories.VenueFactory(state=None)
+        venue = offerers_factories.VenueFactory(state=None, bookingEmail="some.email@test.com")
+        author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+
+        assert not venue.bookingEmail
+        assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_closed_venue_stays_closed(self):
-        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        venue = offerers_factories.VenueFactory(
+            state=offerers_models.VenueState.CLOSED, bookingEmail=None, contact=None
+        )
+        author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+        assert not venue.bookingEmail
+        assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
 
@@ -4140,3 +4155,66 @@ class DeactivateVenueOffersTest:
             log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
             record = next(rec for rec in caplog.records if rec.message == log_msg)
             assert record.extra == expected_backup_data
+
+
+class NullifyVenueEmailsTest:
+    def test_emails_all_venue_emails_are_nullified(self):
+        """Check that all venue's emails are nullified:
+
+        1. booking and contact's email are None;
+        2. the old emails are saved using the history api.
+        """
+        old_booking_email = "booking@test.com"
+        old_contact_email = "hey@test.com"
+        old_phone_number = "+33112233445"
+        old_website = "https://test.com"
+        old_social_medias = {"instagram": "https://instagram.com/@test.com"}
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail=old_booking_email,
+            contact__email=old_contact_email,
+            contact__phone_number=old_phone_number,
+            contact__website=old_website,
+            contact__social_medias=old_social_medias,
+        )
+        user = users_factories.BaseUserFactory()
+
+        with atomic():
+            offerers_api.nullify_venue_emails(venue, user)
+
+        db.session.refresh(venue)
+
+        # check 1. emails are nullified
+        assert not venue.bookingEmail
+        assert not venue.contact
+
+        # check 2. old emails have been saved
+        assert len(venue.action_history) == 2
+
+        modified_info = [item.extraData["modified_info"] for item in venue.action_history]
+        assert sorted(modified_info, key=lambda info: len(info)) == [
+            {
+                "bookingEmail": {"new_info": None, "old_info": old_booking_email},
+            },
+            {
+                "venue.contact.email": {"new_info": None, "old_info": old_contact_email},
+                "venue.contact.phone_number": {"new_info": None, "old_info": old_phone_number},
+                "venue.contact.website": {"new_info": None, "old_info": old_website},
+                "venue.contact.social_medias": {"new_info": None, "old_info": old_social_medias},
+            },
+        ]
+
+    def test_nothings_changes_when_venue_already_has_no_emails_set(self):
+        venue = offerers_factories.VenueFactory(bookingEmail=None, contact=None)
+        user = users_factories.BaseUserFactory()
+
+        with atomic():
+            offerers_api.nullify_venue_emails(venue, user)
+
+        db.session.refresh(venue)
+
+        assert not venue.bookingEmail
+        assert not venue.contact
+
+        # no update to track
+        assert not venue.action_history
