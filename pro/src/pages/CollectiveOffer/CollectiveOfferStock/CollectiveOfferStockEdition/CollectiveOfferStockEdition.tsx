@@ -7,6 +7,7 @@ import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -28,12 +29,18 @@ export const CollectiveOfferStockEdition = ({
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
 
   const departementCode = offer.venue.departementCode ?? ''
 
   const handleSubmitStock = async (
     newCollectiveStock: CollectiveStockEditionBodyModel
   ) => {
+    if (isNewCollectivePriceEnabled) {
+      delete newCollectiveStock.priceDetail
+    }
     if (!offer.collectiveStock) {
       return snackBar.error('Impossible de mettre à jour le stock.')
     }

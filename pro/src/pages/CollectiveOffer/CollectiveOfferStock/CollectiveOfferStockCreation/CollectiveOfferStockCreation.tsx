@@ -17,6 +17,7 @@ import {
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
@@ -29,16 +30,19 @@ import {
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
 function isComplete(
-  stock: Partial<CollectiveStockCreationBodyModel>
+  stock: Partial<CollectiveStockCreationBodyModel>,
+  isNewCollectivePriceEnabled: boolean
 ): stock is CollectiveStockCreationBodyModel {
   const allKeys: (keyof CollectiveStockCreationBodyModel)[] = [
     'bookingLimitDatetime',
-    'priceDetail',
     'endDatetime',
     'numberOfTickets',
     'startDatetime',
     'price',
   ]
+  if (!isNewCollectivePriceEnabled) {
+    allKeys.push('priceDetail')
+  }
   return allKeys.every((key) => key in stock && stock[key] !== undefined)
 }
 
@@ -50,6 +54,9 @@ export const CollectiveOfferStockCreation = ({
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
 
   const { mutate } = useSWRConfig()
 
@@ -101,6 +108,9 @@ export const CollectiveOfferStockCreation = ({
     previous: `/offre/collectif/${offer.id}/creation`,
     next: `/offre/${offer.id}/collectif/etablissement`,
   }
+  if (isNewCollectivePriceEnabled) {
+    stepUrls.next = `/offre/${offer.id}/collectif/informations-pratiques`
+  }
   if (requestId) {
     stepUrls.previous += `?requete=${requestId}`
     stepUrls.next += `?requete=${requestId}`
@@ -109,6 +119,9 @@ export const CollectiveOfferStockCreation = ({
   const handleSubmitStock = async (
     newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
   ) => {
+    if (isNewCollectivePriceEnabled) {
+      delete newCollectiveStock.priceDetail
+    }
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
@@ -116,7 +129,7 @@ export const CollectiveOfferStockCreation = ({
           path: { collective_stock_id: offer.collectiveStock.id },
           body: newCollectiveStock,
         })
-      } else if (isComplete(newCollectiveStock)) {
+      } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
         response = await apiNew.createCollectiveStock({
           body: { ...newCollectiveStock, offerId: offer.id },
         })
