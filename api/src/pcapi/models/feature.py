@@ -104,6 +104,9 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
     )
+    SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des séries d'évènements via les tables BigQuery fournies par l'équipe Data"
+    )
     SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
     )
@@ -211,6 +214,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
+    FeatureToggle.SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH,
