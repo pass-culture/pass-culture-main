@@ -48,6 +48,6 @@ jobs:
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PULL_REQUEST_ID: 1234567890
-          PCAPI_IMAGE_TAG: b28a52a0a3d875d45107
+          PCAPI_IMAGE_TAG: c15db62df9c2f4c72f050963f5cb3b74d4233a67
         run: |
           passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}"
