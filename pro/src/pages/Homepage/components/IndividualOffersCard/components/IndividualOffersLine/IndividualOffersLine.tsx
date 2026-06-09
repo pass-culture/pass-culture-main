@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import type { OfferHomeResponseModel } from '@/apiClient/v1'
+import type { OfferHomeResponseModel } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

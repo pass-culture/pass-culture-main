@@ -3,7 +3,7 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type LocationResponseModelV2,
   OfferContactFormEnum,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'

@@ -1,4 +1,4 @@
-import type { GetCollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
+import type { GetCollectiveOfferTemplateResponseModel } from '@/apiClient/v1/new'
 import {
   getRangeToFrenchText,
   toDateStrippedOfTimezone,

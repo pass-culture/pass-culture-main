@@ -1,7 +1,9 @@
 import { Link, useNavigate } from 'react-router'
 
-import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import {
+  CollectiveOfferDisplayedStatus,
+  type CollectiveOfferTemplateHomeResponseModel,
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'

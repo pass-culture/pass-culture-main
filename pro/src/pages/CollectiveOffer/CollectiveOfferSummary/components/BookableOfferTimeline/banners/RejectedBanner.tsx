@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'

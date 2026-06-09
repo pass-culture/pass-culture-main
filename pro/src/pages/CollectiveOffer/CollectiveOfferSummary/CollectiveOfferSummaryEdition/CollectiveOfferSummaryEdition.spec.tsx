@@ -1,21 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient/api'
 import {
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import {
-  managedVenueFactory,
-  userOffererFactory,
-} from '@/commons/utils/factories/userOfferersFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
@@ -26,12 +21,6 @@ import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
-
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    listEducationalOfferers: vi.fn(),
-  },
-}))
 
 const renderCollectiveOfferSummaryEdition = (
   offer:
@@ -59,19 +48,6 @@ describe('CollectiveOfferSummary', () => {
   let offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-
-  const venue = managedVenueFactory({ id: 1 })
-  const offerer = userOffererFactory({
-    id: 1,
-    name: 'Ma super structure',
-    managedVenues: [venue],
-  })
-
-  beforeEach(() => {
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
-      educationalOfferers: [offerer],
-    })
-  })
 
   it('should display hide offer option when action is allowed', async () => {
     offer = getCollectiveOfferTemplateFactory({

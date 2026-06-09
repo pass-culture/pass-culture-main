@@ -6,7 +6,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
   OfferContactFormEnum,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,

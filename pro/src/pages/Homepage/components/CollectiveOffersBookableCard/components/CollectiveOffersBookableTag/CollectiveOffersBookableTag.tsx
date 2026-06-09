@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 
-import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1/new'
 import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import { pluralizeFr } from '@/commons/utils/pluralize'

@@ -5,7 +5,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   type CollectiveOfferStockResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

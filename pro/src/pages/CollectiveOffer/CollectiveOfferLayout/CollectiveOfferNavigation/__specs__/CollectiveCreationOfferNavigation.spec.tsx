@@ -1,17 +1,14 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseIdModel,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
-  defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
@@ -69,22 +66,6 @@ describe('CollectiveCreationOfferNavigation', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
-
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
-
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
-
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
-      educationalOfferers: [],
-    })
-
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
-
-    vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue(
-      {} as CollectiveOfferResponseIdModel
-    )
 
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'

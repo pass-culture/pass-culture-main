@@ -1,5 +1,5 @@
 import type { GetCollectiveOfferLocationModel } from '@/apiClient/adage'
-import { CollectiveLocationType } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1/new'
 
 import styles from './OfferLocationCell.module.scss'
 
