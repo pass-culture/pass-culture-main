@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { sub } from 'date-fns'
 
-import { api, apiNew } from '@/apiClient/api'
-import { OfferContactFormEnum } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { OfferContactFormEnum } from '@/apiClient/v1/new'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultGetVenue,
@@ -84,9 +84,10 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should redirect to next step on submit', async () => {
-    vi.spyOn(api, 'patchCollectiveOfferTemplatePublication').mockResolvedValue(
-      defaultProps.offer
-    )
+    vi.spyOn(
+      apiNew,
+      'patchCollectiveOfferTemplatePublication'
+    ).mockResolvedValue(defaultProps.offer)
 
     renderCollectiveOfferPreviewCreation(defaultProps)
 
@@ -94,12 +95,12 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.click(nextStep)
 
-    expect(api.patchCollectiveOfferTemplatePublication).toHaveBeenCalled()
+    expect(apiNew.patchCollectiveOfferTemplatePublication).toHaveBeenCalled()
   })
 
   it('should not redirect to next step on submit and show notification error when publication fails', async () => {
     vi.spyOn(
-      api,
+      apiNew,
       'patchCollectiveOfferTemplatePublication'
     ).mockRejectedValueOnce('error')
 

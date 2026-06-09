@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -57,9 +57,9 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const publishOffer = async () => {
     try {
       if (isCollectiveOfferTemplate(offer)) {
-        const newOffer = await api.patchCollectiveOfferTemplatePublication(
-          offer.id
-        )
+        const newOffer = await apiNew.patchCollectiveOfferTemplatePublication({
+          path: { offer_id: offer.id },
+        })
 
         await mutate<GetCollectiveOfferTemplateResponseModel>(
           [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.id],
@@ -90,7 +90,9 @@ export const CollectiveOfferPreviewCreationScreen = ({
         return
       }
 
-      const newOffer = await api.patchCollectiveOfferPublication(offer.id)
+      const newOffer = await apiNew.patchCollectiveOfferPublication({
+        path: { offer_id: offer.id },
+      })
 
       await mutate<GetCollectiveOfferResponseModel>(
         [GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id],
