@@ -143,7 +143,7 @@ describe('DayAndHours', () => {
 
     expect(screen.getByText(/14:00/)).toBeInTheDocument()
     expect(screen.getByText(/19:30/)).toBeInTheDocument()
-    expect(screen.queryByText(/et de/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/et/)).not.toBeInTheDocument()
   })
 
   it('should display each hours and day when the whole day', () => {
@@ -158,6 +158,6 @@ describe('DayAndHours', () => {
     expect(screen.getByText(/12:30/)).toBeInTheDocument()
     expect(screen.getByText(/14:00/)).toBeInTheDocument()
     expect(screen.getByText(/19:30/)).toBeInTheDocument()
-    expect(screen.getByText(/et de/)).toBeInTheDocument()
+    expect(screen.getByText(/et/)).toBeInTheDocument()
   })
 })

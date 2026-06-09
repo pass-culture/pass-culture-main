@@ -8,11 +8,11 @@ export function OpeningHoursReadOnlyHours({
   }
   return (
     <>
-      de {openingHoursForDay[0][0]} à {openingHoursForDay[0][1]}
+      {openingHoursForDay[0][0]}-{openingHoursForDay[0][1]}
       {openingHoursForDay.length > 1 && (
         <>
           {' '}
-          et de {openingHoursForDay[1][0]} à {openingHoursForDay[1][1]}
+          et {openingHoursForDay[1][0]}-{openingHoursForDay[1][1]}
         </>
       )}
     </>
