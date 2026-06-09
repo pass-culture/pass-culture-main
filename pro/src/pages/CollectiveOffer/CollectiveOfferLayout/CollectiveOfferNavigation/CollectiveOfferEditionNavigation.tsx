@@ -3,8 +3,8 @@ import cn from 'classnames'
 import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
-import { CollectiveOfferStep } from './CollectiveOfferCreationNavigation'
 import styles from './CollectiveOfferNavigation.module.scss'
+import { CollectiveOfferStep } from './constants'
 
 export interface CollectiveOfferEditionNavigationProps {
   activeStep: CollectiveOfferStep
