@@ -188,6 +188,17 @@ export const routes: CustomRouteTree = [
   {
     lazy: () =>
       import(
+        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformationsCreation/CollectiveOfferInformationsCreation'
+      ),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    path: '/offre/:offerId/collectif/informations-pratiques',
+    handle: {
+      title: 'Informations pratiques - Créer une offre réservable',
+    },
+  },
+  {
+    lazy: () =>
+      import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
@@ -360,6 +371,18 @@ export const routes: CustomRouteTree = [
     path: '/offre/:offerId/collectif/stocks/edition',
     handle: {
       title: 'Dates et prix - Modifier une offre collective réservable',
+    },
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformationsEdition/CollectiveOfferInformationsEdition'
+      ),
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    path: '/offre/:offerId/collectif/informations-pratiques/edition',
+    handle: {
+      title:
+        'Informations pratiques - Modifier une offre collective réservable',
     },
   },
   {
