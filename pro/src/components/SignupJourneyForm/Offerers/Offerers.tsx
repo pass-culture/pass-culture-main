@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { CreateOffererBodyModel } from '@/apiClient/v1'
+import type { CreateOffererBodyModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -81,7 +81,9 @@ export const Offerers = (): JSX.Element => {
       ? [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer.siret]
       : null,
     ([, offererSiret]) =>
-      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', '')),
+      apiNew.getVenuesOfOffererFromSiret({
+        path: { siret: offererSiret.replaceAll(' ', '') },
+      }),
     { isPaused: () => offerer?.siret === null }
   )
 
@@ -161,7 +163,9 @@ export const Offerers = (): JSX.Element => {
         postalCode: offerer.postalCode,
         siren: offerer.siren ?? '',
       }
-      const createdOfferer = await api.createOfferer(request)
+      const createdOfferer = await apiNew.createOfferer({
+        body: { ...request },
+      })
 
       cleanSignupJourneyStorage()
 

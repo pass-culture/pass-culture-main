@@ -3,12 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import { api, apiNew } from '@/apiClient/api'
-import {
-  ApiError,
-  type VenueOfOffererFromSiretResponseModel,
-} from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1/new'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
@@ -24,6 +21,7 @@ import {
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
+import { ApiError } from 'apiClient/compat'
 import { Offerers } from '../Offerers'
 
 const inMemoryLocalStorage = new Map<string, string>()
@@ -65,12 +63,10 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     createOfferer: vi.fn(),
     getVenues: vi.fn(),
     getVenuesOfOffererFromSiret: vi.fn(),
-  },
-  apiNew: {
     getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),
   },
@@ -177,7 +173,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
     ]
 
-    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererName: 'Offerer Name',
       offererSiren: '123456789',
       venues,
@@ -409,7 +405,7 @@ describe('screens:SignupJourney::Offerers', () => {
       expect(
         screen.queryByText('Rejoindre cet espace ?')
       ).not.toBeInTheDocument()
-      expect(api.createOfferer).not.toHaveBeenCalled()
+      expect(apiNew.createOfferer).not.toHaveBeenCalled()
     })
 
     it('should link offerer to user when they confirm', async () => {
@@ -417,9 +413,9 @@ describe('screens:SignupJourney::Offerers', () => {
         () => false
       )
       await renderOfferersScreen(contextValue)
-      vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
+      vi.spyOn(apiNew, 'createOfferer').mockResolvedValue(expect.anything())
       vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue(expect.anything())
-      vi.spyOn(api, 'getVenues').mockResolvedValue(expect.anything())
+      vi.spyOn(apiNew, 'getVenues').mockResolvedValue(expect.anything())
       vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(expect.anything())
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
@@ -432,11 +428,13 @@ describe('screens:SignupJourney::Offerers', () => {
         await screen.findByRole('button', { name: 'Rejoindre cet espace' })
       )
 
-      expect(api.createOfferer).toHaveBeenCalledWith({
-        city: 'lille',
-        name: 'Offerer Name',
-        postalCode: '59000',
-        siren: '123456789',
+      expect(apiNew.createOfferer).toHaveBeenCalledWith({
+        body: {
+          city: 'lille',
+          name: 'Offerer Name',
+          postalCode: '59000',
+          siren: '123456789',
+        },
       })
       expect(await screen.findByText('Confirmation screen')).toBeInTheDocument()
     })
@@ -461,7 +459,7 @@ describe('screens:SignupJourney::Offerers', () => {
         } as ApiResult,
         ''
       )
-      vi.spyOn(api, 'createOfferer').mockRejectedValueOnce(apiError)
+      vi.spyOn(apiNew, 'createOfferer').mockRejectedValueOnce(apiError)
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
