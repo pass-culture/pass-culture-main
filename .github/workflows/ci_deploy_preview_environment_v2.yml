@@ -45,8 +45,8 @@ jobs:
       - name: Hello World
         shell: bash
         env:
-          NAMESPACE: my-namespace
-          WORKFLOW_TEMPLATE: my-workflow-template
+          NAMESPACE: pcapi-preview-bootstrapper-prd
+          WORKFLOW_TEMPLATE: provision-pcapi-preview-environment
           PULL_REQUEST_ID: 1234567890
           PCAPI_IMAGE_TAG: b28a52a0a3d875d45107
         run: |
