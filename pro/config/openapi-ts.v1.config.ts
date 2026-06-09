@@ -18,7 +18,6 @@ export default defineConfig({
   output: {
     path: 'src/apiClient/v1/new/',
     clean: true,
-    postProcess: ['biome:format'],
   },
   plugins: [
     {
