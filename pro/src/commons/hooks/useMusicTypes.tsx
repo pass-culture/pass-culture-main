@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 
 import { GET_MUSIC_TYPES_QUERY_KEY } from '../config/swrQueryKeys'
 import { updateMusicTypes } from '../store/staticData/reducer'
@@ -18,7 +18,7 @@ export function useMusicTypes() {
       return shouldFetchMusicTypes ? GET_MUSIC_TYPES_QUERY_KEY : null
     },
     async () => {
-      const response = await api.getMusicTypes()
+      const response = await apiNew.getMusicTypes()
       dispatch(updateMusicTypes(response))
       return response
     },

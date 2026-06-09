@@ -42,13 +42,13 @@ import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionSc
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getMusicTypes: vi.fn(),
     createOffer: vi.fn(),
     patchOffer: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
   },
   apiNew: {
     getProductByEan: vi.fn(),
+    getMusicTypes: vi.fn(),
   },
 }))
 
@@ -297,7 +297,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           id: 12,
         })
       )
-      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
         { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
       ])
 
@@ -384,7 +384,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
     })
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -438,7 +438,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         id: 12,
       })
     )
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -494,7 +494,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       })
     )
 
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
     contextValue.offer = getIndividualOfferFactory({
