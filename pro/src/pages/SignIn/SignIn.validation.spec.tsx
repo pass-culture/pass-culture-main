@@ -21,9 +21,9 @@ import { SignIn } from './SignIn'
 vi.mock('@/apiClient/api', () => ({
   api: {
     signin: vi.fn(),
-    getOfferer: vi.fn(),
   },
   apiNew: {
+    getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),
     getProfile: vi.fn(),
   },
@@ -94,7 +94,7 @@ describe('SignIn', () => {
       ],
     })
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
   })

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -22,11 +22,12 @@ import { Hub } from './Hub'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getOfferer: vi.fn(),
     signout: vi.fn(),
   },
   apiNew: {
+    getOfferer: vi.fn(),
     getVenue: vi.fn(),
+    signout: vi.fn(),
   },
 }))
 
@@ -149,7 +150,7 @@ describe('Hub', () => {
         },
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -177,7 +178,7 @@ describe('Hub', () => {
         },
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,

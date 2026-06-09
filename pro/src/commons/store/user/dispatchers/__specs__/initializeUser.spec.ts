@@ -23,12 +23,12 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     getVenuesLite: vi.fn(),
-    getOfferer: vi.fn(),
     signout: vi.fn(),
   },
   apiNew: {
     getVenue: vi.fn(),
     listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
@@ -66,7 +66,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -108,7 +108,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -139,7 +139,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -165,7 +165,7 @@ describe('initializeUser', () => {
       venues: [],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -188,8 +188,8 @@ describe('initializeUser', () => {
       venues: [],
       venuesWithPendingValidation: [],
     })
-    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
     const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
+    const apiGetOffererSpy = vi.spyOn(apiNew, 'getOfferer')
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '999')
 
@@ -228,7 +228,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -260,7 +260,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -293,7 +293,7 @@ describe('initializeUser', () => {
       venues: [],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 200,
       isOnboarded: false,
@@ -325,7 +325,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -366,7 +366,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -404,13 +404,13 @@ describe('initializeUser', () => {
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockImplementation(
-      (offererId: number) =>
+    vi.spyOn(apiNew, 'getOfferer').mockImplementation(
+      ({ path: { offerer_id: offererId } }) =>
         Promise.resolve({
           ...defaultGetOffererResponseModel,
           id: offererId,
           isOnboarded: true,
-        }) as ReturnType<typeof api.getOfferer>
+        }) as ReturnType<typeof apiNew.getOfferer>
     )
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '200')
@@ -453,7 +453,7 @@ describe('error handling', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockRejectedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockRejectedValue(
       new ApiError(
         { method: 'DELETE', url: '' },
         {} as unknown as ApiResult,

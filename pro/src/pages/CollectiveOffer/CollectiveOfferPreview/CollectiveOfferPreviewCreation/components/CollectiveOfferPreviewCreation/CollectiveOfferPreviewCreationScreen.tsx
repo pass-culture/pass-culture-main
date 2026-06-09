@@ -7,8 +7,8 @@ import { api } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  GetOffererResponseModel,
 } from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,

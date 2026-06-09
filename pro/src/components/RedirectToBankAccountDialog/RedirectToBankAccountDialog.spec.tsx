@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -31,11 +31,9 @@ vi.mock('react-router', async () => ({
   useNavigate: vi.fn(),
 }))
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getOfferer: vi.fn(),
-  },
   apiNew: {
     getVenue: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
@@ -89,7 +87,7 @@ describe('<RedirectToBankAccountDialog />', () => {
         managingOffererId: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
     })
@@ -143,9 +141,9 @@ describe('<RedirectToBankAccountDialog />', () => {
       expect(apiNew.getVenue).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: SELECTED_PARTNER_VENUE_ID },
       })
-      expect(api.getOfferer).toHaveBeenCalledWith(
-        SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID
-      )
+      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+        path: { offerer_id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID },
+      })
     })
 
     it('should navigate to the bank account admin page without refreshing the venue when outside the onboarding flow', async () => {
@@ -159,7 +157,7 @@ describe('<RedirectToBankAccountDialog />', () => {
         )
       })
       expect(apiNew.getVenue).not.toHaveBeenCalled()
-      expect(api.getOfferer).not.toHaveBeenCalled()
+      expect(apiNew.getOfferer).not.toHaveBeenCalled()
     })
 
     it('should navigate only after the venue refresh has resolved (order guarantee)', async () => {
@@ -196,9 +194,9 @@ describe('<RedirectToBankAccountDialog />', () => {
       expect(apiNew.getVenue).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: SELECTED_PARTNER_VENUE_ID },
       })
-      expect(api.getOfferer).toHaveBeenCalledWith(
-        SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID
-      )
+      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+        path: { offerer_id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID },
+      })
     })
 
     it('should navigate to cancelRedirectUrl without refreshing the venue when outside the onboarding flow', async () => {
@@ -213,7 +211,7 @@ describe('<RedirectToBankAccountDialog />', () => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/custom-cancel')
       })
       expect(apiNew.getVenue).not.toHaveBeenCalled()
-      expect(api.getOfferer).not.toHaveBeenCalled()
+      expect(apiNew.getOfferer).not.toHaveBeenCalled()
     })
 
     it('should navigate only after the venue refresh has resolved (order guarantee)', async () => {

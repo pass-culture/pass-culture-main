@@ -75,7 +75,7 @@ const mockLogEvent = vi.fn()
 describe('BankInformations page', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
     vi.spyOn(

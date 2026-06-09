@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   CollectiveOfferTemplateResponseModel,
   GetVenueAddressResponseModel,
@@ -54,13 +54,13 @@ const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
-      getOfferer: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
     },
     apiNew: {
-      getVenueAddresses: vi.fn(),
       getCollectiveOfferTemplates: vi.fn(),
       listOfferersNames: vi.fn(),
+      getOfferer: vi.fn(),
+      getVenueAddresses: vi.fn(),
     },
   }
 })
@@ -128,7 +128,7 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
     vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
