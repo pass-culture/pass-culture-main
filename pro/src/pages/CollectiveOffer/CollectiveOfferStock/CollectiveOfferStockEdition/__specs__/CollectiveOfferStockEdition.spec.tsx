@@ -15,6 +15,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
+import { OfferEducationalStock } from '../../components/OfferEducationalStock/OfferEducationalStock'
 import { CollectiveOfferStockEdition } from '../CollectiveOfferStockEdition'
 
 const mockSyncVenue = vi.fn()
@@ -32,12 +33,18 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
   }),
 }))
 
+vi.mock('../../components/OfferEducationalStock/OfferEducationalStock', () => ({
+  OfferEducationalStock: vi.fn(),
+}))
+
 const renderCollectiveStockEdition = (
   path: string,
-  props: CollectiveOfferFromParamsProps
+  props: CollectiveOfferFromParamsProps,
+  features: string[] = []
 ) => {
   renderWithProviders(<CollectiveOfferStockEdition {...props} />, {
     initialRouterEntries: [path],
+    features,
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
@@ -53,8 +60,15 @@ const renderCollectiveStockEdition = (
 describe('CollectiveOfferStockEdition', () => {
   const mockNavigate = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+
+    const actual = await vi.importActual<
+      typeof import('../../components/OfferEducationalStock/OfferEducationalStock')
+    >('../../components/OfferEducationalStock/OfferEducationalStock')
+    vi.mocked(OfferEducationalStock).mockImplementation(
+      actual.OfferEducationalStock
+    )
   })
 
   const venue = managedVenueFactory({ id: 1 })
@@ -184,5 +198,33 @@ describe('CollectiveOfferStockEdition', () => {
         'Cette offre a été importée automatiquement depuis votre système de billetterie.'
       )
     ).toBeVisible()
+  })
+
+  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(apiNew, 'editCollectiveStock').mockResolvedValueOnce({} as any)
+
+    vi.mocked(OfferEducationalStock).mockImplementationOnce(
+      vi.fn(({ onSubmit }) => {
+        const updatedStock = { numberOfTickets: 12, priceDetail: 'test' }
+        return (
+          <button onClick={() => onSubmit(updatedStock)}>Enregistrer</button>
+        )
+      })
+    )
+    renderCollectiveStockEdition(
+      '/offre/A1/collectif/stocks/edition',
+      { offer: defaultOffer },
+      ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
+    )
+
+    const submitButton = await screen.findByRole('button', {
+      name: 'Enregistrer',
+    })
+    await user.click(submitButton)
+    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      path: { collective_stock_id: defaultOffer.collectiveStock?.id },
+      body: { numberOfTickets: 12 },
+    })
   })
 })

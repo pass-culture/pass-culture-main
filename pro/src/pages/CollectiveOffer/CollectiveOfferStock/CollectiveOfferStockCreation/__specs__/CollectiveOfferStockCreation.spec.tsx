@@ -50,10 +50,12 @@ const setSubmitResponse = (
 
 const renderCollectiveStockCreation = (
   path: string,
-  props: CollectiveOfferFromParamsProps
+  props: CollectiveOfferFromParamsProps,
+  features: string[] = []
 ) => {
   renderWithProviders(<CollectiveOfferStockCreation {...props} />, {
     initialRouterEntries: [path],
+    features,
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory(),
@@ -212,5 +214,44 @@ describe('CollectiveOfferStockCreation', () => {
     )
     expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
     expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
+  })
+
+  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock post', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({ collectiveStock: null })
+    const collectiveStock: Partial<CollectiveStockResponseModel> =
+      getCollectiveOfferCollectiveStockFactory()
+    delete collectiveStock.id
+    setSubmitResponse(collectiveStock)
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
+      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
+    ])
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    const expectedStockSent = { ...collectiveStock }
+    delete expectedStockSent.priceDetail
+    expect(apiNew.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      body: {
+        ...expectedStockSent,
+        offerId: offer.id,
+      },
+    })
+  })
+
+  it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory()
+    setSubmitResponse({ numberOfTickets: 12, priceDetail: 'test' })
+
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
+      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
+    ])
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      path: { collective_stock_id: offer.collectiveStock?.id },
+      body: { numberOfTickets: 12 },
+    })
   })
 })
