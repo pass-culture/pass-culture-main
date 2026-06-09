@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -67,17 +67,19 @@ export const OfferTypeScreen = () => {
       } = serializeApiCollectiveFilters(apiFilters)
 
       const templateOffersOnSelectedVenue =
-        await api.getCollectiveOfferTemplates(
-          name,
-          offererId,
-          status,
-          venueId,
-          periodBeginningDate,
-          periodEndingDate,
-          format,
-          locationType,
-          offererAddressId
-        )
+        await apiNew.getCollectiveOfferTemplates({
+          query: {
+            name,
+            offererId,
+            status,
+            venueId,
+            periodBeginningDate,
+            periodEndingDate,
+            format,
+            locationType,
+            offererAddressId,
+          },
+        })
 
       if (templateOffersOnSelectedVenue.length === 0) {
         return snackBar.error(
