@@ -13,9 +13,8 @@ gh workflow run on_dispatch_pcapi_console_job.yaml \
 """
 
 import argparse
+import itertools
 import logging
-
-import sqlalchemy as sa
 
 from pcapi.core import search
 from pcapi.core.artist import models as artists_models
@@ -28,31 +27,22 @@ BATCH_SIZE = 1000
 
 
 def main(apply: bool) -> None:
-    total = db.session.execute(sa.select(sa.func.count()).select_from(artists_models.Artist)).scalar()
+    total = db.session.query(artists_models.Artist).count()
     logger.info("Found %d artists to reindex", total)
 
     if not apply:
         logger.info("Dry run mode enabled, no indexation request sent")
         return
 
-    offset = 0
+    query = db.session.query(artists_models.Artist.id).yield_per(BATCH_SIZE)
     reindexed = 0
-    while True:
-        artist_ids = (
-            db.session.execute(
-                sa.select(artists_models.Artist.id).order_by(artists_models.Artist.id).offset(offset).limit(BATCH_SIZE)
-            )
-            .scalars()
-            .all()
-        )
-        if not artist_ids:
-            break
+    for batch in itertools.batched(query, BATCH_SIZE):
+        artist_ids = [artist.id for artist in batch]
         search.reindex_artist_ids(artist_ids)
         reindexed += len(artist_ids)
-        logger.info("Reindexed %d/%d artists", reindexed, total)
-        offset += BATCH_SIZE
+        logger.info("Reindexed (or not) %d/%d artists", reindexed, total)
 
-    logger.info("Finished reindexing %d artists", reindexed)
+    logger.info("Finished reindexing (or not)  %d artists", reindexed)
 
 
 if __name__ == "__main__":
