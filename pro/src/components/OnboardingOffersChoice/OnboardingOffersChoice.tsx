@@ -16,8 +16,8 @@ import fullNextIcon from '@/icons/full-next.svg'
 import { Card } from '@/ui-kit/Card/Card'
 import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
-import collective from './assets/collective.jpg'
-import individuelle from './assets/individuelle.jpg'
+import collective from './assets/collective.jpeg'
+import individuelle from './assets/individuelle.jpeg'
 import { OnboardingCollectiveModal } from './components/OnboardingCollectiveModal/OnboardingCollectiveModal'
 import styles from './OnboardingOffersChoice.module.scss'
 
@@ -36,10 +36,7 @@ export const OnboardingOffersChoice = ({
     <>
       <div className={styles['card-container']}>
         <Card>
-          <Card.Image
-            src={individuelle}
-            alt="Illustration avec un smartphone affichant le logo pass Culture, un sac à dos et des écouteurs"
-          />
+          <Card.Image src={individuelle} alt="" />
           <Card.Header
             title="Sur l’application mobile à destination des jeunes"
             titleTag="h3"
@@ -67,10 +64,7 @@ export const OnboardingOffersChoice = ({
         </Card>
 
         <Card>
-          <Card.Image
-            src={collective}
-            alt="Illustration avec un ordinateur affichant ADAGE, un tableau noir et des livres"
-          />
+          <Card.Image src={collective} alt="" />
           <Card.Header title="Sur ADAGE à destination des enseignants" />
           <Card.Content>
             <span>
