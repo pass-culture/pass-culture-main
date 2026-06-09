@@ -8,6 +8,10 @@ export const getCollectiveOfferActiveStep = (
     return CollectiveOfferStep.STOCKS
   }
 
+  if (locationPathname.includes('informations-pratiques')) {
+    return CollectiveOfferStep.INFORMATIONS
+  }
+
   if (locationPathname.includes('etablissement')) {
     return CollectiveOfferStep.INSTITUTION
   }
