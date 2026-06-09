@@ -4,7 +4,7 @@ import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   ApiError,
   CancelablePromise,
@@ -256,7 +256,7 @@ describe('IndividualOfferSummaryScreen', () => {
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       getIndividualOfferFactory()
     )
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue(musicTypes)
     vi.spyOn(api, 'getStocksStats').mockResolvedValue(stocksStats)
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
