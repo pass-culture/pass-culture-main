@@ -1,10 +1,8 @@
 import { QRCodeSVG } from 'qrcode.react'
 import { useNavigate } from 'react-router'
 
-import {
-  type GetIndividualOfferResponseModel,
-  OfferStatus,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

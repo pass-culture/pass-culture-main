@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,

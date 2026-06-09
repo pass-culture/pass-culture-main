@@ -1,10 +1,9 @@
 import {
   type ArtistOfferLinkResponseModel,
   ArtistType,
-  OfferStatus,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity, OfferStatus } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
