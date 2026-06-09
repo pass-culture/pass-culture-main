@@ -23,12 +23,10 @@ import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.finance.models as finance_models
-import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
-import pcapi.core.users.models as users_models
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -58,6 +56,7 @@ from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
+from pcapi.core.history import api as history_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -65,6 +64,7 @@ from pcapi.core.offerers import utils as offerers_utils
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.search.models import IndexationReason
+from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
@@ -3445,11 +3445,12 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def close_venue(venue: models.Venue) -> None:
+def close_venue(venue: models.Venue, author: users_models.User) -> None:
     if venue.is_closed:
         return
 
     venue.state = models.VenueState.CLOSING
+    nullify_venue_emails(venue, author)
 
     payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
     on_commit(
@@ -3458,6 +3459,38 @@ def close_venue(venue: models.Venue) -> None:
             payload.model_dump(),
         )
     )
+
+    db.session.flush()
+
+
+def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None:
+    """Nullify venue's booking email addresses and contact object
+
+    Old values are saved using history objects.
+    """
+    if not venue.bookingEmail and (venue.contact and not venue.contact.email):
+        return
+
+    venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+    venue_snapshot.trace_update({"bookingEmail": None})
+    venue_snapshot.add_action()
+
+    venue.bookingEmail = None
+
+    if venue.contact:
+        contact_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+
+        changes: dict = {
+            "email": None,
+            "website": None,
+            "phone_number": None,
+            "social_medias": {},
+        }
+
+        contact_snapshot.trace_update(data=changes, target=venue.contact, field_name_template="venue.contact.{}")
+        contact_snapshot.add_action()
+
+        db.session.query(models.VenueContact).filter_by(venueId=venue.id).delete()
 
     db.session.flush()
 
