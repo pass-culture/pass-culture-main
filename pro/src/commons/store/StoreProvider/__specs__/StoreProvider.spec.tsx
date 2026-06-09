@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { UserRole } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -20,9 +20,6 @@ const renderStoreProvider = () => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getVenuesLite: vi.fn(),
-  },
   apiNew: {
     getProfile: vi.fn(),
     getVenue: vi.fn(),
@@ -59,7 +56,7 @@ describe('src | App', () => {
     )
     const offerersNames = [{ id: 1, name: 'Offerer A', validated: true }]
     vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({ offerersNames })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 2,
@@ -80,7 +77,7 @@ describe('src | App', () => {
     expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(apiNew.getProfile).toHaveBeenCalledTimes(1)
     expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
+    expect(apiNew.getVenuesLite).toHaveBeenCalledTimes(1)
     // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).
     expect(apiNew.getVenue).toHaveBeenCalledTimes(1)
     expect(apiNew.getOfferer).toHaveBeenCalledTimes(2)
