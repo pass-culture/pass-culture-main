@@ -37,7 +37,7 @@ jobs:
       - name: Authenticate to GKE cluster
         uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
         with:
-          cluster_name: ${{ vars.CLUSTER_NAME }}
+          cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
           project_id: ${{ vars.PROJECT_ID }}
           location: ${{ vars.LOCATION }}
           use_dns_based_endpoint: true
@@ -45,8 +45,8 @@ jobs:
       - name: Hello World
         shell: bash
         env:
-          NAMESPACE: pcapi-preview-bootstrapper-prd
-          WORKFLOW_TEMPLATE: provision-pcapi-preview-environment
+          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PULL_REQUEST_ID: 1234567890
           PCAPI_IMAGE_TAG: b28a52a0a3d875d45107
         run: |
