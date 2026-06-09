@@ -25,6 +25,8 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
+  },
+  apiNew: {
     getVenue: vi.fn(),
   },
 }))

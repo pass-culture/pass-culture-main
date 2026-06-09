@@ -2,11 +2,13 @@ import {
   type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
   type GetIndividualOfferResponseModel,
-  type GetVenueResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'

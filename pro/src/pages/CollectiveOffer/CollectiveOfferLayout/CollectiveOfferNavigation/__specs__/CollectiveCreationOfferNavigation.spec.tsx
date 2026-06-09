@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseIdModel,
@@ -72,7 +72,7 @@ describe('CollectiveCreationOfferNavigation', () => {
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
-    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 

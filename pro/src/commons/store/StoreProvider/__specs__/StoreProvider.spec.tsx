@@ -23,12 +23,12 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     getOfferer: vi.fn(),
-    getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
   },
   apiNew: {
-    listOfferersNames: vi.fn(),
+    getVenue: vi.fn(),
     listFeatures: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 vi.mock('@/commons/utils/storageAvailable', () => ({
@@ -49,7 +49,7 @@ describe('src | App', () => {
       id: 1,
       name: 'Offerer A',
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 2,
         managingOffererId: 1,
@@ -81,6 +81,6 @@ describe('src | App', () => {
     expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
     // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).
     expect(api.getOfferer).toHaveBeenCalledTimes(2)
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(apiNew.getVenue).toHaveBeenCalledTimes(1)
   })
 })

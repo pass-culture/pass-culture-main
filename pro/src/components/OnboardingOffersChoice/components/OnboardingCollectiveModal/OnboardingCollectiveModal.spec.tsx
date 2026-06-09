@@ -32,9 +32,9 @@ vi.mock('react-router', async () => ({
 vi.mock('@/apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
-    getVenue: vi.fn(),
   },
   apiNew: {
+    getVenue: vi.fn(),
     synchronizeOffererOnboarding: vi.fn(),
   },
 }))
@@ -75,7 +75,7 @@ describe('<OnboardingCollectiveModal />', () => {
     vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockResolvedValue(
       undefined as never
     )
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: SELECTED_VENUE_ID,
         managingOffererId: SELECTED_OFFERER_ID,
@@ -132,7 +132,7 @@ describe('<OnboardingCollectiveModal />', () => {
       vi.spyOn(getUserDefaultPathModule, 'getUserDefaultPath').mockReturnValue(
         '/accueil'
       )
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
+      vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
           id: SELECTED_VENUE_ID,
           managingOffererId: SELECTED_OFFERER_ID,

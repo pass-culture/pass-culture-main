@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -23,8 +23,10 @@ import { Hub } from './Hub'
 vi.mock('@/apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
-    getVenue: vi.fn(),
     signout: vi.fn(),
+  },
+  apiNew: {
+    getVenue: vi.fn(),
   },
 }))
 
@@ -134,7 +136,7 @@ describe('Hub', () => {
   })
 
   it('should call setSelectedPartnerVenueById when clicking on any venue', async () => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
         publicName: 'Café des Arts',
@@ -158,12 +160,12 @@ describe('Hub', () => {
     await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
 
     await waitFor(() => {
-      expect(api.getVenue).toHaveBeenCalledWith(102)
+      expect(apiNew.getVenue).toHaveBeenCalledWith({ path: { venue_id: 102 } })
     })
   })
 
   it('should show spinner after venue selection', async () => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
         managingOfferer: {

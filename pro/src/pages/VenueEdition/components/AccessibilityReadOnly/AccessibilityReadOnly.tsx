@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { AccessibilitySummarySection as InternalAccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
