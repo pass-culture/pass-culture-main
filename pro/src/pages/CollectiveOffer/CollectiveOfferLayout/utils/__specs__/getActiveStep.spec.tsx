@@ -1,5 +1,4 @@
-import { CollectiveOfferStep } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
-
+import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
 import { getActiveStep } from '../getActiveStep'
 
 describe('getActiveStep', () => {
@@ -11,6 +10,8 @@ describe('getActiveStep', () => {
     expect(getActiveStep('/blablabla/recapitulatif')).toBe(
       CollectiveOfferStep.SUMMARY
     )
+    expect(getActiveStep('/blablabla/apercu')).toBe(CollectiveOfferStep.PREVIEW)
+
     expect(getActiveStep('/blablabla')).toBe(CollectiveOfferStep.DETAILS)
   })
 })

@@ -87,7 +87,7 @@ describe('CollectiveOfferEdition', () => {
     })
     expect(
       await screen.findByRole('heading', {
-        name: /Modifier l’offre/,
+        name: /Modifier l'offre/,
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()

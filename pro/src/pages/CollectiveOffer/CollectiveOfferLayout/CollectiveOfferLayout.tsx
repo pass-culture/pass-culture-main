@@ -6,14 +6,18 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1/new'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Tag } from '@/design-system/Tag/Tag'
-import { CollectiveCreationOfferNavigation } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
-import { getActiveStep } from '@/pages/CollectiveOfferRoutes/utils/getActiveStep'
+import { getActiveStep } from '@/pages/CollectiveOffer/CollectiveOfferLayout/utils/getActiveStep'
 
-import { CollectiveEditionOfferNavigation } from './CollectiveEditionOfferNavigation/CollectiveEditionOfferNavigation'
 import styles from './CollectiveOfferLayout.module.scss'
+import { CollectiveOfferCreationNavigation } from './CollectiveOfferNavigation/CollectiveOfferCreationNavigation'
+import { CollectiveOfferEditionNavigation } from './CollectiveOfferNavigation/CollectiveOfferEditionNavigation'
+import { CollectiveOfferTemplateCreationNavigation } from './CollectiveOfferTemplateNavigation/CollectiveOfferTemplateCreationNavigation'
+import { CollectiveOfferTemplateEditionNavigation } from './CollectiveOfferTemplateNavigation/CollectiveOfferTemplateEditionNavigation'
 
 export interface CollectiveOfferLayoutProps {
   children: React.ReactNode | React.ReactNode[]
@@ -42,54 +46,63 @@ export const CollectiveOfferLayout = ({
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
-  const title = isCreation
-    ? isTemplate
-      ? 'Créer une offre vitrine'
-      : 'Créer une offre réservable'
-    : isSummaryPage
-      ? 'Récapitulatif'
-      : 'Modifier l’offre'
 
-  const navigationProps = {
-    activeStep: getActiveStep(location.pathname),
-    offerId: offerIdFromParams?.includes('T-')
-      ? Number(offerIdFromParams.split('T-')[1])
-      : Number(offerIdFromParams),
-    isCreatingOffer: isCreation,
+  const getTitle = () => {
+    if (isCreation && isTemplate) return 'Créer une offre vitrine'
+    if (isCreation) return 'Créer une offre réservable'
+    if (isSummaryPage) return 'Récapitulatif'
+    return "Modifier l'offre"
   }
 
+  const activeStep = getActiveStep(location.pathname)
+  const offerId = offerIdFromParams?.includes('T-')
+    ? Number(offerIdFromParams.split('T-')[1])
+    : Number(offerIdFromParams)
+
+  const isOfferTemplate = !!offer && isCollectiveOfferTemplate(offer)
+  const isCollectiveOffer = !!offer && !isCollectiveOfferTemplate(offer)
+
   return (
-    <BasicLayout
-      mainHeading={
-        <div className={styles['eac-layout-heading-wrapper']}>
-          {isTemplate && <Tag label="Offre vitrine" />}
-          {title}
-        </div>
-      }
-      mainSubHeading={subTitle}
-      isStickyActionBarInChild
-    >
+    <BasicLayout isStickyActionBarInChild>
+      <MainHeading
+        mainHeading={
+          <div className={styles['eac-layout-heading-wrapper']}>
+            {isTemplate && <Tag label="Offre vitrine" />}
+            {getTitle()}
+          </div>
+        }
+        mainSubHeading={subTitle}
+      />
       {/* TODO (igabriele, 2026-04-27): Isn't that the role of routing permissions to guarantee this prop is true? */}
       {selectedPartnerVenue.allowedOnAdage && (
         <>
-          {navigationProps.isCreatingOffer && (
-            <CollectiveCreationOfferNavigation
-              activeStep={navigationProps.activeStep}
-              className={styles['eac-layout-navigation']}
-              offerId={navigationProps.offerId}
-              isTemplate={isTemplate}
-              requestId={requestId}
-              offer={offer}
-            />
-          )}
-          {!navigationProps.isCreatingOffer && (
-            <CollectiveEditionOfferNavigation
-              isTemplate={isTemplate}
-              offer={offer}
-              offerId={navigationProps.offerId}
-              activeStep={navigationProps.activeStep}
-            />
-          )}
+          {isCollectiveOffer &&
+            (isCreation ? (
+              <CollectiveOfferCreationNavigation
+                activeStep={activeStep}
+                offerId={offerId}
+                requestId={requestId}
+                offer={offer}
+              />
+            ) : (
+              <CollectiveOfferEditionNavigation
+                activeStep={activeStep}
+                offerId={offerId}
+              />
+            ))}
+          {isOfferTemplate &&
+            (isCreation ? (
+              <CollectiveOfferTemplateCreationNavigation
+                activeStep={activeStep}
+                offerId={offerId}
+                offer={offer}
+              />
+            ) : (
+              <CollectiveOfferTemplateEditionNavigation
+                offer={offer}
+                offerId={offerId}
+              />
+            ))}
         </>
       )}
 

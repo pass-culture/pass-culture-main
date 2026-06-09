@@ -44,7 +44,7 @@ const renderCollectiveOfferLayout = (
 describe('CollectiveOfferLayout', () => {
   it('should render edition title page', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/edition', {})
-    expect(screen.getByText('Modifier l’offre')).toBeInTheDocument()
+    expect(screen.getByText("Modifier l'offre")).toBeInTheDocument()
   })
 
   it('should render subtitle if provided', () => {

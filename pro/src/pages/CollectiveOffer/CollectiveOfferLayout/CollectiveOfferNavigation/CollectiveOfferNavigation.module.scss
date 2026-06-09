@@ -1,0 +1,12 @@
+.tabs {
+  margin-top: var(--size-spacing-xl);
+  margin-bottom: unset;
+
+  &-active {
+    margin-bottom: var(--size-spacing-xl);
+  }
+}
+
+.eac-stepper {
+  margin-bottom: var(--size-spacing-xxl);
+}
