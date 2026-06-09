@@ -38,7 +38,7 @@ describe('CollectiveOfferEditionInstitution', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Modifier l’offre/,
+        name: /Modifier l'offre/,
       })
     ).toBeInTheDocument()
 
