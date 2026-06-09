@@ -280,6 +280,20 @@ class Return200Test:
         assert booking.cancellationReason == None
         assert booking.cancellationDate == None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_number_of_teachers(self, client):
+        stock = factories.CollectiveStockFactory(numberOfTeachers=30)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        stock_edition_payload = {"numberOfTeachers": 38}
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+        assert response.status_code == 200
+
+        assert stock.numberOfTeachers == 38
+
 
 class Return403Test:
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
@@ -761,3 +775,39 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == {"priceDetail": ["Ce champ ne peut pas être édité"]}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize(
+        "number_of_teachers,error",
+        (
+            (None, "Ce champ est requis"),
+            (-1, "Saisissez un nombre supérieur ou égal à 0"),
+            (60, "Saisissez un nombre inférieur ou égal à 50"),
+        ),
+    )
+    def test_number_of_teachers_required_none(self, client, number_of_teachers, error):
+        stock = factories.CollectiveStockFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        payload = {"numberOfTeachers": number_of_teachers}
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"numberOfTeachers": [error]}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
+    def test_number_of_teachers_not_allowed(self, client):
+        stock = factories.CollectiveStockFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        payload = {"numberOfTeachers": 10}
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"numberOfTeachers": ["Ce champ ne peut pas être édité"]}

@@ -28,6 +28,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     booking_limit_datetime = stock_data.bookingLimitDatetime
     price = decimal.Decimal(stock_data.price)
     number_of_tickets = stock_data.numberOfTickets
+    number_of_teachers = stock_data.numberOfTeachers
     price_detail = stock_data.priceDetail
 
     validation.check_start_and_end_dates_in_same_educational_year(start, end)
@@ -53,7 +54,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         price=price,
         servicePrice=price,
         numberOfTickets=number_of_tickets,
-        numberOfTeachers=0,
+        numberOfTeachers=number_of_teachers or 0,
         priceDetail=price_detail,
     )
     db.session.add(collective_stock)
@@ -144,7 +145,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
-    if "numberOfTickets" in stock_data or "priceDetail" in stock_data:
+    if "numberOfTickets" in stock_data or "priceDetail" in stock_data or "numberOfTeachers" in stock_data:
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
         )
@@ -207,6 +208,7 @@ def _extract_updatable_fields_from_stock_data(
         "bookingLimitDatetime": booking_limit_datetime,
         "price": decimal.Decimal(price) if price is not None else None,
         "numberOfTickets": stock_data.get("numberOfTickets"),
+        "numberOfTeachers": stock_data.get("numberOfTeachers"),
         "priceDetail": stock_data.get("priceDetail"),
     }
 

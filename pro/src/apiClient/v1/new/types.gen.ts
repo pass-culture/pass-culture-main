@@ -837,6 +837,10 @@ export type CollectiveStockCreationBodyModel = {
      */
     endDatetime: string;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers?: number | null;
+    /**
      * Numberoftickets
      */
     numberOfTickets: number;
@@ -870,6 +874,10 @@ export type CollectiveStockEditionBodyModel = {
      * Enddatetime
      */
     endDatetime?: string | null;
+    /**
+     * Numberofteachers
+     */
+    numberOfTeachers?: number | null;
     /**
      * Numberoftickets
      */
