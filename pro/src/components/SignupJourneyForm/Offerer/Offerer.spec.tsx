@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
@@ -175,7 +175,7 @@ describe('Offerer', () => {
       venues: [],
     })
 
-    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+    vi.spyOn(apiNew, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
   })
@@ -289,7 +289,7 @@ describe('Offerer', () => {
   })
 
   it('should not display authentication screen on submit with form error', async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValue(
+    vi.spyOn(apiNew, 'getStructureData').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

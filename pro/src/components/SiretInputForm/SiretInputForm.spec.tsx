@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
-import { ApiError, type StructureDataBodyModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { StructureDataBodyModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
@@ -14,6 +14,8 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SiretInputForm } from '@/components/SiretInputForm/SiretInputForm'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
+
+import { ApiError } from 'apiClient/compat'
 
 // Mock l’appel à https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
@@ -56,10 +58,10 @@ const renderInputForm = (initialValues = DEFAULT_OFFERER_FORM_VALUES) => {
 }
 describe('<SiretInputForm />', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+    vi.spyOn(apiNew, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
-    vi.spyOn(api, 'checkStructure').mockResolvedValue()
+    vi.spyOn(apiNew, 'checkStructure').mockResolvedValue()
   })
 
   it('should render without accessibility violations', async () => {
@@ -116,7 +118,7 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(api.getStructureData).toHaveBeenCalledOnce()
+    expect(apiNew.getStructureData).toHaveBeenCalledOnce()
 
     expect(screen.getByRole('alert')).not.toHaveTextContent(
       "Le SIRET n'existe pas"
@@ -155,11 +157,11 @@ describe('<SiretInputForm />', () => {
 
     expect(mockBeforeFalse).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
-    expect(api.getStructureData).not.toHaveBeenCalled()
+    expect(apiNew.getStructureData).not.toHaveBeenCalled()
   })
 
   it('should not continue submit on api error', async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -181,19 +183,19 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(api.getStructureData).toHaveBeenCalledOnce()
+    expect(apiNew.getStructureData).toHaveBeenCalledOnce()
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(
         "Le SIRET n'existe pas"
       )
     })
-    expect(api.getStructureData).toHaveBeenCalled()
+    expect(apiNew.getStructureData).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -227,7 +229,7 @@ describe('<SiretInputForm />', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(api.getStructureData).toHaveBeenCalled()
+    expect(apiNew.getStructureData).toHaveBeenCalled()
     expect(
       screen.getByRole('link', { name: /Modifier la visibilité de mon SIRET/ })
     ).toBeInTheDocument()
@@ -327,8 +329,8 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(api.getStructureData).not.toHaveBeenCalled()
-    expect(api.checkStructure).toHaveBeenCalledOnce()
+    expect(apiNew.getStructureData).not.toHaveBeenCalled()
+    expect(apiNew.checkStructure).toHaveBeenCalledOnce()
 
     expect(mockHandleSiretData).not.toHaveBeenCalled()
     expect(checkSiretMock).toHaveBeenCalled()
