@@ -9,6 +9,9 @@ describe('getCollectiveOfferActiveStep', () => {
     expect(getCollectiveOfferActiveStep('/blablabla/stocks')).toBe(
       CollectiveOfferStep.STOCKS
     )
+    expect(
+      getCollectiveOfferActiveStep('/blablabla/informations-pratiques')
+    ).toBe(CollectiveOfferStep.INFORMATIONS)
     expect(getCollectiveOfferActiveStep('/blablabla/etablissement')).toBe(
       CollectiveOfferStep.INSTITUTION
     )

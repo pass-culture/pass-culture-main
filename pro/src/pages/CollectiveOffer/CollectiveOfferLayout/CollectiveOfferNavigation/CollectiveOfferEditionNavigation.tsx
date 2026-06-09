@@ -1,5 +1,6 @@
 import cn from 'classnames'
 
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
@@ -15,7 +16,11 @@ export const CollectiveOfferEditionNavigation = ({
   activeStep,
   offerId = 0,
 }: CollectiveOfferEditionNavigationProps): JSX.Element => {
-  const tabs: NavLinkItem<string>[] = [
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
+
+  let tabs: NavLinkItem<string>[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -27,11 +32,20 @@ export const CollectiveOfferEditionNavigation = ({
       url: `/offre/${offerId}/collectif/stocks/edition`,
     },
     {
+      key: CollectiveOfferStep.INFORMATIONS,
+      label: 'Informations pratiques',
+      url: `/offre/${offerId}/collectif/informations-pratiques/edition`,
+    },
+    {
       key: CollectiveOfferStep.INSTITUTION,
       label: 'Établissement et enseignant',
       url: `/offre/${offerId}/collectif/etablissement/edition`,
     },
   ]
+
+  if (!isNewCollectivePriceEnabled) {
+    tabs = tabs.filter((s) => s.key !== CollectiveOfferStep.INFORMATIONS)
+  }
 
   const allTabs = tabs.map((t) => t.key)
 

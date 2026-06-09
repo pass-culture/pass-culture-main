@@ -1,5 +1,6 @@
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'
 
 import styles from './CollectiveOfferNavigation.module.scss'
@@ -18,11 +19,18 @@ export const CollectiveOfferCreationNavigation = ({
 }: CollectiveOfferCreationNavigationProps): JSX.Element => {
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
+
   const hasPassedDetailsStep = offer
   const hasPassedStocksStep = hasPassedDetailsStep && offer.collectiveStock
+  const hasPassedInformationsSteps =
+    hasPassedStocksStep &&
+    (!isNewCollectivePriceEnabled || !!offer.additionalDetails)
   const hasPassedInstitutionStep = hasPassedStocksStep && offer.institution
 
-  const steps: Step[] = [
+  let steps: Step[] = [
     {
       id: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -38,15 +46,20 @@ export const CollectiveOfferCreationNavigation = ({
           ? `/offre/${offer.id}/collectif/stocks`
           : '',
     },
-
+    {
+      id: CollectiveOfferStep.INFORMATIONS,
+      label: 'Informations pratiques',
+      url: hasPassedStocksStep
+        ? `/offre/${offer.id}/collectif/informations-pratiques`
+        : '',
+    },
     {
       id: CollectiveOfferStep.INSTITUTION,
       label: 'Établissement et enseignant',
-      url: hasPassedStocksStep
+      url: hasPassedInformationsSteps
         ? `/offre/${offer.id}/collectif/etablissement`
         : '',
     },
-
     {
       id: CollectiveOfferStep.SUMMARY,
       label: 'Récapitulatif',
@@ -62,6 +75,10 @@ export const CollectiveOfferCreationNavigation = ({
         : '',
     },
   ]
+
+  if (!isNewCollectivePriceEnabled) {
+    steps = steps.filter((s) => s.id !== CollectiveOfferStep.INFORMATIONS)
+  }
 
   return (
     <Stepper
