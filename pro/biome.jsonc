@@ -78,10 +78,6 @@
           "options": {
             "excludedComponents": ["h1", "main"]
           }
-        },
-        "noUnusedImports": {
-          "level": "error",
-          "fix": "safe" // no code fix suggested for noUnusedVariables
         }
       },
       "style": {
