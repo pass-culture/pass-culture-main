@@ -16,4 +16,5 @@ export interface VenueEditionFormValues {
   activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
   culturalDomains?: string[]
   volunteeringUrl?: string | null
+  withdrawalDetails?: string | null
 }

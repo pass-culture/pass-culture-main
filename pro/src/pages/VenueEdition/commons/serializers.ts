@@ -62,6 +62,7 @@ function buildEditVenuePayload(
       formValues.volunteeringUrl === undefined
         ? undefined
         : formValues.volunteeringUrl || null,
+    withdrawalDetails: formValues.withdrawalDetails,
   }
 }
 
