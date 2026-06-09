@@ -39,9 +39,9 @@ class EventSeriesOfferLink(PcObject, Model):
 class EventSeries(Model):
     __tablename__ = "event_series"
     id: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, primary_key=True, nullable=False)
-    name = sa_orm.mapped_column(sa.Text, nullable=False)
-    description = sa_orm.mapped_column(sa.Text, nullable=True)
-    mediationUuid = sa_orm.mapped_column(sa.Text, nullable=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    mediationUuid: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )

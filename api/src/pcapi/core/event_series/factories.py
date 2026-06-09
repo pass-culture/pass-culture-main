@@ -1,6 +1,7 @@
 import factory
 
 from pcapi.core.factories import BaseFactory
+from pcapi.core.offers.factories import OfferFactory
 
 from . import models
 
@@ -19,3 +20,5 @@ class EventSeriesOfferLinkFactory(BaseFactory[models.EventSeriesOfferLink]):
         model = models.EventSeriesOfferLink
 
     eventSeries = factory.SubFactory(EventSeriesFactory)
+    offer = factory.SubFactory(OfferFactory)
+    offerId = factory.LazyAttribute(lambda o: o.offer.id)
