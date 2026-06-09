@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -11,7 +11,6 @@ import {
   collectiveOfferTemplateFactory,
   defaultDMSApplicationForEAC,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -25,14 +24,8 @@ vi.mock('@firebase/remote-config', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    canOffererCreateEducationalOffer: vi.fn(),
-    getCollectiveOfferTemplates: vi.fn(),
-    getCategories: vi.fn(),
-  },
   apiNew: {
-    getVenue: vi.fn(),
-    listOfferersNames: vi.fn(),
+    getCollectiveOfferTemplates: vi.fn(),
   },
 }))
 
@@ -77,16 +70,7 @@ const renderOfferTypes = (venueOverrides?: Partial<GetVenueResponseModel>) => {
 
 describe('OfferType', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'Ma super structure',
-          validated: true,
-        }),
-      ],
-    })
-    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue([])
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -179,7 +163,7 @@ describe('OfferType', () => {
 
   it('should select duplicate template offer', async () => {
     const offersRecap = [collectiveOfferTemplateFactory()]
-    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
       offersRecap
     )
 
@@ -208,17 +192,19 @@ describe('OfferType', () => {
     )
 
     await waitFor(() => {
-      expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-        null,
-        1,
-        null,
-        2,
-        null,
-        null,
-        null,
-        null,
-        null
-      )
+      expect(apiNew.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
+        query: {
+          format: null,
+          locationType: null,
+          name: null,
+          offererAddressId: null,
+          offererId: 1,
+          periodBeginningDate: null,
+          periodEndingDate: null,
+          status: null,
+          venueId: 2,
+        },
+      })
     })
 
     expect(screen.getByText('Sélection collectif')).toBeInTheDocument()
