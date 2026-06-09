@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api, apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -28,10 +28,10 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     canOffererCreateEducationalOffer: vi.fn(),
     getCollectiveOfferTemplates: vi.fn(),
-    getVenue: vi.fn(),
     getCategories: vi.fn(),
   },
   apiNew: {
+    getVenue: vi.fn(),
     listOfferersNames: vi.fn(),
   },
 }))

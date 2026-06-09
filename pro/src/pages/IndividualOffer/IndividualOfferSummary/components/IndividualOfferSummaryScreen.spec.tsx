@@ -261,7 +261,7 @@ describe('IndividualOfferSummaryScreen', () => {
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 1 })
     )
   })

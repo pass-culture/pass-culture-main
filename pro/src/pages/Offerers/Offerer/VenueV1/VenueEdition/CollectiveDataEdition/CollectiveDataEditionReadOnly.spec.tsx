@@ -1,11 +1,8 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import {
-  DisplayableActivity,
-  type GetVenueResponseModel,
-  StudentLevels,
-} from '@/apiClient/v1'
+import { DisplayableActivity, StudentLevels } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

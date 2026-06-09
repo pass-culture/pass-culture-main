@@ -388,7 +388,7 @@ describe('BankInformations page', () => {
       managedVenues: [{ ...defaultManagedVenue }],
     })
     const getVenueSpy = vi
-      .spyOn(api, 'getVenue')
+      .spyOn(apiNew, 'getVenue')
       .mockResolvedValueOnce(updatedVenue)
 
     renderWithProviders(
@@ -421,6 +421,6 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(getVenueSpy).toHaveBeenCalledWith(venue.id)
+    expect(getVenueSpy).toHaveBeenCalledWith({ path: { venue_id: venue.id } })
   })
 })

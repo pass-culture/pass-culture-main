@@ -2,7 +2,7 @@ import { vi } from 'vitest'
 
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api, apiNew } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
+import { ApiError } from '@/apiClient/compat'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
@@ -22,12 +22,12 @@ import * as logoutModule from '../logout'
 vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
-    getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
     getOfferer: vi.fn(),
     signout: vi.fn(),
   },
   apiNew: {
+    getVenue: vi.fn(),
     listOfferersNames: vi.fn(),
   },
 }))
@@ -58,7 +58,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -100,7 +100,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -145,7 +145,7 @@ describe('initializeUser', () => {
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     const store = configureTestStore()
 
@@ -171,7 +171,7 @@ describe('initializeUser', () => {
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     const store = configureTestStore()
 
@@ -189,7 +189,7 @@ describe('initializeUser', () => {
       venuesWithPendingValidation: [],
     })
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '999')
 
@@ -220,7 +220,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -266,7 +266,7 @@ describe('initializeUser', () => {
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
 
@@ -358,7 +358,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 201,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -398,7 +398,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
@@ -445,7 +445,7 @@ describe('error handling', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { getActivityLabel } from '@/commons/mappings/mappings'

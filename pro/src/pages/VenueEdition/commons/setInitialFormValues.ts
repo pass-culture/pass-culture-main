@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 
 import type { VenueEditionFormValues } from './types'

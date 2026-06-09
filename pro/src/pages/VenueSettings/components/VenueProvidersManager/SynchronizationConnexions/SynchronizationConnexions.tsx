@@ -1,9 +1,7 @@
 import { useRef } from 'react'
 
-import type {
-  GetVenueResponseModel,
-  VenueProviderResponse,
-} from '@/apiClient/v1'
+import type { VenueProviderResponse } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'

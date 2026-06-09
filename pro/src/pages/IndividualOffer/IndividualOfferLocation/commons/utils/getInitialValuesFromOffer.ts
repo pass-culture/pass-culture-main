@@ -1,7 +1,5 @@
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 
 import { OFFER_LOCATION } from '../../../commons/constants'

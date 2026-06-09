@@ -39,7 +39,6 @@ vi.mock('react-router', async () => ({
 vi.mock('@/apiClient/api', () => ({
   api: {
     patchCollectiveOfferPublication: vi.fn(),
-    getVenue: vi.fn(),
   },
   apiNew: {
     listEducationalOfferers: vi.fn(),
@@ -90,7 +89,6 @@ describe('CollectiveOfferPreviewCreation', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
     vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
 
     vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({

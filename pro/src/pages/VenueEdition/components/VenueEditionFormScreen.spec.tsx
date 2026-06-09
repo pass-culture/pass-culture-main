@@ -7,13 +7,11 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { apiNew } from '@/apiClient/api'
-import {
-  ApiError,
-  DisplayableActivity,
-  type GetVenueResponseModel,
-} from '@/apiClient/v1'
+import { ApiError } from '@/apiClient/compat'
+import { DisplayableActivity } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
