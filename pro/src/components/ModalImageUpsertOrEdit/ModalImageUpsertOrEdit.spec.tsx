@@ -130,7 +130,9 @@ describe('ModalImageUpsertOrEdit', () => {
       })
       await waitForRender()
 
-      expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
+      expect(
+        await screen.findByLabelText("Editeur d'image")
+      ).toBeInTheDocument()
       expect(screen.getByText('Page d’accueil')).toBeInTheDocument()
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(

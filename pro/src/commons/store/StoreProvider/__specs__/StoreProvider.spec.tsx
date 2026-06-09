@@ -21,11 +21,11 @@ const renderStoreProvider = () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getProfile: vi.fn(),
     getOfferer: vi.fn(),
     getVenuesLite: vi.fn(),
   },
   apiNew: {
+    getProfile: vi.fn(),
     getVenue: vi.fn(),
     listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
@@ -37,7 +37,7 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
 
 describe('src | App', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getProfile').mockResolvedValue({
+    vi.spyOn(apiNew, 'getProfile').mockResolvedValue({
       id: 1,
       email: 'email@example.com',
       roles: [UserRole.ADMIN],
@@ -76,7 +76,8 @@ describe('src | App', () => {
     await screen.findByText('Sub component')
 
     expect(apiNew.listFeatures).toHaveBeenCalledTimes(1)
-    expect(api.getProfile).toHaveBeenCalledTimes(1)
+    expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(apiNew.getProfile).toHaveBeenCalledTimes(1)
     expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
     // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).

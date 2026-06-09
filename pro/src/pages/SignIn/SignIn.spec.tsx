@@ -29,12 +29,12 @@ import { SignIn } from './SignIn'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getProfile: vi.fn(),
     signout: vi.fn(),
     getOfferer: vi.fn(),
   },
   apiNew: {
     listOfferersNames: vi.fn(),
+    getProfile: vi.fn(),
     signin: vi.fn(),
   },
 }))
@@ -81,7 +81,7 @@ const scrollIntoViewMock = vi.fn()
 describe('SignIn', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
+    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
     vi.spyOn(apiNew, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
