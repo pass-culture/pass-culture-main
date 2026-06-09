@@ -62,13 +62,13 @@ const venueAddress: GetVenueAddressResponseModel[] = [
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getProfile: vi.fn(),
     getBookingsPro: vi.fn(),
     getVenues: vi.fn(),
     getUserHasBookings: vi.fn(),
     getBookingsCsv: vi.fn(),
   },
   apiNew: {
+    getProfile: vi.fn(),
     getVenueAddresses: vi.fn(),
   },
 }))
@@ -135,7 +135,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
     }
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
-    vi.spyOn(api, 'getProfile').mockResolvedValue(user)
+    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(user)
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [venueListItemFactory()],
     })

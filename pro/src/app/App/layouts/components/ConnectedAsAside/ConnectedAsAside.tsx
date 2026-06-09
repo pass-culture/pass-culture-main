@@ -1,5 +1,4 @@
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
-import type { SharedCurrentUserResponseModel as SharedCurrentUserResponseModelNew } from '@/apiClient/v1/new'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
 import { NBSP } from '@/commons/core/shared/constants'
 import fullInfoIcon from '@/icons/full-info.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -7,9 +6,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './ConnectedAsAside.module.scss'
 
 interface ConnectedAsAsideProps {
-  currentUser:
-    | SharedCurrentUserResponseModel
-    | SharedCurrentUserResponseModelNew
+  currentUser: SharedCurrentUserResponseModel
 }
 
 export const ConnectedAsAside = ({ currentUser }: ConnectedAsAsideProps) => {

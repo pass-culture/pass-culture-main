@@ -28,10 +28,10 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
 }))
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getProfile: vi.fn().mockResolvedValue({}),
     signupPro: vi.fn(),
   },
   apiNew: {
+    getProfile: vi.fn().mockResolvedValue({}),
     listOfferersNames: vi.fn(),
   },
 }))
