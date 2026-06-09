@@ -24,7 +24,7 @@ jobs:
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:
-          version: v0.4.0
+          version: v0.4.1-rc0  # v0.4.0
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
 
@@ -45,8 +45,11 @@ jobs:
       - name: Hello World
         shell: bash
         env:
-          PCAPI_ENVIRONMENT_SHORT_NAME: tst
-          PCAPI_VERSION: 1.0.0
+          NAMESPACE: my-namespace
+          WORKFLOW_TEMPLATE: my-workflow-template
+          PULL_REQUEST_ID: 1234567890
+          PCAPI_IMAGE_TAG: b28a52a0a3d875d45107
         run: |
-          # passdirector pcapi deploy -e "${PCAPI_ENVIRONMENT_SHORT_NAME}" --app-version "${PCAPI_VERSION}"
-          run: echo "Deploying PCAPI version ${PCAPI_VERSION} to environment ${PCAPI_ENVIRONMENT_SHORT_NAME}"
+          passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" --log --wait
+          # argo submit --from <workflow_template_name> --namespace <namespace> --parameters --log --wait
+          # run: echo "Deploying PCAPI version ${PCAPI_VERSION} to environment ${PCAPI_ENVIRONMENT_SHORT_NAME}"
