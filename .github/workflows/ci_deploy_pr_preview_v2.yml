@@ -155,6 +155,20 @@ jobs:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
+    uses: ./.github/workflows/docker_push_image_passdirector.yml
+    needs:
+      - build-pcapi
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+      environment: pcapi-opsv2
+    secrets:
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
   deploy-api:
     name: Deploy preview environment
     runs-on: ubuntu-latest
