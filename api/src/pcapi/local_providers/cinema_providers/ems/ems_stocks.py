@@ -148,7 +148,7 @@ class EMSStocks:
             offerer_id=self.venue.managingOffererId,
             venue_id=self.venue.id,
             address_id=self.venue.offererAddress.addressId,
-            label=self.venue.publicName,
+            label=None,
         )
         offer.offererAddress = destination_oa
         offer.bookingEmail = venue.bookingEmail
