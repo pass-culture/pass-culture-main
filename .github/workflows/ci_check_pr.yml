@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - id: label-pr
         uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6.0.1
         with: { sync-labels: true }
@@ -64,6 +66,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Perform Semgrep Analysis
         env:
