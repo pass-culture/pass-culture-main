@@ -19,15 +19,22 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
         with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
+          cache-dependency-path: "${{ inputs.doc-api-entrypoint }}/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "Build documentation"
         run: |
           set -e
-          npm install
-          npm run build
+          pnpm install
+          pnpm run build
         env:
           ENV: ci-tests
         working-directory: "${{ inputs.doc-api-entrypoint }}"

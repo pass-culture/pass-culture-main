@@ -8,7 +8,7 @@ Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'
   - [WSL 2 (Windows uniquement)](#--wsl-2-windows-uniquement)
   - [Git](#-git)
   - [Node.js (via nvm)](#-nodejs-via-nvm)
-  - [Yarn](#-yarn)
+  - [pnpm](#-pnpm)
   - [Docker](#-docker)
 - [Installer le projet](#installer-le-projet)
   - [Lancer le front-end](#lancer-le-front-end)
@@ -69,19 +69,22 @@ nvm use 24.8
 nvm alias default 24.8
 ```
 
-## <img src="docs/yarn.svg" height="20" /> Yarn
+## <img src="docs/pnpm.svg" height="20" /> pnpm
 
-Afin d’uniformiser les outils utilisés, il est recommandé d’utiliser **Yarn**.
+Le projet utilise **pnpm** pour la gestion des dépendances.
 
-Actuellement, la version de Yarn utilisée sur le projet est la version dite « classic » `1.22.22`.
-
-Avec Node.js 20, **pas besoin d'installer Yarn manuellement**, il suffit d'activer **corepack** :
+La méthode recommandée pour installer pnpm en local est la suivante :
 
 ```bash
-corepack enable
+npm install -g pnpm
 ```
 
-Ceci permettra d'utiliser automatiquement la bonne version de Yarn sur le projet.
+Assurez-vous ensuite d’utiliser la version 11 (ou supérieure) avec :
+
+```bash
+pnpm -v
+# Doit afficher 11.x.x
+```
 
 ## <img src="docs/docker-icon.svg" height="20" /> Docker
 
@@ -144,14 +147,14 @@ Cela aura pour effet de builder et lancer les conteneurs Docker permettant de fa
 
 Le front-end se trouve dans le sous-dossier `/pro`, dans lequel on retrouve la structure d’une application React.
 
-Normalement, les dépendances ont déjà été installées avec le script `pc`, sinon on peut le faire manuellement avec `yarn install`.
+Normalement, les dépendances ont déjà été installées avec le script `pc`, sinon on peut le faire manuellement avec `pnpm install`.
 
-Pour démarrer l’application front-end, il suffit de se placer dans le sous-dossier `/pro` et de lancer la commande `yarn start` :
+Pour démarrer l’application front-end, il suffit de se placer dans le sous-dossier `/pro` et de lancer la commande `pnpm start` :
 
 ```bash
 cd pro
 
-yarn start
+pnpm start
 ```
 
 Une fenêtre s’ouvre sur le port [:3001](http://localhost:3001) et affiche une page de connexion.
@@ -213,7 +216,7 @@ Les fichiers de tests sont disponibles à côté de chaque composant ou fichier 
 Pour les lancer, on utilise la commande suivante :
 
 ```bash
-yarn test:unit
+pnpm test:unit
 
 # Lance "vitest" avec la bonne configuration
 ```
@@ -233,7 +236,7 @@ Les composants d'interface de l'application Pro sont regroupés dans un **Storyb
 Il est aussi possible de lancer le Storybook localement avec la commande suivante :
 
 ```bash
-yarn storybook
+pnpm storybook
 
 # Réponds sur le port :6006
 ```
@@ -306,7 +309,7 @@ Nous utilisons **SonarCloud** pour monitorer la dette technique.
 
 # Annexes
 
-Vous retrouverez dans le fichier [`pro/package.json`](https://github.com/pass-culture/pass-culture-main/blob/master/pro/package.json) des scripts Yarn utiles pour le développement.
+Vous retrouverez dans le fichier [`pro/package.json`](https://github.com/pass-culture/pass-culture-main/blob/master/pro/package.json) des scripts utiles pour le développement.
 
 ## Générer des templates de composants React et utilitaires avec [Templatron](https://www.npmjs.com/package/templatron)
 
@@ -337,17 +340,17 @@ Pour plus de détails sur le fonctionnement des templates, voir la [documentatio
 ## Linter les fichiers TypeScript
 
 ```bash
-yarn lint:js
+pnpm lint:js
 ```
 
 ## Identifier du code mort
 
 ```bash
-yarn lint:dead-code
+pnpm lint:dead-code
 ```
 
 ## Identifier des problèmes de types TS
 
 ```bash
-yarn tsc -b
+pnpm tsc -b
 ```
