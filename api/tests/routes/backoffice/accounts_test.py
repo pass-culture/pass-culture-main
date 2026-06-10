@@ -832,7 +832,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         def test_no_button_when_bonus_granted(self, authenticated_client):
             user = users_factories.BeneficiaryFactory()
-            subscription_factories.BonusFraudCheckFactory(user=user)
+            subscription_factories.QFBonusCreditFraudCheckFactory(user=user)
             finance_factories.RecreditFactory(
                 deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT
             )
@@ -1643,7 +1643,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         backoffice_api.upsert_roles(bo_user, [bo_role])
 
         user = users_factories.BeneficiaryFactory(dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=40))
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH],
@@ -2440,14 +2440,14 @@ class GetBonusCreditRequestFormTest(GetEndpointHelper):
     @pytest.mark.parametrize("num_fraud_checks", [1, users_constants.MAX_QF_BONUS_RETRIES])
     def test_get_bonus_credit_request_form_already_tried(self, authenticated_client, num_fraud_checks):
         user = users_factories.BeneficiaryFactory()
-        subscription_factories.BonusFraudCheckFactory.create_batch(
+        subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
             size=num_fraud_checks - 1, user=user, status=subscription_models.FraudCheckStatus.KO
         )
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=subscription_factories.ApiParticulierPersonFactory(
+                custodian=subscription_factories.BonusCreditPersonFactory(
                     gender=users_models.GenderEnum.F,
                     first_names=["Augustine", "Pauline", "Henriette"],
                     last_name="Lansot",
@@ -2541,7 +2541,9 @@ class BonusCreditRequestTest(PostEndpointHelper):
         assert response.status_code == 303
 
         mock_task.assert_called_once()
-        qf_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        qf_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        )
         assert len(qf_fraud_checks) == 1
         qf_fraud_check = qf_fraud_checks[0]
         assert qf_fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
@@ -2574,7 +2576,9 @@ class BonusCreditRequestTest(PostEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "La demande de bonification est en cours."
 
-        qf_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        qf_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        )
         assert len(qf_fraud_checks) == 1
         qf_fraud_check = qf_fraud_checks[0]
         assert qf_fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
@@ -2598,7 +2602,7 @@ class BonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
             "obligatoire lorsque le représentant légal est né en France ;"
         )
-        assert not users_api.get_qf_bonus_credit_fraud_checks(user)
+        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
 
     def test_city_is_set_but_country_is_not_france(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -2614,7 +2618,7 @@ class BonusCreditRequestTest(PostEndpointHelper):
             "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
             "doit rester vide lorsque le représentant légal n'est pas né en France ;"
         )
-        assert not users_api.get_qf_bonus_credit_fraud_checks(user)
+        assert not users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
 
     @pytest.mark.parametrize(
         "user_factory",
@@ -2827,7 +2831,7 @@ class GetPublicAccountHistoryTest:
             dateCreated=now - datetime.timedelta(minutes=10),
             status=None,
         )
-        bonus = subscription_factories.BonusFraudCheckFactory(
+        bonus = subscription_factories.QFBonusCreditFraudCheckFactory(
             user=user,
             dateCreated=now - datetime.timedelta(minutes=5),
             status=subscription_models.FraudCheckStatus.KO,
@@ -4871,7 +4875,7 @@ class RegistrationStepTest:
 
     def test_get_steps_for_tunnel_bonus_credit_ok(self):
         user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
-        subscription_factories.BonusFraudCheckFactory(user=user)
+        subscription_factories.QFBonusCreditFraudCheckFactory(user=user)
         finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
         bonus_steps = _get_steps_tunnel_bonus_credit(user)
         assert len(bonus_steps) == 2
@@ -4880,7 +4884,7 @@ class RegistrationStepTest:
 
     def test_get_steps_for_tunnel_bonus_credit_ko(self):
         user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
-        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+        subscription_factories.QFBonusCreditFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
         bonus_steps = _get_steps_tunnel_bonus_credit(user)
         assert len(bonus_steps) == 2
         assert bonus_steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.KO.value
@@ -4888,8 +4892,10 @@ class RegistrationStepTest:
 
     def test_get_steps_for_tunnel_bonus_credit_ko_then_started(self):
         user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
-        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
-        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.STARTED)
+        subscription_factories.QFBonusCreditFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.STARTED
+        )
         bonus_steps = _get_steps_tunnel_bonus_credit(user)
         assert len(bonus_steps) == 2
         assert bonus_steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value

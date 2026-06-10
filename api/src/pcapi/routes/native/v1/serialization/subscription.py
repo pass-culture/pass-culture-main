@@ -85,7 +85,7 @@ class IdentificationSessionRequest(HttpQueryParamsModel):
     redirectUrl: str
 
 
-class BonusCreditRequest(HttpQueryParamsModel):
+class QuotientFamilialBonusCreditRequest(HttpQueryParamsModel):
     last_name: str
     common_name: str | None = None
     first_names: list[str]
@@ -116,6 +116,24 @@ class BonusCreditRequest(HttpQueryParamsModel):
         if v:
             subscription_utils.validate_name(v)
         return v
+
+    @pydantic_v2.field_validator("birth_country_cog_code", mode="after")
+    @classmethod
+    def birth_country_cog_code_must_be_valid(cls, v: str) -> str:
+        subscription_utils.validate_country_cog_code(v)
+        return v
+
+    @pydantic_v2.field_validator("birth_city_cog_code", mode="after")
+    @classmethod
+    def birth_city_cog_code_must_be_valid(cls, v: str) -> str:
+        if v:
+            subscription_utils.validate_city_cog_code(v)
+        return v
+
+
+class DisabilityBonusCreditRequest(HttpQueryParamsModel):
+    birth_country_cog_code: str
+    birth_city_cog_code: str | None = None
 
     @pydantic_v2.field_validator("birth_country_cog_code", mode="after")
     @classmethod

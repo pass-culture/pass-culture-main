@@ -21,7 +21,7 @@ from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTU
 
 class QuotientFamilialTest:
     def test_get_quotient_familial_for_french_household(self, requests_mock):
-        custodian = subscription_factories.ApiParticulierPersonFactory.create(
+        custodian = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -82,7 +82,7 @@ class QuotientFamilialTest:
         )
 
     def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(self, requests_mock):
-        custodian = subscription_factories.ApiParticulierPersonFactory.create(
+        custodian = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -114,7 +114,7 @@ class QuotientFamilialTest:
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
 
     def test_get_quotient_familial_autofills_birth_country(self, requests_mock):
-        custodian = subscription_factories.ApiParticulierPersonFactory.create(
+        custodian = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -156,7 +156,7 @@ class QuotientFamilialTest:
         ],
     )
     def test_quotient_familial_error(self, requests_mock, status_code, exception):
-        custodian = subscription_factories.ApiParticulierPersonFactory.create()
+        custodian = subscription_factories.BonusCreditPersonFactory.create()
         requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code, json={})
 
         with pytest.raises(exception):
@@ -165,7 +165,7 @@ class QuotientFamilialTest:
 
 class DisabledAdultAllowanceTest:
     def test_get_french_adult_disability_allowance(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="martin",
             common_name="dupont",
             first_names=["pierre", "richard"],
@@ -197,7 +197,7 @@ class DisabledAdultAllowanceTest:
         )
 
     def test_get_abroad_born_adult_disability_allowance_ignores_city_code(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -224,7 +224,7 @@ class DisabledAdultAllowanceTest:
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
 
     def test_get_adult_disability_allowance_autofills_birth_country(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -261,7 +261,7 @@ class DisabledAdultAllowanceTest:
         ],
     )
     def test_adult_disability_allowance_errors(self, requests_mock, status_code, exception):
-        person = subscription_factories.ApiParticulierPersonFactory.create()
+        person = subscription_factories.BonusCreditPersonFactory.create()
         requests_mock.get(api_particulier.AAH_ENDPOINT, status_code=status_code, json={})
 
         with pytest.raises(exception):
@@ -270,7 +270,7 @@ class DisabledAdultAllowanceTest:
 
 class DisabledChildEducationAllowanceTest:
     def test_get_french_child_disability_allowance(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="dupont",
             first_names=["pierre"],
             birth_date=date(2015, 3, 12),
@@ -303,7 +303,7 @@ class DisabledChildEducationAllowanceTest:
         )
 
     def test_get_abroad_born_disabled_child_education_allowance_ignores_city_code(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -330,7 +330,7 @@ class DisabledChildEducationAllowanceTest:
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
 
     def test_get_child_disability_allowance_autofills_birth_country(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
+        person = subscription_factories.BonusCreditPersonFactory.create(
             last_name="dupont",
             first_names=["pierre"],
             birth_date=date(2015, 3, 12),
@@ -366,7 +366,7 @@ class DisabledChildEducationAllowanceTest:
         ],
     )
     def test_adult_disability_allowance_errors(self, requests_mock, status_code, exception):
-        person = subscription_factories.ApiParticulierPersonFactory.create()
+        person = subscription_factories.BonusCreditPersonFactory.create()
         requests_mock.get(api_particulier.AEEH_ENDPOINT, status_code=status_code, json={})
 
         with pytest.raises(exception):

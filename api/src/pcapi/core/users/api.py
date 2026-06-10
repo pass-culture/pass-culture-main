@@ -1448,7 +1448,7 @@ def _get_current_profile_refresh_campaign_date() -> datetime.datetime | None:
     )
 
 
-def get_user_is_eligible_for_bonification(user: models.User, *, is_from_backoffice: bool = False) -> bool:
+def get_user_is_eligible_for_qf_bonification(user: models.User, *, is_from_backoffice: bool = False) -> bool:
     excluded_statuses = {
         subscription_models.QFBonificationStatus.GRANTED,
         subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
@@ -1461,17 +1461,57 @@ def get_user_is_eligible_for_bonification(user: models.User, *, is_from_backoffi
     return deposit_api.can_receive_bonus_credit(user) and get_user_qf_bonification_status(user) not in excluded_statuses
 
 
-def get_qf_bonus_credit_fraud_checks(user: models.User) -> list[subscription_models.BeneficiaryFraudCheck]:
+def get_user_is_eligible_for_disability_bonification(user: models.User, *, is_from_backoffice: bool = False) -> bool:
+    excluded_statuses = {
+        subscription_models.DisabilityBonificationStatus.GRANTED,
+        subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE,
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            subscription_models.DisabilityBonificationStatus.TOO_MANY_RETRIES,
+            subscription_models.DisabilityBonificationStatus.STARTED,
+        }
+    return (
+        deposit_api.can_receive_bonus_credit(user)
+        and get_user_disability_bonification_status(user) not in excluded_statuses
+    )
+
+
+def get_bonus_credit_fraud_checks(
+    user: models.User, fraud_check_type: subscription_models.FraudCheckType | None = None
+) -> list[subscription_models.BeneficiaryFraudCheck]:
+    if fraud_check_type:
+        allowed_fraud_check_types = [fraud_check_type]
+    else:
+        allowed_fraud_check_types = [
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+        ]
+
     # `user.beneficiaryFraudChecks` are ordered by creation date
     return [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        if fraud_check.type in allowed_fraud_check_types
         and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
     ]
 
 
 def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
+    deposit = user.deposit
+    if not deposit:
+        return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return subscription_models.QFBonificationStatus.GRANTED
+
     has_eligible_age = False
     if user.age == 18:
         has_eligible_age = True
@@ -1483,10 +1523,12 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
             <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
         )
 
-    if not has_eligible_age or not user.is_beneficiary or not user.received_pass_17_18:
+    if not has_eligible_age:
         return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
 
-    qf_bonus_credit_fraud_checks = get_qf_bonus_credit_fraud_checks(user)
+    qf_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.QF_BONUS_CREDIT
+    )
     bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
     bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
 
@@ -1496,29 +1538,24 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
     ):
         return subscription_models.QFBonificationStatus.STARTED
 
-    if bonus_fraud_check_status == subscription_models.FraudCheckStatus.OK:
-        return subscription_models.QFBonificationStatus.GRANTED
-
     has_never_completely_tried = bonus_fraud_check_status in (
         None,
         subscription_models.FraudCheckStatus.CANCELED,
         subscription_models.FraudCheckStatus.ERROR,
     )
 
-    if has_eligible_age and user.received_pass_17_18 and has_never_completely_tried:
+    if has_never_completely_tried:
         return subscription_models.QFBonificationStatus.ELIGIBLE
 
     if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
         reason_codes = (bonus_fraud_check.reasonCodes if bonus_fraud_check else None) or []
 
-        if (
-            sum(
-                1
-                for fraud_check in qf_bonus_credit_fraud_checks
-                if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
-            )
-            >= constants.MAX_QF_BONUS_RETRIES
-        ):
+        number_of_user_retries = sum(
+            1
+            for fraud_check in qf_bonus_credit_fraud_checks
+            if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+        )
+        if number_of_user_retries >= constants.MAX_QF_BONUS_RETRIES:
             return subscription_models.QFBonificationStatus.TOO_MANY_RETRIES
 
         if subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD in reason_codes:
@@ -1534,6 +1571,71 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
             return subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND
 
     return subscription_models.QFBonificationStatus.KO
+
+
+def get_user_disability_bonification_status(user: models.User) -> subscription_models.DisabilityBonificationStatus:
+    """
+    Get only the AAH bonus credit status.
+    The AEEH bonus credit status follows it closely: both are created and handled at the same time.
+    """
+    deposit = user.deposit
+    if not deposit:
+        return subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    if deposit.type != finance_models.DepositType.GRANT_17_18:
+        return subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    has_received_bonus = finance_models.RecreditType.BONUS_CREDIT in [
+        recredit.recreditType for recredit in deposit.recredits
+    ]
+    if has_received_bonus:
+        return subscription_models.DisabilityBonificationStatus.GRANTED
+
+    has_eligible_age = False
+    if user.age == 18:
+        has_eligible_age = True
+    elif user.age == 19 and user.birth_date is not None:
+        nineteenth_birthday = user.birth_date + relativedelta(years=19)
+        has_eligible_age = (
+            settings.CREDIT_V3_DECREE_DATETIME.date()
+            <= nineteenth_birthday
+            <= settings.EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME.date()
+        )
+
+    if not has_eligible_age:
+        return subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    aah_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
+        user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+    )
+    aah_bonus_fraud_check = aah_bonus_credit_fraud_checks[-1] if aah_bonus_credit_fraud_checks else None
+    aah_fraud_check_status = aah_bonus_fraud_check.status if aah_bonus_fraud_check is not None else None
+
+    if aah_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    ):
+        return subscription_models.DisabilityBonificationStatus.STARTED
+
+    has_never_completely_tried = aah_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
+
+    if has_never_completely_tried:
+        return subscription_models.DisabilityBonificationStatus.ELIGIBLE
+
+    if aah_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (aah_bonus_fraud_check.reasonCodes if aah_bonus_fraud_check else None) or []
+
+        if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
+            return subscription_models.DisabilityBonificationStatus.PERSON_NOT_FOUND
+
+        if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
+            return subscription_models.DisabilityBonificationStatus.APPLICATION_NOT_FOUND
+
+    return subscription_models.DisabilityBonificationStatus.KO
 
 
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:

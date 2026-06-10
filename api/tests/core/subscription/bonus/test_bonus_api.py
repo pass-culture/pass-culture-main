@@ -179,8 +179,8 @@ class QuotientFamilialApplicationTest:
 
     @patch("pcapi.connectors.api_particulier.get_quotient_familial")
     def test_get_quotient_familial_calls(self, mocked_get_quotient_familial):
-        custodian = subscription_factories.ApiParticulierPersonFactory()
-        fraud_check = subscription_factories.BonusFraudCheckFactory(
+        custodian = subscription_factories.BonusCreditPersonFactory()
+        fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
                 custodian=custodian
@@ -202,7 +202,7 @@ class QuotientFamilialApplicationTest:
 
     def test_application_not_found(self):
         user = users_factories.BeneficiaryFactory()
-        custodian = subscription_factories.ApiParticulierPersonFactory()
+        custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
@@ -247,7 +247,7 @@ class QuotientFamilialApplicationTest:
 
     def test_person_not_found(self):
         user = users_factories.BeneficiaryFactory()
-        custodian = subscription_factories.ApiParticulierPersonFactory()
+        custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
@@ -292,7 +292,7 @@ class QuotientFamilialApplicationTest:
 
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
-        custodian = subscription_factories.ApiParticulierPersonFactory()
+        custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
@@ -363,7 +363,7 @@ class QuotientFamilialApplicationTest:
         high_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
         high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
         user = _build_user_from_fixture(high_quotient_familial)
-        custodian = subscription_factories.ApiParticulierPersonFactory()
+        custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
@@ -537,7 +537,7 @@ class QuotientFamilialApplicationTest:
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-        bonus_fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+        bonus_fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
             status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
         )
 

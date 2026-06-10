@@ -173,13 +173,13 @@ def start_identification_session(
 @atomic()
 @authenticated_and_active_user_required
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-def create_quotient_familial_bonus_credit_fraud_check(body: serializers.BonusCreditRequest) -> None:
-    if not users_api.get_user_is_eligible_for_bonification(current_user):
+def create_quotient_familial_bonus_credit_fraud_check(body: serializers.QuotientFamilialBonusCreditRequest) -> None:
+    if not users_api.get_user_is_eligible_for_qf_bonification(current_user):
         raise api_errors.ApiErrors(
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,
         )
-    fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
+    fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         current_user,
         last_name=body.last_name,
         common_name=body.common_name,
@@ -192,3 +192,28 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.BonusCre
     )
     payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
+
+@blueprint.native_route("/subscription/bonus/disability", methods=["POST"])
+@atomic()
+@authenticated_and_active_user_required
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonusCreditRequest) -> None:
+    if not users_api.get_user_is_eligible_for_disability_bonification(current_user):
+        raise api_errors.ApiErrors(
+            {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
+            status_code=400,
+        )
+
+    aah_fraud_check, aeeh_fraud_check = bonus_fraud_api.create_disability_bonus_credit_fraud_checks(
+        current_user,
+        birth_country_cog_code=body.birth_country_cog_code,
+        birth_city_cog_code=body.birth_city_cog_code,
+        origin="enrolled from /subscription/bonus/disability endpoint",
+    )
+
+    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+
+    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
