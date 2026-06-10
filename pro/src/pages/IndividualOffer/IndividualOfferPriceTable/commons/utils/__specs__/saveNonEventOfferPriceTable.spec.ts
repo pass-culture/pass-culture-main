@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -15,8 +15,10 @@ vi.mock('swr', async (importOriginal) => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    patchOffer: vi.fn(),
     upsertOfferStocks: vi.fn(),
+  },
+  apiNew: {
+    patchOffer: vi.fn(),
   },
 }))
 
@@ -58,7 +60,10 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
     expect(api.upsertOfferStocks).toHaveBeenCalledWith(
       offer.id,
       expect.objectContaining({ stocks: expect.any(Array) })
@@ -79,7 +84,10 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
   })
 
   it('should revalidate offer data after upserting stocks', async () => {

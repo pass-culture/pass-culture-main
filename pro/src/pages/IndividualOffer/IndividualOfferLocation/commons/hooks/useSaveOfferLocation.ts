@@ -2,9 +2,9 @@ import type { UseFormSetError } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1/new'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -49,7 +49,7 @@ export function useSaveOfferLocation({
 
       await mutate(
         [GET_OFFER_QUERY_KEY, offer.id],
-        api.patchOffer(offer.id, requestBody),
+        apiNew.patchOffer({ path: { offer_id: offer.id }, body: requestBody }),
         { revalidate: false }
       )
 

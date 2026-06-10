@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -20,7 +20,7 @@ import {
 } from './IndividualOfferPracticalInfosScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getOffer: vi.fn(),
     patchOffer: vi.fn(),
   },
@@ -126,7 +126,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     renderIndividualOfferPracticalInfosScreen()
 
     const updateSpy = vi
-      .spyOn(api, 'patchOffer')
+      .spyOn(apiNew, 'patchOffer')
       .mockResolvedValue(getIndividualOfferFactory())
 
     await waitFor(() => {
