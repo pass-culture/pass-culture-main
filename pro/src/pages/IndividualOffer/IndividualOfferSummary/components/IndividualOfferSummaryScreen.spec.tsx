@@ -256,8 +256,9 @@ describe('IndividualOfferSummaryScreen', () => {
       getIndividualOfferFactory()
     )
     vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue(musicTypes)
-    vi.spyOn(api, 'getStocksStats').mockResolvedValue(stocksStats)
-    vi.spyOn(api, 'getStocks').mockResolvedValue(
+    // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
+    vi.spyOn(apiNew, 'getStocksStats').mockResolvedValue(stocksStats)
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
     vi.spyOn(apiNew, 'getVenue').mockResolvedValue(

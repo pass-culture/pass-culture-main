@@ -1,4 +1,4 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import {
   getStocksResponseFactory,
@@ -349,7 +349,7 @@ describe('onSubmit', () => {
   cases.forEach(
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
-        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
+        vi.spyOn(apiNew, 'bulkCreateEventStocks').mockResolvedValueOnce(
           getStocksResponseFactory({
             totalStockCount: expectedStocks.length,
             editedStockCount: expectedStocks.length,
@@ -357,23 +357,25 @@ describe('onSubmit', () => {
         )
         await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
 
-        expect(api.bulkCreateEventStocks).toBeCalledWith({
-          offerId: 66,
-          stocks: expectedStocks.map(
-            ({
-              beginningDatetime,
-              bookingLimitDatetime,
-              priceCategoryId,
-              quantity,
-            }) => ({
-              beginningDatetime,
-              bookingLimitDatetime,
-              priceCategoryId,
-              quantity,
-            })
-          ),
+        expect(apiNew.bulkCreateEventStocks).toHaveBeenCalledWith({
+          body: {
+            offerId: 66,
+            stocks: expectedStocks.map(
+              ({
+                beginningDatetime,
+                bookingLimitDatetime,
+                priceCategoryId,
+                quantity,
+              }) => ({
+                beginningDatetime,
+                bookingLimitDatetime,
+                priceCategoryId,
+                quantity,
+              })
+            ),
+          },
         })
-        expect(snackBarSuccess).toBeCalledWith(expectedNotification)
+        expect(snackBarSuccess).toHaveBeenCalledWith(expectedNotification)
       })
     }
   )
@@ -468,7 +470,7 @@ describe('onSubmit', () => {
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({
+    vi.spyOn(apiNew, 'bulkCreateEventStocks').mockRejectedValueOnce({
       stocks: ['Erreur'],
     })
 

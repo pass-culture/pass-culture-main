@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -44,7 +44,9 @@ describe('IndividialOfferPracticalInfos', () => {
       subcategories: [],
     })
     vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offer)
-    vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory({}))
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({})
+    )
     renderIndividualOfferMedia()
 
     await waitFor(() => {
@@ -58,7 +60,9 @@ describe('IndividialOfferPracticalInfos', () => {
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory({}))
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({})
+    )
 
     renderIndividualOfferMedia()
 
