@@ -1,0 +1,221 @@
+name: 0 [CI] Deploy PR preview v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      sandbox:
+        description: "Sandbox installed"
+        required: true
+        default: "empty"
+        type: choice
+        options:
+          - empty
+          - industrial
+          - tiny
+      sandbox-args:
+        description: "Arguments passed to the sandbox command"
+        required: false
+        default: ""
+        type: string
+      front-only:
+        description: "Deploy only frontend (skip API deploy)"
+        required: false
+        default: false
+        type: boolean
+      deployment_source_branch:
+        description: "Branch of pass-culture-deployment repository to use for helm charts."
+        required: false
+        default: "master"
+
+permissions: write-all
+
+env:
+  DOCKER_REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+  CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+
+jobs:
+  deploy-preview-env-init:
+    name: Init
+    # TODO: add environment
+    runs-on: ubuntu-latest
+    outputs:
+      # checksum-tag is the sha1sum of the api folder. It is used to tag the docker image
+      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+      # resource_label names every resource created by this workflow. It is the sha1sum of the branch name
+      resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
+      pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
+      # testing_label controls whether we connect to testing backend or a preview backend
+      testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
+    steps:
+      # TODO: is checkout necessary
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-tags: false
+          ref: ${{ github.ref_name }}
+
+      - name: Set resources label name
+        id: set_resource_label
+        env:
+          FRONT_ONLY: ${{ inputs.front-only }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          if [ "$FRONT_ONLY" == "true" ]; then
+            echo "testing_label=" >> "$GITHUB_OUTPUT"
+          else
+            echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          fi
+
+      # TODO: Recheck output
+      - name: Define pcapi image tags
+        id: pcapi-tags
+        run: |
+          DOCKER_IMAGE="${{ env.DOCKER_REGISTRY }}/pcapi"
+          API_CHECKSUM=$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')
+          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
+          API_TAG="checksum-tag=$API_CHECKSUM"
+          echo "PUSH_TAGS=$PUSH_TAGS"
+          echo "API_TAG=$API_TAG"
+          echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
+          echo "$API_TAG" >> "$GITHUB_OUTPUT"
+
+      # TODO: use SA CD
+      - name: Authentification to Google (branch name length must be <= 77 chars — it might change)
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+
+      # TODO: use workload identity for SA CD
+      - name: OpenID Connect Authentication
+        id: openid-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          create_credentials_file: false
+          token_format: access_token
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+
+      - name: Check if pcapi already exists
+        id: check-checksum-tag
+        run: ./.github/workflows/scripts/check-image-tag-exists.sh
+        env:
+          image: pcapi
+          tag: ${{ github.sha }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
+
+  deploy-pro-on-firebase-preview-env:
+    name: Deploy preview environment for PRO
+    # TODO: add environment
+    needs: [deploy-preview-env-init]
+    uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
+    with:
+      cache_bucket_name: ${{ env.CACHE_BUCKET_NAME }}
+      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  build-pcapi:
+    name: Build pcapi docker image
+    # TODO: add environment
+    needs: [deploy-preview-env-init]
+    if: inputs.front-only == false
+    uses: ./.github/workflows/docker_build_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
+    # TODO: add environment
+    needs:
+      - deploy-preview-env-init
+      - build-pcapi
+    if: inputs.front-only == false
+    uses: ./.github/workflows/docker_push_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+      tag_latest: true
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  deploy-api:
+    name: Deploy preview environment
+    runs-on: ubuntu-latest
+    environment:
+      name: pcapi-preview
+      deployment: true
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - deploy-preview-env-init
+      - push-pcapi
+      - deploy-pro-on-firebase-preview-env
+    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    steps:
+      # TODO: check if checkout can be skipped
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{github.ref}}
+
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: v0.4.1
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: Authentification to Google
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          service_account: ${{ vars.PCAPI_PREVIEW_CD_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        with:
+          cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
+          project_id: ${{ vars.PROJECT_ID }}
+          location: ${{ vars.LOCATION }}
+          use_dns_based_endpoint: true
+
+      - name: Deploy preview environment stack
+        shell: bash
+        env:
+          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
+          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PCAPI_IMAGE_TAG: ${{ github.sha }}
+        # TODO: bind sandbox arguments
+        run: |
+          passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}"
+
+      - name: Publish Summary
+        env:
+          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+        run: |
+          {
+            echo "### :rocket: Deploy PRO summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
+            echo "| [Back] url                           |  https://pr-${{ PULL_REQUEST_ID }}.backend.testing.passculture.team/ |"
+            echo "| [BO] url                             |  https://pr-${{ PULL_REQUEST_ID }}.backoffice.testing.passculture.team/ |"
+          } >> "$GITHUB_STEP_SUMMARY"
