@@ -3,8 +3,8 @@ import { type MouseEvent, useState } from 'react'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -41,20 +41,24 @@ export const OfferFavoriteButton = ({
   const removeFromFavorites = async () => {
     setIsFavorite(false)
     try {
-      await apiAdage.deleteFavoriteForCollectiveOfferTemplate(offer.id)
+      await apiAdageNew.deleteFavoriteForCollectiveOfferTemplate({
+        path: { offer_template_id: offer.id },
+      })
       //  Decrease adage user favorite count for header
       setFavoriteCount?.((count) => count - 1)
 
       snackBar.success('Supprimé de vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
-        offerId: offer.id,
-        queryId,
-        iframeFrom: location.pathname,
-        isFavorite: false,
-        isFromNoResult: isInSuggestions,
-        vueType: viewType,
-        playlistId,
+      apiAdageNew.logFavOfferButtonClick({
+        body: {
+          offerId: offer.id,
+          queryId,
+          iframeFrom: location.pathname,
+          isFavorite: false,
+          isFromNoResult: isInSuggestions,
+          vueType: viewType,
+          playlistId,
+        },
       })
 
       afterFavoriteChange?.(false)
@@ -67,21 +71,25 @@ export const OfferFavoriteButton = ({
   const addToFavorites = async () => {
     setIsFavorite(true)
     try {
-      await apiAdage.postCollectiveTemplateFavorites(offer.id)
+      await apiAdageNew.postCollectiveTemplateFavorites({
+        path: { offer_id: offer.id },
+      })
 
       //  Increase adage user favorite count for header
       setFavoriteCount?.((count) => count + 1)
 
       snackBar.success('Ajouté à vos favoris')
 
-      apiAdage.logFavOfferButtonClick({
-        offerId: offer.id,
-        queryId,
-        iframeFrom: location.pathname,
-        isFavorite: true,
-        isFromNoResult: isInSuggestions,
-        vueType: viewType,
-        playlistId,
+      apiAdageNew.logFavOfferButtonClick({
+        body: {
+          offerId: offer.id,
+          queryId,
+          iframeFrom: location.pathname,
+          isFavorite: true,
+          isFromNoResult: isInSuggestions,
+          vueType: viewType,
+          playlistId,
+        },
       })
 
       afterFavoriteChange?.(true)

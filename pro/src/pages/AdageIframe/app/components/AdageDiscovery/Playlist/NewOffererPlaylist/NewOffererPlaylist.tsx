@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import useSWR from 'swr'
 
-import { AdagePlaylistType } from '@/apiClient/adage/models/AdagePlaylistType'
-import { apiAdage } from '@/apiClient/api'
+import { AdagePlaylistType } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 import { Carousel } from '../../Carousel/Carousel'
@@ -29,7 +29,7 @@ export const NewOffererPlaylist = ({
 }: NewOffererPlaylistProps) => {
   const { data: playlist, isLoading } = useSWR(
     [GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY],
-    () => apiAdage.getNewOfferersPlaylist(),
+    () => apiAdageNew.getNewOfferersPlaylist(),
     { fallbackData: { venues: [] } }
   )
 

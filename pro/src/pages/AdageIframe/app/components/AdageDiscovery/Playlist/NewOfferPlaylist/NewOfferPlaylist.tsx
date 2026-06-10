@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import useSWR from 'swr'
 
-import { AdagePlaylistType } from '@/apiClient/adage/models/AdagePlaylistType'
+import { AdagePlaylistType } from '@/apiClient/adage/new'
 import { apiAdageNew } from '@/apiClient/api'
 import { GET_NEW_OFFERS_PLAYLIST_KEY } from '@/commons/config/swrQueryKeys'
 

@@ -1,7 +1,7 @@
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 
 export type Facets = (string | string[])[]
 
