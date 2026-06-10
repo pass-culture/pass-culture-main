@@ -29,7 +29,9 @@ jobs:
       message-ts: ${{ steps.update-message.outputs.message-ts }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with: { fetch-tags: false }
+        with:
+          fetch-tags: false
+          persist-credentials: false
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:

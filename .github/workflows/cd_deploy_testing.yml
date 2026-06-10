@@ -27,6 +27,7 @@ jobs:
         with:
           fetch-tags: false
           ref: "master"
+          persist-credentials: false
       - name: Compute API checksum
         id: compute-api-checksum
         run: |
