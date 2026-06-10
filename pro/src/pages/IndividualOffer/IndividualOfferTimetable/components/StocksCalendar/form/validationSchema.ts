@@ -123,6 +123,9 @@ export const getValidationSchema = () =>
       .number()
       .required()
       .nullable()
+      .transform((currentValue) =>
+        Number.isNaN(currentValue) ? null : currentValue
+      )
       .test(
         'isBookingLimitValid',
         'La date limite de réservation est dans le passé',
