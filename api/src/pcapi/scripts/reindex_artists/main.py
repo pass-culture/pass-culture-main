@@ -30,15 +30,12 @@ def main(apply: bool) -> None:
     total = db.session.query(artists_models.Artist).count()
     logger.info("Found %d artists to reindex", total)
 
-    if not apply:
-        logger.info("Dry run mode enabled, no indexation request sent")
-        return
-
     query = db.session.query(artists_models.Artist.id).yield_per(BATCH_SIZE)
     reindexed = 0
     for batch in itertools.batched(query, BATCH_SIZE):
         artist_ids = [artist.id for artist in batch]
-        search.reindex_artist_ids(artist_ids)
+        if apply:
+            search.reindex_artist_ids(artist_ids)
         reindexed += len(artist_ids)
         logger.info("Reindexed (or not) %d/%d artists", reindexed, total)
 
