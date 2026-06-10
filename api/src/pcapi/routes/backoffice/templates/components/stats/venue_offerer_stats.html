@@ -1,10 +1,19 @@
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 <div class="row">
   <div class="col-md-6">
-    <div class="card h-100 shadow">
+    <div class="card h-100">
       <div class="card-body row p-4">
         <div>
-          <h5>Offres</h5>
+          <div class="d-flex justify-content-between">
+            <h5>Offres</h5>
+            <div>
+              {% if fraud_form %}
+                {{ object | format_confidence_level_badge_for_venue }}
+                {{ build_modal_form("edit-fraud", fraud_dst , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil-square") }}
+              {% endif %}
+            </div>
+          </div>
           <div class="d-flex justify-content-between">
             <div class="pe-3">
               <h2 class="text-black">
@@ -19,6 +28,9 @@
               <div>
                 {% if urls.list_offers %}
                   <a class="link-primary"
+                     data-bs-toggle="tooltip"
+                     data-bs-placement="top"
+                     data-bs-title="Voir les offres individuelles"
                      href="{{ urls.list_offers }}">individuelle{{ individual_offers|pluralize }}</a>
                 {% else %}
                   individuelle{{ individual_offers|pluralize }}
@@ -53,6 +65,9 @@
               <div>
                 {% if urls.list_collective_offers %}
                   <a class="link-primary"
+                     data-bs-toggle="tooltip"
+                     data-bs-placement="top"
+                     data-bs-title="Voir les offres collectives"
                      href="{{ urls.list_collective_offers }}">collective{{ collective_offers | pluralize }}</a>
                 {% else %}
                   collective{{ collective_offers | pluralize }}
@@ -85,6 +100,9 @@
               <div>
                 {% if urls.list_collective_offer_templates %}
                   <a class="link-primary"
+                     data-bs-toggle="tooltip"
+                     data-bs-placement="top"
+                     data-bs-title="Voir les offres collectives vitrine"
                      href="{{ urls.list_collective_offer_templates }}">vitrine</a>
                 {% else %}
                   vitrine
@@ -97,7 +115,7 @@
     </div>
   </div>
   <div class="col-md-3">
-    <div class="card h-100 shadow">
+    <div class="card h-100">
       <div class="card-body p-4">
         <h5>Réservations</h5>
         <div class="d-flex justify-content-between">
@@ -111,6 +129,9 @@
             </h2>
             {% if urls.list_bookings %}
               <a class="link-primary"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="Voir les réservations individuelles"
                  href="{{ urls.list_bookings }}">individuelle{{ stats.individual_bookings | pluralize }}</a>
             {% else %}
               individuelle{{ stats.individual_bookings | pluralize }}
@@ -126,6 +147,9 @@
             </h2>
             {% if urls.list_collective_bookins %}
               <a class="link-primary"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="Voir les réservations collectives"
                  href="{{ urls.list_collective_bookins }}">collective{{ stats.collective_bookings | pluralize }}</a>
             {% else %}
               collective{{ stats.collective_bookings | pluralize }}
@@ -136,7 +160,7 @@
     </div>
   </div>
   <div class="col-md-3">
-    <div class="card h-100 shadow">
+    <div class="card h-100">
       <div class="card-body p-4">
         <h5>Chiffre d'affaires</h5>
         <h2 class="text-black">

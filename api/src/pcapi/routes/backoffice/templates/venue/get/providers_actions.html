@@ -1,0 +1,100 @@
+{# set in a distinct file to keep venue/get.html readable #}
+{% if has_permission("ADVANCED_PRO_SUPPORT") or has_permission("MANAGE_TECH_PARTNERS") %}
+  <div class="dropdown ms-2">
+    <button type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            class="btn p-0">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu">
+      <li class="dropdown-item p-0">
+        {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+          <form action="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                name="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                method="post">
+            {{ csrf_token }}
+            <button type="submit"
+                    class="btn btn-sm d-block w-100 text-start px-3">
+              {% if venue_provider.isActive %}
+                Mettre en pause
+              {% else %}
+                Réactiver
+              {% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </li>
+      <li class="dropdown-item p-0">
+        {% if has_permission("MANAGE_TECH_PARTNERS") and new_etl_integration_can_be_enabled(venue_provider) %}
+          <form action="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                name="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                method="post">
+            {{ csrf_token }}
+            <button type="submit"
+                    class="btn btn-sm d-block w-100 text-start px-3">
+              {% if venue_provider.isNewEtlIntegrationEnabled %}
+                Désactiver la nouvelle intégration cinéma
+              {% else %}
+                Activer la nouvelle intégration cinéma
+              {% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </li>
+      <li class="dropdown-item p-0">
+        {% if venue_provider.isActive and (venue_provider.isFromCinemaProvider or venue_provider.isFromAllocineProvider) %}
+          <form action="{{ url_for('backoffice_web.venue.add_cinema_sessions_synchronize_task', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                name="{{ url_for('backoffice_web.venue.add_cinema_sessions_synchronize_task', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                method="post">
+            {{ csrf_token }}
+            <button type="submit"
+                    class="btn btn-sm d-block w-100 text-start px-3">Synchroniser les séances de cinéma</button>
+          </form>
+        {% endif %}
+      </li>
+      {% set has_delete_option = (venue_provider.provider.localClass != 'AllocineStocks') %}
+      {% if has_permission("ADVANCED_PRO_SUPPORT") and has_delete_option %}
+        <li class="dropdown-item p-0">
+          <a class="btn btn-sm d-block w-100 text-start px-3"
+             data-bs-toggle="modal"
+             data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}">Supprimer le lien</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+  {% if has_delete_option %}
+    <div class="modal modal-lg fade pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
+         tabindex="-1"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form action="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                name="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                method="POST">
+            <div class="modal-header"
+                 id="delete-venue-provider-modal-label">
+              <h5 class="modal-title">
+                Supprimer le lien entre le partenaire culturel {{ venue.publicName }} et le provider {{ venue_provider.provider.name }}
+              </h5>
+            </div>
+            <div class="modal-body row">
+              <p>
+                Le lien entre <strong>{{ venue.publicName }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
+                de la base de données. Veuillez confirmer ce choix.
+              </p>
+              {{ build_form_fields_group(delete_form) }}
+            </div>
+            <div class="modal-footer">
+              <button type="button"
+                      class="btn btn-outline-primary-subtle-bg"
+                      data-bs-dismiss="modal">Annuler</button>
+              <button type="submit"
+                      class="btn btn-primary">Confirmer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

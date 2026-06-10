@@ -1311,7 +1311,7 @@ def format_confidence_level_badge(
             return format_badge(f"Validation auto {info}", "success")
 
     if show_no_rule:
-        return format_badge("Suivre les règles", "secondary")
+        return format_badge("Suivre les règles de validation", "secondary")
 
     return ""
 

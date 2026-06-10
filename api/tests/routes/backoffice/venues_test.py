@@ -364,12 +364,14 @@ class GetVenueTest(GetEndpointHelper):
         assert venue.name in response_text
         assert f"Nom d'usage : {venue.publicName} " in response_text
         assert f"Venue ID : {venue.id} " in response_text
-        assert f"SIRET : {venue.siret} " in response_text
+        assert f"SIRET : {venue.siret}" in response_text
         assert "Région : Provence-Alpes-Côte d'Azur" in response_text
-        assert f"Ville : {venue.offererAddress.address.city} " in response_text
-        assert f"Code postal : {venue.offererAddress.address.postalCode} " in response_text
+        assert (
+            f"Adresse : {venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city} "
+            in response_text
+        )
         assert f"Email : {venue.bookingEmail} " in response_text
-        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
+        assert f"N° de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Cartographié sur ADAGE : Non" in response_text
         assert "ID ADAGE" not in response_text
@@ -380,9 +382,8 @@ class GetVenueTest(GetEndpointHelper):
         assert "Type de lieu" not in response_text
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
-        assert "Page Acceslibre" not in response_text
-        assert "Page JeVeuxAider.gouv.fr" not in response_text
-        assert "Validation des offres : Suivre les règles" in response_text
+        assert "Page Acceslibre : Non renseigné" in response_text
+        assert "Page bénévolat : Non renseigné" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Partenaire culturel" in badges
@@ -428,7 +429,7 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert "Peut créer une offre EAC : Oui" in response_text
         assert "Cartographié sur ADAGE : Oui" in response_text
-        assert "ID ADAGE : 7122022" in response_text
+        assert "ADAGE ID : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client):
         venue = offerers_factories.VenueFactory(contact=None)
@@ -478,43 +479,6 @@ class GetVenueTest(GetEndpointHelper):
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
-    @pytest.mark.parametrize(
-        "factory, expected_text",
-        [
-            (offerers_factories.WhitelistedVenueConfidenceRuleFactory, "Validation auto"),
-            (offerers_factories.ManualReviewVenueConfidenceRuleFactory, "Revue manuelle"),
-        ],
-    )
-    def test_get_venue_with_confidence_rule(self, authenticated_client, factory, expected_text):
-        rule = factory()
-        url = url_for(self.endpoint, venue_id=rule.venue.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert f"Validation des offres : {expected_text}" in response_text
-
-    @pytest.mark.parametrize(
-        "factory, expected_text",
-        [
-            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto (entité juridique)"),
-            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (entité juridique)"),
-        ],
-    )
-    def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text):
-        rule = factory()
-        venue = offerers_factories.VenueFactory(managingOfferer=rule.offerer)
-        url = url_for(self.endpoint, venue_id=venue.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert f"Validation des offres : {expected_text}" in response_text
-
     def test_get_caledonian_venue(self, authenticated_client):
         venue = offerers_factories.CaledonianVenueFactory()
         url = url_for(self.endpoint, venue_id=venue.id)
@@ -529,9 +493,11 @@ class GetVenueTest(GetEndpointHelper):
         assert venue.siret not in response_text
         assert f"RIDET : {venue.ridet} " in response_text
         assert "Région : Nouvelle-Calédonie " in response_text
-        assert f"Ville : {venue.offererAddress.address.city} " in response_text
-        assert f"Code postal : {venue.offererAddress.address.postalCode} " in response_text
-        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
+        assert (
+            f"Adresse : {venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city} "
+            in response_text
+        )
+        assert f"N° de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Cartographié sur ADAGE" not in response_text
         assert "ID ADAGE" not in response_text
@@ -638,7 +604,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Page JeVeuxAider.gouv.fr : https://www.jeveuxaider.gouv.fr/organisations/oulala" in response_text
+        assert "Page bénévolat : https://www.jeveuxaider.gouv.fr/organisations/oulala" in response_text
 
     class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
@@ -678,7 +644,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         response_text = html_parser.extract_cards_text(response.data)
         assert (
-            "Offres 137 individuelles 125 réservables | 12 non réservables 56 collectives 54 réservables | 2 non réservables 0 vitrine"
+            "137 individuelles 125 réservables | 12 non réservables 56 collectives 54 réservables | 2 non réservables 0 vitrine"
             in response_text[0]
         )
         assert "Réservations 876 individuelles 678 collectives" in response_text[1]
@@ -704,11 +670,48 @@ class GetVenueStatsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert (
-            "Offres N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable 0 vitrine"
+            "N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable 0 vitrine"
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
         assert "Chiffre d'affaires N/A" in html_parser.extract_cards_text(response.data)[2]
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedVenueConfidenceRuleFactory, "Validation auto"),
+            (offerers_factories.ManualReviewVenueConfidenceRuleFactory, "Revue manuelle"),
+        ],
+    )
+    def test_get_venue_with_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        url = url_for(self.endpoint, venue_id=rule.venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert expected_text in response_text
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto (entité juridique)"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (entité juridique)"),
+        ],
+    )
+    def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        venue = offerers_factories.VenueFactory(managingOfferer=rule.offerer)
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert expected_text in response_text
 
 
 class GetVenueRevenueDetailsTest(GetEndpointHelper):

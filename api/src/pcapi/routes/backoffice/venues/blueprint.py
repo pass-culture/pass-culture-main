@@ -1,3 +1,4 @@
+import enum
 import logging
 import typing
 from functools import partial
@@ -54,6 +55,7 @@ from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -214,16 +216,13 @@ def get_venue(venue_id: int) -> sa.engine.Row:
         )
         .filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                 offerers_models.Offerer.siren,
                 offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
                 offerers_models.Offerer.allowedOnAdage,
                 offerers_models.Offerer.name,
-            )
-            .joinedload(offerers_models.Offerer.confidenceRule)
-            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            ),
             sa_orm.joinedload(offerers_models.Venue.contact),
             sa_orm.joinedload(offerers_models.Venue.venueLabel),
             sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
@@ -266,88 +265,124 @@ def get_venue(venue_id: int) -> sa.engine.Row:
     return venue
 
 
+class VenueDetailsActionType(enum.StrEnum):
+    CONNECT_AS = enum.auto()
+    NATIVE = enum.auto()
+    UPDATE = enum.auto()
+    ERP_SYNCHRONISATION = enum.auto()
+    DELETE = enum.auto()
+    DELETE_SIRET = enum.auto()
+    BLOCK_REIMBURSEMENTS = enum.auto()
+    UNBLOCK_REIMBURSEMENTS = enum.auto()
+
+
+def _get_venue_details_actions(venue: offerers_models.Venue) -> DetailsActions:
+    venue_details_actions = DetailsActions(VenueDetailsActionType)
+    if access_control.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
+        venue_details_actions.add_action(VenueDetailsActionType.CONNECT_AS)
+    venue_details_actions.add_action(VenueDetailsActionType.NATIVE)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
+        venue_details_actions.add_action(VenueDetailsActionType.UPDATE)
+        if venue.isOpenToPublic:
+            venue_details_actions.add_action(VenueDetailsActionType.ERP_SYNCHRONISATION)
+    if access_control.has_current_user_permission(perm_models.Permissions.DELETE_PRO_ENTITY):
+        venue_details_actions.add_action(VenueDetailsActionType.DELETE)
+    if access_control.has_current_user_permission(perm_models.Permissions.MOVE_SIRET):
+        venue_details_actions.add_action(VenueDetailsActionType.DELETE_SIRET)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION):
+        if venue.isReimbursementSuspended:
+            venue_details_actions.add_action(VenueDetailsActionType.UNBLOCK_REIMBURSEMENTS)
+        else:
+            venue_details_actions.add_action(VenueDetailsActionType.BLOCK_REIMBURSEMENTS)
+    return venue_details_actions
+
+
 def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVenueForm | None = None) -> str:
     venue: offerers_models.Venue = venue_row.Venue
-
-    if not edit_venue_form:
-        edit_prefill: dict[str, typing.Any] = {
-            "name": venue.name,
-            "public_name": venue.publicName,
-            "siret": venue.siret,
-            "booking_email": venue.bookingEmail,
-            "phone_number": venue.contact.phone_number if venue.contact else None,
-            "acceslibre_url": venue.external_accessibility_url,
-            "volunteering_url": venue.volunteeringUrl,
-            "is_permanent": venue.isPermanent,
-        }
-        # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)
-        if venue.offererAddress:
-            edit_prefill |= {
-                "postal_address_autocomplete": (
-                    f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
-                    if venue.offererAddress.address.street is not None
-                    and venue.offererAddress.address.city is not None
-                    and venue.offererAddress.address.postalCode is not None
-                    else None
-                ),
-                "street": venue.offererAddress.address.street,
-                "postal_code": venue.offererAddress.address.postalCode,
-                "city": venue.offererAddress.address.city,
-                "ban_id": venue.offererAddress.address.banId,
-                "insee_code": venue.offererAddress.address.inseeCode,
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
-            }
-        edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
-        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
-        edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
-
-    delete_form = empty_forms.EmptyForm()
-
-    fraud_form = (
-        forms.FraudForm(confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None)
-        if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-        else None
-    )
-
-    search_form = pro_forms.CompactProSearchForm(
-        q=request.args.get("q"),
-        pro_type=pro_forms.TypeOptions.VENUE.name,
-        departments=(
-            request.args.getlist("departments")
-            if request.args.get("q") or request.args.getlist("departments")
-            else current_user.backoffice_profile.preferences.get("departments", [])
+    actions = _get_venue_details_actions(venue)
+    kwargs: dict[str, typing.Any] = {
+        "search_dst": url_for("backoffice_web.pro.search_pro"),
+        "search_form": pro_forms.CompactProSearchForm(
+            q=request.args.get("q"),
+            pro_type=pro_forms.TypeOptions.VENUE.name,
+            departments=(
+                request.args.getlist("departments")
+                if request.args.get("q") or request.args.getlist("departments")
+                else current_user.backoffice_profile.preferences.get("departments", [])
+            ),
         ),
-    )
+    }
 
-    connect_as = get_connect_as(
-        object_type="venue",
-        object_id=venue.id,
-        pc_pro_path=urls.build_pc_pro_venue_path(venue),
-    )
+    if VenueDetailsActionType.CONNECT_AS in actions:
+        kwargs["connect_as"] = get_connect_as(
+            object_type="venue",
+            object_id=venue.id,
+            pc_pro_path=urls.build_pc_pro_venue_path(venue),
+        )
+
+    if VenueDetailsActionType.UPDATE in actions:
+        if not edit_venue_form:
+            edit_prefill: dict[str, typing.Any] = {
+                "name": venue.name,
+                "public_name": venue.publicName,
+                "siret": venue.siret,
+                "booking_email": venue.bookingEmail,
+                "phone_number": venue.contact.phone_number if venue.contact else None,
+                "acceslibre_url": venue.external_accessibility_url,
+                "volunteering_url": venue.volunteeringUrl,
+                "is_permanent": venue.isPermanent,
+            }
+            # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)
+            if venue.offererAddress:
+                edit_prefill |= {
+                    "postal_address_autocomplete": (
+                        f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+                        if venue.offererAddress.address.street is not None
+                        and venue.offererAddress.address.city is not None
+                        and venue.offererAddress.address.postalCode is not None
+                        else None
+                    ),
+                    "street": venue.offererAddress.address.street,
+                    "postal_code": venue.offererAddress.address.postalCode,
+                    "city": venue.offererAddress.address.city,
+                    "ban_id": venue.offererAddress.address.banId,
+                    "insee_code": venue.offererAddress.address.inseeCode,
+                    "latitude": venue.offererAddress.address.latitude,
+                    "longitude": venue.offererAddress.address.longitude,
+                }
+            edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
+            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+            edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
+        kwargs["edit_venue_form"] = edit_venue_form
+
+    if VenueDetailsActionType.ERP_SYNCHRONISATION in actions:
+        kwargs["erp_synchronisation_form"] = empty_forms.EmptyForm()
+
+    if VenueDetailsActionType.DELETE in actions:
+        kwargs["delete_form"] = empty_forms.EmptyForm()
+
+    if VenueDetailsActionType.BLOCK_REIMBURSEMENTS in actions:
+        kwargs["block_reimbursement_form"] = forms.CommentForm()
+
+    if VenueDetailsActionType.UNBLOCK_REIMBURSEMENTS in actions:
+        kwargs["block_reimbursement_form"] = forms.CommentForm()
+
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        kwargs["fraud_form"] = forms.FraudForm(
+            confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None
+        )
 
     return render_template(
         "venue/get.html",
-        search_form=search_form,
-        search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
         has_fraudulent_booking=venue_row.has_fraudulent_booking,
-        edit_venue_form=edit_venue_form,
-        delete_form=delete_form,
-        fraud_form=fraud_form,
-        comment_form=forms.CommentForm(),
         active_tab=request.args.get("active_tab", "history"),
-        connect_as=connect_as,
-        zendesk_sell_synchronisation_form=(
-            empty_forms.EmptyForm()
-            if venue.isOpenToPublic
-            and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-            else None
-        ),
         get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
         # TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
         # See https://passculture.atlassian.net/browse/PC-40117
         new_etl_integration_can_be_enabled=new_etl_integration_can_be_enabled,
+        allowed_actions=actions,
+        **kwargs,
     )
 
 
@@ -431,10 +466,15 @@ def get_stats(venue_id: int) -> response_utils.BackofficeResponse:
             offerers_models.Venue.id == venue_id,
         )
         .options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa_orm.joinedload(offerers_models.Venue.offererAddress)
             .load_only()
             .joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
         )
     ).one_or_none()
 
@@ -443,11 +483,15 @@ def get_stats(venue_id: int) -> response_utils.BackofficeResponse:
 
     stats = offerers_api.get_venues_stats((venue.id,))
 
+    kwargs: dict[str, typing.Any] = {}
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        kwargs["fraud_form"] = forms.FraudForm(
+            confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None
+        )
+        kwargs["fraud_dst"] = url_for("backoffice_web.venue.update_for_fraud", venue_id=venue.id)
+
     return render_template(
-        "components/stats/venue_offerer_stats.html",
-        object=venue,
-        stats=stats,
-        urls=_get_stat_urls(venue),
+        "components/stats/venue_offerer_stats.html", object=venue, stats=stats, urls=_get_stat_urls(venue), **kwargs
     )
 
 
