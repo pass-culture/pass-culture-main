@@ -2,9 +2,9 @@ import {
   type ArtistOfferLinkBodyModel,
   type ArtistOfferLinkResponseModel,
   ArtistType,
-  type PatchOfferBodyModel,
   type PostOfferBodyModel,
 } from '@/apiClient/v1'
+import type { PatchOfferBodyModel } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
@@ -135,6 +135,8 @@ export function serializeDetailsPatchData(
     (f) => !isReadOnly(f)
   )
 
+  // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
+  // @ts-expect-error
   return trimStringsInObject({
     ...(!isReadOnly('name') && { name: formValues.name }),
     ...(!isReadOnly('subcategoryId') && {

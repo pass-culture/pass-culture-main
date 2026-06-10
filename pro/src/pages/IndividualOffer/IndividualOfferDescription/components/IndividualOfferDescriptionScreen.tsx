@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -137,10 +137,10 @@ export const IndividualOfferDescriptionScreen = () => {
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchOffer(
-            initialOfferId,
-            serializeDetailsPatchData(formValues, readOnlyFields)
-          ),
+          apiNew.patchOffer({
+            path: { offer_id: initialOfferId },
+            body: serializeDetailsPatchData(formValues, readOnlyFields),
+          }),
           { revalidate: false }
         )
       }
