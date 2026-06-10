@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -102,7 +102,7 @@ describe('IndividualOfferConfirmation', () => {
     contextOverride = {
       offer: offer,
     }
-    vi.spyOn(api, 'getOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({

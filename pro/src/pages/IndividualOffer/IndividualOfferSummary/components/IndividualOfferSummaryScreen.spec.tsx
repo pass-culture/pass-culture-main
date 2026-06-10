@@ -29,7 +29,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
@@ -674,7 +674,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           location: {
-            ...getLocationResponseModelV2({
+            ...getLocationResponseModel({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -687,6 +687,8 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
+      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // @ts-expect-error
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
@@ -711,7 +713,9 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        location: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        location: null,
       })
       const contextValues = {
         offer: {

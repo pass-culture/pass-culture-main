@@ -15,6 +15,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
+import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
@@ -65,6 +66,7 @@ export const IndividualOfferDescriptionScreen = () => {
     hasPublishedOfferWithSameEan,
   } = useIndividualOfferContext()
   const initialOfferImage = getIndividualOfferImage(initialOffer)
+  const extraData = initialOffer?.extraData as OfferExtraData | undefined
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
 
   const isNewOfferDraft = !initialOffer
@@ -264,7 +266,7 @@ export const IndividualOfferDescriptionScreen = () => {
       {isEanSearchInputDisplayed && (
         <DetailsEanSearch
           isDraftOffer={isNewOfferDraft}
-          initialEan={initialOffer?.extraData?.ean}
+          initialEan={extraData?.ean}
           isProductBased={hasSelectedProduct}
           onEanReset={resetFormAndEanImage}
           onEanSearch={updateProduct}

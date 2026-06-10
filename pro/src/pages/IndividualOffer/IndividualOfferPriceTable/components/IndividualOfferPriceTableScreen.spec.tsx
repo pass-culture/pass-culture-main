@@ -1,10 +1,8 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+import type { GetOfferStockResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -205,7 +203,9 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       props: {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
-          lastProvider: undefined,
+          // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+          // @ts-expect-error
+          lastProvider: null,
         }),
       },
     })

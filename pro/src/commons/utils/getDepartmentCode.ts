@@ -1,7 +1,5 @@
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  ListOffersOfferResponseModel,
-} from '@/apiClient/v1'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 
 export const getDepartmentCode = (
   offer:

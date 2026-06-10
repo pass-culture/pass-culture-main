@@ -1,9 +1,7 @@
 import { isAfter } from 'date-fns'
 
-import {
-  type GetIndividualOfferWithAddressResponseModel,
-  OfferStatus,
-} from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'

@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'

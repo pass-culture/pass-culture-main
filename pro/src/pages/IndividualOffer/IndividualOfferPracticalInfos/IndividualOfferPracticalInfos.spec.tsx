@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -39,11 +39,11 @@ const renderIndividualOfferMedia = () => {
 
 describe('IndividialOfferPracticalInfos', () => {
   it('should render a spinner until offer is fetched', async () => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
+    vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offer)
     vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory({}))
     renderIndividualOfferMedia()
 
@@ -53,8 +53,8 @@ describe('IndividialOfferPracticalInfos', () => {
   })
 
   it('should display the page once the offer is fetched', async () => {
-    vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offer)
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
     })

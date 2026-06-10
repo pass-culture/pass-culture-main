@@ -2,7 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
