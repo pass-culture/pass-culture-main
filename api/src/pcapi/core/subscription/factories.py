@@ -147,7 +147,7 @@ class ProfileCompletionContentFactory(factory.Factory):
     school_type: users_models.SchoolTypeEnum | None = None
 
 
-class ApiParticulierPersonFactory(factory.Factory):
+class BonusCreditPersonFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.BonusCreditPerson
 
@@ -176,7 +176,7 @@ class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.QuotientFamilialBonusCreditContent
 
-    custodian = factory.SubFactory(ApiParticulierPersonFactory)
+    custodian = factory.SubFactory(BonusCreditPersonFactory)
     quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
 
 
@@ -184,14 +184,14 @@ class AdultDisabilityBonusCreditContentFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.AdultDisabilityBonusCreditContent
 
-    person = factory.SubFactory(ApiParticulierPersonFactory)
+    person = factory.SubFactory(BonusCreditPersonFactory)
 
 
 class DisabledChildEducationBonusCreditContentFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.DisabledChildEducationBonusCreditContent
 
-    person = factory.SubFactory(ApiParticulierPersonFactory)
+    person = factory.SubFactory(BonusCreditPersonFactory)
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, type[factory.Factory] | None] = {
@@ -331,6 +331,16 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
     reasonCodes = [subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
 
 
-class BonusFraudCheckFactory(BeneficiaryFraudCheckFactory):
+class QFBonusCreditFraudCheckFactory(BeneficiaryFraudCheckFactory):
     type = subscription_models.FraudCheckType.QF_BONUS_CREDIT
+    status = subscription_models.FraudCheckStatus.OK
+
+
+class AAHBonusCreditFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+    status = subscription_models.FraudCheckStatus.OK
+
+
+class AEEHBonusCreditFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
     status = subscription_models.FraudCheckStatus.OK

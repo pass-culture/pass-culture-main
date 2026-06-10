@@ -141,6 +141,7 @@ class UserProfileResponse(HttpBodyModel):
     phone_number: str | None = None
     postal_code: str | None = None
     qf_bonification_status: subscription_models.QFBonificationStatus | None = None
+    disability_bonification_status: subscription_models.DisabilityBonificationStatus | None = None
     recredit_amount_to_show: int | None = None
     recredit_type_to_show: finance_models.RecreditType | None = None
     remaining_bonus_attempts: int | None = None
@@ -254,6 +255,7 @@ class UserProfileResponse(HttpBodyModel):
                 phone_number=user.phoneNumber,
                 postal_code=user.postalCode,
                 qf_bonification_status=users_api.get_user_qf_bonification_status(user),
+                disability_bonification_status=users_api.get_user_disability_bonification_status(user),
                 recredit_amount_to_show=convert_to_cent(user.recreditAmountToShow),
                 recredit_type_to_show=users_api.get_latest_user_recredit_type(user),
                 remaining_bonus_attempts=users_api.get_user_remaining_bonus_attempts(user),

@@ -121,7 +121,7 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
 
     if access_control.has_current_user_permission(
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
-    ) and users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+    ) and users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         account_details_actions.add_action(AccountDetailsActionType.BONUS)
     if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT) and (
         user.is_beneficiary or user.roles == []
@@ -1529,7 +1529,7 @@ def _get_steps_tunnel_underage(user: users_models.User, item_status_15_17: dict)
 
 
 def _get_steps_tunnel_bonus_credit(user: users_models.User) -> list[RegistrationStep]:
-    bonus_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+    bonus_fraud_checks = users_api.get_bonus_credit_fraud_checks(user)
     if not bonus_fraud_checks:
         return []
 
@@ -1798,7 +1798,7 @@ def _fetch_user_for_bonus(user_id: int) -> users_models.User:
 def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+    if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because button should not be displayed, except if the credit is granted in the meantime
         return render_template(
             "components/dynamic/modal_form.html",
@@ -1808,7 +1808,7 @@ def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResp
         )
 
     try:
-        fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        fraud_checks = users_api.get_bonus_credit_fraud_checks(user, subscription_models.FraudCheckType.QF_BONUS_CREDIT)
         content = fraud_checks[-1].source_data()
         assert isinstance(content, bonus_schemas.QuotientFamilialBonusCreditContent)
         custodian = content.custodian
@@ -1846,7 +1846,7 @@ def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResp
 def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
-    if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+    if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
         flash("Ce compte n'est pas éligible à une bonification", "warning")
         return redirect(get_public_account_link(user_id), code=303)
@@ -1856,7 +1856,7 @@ def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(get_public_account_link(user_id), code=303)
 
-    fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
+    fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         user,
         gender=users_models.GenderEnum[form.civility.data],
         first_names=list(filter(None, re.split(",|;| ", form.first_names.data))),

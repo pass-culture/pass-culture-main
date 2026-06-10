@@ -23,6 +23,7 @@ from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as batch_testing
 from pcapi.core.finance import conf as finance_conf
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import OfferFactory
@@ -653,21 +654,23 @@ def test_get_user_attributes_with_achievements():
     assert attributes.achievements == ["FIRST_MOVIE_BOOKING"]
 
 
-@pytest.mark.parametrize(
-    "fraud_check_status, expected_bonification_status",
-    [
-        (subscription_models.FraudCheckStatus.PENDING, subscription_models.QFBonificationStatus.STARTED),
-        (subscription_models.FraudCheckStatus.OK, subscription_models.QFBonificationStatus.GRANTED),
-    ],
-)
-def test_get_user_attributes_bonification_status(fraud_check_status, expected_bonification_status):
+def test_get_user_attributes_bonification_pending_status():
     user = BeneficiaryFactory()
     subscription_factories.BeneficiaryFraudCheckFactory(
         user=user,
         type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-        status=fraud_check_status,
+        status=subscription_models.FraudCheckStatus.PENDING,
     )
 
     attributes = get_user_attributes(user)
 
-    assert attributes.bonification_status == expected_bonification_status
+    assert attributes.bonification_status == subscription_models.QFBonificationStatus.STARTED
+
+
+def test_get_user_attributes_bonification_granted_status():
+    user = BeneficiaryFactory()
+    finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+
+    attributes = get_user_attributes(user)
+
+    assert attributes.bonification_status == subscription_models.QFBonificationStatus.GRANTED
