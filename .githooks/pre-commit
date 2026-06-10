@@ -21,19 +21,19 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/*' 
 if [[ ! -z "$STAGED_FILES" ]]; then
   # run linter on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]; then
-    echo "Looking for dead code..."
-    yarn lint:dead-code
+    echo "Looking for dead code…"
+    pnpm lint:dead-code
     DEAD_CODE_EXIT_CODE=$?
     if [ $DEAD_CODE_EXIT_CODE -ne 0 ]; then
-      echo "Fixing dead code errors..."
-      yarn lint:dead-code:fix
+      echo "Fixing dead code errors…"
+      pnpm lint:dead-code:fix
       echo "✅ dead code fixed"
     else
       echo "✅ dead code all good"
     fi
 
-    echo "Looking for code used only in tests..."
-    yarn lint:dead-code:production
+    echo "Looking for code used only in tests…"
+    pnpm lint:dead-code:production
     TEST_ONLY_EXIT_CODE=$?
     if [ $TEST_ONLY_EXIT_CODE -ne 0 ]; then
       echo "❌ Please fix code used only in tests first "
@@ -42,8 +42,8 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       echo "✅ test-only imports are all good"
     fi
 
-    echo "Running Linter..."
-    yarn lint:js:fix $STAGED_FILES
+    echo "Running Linter…"
+    pnpm lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
@@ -61,7 +61,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run typescript quality on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
     echo "Quality checking..."
-    yarn tsc -b
+    pnpm tsc -b
     QUALITY_EXIT_CODE=$?
 
     # check linter exit code
@@ -77,7 +77,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
-    yarn test:unit:hook $STAGED_FILES
+    pnpm test:unit:hook $STAGED_FILES
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
@@ -94,7 +94,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
     echo "Running Tests"
     # The following command will run tests related to the vite root (`src`)
     # In bash ${string//substring/replacement} replace all occurrences of a string
-    yarn test:unit:hookcoverage ${STAGED_FILES//src\//}
+    pnpm test:unit:hookcoverage ${STAGED_FILES//src\//}
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
@@ -111,7 +111,7 @@ if [[ ! -z "$STAGED_SCSS_FILES" ]]; then
   # run stylelint on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",stylelint," ]]; then
     echo "Running style Linter..."
-    yarn lint:scss:hook:fix $STAGED_SCSS_FILES
+    pnpm lint:scss:hook:fix $STAGED_SCSS_FILES
     LINTER_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
@@ -133,7 +133,7 @@ if [[ ! -z "$STAGED_SCSS_FILES" || ! -z "$STAGED_TS_FILES" ]]; then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",unusedcss," ]]; then
     echo "Running check-unused-css ..."
 
-    yarn lint:scss:checkunused
+    pnpm lint:scss:checkunused
     LINTER_EXIT_CODE=$?
 
     # check linter exit code

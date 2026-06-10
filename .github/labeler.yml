@@ -1,18 +1,18 @@
 ci:
-- changed-files:
-  - any-glob-to-any-file: .github/**
+  - changed-files:
+      - any-glob-to-any-file: .github/**
 
 dependencies:
-- changed-files:
-  - any-glob-to-any-file:
-    - api/uv.lock
-    - pro/yarn.lock
-    - api/documentation/package-lock.json
+  - changed-files:
+      - any-glob-to-any-file:
+          - api/uv.lock
+          - pro/pnpm-lock.yaml
+          - api/documentation/package-lock.json
 
 migration:
-- changed-files:
-    - any-glob-to-any-file: api/src/pcapi/alembic/versions/**
+  - changed-files:
+      - any-glob-to-any-file: api/src/pcapi/alembic/versions/**
 
 # Add 'ticket' label to any PR where the head branch name has a `PC` or 'pc' section in the name
 ticket:
- - head-branch: ['PC', 'pc']
+  - head-branch: ["PC", "pc"]

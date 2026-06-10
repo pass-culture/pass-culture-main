@@ -75,7 +75,7 @@ Structure du dossier `pro/src/` (Schéma généré avec [cet utilitaire](<https:
 > On peut générer un composant (page, ui-kit, transverse) avec la commande suivante :
 >
 > ```bash
-> yarn generate:component <nom composant>
+> pnpm generate:component <nom composant>
 > ```
 >
 > [C.f. documentation détaillée](../scripts/generator/README.md)

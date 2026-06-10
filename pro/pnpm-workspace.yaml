@@ -1,0 +1,5 @@
+allowBuilds:
+  '@firebase/util': false
+  '@parcel/watcher': false
+  esbuild: false
+  storybook-addon-remix-react-router: false

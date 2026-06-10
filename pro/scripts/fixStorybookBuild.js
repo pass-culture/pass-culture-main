@@ -35,7 +35,7 @@ const fixStorybookCssNesting = async () => {
   } catch {
     console.error(
       'error =>',
-      `${IFRAME_PATH} not found. Run \`yarn build-storybook\` first.`
+      `${IFRAME_PATH} not found. Run \`pnpm build-storybook\` first.`
     )
     process.exit(1)
   }

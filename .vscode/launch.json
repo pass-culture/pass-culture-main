@@ -114,7 +114,7 @@
             "request": "launch",
             "name": "Debug current spec test file",
             "cwd": "${workspaceFolder}/pro",
-            "runtimeExecutable": "yarn",
+            "runtimeExecutable": "pnpm",
             "runtimeArgs": [
                 "test:unit",
                 "run",

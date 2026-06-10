@@ -10,13 +10,20 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
         with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
-      - run: yarn install --immutable
+      - run: pnpm ci
         working-directory: pro
-      - run: yarn build-storybook
+      - run: pnpm build-storybook
         working-directory: pro
       - name: Deploy Storybook on GitHub pages
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0

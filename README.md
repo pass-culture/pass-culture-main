@@ -10,18 +10,19 @@
 </div>
 
 ---
+
 Le repo `main` contient les 4 projets suivants :
 
 - Le backend : [api](./api) (Flask)
 - L'espace partenaire : [pro](./pro) (React)
 - La documentation de l'API publique pour les partenaires techniques du pass Culture : [doc](./api/documentation)
-- La page de maintenance (HTML):  [maintenance-site](./maintenance-site)
+- La page de maintenance (HTML): [maintenance-site](./maintenance-site)
 
 ## Installation
 
 ### Installer les dépendances communes entre le front pro et le backend
 
-- [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain)  # TODO: tester l'installation avec safe-chain
+- [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain) # TODO: tester l'installation avec safe-chain
   - `npm i -g @aikidosec/safe-chain`
   - `safe-chain setup`
   - Redémarrer le terminal
@@ -55,7 +56,7 @@ Il est recommandé de lire les READMEs dans le paragraphe au dessus pour l'insta
 des serveurs. Cependant, si vous êtes à 5 minutes près, voici de brèves instructions pour lancer l'API et les différents frontends via le script `pc`, qui fait appel à docker compose.
 
 Le script `pc` n'est pas essentiel au projet, il est toujours possible de lancer les serveurs directement en
-utilisant les commandes `python` ou `yarn`.
+utilisant les commandes `python` ou `pnpm`.
 
 #### Backend api
 
@@ -75,12 +76,12 @@ Un grand désavantage de passer par docker est la latence et la durée de créat
 #### Backoffice
 
 - [http://localhost:5002/](http://localhost:5002/) devrait être lancé et fonctionnel après `pc start-backend`, une fois
-qu'api répond
+  qu'api répond
 - Cliquez sur _Se connecter via Google_
 - Vous arriverez alors sur la page d'accueil du BO, en tant qu'utilisateur admin `admin@passculture.local`, avec toutes
-les permissions
+  les permissions
 - Si vous avez besoin d'une adresse email spécifique pour l'admin local, par exemple pour le lien avec des services
-externes, spécifiez l'email dans une variable `BACKOFFICE_LOCAL_USER_EMAIL` dans le fichier `.env.local.secret`.
+  externes, spécifiez l'email dans une variable `BACKOFFICE_LOCAL_USER_EMAIL` dans le fichier `.env.local.secret`.
 
 #### Portail pro
 
@@ -138,7 +139,7 @@ https://backend.staging.passculture.team/health/api
 https://backend.passculture.app/health/api
 ```
 
-## Administration  # TODO: migrer la documentation à la nouvelle infra
+## Administration # TODO: migrer la documentation à la nouvelle infra
 
 ### Connexion à la base postgreSQL d'un environnement
 
