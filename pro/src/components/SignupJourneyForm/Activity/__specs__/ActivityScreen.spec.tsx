@@ -88,7 +88,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     listEducationalDomains: vi.fn(),
   },
 }))

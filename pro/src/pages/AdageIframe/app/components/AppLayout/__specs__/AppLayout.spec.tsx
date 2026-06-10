@@ -42,6 +42,16 @@ vi.mock('@/apiClient/api', () => ({
     logSearchButtonClick: vi.fn(),
     logCatalogView: vi.fn(),
     getCollectiveOffer: vi.fn(),
+    logHasSeenAllPlaylist: vi.fn(),
+    logConsultPlaylistElement: vi.fn(),
+    logHasSeenWholePlaylist: vi.fn(),
+    newTemplateOffersPlaylist: vi.fn(),
+  },
+  apiNew: {
+    listEducationalDomains: vi.fn(() => [
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+    ]),
   },
 }))
 
@@ -70,21 +80,6 @@ vi.mock('@/commons/utils/config', async () => {
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
   }
 })
-
-vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
-    logHasSeenAllPlaylist: vi.fn(),
-    logConsultPlaylistElement: vi.fn(),
-    logHasSeenWholePlaylist: vi.fn(),
-    newTemplateOffersPlaylist: vi.fn(),
-  },
-  api: {
-    listEducationalDomains: vi.fn(() => [
-      { id: 1, name: 'Danse' },
-      { id: 2, name: 'Architecture' },
-    ]),
-  },
-}))
 
 vi.mock('@/commons/hooks/useIsElementVisible', () => ({
   useIsElementVisible: vi.fn(() => [false, false]),

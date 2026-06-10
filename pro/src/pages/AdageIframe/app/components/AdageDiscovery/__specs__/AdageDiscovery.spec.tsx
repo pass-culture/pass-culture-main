@@ -9,7 +9,7 @@ import {
   AdageFrontRoles,
   type AuthenticatedResponse,
 } from '@/apiClient/adage/new'
-import { api, apiAdage } from '@/apiClient/api'
+import { apiAdageNew, apiNew } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -27,17 +27,15 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
-    logHasSeenAllPlaylist: vi.fn(),
-    logConsultPlaylistElement: vi.fn(),
-    logHasSeenWholePlaylist: vi.fn(),
-    newTemplateOffersPlaylist: vi.fn(),
-  },
-  api: {
+  apiNew: {
     listEducationalDomains: vi.fn(),
   },
   apiAdageNew: {
     saveRedactorPreferences: vi.fn(),
+    logHasSeenAllPlaylist: vi.fn(),
+    logConsultPlaylistElement: vi.fn(),
+    logHasSeenWholePlaylist: vi.fn(),
+    newTemplateOffersPlaylist: vi.fn(),
   },
 }))
 
@@ -72,7 +70,7 @@ describe('AdageDiscovery', () => {
       error: snackBarError,
     }))
 
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
+    vi.spyOn(apiNew, 'listEducationalDomains').mockResolvedValue([
       { id: 1, name: 'Danse', nationalPrograms: [] },
       { id: 2, name: 'Architecture', nationalPrograms: [] },
     ])
@@ -81,7 +79,9 @@ describe('AdageDiscovery', () => {
   it('should render adage discovery', async () => {
     renderAdageDiscovery(adageUser)
 
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
+    )
 
     expect(
       screen.getByText('Les offres publiées récemment')
@@ -106,9 +106,11 @@ describe('AdageDiscovery', () => {
   it('should not call tracker when footer suggestion is not visible', async () => {
     renderAdageDiscovery(adageUser)
 
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
+    )
 
-    expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(0)
+    expect(apiAdageNew.logHasSeenAllPlaylist).toHaveBeenCalledTimes(0)
   })
 
   it('should call tracker when last playlist is visible', async () => {
@@ -118,9 +120,11 @@ describe('AdageDiscovery', () => {
 
     renderAdageDiscovery(adageUser)
 
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
+    )
 
-    expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(1)
+    expect(apiAdageNew.logHasSeenAllPlaylist).toHaveBeenCalledTimes(1)
   })
 
   it('should call tracker for domains playlist element', async () => {
@@ -134,13 +138,15 @@ describe('AdageDiscovery', () => {
 
     await userEvent.click(link)
 
-    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith(
+    expect(apiAdageNew.logConsultPlaylistElement).toHaveBeenCalledWith(
       expect.objectContaining({
-        domainId: 1,
-        index: 0,
-        playlistId: DOMAINS_PLAYLIST,
-        playlistType: 'domain',
-        iframeFrom: '/',
+        body: {
+          domainId: 1,
+          index: 0,
+          playlistId: DOMAINS_PLAYLIST,
+          playlistType: 'domain',
+          iframeFrom: '/',
+        },
       })
     )
   })
@@ -161,14 +167,16 @@ describe('AdageDiscovery', () => {
       .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
 
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
+    )
 
     //  Log called once for each playlist
-    expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
+    expect(apiAdageNew.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
   })
 
   it('should display error message when educational domains API fails', async () => {
-    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(
+    vi.spyOn(apiNew, 'listEducationalDomains').mockRejectedValueOnce(
       new Error('API Error')
     )
 

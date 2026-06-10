@@ -89,7 +89,7 @@ vi.mock('@/apiClient/api', () => ({
     logHasSeenAllPlaylist: vi.fn(),
     logOfferListViewSwitch: vi.fn(),
   },
-  api: {
+  apiNew: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
@@ -140,7 +140,7 @@ describe('app', () => {
       })
     })
 
-    it('should display venue tag when siret is provided and public name exists', async () => {
+    it('should display venue tag using public name when siret and venue are provided', async () => {
       const mockLocation = {
         ...window.location,
         search: '?siret=123456789&venue=1436',
