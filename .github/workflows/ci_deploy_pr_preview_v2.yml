@@ -84,12 +84,12 @@ jobs:
           echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
           echo "$API_TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Authentification to Google (branch name length must be <= 77 chars — it might change)
+      - name: Authentification to Google
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         id: openid-auth
         with:
           token_format: access_token
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
 
       - name: Check if pcapi already exists
