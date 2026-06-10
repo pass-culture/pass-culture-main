@@ -2,8 +2,6 @@ import decimal
 import enum
 import typing
 
-from sqlalchemy.ext.mutable import MutableDict
-
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import utils as geography_utils
@@ -154,8 +152,6 @@ class ObjectUpdateSnapshot:
                 old_value = getattr(target, column).name
             elif isinstance(getattr(target, column), decimal.Decimal):
                 old_value = float(getattr(target, column))
-            elif isinstance(getattr(target, column), MutableDict) and new_value is None:
-                old_value = None
             else:
                 old_value = getattr(target, column)
 
