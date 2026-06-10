@@ -1,6 +1,10 @@
 name: 0 [CI] Deploy PR preview v2
 
 on:
+  push:
+    branches:
+      - IC-1378/feature/deploy-preview-env-infra-v2
+
   workflow_dispatch:
     inputs:
       sandbox:
