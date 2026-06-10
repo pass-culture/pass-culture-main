@@ -1,7 +1,7 @@
 import type {
   CreatePriceCategoryModel,
   PriceCategoryBody,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 import type { PriceTableFormValues } from '../schemas'
