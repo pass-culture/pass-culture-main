@@ -711,7 +711,9 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        location: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        location: null,
       })
       const contextValues = {
         offer: {

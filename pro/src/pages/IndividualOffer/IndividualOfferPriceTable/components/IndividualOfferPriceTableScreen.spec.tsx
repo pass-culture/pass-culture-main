@@ -205,7 +205,9 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       props: {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
-          lastProvider: undefined,
+          // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+          // @ts-expect-error
+          lastProvider: null,
         }),
       },
     })

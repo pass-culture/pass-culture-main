@@ -24,8 +24,12 @@ describe('OfferPublicationEditionForm', () => {
   it('should render the form', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        publicationDatetime: undefined,
-        bookingAllowedDatetime: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        publicationDatetime: null,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
     })
@@ -46,10 +50,12 @@ describe('OfferPublicationEditionForm', () => {
   it('should disable the form if the pause toggle is on', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        // TODO (tpommellet): To remove once the OfferPublicationEditionForm has been migrated to the new offer model.
-        // Currently, the component still reads the legacy (`@/apiClient/v1`) offer model and detects a paused offer via `publicationDatetime === null`
-        publicationDatetime: null as unknown as undefined,
-        bookingAllowedDatetime: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        publicationDatetime: null,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
     })
@@ -78,7 +84,9 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: publicationDateFomatted,
-        bookingAllowedDatetime: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
     })
@@ -104,7 +112,9 @@ describe('OfferPublicationEditionForm', () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
         publicationDatetime: bookingAllowedDateFormatted,
-        bookingAllowedDatetime: undefined,
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        bookingAllowedDatetime: null,
       }),
       onSubmit: () => {},
     })

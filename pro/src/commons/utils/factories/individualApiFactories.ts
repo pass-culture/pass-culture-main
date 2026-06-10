@@ -106,6 +106,9 @@ export const getIndividualOfferFactory = (
     isDuo: true,
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+    // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+    // @ts-expect-error
+    lastProvider: null,
     bookingsCount: 0,
     isNonFreeOffer: true,
     visualDisabilityCompliant: true,
