@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
