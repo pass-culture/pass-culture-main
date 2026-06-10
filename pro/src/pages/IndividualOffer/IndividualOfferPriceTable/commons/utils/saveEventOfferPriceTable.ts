@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   GET_OFFER_QUERY_KEY,
@@ -36,10 +36,10 @@ export const saveEventOfferPriceTable = async (
   if (dirtyFields) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
-      api.replaceOfferPriceCategories(
-        offer.id,
-        toPriceCategoryBody(formValues)
-      ),
+      apiNew.replaceOfferPriceCategories({
+        path: { offer_id: offer.id },
+        body: toPriceCategoryBody(formValues),
+      }),
       { revalidate: false }
     )
     await mutate([GET_STOCKS_QUERY_KEY, offer.id])
