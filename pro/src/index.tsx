@@ -11,7 +11,7 @@ import { unregister } from './registerServiceWorker'
 
 const isAdageIframe = window.location.href.includes('adage-iframe')
 
-// Initialize sentry
+// Initialize Sentry
 if (SENTRY_SERVER_URL) {
   initializeSentry()
 }

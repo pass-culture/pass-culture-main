@@ -127,7 +127,6 @@
   "overrides": [
     // -------------------------------------------------------------------------
     // package.json
-    // We don't want Biome linting to conflict with Yarn `JSON.stringify` formatting when Yarn updates version or dependencies.
 
     {
       "includes": ["package.json"],

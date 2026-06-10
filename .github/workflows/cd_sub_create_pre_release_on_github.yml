@@ -61,7 +61,7 @@ jobs:
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
-          yarn version --new-version "$TAG_NUMBER"
+          pnpm version --no-commit-hooks --no-git-tag-version "$TAG_NUMBER"
           git add package.json
 
       - name: Add version to image-resizing
