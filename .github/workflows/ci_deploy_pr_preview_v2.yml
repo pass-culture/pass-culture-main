@@ -41,7 +41,6 @@ jobs:
     name: Init
     environment:
       name: pcapi-preview
-      deploy: false
     runs-on: ubuntu-latest
     outputs:
       # checksum-tag is the sha1sum of the api folder. It is used to tag the docker image
@@ -196,6 +195,7 @@ jobs:
           passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}"
 
       - name: Publish Summary
+        shell: bash
         env:
           PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
         run: |
@@ -204,6 +204,6 @@ jobs:
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
             echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
-            echo "| [Back] url                           |  https://pr-${{ PULL_REQUEST_ID }}.backend.testing.passculture.team/ |"
-            echo "| [BO] url                             |  https://pr-${{ PULL_REQUEST_ID }}.backoffice.testing.passculture.team/ |"
+            echo "| [Back] url                           |  https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team/ |"
+            echo "| [BO] url                             |  https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team/ |"
           } >> "$GITHUB_STEP_SUMMARY"
