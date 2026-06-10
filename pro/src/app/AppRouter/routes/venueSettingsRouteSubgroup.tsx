@@ -6,7 +6,7 @@ import { VenueSettings } from '@/pages/VenueSettings/VenueSettings'
 import type { CustomRouteGroup } from '../types'
 import { mustHaveSelectedPartnerVenue } from '../utils'
 
-export const settingsRouteGroup: CustomRouteGroup = {
+export const venueSettingsRouteSubgroup: CustomRouteGroup = {
   path: '/parametres',
   loader: withUserPermissions(mustHaveSelectedPartnerVenue),
   handle: {
