@@ -35,7 +35,7 @@
     "test:e2e:mobile:ci": "playwright test -c ./config/playwright.config.ts --project=mobile-chrome",
     "test:e2e:mobile:debug": "playwright test -c ./config/playwright.config.ts --debug --project=mobile-chrome",
     "test:unit": "vitest",
-    "test:unit:hook": "vitest related --run",
+    "test:unit:hook": "vitest related --runn",
     "test:unit:hookcoverage": "vitest related --run --coverage.enabled=true --coverage.100=true",
     "test:unit:ci": "vitest run --coverage",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
