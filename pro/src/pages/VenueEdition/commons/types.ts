@@ -1,19 +1,20 @@
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1/new'
-import type { AccessibilityFormValues } from '@/commons/core/shared/types'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
-import type { Nullable } from '@/commons/utils/types'
+import type {
+  EditVenueBodyModel,
+  VenueContactModelV2,
+} from '@/apiClient/v1/new'
+import type { Defined, PickDefined } from '@/commons/utils/types'
 
-export interface VenueEditionFormValues {
-  accessibility: Nullable<AccessibilityFormValues>
-  description?: string
-  email?: string | null
-  isAccessibilityAppliedOnAllOffers: boolean
-  phoneNumber?: string | null
-  webSite?: string | null
-  isOpenToPublic: string
-  openingHours?: WeekdayOpeningHoursTimespans | null
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
-  culturalDomains?: string[]
-  volunteeringUrl?: string | null
+export type EditVenueBodyModelVenueEditionPatch = PickDefined<
+  EditVenueBodyModel,
+  | 'activity'
+  | 'audioDisabilityCompliant'
+  | 'culturalDomains'
+  | 'isOpenToPublic'
+  | 'mentalDisabilityCompliant'
+  | 'motorDisabilityCompliant'
+  | 'openingHours'
+  | 'visualDisabilityCompliant'
+  | 'volunteeringUrl'
+> & {
+  contact: Defined<VenueContactModelV2>
 }

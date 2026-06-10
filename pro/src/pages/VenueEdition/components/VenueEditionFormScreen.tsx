@@ -32,9 +32,9 @@ export const VenueEditionFormScreen = ({
       )}
 
       {location.pathname.includes('/edition') ? (
-        <VenueEditionForm venue={venue} />
+        <VenueEditionForm />
       ) : (
-        <VenueEditionReadOnly venue={venue} />
+        <VenueEditionReadOnly />
       )}
     </>
   )

@@ -29,10 +29,12 @@ import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInpu
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import { getVolunteeringUrlError } from '../commons/getVolunteeringUrlError'
+import {
+  type VenueEditionFormValues,
+  VenueEditionValidationSchema,
+} from '../commons/schemas'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
-import type { VenueEditionFormValues } from '../commons/types'
-import { getValidationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { ActivityDetailsReadOnly } from './ActivityDetails/ActivityDetailsReadOnly/ActivityDetailsReadOnly'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
@@ -51,13 +53,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { logEvent } = useAnalytics()
   const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
 
-  const methods = useForm<VenueEditionFormValues>({
+  const form = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(getValidationSchema()),
+    resolver: yupResolver(VenueEditionValidationSchema),
     mode: 'onBlur',
   })
-
-  const hasDirtyFields = Object.keys(methods.formState.dirtyFields).length > 0
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
@@ -102,7 +102,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         )
 
         for (const field of errorsKeys) {
-          methods.setError(field as keyof VenueEditionFormValues, {
+          form.setError(field as keyof VenueEditionFormValues, {
             type: field,
             message: formErrors[field].toString(),
           })
@@ -117,13 +117,13 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   }
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout fullWidthActions>
           <FormLayout.Section
             title={
-              venue.isOpenToPublic
+              form.isOpenToPublic
                 ? 'Vos informations pour le grand public'
                 : 'Vos informations'
             }
@@ -155,13 +155,13 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
               <FormLayout.Row>
                 <TextArea
-                  {...methods.register('description')}
+                  {...form.register('description')}
                   label="Description"
                   maxLength={1000}
                   description={
                     'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
                   }
-                  error={methods.formState.errors.description?.message}
+                  error={form.formState.errors.description?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
@@ -234,16 +234,16 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             >
               <FormLayout.Row>
                 <TextInput
-                  {...methods.register('volunteeringUrl')}
+                  {...form.register('volunteeringUrl')}
                   name="volunteeringUrl"
                   label="URL de votre page JeVeuxAider.gouv.fr"
                   description="Format : https://www.jeveuxaider.gouv.fr/organisations/exemple"
-                  error={methods.formState.errors.volunteeringUrl?.message}
+                  error={form.formState.errors.volunteeringUrl?.message}
                   onBlur={(event) => {
                     const value = event.target.value
                     const error = getVolunteeringUrlError(value)
                     if (value.trim() && error) {
-                      methods.setError('volunteeringUrl', {
+                      form.setError('volunteeringUrl', {
                         type: 'manual',
                         message: error,
                       })
@@ -262,9 +262,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             >
               <FormLayout.Row mdSpaceAfter>
                 <PhoneNumberInput
-                  {...methods.register('phoneNumber')}
+                  {...form.register('phoneNumber')}
                   label="Téléphone"
-                  error={methods.formState.errors.phoneNumber?.message}
+                  error={form.formState.errors.phoneNumber?.message}
                 />
               </FormLayout.Row>
               <FormLayout.Row mdSpaceAfter>
@@ -273,8 +273,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   type="email"
                   description="Format : email@exemple.com"
                   autoComplete="email"
-                  {...methods.register('email')}
-                  error={methods.formState.errors.email?.message}
+                  {...form.register('email')}
+                  error={form.formState.errors.email?.message}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
@@ -283,17 +283,17 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   type="url"
                   description="Format : https://exemple.com"
                   maxLength={256}
-                  {...methods.register('webSite')}
-                  error={methods.formState.errors.webSite?.message}
+                  {...form.register('webSite')}
+                  error={form.formState.errors.webSite?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
           </FormLayout.Section>
         </FormLayout>
 
-        <VenueFormActionBar isSubmitting={methods.formState.isSubmitting} />
+        <VenueFormActionBar isSubmitting={form.formState.isSubmitting} />
         <RouteLeavingGuardVenueEdition
-          shouldBlock={hasDirtyFields && !methods.formState.isSubmitting}
+          shouldBlock={form.formState.isDirty && !form.formState.isSubmitting}
         />
       </form>
     </FormProvider>

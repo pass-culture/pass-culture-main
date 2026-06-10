@@ -1,8 +1,8 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { getVolunteeringUrlError } from '../getVolunteeringUrlError'
+import { getValidationSchema } from '../schemas'
 import type { VenueEditionFormValues } from '../types'
-import { getValidationSchema } from '../validationSchema'
 
 vi.mock('../getVolunteeringUrlError', () => ({
   getVolunteeringUrlError: vi.fn(),
