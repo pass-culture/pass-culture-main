@@ -252,7 +252,7 @@ describe('IndividualOfferSummaryScreen', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
       getIndividualOfferFactory()
     )
     vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue(musicTypes)
@@ -385,11 +385,12 @@ describe('IndividualOfferSummaryScreen', () => {
             resolve(getIndividualOfferFactory())
           }, 200)
         )
-      vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockImplementationOnce(
+        // @ts-expect-error -- to remove once the api client is migrated to Pydantic V2
         () => mockResponse
       )
       await userEvent.click(buttonPublish)
-      expect(api.patchPublishOffer).toHaveBeenCalled()
+      expect(apiNew.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()
       await waitFor(() => expect(pageTitle).not.toBeInTheDocument())
       expect(
@@ -436,9 +437,11 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
-      expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: 1,
-        publicationDatetime: `${publicationDate}T10:00:00Z`,
+      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+        body: {
+          id: 1,
+          publicationDatetime: `${publicationDate}T10:00:00Z`,
+        },
       })
 
       // Clean up the mocked time
@@ -490,9 +493,11 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
-      expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: 1,
-        bookingAllowedDatetime: `${bookingAllowedDate}T10:00:00Z`,
+      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+        body: {
+          id: 1,
+          bookingAllowedDatetime: `${bookingAllowedDate}T10:00:00Z`,
+        },
       })
 
       // Clean up the mocked time
@@ -504,7 +509,7 @@ describe('IndividualOfferSummaryScreen', () => {
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      vi.spyOn(api, 'patchPublishOffer').mockRejectedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -526,7 +531,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal when the partner venue has no bank account and the offer is non-free', async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({
           isNonFreeOffer: true,
         })
@@ -569,7 +574,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal when the partner venue already has a bank account', async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
@@ -592,7 +597,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal if offer is free', async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
@@ -614,7 +619,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal if the partner venue already has non-free offers', async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
@@ -637,7 +642,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal in onboarding mode regardless of bank account or non-free offers', async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
@@ -768,7 +773,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should validate publication date and time when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -823,15 +828,17 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: 1,
-        publicationDatetime: expect.any(String),
-        bookingAllowedDatetime: undefined,
+      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+        body: {
+          id: 1,
+          publicationDatetime: expect.any(String),
+          bookingAllowedDatetime: undefined,
+        },
       })
     })
 
     it("should require publication date to be in the future when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -879,10 +886,12 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: 1,
-        publicationDatetime: expect.any(String),
-        bookingAllowedDatetime: undefined,
+      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+        body: {
+          id: 1,
+          publicationDatetime: expect.any(String),
+          bookingAllowedDatetime: undefined,
+        },
       })
     })
 
@@ -999,7 +1008,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should require publication date to be within two years when it's a scheduled publication", async () => {
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -1051,10 +1060,12 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: 1,
-        publicationDatetime: expect.any(String),
-        bookingAllowedDatetime: undefined,
+      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+        body: {
+          id: 1,
+          publicationDatetime: expect.any(String),
+          bookingAllowedDatetime: undefined,
+        },
       })
     })
   })
