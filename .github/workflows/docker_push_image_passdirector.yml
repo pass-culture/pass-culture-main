@@ -88,6 +88,7 @@ jobs:
           TAG: ${{ inputs.tag }}
           REGISTRY: ${{ inputs.registry_url }}/${{ inputs.registry_project }}/${{ inputs.registry_repository }}
         run: |
+          echo docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}"
           passdirector docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}"
       - name: Push image with latest tag using passdirector
         shell: bash
