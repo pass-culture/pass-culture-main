@@ -155,6 +155,7 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
           otherwise: (schema) => schema,
         }),
       volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
+      withdrawalDetails: yup.string().nullable(),
     })
     .concat(openToPublicValidationSchema)
 }
