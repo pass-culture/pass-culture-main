@@ -271,4 +271,45 @@ describe('RecurrenceForm', () => {
     const errorMessages = screen.getAllByText(/Veuillez renseigner un horaire/i)
     expect(errorMessages.length).toBe(2)
   })
+
+  it('should accept empty string as an empty value', async () => {
+    // This reproduces a bug where a user added a number value, but deleted it, and then tried to submit the form.
+    // The form would not be submitted because the value was an empty string, and parsing it as a number would throw an error.
+
+    // The error:
+    // bookingLimitDateInterval must be a `number` type, but the final value was: `NaN` (cast from the value `""`).
+
+    // The fix: transform the empty string to null
+    renderRecurrenceForm()
+
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement *'),
+      format(addDays(new Date(), 2), FORMAT_ISO_DATE_ONLY)
+    )
+    await userEvent.type(screen.getByLabelText(/Horaire 1/), '12:00')
+    await userEvent.type(
+      screen.getByRole('spinbutton', {
+        name: 'Nombre de places',
+      }),
+      '10'
+    )
+    await userEvent.type(screen.getByLabelText(/Tarif/), '21')
+
+    // Type '1' and then delete it to have an empty string as value
+    await userEvent.type(
+      screen.getByLabelText('Nombre de jours avant le début de l’évènement', {
+        exact: false,
+      }),
+      '1'
+    )
+    await userEvent.type(
+      screen.getByLabelText('Nombre de jours avant le début de l’évènement', {
+        exact: false,
+      }),
+      '[Backspace]'
+    )
+
+    await userEvent.click(screen.getByText('Valider'))
+    expect(mockSubmit).toHaveBeenCalled()
+  })
 })
