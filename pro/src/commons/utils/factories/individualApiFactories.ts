@@ -9,8 +9,6 @@ import {
   type CategoryResponseModel,
   type GetBookingResponse,
   type GetOffererVenueResponseModel,
-  type GetOfferStockResponseModel,
-  type GetStocksResponseModel,
   type GetVenueResponseModel,
   type ManagedVenue,
   type OfferHomeResponseModel,
@@ -25,7 +23,9 @@ import {
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
   type GetOfferManagingOffererResponseModel,
+  type GetOfferStockResponseModel,
   type GetOfferVenueResponseModel,
+  type GetStocksResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
   OfferStatus,
@@ -363,6 +363,7 @@ export const getOfferStockFactory = (
   return {
     id: stockResponseId++,
     price: 10,
+    // @ts-expect-error - to remove when GetStockResponseModel will be migrated to pydanticV2
     activationCodesExpirationDatetime: null,
     hasActivationCode: false,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),

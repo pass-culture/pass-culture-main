@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_STOCKS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
@@ -13,7 +13,7 @@ const IndividualOfferPracticalInfos = (): JSX.Element | null => {
 
   const getStocksQuery = useSWR(
     offer?.id ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
-    ([, offerId]) => api.getStocks(offerId)
+    ([, offerId]) => apiNew.getStocks({ path: { offer_id: offerId } })
   )
 
   if (!offer || !getStocksQuery.data) {

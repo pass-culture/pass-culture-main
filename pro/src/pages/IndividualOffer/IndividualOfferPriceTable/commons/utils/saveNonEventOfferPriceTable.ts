@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   GET_OFFER_QUERY_KEY,
@@ -38,10 +38,10 @@ export const saveNonEventOfferPriceTable = async (
 
   await mutate(
     [GET_STOCKS_QUERY_KEY, offer.id],
-    api.upsertOfferStocks(
-      offer.id,
-      toThingStocksBulkUpsertBodyModel(formValues, { departementCode })
-    ),
+    apiNew.upsertOfferStocks({
+      path: { offer_id: offer.id },
+      body: toThingStocksBulkUpsertBodyModel(formValues, { departementCode }),
+    }),
     { revalidate: false }
   )
 
