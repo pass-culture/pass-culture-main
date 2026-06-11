@@ -1,16 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
 import * as handleErrorModule from '@/commons/errors/handleError'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { logout } from '../logout'
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    signout: vi.fn(),
-  },
-}))
 vi.mock('@/commons/errors/handleError', () => ({
   handleError: vi.fn(),
 }))
@@ -53,7 +47,6 @@ describe('logout', () => {
   it('should handle signout error gracefully and still reset state', async () => {
     const failedFetchMock = vi.fn(() => Promise.reject(new Error()))
     vi.spyOn(window, 'fetch').mockImplementation(failedFetchMock)
-    vi.spyOn(api, 'signout').mockRejectedValue(new Error())
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
     await logout()
