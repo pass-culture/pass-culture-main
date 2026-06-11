@@ -4,7 +4,7 @@ import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   ApiError,
   CancelablePromise,
