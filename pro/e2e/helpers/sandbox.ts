@@ -9,6 +9,12 @@ export async function sandboxCall<T = unknown>(
   method: 'GET' | 'POST',
   url: string
 ): Promise<T> {
+  if (!process.env.E2E_API_KEY) {
+    throw new Error(
+      'E2E_API_KEY is not set. Please add it to env vars or to your `.env.local.secret` file.'
+    )
+  }
+
   const response = await request.fetch(url, {
     method,
     timeout: SANDBOX_TIMEOUT,
