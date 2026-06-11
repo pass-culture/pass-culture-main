@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
-          persist-credentials: false
+          persist-credentials: true
       - name: Create new maintenance branch (v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0)
         env:
           NEW_MAINTENANCE_BRANCH: maint/v${{ needs.compute-major-version-variables.outputs.release-number }}
