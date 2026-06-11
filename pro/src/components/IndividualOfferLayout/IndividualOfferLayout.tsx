@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
@@ -69,7 +69,7 @@ export const IndividualOfferLayout = ({
       return
     }
     try {
-      await api.deleteDraftOffers({ ids: [offer.id] })
+      await apiNew.deleteDraftOffers({ body: { ids: [offer.id] } })
     } catch {
       snackBar.error(
         'Une erreur s’est produite lors de la suppression de l’offre'

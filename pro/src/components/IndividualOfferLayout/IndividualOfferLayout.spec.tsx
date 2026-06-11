@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
@@ -290,7 +290,7 @@ describe('IndividualOfferLayout', () => {
 
     it('should remove the draft offer if the user clicks on "Supprimer ce brouillon"', async () => {
       const deleteDraftOffersSpy = vi
-        .spyOn(api, 'deleteDraftOffers')
+        .spyOn(apiNew, 'deleteDraftOffers')
         .mockResolvedValueOnce()
 
       const offer = getIndividualOfferFactory({ status: OfferStatus.DRAFT })
@@ -305,7 +305,9 @@ describe('IndividualOfferLayout', () => {
         screen.getByRole('button', { name: 'Supprimer ce brouillon' })
       )
 
-      expect(deleteDraftOffersSpy).toHaveBeenCalledWith({ ids: [offer.id] })
+      expect(deleteDraftOffersSpy).toHaveBeenCalledWith({
+        body: { ids: [offer.id] },
+      })
 
       expect(
         await screen.findByText('Votre brouillon a bien été supprimé')
@@ -314,7 +316,7 @@ describe('IndividualOfferLayout', () => {
 
     it('should not remove the draft offer if the offer does not exist', async () => {
       const deleteDraftOffers = vi
-        .spyOn(api, 'deleteDraftOffers')
+        .spyOn(apiNew, 'deleteDraftOffers')
         .mockResolvedValueOnce()
 
       const contextValues = {
@@ -331,7 +333,7 @@ describe('IndividualOfferLayout', () => {
     })
 
     it('should show an error message if the deletion failed', async () => {
-      vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(
+      vi.spyOn(apiNew, 'deleteDraftOffers').mockRejectedValueOnce(
         new Error('error')
       )
 
