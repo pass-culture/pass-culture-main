@@ -27,8 +27,8 @@ importers:
         specifier: 0.14.13
         version: 0.14.13
       '@firebase/remote-config':
-        specifier: 0.8.3
-        version: 0.8.3(@firebase/app@0.14.13)
+        specifier: 0.8.4
+        version: 0.8.4(@firebase/app@0.14.13)
       '@hookform/resolvers':
         specifier: 5.4.0
         version: 5.4.0(react-hook-form@7.76.1(react@19.2.6))
@@ -773,8 +773,8 @@ packages:
     resolution: {integrity: sha512-vZKLsqE1ABOy8OjQiE7cUTFn4gvaqlk88yp8N94Pk/sDpq61YqZGqmVFZTvOyflTwuYFcWirBdYGoJgbDaXKYQ==}
     engines: {node: '>=20.0.0'}
 
-  '@firebase/remote-config@0.8.3':
-    resolution: {integrity: sha512-ggGKAaLy9YNOvpFoQZgm5p5SiFw3ZFtwti08dojnBQmQicpThTxvG5xZMSpCTYMj2o3gM/yK9CVd2w+kZub8YA==}
+  '@firebase/remote-config@0.8.4':
+    resolution: {integrity: sha512-lslywR5lGvHWTu4z/MPoYs3UwS3CKdeY+ELXY87087VsOpBpkD+9Orra23tA9GW683arPTDOM3CM6eKmtiOO3g==}
     peerDependencies:
       '@firebase/app': 0.x
 
@@ -4687,7 +4687,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@firebase/remote-config@0.8.3(@firebase/app@0.14.13)':
+  '@firebase/remote-config@0.8.4(@firebase/app@0.14.13)':
     dependencies:
       '@firebase/app': 0.14.13
       '@firebase/component': 0.7.3
