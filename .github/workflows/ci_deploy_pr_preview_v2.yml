@@ -192,7 +192,13 @@ jobs:
           PCAPI_IMAGE_TAG: ${{ github.sha }}
         # TODO: bind sandbox arguments
         run: |
-          passdirector workflows submit --namespace "${NAMESPACE}" --template "${WORKFLOW_TEMPLATE}" --parameter pullRequestId="${PULL_REQUEST_ID}" --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}"
+          passdirector workflows submit \
+            --namespace "${NAMESPACE}" \
+            --template "${WORKFLOW_TEMPLATE}" \
+            --parameter pullRequestId="${PULL_REQUEST_ID}" \
+            --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" \
+            --parameter sandbox="${{ inputs.sandbox }}" \
+            --parameter sandboxArgs="${{ inputs.sandbox-args }}"
 
       - name: Publish Summary
         shell: bash
