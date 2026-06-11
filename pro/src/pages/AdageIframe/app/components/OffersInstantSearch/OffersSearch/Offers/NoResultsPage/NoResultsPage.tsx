@@ -1,4 +1,4 @@
-import type { VenueResponse } from '@/apiClient/adage'
+import type { VenueResponse } from '@/apiClient/adage/new'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 

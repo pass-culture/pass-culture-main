@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { usePagination } from 'react-instantsearch'
 import { useParams } from 'react-router'
 
-import { PaginationType } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { PaginationType } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setAdagePageSaved } from '@/commons/store/adageFilter/reducer'
@@ -29,11 +29,13 @@ export const CustomPagination = ({
   }>()
 
   const logPagination = async (type: PaginationType) => {
-    await apiAdage.logSearchShowMore({
-      iframeFrom: location.pathname,
-      source: siret || venueId ? 'partnersMap' : 'homepage',
-      queryId: queryId,
-      type,
+    await apiAdageNew.logSearchShowMore({
+      body: {
+        iframeFrom: location.pathname,
+        source: siret || venueId ? 'partnersMap' : 'homepage',
+        queryId: queryId,
+        type,
+      },
     })
   }
 

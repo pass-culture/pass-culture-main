@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -36,7 +36,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),
     logContactUrlClick: vi.fn(),
@@ -172,12 +172,15 @@ describe('RequestFormDialog', () => {
       screen.getByRole('button', { name: 'Envoyer ma demande' })
     )
 
-    expect(apiAdage.createCollectiveRequest).toHaveBeenCalledWith(1, {
-      comment: 'Test description',
-      phoneNumber: undefined,
-      requestedDate: today,
-      totalTeachers: undefined,
-      totalStudents: undefined,
+    expect(apiAdageNew.createCollectiveRequest).toHaveBeenNthCalledWith(1, {
+      body: {
+        comment: 'Test description',
+        phoneNumber: undefined,
+        requestedDate: today,
+        totalTeachers: undefined,
+        totalStudents: undefined,
+      },
+      path: { offer_id: 1 },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre demande a bien été envoyée'
@@ -185,7 +188,7 @@ describe('RequestFormDialog', () => {
     expect(mockCloseModal).toHaveBeenCalled()
   })
   it('should display error message when api reject call', async () => {
-    vi.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
+    vi.spyOn(apiAdageNew, 'createCollectiveRequest').mockRejectedValueOnce({})
     const snackBarError = vi.fn()
     const mockCloseModal = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
@@ -266,10 +269,12 @@ describe('RequestFormDialog', () => {
       })
     )
 
-    expect(apiAdage.logRequestFormPopinDismiss).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      collectiveOfferTemplateId: 1,
-      comment: 'Test description',
+    expect(apiAdageNew.logRequestFormPopinDismiss).toHaveBeenCalledWith({
+      body: {
+        iframeFrom: '/',
+        collectiveOfferTemplateId: 1,
+        comment: 'Test description',
+      },
     })
   })
 
@@ -285,9 +290,11 @@ describe('RequestFormDialog', () => {
 
     await userEvent.click(buttonLink)
 
-    expect(apiAdage.logContactUrlClick).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      offerId: 1,
+    expect(apiAdageNew.logContactUrlClick).toHaveBeenCalledWith({
+      body: {
+        iframeFrom: '/',
+        offerId: 1,
+      },
     })
   })
 })

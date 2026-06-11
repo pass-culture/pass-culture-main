@@ -18,8 +18,8 @@ import {
 import { useFormContext } from 'react-hook-form'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
 
-import { SuggestionType } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { SuggestionType } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import {
   setAdagePageSaved,
@@ -121,10 +121,12 @@ export const Autocomplete = ({
     suggestionType: SuggestionType,
     suggestionValue: string
   ) => {
-    await apiAdage.logTrackingAutocompleteSuggestionClick({
-      iframeFrom: location.pathname,
-      suggestionType,
-      suggestionValue,
+    await apiAdageNew.logTrackingAutocompleteSuggestionClick({
+      body: {
+        iframeFrom: location.pathname,
+        suggestionType,
+        suggestionValue,
+      },
     })
   }
 

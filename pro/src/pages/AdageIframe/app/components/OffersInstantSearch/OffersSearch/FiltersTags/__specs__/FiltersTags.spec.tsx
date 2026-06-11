@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CollectiveLocationType } from '@/apiClient/adage'
+import { CollectiveLocationType } from '@/apiClient/adage/new'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { SearchFormValues } from '../../../OffersInstantSearch'

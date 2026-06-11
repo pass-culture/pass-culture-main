@@ -2,8 +2,8 @@ import cn from 'classnames'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { AdageFrontRoles, type AdageHeaderLink } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles, type AdageHeaderLink } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -16,6 +16,15 @@ import styles from './AdageHeader.module.scss'
 import { AdageHeaderBudget } from './AdageHeaderBudget/AdageHeaderBudget'
 import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
+function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
+  apiAdageNew.logHeaderLinkClick({
+    body: {
+      iframeFrom: location.pathname,
+      header_link_name: headerLinkName,
+    },
+  })
+}
+
 export const AdageHeader = () => {
   const { adageUser } = useAdageUser()
 
@@ -23,18 +32,11 @@ export const AdageHeader = () => {
 
   const isDiscoveryPage = pathname === '/adage-iframe/decouverte'
 
-  function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
-    apiAdage.logHeaderLinkClick({
-      iframeFrom: location.pathname,
-      header_link_name: headerLinkName,
-    })
-  }
-
   const getEducationalInstitutionBudget = useSWR(
-    adageUser.role !== AdageFrontRoles.READONLY
-      ? GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY
-      : null,
-    () => apiAdage.getEducationalInstitutionWithBudget()
+    adageUser.role === AdageFrontRoles.READONLY
+      ? null
+      : GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY,
+    () => apiAdageNew.getEducationalInstitutionWithBudget()
   )
 
   const institutionBudget = getEducationalInstitutionBudget.data?.budget

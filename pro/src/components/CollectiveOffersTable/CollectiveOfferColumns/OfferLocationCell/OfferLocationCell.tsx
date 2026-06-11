@@ -1,10 +1,10 @@
-import type { GetCollectiveOfferLocationModel } from '@/apiClient/adage'
+import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1/new'
 import { CollectiveLocationType } from '@/apiClient/v1/new'
 
 import styles from './OfferLocationCell.module.scss'
 
 export interface OfferLocationCellProps {
-  offerLocation?: GetCollectiveOfferLocationModel | null
+  offerLocation?: GetCollectiveOfferLocationModelV2 | null
 }
 
 export const OfferLocationCell = ({

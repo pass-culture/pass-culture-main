@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as instantSearch from 'react-instantsearch'
 
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CustomPagination } from '../Pagination'
@@ -10,7 +10,7 @@ import { CustomPagination } from '../Pagination'
 const mockRefinePagination = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     logSearchShowMore: vi.fn(),
   },
 }))
@@ -69,6 +69,6 @@ describe('AdagePagination', () => {
       screen.getByRole('button', { name: /page précédente/ })
     )
 
-    expect(apiAdage.logSearchShowMore).toHaveBeenCalledTimes(2)
+    expect(apiAdageNew.logSearchShowMore).toHaveBeenCalledTimes(2)
   })
 })
