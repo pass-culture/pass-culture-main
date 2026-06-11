@@ -1909,6 +1909,19 @@ wheels = [
 ]
 
 [[package]]
+name = "open-data-contract-standard"
+version = "3.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4e/8a/81076b5398c08444f50f749a363f43f0f063b05f7de232da7437129ef458/open_data_contract_standard-3.1.2.tar.gz", hash = "sha256:9da18e1e961388bca6110e5a394c85bdf69de3e9966b2acf3f81f0092694d714", size = 18095, upload-time = "2025-12-17T12:43:56.88Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bf/9c/ed60cc0d1fcbfe9605abf7449f0301d215d15db8a000f3b2402c04407789/open_data_contract_standard-3.1.2-py3-none-any.whl", hash = "sha256:da801b93af6f18704100387a830388c7d78f8811ce834d84505241f22b882213", size = 17253, upload-time = "2025-12-17T12:43:55.533Z" },
+]
+
+[[package]]
 name = "openpyxl"
 version = "3.1.5"
 source = { registry = "https://pypi.org/simple" }
@@ -2039,6 +2052,7 @@ dev = [
     { name = "ipdb" },
     { name = "jsbeautifier" },
     { name = "mypy" },
+    { name = "open-data-contract-standard" },
     { name = "pgcli" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pytest" },
@@ -2148,6 +2162,7 @@ dev = [
     { name = "ipdb", specifier = "==0.13.13" },
     { name = "jsbeautifier", specifier = "==1.15.4" },
     { name = "mypy", specifier = "==2.1.0" },
+    { name = "open-data-contract-standard", specifier = ">=3.1.2" },
     { name = "pgcli", specifier = "==4.3.0" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.4" },
     { name = "pytest", specifier = "==9.0.3" },

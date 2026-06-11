@@ -1,0 +1,246 @@
+version: 1.O.0
+kind: DataContract
+apiVersion: v3.1.0
+id: offer
+name: offer
+status: draft
+servers:
+  - id: local
+    server: local
+    type: postgres
+    account: pass_culture
+    database: pass_culture
+    host: localhost
+    port: 5434
+    schema: public
+description:
+  usage: ''
+  purpose: ''
+  limitations: ''
+schema:
+  - name: offer
+    properties:
+      - name: isActive
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: true
+      - name: authorId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: bookingContact
+        physicalType: VARCHAR(120)
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: bookingEmail
+        physicalType: VARCHAR(120)
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: dateCreated
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: true
+      - name: dateModifiedAtLastProvider
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: false
+      - name: dateUpdated
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: false
+      - name: finalizationDatetime
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: false
+      - name: publicationDatetime
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: false
+      - name: bookingAllowedDatetime
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        required: false
+      - name: description
+        physicalType: TEXT
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: durationMinutes
+        physicalType: INTEGER
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: ean
+        physicalType: TEXT
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: externalTicketOfficeUrl
+        physicalType: VARCHAR
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: jsonData
+        physicalType: JSONB
+        primaryKey: false
+        logicalType: object
+        required: false
+      - name: fieldsUpdated
+        physicalType: VARCHAR(100)[]
+        primaryKey: false
+        logicalType: array
+        required: true
+      - name: lastProviderId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: idAtProvider
+        physicalType: TEXT
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: isDuo
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: true
+      - name: isNational
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: true
+      - name: lastValidationPrice
+        physicalType: NUMERIC(10, 2)
+        primaryKey: false
+        logicalType: number
+        required: false
+      - name: name
+        physicalType: VARCHAR(140)
+        primaryKey: false
+        logicalType: string
+        required: true
+      - name: productId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: rankingWeight
+        physicalType: INTEGER
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: subcategoryId
+        physicalType: TEXT
+        primaryKey: false
+        logicalType: string
+        required: true
+      - name: url
+        physicalType: VARCHAR(255)
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: venueId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: true
+      - name: withdrawalDelay
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: withdrawalDetails
+        physicalType: TEXT
+        primaryKey: false
+        logicalType: string
+        required: false
+      - name: withdrawalType
+        physicalType: TEXT
+        primaryKey: false
+        required: false
+        quality:
+          - description: Ensure that there are no unexpected withdrawalType values.
+            type: library
+            metric: invalidValues
+            arguments:
+              validValues:
+                - BY_EMAIL
+                - IN_APP
+                - NO_TICKET
+                - ON_SITE
+            mustBe: 0
+      - name: offererAddressId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: id
+        physicalType: BIGINT
+        primaryKey: true
+        logicalType: integer
+        required: true
+      - name: lastValidationDate
+        physicalType: TIMESTAMP WITHOUT TIME ZONE
+        primaryKey: false
+        logicalType: timestamp
+        required: false
+      - name: lastValidationType
+        physicalType: validation_type
+        primaryKey: false
+        required: false
+        quality:
+          - description: Ensure that there are no unexpected lastValidationType values.
+            type: library
+            metric: invalidValues
+            arguments:
+              validValues:
+                - AUTO
+                - MANUAL
+                - CGU_INCOMPATIBLE_PRODUCT
+            mustBe: 0
+      - name: validation
+        physicalType: validation_status
+        primaryKey: false
+        required: true
+        quality:
+          - description: Ensure that there are no unexpected validation values.
+            type: library
+            metric: invalidValues
+            arguments:
+              validValues:
+                - APPROVED
+                - DRAFT
+                - PENDING
+                - REJECTED
+            mustBe: 0
+      - name: lastValidationAuthorUserId
+        physicalType: BIGINT
+        primaryKey: false
+        logicalType: integer
+        required: false
+      - name: audioDisabilityCompliant
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: false
+      - name: mentalDisabilityCompliant
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: false
+      - name: motorDisabilityCompliant
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: false
+      - name: visualDisabilityCompliant
+        physicalType: BOOLEAN
+        primaryKey: false
+        logicalType: boolean
+        required: false
+

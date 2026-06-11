@@ -98,6 +98,7 @@ dev = [
   "ipdb==0.13.13",
   "jsbeautifier ==1.15.4",                  # djlint requires 1.15.1 which is broken
   "mypy==2.1.0",
+  "open-data-contract-standard>=3.1.2",
   "pgcli ==4.3.0",
   "psycopg[binary]==3.3.4",
   "pytest ==9.0.3",
