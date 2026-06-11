@@ -8,7 +8,10 @@ from pcapi import settings
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
@@ -358,3 +361,39 @@ class CheckOffererSirenCloudTaskTest:
 
         assert response.status_code == 204
         assert caplog.records[0].message == "Invalid SIREN format in the database"
+
+
+class FinalizeClosingVenueTaskTest:
+    def test_new_history_entries_are_added(self):
+        venue = offerers_factories.VenueFactory()
+        self.create_synced_offers(venue)
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        db.session.refresh(venue)
+
+        history = db.session.query(history_models.ActionHistory).filter_by(venueId=venue.id).one()
+        assert history.actionType == history_models.ActionType.VENUE_CLOSED
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_pivots_have_been_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        self.create_synced_offers(venue)
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        db.session.refresh(venue)
+        assert not venue.cinemaProviderPivot
+        assert not venue.allocinePivot
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def create_synced_offers(self, venue):
+        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
+        now = datetime.datetime.now(datetime.UTC)
+
+        offers_factories.OfferFactory(venue=venue, publicationDatetime=now)
+        offers_factories.OfferFactory(venue=venue, lastProviderId=boost_pivot.providerId, publicationDatetime=now)

@@ -16,6 +16,7 @@ from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -100,3 +101,25 @@ def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
     venue = db.session.query(offerers_models.Venue).filter_by(id=payload.venue_id).one_or_none()
     if venue:
         offerers_api.match_acceslibre(venue)
+
+
+class FinalizeClosingVenuePayload(BaseModelV2):
+    venue_id: int
+
+
+@celery_async_task(name="tasks.offerers.default.finalize_closing_venue_task", model=FinalizeClosingVenuePayload)
+def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
+    with atomic():
+        venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.venue_id).one()
+        offerers_api.deactivate_venue_offers(venue)
+
+        offerers_api.delete_venue_pivots(venue.id)
+        db.session.flush()
+
+        logger.info("closing venue: pivots deleted", extra={"venue_id": venue.id})
+
+        venue.state = offerers_models.VenueState.CLOSED
+        history_api.add_action(history_models.ActionType.VENUE_CLOSED, author=None, venue=venue)
+        db.session.flush()
+
+        logger.info("closing venue: closed", extra={"venue_id": venue.id})

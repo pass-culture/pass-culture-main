@@ -578,6 +578,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offerers_models.Venue.visualDisabilityCompliant,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.state,
             )
             .options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
