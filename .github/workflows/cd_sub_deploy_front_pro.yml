@@ -64,6 +64,7 @@ jobs:
         with:
           cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
