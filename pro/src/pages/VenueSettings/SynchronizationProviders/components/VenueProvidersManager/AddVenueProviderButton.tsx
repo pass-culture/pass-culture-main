@@ -19,7 +19,7 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
+import { DEFAULT_PROVIDER_OPTION } from '../../commons/constants'
 import { VenueProviderForm } from './VenueProviderForm'
 
 export interface AddVenueProviderButtonProps {

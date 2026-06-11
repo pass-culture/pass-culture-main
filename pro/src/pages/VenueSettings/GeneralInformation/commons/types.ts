@@ -24,7 +24,6 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   venueSiret: number | ''
   withdrawalDetails: string
   manuallySetAddress?: boolean
-  bookingEmail?: string
   isOpenToPublic: string
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
   culturalDomains?: string[]

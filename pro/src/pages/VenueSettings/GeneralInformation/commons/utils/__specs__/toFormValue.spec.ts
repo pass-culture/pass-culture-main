@@ -51,7 +51,6 @@ describe('toFormValues', () => {
       banId: '49759_1304_00002',
       manuallySetAddress: true,
       comment: '',
-      bookingEmail: '',
       name: 'Nom de la structure',
       venueSiret: '',
       publicName: 'Adresse de la venue',

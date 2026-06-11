@@ -16,9 +16,9 @@ import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactorie
 import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
-} from '../types'
-import { saveVenueSettings } from '../utils/saveVenueSettings'
-import { useSaveVenueSettings } from './useSaveVenueSettings'
+} from '../../types'
+import { saveVenueSettings } from '../../utils/saveVenueSettings'
+import { useSaveVenueSettings } from '../useSaveVenueSettings'
 
 vi.mock('react-router', async () => {
   const actual =
@@ -30,12 +30,11 @@ vi.mock('react-router', async () => {
   }
 })
 
-vi.mock('../utils/saveVenueSettings', () => ({
+vi.mock('../../utils/saveVenueSettings', () => ({
   saveVenueSettings: vi.fn(() => Promise.resolve()),
 }))
 
 const defaultFormValues: VenueSettingsFormValues = {
-  bookingEmail: 'contact@lieuexemple.com',
   comment: '',
   name: '',
   publicName: '',

@@ -3,12 +3,32 @@ export type AnyObject = {
   [key: string]: any
 }
 
+/**
+ * Makes all properties of an object both defined and non-omittable.
+ *
+ * @example
+ * ```ts
+ * type Foo = {
+ *   a?: number
+ *   b: string | undefined
+ *   c?: string | undefined
+ * }
+ *
+ * type Bar = Defined<Foo>
+ * // Result:
+ * // {
+ * //   a: number
+ * //   b: string
+ * //   c: string
+ * // }
+ * ```
+ */
 export type Defined<T extends AnyObject> = {
   [K in keyof T]-?: T[K] extends undefined ? never : T[K]
 }
 
 /**
- * Makes all properties in `T` optional, except for those in `K` which are required.
+ * Makes all properties of an object omittable, except for those in `K`.
  *
  * @example
  * ```ts
@@ -18,7 +38,7 @@ export type Defined<T extends AnyObject> = {
  * }
  *
  * type Bar = PartialExcept<Foo, 'id'>
- * // Equivalent to:
+ * // Result:
  * // {
  * //   id: number
  * //   name?: string
@@ -31,9 +51,10 @@ export type PartialExcept<T extends AnyObject, K extends keyof T> = Partial<
   Pick<T, K>
 
 /**
- * Makes all properties of a given object type nullable.
+ * Makes all properties of an object nullable.
  *
  * @example
+ * ```ts
  * interface Foo {
  *   a: number
  *   b: string
@@ -45,12 +66,38 @@ export type PartialExcept<T extends AnyObject, K extends keyof T> = Partial<
  * //   a: number | null;
  * //   b: string | null;
  * // }
- *
- * @template T - The object type whose properties will be made nullable.
+ * ```
  */
 export type Nullable<T extends AnyObject> = {
   [P in keyof T]: T[P] | null
 }
+
+/**
+ * Picks the properties of an object, and makes them both defined and non-omittable.
+ *
+ * @description
+ * This is useful for real PATCHes where a form only covers a subset of a Backend route's request body.
+ *
+ * @example
+ * ```ts
+ * type FooRequestBody = {
+ *   a?: boolean
+ *   b?: number
+ *   c?: string
+ * }
+ *
+ * type FooRequestBodyBarPatch = PickDefined<FooRequestBody, 'a' | 'b'>
+ * // Result:
+ * // {
+ * //   a: boolean
+ * //   b: number
+ * // }
+ * ```
+ */
+export type PickDefined<T extends AnyObject, K extends keyof T> = Pick<
+  Defined<T>,
+  K
+>
 
 export const hasProperty = <T extends string>(
   element: unknown,

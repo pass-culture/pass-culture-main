@@ -5,9 +5,9 @@ import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { AddVenueProviderButton } from '@/pages/VenueSettings/components/VenueProvidersManager/AddVenueProviderButton'
-import { VenueProviderCard } from '@/pages/VenueSettings/components/VenueProvidersManager/VenueProviderList/VenueProviderCard'
 
+import { AddVenueProviderButton } from '../AddVenueProviderButton'
+import { VenueProviderCard } from '../VenueProviderList/VenueProviderCard'
 import styles from './SynchronizationConnexions.module.scss'
 
 interface SynchronizationConnexionsProps {

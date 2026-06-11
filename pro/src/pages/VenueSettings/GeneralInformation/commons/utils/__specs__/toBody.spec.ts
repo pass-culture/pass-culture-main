@@ -25,7 +25,6 @@ describe('toBody', () => {
       banId: '35288_7283_00001',
       manuallySetAddress: false,
       comment: 'This is a venue comment',
-      bookingEmail: 'me@example.com',
       name: 'Lieu de test',
       venueSiret: '',
       publicName: 'Adresse de la venue',
@@ -58,7 +57,6 @@ describe('toBody', () => {
     payload = {
       activity: 'OPEN_TO_PUBLIC_ACTIVITY' as EditVenueBodyModel['activity'],
       banId: '35288_7283_00001',
-      bookingEmail: 'me@example.com',
       city: 'Paris',
       comment: '',
       culturalDomains: ['Domaine 1', 'Domaine 2'],

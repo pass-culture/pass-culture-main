@@ -18,7 +18,6 @@ const defaultFormValues: VenueSettingsFormValues = {
   activity: null,
   culturalDomains: [],
   description: 'desc',
-  bookingEmail: 'contact@lieuexemple.com',
   comment: '',
   name: '',
   publicName: '',
@@ -75,7 +74,6 @@ describe('saveVenueSettings', () => {
       body: {
         activity: null,
         banId: '12345',
-        bookingEmail: 'contact@lieuexemple.com',
         city: 'Ville Exemple',
         comment: '',
         culturalDomains: [],

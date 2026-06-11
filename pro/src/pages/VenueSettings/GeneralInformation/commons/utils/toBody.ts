@@ -37,10 +37,6 @@ export const toBody = (
     }
   }
 
-  if ('bookingEmail' in formValues) {
-    payload.bookingEmail = formValues.bookingEmail
-  }
-
   if ('withdrawalDetails' in formValues) {
     payload.withdrawalDetails = formValues.withdrawalDetails
   }

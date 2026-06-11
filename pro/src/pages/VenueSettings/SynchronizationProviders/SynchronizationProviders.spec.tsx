@@ -13,7 +13,7 @@ import {
 import { Component as SynchronizationProviders } from './SynchronizationProviders'
 
 vi.mock(
-  '@/pages/VenueSettings/components/VenueProvidersManager/SynchronizationConnexions/SynchronizationConnexions',
+  './components/VenueProvidersManager/SynchronizationConnexions/SynchronizationConnexions',
   () => ({
     SynchronizationConnexions: ({
       venueProviders,

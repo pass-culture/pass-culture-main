@@ -25,14 +25,14 @@ import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/R
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
-import { useSaveVenueSettings } from '../commons/hooks/useSaveVenueSettings'
+import { useSaveVenueSettings } from './commons/hooks/useSaveVenueSettings'
+import { venueSettingsValidationSchema } from './commons/schema'
 import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
-} from '../commons/types'
-import { toFormValues } from '../commons/utils/toFormValues'
-import { venueSettingsValidationSchema } from '../commons/validationSchema'
-import { SiretOrCommentFields } from '../components/SiretOrCommentFields/SiretOrCommentFields'
+} from './commons/types'
+import { toFormValues } from './commons/utils/toFormValues'
+import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)

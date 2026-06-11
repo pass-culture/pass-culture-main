@@ -1,11 +1,11 @@
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { yup } from '@/commons/utils/yup'
 
+import { venueSettingsValidationSchema } from '../schema'
 import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'
-import { venueSettingsValidationSchema } from '../validationSchema'
 
 describe('VenueSettingsValidationSchema', () => {
   const baseContext: VenueSettingsFormContext = {
@@ -16,7 +16,6 @@ describe('VenueSettingsValidationSchema', () => {
   }
 
   const baseFormValues: VenueSettingsFormValues = {
-    bookingEmail: 'contact@lieuexemple.com',
     comment: 'comment',
     name: 'Venue Name',
     publicName: 'Venue Public Name',
@@ -93,19 +92,6 @@ describe('VenueSettingsValidationSchema', () => {
       expectedErrors: [
         'Veuillez renseigner les coordonnées GPS',
         'Veuillez respecter le format attendu',
-      ],
-    },
-    {
-      description: 'invalid - bookingEmail format invalid',
-      formValues: {
-        ...baseFormValues,
-        bookingEmail: 'email1@example.com email2@example.com',
-      },
-      context: {
-        ...baseContext,
-      },
-      expectedErrors: [
-        'Veuillez renseigner un email valide, exemple : mail@exemple.com',
       ],
     },
   ]
