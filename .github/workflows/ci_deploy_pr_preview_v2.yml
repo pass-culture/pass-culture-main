@@ -10,7 +10,7 @@ on:
       sandbox:
         description: "Sandbox installed"
         required: true
-        default: "tiny"
+        default: "empty"
         type: choice
         options:
           - empty
@@ -19,7 +19,7 @@ on:
       sandbox-args:
         description: "Arguments passed to the sandbox command"
         required: false
-        default: "arg1 arg2"
+        default: ""
         type: string
       front-only:
         description: "Deploy only frontend (skip API deploy)"
@@ -211,7 +211,7 @@ jobs:
           SANDBOX_NAME: ${{ inputs.sandbox }}
           SANDBOX_ARGS: ${{ inputs.sandbox-args }}
         run: |
-          echo passdirector workflows submit \
+          passdirector workflows submit \
             --namespace "${NAMESPACE}" \
             --template "${WORKFLOW_TEMPLATE}" \
             --parameter pullRequestId="${PULL_REQUEST_ID}" \
