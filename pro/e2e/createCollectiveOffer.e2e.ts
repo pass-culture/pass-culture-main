@@ -215,7 +215,6 @@ test.describe('Create collective offers', () => {
     checkAccessibility,
   }) => {
     await page.getByLabel('Une offre vitrine').first().click()
-    await page.getByText('Étape suivante').click()
     await fillBasicOFferForm(page)
     await fillOfferDetails(page, checkAccessibility, true)
     await expect(page.getByText(`Adresse : ${venueFullAddress}`)).toBeVisible()
