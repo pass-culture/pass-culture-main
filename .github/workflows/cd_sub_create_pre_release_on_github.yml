@@ -44,7 +44,7 @@ jobs:
         with:
           ref: ${{ inputs.base_ref }}
           token: ${{ steps.github-token.outputs.token }}
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Add version to api
         env:
