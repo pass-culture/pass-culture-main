@@ -45,6 +45,7 @@ describe('Tag', () => {
     TagVariant.BOOKCLUB,
     TagVariant.HEADLINE,
     TagVariant.LIKE,
+    TagVariant.PROEDITO,
   ])('should always render an icon for specific variant: %s', (variant) => {
     const { container } = renderTag({
       label: 'Département',
