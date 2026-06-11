@@ -194,7 +194,7 @@ jobs:
         env:
           SANDBOX: ${{ inputs.sandbox }}
         run: |
-          if [ "${SANDBOX}" != "empty" ]; then
+          if [ -n "${SANDBOX}" ] && [ "${SANDBOX}" != "empty" ]; then
             echo "sandbox_enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "sandbox_enabled=false" >> "$GITHUB_OUTPUT"
