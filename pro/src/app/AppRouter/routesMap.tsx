@@ -180,7 +180,7 @@ export const routes: CustomRouteTree = [
   {
     lazy: () =>
       import(
-        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformationsCreation/CollectiveOfferInformationsCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformations'
       ),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/informations-pratiques',
@@ -368,7 +368,7 @@ export const routes: CustomRouteTree = [
   {
     lazy: () =>
       import(
-        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformationsEdition/CollectiveOfferInformationsEdition'
+        '@/pages/CollectiveOffer/CollectiveOfferInformations/CollectiveOfferInformations'
       ),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/informations-pratiques/edition',
