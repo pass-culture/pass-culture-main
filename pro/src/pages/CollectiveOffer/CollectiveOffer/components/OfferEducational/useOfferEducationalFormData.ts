@@ -6,12 +6,8 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramResponseModel,
-  VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
-import {
-  GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_EDUCATIONAL_OFFERERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 
 export type DomainOption = {
@@ -23,7 +19,6 @@ export type DomainOption = {
 type OfferEducationalFormData = {
   domains: DomainOption[]
   offerer: GetEducationalOffererResponseModel | null
-  venues: VenueListItemResponseModel[]
 }
 
 export const useOfferEducationalFormData = (
@@ -49,20 +44,6 @@ export const useOfferEducationalFormData = (
       { fallback: [] }
     )
 
-  // Getting selected venue at step 1 (details) to infer address fields
-  const { data: venues, isLoading: loadingVenues } = useSWR(
-    [GET_VENUES_QUERY_KEY, targetOffererId],
-    ([, offererIdParam]) =>
-      apiNew.getVenues({
-        query: {
-          validated: null,
-          activeOfferersOnly: true,
-          offererId: offererIdParam,
-        },
-      }),
-    { fallbackData: { venues: [] } }
-  )
-
   const selectedEducationalOfferer =
     educationalOfferers?.educationalOfferers.find(
       (educationalOfferer) => educationalOfferer.id === targetOffererId
@@ -76,13 +57,11 @@ export const useOfferEducationalFormData = (
 
   const offerer = selectedEducationalOfferer || null
 
-  const isLoading =
-    loadingEducationalOfferers || loadingEducationalDomains || loadingVenues
+  const isLoading = loadingEducationalOfferers || loadingEducationalDomains
 
   return {
     isReady: !isLoading,
     domains,
     offerer,
-    venues: venues.venues,
   }
 }

@@ -6,16 +6,12 @@ import { apiNew } from '@/apiClient/api'
 import type {
   CollectiveOfferTemplateResponseModel,
   GetVenueAddressResponseModel,
-  VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -34,28 +30,8 @@ vi.mock('@/commons/hooks/useActiveFeature', () => ({
   useActiveFeature: vi.fn(),
 }))
 
-const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
-  venues: [
-    makeVenueListItem({
-      id: 1,
-      name: 'First Venue',
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-    makeVenueListItem({
-      id: 2,
-      name: 'Second Venue',
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-  ],
-}
-
 vi.mock('@/apiClient/api', () => {
   return {
-    api: {
-      getVenues: vi.fn(() => mockVenuesResponse),
-    },
     apiNew: {
       getCollectiveOfferTemplates: vi.fn(),
       listOfferersNames: vi.fn(),

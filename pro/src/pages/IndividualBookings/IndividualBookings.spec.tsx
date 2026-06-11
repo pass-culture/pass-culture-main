@@ -6,7 +6,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetVenueAddressResponseModel } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
@@ -19,7 +19,6 @@ import {
 import {
   bookingRecapFactory,
   defaultGetOffererVenueResponseModel,
-  venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -61,9 +60,6 @@ const venueAddress: GetVenueAddressResponseModel[] = [
 ]
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getVenues: vi.fn(),
-  },
   apiNew: {
     getBookingsCsv: vi.fn(),
     getBookingsPro: vi.fn(),
@@ -128,9 +124,6 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
     vi.spyOn(apiNew, 'getProfile').mockResolvedValue(user)
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [venueListItemFactory()],
-    })
     vi.spyOn(apiNew, 'getUserHasBookings').mockResolvedValue({
       hasBookings: true,
     })

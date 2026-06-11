@@ -22,7 +22,6 @@ import {
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { getLocationResponseModelV2 } from '@/commons/utils/factories/commonOffersApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 
@@ -71,7 +70,6 @@ vi.mock('@/apiClient/api', () => ({
     createCollectiveOffer: vi.fn(),
     attachOfferImage: vi.fn(),
     listEducationalOfferers: vi.fn(),
-    getVenues: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     patchCollectiveOffersArchive: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
@@ -219,9 +217,6 @@ describe('OfferActionsCells', () => {
     beforeEach(() => {
       vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValueOnce({
         educationalOfferers: [],
-      })
-      vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-        venues: [makeVenueListItem({ id: 4 })],
       })
     })
 

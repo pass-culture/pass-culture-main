@@ -30,7 +30,6 @@ vi.mock('@/apiClient/api', () => ({
     getCollectiveOfferRequest: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     listEducationalOfferers: vi.fn(),
-    getVenues: vi.fn(),
     attachOfferImage: vi.fn(),
     createCollectiveOffer: vi.fn(),
   },
@@ -96,7 +95,6 @@ describe('CollectiveOfferFromRequest', () => {
       educationalOfferers: [],
     })
     vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({ venues: [] })
     vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
     })

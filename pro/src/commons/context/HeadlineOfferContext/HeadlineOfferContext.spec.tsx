@@ -5,7 +5,6 @@ import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -59,7 +58,6 @@ vi.mock('@/apiClient/api', () => ({
     getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
-    getVenues: vi.fn(),
   },
 }))
 
@@ -123,14 +121,6 @@ describe('HeadlineOfferContext', () => {
     vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue(
       MOCK_DATA.headlineOffer
     )
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-      venues: [
-        makeVenueListItem({
-          id: MOCK_DATA.headlineOffer.venueId,
-          isPermanent: true,
-        }),
-      ],
-    })
   })
 
   it('should fetch headline offer and make it available', async () => {

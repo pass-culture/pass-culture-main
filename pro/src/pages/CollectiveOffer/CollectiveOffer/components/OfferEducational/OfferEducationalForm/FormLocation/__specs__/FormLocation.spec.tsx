@@ -3,12 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import {
-  CollectiveLocationType,
-  type VenueListItemResponseModel,
-} from '@/apiClient/v1/new'
+import { CollectiveLocationType } from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { FormLocation, type FormLocationProps } from '../FormLocation'
@@ -94,33 +91,19 @@ function renderFormLocation(
   }
 
   return {
-    ...renderWithProviders(<FormLocationWrapper />),
+    ...renderWithProviders(<FormLocationWrapper />, {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: defaultGetVenue,
+        },
+      },
+    }),
     getValues: () => getValues(),
   }
 }
 
 describe('FormLocation', () => {
-  const location = {
-    banId: '',
-    city: 'Paris',
-    departmentCode: '75',
-    id: 1,
-    inseeCode: null,
-    isVenueLocation: true,
-    isManualEdition: false,
-    label: 'Venue 1',
-    latitude: 48.87004,
-    longitude: 2.3785,
-    postalCode: '75001',
-    street: '1 Rue de Paris',
-  }
-
-  const venues: VenueListItemResponseModel[] = [
-    makeVenueListItem({ id: 1, location }),
-  ]
-
   const props: FormLocationProps = {
-    venues,
     disableForm: false,
   }
 
@@ -131,7 +114,7 @@ describe('FormLocation', () => {
   it('should render the location form with title', () => {
     renderFormLocation(props, initialValues)
 
-    expect(screen.getByText(/Où se déroule votre offre ?/)).toBeInTheDocument()
+    expect(screen.getByText(/Où se déroule votre offre ?/)).toBeVisible()
   })
 
   it('should display the address option', () => {
@@ -405,7 +388,7 @@ describe('FormLocation', () => {
 
     await userEvent.click(screen.getByText('À une adresse précise'))
 
-    const venueOption = screen.getByText(/Venue 1/)
+    const venueOption = screen.getByText(/Mon lieu/)
     await userEvent.click(venueOption)
 
     const values = getValues()

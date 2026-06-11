@@ -1,13 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import {
-  makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
-} from '@/commons/utils/factories/venueFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -26,13 +21,8 @@ function renderComponent(props: OfferEducationalProps) {
       user: {
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({
-          id: props.venues[0].id,
+          id: 1,
         }),
-        venues: [
-          ...props.venues.map((venue) =>
-            makeVenueListItemLiteResponseModel({ id: venue.id })
-          ),
-        ],
       },
     },
   })
@@ -42,10 +32,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-      venues: [venueListItemFactory()],
-    })
-
     props = defaultCreationProps
   })
 

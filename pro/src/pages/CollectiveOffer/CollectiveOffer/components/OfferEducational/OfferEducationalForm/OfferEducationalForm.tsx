@@ -7,7 +7,6 @@ import {
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
   type GetEducationalOffererResponseModel,
-  type VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -54,7 +53,6 @@ export type OfferEducationalFormProps = {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
   isSubmitting: boolean
-  venues?: VenueListItemResponseModel[]
 }
 
 export const OfferEducationalForm = ({
@@ -67,7 +65,6 @@ export const OfferEducationalForm = ({
   onImageDelete,
   offer,
   isSubmitting,
-  venues,
 }: OfferEducationalFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [isEligible, setIsEligible] = useState<boolean>()
@@ -139,10 +136,7 @@ export const OfferEducationalForm = ({
                   />
                 )}
 
-                <FormLocation
-                  venues={venues ?? []}
-                  disableForm={!canEditDetails}
-                />
+                <FormLocation disableForm={!canEditDetails} />
 
                 <FormParticipants disableForm={!canEditDetails} />
                 <FormAccessibility disableForm={!canEditDetails} />

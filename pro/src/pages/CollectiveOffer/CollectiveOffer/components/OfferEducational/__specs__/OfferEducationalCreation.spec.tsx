@@ -9,10 +9,7 @@ import {
 } from '@/apiClient/v1/new'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import {
-  makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
-} from '@/commons/utils/factories/venueFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -22,9 +19,6 @@ import {
 } from '../OfferEducational'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getVenues: vi.fn(),
-  },
   apiNew: {
     editCollectiveOffer: vi.fn(),
   },
@@ -49,13 +43,8 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
       user: {
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({
-          id: props.venues[0].id,
+          id: 1,
         }),
-        venues: [
-          ...props.venues.map((venue) =>
-            makeVenueListItemLiteResponseModel({ id: venue.id })
-          ),
-        ],
       },
     },
     initialRouterEntries: route ? [route] : undefined,

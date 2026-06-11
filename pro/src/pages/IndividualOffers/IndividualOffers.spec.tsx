@@ -137,7 +137,6 @@ describe('IndividualOffers', () => {
     vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
 
     vi.spyOn(apiNew, 'listOffers').mockResolvedValue(offersRecap)

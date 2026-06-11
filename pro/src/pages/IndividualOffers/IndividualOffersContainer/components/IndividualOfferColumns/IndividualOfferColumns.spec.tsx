@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
 import {
   type HeadLineOfferResponseModel,
   OfferStatus,
@@ -100,12 +99,6 @@ const renderTableWithOffer = (
   )
 }
 describe('getIndividualOfferColumns', () => {
-  beforeEach(() => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
-      venues: [],
-    })
-  })
-
   it('renders location based on address', async () => {
     renderTableWithOffer()
     expect(
@@ -157,10 +150,6 @@ describe('getIndividualOfferColumns', () => {
   })
 
   it('should redirect to stocks edition page when the offer is not isEvent', async () => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
-      venues: [],
-    })
-
     renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
 
     await userEvent.click(
@@ -174,10 +163,6 @@ describe('getIndividualOfferColumns', () => {
   })
 
   it('should redirect to timetable edition page when the offer is isEvent', async () => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValueOnce({
-      venues: [],
-    })
-
     renderTableWithOffer(
       {
         ...baseOffer,

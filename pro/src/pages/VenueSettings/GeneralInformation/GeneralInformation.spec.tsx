@@ -188,16 +188,18 @@ describe('GeneralInformation', () => {
       })
     })
 
-    it('closed to public - should not show address section', () => {
+    it('closed to public - should not show address section', async () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: false })
 
-      expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByTestId('address-fields')).not.toBeInTheDocument()
+      })
     })
 
-    it('open to public - should show address section', () => {
+    it('open to public - should show address section', async () => {
       renderGeneralInformation({ id: 1, isOpenToPublic: true })
 
-      expect(screen.getByTestId('address-fields')).toBeInTheDocument()
+      expect(await screen.findByTestId('address-fields')).toBeInTheDocument()
     })
 
     it('switching to "Non" should show address section when activity is valid for NOT_OPEN_TO_PUBLIC', async () => {
