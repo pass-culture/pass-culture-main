@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveAdditionalFeeModel } from './CollectiveAdditionalFeeModel';
 export type CollectiveStockCreationBodyModel = {
+  additionalFees?: (Array<CollectiveAdditionalFeeModel> | null);
   bookingLimitDatetime: (string | null);
   endDatetime: string;
   numberOfTeachers?: (number | null);
@@ -10,6 +12,7 @@ export type CollectiveStockCreationBodyModel = {
   offerId: number;
   price: number;
   priceDetail?: (string | null);
+  servicePrice?: (number | null);
   startDatetime: string;
 };
 

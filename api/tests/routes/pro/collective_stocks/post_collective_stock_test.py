@@ -6,6 +6,7 @@ import time_machine
 
 from pcapi import settings
 from pcapi.core.educational import factories
+from pcapi.core.educational.models import CollectiveAdditionalFeeType
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
@@ -17,14 +18,15 @@ from pcapi.utils import date as date_utils
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
-BASE_PAYLOAD = {
+BASE_PAYLOAD_NO_DETAIL = {
     "startDatetime": "2022-01-17T22:00:00Z",
     "endDatetime": "2022-01-17T22:00:00Z",
     "bookingLimitDatetime": "2021-12-31T20:00:00Z",
     "price": 1500.12,
     "numberOfTickets": 38,
-    "priceDetail": "Détail du prix",
 }
+
+BASE_PAYLOAD = {**BASE_PAYLOAD_NO_DETAIL, "priceDetail": "Détail du prix"}
 
 
 def _create_educational_year():
@@ -42,11 +44,11 @@ class Return200Test:
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 201
-        created_stock = db.session.get(CollectiveStock, response.json["id"])
-
+        created_stock = db.session.query(CollectiveStock).filter_by(id=response.json["id"]).one()
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.servicePrice == decimal.Decimal("1500.12")
+        assert created_stock.collectiveAdditionalFees == []
         assert created_stock.numberOfTickets == 38
         assert created_stock.numberOfTeachers == 0
         assert created_stock.priceDetail == "Détail du prix"
@@ -59,19 +61,37 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_number_of_teachers(self, client):
+    def test_new_price_fields(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, "numberOfTeachers": 10}
-        del stock_payload["priceDetail"]
+        fees = [
+            {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+            {"type": CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15},
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.50},
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
+        ]
+        stock_payload = {
+            **BASE_PAYLOAD_NO_DETAIL,
+            "offerId": offer.id,
+            "numberOfTeachers": 10,
+            "price": 110.50,
+            "servicePrice": 40,
+            "additionalFees": fees,
+        }
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 201
-        created_stock = db.session.get(CollectiveStock, response.json["id"])
+        created_stock = db.session.query(CollectiveStock).filter_by(id=response.json["id"]).one()
         assert created_stock.priceDetail is None
         assert created_stock.numberOfTeachers == 10
+        assert created_stock.price == 110.50
+        assert created_stock.servicePrice == 40
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(created_stock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ] == fees
 
 
 class Return404Test:
@@ -352,8 +372,7 @@ class Return400Test:
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
-        del stock_payload["priceDetail"]
+        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -366,8 +385,7 @@ class Return400Test:
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
-        del stock_payload["priceDetail"]
+        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -388,8 +406,7 @@ class Return400Test:
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, "numberOfTeachers": number_of_teachers}
-        del stock_payload["priceDetail"]
+        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id, "numberOfTeachers": number_of_teachers}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -407,3 +424,117 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json == {"numberOfTeachers": ["Ce champ ne peut pas être présent"]}
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
+    @pytest.mark.parametrize("field,value", (("servicePrice", 10), ("additionalFees", [])))
+    def test_price_fields_not_allowed(self, client, field, value):
+        _create_educational_year()
+        offer = factories.DraftCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, field: value}
+        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
+
+        assert response.status_code == 400
+        assert response.json == {field: ["Ce champ ne peut pas être présent"]}
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize(
+        "payload,error",
+        (
+            # missing additionalFees
+            ({"price": 10, "servicePrice": 10}, {"additionalFees": ["Ce champ est requis"]}),
+            # missing servicePrice
+            (
+                {
+                    "price": 10,
+                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}],
+                },
+                {"servicePrice": ["Ce champ est requis"]},
+            ),
+            # servicePrice = None
+            ({"price": 10, "servicePrice": None, "additionalFees": []}, {"servicePrice": ["Ce champ est requis"]}),
+            # additionalFees = None
+            ({"price": 10, "servicePrice": 10, "additionalFees": None}, {"additionalFees": ["Ce champ est requis"]}),
+            # additionalFees invalid
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.label": ["Le label ne peut pas être rempli pour ce type"]},
+            ),
+            # additionalFees type duplicate
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                    ],
+                },
+                {"additionalFees": ["Un type est en doublon"]},
+            ),
+            # additionalFees label duplicate
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"additionalFees": ["Un label est en doublon"]},
+            ),
+            # servicePrice too low
+            (
+                {
+                    "price": 20,
+                    "servicePrice": -1,
+                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}],
+                },
+                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+            ),
+            # price total does not match
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"price": ["Le prix total ne correspond pas à la somme des frais"]},
+            ),
+            # price too high
+            (
+                {
+                    "price": settings.EAC_OFFER_PRICE_LIMIT + 5,
+                    "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"price": ["Le prix est trop élevé."]},
+            ),
+        ),
+    )
+    def test_price_errors(self, client, payload, error):
+        _create_educational_year()
+        offer = factories.DraftCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_payload = {**BASE_PAYLOAD_NO_DETAIL, "offerId": offer.id, "numberOfTeachers": 10, **payload}
+        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
+
+        assert response.status_code == 400
+        assert response.json == error

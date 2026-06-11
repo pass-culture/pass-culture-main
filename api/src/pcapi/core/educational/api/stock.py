@@ -27,6 +27,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     end = stock_data.endDatetime
     booking_limit_datetime = stock_data.bookingLimitDatetime
     price = decimal.Decimal(stock_data.price)
+    service_price = decimal.Decimal(stock_data.servicePrice) if stock_data.servicePrice is not None else None
     number_of_tickets = stock_data.numberOfTickets
     number_of_teachers = stock_data.numberOfTeachers
     price_detail = stock_data.priceDetail
@@ -50,13 +51,19 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         startDatetime=start,
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
-        # for now we set servicePrice=price, until we receive servicePrice
         price=price,
-        servicePrice=price,
+        servicePrice=service_price if service_price is not None else price,
         numberOfTickets=number_of_tickets,
-        numberOfTeachers=number_of_teachers or 0,
+        numberOfTeachers=number_of_teachers if number_of_teachers is not None else 0,
         priceDetail=price_detail,
     )
+
+    if stock_data.additionalFees:
+        collective_stock.collectiveAdditionalFees = [
+            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=decimal.Decimal(fee.amount))
+            for fee in stock_data.additionalFees
+        ]
+
     db.session.add(collective_stock)
 
     # when we receive priceDetail, also write to offer additionalDetails
