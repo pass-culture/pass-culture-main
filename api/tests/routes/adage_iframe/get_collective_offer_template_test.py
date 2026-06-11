@@ -32,15 +32,6 @@ def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
 
 
-@pytest.fixture(name="offer")
-def offer_fixture():
-    offer_range = educational_factories.DateRangeFactory(
-        start=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
-        end=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
-    )
-    return offer_range
-
-
 def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
     is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}

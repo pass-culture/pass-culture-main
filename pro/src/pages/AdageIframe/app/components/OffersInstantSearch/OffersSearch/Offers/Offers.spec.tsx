@@ -174,6 +174,8 @@ describe('offers', () => {
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         price: 80000,
+        servicePrice: 80000,
+        collectiveAdditionalFees: [],
       },
       venue: {
         id: 1,
@@ -212,6 +214,8 @@ describe('offers', () => {
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         price: 3000,
+        servicePrice: 3000,
+        collectiveAdditionalFees: [],
       },
       venue: {
         id: 1,

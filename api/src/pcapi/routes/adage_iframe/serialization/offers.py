@@ -1,3 +1,4 @@
+import decimal
 import logging
 import typing
 from datetime import date
@@ -13,6 +14,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
@@ -65,16 +67,31 @@ class OfferManagingOffererResponse(BaseModel):
         orm_mode = True
 
 
+class CollectiveAdditionalFeeResponse(ConfiguredBaseModel):
+    type: models.CollectiveAdditionalFeeType
+    label: str | None
+    amount: int
+
+    @validator("amount", pre=True)
+    def validate_amount(cls, value: decimal.Decimal | None) -> int | None:
+        return convert_to_cent(value)
+
+
 class OfferStockResponse(BaseModel):
     id: int
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: int
+    servicePrice: int | None
+    collective_additional_fees: list[CollectiveAdditionalFeeResponse]
     numberOfTickets: int | None
+    numberOfTeachers: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
 
-    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    @validator("price", "servicePrice", pre=True)
+    def validate_price(cls, value: decimal.Decimal | None) -> int | None:
+        return convert_to_cent(value)
 
     class Config:
         orm_mode = True
@@ -182,6 +199,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
     collectiveStock: OfferStockResponse = Field(alias="stock")
     institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
     teacher: EducationalRedactorResponseModel | None
+    additionalDetails: str | None
 
     @classmethod
     def build(
@@ -211,6 +229,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             formats=offer.formats,
             isTemplate=False,
+            additionalDetails=offer.additionalDetails,
         )
 
 

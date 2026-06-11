@@ -33,9 +33,9 @@ def redactor_fixture():
 
 
 class CollectiveOfferTest:
-    # 1. fetch redactor
-    # 2. fetch collective offer and related data
-    num_queries = 2
+    num_queries = 1  # fetch redactor
+    num_queries += 1  # fetch collective offer and related data
+    num_queries += 1  # selectinload additional fees
 
     def test_get_collective_offer_for_my_institution(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
@@ -140,3 +140,34 @@ class CollectiveOfferTest:
         assert response_location["location"] is not None
         assert response_location["location"]["isVenueLocation"] is True
         assert response_location["location"]["banId"] == venue.offererAddress.address.banId
+
+    def test_price_fields(self, eac_client, redactor):
+        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
+        venue = offerers_factories.VenueFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            price=200,
+            servicePrice=120,
+            numberOfTeachers=3,
+            collectiveOffer__additionalDetails="Informations pratiques importantes",
+            collectiveOffer__venue=venue,
+            collectiveOffer__institution=institution,
+        )
+        educational_factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=models.CollectiveAdditionalFeeType.TRAVEL, amount=50
+        )
+        educational_factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
+
+        dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
+        with assert_num_queries(self.num_queries):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        [result] = response.json["collectiveOffers"]
+        assert result["additionalDetails"] == "Informations pratiques importantes"
+        assert result["stock"]["price"] == 20_000
+        assert result["stock"]["servicePrice"] == 12_000
+        assert result["stock"]["numberOfTeachers"] == 3
+        assert sorted(result["stock"]["collectiveAdditionalFees"], key=lambda f: f["amount"]) == [
+            {"type": models.CollectiveAdditionalFeeType.OTHER.value, "label": "nice fee", "amount": 3000},
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.value, "label": None, "amount": 5000},
+        ]

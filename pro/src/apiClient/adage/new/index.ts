@@ -58,6 +58,8 @@ export {
   type BookCollectiveOfferResponse,
   type CatalogViewBody,
   type ClientOptions,
+  type CollectiveAdditionalFeeResponse,
+  CollectiveAdditionalFeeType,
   CollectiveLocationType,
   type CollectiveOfferDatesModel,
   type CollectiveOfferResponseModel,

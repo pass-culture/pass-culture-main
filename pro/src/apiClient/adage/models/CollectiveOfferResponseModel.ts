@@ -12,6 +12,7 @@ import type { OfferStockResponse } from './OfferStockResponse';
 import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
 export type CollectiveOfferResponseModel = {
+  additionalDetails?: string | null;
   audioDisabilityCompliant?: boolean | null;
   contactEmail?: string | null;
   contactPhone?: string | null;

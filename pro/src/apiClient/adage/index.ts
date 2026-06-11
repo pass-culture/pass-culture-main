@@ -20,6 +20,8 @@ export type { AuthenticatedResponse } from './models/AuthenticatedResponse';
 export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferRequest';
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
 export type { CatalogViewBody } from './models/CatalogViewBody';
+export type { CollectiveAdditionalFeeResponse } from './models/CollectiveAdditionalFeeResponse';
+export { CollectiveAdditionalFeeType } from './models/CollectiveAdditionalFeeType';
 export { CollectiveLocationType } from './models/CollectiveLocationType';
 export type { CollectiveOfferDatesModel } from './models/CollectiveOfferDatesModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';

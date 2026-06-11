@@ -78,6 +78,8 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
     startDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
     price: 140000,
+    servicePrice: 140000,
+    collectiveAdditionalFees: [],
     numberOfTickets: 10,
   },
   venue: {
