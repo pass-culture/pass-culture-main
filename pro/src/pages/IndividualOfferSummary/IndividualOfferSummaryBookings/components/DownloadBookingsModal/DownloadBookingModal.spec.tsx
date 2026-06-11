@@ -2,8 +2,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient/api'
-import type { EventDatesInfos } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { EventDatesInfos } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -100,7 +100,7 @@ describe('DownloadBookingModal', () => {
   })
 
   it('should download validated bookings as CSV', async () => {
-    vi.spyOn(api, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
+    vi.spyOn(apiNew, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
     vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
       logEvent: mockLogEvent,
     })
@@ -139,11 +139,10 @@ describe('DownloadBookingModal', () => {
     })
 
     await userEvent.click(downLoadCsvButton)
-    expect(api.exportBookingsForOfferAsCsv).toHaveBeenCalledWith(
-      MOCK_OFFER_ID,
-      'validated',
-      '2022-01-01'
-    )
+    expect(apiNew.exportBookingsForOfferAsCsv).toHaveBeenCalledWith({
+      path: { offer_id: MOCK_OFFER_ID },
+      query: { eventDate: '2022-01-01', status: 'validated' },
+    })
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasDownloadedBookings', {
       format: 'csv',
@@ -178,7 +177,7 @@ describe('DownloadBookingModal', () => {
   })
 
   it('should download all bookings as Excel', async () => {
-    vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
+    vi.spyOn(apiNew, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
     vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
       logEvent: mockLogEvent,
     })
@@ -216,11 +215,10 @@ describe('DownloadBookingModal', () => {
     })
 
     await userEvent.click(downLoadXlsxButton)
-    expect(api.exportBookingsForOfferAsExcel).toHaveBeenCalledWith(
-      MOCK_OFFER_ID,
-      'all',
-      '2022-01-02'
-    )
+    expect(apiNew.exportBookingsForOfferAsExcel).toHaveBeenCalledWith({
+      path: { offer_id: MOCK_OFFER_ID },
+      query: { eventDate: '2022-01-02', status: 'all' },
+    })
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasDownloadedBookings', {
       format: 'excel',
