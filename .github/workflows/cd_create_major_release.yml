@@ -3,8 +3,8 @@ name: 0 [CD] Create major release
 on:
   schedule:
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onschedule
-    # “At 09:27 on every day-of-week from Monday through Friday.”
-    - cron: '27 9 * * 1-5'
+    # “At 08:27 on every day-of-week from Monday through Friday.”
+    - cron: '27 8 * * 1-5'
       timezone: "Europe/Paris"
   workflow_dispatch:
 
