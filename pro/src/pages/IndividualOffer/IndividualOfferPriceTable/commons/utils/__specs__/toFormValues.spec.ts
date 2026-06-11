@@ -1,7 +1,7 @@
 import type {
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -23,8 +23,11 @@ describe('toFormValues', () => {
     const stocks: GetOfferStockResponseModel[] = [
       {
         id: 1,
+        // @ts-expect-error waiting migration GetOfferStockResponseModel to pydanticV2
         activationCodesExpirationDatetime: null,
+        // @ts-expect-error waiting migration GetOfferStockResponseModel to pydanticV2
         beginningDatetime: null,
+        // @ts-expect-error waiting migration GetOfferStockResponseModel to pydanticV2
         bookingLimitDatetime: null,
         bookingsQuantity: 2,
         hasActivationCode: false,

@@ -2,10 +2,10 @@ import { format } from 'date-fns'
 import type { CastOptions } from 'yup'
 
 import type {
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
-} from '@/apiClient/v1'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
