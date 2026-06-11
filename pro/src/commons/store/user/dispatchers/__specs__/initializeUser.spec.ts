@@ -1,8 +1,7 @@
 import { vi } from 'vitest'
 
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api, apiNew } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/compat'
+import { ApiError, type ApiResult } from '@/apiClient/compat'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,

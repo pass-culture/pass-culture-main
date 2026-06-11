@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import { apiNew } from '@/apiClient/api'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1/new'
@@ -21,7 +20,7 @@ import {
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
-import { ApiError } from 'apiClient/compat'
+import { ApiError, type ApiRequestOptions } from 'apiClient/compat'
 import { Offerers } from '../Offerers'
 
 const inMemoryLocalStorage = new Map<string, string>()

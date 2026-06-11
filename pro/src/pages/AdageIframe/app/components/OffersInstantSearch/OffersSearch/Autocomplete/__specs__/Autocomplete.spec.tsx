@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SuggestionType } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { SuggestionType } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
@@ -18,7 +18,7 @@ import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { Autocomplete } from '../Autocomplete'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     logTrackingAutocompleteSuggestionClick: vi.fn(),
   },
 }))
@@ -358,7 +358,7 @@ describe('Autocomplete', () => {
     beforeEach(() => {
       mockGetItems = vi.fn().mockImplementation(() => mockVenueSuggestions)
       mockSourceId = 'VenueSuggestionsSource'
-      vi.mocked(apiAdage.logTrackingAutocompleteSuggestionClick).mockClear()
+      vi.mocked(apiAdageNew.logTrackingAutocompleteSuggestionClick).mockClear()
     })
 
     it('should call handleSubmit and refine when venue suggestion is clicked', async () => {
@@ -388,11 +388,13 @@ describe('Autocomplete', () => {
 
       await waitFor(() => {
         expect(
-          apiAdage.logTrackingAutocompleteSuggestionClick
+          apiAdageNew.logTrackingAutocompleteSuggestionClick
         ).toHaveBeenCalledWith({
-          iframeFrom: '/',
-          suggestionType: SuggestionType.VENUE,
-          suggestionValue: 'Mock Venue 1',
+          body: {
+            iframeFrom: '/',
+            suggestionType: SuggestionType.VENUE,
+            suggestionValue: 'Mock Venue 1',
+          },
         })
       })
     })
@@ -433,7 +435,7 @@ describe('Autocomplete', () => {
 
       await waitFor(() => {
         expect(
-          apiAdage.logTrackingAutocompleteSuggestionClick
+          apiAdageNew.logTrackingAutocompleteSuggestionClick
         ).toHaveBeenCalled()
       })
 

@@ -1,7 +1,7 @@
 import { type ChangeEvent, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { StudentLevels } from '@/apiClient/adage'
+import { StudentLevels } from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

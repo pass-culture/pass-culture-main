@@ -1,9 +1,12 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import { apiNew } from '@/apiClient/api'
-import { ApiError, type ApiResult } from '@/apiClient/compat'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'

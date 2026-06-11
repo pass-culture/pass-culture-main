@@ -3,8 +3,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
 import { useForm } from 'react-hook-form'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -74,7 +74,10 @@ export const RequestFormDialog = ({
   const onSubmit = async () => {
     const payload = createCollectiveRequestPayload(hookForm.getValues())
     try {
-      await apiAdage.createCollectiveRequest(offerId, payload)
+      await apiAdageNew.createCollectiveRequest({
+        path: { offer_id: offerId },
+        body: payload,
+      })
       snackBar.success('Votre demande a bien été envoyée')
       reset()
     } catch {
@@ -89,25 +92,29 @@ export const RequestFormDialog = ({
 
   const onCancel = async () => {
     if (!isPreview) {
-      await apiAdage.logRequestFormPopinDismiss({
-        iframeFrom: location.pathname,
-        collectiveOfferTemplateId: offerId,
-        comment: watch('description'),
-        phoneNumber: watch('teacherPhone') || undefined,
-        requestedDate: isDateValid(watch('offerDate'))
-          ? watch('offerDate')
-          : undefined,
-        totalStudents: watch('nbStudents') || undefined,
-        totalTeachers: watch('nbTeachers') || undefined,
+      await apiAdageNew.logRequestFormPopinDismiss({
+        body: {
+          iframeFrom: location.pathname,
+          collectiveOfferTemplateId: offerId,
+          comment: watch('description'),
+          phoneNumber: watch('teacherPhone') || undefined,
+          requestedDate: isDateValid(watch('offerDate'))
+            ? watch('offerDate')
+            : undefined,
+          totalStudents: watch('nbStudents') || undefined,
+          totalTeachers: watch('nbTeachers') || undefined,
+        },
       })
     }
     reset()
   }
 
   const logContactUrl = () => {
-    apiAdage.logContactUrlClick({
-      iframeFrom: location.pathname,
-      offerId,
+    apiAdageNew.logContactUrlClick({
+      body: {
+        iframeFrom: location.pathname,
+        offerId,
+      },
     })
   }
 

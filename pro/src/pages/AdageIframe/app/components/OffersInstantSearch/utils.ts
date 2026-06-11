@@ -1,5 +1,5 @@
-import type { VenueResponse } from '@/apiClient/adage'
-import { CollectiveLocationType } from '@/apiClient/adage/models/CollectiveLocationType'
+import type { VenueResponse } from '@/apiClient/adage/new'
+import { CollectiveLocationType } from '@/apiClient/adage/new'
 import type { Facets, Option } from '@/pages/AdageIframe/app/types'
 
 import type { SearchFormValues } from './OffersInstantSearch'

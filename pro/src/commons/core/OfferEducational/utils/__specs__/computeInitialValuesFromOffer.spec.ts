@@ -1,5 +1,5 @@
-import { CollectiveLocationType } from '@/apiClient/adage'
 import {
+  CollectiveLocationType,
   type GetCollectiveOfferVenueResponseModel,
   type LocationResponseModelV2,
   OfferContactFormEnum,

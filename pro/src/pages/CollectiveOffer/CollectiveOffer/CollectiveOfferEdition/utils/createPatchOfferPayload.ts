@@ -1,6 +1,6 @@
-import { OfferContactFormEnum } from '@/apiClient/adage'
 import {
   CollectiveLocationType,
+  OfferContactFormEnum,
   type PatchCollectiveOfferBodyModel,
   type PatchCollectiveOfferTemplateBodyModel,
 } from '@/apiClient/v1/new'

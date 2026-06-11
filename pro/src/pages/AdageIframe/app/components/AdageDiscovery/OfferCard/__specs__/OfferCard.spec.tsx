@@ -6,7 +6,7 @@ import {
   type AuthenticatedResponse,
   CollectiveLocationType,
 } from '@/apiClient/adage/new'
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -21,7 +21,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { type CardComponentProps, OfferCardComponent } from '../OfferCard'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     logConsultPlaylistElement: vi.fn(),
   },
 }))
@@ -115,7 +115,7 @@ describe('OfferCard component', () => {
 
   it('should call tracking route on click in offer card', async () => {
     const mockHandleTracking = vi.fn()
-    vi.spyOn(apiAdage, 'logConsultPlaylistElement')
+    vi.spyOn(apiAdageNew, 'logConsultPlaylistElement')
 
     renderOfferCardComponent({
       offer: mockOffer,

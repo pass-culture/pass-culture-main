@@ -2,9 +2,11 @@ import { act, renderHook } from '@testing-library/react'
 import { useForm } from 'react-hook-form'
 import * as reactRouter from 'react-router'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { ApiError } from '@/apiClient/v1'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'

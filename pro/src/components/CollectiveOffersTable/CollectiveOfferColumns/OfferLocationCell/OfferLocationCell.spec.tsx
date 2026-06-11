@@ -11,6 +11,8 @@ import {
 const props = {
   offerLocation: {
     locationType: CollectiveLocationType.SCHOOL,
+    locationComment: null,
+    location: null,
   },
 }
 
@@ -26,7 +28,11 @@ describe('OfferLocationCell', () => {
   it('should display À déterminer when locationType is TO_BE_DEFINED', () => {
     renderOfferLocationCell({
       ...props,
-      offerLocation: { locationType: CollectiveLocationType.TO_BE_DEFINED },
+      offerLocation: {
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        locationComment: null,
+        location: null,
+      },
     })
     expect(screen.getByText('À déterminer')).toBeInTheDocument()
   })
@@ -36,6 +42,7 @@ describe('OfferLocationCell', () => {
       ...props,
       offerLocation: {
         locationType: CollectiveLocationType.ADDRESS,
+        locationComment: null,
         location: {
           label: 'Toto',
           street: '123 Main St',
@@ -47,6 +54,9 @@ describe('OfferLocationCell', () => {
           isManualEdition: false,
           latitude: 0,
           longitude: 0,
+          banId: null,
+          departmentCode: '75',
+          inseeCode: '75056',
         },
       },
     })

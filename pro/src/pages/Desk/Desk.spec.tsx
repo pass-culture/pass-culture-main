@@ -2,9 +2,12 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import { apiNew } from '@/apiClient/api'
-import { ApiError, type ApiResult } from '@/apiClient/compat'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
 import { HTTP_STATUS } from '@/apiClient/helpers'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'

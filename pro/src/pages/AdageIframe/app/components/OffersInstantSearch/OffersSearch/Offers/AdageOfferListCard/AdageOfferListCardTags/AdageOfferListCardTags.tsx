@@ -16,7 +16,7 @@ type AdageOfferListCardTagsProps = {
 export function AdageOfferListCardTags({
   offer,
   adageUser,
-}: AdageOfferListCardTagsProps) {
+}: Readonly<AdageOfferListCardTagsProps>) {
   const tags = getOfferTags(offer, adageUser, true)
 
   return (
