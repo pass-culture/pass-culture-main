@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -14,14 +14,14 @@ const renderDraftOffers = (options?: RenderWithProvidersOptions) => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getCategories: vi.fn(),
   },
 }))
 
 describe('<DraftOffers />', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
     })

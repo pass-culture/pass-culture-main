@@ -1,9 +1,10 @@
 import {
   type ArtistOfferLinkResponseModel,
   ArtistType,
+  DisplayableActivity,
+  OfferStatus,
   SubcategoryIdEnum,
-} from '@/apiClient/v1'
-import { DisplayableActivity, OfferStatus } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -187,6 +188,7 @@ describe('getInitialArtistOfferLinks', () => {
   it('should return defaults links', () => {
     const artists: ArtistOfferLinkResponseModel[] = []
 
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(artists, defaultLinks)
 
     expect(result).toStrictEqual(defaultLinks)
@@ -206,7 +208,7 @@ describe('getInitialArtistOfferLinks', () => {
         artistType: ArtistType.STAGE_DIRECTOR,
       },
     ]
-
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toStrictEqual(offerLinks)
@@ -217,6 +219,7 @@ describe('getInitialArtistOfferLinks', () => {
       { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
     ]
 
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toHaveLength(3)

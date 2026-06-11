@@ -1,13 +1,11 @@
 import {
   ArtistType,
   type CategoryResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient/v1'
-import {
-  type GetIndividualOfferWithAddressResponseModel,
-  OfferStatus,
 } from '@/apiClient/v1/new'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import {

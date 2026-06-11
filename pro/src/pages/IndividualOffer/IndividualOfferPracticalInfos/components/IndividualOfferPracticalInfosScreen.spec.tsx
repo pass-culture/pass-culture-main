@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1'
+import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import * as useOfferWizardMode from '@/commons/hooks/useOfferWizardMode'
