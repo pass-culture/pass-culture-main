@@ -66,7 +66,7 @@ export const CollectiveOfferTemplateEditionNavigation = ({
 
       setIsArchiveModalOpen(false)
 
-      snackBar.success('Une offre a bien été archivée')
+      snackBar.success("L'offre a bien été archivée")
     } catch {
       snackBar.error("Une erreur est survenue lors de l'archivage de l'offre")
     }

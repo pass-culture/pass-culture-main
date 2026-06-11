@@ -75,7 +75,6 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
   it('should log event when clicking "Dupliquer" button', async () => {
     const user = userEvent.setup()
     vi.spyOn(apiNew, 'duplicateCollectiveOffer').mockResolvedValueOnce(
-      // Simuler la nouvelle offre dupliquée
       getCollectiveOfferFactory({
         id: 999,
       })
@@ -85,14 +84,12 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
     })
 
     fetchMock.mockResponseOnce((request) => {
-      // Si l'offre mockée a cette URL, l'intercepter ici.
       if (
         request.url === 'https://example.com/image.jpg' &&
         request.method === 'GET'
       ) {
         return {
           status: 200,
-          // Retourner un contenu simulé (ex: un faux buffer)
           body: 'Mock Image Data',
           headers: { 'Content-Type': 'image/jpeg' },
         }
@@ -224,7 +221,7 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
     await user.click(screen.getByText('Archiver l’offre'))
 
     expect(mockSnackBar.success).toHaveBeenCalledWith(
-      'Une offre a bien été archivée'
+      "L'offre a bien été archivée"
     )
   })
 
@@ -302,5 +299,16 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
         'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
       )
     ).toBeVisible()
+  })
+
+  it('should not show create bookable offer button if template offer has pending status', () => {
+    const offer = getCollectiveOfferTemplateFactory({
+      displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+    })
+    renderOfferTemplateEditionNavigation(offer)
+
+    expect(
+      screen.queryByRole('button', { name: 'Créer une offre réservable' })
+    ).not.toBeInTheDocument()
   })
 })

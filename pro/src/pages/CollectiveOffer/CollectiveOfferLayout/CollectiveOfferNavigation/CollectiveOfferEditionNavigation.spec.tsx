@@ -18,7 +18,7 @@ describe('<CollectiveOfferEditionNavigation />', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should not show duplicate button when CAN_DUPLICATE is not allowed', () => {
+  it('should show navigation tabs', () => {
     renderWithProviders(
       <CollectiveOfferEditionNavigation
         activeStep={CollectiveOfferStep.DETAILS}
