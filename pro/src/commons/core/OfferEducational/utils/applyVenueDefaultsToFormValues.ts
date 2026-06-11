@@ -1,7 +1,6 @@
 import {
   CollectiveLocationType,
-  type GetEducationalOffererResponseModel,
-  type VenueListItemResponseModel,
+  type GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 
 import { getDefaultEducationalValues } from '../constants'
@@ -9,29 +8,16 @@ import type { OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
   values: OfferEducationalFormValues,
-  offerer: GetEducationalOffererResponseModel | null,
   isOfferCreated: boolean,
-  venues?: VenueListItemResponseModel[]
+  selectedVenue: GetVenueResponseModel
 ): OfferEducationalFormValues => {
-  const venue = offerer?.managedVenues.find(
-    ({ id }) => id.toString() === values.venueId
-  )
-
-  const selectedVenue = venues?.find(
-    (v) => v.id.toString() === values.venueId.toString()
-  )
-
-  if (!venue) {
-    return values
-  }
-
   const locationFromSelectedVenue = {
     locationType: CollectiveLocationType.ADDRESS,
     location: {
       isVenueLocation: true,
       id: selectedVenue?.location?.id.toString() ?? '',
       isManualEdition: false,
-      label: venue.publicName,
+      label: selectedVenue?.publicName,
     },
   }
 
@@ -52,12 +38,12 @@ export const applyVenueDefaultsToFormValues = (
     return {
       ...values,
       contactEmail:
-        venue.collectiveEmail && !values.contactEmail
-          ? venue.collectiveEmail
+        selectedVenue.collectiveEmail && !values.contactEmail
+          ? selectedVenue.collectiveEmail
           : values.contactEmail,
       phone:
-        venue.collectivePhone && !values.phone
-          ? venue.collectivePhone
+        selectedVenue.collectivePhone && !values.phone
+          ? selectedVenue.collectivePhone
           : values.phone,
       location:
         // if offer location was the venue address, we set by default the new selected
@@ -70,7 +56,7 @@ export const applyVenueDefaultsToFormValues = (
   const valuesWithNewVenueFields = {
     ...values,
     interventionArea:
-      venue.collectiveInterventionArea ??
+      selectedVenue.collectiveInterventionArea ??
       getDefaultEducationalValues().interventionArea,
     location: locationFromSelectedVenue,
     ...selectedVenueAddress,
@@ -82,7 +68,7 @@ export const applyVenueDefaultsToFormValues = (
     mentalDisabilityCompliant,
     motorDisabilityCompliant,
     audioDisabilityCompliant,
-  } = venue
+  } = selectedVenue
 
   const noDisabilityCompliant =
     !visualDisabilityCompliant &&
@@ -99,10 +85,10 @@ export const applyVenueDefaultsToFormValues = (
       audio: Boolean(audioDisabilityCompliant),
       none: noDisabilityCompliant,
     },
-    contactEmail: venue.collectiveEmail ?? values.contactEmail,
-    phone: venue.collectivePhone ?? values.phone,
+    contactEmail: selectedVenue.collectiveEmail ?? values.contactEmail,
+    phone: selectedVenue.collectivePhone ?? values.phone,
     bookingEmails: [
-      { email: venue.collectiveEmail ?? values.contactEmail ?? '' },
+      { email: selectedVenue.collectiveEmail ?? values.contactEmail ?? '' },
     ],
   }
 }

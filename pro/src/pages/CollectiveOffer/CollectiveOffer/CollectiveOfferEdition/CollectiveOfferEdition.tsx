@@ -36,7 +36,6 @@ export const CollectiveOfferEdition = ({
         <OfferEducational
           userOfferer={offerEducationalFormData.offerer}
           domainsOptions={offerEducationalFormData.domains}
-          venues={offerEducationalFormData.venues}
           offer={offer}
           mode={
             isCollectiveOfferDetailsEditable(offer)

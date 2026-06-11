@@ -238,41 +238,6 @@ export const bookingRecapFactory = (
   }
 }
 
-/** @deprecated Use `makeVenueListItem()` for better type inference and safety. */
-export const venueListItemFactory = (
-  customVenueListItem: Partial<VenueListItemResponseModel> = {}
-): VenueListItemResponseModel => {
-  const id = customVenueListItem.id ?? venueId++
-  const offererId = customVenueListItem.managingOffererId ?? 1
-  const offererName =
-    customVenueListItem.offererName ?? 'la structure de Michel'
-
-  return {
-    id,
-    activity: null,
-    audioDisabilityCompliant: true,
-    bankAccountStatus: null,
-    bookingEmail: null,
-    hasCreatedOffer: true,
-    hasNonFreeOffers: true,
-    externalAccessibilityData: null,
-    isActive: true,
-    isCaledonian: false,
-    isPermanent: true,
-    isValidated: true,
-    location: null,
-    managingOffererId: offererId,
-    mentalDisabilityCompliant: true,
-    motorDisabilityCompliant: true,
-    name: `Nom de la structure ${id}`,
-    offererName,
-    publicName: `Nom public de la structure ${id}`,
-    siret: null,
-    visualDisabilityCompliant: true,
-    withdrawalDetails: null,
-    ...customVenueListItem,
-  }
-}
 export const makeVenueListItem = <
   T extends PartialExcept<VenueListItemResponseModel, 'id'>,
 >(

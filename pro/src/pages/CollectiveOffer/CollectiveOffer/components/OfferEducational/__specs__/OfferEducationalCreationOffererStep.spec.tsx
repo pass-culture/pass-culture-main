@@ -1,11 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import {
-  makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
-} from '@/commons/utils/factories/venueFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -22,13 +18,8 @@ function renderOfferEducational(props: OfferEducationalProps) {
       user: {
         currentUser: user,
         selectedPartnerVenue: makeGetVenueResponseModel({
-          id: props.venues[0].id,
+          id: 1,
         }),
-        venues: [
-          ...props.venues.map((venue) =>
-            makeVenueListItemLiteResponseModel({ id: venue.id })
-          ),
-        ],
       },
     },
   })
@@ -37,12 +28,9 @@ function renderOfferEducational(props: OfferEducationalProps) {
 describe('screens | OfferEducational : creation offerer step', () => {
   describe('when the offerer is not validated', () => {
     it('should display specific banner instead of place and referencing banner', async () => {
-      const venues = [makeVenueListItem({ id: 1 })]
-
       const props: OfferEducationalProps = {
         ...defaultCreationProps,
         userOfferer: null,
-        venues,
       }
 
       renderOfferEducational(props)

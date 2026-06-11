@@ -15,10 +15,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import {
-  listOffersOfferFactory,
-  venueListItemFactory,
-} from '@/commons/utils/factories/individualApiFactories'
+import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -101,7 +98,6 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
-    getVenues: vi.fn(),
   },
 }))
 
@@ -624,11 +620,6 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should display headline offer block when feature is available', async () => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-      venues: [
-        venueListItemFactory({ name: 'Une venue physique & permanente' }),
-      ],
-    })
     vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',

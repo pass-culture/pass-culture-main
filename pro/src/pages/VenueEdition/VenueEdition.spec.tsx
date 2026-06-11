@@ -4,10 +4,7 @@ import { Route, Routes } from 'react-router'
 import { api, apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -145,24 +142,7 @@ describe('VenueEdition', () => {
   })
 
   describe('about venue / partner page selection', () => {
-    it('should not let choose another partner page when there is only one partner page', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [
-          makeVenueListItem({
-            id: FIRST_VENUE.id,
-            name: FIRST_VENUE.name,
-            publicName: FIRST_VENUE.publicName,
-          }),
-          makeVenueListItem({
-            id: SECOND_VENUE.id,
-            name: SECOND_VENUE.name,
-            publicName: SECOND_VENUE.publicName,
-            isPermanent: false,
-            hasCreatedOffer: false,
-          }),
-        ],
-      })
-
+    it('should not let choose an other partner page when there is only one partner page', async () => {
       const options: RenderWithProvidersOptions = {
         storeOverrides: {
           user: {

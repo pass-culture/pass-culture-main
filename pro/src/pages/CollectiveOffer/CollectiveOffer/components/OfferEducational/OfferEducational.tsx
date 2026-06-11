@@ -10,7 +10,6 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
-  VenueListItemResponseModel,
 } from '@/apiClient/v1/new'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
@@ -57,7 +56,6 @@ export interface OfferEducationalProps {
   mode: Mode
   domainsOptions: DomainOption[]
   isTemplate: boolean
-  venues: VenueListItemResponseModel[]
 }
 
 export const OfferEducational = ({
@@ -66,7 +64,6 @@ export const OfferEducational = ({
   domainsOptions,
   mode,
   isTemplate,
-  venues,
 }: OfferEducationalProps): JSX.Element => {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -93,9 +90,8 @@ export const OfferEducational = ({
     mode === Mode.CREATION
       ? applyVenueDefaultsToFormValues(
           baseInitialValues,
-          userOfferer,
           isOfferCreated,
-          venues
+          selectedPartnerVenue
         )
       : baseInitialValues
 
@@ -217,7 +213,6 @@ export const OfferEducational = ({
             onImageUpload={onImageUpload}
             offer={offer}
             isSubmitting={form.formState.isSubmitting}
-            venues={venues}
           />
         </form>
       </FormProvider>

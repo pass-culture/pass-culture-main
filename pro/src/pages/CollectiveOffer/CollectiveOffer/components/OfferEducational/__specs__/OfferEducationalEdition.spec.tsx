@@ -1,12 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -24,10 +22,6 @@ describe('screens | OfferEducational: edition', () => {
   let props: OfferEducationalProps
 
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getVenues').mockResolvedValue({
-      venues: [makeVenueListItem({ id: 1 })],
-    })
-
     props = defaultEditionProps
   })
 

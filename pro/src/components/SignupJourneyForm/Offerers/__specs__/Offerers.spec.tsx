@@ -65,7 +65,6 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 vi.mock('@/apiClient/api', () => ({
   apiNew: {
     createOfferer: vi.fn(),
-    getVenues: vi.fn(),
     getVenuesOfOffererFromSiret: vi.fn(),
     getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),
@@ -415,7 +414,6 @@ describe('screens:SignupJourney::Offerers', () => {
       await renderOfferersScreen(contextValue)
       vi.spyOn(apiNew, 'createOfferer').mockResolvedValue(expect.anything())
       vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue(expect.anything())
-      vi.spyOn(apiNew, 'getVenues').mockResolvedValue(expect.anything())
       vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(expect.anything())
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))

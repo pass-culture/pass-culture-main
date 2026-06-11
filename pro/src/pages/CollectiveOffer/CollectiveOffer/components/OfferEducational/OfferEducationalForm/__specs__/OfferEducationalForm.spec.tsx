@@ -12,16 +12,16 @@ import {
   Mode,
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
-import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  defaultGetVenue,
+  getCollectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEducationalForm,
@@ -63,7 +63,6 @@ vi.mock('react-avatar-editor', () => {
 
 function renderOfferEducationalForm(
   props: OfferEducationalFormProps,
-  options?: RenderWithProvidersOptions,
   initialValues?: Partial<OfferEducationalFormValues>
 ) {
   function OfferEducationalFormWrapper() {
@@ -84,7 +83,13 @@ function renderOfferEducationalForm(
     )
   }
 
-  return renderWithProviders(<OfferEducationalFormWrapper />, options)
+  return renderWithProviders(<OfferEducationalFormWrapper />, {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: defaultGetVenue,
+      },
+    },
+  })
 }
 
 const mockLogEvent = vi.fn()

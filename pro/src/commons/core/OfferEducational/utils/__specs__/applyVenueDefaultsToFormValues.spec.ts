@@ -1,50 +1,20 @@
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { applyVenueDefaultsToFormValues } from '../applyVenueDefaultsToFormValues'
 
 describe('applyVenueDefaultsToFormValues', () => {
-  it('should return the initial values if the venue cant be found', () => {
-    const formValues = { ...getDefaultEducationalValues(), venueId: '2' }
-    const newFormValues = applyVenueDefaultsToFormValues(
-      formValues,
-      {
-        id: 1,
-        managedVenues: [],
-        name: 'test',
-        allowedOnAdage: true,
-      },
-      false
-    )
-
-    expect(newFormValues).toEqual(formValues)
-  })
-
   it('should return the accessibility values from the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...getDefaultEducationalValues(), venueId: '2', offererId: '1' },
-      {
-        id: 1,
-        managedVenues: [
-          {
-            id: 2,
-            name: 'Venue Name',
-            publicName: 'Venue Public Name',
-            audioDisabilityCompliant: true,
-            mentalDisabilityCompliant: true,
-            street: null,
-            city: 'Paris',
-            postalCode: '75001',
-            collectiveEmail: null,
-            collectivePhone: null,
-            collectiveInterventionArea: null,
-            motorDisabilityCompliant: null,
-            visualDisabilityCompliant: null,
-          },
-        ],
-        name: 'test',
-        allowedOnAdage: true,
-      },
-      false
+      false,
+      makeGetVenueResponseModel({
+        id: 2,
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
+      })
     )
 
     expect(newFormValues).toEqual(
@@ -63,29 +33,14 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should set disability compliance to none if no accessibility value is checked on the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...getDefaultEducationalValues(), venueId: '2', offererId: '1' },
-      {
-        id: 1,
-        managedVenues: [
-          {
-            id: 2,
-            name: 'Venue Name',
-            publicName: 'Venue Public Name',
-            street: null,
-            city: 'Paris',
-            postalCode: '75001',
-            collectiveEmail: null,
-            collectivePhone: null,
-            collectiveInterventionArea: null,
-            audioDisabilityCompliant: null,
-            mentalDisabilityCompliant: null,
-            motorDisabilityCompliant: null,
-            visualDisabilityCompliant: null,
-          },
-        ],
-        name: 'test',
-        allowedOnAdage: true,
-      },
-      false
+      false,
+      makeGetVenueResponseModel({
+        id: 2,
+        audioDisabilityCompliant: null,
+        mentalDisabilityCompliant: null,
+        motorDisabilityCompliant: null,
+        visualDisabilityCompliant: null,
+      })
     )
 
     expect(newFormValues).toEqual(
@@ -104,29 +59,12 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should prefill the form values with the venue email and phone if the venue has them', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...getDefaultEducationalValues(), offererId: '1', venueId: '2' },
-      {
-        id: 1,
-        managedVenues: [
-          {
-            id: 2,
-            name: 'Venue Name',
-            publicName: 'Venue Public Name',
-            collectiveEmail: 'test@email.co',
-            collectivePhone: '00000000',
-            street: null,
-            city: 'Paris',
-            postalCode: '75001',
-            collectiveInterventionArea: null,
-            audioDisabilityCompliant: null,
-            mentalDisabilityCompliant: null,
-            motorDisabilityCompliant: null,
-            visualDisabilityCompliant: null,
-          },
-        ],
-        name: 'test',
-        allowedOnAdage: true,
-      },
-      true
+      true,
+      makeGetVenueResponseModel({
+        id: 2,
+        collectiveEmail: 'test@email.co',
+        collectivePhone: '00000000',
+      })
     )
 
     expect(newFormValues.contactEmail).toEqual('test@email.co')
@@ -142,29 +80,12 @@ describe('applyVenueDefaultsToFormValues', () => {
         contactEmail: 'test2@email.co',
         phone: '11111111',
       },
-      {
-        id: 1,
-        managedVenues: [
-          {
-            id: 2,
-            name: 'Venue Name',
-            publicName: 'Venue Public Name',
-            collectiveEmail: 'test@email.co',
-            collectivePhone: '00000000',
-            street: null,
-            city: 'Paris',
-            postalCode: '75001',
-            collectiveInterventionArea: null,
-            audioDisabilityCompliant: null,
-            mentalDisabilityCompliant: null,
-            motorDisabilityCompliant: null,
-            visualDisabilityCompliant: null,
-          },
-        ],
-        name: 'test',
-        allowedOnAdage: true,
-      },
-      true
+      true,
+      makeGetVenueResponseModel({
+        id: 2,
+        collectiveEmail: 'test@email.co',
+        collectivePhone: '00000000',
+      })
     )
 
     expect(newFormValues.contactEmail).toEqual('test2@email.co')

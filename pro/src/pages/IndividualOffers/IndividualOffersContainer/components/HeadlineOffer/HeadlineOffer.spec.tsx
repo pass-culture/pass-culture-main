@@ -2,14 +2,13 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
-import { api, apiNew } from 'apiClient/api'
+import { apiNew } from 'apiClient/api'
 import { HeadlineOffer } from './HeadlineOffer'
 
 describe('HeadlineOffer', () => {
@@ -23,14 +22,7 @@ describe('HeadlineOffer', () => {
       name: 'My offer',
       venueId: 1,
     })
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        venueListItemFactory({
-          id: 1,
-          name: 'Une venue physique & permanente',
-        }),
-      ],
-    })
+
     const user = sharedCurrentUserFactory()
     renderWithProviders(
       <HeadlineOfferContextProvider>

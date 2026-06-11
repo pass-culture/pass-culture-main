@@ -1,6 +1,5 @@
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { userOffererFactory } from '@/commons/utils/factories/userOfferersFactories'
 
 import type { OfferEducationalProps } from '../OfferEducational'
@@ -18,7 +17,6 @@ export const defaultCreationProps: OfferEducationalProps = {
     },
   ],
   isTemplate: false,
-  venues: [makeVenueListItem({ id: 1 })],
 }
 
 export const defaultEditionProps: OfferEducationalProps = {
@@ -33,5 +31,4 @@ export const defaultEditionProps: OfferEducationalProps = {
     },
   ],
   isTemplate: false,
-  venues: [makeVenueListItem({ id: 2 })],
 }

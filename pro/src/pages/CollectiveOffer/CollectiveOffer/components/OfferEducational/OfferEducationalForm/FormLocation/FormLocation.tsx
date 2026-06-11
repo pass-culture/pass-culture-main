@@ -2,11 +2,10 @@ import { useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
-import {
-  CollectiveLocationType,
-  type VenueListItemResponseModel,
-} from '@/apiClient/v1/new'
+import { CollectiveLocationType } from '@/apiClient/v1/new'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -19,18 +18,16 @@ import styles from '../OfferEducationalForm.module.scss'
 import { InterventionAreaMultiSelect } from './InterventionAreaMultiSelect'
 export interface FormLocationProps {
   disableForm: boolean
-  venues: VenueListItemResponseModel[]
 }
 
 export const FormLocation = ({
-  venues,
   disableForm,
 }: FormLocationProps): JSX.Element => {
   const { watch, setValue, register, getFieldState } =
     useFormContext<OfferEducationalFormValues>()
   const isManualEdition = watch('location.location.isManualEdition')
 
-  const selectedVenue = venues.find((v) => v.id.toString() === watch('venueId'))
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const toggleManualAddressForm = () => {
     setValue('location.location.isManualEdition', !isManualEdition)
@@ -44,7 +41,7 @@ export const FormLocation = ({
   }
 
   const setVenueAddressFields = () => {
-    const { location } = selectedVenue || {}
+    const { location } = selectedPartnerVenue || {}
     setValue('banId', location?.banId)
     setValue('city', location?.city)
     setValue('longitude', (location?.longitude || '').toString())
@@ -105,11 +102,11 @@ export const FormLocation = ({
           name="location.location.id"
           options={[
             {
-              label: selectedVenue
-                ? `${selectedVenue.location?.label} - ${selectedVenue.location?.street}
-                  ${selectedVenue.location?.postalCode} ${selectedVenue.location?.city}`
+              label: selectedPartnerVenue
+                ? `${selectedPartnerVenue.location?.label} - ${selectedPartnerVenue.location?.street}
+                  ${selectedPartnerVenue.location?.postalCode} ${selectedPartnerVenue.location?.city}`
                 : 'Adresse du lieu sélectionné',
-              value: selectedVenue?.location?.id.toString() ?? '',
+              value: selectedPartnerVenue?.location?.id.toString() ?? '',
             },
             {
               label: 'Autre adresse',
@@ -191,7 +188,7 @@ export const FormLocation = ({
       event.target.value as CollectiveLocationType
     )
     if (event.target.value === CollectiveLocationType.ADDRESS) {
-      const { location } = selectedVenue || {}
+      const { location } = selectedPartnerVenue || {}
       // If here, the user chose to use the venue address
       setVenueAddressFields()
       setValue('location.location.id', location?.id.toString())
