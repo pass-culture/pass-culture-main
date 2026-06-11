@@ -2,6 +2,7 @@ import cx from 'classnames'
 
 import bookIcon from '@/icons/full-book.svg'
 import headlineIcon from '@/icons/full-boosted.svg'
+import fullProEditoIcon from '@/icons/full-proEdito.svg'
 import likeIcon from '@/icons/full-thumb-up.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -17,6 +18,7 @@ export enum TagVariant {
   CINECLUB = 'cineclub',
   HEADLINE = 'headline',
   LIKE = 'like',
+  PROEDITO = 'pro-edito',
 }
 
 const tagIconByVariant: { [key in TagVariant]?: string } = {
@@ -24,6 +26,7 @@ const tagIconByVariant: { [key in TagVariant]?: string } = {
   [TagVariant.CINECLUB]: bookIcon,
   [TagVariant.HEADLINE]: headlineIcon,
   [TagVariant.LIKE]: likeIcon,
+  [TagVariant.PROEDITO]: fullProEditoIcon,
 }
 
 export type TagProps = {

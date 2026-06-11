@@ -38,6 +38,7 @@ import fullParametersIcon from '@/icons/full-parameters.svg'
 import fullPauseIcon from '@/icons/full-pause.svg'
 import fullPlayIcon from '@/icons/full-play.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
+import fullProEditoIcon from '@/icons/full-proEdito.svg'
 import fullProfilIcon from '@/icons/full-profil.svg'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import fullRightIcon from '@/icons/full-right.svg'
@@ -196,6 +197,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullBoostedIcon },
   { src: fullSmsIcon },
   { src: fullBulbIcon },
+  { src: fullProEditoIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [

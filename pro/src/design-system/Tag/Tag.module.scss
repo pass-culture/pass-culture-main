@@ -60,6 +60,14 @@
     background-color: var(--color-background-cineclub);
   }
 
+  &.pro-edito {
+    .icon {
+      color: var(--color-icon-pro-edito);
+    }
+
+    background-color: var(--color-background-pro-edito);
+  }
+
   &.headline {
     .icon {
       color: var(--color-icon-headline);
