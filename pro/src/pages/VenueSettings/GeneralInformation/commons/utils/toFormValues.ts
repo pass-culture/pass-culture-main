@@ -26,7 +26,6 @@ export const toFormValues = ({
     banId: venue.location?.banId ?? null,
     manuallySetAddress: venue.location?.isManualEdition,
     comment: venue.comment ?? '',
-    bookingEmail: venue.bookingEmail ?? '',
     name: venue.name,
     venueSiret: venue.pricingPoint?.id ?? '',
     publicName: venue.publicName,

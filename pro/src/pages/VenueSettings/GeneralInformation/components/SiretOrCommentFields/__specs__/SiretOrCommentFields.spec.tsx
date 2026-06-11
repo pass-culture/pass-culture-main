@@ -11,7 +11,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/design-system/Button/Button'
-import type { VenueSettingsFormValues } from '@/pages/VenueSettings/commons/types'
+import type { VenueSettingsFormValues } from '@/pages/VenueSettings/GeneralInformation/commons/types'
 
 import {
   SiretOrCommentFields,

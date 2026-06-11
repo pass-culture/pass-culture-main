@@ -8,18 +8,15 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SynchronizationConnexions } from './SynchronizationConnexions'
 
-vi.mock(
-  '@/pages/VenueSettings/components/VenueProvidersManager/VenueProviderList/VenueProviderCard',
-  () => ({
-    VenueProviderCard: ({
-      venueProvider,
-    }: {
-      venueProvider: VenueProviderResponse
-    }) => (
-      <div data-testid="venue-provider-card">{venueProvider.provider.name}</div>
-    ),
-  })
-)
+vi.mock('../VenueProviderList/VenueProviderCard', () => ({
+  VenueProviderCard: ({
+    venueProvider,
+  }: {
+    venueProvider: VenueProviderResponse
+  }) => (
+    <div data-testid="venue-provider-card">{venueProvider.provider.name}</div>
+  ),
+}))
 
 vi.mock('@/apiClient/api', () => ({
   apiNew: {

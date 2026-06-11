@@ -1,7 +1,6 @@
 import * as yup from 'yup'
 
 import { checkCoords } from '@/commons/utils/coords'
-import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import { SiretOrCommentValidationSchema } from '../components/SiretOrCommentFields/validationSchema'
 
@@ -46,7 +45,6 @@ export const venueSettingsValidationSchema = yup
         }
         return schema
       }),
-    bookingEmail: yup.string().test(emailSchema),
     name: yup
       .string()
       .required(`Veuillez renseigner la raison sociale de votre lieu`),

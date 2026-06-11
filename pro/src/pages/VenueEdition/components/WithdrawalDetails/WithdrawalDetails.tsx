@@ -5,7 +5,7 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullInfoIcon from '@/icons/full-info.svg'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import type { VenueSettingsFormValues } from '../../../VenueSettings/commons/types'
+import type { VenueSettingsFormValues } from '../../../VenueSettings/GeneralInformation/commons/types'
 import styles from './WithdrawalDetails.module.scss'
 
 export const WithdrawalDetails = () => {

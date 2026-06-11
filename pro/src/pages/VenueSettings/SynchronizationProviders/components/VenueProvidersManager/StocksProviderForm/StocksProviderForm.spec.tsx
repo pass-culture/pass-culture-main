@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   StocksProviderForm,
   type StocksProviderFormProps,
-} from '../StocksProviderForm'
+} from './StocksProviderForm'
 
 const mockLogEvent = vi.fn()
 

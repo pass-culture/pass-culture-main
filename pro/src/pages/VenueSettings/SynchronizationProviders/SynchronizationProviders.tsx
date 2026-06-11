@@ -5,7 +5,7 @@ import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 
-import { SynchronizationConnexions } from '../components/VenueProvidersManager/SynchronizationConnexions/SynchronizationConnexions'
+import { SynchronizationConnexions } from './components/VenueProvidersManager/SynchronizationConnexions/SynchronizationConnexions'
 
 const SynchronizationsProviders = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)

@@ -10,37 +10,30 @@ import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/R
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-import { useSaveVenueSettings } from '../commons/hooks/useSaveVenueSettings'
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../commons/types'
-import { toFormValues } from '../commons/utils/toFormValues'
-import { venueSettingsValidationSchema } from '../commons/validationSchema'
+import { useSave } from './commons/hooks/useSave'
+import {
+  type VenueSettingsNotificationsFormValues,
+  VenueSettingsNotificationsValidationSchema,
+} from './commons/schemas'
 
 const Notifications = () => {
-  const venue = useAppSelector(ensureSelectedPartnerVenue)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
-  const formContext: VenueSettingsFormContext = {
-    isCaledonian: venue.isCaledonian,
-    siren: venue.managingOfferer?.siren,
-    withSiret: Boolean(venue.siret),
-  }
-
-  const form = useForm<VenueSettingsFormValues>({
-    context: formContext,
-    defaultValues: toFormValues({ venue }),
-    resolver: yupResolver(
-      // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
-      venueSettingsValidationSchema as any
-    ),
+  const form = useForm<VenueSettingsNotificationsFormValues>({
+    defaultValues: {
+      bookingEmail: selectedPartnerVenue.bookingEmail,
+    },
+    resolver: yupResolver(VenueSettingsNotificationsValidationSchema),
     mode: 'onBlur',
   })
 
-  const { saveAndContinue } = useSaveVenueSettings({ form, venue })
+  const { save } = useSave({
+    form,
+    venue: selectedPartnerVenue,
+  })
 
-  const onSubmit = (formValues: VenueSettingsFormValues) =>
-    saveAndContinue(formValues, formContext)
+  const onSubmit = (formValues: VenueSettingsNotificationsFormValues) =>
+    save(formValues)
 
   const {
     register,
