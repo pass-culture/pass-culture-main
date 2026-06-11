@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
@@ -103,7 +103,7 @@ describe('IndividualOfferLayout', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
       shouldDisplayRecommendationCard: true,

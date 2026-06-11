@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -32,7 +32,9 @@ function renderOfferRecommendationCard() {
 describe('OfferRecommendationCard', () => {
   describe('when no recommendation', () => {
     it('should display the card with placeholder text and add button', async () => {
-      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
+      vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+        proAdvice: null,
+      })
 
       renderOfferRecommendationCard()
 
@@ -51,7 +53,7 @@ describe('OfferRecommendationCard', () => {
 
   describe('when offer has recommendation', () => {
     it('should display the card with recommendation content and edit button', async () => {
-      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+      vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
         proAdvice: {
           content: 'C’est génial !',
           author: 'Jean-Mi',
@@ -75,7 +77,7 @@ describe('OfferRecommendationCard', () => {
       const longContent =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
 
-      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+      vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
         proAdvice: {
           content: longContent,
           author: 'Jean-Mi',
@@ -103,7 +105,7 @@ describe('OfferRecommendationCard', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,
     })
 
@@ -115,7 +117,7 @@ describe('OfferRecommendationCard', () => {
     expect(
       screen.getByRole('heading', { name: 'Ajouter votre recommandation' })
     ).toBeInTheDocument()
-    expect(mockLogEvent).toBeCalledWith(
+    expect(mockLogEvent).toHaveBeenCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
       { offerId: 769, action: 'started' }
     )
@@ -126,7 +128,7 @@ describe('OfferRecommendationCard', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: {
         content: 'C’est génial !',
         author: 'Jean-Mi',
@@ -143,7 +145,7 @@ describe('OfferRecommendationCard', () => {
         screen.getByRole('heading', { name: 'Ajouter votre recommandation' })
       ).toBeInTheDocument()
     })
-    expect(mockLogEvent).toBeCalledWith(
+    expect(mockLogEvent).toHaveBeenCalledWith(
       EngagementEvents.HAS_MADE_RECOMMENDATION,
       { offerId: 769, action: 'edited' }
     )

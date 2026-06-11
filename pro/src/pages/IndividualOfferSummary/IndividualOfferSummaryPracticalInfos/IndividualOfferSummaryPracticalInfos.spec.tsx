@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
+import { apiNew } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -29,15 +30,28 @@ const renderIndividualOfferSummaryPracticalInfos = (
   )
 }
 
+const waitForRecommendationCardFetch = async () => {
+  await waitFor(() => {
+    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+  })
+}
+
 describe('IndividualOfferSummaryPracticalInfos', () => {
+  beforeEach(() => {
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: null,
+    })
+  })
+
   it('should render a spinner if there is no offer', () => {
     renderIndividualOfferSummaryPracticalInfos({ offer: null })
 
     expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
   })
 
-  it('should render a practical info section', () => {
+  it('should render a practical info section', async () => {
     renderIndividualOfferSummaryPracticalInfos()
+    await waitForRecommendationCardFetch()
 
     expect(
       screen.getByRole('heading', {

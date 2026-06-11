@@ -82,6 +82,12 @@ const renderOffer = (
   )
 }
 
+const waitForRecommendationCardFetch = async () => {
+  await waitFor(() => {
+    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+  })
+}
+
 describe('IndividualOfferConfirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: GetIndividualOfferWithAddressResponseModel
@@ -105,6 +111,9 @@ describe('IndividualOfferConfirmation', () => {
     vi.spyOn(apiNew, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferWithAddressResponseModel
     )
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: null,
+    })
     vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
       shouldDisplayRecommendationCard: true,
       shouldDisplayHighlightCard: true,
@@ -112,9 +121,10 @@ describe('IndividualOfferConfirmation', () => {
     })
   })
 
-  it('should display a pending message when offer is pending for validation', () => {
+  it('should display a pending message when offer is pending for validation', async () => {
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
+    await waitForRecommendationCardFetch()
 
     expect(
       screen.getByRole('heading', { name: /Offre en cours de validation/ })
@@ -124,8 +134,9 @@ describe('IndividualOfferConfirmation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display a success message when offer is accepted', () => {
+  it('should display a success message when offer is accepted', async () => {
     renderOffer(contextOverride)
+    await waitForRecommendationCardFetch()
 
     expect(
       screen.getByRole('heading', {
@@ -135,8 +146,9 @@ describe('IndividualOfferConfirmation', () => {
   })
 
   describe('preview section', () => {
-    it('should show the QR code block for an active offer', () => {
+    it('should show the QR code block for an active offer', async () => {
       renderOffer(contextOverride)
+      await waitForRecommendationCardFetch()
 
       expect(screen.getByTestId('qr-code')).toBeInTheDocument()
       expect(
@@ -150,9 +162,10 @@ describe('IndividualOfferConfirmation', () => {
       ).toBeInTheDocument()
     })
 
-    it('should hide the QR code block when the offer is scheduled in the future', () => {
+    it('should hide the QR code block when the offer is scheduled in the future', async () => {
       offer.publicationDate = new Date(Date.now() + 3600 * 1000).toISOString()
       renderOffer(contextOverride)
+      await waitForRecommendationCardFetch()
 
       expect(screen.queryByTestId('qr-code')).not.toBeInTheDocument()
       expect(
@@ -163,8 +176,9 @@ describe('IndividualOfferConfirmation', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should encode the offer URL with UTM params in the QR code', () => {
+    it('should encode the offer URL with UTM params in the QR code', async () => {
       renderOffer(contextOverride)
+      await waitForRecommendationCardFetch()
 
       expect(screen.getByTestId('qr-code')).toHaveAttribute(
         'data-value',
@@ -172,8 +186,9 @@ describe('IndividualOfferConfirmation', () => {
       )
     })
 
-    it('should display the preview action links', () => {
+    it('should display the preview action links', async () => {
       renderOffer(contextOverride)
+      await waitForRecommendationCardFetch()
 
       expect(
         screen.getByRole('link', { name: 'Créer une nouvelle offre' })

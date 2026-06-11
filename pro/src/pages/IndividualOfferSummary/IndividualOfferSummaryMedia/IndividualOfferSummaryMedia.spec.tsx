@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
+import { apiNew } from '@/apiClient/api'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -24,14 +25,27 @@ const renderIndividualOfferSummaryScreen = () => {
   )
 }
 
+const waitForRecommendationCardFetch = async () => {
+  await waitFor(() => {
+    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+  })
+}
+
 const LABELS = {
   mediaSectionTitle: 'Image et vidéo',
   actionBarLinkLabel: 'Retour à la liste des offres',
 }
 
 describe('IndividualOfferSummaryMedia', () => {
-  it('should render a media section', () => {
+  beforeEach(() => {
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: null,
+    })
+  })
+
+  it('should render a media section', async () => {
     renderIndividualOfferSummaryScreen()
+    await waitForRecommendationCardFetch()
 
     const mediaSection = screen.getByRole('heading', {
       name: LABELS.mediaSectionTitle,
@@ -39,8 +53,9 @@ describe('IndividualOfferSummaryMedia', () => {
     expect(mediaSection).toBeInTheDocument()
   })
 
-  it('should render an action bar & back to offers list button', () => {
+  it('should render an action bar & back to offers list button', async () => {
     renderIndividualOfferSummaryScreen()
+    await waitForRecommendationCardFetch()
 
     const actionBarLink = screen.getByRole('link', {
       name: LABELS.actionBarLinkLabel,
