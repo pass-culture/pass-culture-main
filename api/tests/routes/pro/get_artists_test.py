@@ -25,10 +25,12 @@ class Returns200Test:
         assert {
             "id": artist1.id,
             "name": artist1.name,
+            "description": artist1.description,
             "thumbUrl": None,
         } in response.json
         assert {
             "id": artist2.id,
             "name": artist2.name,
+            "description": artist2.description,
             "thumbUrl": f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{artist2.mediation_uuid}",
         } in response.json
