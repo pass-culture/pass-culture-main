@@ -135,7 +135,7 @@ jobs:
       environment: pcapi-preview
       registry_repository: pcapi-preview
     secrets:
-      WORKLOAD_IDENTITY_PRD: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
