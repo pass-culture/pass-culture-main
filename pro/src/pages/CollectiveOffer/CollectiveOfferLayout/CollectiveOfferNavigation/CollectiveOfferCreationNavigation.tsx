@@ -22,7 +22,7 @@ export const CollectiveOfferCreationNavigation = ({
 
   const hasPassedDetailsStep = offer && offerId
   const hasPassedStocksStep = hasPassedDetailsStep && offer.collectiveStock
-  const hasPassedVisibilityStep = hasPassedStocksStep && offer.institution
+  const hasPassedInstitutionStep = hasPassedStocksStep && offer.institution
 
   const steps: Step[] = [
     {
@@ -52,14 +52,14 @@ export const CollectiveOfferCreationNavigation = ({
     {
       id: CollectiveOfferStep.SUMMARY,
       label: 'Récapitulatif',
-      url: hasPassedVisibilityStep
+      url: hasPassedInstitutionStep
         ? `/offre/${offerId}/collectif/creation/recapitulatif`
         : '',
     },
     {
       id: CollectiveOfferStep.PREVIEW,
       label: 'Aperçu',
-      url: hasPassedVisibilityStep
+      url: hasPassedInstitutionStep
         ? `/offre/${offerId}/collectif/creation/apercu`
         : '',
     },

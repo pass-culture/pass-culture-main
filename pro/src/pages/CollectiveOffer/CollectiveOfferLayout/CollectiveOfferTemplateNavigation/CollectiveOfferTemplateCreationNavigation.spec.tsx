@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/dom'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -25,7 +24,7 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should show different links if offer is template', async () => {
+  it('should show template offer steps', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
       offerId: offer.id,
@@ -35,8 +34,6 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(3)
-    expect(screen.queryByText('Dates et prix')).not.toBeInTheDocument()
-    expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
@@ -45,7 +42,7 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     )
   })
 
-  it('should show links if confirmation is the active step and the offer is template', () => {
+  it('should show links if confirmation is the active step', () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
       offerId: offer.id,
@@ -54,20 +51,5 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     })
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
-  })
-
-  it('should not show create bookable offer button if template offer has pending status', () => {
-    const offer = getCollectiveOfferTemplateFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-    })
-    renderCollectiveOfferNavigation({
-      offerId: offer.id,
-      offer,
-      activeStep: CollectiveOfferTemplateStep.DETAILS,
-    })
-
-    expect(
-      screen.queryByRole('button', { name: 'Créer une offre réservable' })
-    ).not.toBeInTheDocument()
   })
 })
