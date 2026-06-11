@@ -148,6 +148,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      backend_url: ${{ steps.deploy-api.outputs.backend_url }}
+      backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
     needs:
       - deploy-preview-env-init
       - push-pcapi
@@ -184,6 +187,7 @@ jobs:
           use_dns_based_endpoint: true
 
       - name: Deploy preview environment stack
+        id: deploy-api
         shell: bash
         env:
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
@@ -201,15 +205,15 @@ jobs:
             --parameter sandbox="${SANDBOX}" \
             --parameter sandboxArgs="${SANDBOX_ARGS}"
 
-          echo "BACKEND_URL=https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
-          echo "BACKOFFICE_URL=https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "backend_url=https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "backoffice_url=https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
 
       - name: Publish Summary
         shell: bash
         env:
           PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
-          BACKEND_URL: ${{ steps.deploy-api.outputs.BACKEND_URL }}
-          BACKOFFICE_URL: ${{ steps.deploy-api.outputs.BACKOFFICE_URL }}
+          BACKEND_URL: ${{ steps.deploy-api.outputs.backend_url }}
+          BACKOFFICE_URL: ${{ steps.deploy-api.outputs.backoffice_url }}
         run: |
           {
             echo "### :rocket: Deploy PRO summary"
