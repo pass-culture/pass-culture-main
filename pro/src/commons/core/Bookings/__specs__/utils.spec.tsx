@@ -1,4 +1,4 @@
-import { BookingStatusFilter } from '@/apiClient/v1'
+import { BookingStatusFilter } from '@/apiClient/v1/new'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,

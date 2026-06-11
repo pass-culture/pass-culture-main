@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
@@ -144,7 +144,7 @@ export const IndividualBookings = () => {
 
   const { data: hasBookingsQuery, isLoading: hasBookingsQueryLoading } = useSWR(
     [GET_HAS_BOOKINGS_QUERY_KEY],
-    () => api.getUserHasBookings()
+    () => apiNew.getUserHasBookings()
   )
 
   const resetPreFiltersWithLog = () => {
