@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ArtistResponseModel = {
+  description: (string | null);
   id: string;
   name: string;
   thumbUrl: (string | null);
