@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -13,7 +13,7 @@ import {
 } from './PrebookingButton'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     bookCollectiveOffer: vi.fn(),
     logBookingModalButtonClick: vi.fn(),
   },
@@ -105,7 +105,7 @@ describe('offer item', () => {
       screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
     ).toBeInTheDocument()
 
-    vi.spyOn(apiAdage, 'bookCollectiveOffer').mockRejectedValueOnce({
+    vi.spyOn(apiAdageNew, 'bookCollectiveOffer').mockRejectedValueOnce({
       statusCode: 400,
       body: { code: 'WRONG_UAI_CODE' },
     })
@@ -119,7 +119,7 @@ describe('offer item', () => {
   })
 
   it('should display a success message notification when booking worked', async () => {
-    vi.spyOn(apiAdage, 'bookCollectiveOffer').mockResolvedValue({
+    vi.spyOn(apiAdageNew, 'bookCollectiveOffer').mockResolvedValue({
       bookingId: 123,
     })
 
@@ -148,11 +148,13 @@ describe('offer item', () => {
     })
     await userEvent.click(preBookButton)
 
-    expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      isFromNoResult: false,
-      queryId: 'aez',
-      stockId: 117,
+    expect(apiAdageNew.logBookingModalButtonClick).toHaveBeenCalledWith({
+      body: {
+        iframeFrom: '/',
+        isFromNoResult: false,
+        queryId: 'aez',
+        stockId: 117,
+      },
     })
   })
 
@@ -164,11 +166,13 @@ describe('offer item', () => {
     })
     await userEvent.click(preBookButton)
 
-    expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      isFromNoResult: true,
-      queryId: 'aez',
-      stockId: 117,
+    expect(apiAdageNew.logBookingModalButtonClick).toHaveBeenCalledWith({
+      body: {
+        iframeFrom: '/',
+        isFromNoResult: true,
+        queryId: 'aez',
+        stockId: 117,
+      },
     })
   })
 })

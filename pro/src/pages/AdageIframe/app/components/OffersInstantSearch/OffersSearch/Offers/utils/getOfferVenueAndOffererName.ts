@@ -1,4 +1,4 @@
-import type { OfferVenueResponse } from '@/apiClient/adage'
+import type { OfferVenueResponse } from '@/apiClient/adage/new'
 
 export const getOfferVenueAndOffererName = (
   offerVenue: OfferVenueResponse
