@@ -76,14 +76,18 @@ export const DownloadBookingsModal = ({
       ?.submitter?.dataset.export
 
     if (fileFormat === BookingExportType.CSV) {
+      const bookingsCsvText = (await apiNew.exportBookingsForOfferAsCsv({
+        path: { offer_id: offerId },
+        query: {
+          status: data.selectedBookingType,
+          eventDate: data.selectedDate,
+        },
+      })) as string
+      const bookingsCsvBlob = new Blob([bookingsCsvText], {
+        type: 'text/csv;charset=utf-8;',
+      })
       downloadFile(
-        (await apiNew.exportBookingsForOfferAsCsv({
-          path: { offer_id: offerId },
-          query: {
-            status: data.selectedBookingType,
-            eventDate: data.selectedDate,
-          },
-        })) as Blob,
+        bookingsCsvBlob,
         `reservations-${data.selectedBookingType}-${data.selectedDate}.csv`
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
