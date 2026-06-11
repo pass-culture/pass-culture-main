@@ -64,8 +64,6 @@ jobs:
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          # TODO: show pr id
-          echo "PR_ID=$BRANCH_SHA1"
           echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           if [ "$FRONT_ONLY" == "true" ]; then
             echo "testing_label=" >> "$GITHUB_OUTPUT"
