@@ -10,7 +10,7 @@ on:
       sandbox:
         description: "Sandbox installed"
         required: true
-        default: "empty"
+        default: "tiny"
         type: choice
         options:
           - empty
@@ -19,7 +19,7 @@ on:
       sandbox-args:
         description: "Arguments passed to the sandbox command"
         required: false
-        default: ""
+        default: "arg1 arg2"
         type: string
       front-only:
         description: "Deploy only frontend (skip API deploy)"
@@ -187,7 +187,6 @@ jobs:
           location: ${{ vars.LOCATION }}
           use_dns_based_endpoint: true
 
-      # TODO: check if sandboxEnabled
       - name: Check if sandbox is enabled
         id: is-sandbox-enabled
         shell: bash
