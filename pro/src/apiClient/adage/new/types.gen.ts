@@ -179,6 +179,36 @@ export type CatalogViewBody = {
 };
 
 /**
+ * CollectiveAdditionalFeeResponse
+ */
+export type CollectiveAdditionalFeeResponse = {
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Label
+     */
+    label?: string;
+    type: CollectiveAdditionalFeeType;
+};
+
+/**
+ * CollectiveAdditionalFeeType
+ *
+ * An enumeration.
+ */
+export enum CollectiveAdditionalFeeType {
+    ACCOMMODATION = 'ACCOMMODATION',
+    TRAVEL = 'TRAVEL',
+    MEAL = 'MEAL',
+    CONSUMABLE_ITEMS = 'CONSUMABLE_ITEMS',
+    COPYRIGHT = 'COPYRIGHT',
+    APPLICATION_FEE = 'APPLICATION_FEE',
+    OTHER = 'OTHER'
+}
+
+/**
  * CollectiveLocationType
  *
  * An enumeration.
@@ -207,6 +237,10 @@ export type CollectiveOfferDatesModel = {
  * CollectiveOfferResponseModel
  */
 export type CollectiveOfferResponseModel = {
+    /**
+     * Additionaldetails
+     */
+    additionalDetails?: string;
     /**
      * Audiodisabilitycompliant
      */
@@ -962,6 +996,10 @@ export type OfferStockResponse = {
      */
     bookingLimitDatetime?: string;
     /**
+     * Collectiveadditionalfees
+     */
+    collectiveAdditionalFees: Array<CollectiveAdditionalFeeResponse>;
+    /**
      * Educationalpricedetail
      */
     educationalPriceDetail?: string;
@@ -974,6 +1012,10 @@ export type OfferStockResponse = {
      */
     id: number;
     /**
+     * Numberofteachers
+     */
+    numberOfTeachers?: number;
+    /**
      * Numberoftickets
      */
     numberOfTickets?: number;
@@ -981,6 +1023,10 @@ export type OfferStockResponse = {
      * Price
      */
     price: number;
+    /**
+     * Serviceprice
+     */
+    servicePrice?: number;
     /**
      * Startdatetime
      */

@@ -32,6 +32,7 @@ def redactor_fixture():
 
 class CollectiveOfferTest:
     num_queries = 1  # fetch collective offer and related data
+    num_queries += 1  # selectinload collectiveAdditionalFees
     num_queries += 1  # fetch redactor
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -43,6 +44,7 @@ class CollectiveOfferTest:
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
+            servicePrice=10,
             collectiveOffer__students=[models.StudentLevels.GENERAL2],
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
@@ -72,8 +74,11 @@ class CollectiveOfferTest:
                 "bookingLimitDatetime": "2021-05-14T23:00:00Z",
                 "id": stock.id,
                 "price": 1000,
+                "servicePrice": 1000,
                 "educationalPriceDetail": stock.priceDetail,
                 "numberOfTickets": stock.numberOfTickets,
+                "numberOfTeachers": stock.numberOfTeachers,
+                "collectiveAdditionalFees": [],
             },
             "venue": {
                 "adageId": None,
@@ -137,6 +142,7 @@ class CollectiveOfferTest:
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "formats": [fmt.value for fmt in offer.formats],
             "isTemplate": False,
+            "additionalDetails": None,
         }
 
     def test_location_address_venue(self, eac_client, redactor):
@@ -177,6 +183,33 @@ class CollectiveOfferTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=validation)
         response = eac_client.get(f"/adage-iframe/collective/offers/{offer.id}")
         assert response.status_code == 404
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def test_get_collective_offer_price_fields(self, eac_client, redactor):
+        stock = educational_factories.CollectiveStockFactory(
+            startDatetime=datetime(2021, 5, 15),
+            price=200,
+            servicePrice=120,
+            numberOfTeachers=3,
+            collectiveOffer__additionalDetails="Informations pratiques importantes",
+        )
+        educational_factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=models.CollectiveAdditionalFeeType.TRAVEL, amount=50
+        )
+        educational_factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
+
+        dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
+        response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        assert response.json["additionalDetails"] == "Informations pratiques importantes"
+        assert response.json["stock"]["price"] == 20_000
+        assert response.json["stock"]["servicePrice"] == 12_000
+        assert response.json["stock"]["numberOfTeachers"] == 3
+        assert sorted(response.json["stock"]["collectiveAdditionalFees"], key=lambda f: f["amount"]) == [
+            {"type": models.CollectiveAdditionalFeeType.OTHER.value, "label": "nice fee", "amount": 3000},
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.value, "label": None, "amount": 5000},
+        ]
 
     def test_non_redactor_is_ok(self, eac_client):
         """Ensure that an authenticated user that is a not an

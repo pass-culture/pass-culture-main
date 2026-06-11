@@ -10,6 +10,8 @@ describe('adageOfferStocks', () => {
         stock: {
           id: 1,
           price: 100,
+          servicePrice: 100,
+          collectiveAdditionalFees: [],
           numberOfTickets: 20,
         },
       })

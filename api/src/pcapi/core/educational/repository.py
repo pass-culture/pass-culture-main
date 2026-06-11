@@ -1219,8 +1219,9 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> models.CollectiveOffe
                 models.EducationalRedactor.lastName,
                 models.EducationalRedactor.civility,
             ),
-            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
-                models.CollectiveStock.collectiveBookings
+            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).options(
+                sa_orm.joinedload(models.CollectiveStock.collectiveBookings),
+                sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
             ),
             sa_orm.joinedload(models.CollectiveOffer.institution),
             sa_orm.joinedload(models.CollectiveOffer.venue).options(
@@ -1562,8 +1563,9 @@ def get_offers_for_my_institution(uai: str) -> sa_orm.Query[models.CollectiveOff
         db.session.query(models.CollectiveOffer)
         .join(models.EducationalInstitution, models.CollectiveOffer.institution)
         .options(
-            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
-                models.CollectiveStock.collectiveBookings
+            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).options(
+                sa_orm.joinedload(models.CollectiveStock.collectiveBookings),
+                sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
             ),
             sa_orm.joinedload(models.CollectiveOffer.venue).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),

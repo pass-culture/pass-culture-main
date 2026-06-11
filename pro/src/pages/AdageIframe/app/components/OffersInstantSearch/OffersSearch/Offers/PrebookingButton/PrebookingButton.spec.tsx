@@ -48,8 +48,11 @@ describe('offer item', () => {
         startDatetime: '03/01/2023',
         bookingLimitDatetime: '01/01/2023',
         price: 20,
+        servicePrice: 20,
+        collectiveAdditionalFees: [],
         numberOfTickets: 3,
         educationalPriceDetail: '1200',
+        numberOfTeachers: 3,
       },
     }
   })
