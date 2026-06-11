@@ -201,16 +201,21 @@ jobs:
             --parameter sandbox="${SANDBOX}" \
             --parameter sandboxArgs="${SANDBOX_ARGS}"
 
+          echo "BACKEND_URL=https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "BACKOFFICE_URL=https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
+
       - name: Publish Summary
         shell: bash
         env:
-          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
+          BACKEND_URL: ${{ steps.deploy-api.outputs.BACKEND_URL }}
+          BACKOFFICE_URL: ${{ steps.deploy-api.outputs.BACKOFFICE_URL }}
         run: |
           {
             echo "### :rocket: Deploy PRO summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
-            echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
-            echo "| [Back] url                           |  https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team/ |"
-            echo "| [BO] url                             |  https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team/ |"
+            echo "| [Pro] url                            |  ${PRO_URL} |"
+            echo "| [Back] url                           |  ${BACKEND_URL} |"
+            echo "| [BO] url                             |  ${BACKOFFICE_URL} |"
           } >> "$GITHUB_STEP_SUMMARY"
