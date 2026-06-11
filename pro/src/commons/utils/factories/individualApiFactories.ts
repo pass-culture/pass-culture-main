@@ -12,7 +12,6 @@ import {
   type GetVenueResponseModel,
   type ManagedVenue,
   type OfferHomeResponseModel,
-  type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   type VenueProviderResponse,
 } from '@/apiClient/v1'
@@ -31,6 +30,7 @@ import {
   OfferStatus,
   type PriceCategoryResponseModel,
   SubcategoryIdEnum,
+  type SubcategoryResponseModel,
 } from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'

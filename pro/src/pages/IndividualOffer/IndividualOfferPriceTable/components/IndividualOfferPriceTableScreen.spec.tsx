@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import type { GetOfferStockResponseModel } from '@/apiClient/v1'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetOfferStockResponseModel,
+} from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,

@@ -5,8 +5,10 @@ import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
-import type { GetOfferStockResponseModel } from '@/apiClient/v1'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetOfferStockResponseModel,
+} from '@/apiClient/v1/new'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
