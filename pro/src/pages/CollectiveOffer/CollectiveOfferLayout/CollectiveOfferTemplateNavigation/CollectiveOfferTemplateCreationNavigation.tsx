@@ -6,23 +6,21 @@ import { CollectiveOfferTemplateStep } from './constants'
 
 export type CollectiveOfferTemplateCreationNavigationProps = {
   activeStep: CollectiveOfferTemplateStep
-  offerId?: number
   offer?: GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveOfferTemplateCreationNavigation = ({
   activeStep,
-  offerId = 0,
   offer,
 }: CollectiveOfferTemplateCreationNavigationProps): JSX.Element => {
-  const isOfferTemplateCreated = offer && offerId
+  const isOfferTemplateCreated = !!offer
 
   const stepList: Step[] = [
     {
       id: CollectiveOfferTemplateStep.DETAILS,
       label: 'Détails de l’offre',
       url: isOfferTemplateCreated
-        ? `/offre/collectif/vitrine/${offerId}/creation`
+        ? `/offre/collectif/vitrine/${offer.id}/creation`
         : '',
     },
     {

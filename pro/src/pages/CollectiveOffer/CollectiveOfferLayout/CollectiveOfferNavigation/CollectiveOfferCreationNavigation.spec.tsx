@@ -16,18 +16,15 @@ const renderCollectiveOfferNavigation = (
 
 describe('<CollectiveOfferCreationNavigation />', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.DETAILS,
-    })
+    const activeStep = CollectiveOfferStep.DETAILS
+    const { container } = renderCollectiveOfferNavigation({ activeStep })
 
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display navigation for collective offer in creation', async () => {
-    renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.DETAILS,
-      offerId: 0,
-    })
+    const activeStep = CollectiveOfferStep.DETAILS
+    renderCollectiveOfferNavigation({ activeStep })
 
     expect(screen.getByTestId('stepper')).toBeVisible()
 
@@ -45,12 +42,10 @@ describe('<CollectiveOfferCreationNavigation />', () => {
   })
 
   it('should show links if institution is the active step', () => {
+    const activeStep = CollectiveOfferStep.INSTITUTION
     const offer = getCollectiveOfferFactory({ institution: undefined })
-    renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.INSTITUTION,
-      offer,
-      offerId: offer.id,
-    })
+    renderCollectiveOfferNavigation({ activeStep, offer })
+
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
@@ -65,6 +60,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
   })
 
   it('should show links if summary is the active step', () => {
+    const activeStep = CollectiveOfferStep.SUMMARY
     const offer = getCollectiveOfferFactory({
       institution: {
         city: '',
@@ -76,11 +72,8 @@ describe('<CollectiveOfferCreationNavigation />', () => {
         institutionType: '',
       },
     })
-    renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.SUMMARY,
-      offer,
-      offerId: offer.id,
-    })
+    renderCollectiveOfferNavigation({ activeStep, offer })
+
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(5)
     expect(links[0].getAttribute('href')).toBe(
@@ -101,6 +94,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
   })
 
   it('should show links if confirmation is the active step', () => {
+    const activeStep = CollectiveOfferStep.CONFIRMATION
     const offer = getCollectiveOfferFactory({
       institution: {
         city: '',
@@ -112,11 +106,8 @@ describe('<CollectiveOfferCreationNavigation />', () => {
         institutionType: '',
       },
     })
-    renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferStep.CONFIRMATION,
-      offer,
-      offerId: offer.id,
-    })
+    renderCollectiveOfferNavigation({ activeStep, offer })
+
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(5)
     expect(links[0].getAttribute('href')).toBe(
@@ -134,12 +125,9 @@ describe('<CollectiveOfferCreationNavigation />', () => {
   })
 
   it('should be able to go to the institution and stocks step if the institution and stock are already filled', () => {
+    const activeStep = CollectiveOfferStep.DETAILS
     const offer = getCollectiveOfferFactory()
-    renderCollectiveOfferNavigation({
-      offerId: offer.id,
-      offer,
-      activeStep: CollectiveOfferStep.DETAILS,
-    })
+    renderCollectiveOfferNavigation({ activeStep, offer })
 
     expect(
       screen.getByRole('link', { name: /Établissement et enseignant/ })
@@ -148,15 +136,12 @@ describe('<CollectiveOfferCreationNavigation />', () => {
   })
 
   it('should be able to go to the stocks step if the details are already filled', () => {
+    const activeStep = CollectiveOfferStep.DETAILS
     const offer = getCollectiveOfferFactory({
       institution: undefined,
       collectiveStock: undefined,
     })
-    renderCollectiveOfferNavigation({
-      offerId: offer.id,
-      offer,
-      activeStep: CollectiveOfferStep.DETAILS,
-    })
+    renderCollectiveOfferNavigation({ activeStep, offer })
 
     expect(
       screen.queryByRole('link', { name: /Établissement et enseignant/ })

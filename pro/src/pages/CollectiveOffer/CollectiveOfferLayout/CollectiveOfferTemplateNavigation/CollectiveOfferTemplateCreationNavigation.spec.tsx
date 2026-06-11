@@ -27,7 +27,6 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
   it('should show template offer steps', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
-      offerId: offer.id,
       activeStep: CollectiveOfferTemplateStep.SUMMARY,
       offer,
     })
@@ -45,7 +44,6 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
   it('should show links if confirmation is the active step', () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
-      offerId: offer.id,
       activeStep: CollectiveOfferTemplateStep.CONFIRMATION,
       offer,
     })
