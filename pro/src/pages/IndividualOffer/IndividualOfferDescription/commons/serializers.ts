@@ -2,9 +2,9 @@ import {
   type ArtistOfferLinkBodyModel,
   type ArtistOfferLinkResponseModel,
   ArtistType,
+  type PatchOfferBodyModel,
   type PostOfferBodyModel,
-} from '@/apiClient/v1'
-import type { PatchOfferBodyModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
@@ -103,6 +103,8 @@ export function serializeDetailsPostData(
     '`formValues.accessibility` is undefined'
   )
 
+  // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
+  // @ts-expect-error
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -116,6 +118,8 @@ export function serializeDetailsPostData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
+    // TODO (rchaffal) to remove once ArtistOfferLinks is migrated to Pydantic V2
+    // @ts-expect-error
     artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
@@ -161,6 +165,8 @@ export function serializeDetailsPatchData(
       visualDisabilityCompliant: formValues.accessibility.visual,
     }),
     ...(!isReadOnly('artistOfferLinks') && {
+      // TODO (rchaffal) to remove once ArtistOfferLinks is migrated to Pydantic V2
+      // @ts-expect-error
       artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
     }),
   })

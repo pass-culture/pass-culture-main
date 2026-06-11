@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   ArtistType,
   SubcategoryIdEnum,
@@ -40,14 +40,12 @@ import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescr
 import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     createOffer: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
-  },
-  apiNew: {
-    patchOffer: vi.fn(),
     getProductByEan: vi.fn(),
     getMusicTypes: vi.fn(),
+    patchOffer: vi.fn(),
   },
 }))
 
@@ -293,7 +291,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'createOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
@@ -380,7 +378,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'createOffer').mockRejectedValue({
+    vi.spyOn(apiNew, 'createOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
@@ -434,7 +432,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'createOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -448,31 +446,33 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(api.createOffer).toHaveBeenCalledOnce()
-    expect(api.createOffer).toHaveBeenCalledWith({
-      artistOfferLinks: [],
-      audioDisabilityCompliant: true,
-      description: 'My super description',
-      durationMinutes: null,
-      extraData: {
-        author: null,
-        ean: '1234567891234',
-        gtl_id: 'pop',
-        showSubType: '205',
-        showType: '200',
-        performer: null,
-        speaker: null,
-        stageDirector: null,
-        visa: null,
+    expect(apiNew.createOffer).toHaveBeenCalledOnce()
+    expect(apiNew.createOffer).toHaveBeenCalledWith({
+      body: {
+        artistOfferLinks: [],
+        audioDisabilityCompliant: true,
+        description: 'My super description',
+        durationMinutes: null,
+        extraData: {
+          author: null,
+          ean: '1234567891234',
+          gtl_id: 'pop',
+          showSubType: '205',
+          showType: '200',
+          performer: null,
+          speaker: null,
+          stageDirector: null,
+          visa: null,
+        },
+        hasCulturalOutreachClaim: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'My super offer',
+        subcategoryId: 'physical',
+        venueId: 189,
+        url: undefined,
+        visualDisabilityCompliant: true,
       },
-      hasCulturalOutreachClaim: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      name: 'My super offer',
-      subcategoryId: 'physical',
-      venueId: 189,
-      url: undefined,
-      visualDisabilityCompliant: true,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
       '/offre/individuelle/12/creation/description',
@@ -728,7 +728,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         })
 
         it('should disabled all fields if another offer with the same EAN is already published', async () => {
-          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+          vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
             id: 1,
             dateCreated: '',
             isActive: true,
