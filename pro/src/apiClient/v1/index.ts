@@ -40,6 +40,7 @@ export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
 export type { CheckTokenBodyModel } from './models/CheckTokenBodyModel';
+export type { CollectiveAdditionalFeeModel } from './models/CollectiveAdditionalFeeModel';
 export type { CollectiveAdditionalFeeResponseModel } from './models/CollectiveAdditionalFeeResponseModel';
 export { CollectiveAdditionalFeeType } from './models/CollectiveAdditionalFeeType';
 export { CollectiveBookingCancellationReasons } from './models/CollectiveBookingCancellationReasons';

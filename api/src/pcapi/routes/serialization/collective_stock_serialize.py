@@ -1,3 +1,5 @@
+import collections
+import decimal
 import typing
 from datetime import datetime
 from datetime import timezone
@@ -73,40 +75,82 @@ def validate_price_detail(price_detail: str | None) -> str | None:
     return price_detail
 
 
+class CollectiveAdditionalFeeModel(HttpBodyModel):
+    type: models.CollectiveAdditionalFeeType
+    label: str | None
+    amount: float
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_model(self) -> typing.Self:
+        if self.label is not None and self.type != models.CollectiveAdditionalFeeType.OTHER:
+            raise_error_from_location(None, loc="label", msg="Le label ne peut pas être rempli pour ce type")
+
+        return self
+
+
 class CollectiveStockCreationBodyModel(HttpBodyModel):
     offerId: int
     startDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_start_datetime)]
     endDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_end_datetime)]
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
     price: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
+    servicePrice: float | None = pydantic_v2.Field(default=None, ge=0)
+    additionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
+        default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
+    )
     numberOfTickets: typing.Annotated[int, pydantic_v2.AfterValidator(validate_number_of_tickets)]
     numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
     priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
 
     @pydantic_v2.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
+        new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+
         # priceDetail must be present only when FF is OFF
-        if (
-            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "priceDetail" in self.model_fields_set
-        ):
+        if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être présent")
 
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "priceDetail" not in self.model_fields_set
-        ):
+        if not new_price_ff_is_active and "priceDetail" not in self.model_fields_set:
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ est requis")
 
-        # numberOfTeachers must be present and not None only when FF is ON
-        if feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active() and self.numberOfTeachers is None:
-            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ est requis")
-
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "numberOfTeachers" in self.model_fields_set
+        # numberOfTeachers, servicePrice, additionalFees must be present and not None only when FF is ON
+        for field_name, field_value in (
+            ("numberOfTeachers", self.numberOfTeachers),
+            ("servicePrice", self.servicePrice),
+            ("additionalFees", self.additionalFees),
         ):
-            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ ne peut pas être présent")
+            if new_price_ff_is_active and field_value is None:
+                raise_error_from_location(None, loc=field_name, msg="Ce champ est requis")
+
+            if not new_price_ff_is_active and field_name in self.model_fields_set:
+                raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être présent")
+
+        if new_price_ff_is_active:
+            # check additional fees type and label duplicates
+            if self.additionalFees:
+                type_counter = collections.Counter(
+                    fee.type for fee in self.additionalFees if fee.type != models.CollectiveAdditionalFeeType.OTHER
+                )
+                if any(type_count > 1 for type_count in type_counter.values()):
+                    raise_error_from_location(None, loc="additionalFees", msg="Un type est en doublon")
+
+                label_counter = collections.Counter(
+                    fee.label for fee in self.additionalFees if fee.type == models.CollectiveAdditionalFeeType.OTHER
+                )
+                if any(label_count > 1 for label_count in label_counter.values()):
+                    raise_error_from_location(None, loc="additionalFees", msg="Un label est en doublon")
+
+            # check total price
+            assert self.servicePrice is not None  # checked above when ff is active
+            assert self.additionalFees is not None  # same
+            total_price = decimal.Decimal(self.servicePrice) + sum(
+                decimal.Decimal(fee.amount) for fee in self.additionalFees
+            )
+            if total_price != decimal.Decimal(self.price):
+                raise_error_from_location(None, loc="price", msg="Le prix total ne correspond pas à la somme des frais")
+
+            if total_price > settings.EAC_OFFER_PRICE_LIMIT:
+                raise_error_from_location(None, loc="price", msg="Le prix est trop élevé")
 
         return self
 
@@ -124,23 +168,18 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
 
     @pydantic_v2.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
-        if (
-            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "priceDetail" in self.model_fields_set
-        ):
+        new_price_ff_is_active = feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+
+        # priceDetail must not be present when FF is ON
+        if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
 
-        if (
-            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "numberOfTeachers" in self.model_fields_set
-        ):
+        # numberOfTeachers must not be present when FF is OFF
+        if not new_price_ff_is_active and "numberOfTeachers" in self.model_fields_set:
             raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ ne peut pas être édité")
 
-        if (
-            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
-            and "numberOfTeachers" in self.model_fields_set
-            and self.numberOfTeachers is None
-        ):
+        # numberOfTeachers must not be set as None when FF is ON
+        if new_price_ff_is_active and "numberOfTeachers" in self.model_fields_set and self.numberOfTeachers is None:
             raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ est requis")
 
         return self

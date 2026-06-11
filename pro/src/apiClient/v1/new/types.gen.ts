@@ -474,6 +474,21 @@ export type CheckTokenBodyModel = {
 };
 
 /**
+ * CollectiveAdditionalFeeModel
+ */
+export type CollectiveAdditionalFeeModel = {
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Label
+     */
+    label: string | null;
+    type: CollectiveAdditionalFeeType;
+};
+
+/**
  * CollectiveAdditionalFeeResponseModel
  */
 export type CollectiveAdditionalFeeResponseModel = {
@@ -829,6 +844,10 @@ export type CollectiveRevenue = {
  */
 export type CollectiveStockCreationBodyModel = {
     /**
+     * Additionalfees
+     */
+    additionalFees?: Array<CollectiveAdditionalFeeModel> | null;
+    /**
      * Bookinglimitdatetime
      */
     bookingLimitDatetime: string | null;
@@ -856,6 +875,10 @@ export type CollectiveStockCreationBodyModel = {
      * Pricedetail
      */
     priceDetail?: string | null;
+    /**
+     * Serviceprice
+     */
+    servicePrice?: number | null;
     /**
      * Startdatetime
      */
