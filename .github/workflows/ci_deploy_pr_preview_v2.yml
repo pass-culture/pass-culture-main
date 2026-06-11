@@ -63,6 +63,7 @@ jobs:
           FRONT_ONLY: ${{ inputs.front-only }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
+          # TODO: retrieve pr id and use it as label instead of branch name. It will be more readable and avoid sha1sum collision risk. It requires to change the workflow trigger to pull_request and to update the trigger of the workflow calling this one
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           if [ "$FRONT_ONLY" == "true" ]; then
