@@ -1,7 +1,7 @@
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
+} from '@/apiClient/adage/new'
 import { Markdown } from '@/components/Markdown/Markdown'
 
 import { getOfferVenueAndOffererName } from '../../utils/getOfferVenueAndOffererName'
@@ -13,14 +13,14 @@ export type AdageOfferListCardContentProps = {
 
 export function AdageOfferListCardContent({
   offer,
-}: AdageOfferListCardContentProps) {
+}: Readonly<AdageOfferListCardContentProps>) {
   const description = offer.description ?? ''
   return (
     <>
       <p className={styles['offer-offerer']}>
         {getOfferVenueAndOffererName(offer.venue)}
       </p>
-      {offer.formats.length && (
+      {Boolean(offer.formats.length) && (
         <div className={styles['offer-formats']}>
           {offer.formats.length === 1 ? (
             <span className={styles['offer-formats-format']}>

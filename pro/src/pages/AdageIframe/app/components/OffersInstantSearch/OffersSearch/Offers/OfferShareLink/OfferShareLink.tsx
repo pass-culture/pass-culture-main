@@ -3,8 +3,8 @@ import type { MouseEvent } from 'react'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+} from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -20,10 +20,12 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
 
   function handleShareButtonClicked(event: MouseEvent) {
     if (LOGS_DATA) {
-      apiAdage.logTrackingCtaShare({
-        iframeFrom: location.pathname,
-        offerId: offer.id,
-        source: '',
+      apiAdageNew.logTrackingCtaShare({
+        body: {
+          iframeFrom: location.pathname,
+          offerId: offer.id,
+          source: '',
+        },
       })
     }
     event.stopPropagation()

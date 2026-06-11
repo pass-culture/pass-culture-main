@@ -38,9 +38,9 @@ export const OffersForMyInstitution = () => {
   )
 
   const educationalInstitutionBudget = useSWR(
-    adageUser.role !== AdageFrontRoles.READONLY
-      ? GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY
-      : null,
+    adageUser.role === AdageFrontRoles.READONLY
+      ? null
+      : GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY,
     () => apiAdageNew.getEducationalInstitutionWithBudget()
   )
   const budget = educationalInstitutionBudget.data?.budget
