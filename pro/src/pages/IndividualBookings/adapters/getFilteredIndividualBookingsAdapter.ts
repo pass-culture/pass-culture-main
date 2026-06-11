@@ -1,4 +1,4 @@
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
@@ -31,16 +31,18 @@ export const getFilteredIndividualBookingsAdapter = async (
       offererAddressId,
     } = buildBookingsRecapQuery(nextPageFilters)
 
-    const bookings = await api.getBookingsPro(
-      venueId,
-      page,
-      offerId,
-      eventDate,
-      bookingStatusFilter,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      offererAddressId
-    )
+    const bookings = await apiNew.getBookingsPro({
+      query: {
+        venueId,
+        page,
+        offerId,
+        eventDate,
+        bookingStatusFilter,
+        bookingPeriodBeginningDate,
+        bookingPeriodEndingDate,
+        offererAddressId,
+      },
+    })
     pages = bookings.pages
 
     allBookings = [...allBookings, ...bookings.bookingsRecap]

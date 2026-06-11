@@ -62,13 +62,13 @@ const venueAddress: GetVenueAddressResponseModel[] = [
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getBookingsPro: vi.fn(),
     getVenues: vi.fn(),
-    getUserHasBookings: vi.fn(),
-    getBookingsCsv: vi.fn(),
   },
   apiNew: {
+    getBookingsCsv: vi.fn(),
+    getBookingsPro: vi.fn(),
     getProfile: vi.fn(),
+    getUserHasBookings: vi.fn(),
     getVenueAddresses: vi.fn(),
   },
 }))
@@ -79,14 +79,6 @@ vi.mock('@/commons/utils/date', async () => {
     getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
   }
 })
-
-const NTH_ARGUMENT_GET_BOOKINGS = {
-  page: 2,
-  eventDate: 4,
-  bookingBeginningDate: 6,
-  bookingEndingDate: 7,
-  offererAddressId: 8,
-}
 
 const user = sharedCurrentUserFactory()
 
@@ -134,13 +126,15 @@ describe('components | BookingsRecap | Pro user', () => {
       pages: 0,
       total: 0,
     }
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
     vi.spyOn(apiNew, 'getProfile').mockResolvedValue(user)
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [venueListItemFactory()],
     })
-    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
-    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(apiNew, 'getUserHasBookings').mockResolvedValue({
+      hasBookings: true,
+    })
+    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
     vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
@@ -164,7 +158,7 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    expect(api.getBookingsPro).not.toHaveBeenCalled()
+    expect(apiNew.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Rechercher »'
     )
@@ -174,7 +168,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Rechercher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -193,15 +187,17 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
-      ]
-    ).toBe(venueAddress[0].id)
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          offererAddressId: venueAddress[0].id,
+        }),
+      })
+    )
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -221,7 +217,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -250,7 +246,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should not allow user to reset prefilters when none were applied', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -270,7 +266,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset prefilters when some where applied', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -311,7 +307,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should ask user to select a pre-filter when user reset them', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -359,7 +355,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookings2],
     }
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
@@ -380,29 +376,31 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(screen.getByText(bookings1.stock.offerName)).toBeInTheDocument()
 
-    expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
-    expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
-    ).toBe(1)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
-      ]
-    ).toBe(venueAddress[0].id)
-    expect(
-      spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
-    ).toBe(2)
-    expect(
-      spyGetBookingsPro.mock.calls[1][
-        NTH_ARGUMENT_GET_BOOKINGS.offererAddressId - 1
-      ]
-    ).toBe(venueAddress[0].id)
+    expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(2)
+    expect(spyGetBookingsPro).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        query: expect.objectContaining({
+          page: 1,
+          offererAddressId: venueAddress[0].id,
+        }),
+      })
+    )
+    expect(spyGetBookingsPro).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        query: expect.objectContaining({
+          page: 2,
+          offererAddressId: venueAddress[0].id,
+        }),
+      })
+    )
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -421,20 +419,23 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.eventDate - 1]
-    ).toStrictEqual(
-      formatBrowserTimezonedDateAsUTC(
-        new Date(2020, 5, 8),
-        FORMAT_ISO_DATE_ONLY
-      )
+
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          eventDate: formatBrowserTimezonedDateAsUTC(
+            new Date(2020, 5, 8),
+            FORMAT_ISO_DATE_ONLY
+          ),
+        }),
+      })
     )
   })
 
   it('should set booking period to null when user select event date', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -453,23 +454,21 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
-      ]
-    ).toBeUndefined()
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
-      ]
-    ).toBeUndefined()
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          bookingPeriodEndingDate: undefined,
+          bookingPeriodBeginningDate: undefined,
+        }),
+      })
+    )
   })
 
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
     const bookingRecap = bookingRecapFactory()
 
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -484,22 +483,20 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
-      ]
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
-      ]
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+          bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+        }),
+      })
+    )
   })
 
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -521,16 +518,14 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
-      ]
-    ).toStrictEqual('2020-05-10')
-    expect(
-      spyGetBookingsPro.mock.calls[0][
-        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
-      ]
-    ).toStrictEqual('2020-06-05')
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          bookingPeriodBeginningDate: '2020-05-10',
+          bookingPeriodEndingDate: '2020-06-05',
+        }),
+      })
+    )
   })
 
   it('should reset bookings recap list when applying filters', async () => {
@@ -548,7 +543,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [otherVenueBooking],
     }
-    vi.spyOn(api, 'getBookingsPro')
+    vi.spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
 
@@ -580,7 +575,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should show notification with information message when there are more than 10 pages', async () => {
     const bookingsRecap = { pages: 11, bookingsRecap: [], total: 11 }
-    vi.spyOn(api, 'getBookingsPro')
+    vi.spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -607,12 +602,12 @@ describe('components | BookingsRecap | Pro user', () => {
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
     expect(informationalMessage).toBeInTheDocument()
-    expect(api.getBookingsPro).toHaveBeenCalledTimes(10)
+    expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(10)
   })
 
   it('should not show notification with information message when there are 10 pages or less', async () => {
     const bookingsRecap = { pages: 10, bookingsRecap: [], total: 10 }
-    vi.spyOn(api, 'getBookingsPro')
+    vi.spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -634,7 +629,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByRole('button', { name: 'Rechercher les réservations' })
     )
 
-    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(10))
+    await waitFor(() => expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(10))
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
@@ -696,7 +691,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should display no booking screen when user does not have any booking yet', async () => {
-    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
+    vi.spyOn(apiNew, 'getUserHasBookings').mockResolvedValue({
       hasBookings: false,
     })
 
@@ -729,7 +724,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should render downloads moved banner and filters after search', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -754,7 +749,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should fetch bookings using venueId when clicking "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(api, 'getBookingsPro')
+      .spyOn(apiNew, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -769,12 +764,17 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     await screen.findAllByText(bookingRecap.stock.offerName)
-    const callArgs = spyGetBookingsPro.mock.calls[0]
-    expect(callArgs[0]).toBe(1)
+    expect(spyGetBookingsPro).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          page: 1,
+        }),
+      })
+    )
   })
 
   it('should reset filters to venue-scoped defaults', async () => {
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
