@@ -7,8 +7,7 @@ Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'
 - [Pré-requis](#pré-requis)
   - [WSL 2 (Windows uniquement)](#--wsl-2-windows-uniquement)
   - [Git](#-git)
-  - [Node.js (via nvm)](#-nodejs-via-nvm)
-  - [pnpm](#-pnpm)
+  - [Node.js & pnpm (via mise)](#-nodejs--pnpm-via-mise)
   - [Docker](#-docker)
 - [Installer le projet](#installer-le-projet)
   - [Lancer le front-end](#lancer-le-front-end)
@@ -48,43 +47,15 @@ git config --global pull.rebase true
 
 La convention des messages de commit suit la norme [Conventional Commits](https://www.conventionalcommits.org/).
 
-Pour s’assurer que les messages de commit respectent cette convention, il est également conseillé d’installer **Commitizen** qui vous guidera dans la rédaction de messages de commit conformes à la convention.
+Pour s’assurer que les messages de commit respectent cette convention, vous pouvez utiliser **Commitizen**, qui vous guidera dans la rédaction de messages conformes.
 
-> **[Installer Commitizen](https://commitizen-tools.github.io/commitizen/#installation)** (conseillé)
+> **Commitizen** est fourni par mise (voir l’[installation racine](../README.md#installation)) ; aucune installation séparée n’est nécessaire.
 
-## <img src="docs/nodejs-icon-alt.svg" height="20" /> Node.js (via nvm)
+## <img src="docs/nodejs-icon-alt.svg" height="20" /> Node.js & pnpm (via mise)
 
-Il est recommandé d'utiliser **nvm** pour installer et gérer la version de Node.js.
+Node.js et pnpm sont gérés par [mise](https://mise.jdx.dev) via le fichier `mise.toml` à la racine du repo : les versions sont épinglées et installées en une seule fois.
 
-> **[Installer nvm](https://github.com/nvm-sh/nvm)**
-
-Une fois nvm installé, on peut installer et utiliser la bonne version de Node.js :
-
-```bash
-nvm install 24.8
-
-nvm use 24.8
-
-# (Conseillé : pour utiliser la version 24.8 par défaut)
-nvm alias default 24.8
-```
-
-## <img src="docs/pnpm.svg" height="20" /> pnpm
-
-Le projet utilise **pnpm** pour la gestion des dépendances.
-
-La méthode recommandée pour installer pnpm en local est la suivante :
-
-```bash
-npm install -g pnpm
-```
-
-Assurez-vous ensuite d’utiliser la version 11 (ou supérieure) avec :
-
-```bash
-pnpm -v
-# Doit afficher 11.x.x
-```
+Suivez l'[installation décrite dans le README racine](../README.md#installation) (installer mise, l'activer dans votre shell, puis `mise install`). Une fois mise activé, `node` et `pnpm` sont disponibles aux bonnes versions dès l'entrée dans le dossier.
 
 ## <img src="docs/docker-icon.svg" height="20" /> Docker
 

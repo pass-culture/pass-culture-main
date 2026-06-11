@@ -1,0 +1,18 @@
+[settings]
+minimum_release_age = "7d"
+
+[tools]
+# Runtimes & package managers
+node = "24.8"
+pnpm = "11.5"
+uv = "0.11.7"
+
+# Quality & Security CLIs (git hooks + CI)
+"pipx:commitizen" = "4.16.3"
+gitleaks = "8.30"
+semgrep = "1.165"
+
+# Infra CLIs
+gh = "2.93"
+kubectl = "1.36"
+kubectx = "0.11"

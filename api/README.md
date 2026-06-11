@@ -101,13 +101,13 @@ D'abord, il faut installer les dépendances systèmes.
 ```sh
 # --- macOS ---
 # vous devez installer PostgreSQL 15 et postgis 3 via https://postgresapp.com/downloads.html
-brew install coreutils libxmlsec1 weasyprint redis uv
+brew install coreutils libxmlsec1 weasyprint redis
 brew services start redis
 # --- macOS ---
 
 # --- Ubuntu ---
 # vous devez configurer le dépôt distant https://www.postgresql.org/download/linux/ubuntu/
-sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 postgresql-15-postgis-3 uv
+sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0 postgresql-15-postgis-3
 sudo systemctl enable redis
 sudo systemctl enable postgresql
 # --- Ubuntu ---
@@ -135,8 +135,7 @@ Voir comment lancer les applications depuis le setup avec le lancement des servi
 
 ## Installer les CLI pour se connecter à l'infrastructure
 
-- [kubectl](https://kubectl.docs.kubernetes.io/installation/kubectl/)
-- [gcloud](https://cloud.google.com/sdk/docs/install)
+Si vous avez suivi correctement [les étapes d'installation communes aux Frontend et Backend](../README.md#bsr-poke-mise#installer-les-dépendances-communes-aux-frontend-et-backend), vous devriez avoir accès à tous les outils nécessaires pour vous connecter à l'infrastructure.
 
 ## Database de jeu
 
@@ -326,7 +325,7 @@ Le fichier de configuration [vscode](api/.vscode/settings.json) permet notamment
 fichier est sauvegardé.
 
 Vérifier que l'interpréteur python utilisé par VSCode est le bon. Taper `cmd+shift+P` puis `Python: select interpreter`
-et choisir le python précédemment installé en local (virtual env ou pyenv).
+et choisir le python du virtualenv `.venv` créé par uv (`api/.venv/bin/python`).
 
 #### Exécution des tests
 

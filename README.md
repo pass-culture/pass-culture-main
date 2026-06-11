@@ -20,21 +20,22 @@ Le repo `main` contient les 4 projets suivants :
 
 ## Installation
 
-### Installer les dépendances communes entre le front pro et le backend
+### Installer les dépendances communes aux Frontend et Backend
 
-- [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain) # TODO: tester l'installation avec safe-chain
-  - `npm i -g @aikidosec/safe-chain`
-  - `safe-chain setup`
-  - Redémarrer le terminal
+Les toolchains et outils globaux du projet (Node.js, pnpm, uv, commitizen, gitleaks, semgrep, gh, kubectl, kubectx) sont gérés par [mise](https://mise.jdx.dev) via le fichier `mise.toml` à la racine : inutile de les installer un par un.
 
-- [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
-  - `brew install commitizen`
-
-- [gitleaks](https://github.com/gitleaks/gitleaks)
-  - `brew install gitleaks`
-
-- [semgrep](https://semgrep.dev/)
-  - `brew install semgrep`
+1. Installer [mise](https://mise.jdx.dev/installing-mise.html), puis l'[activer dans votre shell](https://mise.jdx.dev/installing-mise.html#shells) (ex. `echo 'eval "$(mise activate zsh)"' >> "${ZDOTDIR-$HOME}/.zshrc"` pour zsh).
+2. `mise trust -y && mise install` pour installer toutes les outils globaux (versions épinglées dans `mise.toml`).
+3. Installer [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain) (géré globalement par la secops, en dehors de mise) :
+    1. `mise use -g npm:@aikidosec/safe-chain` (ou `npm i -g @aikidosec/safe-chain`)
+    2. `safe-chain setup`
+    3. Redémarrer le terminal.
+4. Installer Google Cloud SDK (gcloud):
+    ```sh
+    cd /tmp/ || exit 1
+    curl https://sdk.cloud.google.com > install.sh
+    ./install.sh --disable-prompts
+    ```
 
 ### Installer l'ensemble des projets
 
