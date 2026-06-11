@@ -2148,7 +2148,7 @@ dev = [
     { name = "ipdb", specifier = "==0.13.13" },
     { name = "jsbeautifier", specifier = "==1.15.4" },
     { name = "mypy", specifier = "==2.1.0" },
-    { name = "pgcli", specifier = "==4.3.0" },
+    { name = "pgcli", specifier = "==4.5.0" },
     { name = "psycopg", extras = ["binary"], specifier = "==3.3.4" },
     { name = "pytest", specifier = "==9.0.3" },
     { name = "pytest-dotenv", specifier = "==0.5.2" },
@@ -2182,7 +2182,7 @@ wheels = [
 
 [[package]]
 name = "pgcli"
-version = "4.3.0"
+version = "4.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cli-helpers", extra = ["styles"] },
@@ -2197,9 +2197,9 @@ dependencies = [
     { name = "sqlparse" },
     { name = "tzlocal" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ab/9a/c86de44b7a663f0a15cb835d317f22f2ef8438154f6b646ffe32baa3799d/pgcli-4.3.0.tar.gz", hash = "sha256:765ae1550c5508a481f19f16a99716c253fe91afb255797add2d635da20b6aef", size = 147254, upload-time = "2025-03-22T22:04:51.903Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/ca/b081f0ae381425f87dd751b449c33aca7398c2183799fc56501fe7c26975/pgcli-4.5.0.tar.gz", hash = "sha256:9dce07f5b628068156256cb818e5191a773afe6eeb7054f210fa892813625e3e", size = 665814, upload-time = "2026-06-03T00:03:20.685Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/b4/1229fbe208450998c1e66f5dd2b7e59277602911b5cd2e502dcbffd4c8df/pgcli-4.3.0-py3-none-any.whl", hash = "sha256:1b06710c837407465ad200b636a604b5e1a6ad3e05eabfd8306e13de247765b9", size = 85466, upload-time = "2025-03-22T22:04:49.775Z" },
+    { url = "https://files.pythonhosted.org/packages/74/f7/3619b56e90b96fc7e1bb96711c4323e3bd567309ba9896551c0cbcd5075f/pgcli-4.5.0-py3-none-any.whl", hash = "sha256:c17fd6d7a29e6eeddc100885f4c5f5867e9ec632722504f2c2da4859343127a2", size = 86816, upload-time = "2026-06-03T00:03:19.371Z" },
 ]
 
 [[package]]
