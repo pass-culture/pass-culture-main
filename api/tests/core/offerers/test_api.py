@@ -11,8 +11,10 @@ import sqlalchemy as sa
 import time_machine
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.search.testing as search_testing
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.entreprise import models as sirene_models
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import factories as criteria_factories
@@ -4056,3 +4058,85 @@ class CloseVenueTest:
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
+
+
+class DeactivateVenueOffersTest:
+    def test_venue_without_offers_nor_syncs(self):
+        venue = offerers_factories.VenueFactory()
+
+        # index offers and check that they have been unindexed, as expected
+        search.reindex_offer_ids([o.id for o in venue.offers])
+
+        with atomic():
+            offerers_api.deactivate_venue_offers(venue)
+
+        # offers should have been unindexed
+        assert not search_testing.search_store["offers"]
+
+        # not eligible for search -> won't be indexed
+        assert all([not o.is_eligible_for_search for o in venue.offers])
+
+        assert all([not o.publicationDatetime for o in venue.offers])
+
+    def test_venue_with_only_non_synced_deactivated_offers(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.OfferFactory.create_batch(3, publicationDatetime=None, venue=venue)
+
+        # index offers and check that they have been unindexed, as expected
+        search.reindex_offer_ids([o.id for o in venue.offers])
+
+        with atomic():
+            offerers_api.deactivate_venue_offers(venue)
+
+        db.session.refresh(venue)
+
+        # offers should have been unindexed
+        assert not search_testing.search_store["offers"]
+
+        # not eligible for search -> won't be indexed
+        assert all([not o.is_eligible_for_search for o in venue.offers])
+
+        assert all([not o.publicationDatetime for o in venue.offers])
+
+    def test_venue_with_active_and_synced_offers(self, caplog):
+        venue = offerers_factories.VenueFactory()
+        boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
+        now = datetime.datetime.now(datetime.UTC)
+
+        # index offers and check that they have been unindexed, as expected
+        search.reindex_offer_ids([o.id for o in venue.offers])
+
+        offers_factories.StockFactory(offer__venue=venue, offer__publicationDatetime=now)
+        offers_factories.StockFactory(
+            offer__venue=venue, offer__lastProviderId=boost_pivot.providerId, offer__publicationDatetime=now
+        )
+
+        with atomic():
+            offerers_api.deactivate_venue_offers(venue)
+
+        db.session.refresh(venue)
+
+        # offers should have been unindexed
+        assert not search_testing.search_store["offers"]
+
+        # not eligible for search -> won't be indexed
+        assert all([not o.is_eligible_for_search for o in venue.offers])
+
+        assert all([not o.publicationDatetime for o in venue.offers])
+
+    def test_offers_backup_data_is_logged(self, caplog):
+        venue = offerers_factories.VenueFactory()
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
+        offer = offers_factories.OfferFactory(publicationDatetime=yesterday, venue=venue)
+
+        expected_backup_data = {
+            "offers_backup": {offer.id: {"publicationDatetime": offer.publicationDatetime}},
+            "venue_id": venue.id,
+        }
+
+        with caplog.at_level("INFO"):
+            offerers_api.deactivate_venue_offers(venue)
+
+            log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
+            record = next(rec for rec in caplog.records if rec.message == log_msg)
+            assert record.extra == expected_backup_data

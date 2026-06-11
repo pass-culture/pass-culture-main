@@ -16,6 +16,8 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -218,3 +220,16 @@ def clean_offerer_invitations(apply: bool = False) -> None:
     else:
         db.session.rollback()
         logger.info("clean_offerer_invitations was a dry-run -- rollback")
+
+
+@blueprint.cli.command("finalize_closing_venue")
+@click.option("--venue-id", type=int, required=True, help="venue id")
+@click.option("--apply", is_flag=True)
+def finalize_closing_venue_command(venue_id: int, apply: bool = False) -> None:
+    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).one()
+    with atomic():
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        if not apply:
+            mark_transaction_as_invalid()

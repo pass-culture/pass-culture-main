@@ -310,6 +310,7 @@ DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
 
 class VenueState(enum.Enum):
     CLOSED = "CLOSED"
+    CLOSING = "CLOSING"
 
 
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
@@ -961,7 +962,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_closed(self) -> bool:
-        return self.state == VenueState.CLOSED
+        return self.state in (VenueState.CLOSING, VenueState.CLOSED)
 
 
 class GooglePlacesInfo(PcObject, Model):

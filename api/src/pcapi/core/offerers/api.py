@@ -631,35 +631,7 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
 
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
-    pivot = (
-        db.session.query(providers_models.CinemaProviderPivot)
-        .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
-        .one_or_none()
-    )
-    if pivot:
-        if pivot.CDSCinemaDetails:
-            db.session.query(providers_models.CDSCinemaDetails).filter(
-                providers_models.CDSCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.BoostCinemaDetails:
-            db.session.query(providers_models.BoostCinemaDetails).filter(
-                providers_models.BoostCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.CGRCinemaDetails:
-            db.session.query(providers_models.CGRCinemaDetails).filter(
-                providers_models.CGRCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        if pivot.EMSCinemaDetails:
-            db.session.query(providers_models.EMSCinemaDetails).filter(
-                providers_models.EMSCinemaDetails.cinemaProviderPivotId == pivot.id
-            ).delete(synchronize_session=False)
-        db.session.query(providers_models.CinemaProviderPivot).filter(
-            providers_models.CinemaProviderPivot.venueId == venue_id
-        ).delete(synchronize_session=False)
-
-    db.session.query(providers_models.AllocinePivot).filter(
-        providers_models.CinemaProviderPivot.venueId == venue_id
-    ).delete(synchronize_session=False)
+    delete_venue_pivots(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
     # venue to delete. We should NOT delete rows where the
@@ -3477,5 +3449,78 @@ def close_venue(venue: models.Venue) -> None:
     if venue.is_closed:
         return
 
-    venue.state = models.VenueState.CLOSED
+    venue.state = models.VenueState.CLOSING
+
+    payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+    on_commit(
+        functools.partial(
+            tasks.finalize_closing_venue_task.delay,
+            payload.model_dump(),
+        )
+    )
+
     db.session.flush()
+
+
+def delete_venue_pivots(venue_id: int) -> None:
+    pivot = (
+        db.session.query(providers_models.CinemaProviderPivot)
+        .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
+        .one_or_none()
+    )
+    if pivot:
+        if pivot.CDSCinemaDetails:
+            db.session.query(providers_models.CDSCinemaDetails).filter(
+                providers_models.CDSCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.BoostCinemaDetails:
+            db.session.query(providers_models.BoostCinemaDetails).filter(
+                providers_models.BoostCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.CGRCinemaDetails:
+            db.session.query(providers_models.CGRCinemaDetails).filter(
+                providers_models.CGRCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.EMSCinemaDetails:
+            db.session.query(providers_models.EMSCinemaDetails).filter(
+                providers_models.EMSCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        db.session.query(providers_models.CinemaProviderPivot).filter(
+            providers_models.CinemaProviderPivot.venueId == venue_id
+        ).delete(synchronize_session=False)
+
+    db.session.query(providers_models.AllocinePivot).filter(
+        providers_models.CinemaProviderPivot.venueId == venue_id
+    ).delete(synchronize_session=False)
+
+
+def deactivate_venue_offers(venue: models.Venue) -> None:
+    _BATCH_LIMIT = 100
+    continue_deactivation_process = True
+    while continue_deactivation_process:
+        query = (
+            db.session.query(offers_models.Offer)
+            .filter(
+                offers_models.Offer.venueId == venue.id,
+                offers_models.Offer.publicationDatetime.is_not(None),
+            )
+            .limit(_BATCH_LIMIT)
+        )
+
+        offers = query.all()
+        continue_deactivation_process = len(offers) == _BATCH_LIMIT
+
+        backup_data = {offer.id: {"publicationDatetime": offer.publicationDatetime} for offer in offers}
+
+        with atomic():
+            offer_ids = [offer.id for offer in offers]
+            db.session.execute(
+                sa.update(offers_models.Offer)
+                .where(offers_models.Offer.id.in_(offer_ids))
+                .values(publicationDatetime=None)
+            )
+
+        search.unindex_offer_ids([offer.id for offer in offers])
+        log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
+        log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
+        logger.info(log_msg, extra=log_extra)
