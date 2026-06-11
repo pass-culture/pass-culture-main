@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -125,7 +125,7 @@ export const IndividualOfferDescriptionScreen = () => {
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.createOffer(serializeDetailsPostData(formValues)),
+          apiNew.createOffer({ body: serializeDetailsPostData(formValues) }),
           {
             revalidate: false,
             populateCache: (newOffer) => {
