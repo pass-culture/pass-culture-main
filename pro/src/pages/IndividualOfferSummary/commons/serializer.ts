@@ -1,10 +1,10 @@
 import {
   ArtistType,
   type CategoryResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   type GetMusicTypesResponse,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'

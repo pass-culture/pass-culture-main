@@ -1,11 +1,11 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
   ListOffersOfferResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { GET_CATEGORIES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokOfferIcon from '@/icons/stroke-offer.svg'
 import { CardLink } from '@/ui-kit/CardLink/CardLink'
@@ -30,7 +30,7 @@ const extractOfferCategoriesData = (
 export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    () => api.getCategories(),
+    () => apiNew.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
   )
 

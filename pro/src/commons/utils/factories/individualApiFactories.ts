@@ -6,7 +6,6 @@ import {
   type BookingRecapResponseModel,
   type BookingRecapResponseStockModel,
   BookingRecapStatus,
-  type CategoryResponseModel,
   type GetBookingResponse,
   type GetOffererVenueResponseModel,
   type GetVenueResponseModel,
@@ -16,6 +15,7 @@ import {
   type VenueProviderResponse,
 } from '@/apiClient/v1'
 import {
+  type CategoryResponseModel,
   DisplayableActivity,
   type GetIndividualOfferWithAddressResponseModel,
   type GetOffererNameResponseModel,

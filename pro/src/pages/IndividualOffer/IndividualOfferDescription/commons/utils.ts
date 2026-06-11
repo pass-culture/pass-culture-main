@@ -1,13 +1,11 @@
 import {
   type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
+  DisplayableActivity,
   type GetIndividualOfferResponseModel,
+  type GetVenueResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1'
-import {
-  DisplayableActivity,
-  type GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
@@ -147,6 +145,7 @@ export function getInitialValuesFromOffer({
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
     author: offer.extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
     artistOfferLinks: getInitialArtistOfferLinks(
+      // @ts-expect-error - Waiting for pydanticV2 migration
       offer.artistOfferLinks,
       DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
     ),
@@ -157,6 +156,7 @@ export function getInitialValuesFromOffer({
       DEFAULT_DETAILS_FORM_VALUES.stageDirector,
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
+    // @ts-expect-error - Waiting for pydanticV2 migration
     accessibility: getAccessibilityFormValuesFromOffer(offer),
   }
 }

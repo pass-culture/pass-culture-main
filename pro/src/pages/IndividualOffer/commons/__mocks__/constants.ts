@@ -2,7 +2,7 @@ import {
   type CategoryResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import {

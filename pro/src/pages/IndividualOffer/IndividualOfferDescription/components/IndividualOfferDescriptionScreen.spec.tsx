@@ -7,10 +7,11 @@ import { vi } from 'vitest'
 import { apiNew } from '@/apiClient/api'
 import {
   ArtistType,
+  DisplayableActivity,
+  OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1'
-import { DisplayableActivity, OfferStatus } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
