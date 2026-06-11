@@ -4,6 +4,7 @@ import { apiNew } from '@/apiClient/api'
 import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
+import { truncateAtWord } from '@/commons/utils/string'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -22,7 +23,8 @@ const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
   [ArtistType.STAGE_DIRECTOR]: 'Metteur en scène',
 }
 
-const ARTIST_THUMB_WIDTH = 36
+const ARTIST_THUMB_WIDTH = 44
+const ARTIST_DESCRIPTION_MAX_LENGTH = 30
 
 type ArtistOption = ArtistResponseModel & { value: string; label: string }
 
@@ -125,6 +127,12 @@ export function ArtistField({
                     ...artist,
                     value: artist.id,
                     label: artist.name,
+                    description: artist.description
+                      ? truncateAtWord(
+                          artist.description,
+                          ARTIST_DESCRIPTION_MAX_LENGTH
+                        )
+                      : null,
                     thumbUrl: artist.thumbUrl
                       ? resizeImageURL({
                           imageURL: artist.thumbUrl,

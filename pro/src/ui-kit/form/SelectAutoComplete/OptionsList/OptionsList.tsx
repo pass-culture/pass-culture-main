@@ -76,6 +76,7 @@ export const OptionsList = ({
           >
             <OptionItem
               label={option.label}
+              description={option.description}
               thumbUrl={option.thumbUrl}
               thumbPlaceholder={thumbPlaceholder}
             />
@@ -157,10 +158,12 @@ const CreatableOptionItem = ({
 
 const OptionItem = ({
   label,
+  description,
   thumbUrl,
   thumbPlaceholder,
 }: {
   label: string
+  description?: string | null
   thumbUrl?: string | null
   thumbPlaceholder?: string
 }) => (
@@ -171,7 +174,12 @@ const OptionItem = ({
         thumbPlaceholder={thumbPlaceholder}
       />
     )}
-    <span>{label}</span>
+    <span className={styles['option-texts']}>
+      <span>{label}</span>
+      {description && (
+        <span className={styles['option-description']}>{description}</span>
+      )}
+    </span>
   </span>
 )
 

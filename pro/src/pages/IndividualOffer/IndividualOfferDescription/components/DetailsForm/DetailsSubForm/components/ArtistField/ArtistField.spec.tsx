@@ -92,8 +92,13 @@ describe('ArtistField', () => {
   beforeEach(() => {
     apiSelectSpy.mockClear()
     vi.mocked(apiNew.getArtists).mockResolvedValue([
-      { id: '1', name: 'Alice', thumbUrl: 'any-url' },
-      { id: '2', name: 'Bob', thumbUrl: 'any-url' },
+      {
+        id: '1',
+        name: 'Alice',
+        description: 'Auteurice de romans et de nouvelles fantastiques',
+        thumbUrl: 'any-url',
+      },
+      { id: '2', name: 'Bob', description: null, thumbUrl: 'any-url' },
     ])
   })
 
@@ -180,8 +185,23 @@ describe('ArtistField', () => {
     expect(resizeImageURL).toHaveBeenCalledTimes(2)
     expect(resizeImageURL).toHaveBeenCalledWith({
       imageURL: 'any-url',
-      width: 36,
+      width: 44,
     })
+  })
+
+  it('searchApi should truncate artist descriptions at word boundary', async () => {
+    renderArtistField()
+    const props = apiSelectSpy.mock.calls[0][0]
+
+    const result = await props.searchApi('Al')
+
+    expect(result).toEqual([
+      expect.objectContaining({
+        label: 'Alice',
+        description: 'Auteurice de romans et de...',
+      }),
+      expect.objectContaining({ label: 'Bob', description: null }),
+    ])
   })
 
   it('onCreate should update form value with search text', async () => {
