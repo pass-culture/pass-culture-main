@@ -94,7 +94,7 @@ dev = [
   "commitizen==4.16.2",
   "debugpy ==1.8.20",
   "djlint ==1.36.4",
-  "fakeredis ==2.35.1",
+  "fakeredis==2.36.0",
   "ipdb==0.13.13",
   "jsbeautifier ==1.15.4",                  # djlint requires 1.15.1 which is broken
   "mypy==2.1.0",
