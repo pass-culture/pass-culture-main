@@ -29,7 +29,7 @@ on:
       deployment_source_branch:
         description: "Branch of pass-culture-deployment repository to use for helm charts."
         required: false
-        default: "master"
+        default: "IC-1378/feature/deploy-preview-env-infra-v2"
 
 permissions: write-all
 
