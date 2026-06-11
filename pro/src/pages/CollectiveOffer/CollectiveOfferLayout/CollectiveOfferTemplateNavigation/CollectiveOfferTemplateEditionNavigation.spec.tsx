@@ -41,10 +41,7 @@ const renderOfferTemplateEditionNavigation = (
   offer: GetCollectiveOfferTemplateResponseModel
 ) =>
   renderWithProviders(
-    <CollectiveOfferTemplateEditionNavigation
-      offer={offer}
-      offerId={offer.id}
-    />
+    <CollectiveOfferTemplateEditionNavigation offer={offer} />
   )
 
 describe('<CollectiveOfferTemplateEditionNavigation />', () => {

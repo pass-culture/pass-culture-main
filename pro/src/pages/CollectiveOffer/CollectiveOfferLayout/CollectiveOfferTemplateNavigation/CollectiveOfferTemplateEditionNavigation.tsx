@@ -33,14 +33,13 @@ import fullShowIcon from '@/icons/full-show.svg'
 import styles from './CollectiveOfferTemplateNavigation.module.scss'
 
 export interface CollectiveOfferTemplateEditionNavigationProps {
-  offerId?: number
   offer?: GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveOfferTemplateEditionNavigation = ({
-  offerId = 0,
   offer,
 }: CollectiveOfferTemplateEditionNavigationProps): JSX.Element => {
+  const offerId = offer?.id ?? 0
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
