@@ -217,12 +217,18 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
         return
 
     source_data = aah_fraud_check.source_data()
-    if not isinstance(source_data, bonus_schemas.DisabilityBonusCreditContent):
-        raise ValueError(f"DisabilityBonusCreditContent was expected while {type(source_data)} was given")
+    if not isinstance(source_data, bonus_schemas.AdultDisabilityBonusCreditContent):
+        raise ValueError(f"AdultDisabilityBonusCreditContent was expected while {type(source_data)} was given")
 
-    aah_result = _call_api_particulier(
-        aah_fraud_check, lambda: api_particulier.get_disabled_adult_allowance(source_data.person)
-    )
+    if settings.ENABLE_PARTICULIER_API_MOCK:
+        aah_result = _call_api_particulier(
+            aah_fraud_check, lambda: staging_api.get_and_mock_disabled_adult_allowance(source_data.person, user)
+        )
+    else:
+        aah_result = _call_api_particulier(
+            aah_fraud_check, lambda: api_particulier.get_disabled_adult_allowance(source_data.person)
+        )
+
     if aah_result.response:
         aah_result.status, aah_result.reason_codes = _get_adult_disability_bonus_status(aah_result.response.data)
 
@@ -268,12 +274,19 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
         return
 
     source_data = aeeh_fraud_check.source_data()
-    if not isinstance(source_data, bonus_schemas.DisabilityBonusCreditContent):
-        raise ValueError(f"DisabilityBonusCreditContent was expected while {type(source_data)} was given")
+    if not isinstance(source_data, bonus_schemas.DisabledChildEducationBonusCreditContent):
+        raise ValueError(f"DisabledChildEducationBonusCreditContent was expected while {type(source_data)} was given")
 
-    aeeh_result = _call_api_particulier(
-        aeeh_fraud_check, lambda: api_particulier.get_disabled_child_education_allowance(source_data.person)
-    )
+    if settings.ENABLE_PARTICULIER_API_MOCK:
+        aeeh_result = _call_api_particulier(
+            aeeh_fraud_check,
+            lambda: staging_api.get_and_mock_disabled_child_education_allowance(source_data.person, user),
+        )
+    else:
+        aeeh_result = _call_api_particulier(
+            aeeh_fraud_check, lambda: api_particulier.get_disabled_child_education_allowance(source_data.person)
+        )
+
     if aeeh_result.response:
         aeeh_result.status, aeeh_result.reason_codes = _get_disabled_child_education_bonus_status(
             aeeh_result.response.data

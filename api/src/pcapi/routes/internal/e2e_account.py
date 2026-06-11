@@ -7,6 +7,8 @@ from pcapi.core.users import models as users_models
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.dev import forms as dev_forms
+from pcapi.routes.backoffice.dev.blueprint import create_disabled_adult_allowance_fraud_check_mock
+from pcapi.routes.backoffice.dev.blueprint import create_disabled_child_education_allowance_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_qf_fraud_check_mock
 from pcapi.routes.backoffice.dev.blueprint import create_ubble_fraud_check
 from pcapi.routes.backoffice.dev.blueprint import get_token_expiration_timestamp
@@ -75,5 +77,37 @@ def configure_api_quotient_familial_response(user_id: int) -> tuple[dict, int]:
         return form.errors, 400
 
     create_qf_fraud_check_mock(user, form)
+
+    return {}, 200
+
+
+@private_api.route("/e2e/account/<user_id>/aah", methods=["POST"])
+@transaction_manager.atomic()
+@api_key_required
+def configure_api_disabled_adult_allowance_response(user_id: int) -> tuple[dict, int]:
+    user = get_or_404(users_models.User, user_id)
+    form = dev_forms.DisabledAdultAllowanceConfigurationForm()
+
+    if not form.validate():
+        transaction_manager.mark_transaction_as_invalid()
+        return form.errors, 400
+
+    create_disabled_adult_allowance_fraud_check_mock(user, form)
+
+    return {}, 200
+
+
+@private_api.route("/e2e/account/<user_id>/aeeh", methods=["POST"])
+@transaction_manager.atomic()
+@api_key_required
+def configure_api_disabled_child_education_allowance_response(user_id: int) -> tuple[dict, int]:
+    user = get_or_404(users_models.User, user_id)
+    form = dev_forms.DisabledChildEducationAllowanceConfigurationForm()
+
+    if not form.validate():
+        transaction_manager.mark_transaction_as_invalid()
+        return form.errors, 400
+
+    create_disabled_child_education_allowance_fraud_check_mock(user, form)
 
     return {}, 200

@@ -78,6 +78,7 @@ def create_ubble_fraud_check(user: users_models.User, form: forms.UbbleConfigura
         ).dict(exclude_none=True),
     )
     db.session.add(ubble_fraud_check)
+    db.session.flush()
 
 
 def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
@@ -145,6 +146,93 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
         resultContent=result_content,
     )
     db.session.add(quotient_familial_config_fraud_check)
+    db.session.flush()
+
+
+def create_disabled_adult_allowance_fraud_check_mock(
+    user: users_models.User, form: forms.DisabledAdultAllowanceConfigurationForm
+) -> None:
+    mock_type = form.mock_type.data
+    result_content = None
+
+    if mock_type == forms.DisabledAdultAllowanceMockType.BENEFICIARY.value:
+        result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
+            http_status_code=200,
+            is_disability_beneficiary=True,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledAdultAllowanceMockType.NON_BENEFICIARY.value:
+        result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
+            http_status_code=200,
+            is_disability_beneficiary=False,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value:
+        result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
+            http_status_code=404,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value:
+        result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
+            http_status_code=422,
+        ).model_dump()
+
+    disabled_adult_allowance_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+        thirdPartyId=f"aah-bonus-credit-config-{user.id}",
+        status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+        resultContent=result_content,
+    )
+    db.session.add(disabled_adult_allowance_config_fraud_check)
+    db.session.flush()
+
+
+def create_disabled_child_education_allowance_fraud_check_mock(
+    user: users_models.User, form: forms.DisabledChildEducationAllowanceConfigurationForm
+) -> None:
+    mock_type = form.mock_type.data
+    result_content = None
+
+    if mock_type == forms.DisabledChildEducationAllowanceMockType.BENEFICIARY.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=200,
+            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.BENEFICIARY,
+        ).model_dump()
+
+    if mock_type == forms.DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=200,
+            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.RIGHT_OPENING,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledChildEducationAllowanceMockType.NON_BENEFICIARY.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=200,
+            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledChildEducationAllowanceMockType.APPLICATION_NOT_FOUND.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=404,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledChildEducationAllowanceMockType.PERSON_NOT_FOUND.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=422,
+        ).model_dump()
+
+    disabled_child_education_allowance_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        thirdPartyId=f"aeeh-bonus-credit-config-{user.id}",
+        status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+        resultContent=result_content,
+    )
+    db.session.add(disabled_child_education_allowance_config_fraud_check)
+    db.session.flush()
 
 
 @dev_blueprint.route("/components", methods=["GET"])
@@ -203,8 +291,6 @@ def get_generated_user() -> response_utils.BackofficeResponse:
     else:
         ubble_form = forms.UbbleConfigurationForm()
 
-    quotient_familial_form = forms.QuotientFamilialConfigurationForm()
-
     return render_template(
         "dev/users_generator.html",
         link_to_app=link_to_app,
@@ -214,7 +300,9 @@ def get_generated_user() -> response_utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.dev.generate_user"),
         ubble_configuration_form=ubble_form,
-        quotient_familial_form=quotient_familial_form,
+        quotient_familial_form=forms.QuotientFamilialConfigurationForm(),
+        disabled_adult_allowance_form=forms.DisabledAdultAllowanceConfigurationForm(),
+        disabled_child_education_allowance_form=forms.DisabledChildEducationAllowanceConfigurationForm(),
     )
 
 
@@ -365,7 +453,6 @@ def configure_ubble_v2_response(user_id: int) -> response_utils.BackofficeRespon
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
     create_ubble_fraud_check(user, form)
-    db.session.flush()
 
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
 
@@ -394,7 +481,64 @@ def configure_api_quotient_familial_response(user_id: int) -> response_utils.Bac
         return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
 
     create_qf_fraud_check_mock(user, form)
-    db.session.flush()
+
+    flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")
+
+    token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
+    params: dict[str, typing.Any] = {}
+    if token:
+        params["accessToken"] = token.encoded_token
+        params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
+        params["email"] = user.email
+    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+
+
+@dev_blueprint.route("/<int:user_id>/api_particulier/disabled_adult_allowance/configuration", methods=["POST"])
+@access_control.custom_login_required(redirect_to=".home")
+def configure_api_disabled_adult_allowance_response(user_id: int) -> response_utils.BackofficeResponse:
+    user = _get_user_if_exists(str(user_id))
+    if user is None:
+        mark_transaction_as_invalid()
+        flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+
+    form = forms.DisabledAdultAllowanceConfigurationForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+
+    create_disabled_adult_allowance_fraud_check_mock(user, form)
+
+    flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")
+
+    token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
+    params: dict[str, typing.Any] = {}
+    if token:
+        params["accessToken"] = token.encoded_token
+        params["expirationTimestamp"] = str(get_token_expiration_timestamp(token))
+        params["email"] = user.email
+    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+
+
+@dev_blueprint.route(
+    "/<int:user_id>/api_particulier/disabled_child_education_allowance/configuration", methods=["POST"]
+)
+@access_control.custom_login_required(redirect_to=".home")
+def configure_api_disabled_child_education_allowance_response(user_id: int) -> response_utils.BackofficeResponse:
+    user = _get_user_if_exists(str(user_id))
+    if user is None:
+        mark_transaction_as_invalid()
+        flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+
+    form = forms.DisabledChildEducationAllowanceConfigurationForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return request_utils.safe_redirect_back(request, url_for("backoffice_web.dev.get_generated_user"))
+
+    create_disabled_child_education_allowance_fraud_check_mock(user, form)
 
     flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")
 

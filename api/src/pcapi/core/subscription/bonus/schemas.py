@@ -4,6 +4,7 @@ their returned responses ever changes
 """
 
 import datetime
+import enum
 import typing
 
 from pydantic import BaseModel as BaseModelV2
@@ -71,7 +72,21 @@ class QuotientFamilialBonusCreditContent(BaseModelV2):
     error_code: str | None = None
 
 
-class DisabilityBonusCreditContent(BaseModelV2):
+class AdultDisabilityBonusCreditContent(BaseModelV2):
     person: BonusCreditPerson
+    is_disability_beneficiary: bool | None = None
+    http_status_code: int | None = None
+    error_code: str | None = None
+
+
+class DisabledChildEducationBeneficiaryStatus(enum.StrEnum):
+    BENEFICIARY = "beneficiary"
+    RIGHT_OPENING = "right_opening"
+    NON_BENEFICIARY = "non_beneficiary"
+
+
+class DisabledChildEducationBonusCreditContent(BaseModelV2):
+    person: BonusCreditPerson
+    disability_beneficiary_status: DisabledChildEducationBeneficiaryStatus | None = None
     http_status_code: int | None = None
     error_code: str | None = None

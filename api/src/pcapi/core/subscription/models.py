@@ -14,7 +14,8 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.subscription.bonus.schemas import DisabilityBonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import AdultDisabilityBonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import DisabledChildEducationBonusCreditContent
     from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
@@ -163,7 +164,8 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 
 FraudCheckContent = typing.Union[
     "QuotientFamilialBonusCreditContent",
-    "DisabilityBonusCreditContent",
+    "AdultDisabilityBonusCreditContent",
+    "DisabledChildEducationBonusCreditContent",
     "DMSContent",
     "EduconnectContent",
     "UbbleContent",
@@ -177,7 +179,8 @@ FraudCheckContent = typing.Union[
 
 
 def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckContent]]:
-    from pcapi.core.subscription.bonus.schemas import DisabilityBonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import AdultDisabilityBonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import DisabledChildEducationBonusCreditContent
     from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
@@ -190,8 +193,8 @@ def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckCon
 
     return {
         FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContent,
-        FraudCheckType.AAH_BONUS_CREDIT: DisabilityBonusCreditContent,
-        FraudCheckType.AEEH_BONUS_CREDIT: DisabilityBonusCreditContent,
+        FraudCheckType.AAH_BONUS_CREDIT: AdultDisabilityBonusCreditContent,
+        FraudCheckType.AEEH_BONUS_CREDIT: DisabledChildEducationBonusCreditContent,
         FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
         FraudCheckType.DMS: DMSContent,
         FraudCheckType.EDUCONNECT: EduconnectContent,

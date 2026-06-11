@@ -170,6 +170,54 @@ class QuotientFamilialConfigurationForm(utils.PCForm):
     )
 
 
+class DisabledAdultAllowanceMockType(enum.Enum):
+    BENEFICIARY = "BENEFICIARY"
+    NON_BENEFICIARY = "NON_BENEFICIARY"
+    APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
+    PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+
+
+class DisabledAdultAllowanceConfigurationForm(utils.PCForm):
+    mock_type = fields.PCSelectField(
+        "Type de mock",
+        choices=[
+            (DisabledAdultAllowanceMockType.BENEFICIARY.value, "Ok bénéficiaire"),
+            (DisabledAdultAllowanceMockType.NON_BENEFICIARY.value, "Non bénéficiaire"),
+            (DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
+            (DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
+        ],
+        default=DisabledAdultAllowanceMockType.BENEFICIARY.value,
+    )
+
+
+class DisabledChildEducationAllowanceMockType(enum.Enum):
+    BENEFICIARY = "BENEFICIARY"
+    RIGHT_OPENING = "RIGHT_OPENING"
+    NON_BENEFICIARY = "NON_BENEFICIARY"
+    APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
+    PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+
+
+class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
+    mock_type = fields.PCSelectField(
+        "Type de mock",
+        choices=[
+            (DisabledChildEducationAllowanceMockType.BENEFICIARY.value, "Ok bénéficiaire"),
+            (DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value, "Ok ouvrant droit"),
+            (DisabledChildEducationAllowanceMockType.NON_BENEFICIARY.value, "Non bénéficiaire"),
+            (
+                DisabledChildEducationAllowanceMockType.APPLICATION_NOT_FOUND.value,
+                "404 impossible de trouver le dossier",
+            ),
+            (
+                DisabledChildEducationAllowanceMockType.PERSON_NOT_FOUND.value,
+                "422 problème de données d'identification",
+            ),
+        ],
+        default=DisabledChildEducationAllowanceMockType.BENEFICIARY.value,
+    )
+
+
 class OfferGeneratorForm(utils.PCForm):
     name = fields.PCStringField("Nom de l'offre")
     price = fields.PCDecimalField(
