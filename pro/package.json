@@ -47,7 +47,7 @@
     "@algolia/autocomplete-plugin-recent-searches": "1.19.8",
     "@algolia/autocomplete-preset-algolia": "1.19.8",
     "@firebase/analytics": "0.10.22",
-    "@firebase/app": "0.14.12",
+    "@firebase/app": "0.14.13",
     "@firebase/remote-config": "0.8.3",
     "@hookform/resolvers": "5.4.0",
     "@pass-culture/design-system": "0.9.2",
