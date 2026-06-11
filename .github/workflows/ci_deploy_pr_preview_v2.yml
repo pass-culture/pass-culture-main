@@ -135,7 +135,7 @@ jobs:
       environment: pcapi-preview
       registry_repository: pcapi-preview
     secrets:
-      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      WORKLOAD_IDENTITY_PRD: ${{ vars.WORKLOAD_IDENTITY_PRD }}
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
@@ -188,7 +188,7 @@ jobs:
         env:
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
-          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PULL_REQUEST_ID: "1234567890" # ${{ needs.deploy-preview-env-init.outputs.resource_label }}
           PCAPI_IMAGE_TAG: ${{ github.sha }}
         # TODO: bind sandbox arguments
         run: |
@@ -197,7 +197,7 @@ jobs:
       - name: Publish Summary
         shell: bash
         env:
-          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PULL_REQUEST_ID: "1234567890" # ${{ needs.deploy-preview-env-init.outputs.resource_label }}
         run: |
           {
             echo "### :rocket: Deploy PRO summary"
