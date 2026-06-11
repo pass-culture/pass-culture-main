@@ -1,4 +1,14 @@
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
+import dotenv from 'dotenv'
+
+dotenv.config({
+  path: resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '../.env.local.secret'
+  ),
+})
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3001'
 

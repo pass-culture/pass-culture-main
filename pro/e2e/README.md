@@ -5,6 +5,15 @@
 Les tests E2E sont lancés sur l'app react en local (sur votre machine, et la CI). Il faut donc lancer l'app pro.
 Il faudra aussi lancer pcapi, et vérifier qu'il n'y ait pas d'erreurs lors de l'execution des tests.
 
+### Clé d'API E2E (`E2E_API_KEY`)
+
+Les routes internes de seeding de l'API (`/sandboxes/...`, `/e2e/...`, `/testing/...`) sont protégées par un header `x-api-key`. Les tests Playwright envoient ce header en lisant `process.env.E2E_API_KEY`.
+
+Il faut donc définir la **même valeur** des deux côtés, dans deux fichiers `.env.local.secret` (tous deux sont gitignorés) :
+
+- `api/.env.local.secret` : `E2E_API_KEY="dummysecret"`
+- `pro/.env.local.secret` : `E2E_API_KEY="dummysecret"`
+
 NB: Les tests e2e écrasent et recréent les données dans postgres. Pour éviter d'utiliser votre postrge de développement, vous pouvez ajouter la variable d'environnement `IS_E2E_TESTS=1` dans l'api.
 Par exemple, si vous lancez l'api dans docker, vous pouvez ajouter dans le `docker-compose-backend.yml` :
 

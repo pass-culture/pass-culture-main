@@ -186,6 +186,9 @@ importers:
       check-unused-css:
         specifier: 0.5.0
         version: 0.5.0(typescript@6.0.3)
+      dotenv:
+        specifier: 16.6.1
+        version: 16.6.1
       jsdom:
         specifier: 29.1.1
         version: 29.1.1
