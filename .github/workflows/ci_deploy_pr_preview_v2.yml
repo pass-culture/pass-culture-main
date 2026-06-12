@@ -30,6 +30,11 @@ on:
         description: "Branch of pass-culture-deployment repository to use for helm charts."
         required: false
         default: "IC-1378/feature/deploy-preview-env-infra-v2"
+      rebuild-staging:
+        description: "When true, run the rebuild staging import steps on the preview environment"
+        required: false
+        default: false
+        type: boolean
 
 permissions: write-all
 
@@ -51,7 +56,6 @@ jobs:
       # testing_label controls whether we connect to testing backend or a preview backend
       testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
     steps:
-      # TODO: is checkout necessary
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-tags: false
@@ -72,13 +76,13 @@ jobs:
             echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Authentification to Google
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        id: openid-auth
-        with:
-          token_format: access_token
-          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
-          service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
+#      - name: Authentification to Google
+#        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+#        id: openid-auth
+#        with:
+#          token_format: access_token
+#          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+#          service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
 
   deploy-pro-on-firebase-preview-env:
     name: Deploy preview environment for PRO
@@ -124,7 +128,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pcapi-preview
-      deployment: true
     permissions:
       id-token: write
       contents: read
@@ -138,10 +141,10 @@ jobs:
       - deploy-pro-on-firebase-preview-env
     if: always() && !failure() && !cancelled() && inputs.front-only == false
     steps:
-      # TODO: check if checkout can be skipped
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{github.ref}}
+#      # TODO: check if checkout can be skipped
+#      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+#        with:
+#          ref: ${{github.ref}}
 
       - name: Install Argo Workflows CLI
         uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
@@ -210,10 +213,12 @@ jobs:
           BACKEND_URL: ${{ steps.deploy-api.outputs.backend_url }}
           BACKOFFICE_URL: ${{ steps.deploy-api.outputs.backoffice_url }}
         run: |
+          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
           {
             echo "### :rocket: Deploy PRO summary"
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
+            echo "| Date                                 | ${DATE} |"
             echo "| [Pro] url                            |  ${PRO_URL} |"
             echo "| [Back] url                           |  ${BACKEND_URL} |"
             echo "| [BO] url                             |  ${BACKOFFICE_URL} |"
