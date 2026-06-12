@@ -152,6 +152,7 @@ class FeatureToggle(enum.Enum):
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
+    WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
@@ -227,6 +228,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
+    FeatureToggle.WIP_OFFER_EXPOSURE,
     # Please keep alphabetic order
 )
 
