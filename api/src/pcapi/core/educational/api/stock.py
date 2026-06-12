@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 from functools import partial
 
 import sqlalchemy.orm as sa_orm
@@ -11,17 +12,21 @@ from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
+from pcapi.models import feature
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
 from pcapi.utils.decimal import float_to_decimal
 from pcapi.utils.transaction_manager import on_commit
 
 
+if typing.TYPE_CHECKING:
+    from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
+
+
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> models.CollectiveStock:
+def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> models.CollectiveStock:
     offer_id = stock_data.offerId
     start = stock_data.startDatetime
     end = stock_data.endDatetime
@@ -140,8 +145,8 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
 
     price = updatable_fields["price"]
     if price is not None:
-        # for now we set servicePrice=price, until we receive servicePrice
-        updatable_fields["servicePrice"] = price
+        if not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active():
+            updatable_fields["servicePrice"] = price
 
         if price > stock.price:
             validation.check_collective_offer_action_is_allowed(
@@ -152,7 +157,8 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
-    if "numberOfTickets" in stock_data or "priceDetail" in stock_data or "numberOfTeachers" in stock_data:
+    discount_fields = ("numberOfTickets", "numberOfTeachers", "servicePrice", "additionalFees", "priceDetail")
+    if any(field in stock_data for field in discount_fields):
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
         )
@@ -166,6 +172,39 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
         updatable_fields["bookingLimitDatetime"] = updatable_fields["startDatetime"]
 
     stock = repository.get_and_lock_collective_stock(stock_id=stock.id)
+
+    # update the additional fees
+    additional_fees: list[dict] | None = updatable_fields.pop("additionalFees", None)
+    if additional_fees is not None:
+        new_amount_by_type_label = {
+            (fee["type"], fee["label"]): float_to_decimal(fee["amount"]) for fee in additional_fees
+        }
+        current_fee_by_type_label = {(fee.type, fee.label): fee for fee in stock.collectiveAdditionalFees}
+
+        for type_label, new_amount in new_amount_by_type_label.items():
+            # type / label found -> update the row
+            if type_label in current_fee_by_type_label:
+                current_fee_by_type_label[type_label].amount = new_amount
+            # type / label not found -> add a row
+            else:
+                fee_type, fee_label = type_label
+                db.session.add(
+                    models.CollectiveAdditionalFee(
+                        type=fee_type, label=fee_label, amount=new_amount, collectiveStock=stock
+                    )
+                )
+
+        # remove current type / label rows that are not present in the input
+        to_delete = [
+            fee.id for fee in stock.collectiveAdditionalFees if (fee.type, fee.label) not in new_amount_by_type_label
+        ]
+        if to_delete:
+            db.session.query(models.CollectiveAdditionalFee).filter(
+                models.CollectiveAdditionalFee.id.in_(to_delete)
+            ).delete()
+
+        db.session.flush()
+
     for attribute, new_value in updatable_fields.items():
         if new_value is not None and getattr(stock, attribute) != new_value:
             setattr(stock, attribute, new_value)
@@ -209,11 +248,14 @@ def _extract_updatable_fields_from_stock_data(
         booking_limit_datetime = stock.bookingLimitDatetime
 
     price = stock_data.get("price")
+    service_price = stock_data.get("servicePrice")
     updatable_fields = {
         "startDatetime": start_datetime,
         "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,
         "price": float_to_decimal(price) if price is not None else None,
+        "servicePrice": float_to_decimal(service_price) if service_price is not None else None,
+        "additionalFees": stock_data.get("additionalFees"),
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "numberOfTeachers": stock_data.get("numberOfTeachers"),
         "priceDetail": stock_data.get("priceDetail"),

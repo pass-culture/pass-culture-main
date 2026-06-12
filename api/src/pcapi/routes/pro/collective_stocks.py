@@ -83,6 +83,10 @@ def edit_collective_stock(
         educational_api_stock.edit_collective_stock(
             stock=collective_stock, stock_data=body.model_dump(exclude_unset=True)
         )
+
+        # re-fetch collective stock to reload relations
+        collective_stock = repository.get_collective_stock(collective_stock_id)
+
         return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
     except exceptions.CollectiveOfferForbiddenAction:
         raise ForbiddenError({"global": ["Cette action n'est pas autorisée sur l'offre collective liée à ce stock."]})

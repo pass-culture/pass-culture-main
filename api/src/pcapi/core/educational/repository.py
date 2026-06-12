@@ -509,7 +509,9 @@ def get_collective_stock(collective_stock_id: int) -> models.CollectiveStock | N
                 .joinedload(offerers_models.OffererAddress.address),
             ),
             sa_orm.joinedload(models.CollectiveStock.collectiveBookings),
+            sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
         )
+        .populate_existing()
         .one_or_none()
     )
 
