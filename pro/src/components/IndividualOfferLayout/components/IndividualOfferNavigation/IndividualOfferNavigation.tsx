@@ -6,6 +6,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'
@@ -18,6 +19,7 @@ import { getSteps, type StepPattern } from './utils/getSteps'
 export const IndividualOfferNavigation = () => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { offer, isEvent, subCategories } = useIndividualOfferContext()
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
@@ -29,6 +31,7 @@ export const IndividualOfferNavigation = () => {
     isEvent,
     mode,
     bookingsCount: offer?.bookingsCount,
+    isOfferExposureEnabled,
   })
 
   // Steps are passed as argument since they are not static.

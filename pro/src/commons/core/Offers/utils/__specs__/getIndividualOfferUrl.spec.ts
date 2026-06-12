@@ -100,6 +100,14 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/reservations',
     },
+    {
+      props: {
+        offerId: offerId,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
+      },
+      expectedUrl: '/offre/individuelle/42/visibilite',
+    },
   ]
   it.each(testCases)('should return right url', ({ props, expectedUrl }) => {
     expect(getIndividualOfferUrl(props)).toBe(expectedUrl)

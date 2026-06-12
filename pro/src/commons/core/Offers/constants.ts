@@ -19,6 +19,7 @@ export enum OFFER_WIZARD_MODE {
 }
 
 export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
+  EXPOSURE = 'visibilite',
   DESCRIPTION = 'description',
   LOCATION = 'localisation',
   MEDIA = 'media',

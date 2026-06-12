@@ -20,6 +20,7 @@ type GetStepsContext = {
   isEvent: boolean | null
   mode: OFFER_WIZARD_MODE
   bookingsCount?: number | null
+  isOfferExposureEnabled?: boolean
 }
 
 interface StepDefinition {
@@ -32,6 +33,14 @@ interface StepDefinition {
 }
 
 const STEP_DEFINITIONS: StepDefinition[] = [
+  {
+    id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
+    label: 'Visibilité',
+    shouldInclude: (ctx) =>
+      (ctx.mode === OFFER_WIZARD_MODE.READ_ONLY &&
+        ctx.isOfferExposureEnabled) ??
+      false,
+  },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     label: 'Description',
@@ -90,8 +99,14 @@ export const getSteps = ({
   isEvent,
   mode,
   bookingsCount,
+  isOfferExposureEnabled,
 }: GetStepsContext): StepPattern[] => {
-  const ctx: GetStepsContext = { isEvent, mode, bookingsCount }
+  const ctx: GetStepsContext = {
+    isEvent,
+    mode,
+    bookingsCount,
+    isOfferExposureEnabled,
+  }
   return STEP_DEFINITIONS.filter((def) =>
     def.shouldInclude ? def.shouldInclude(ctx) : true
   ).map<StepPattern>((def) => ({

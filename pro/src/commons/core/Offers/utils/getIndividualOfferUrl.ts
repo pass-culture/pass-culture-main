@@ -48,7 +48,7 @@ const routes = {
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/recapitulatif`,
-    [OFFER_WIZARD_MODE.EDITION]: ``,
+    [OFFER_WIZARD_MODE.EDITION]: '',
     [OFFER_WIZARD_MODE.READ_ONLY]: '',
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION]: {
@@ -57,9 +57,14 @@ const routes = {
     [OFFER_WIZARD_MODE.READ_ONLY]: '',
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS]: {
-    [OFFER_WIZARD_MODE.CREATION]: ``,
+    [OFFER_WIZARD_MODE.CREATION]: '',
     [OFFER_WIZARD_MODE.EDITION]: '',
     [OFFER_WIZARD_MODE.READ_ONLY]: '/offre/individuelle/:offerId/reservations',
+  },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE]: {
+    [OFFER_WIZARD_MODE.CREATION]: '',
+    [OFFER_WIZARD_MODE.EDITION]: '',
+    [OFFER_WIZARD_MODE.READ_ONLY]: '/offre/individuelle/:offerId/visibilite',
   },
 }
 

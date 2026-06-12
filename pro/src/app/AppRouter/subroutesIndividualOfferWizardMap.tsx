@@ -29,6 +29,20 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Détails de l’offre - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
+    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+  },
+  // Exposure
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferExposure/IndividualOfferExposure'
+      ),
+    path: '/offre/individuelle/:offerId/visibilite',
+    handle: {
+      title: 'Visibilité - Consulter une offre individuelle',
+    },
+    featureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   //  Description
@@ -74,9 +88,10 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Description - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
-  //  Informations pratiques
+  //  Practical Informations
   {
     lazy: () =>
       import(
@@ -131,6 +146,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Localisation - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Image & video (media) pages
@@ -165,6 +181,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Image et vidéo - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Price categories pages
@@ -199,6 +216,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Tarifs - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Timetable
@@ -233,6 +251,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Horaires - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   {
@@ -266,6 +285,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Informations pratiques - Consulter une offre individuelle',
     },
+    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
   // Booking summary page
