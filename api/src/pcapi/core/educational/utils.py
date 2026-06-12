@@ -12,6 +12,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.users.utils import ALGORITHM_RS_256
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import requests
@@ -86,9 +87,24 @@ def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True, 
             "canPrebook": can_prebook,
         }
         if not readonly:
-            authenticated_informations["uai"] = uai if uai is not None else UAI_FOR_FAKE_TOKEN
-            authenticated_informations["lat"] = 48.8566  # Paris
-            authenticated_informations["lon"] = 2.3522  # Paris
+            uai = uai if uai is not None else UAI_FOR_FAKE_TOKEN
+            institution = (
+                db.session.query(models.EducationalInstitution)
+                .filter(models.EducationalInstitution.institutionId == uai)
+                .one_or_none()
+            )
+
+            if institution and institution.latitude is not None and institution.longitude is not None:
+                lat = float(institution.latitude)
+                long = float(institution.longitude)
+            else:
+                # Paris
+                lat = 48.8566
+                long = 2.3522
+
+            authenticated_informations["uai"] = uai
+            authenticated_informations["lat"] = lat
+            authenticated_informations["lon"] = long
 
         return jwt.encode(
             authenticated_informations,
