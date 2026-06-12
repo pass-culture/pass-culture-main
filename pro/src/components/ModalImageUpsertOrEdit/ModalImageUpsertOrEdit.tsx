@@ -364,8 +364,7 @@ export const ModalImageUpsertOrEdit = ({
           {!isLoadingImage && !image && (
             <ImageDragAndDrop
               onDropOrSelected={onImageReplacementDropOrSelected}
-              {...(mode === UploaderModeEnum.OFFER ||
-              mode === UploaderModeEnum.OFFER_COLLECTIVE
+              {...(mode === UploaderModeEnum.OFFER
                 ? {}
                 : {
                     minSizes: {
