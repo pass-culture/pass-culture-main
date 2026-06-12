@@ -15,6 +15,7 @@ import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividu
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -42,8 +43,9 @@ export const IndividualOfferMediaScreen = ({
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const initialImageOffer = getIndividualOfferImage(offer)
   const {
@@ -81,6 +83,7 @@ export const IndividualOfferMediaScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     }
@@ -172,6 +175,7 @@ export const IndividualOfferMediaScreen = ({
             ? OFFER_WIZARD_MODE.READ_ONLY
             : mode,
         isOnboarding,
+        isOfferExposureEnabled,
       })
     )
   }

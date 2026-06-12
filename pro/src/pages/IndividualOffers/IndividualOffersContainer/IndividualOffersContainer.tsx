@@ -15,6 +15,7 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
@@ -130,8 +131,12 @@ export const IndividualOffersContainer = ({
   )
 
   const { headlineOffer } = useHeadlineOfferContext()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
-  const columns = getIndividualOfferColumns(headlineOffer)
+  const columns = getIndividualOfferColumns(
+    headlineOffer,
+    isOfferExposureEnabled
+  )
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',

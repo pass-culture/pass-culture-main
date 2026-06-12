@@ -55,15 +55,19 @@ const baseOffer = listOffersOfferFactory({
 type RenderOptions = {
   isRefactoFutureOfferEnabled?: boolean
   headlineOffer?: HeadLineOfferResponseModel | null
+  isOfferExposureEnabled?: boolean
 }
 
 const renderTableWithOffer = (
   offer = baseOffer,
   options: RenderOptions = {}
 ) => {
-  const { headlineOffer = null } = options
+  const { headlineOffer = null, isOfferExposureEnabled = false } = options
 
-  const columns = getIndividualOfferColumns(headlineOffer)
+  const columns = getIndividualOfferColumns(
+    headlineOffer,
+    isOfferExposureEnabled
+  )
 
   return renderWithProviders(
     <HeadlineOfferContextProvider>
@@ -178,5 +182,24 @@ describe('getIndividualOfferColumns', () => {
     expect(
       screen.getByRole('link', { name: 'Dates et capacités' })
     ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
+  })
+
+  it('should link to exposure when feature is enabled', async () => {
+    renderTableWithOffer(baseOffer, { isOfferExposureEnabled: true })
+
+    expect(
+      await screen.findByRole('link', { name: 'My Offer 2 dates' })
+    ).toHaveAttribute('href', expect.stringContaining('/visibilite'))
+  })
+
+  it('should keep creation link for draft when feature is enabled', async () => {
+    renderTableWithOffer(
+      { ...baseOffer, status: OfferStatus.DRAFT },
+      { isOfferExposureEnabled: true }
+    )
+
+    expect(
+      await screen.findByRole('link', { name: 'My Offer 2 dates' })
+    ).toHaveAttribute('href', expect.stringContaining('/creation/description'))
   })
 })

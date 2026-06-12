@@ -12,6 +12,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -39,6 +40,9 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
 }))
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
+}))
+vi.mock('@/commons/hooks/useActiveFeature', () => ({
+  useActiveFeature: vi.fn(),
 }))
 vi.mock('@/commons/core/Offers/utils/getIndividualOfferUrl', () => ({
   getIndividualOfferUrl: vi.fn(),
@@ -72,6 +76,7 @@ describe('useSaveOfferLocation', () => {
     >
     vi.mocked(useSnackBar).mockReturnValue(notificationMock)
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
+    vi.mocked(useActiveFeature).mockReturnValue(false)
     vi.mocked(toPatchOfferBodyModel).mockReturnValue({})
   })
 
@@ -109,6 +114,7 @@ describe('useSaveOfferLocation', () => {
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding: false,
+      isOfferExposureEnabled: false,
     })
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
@@ -145,6 +151,7 @@ describe('useSaveOfferLocation', () => {
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       mode: OFFER_WIZARD_MODE.CREATION,
       isOnboarding: true,
+      isOfferExposureEnabled: false,
     })
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()

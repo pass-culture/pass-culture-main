@@ -18,6 +18,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -42,8 +43,9 @@ export const IndividualOfferPracticalInfosScreen = ({
 }: IndividualOfferPracticalInfosScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const snackBar = useSnackBar()
 
@@ -83,6 +85,7 @@ export const IndividualOfferPracticalInfosScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     }
@@ -137,6 +140,7 @@ export const IndividualOfferPracticalInfosScreen = ({
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     } catch {

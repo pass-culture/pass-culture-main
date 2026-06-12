@@ -6,6 +6,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,
@@ -26,12 +27,17 @@ export const BookingOfferCell = ({
   booking,
   isCaledonian = false,
 }: BookingOfferCellProps) => {
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+
   const offerUrl = booking.stock.offerIsEducational
     ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
     : getIndividualOfferUrl({
         offerId: booking.stock.offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+        step: isOfferExposureEnabled
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+        isOfferExposureEnabled,
       })
 
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime

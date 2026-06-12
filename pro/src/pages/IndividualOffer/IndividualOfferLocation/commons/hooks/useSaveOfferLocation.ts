@@ -12,6 +12,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -30,8 +31,9 @@ export function useSaveOfferLocation({
   const navigate = useNavigate()
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
 
   const saveAndContinue = async ({
     formValues,
@@ -67,6 +69,7 @@ export function useSaveOfferLocation({
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     } catch (error) {

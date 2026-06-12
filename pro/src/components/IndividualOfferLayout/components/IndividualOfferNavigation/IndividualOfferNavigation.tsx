@@ -59,6 +59,7 @@ export const IndividualOfferNavigation = () => {
             step: id,
             mode,
             isOnboarding,
+            isOfferExposureEnabled,
           }),
           {
             offerId: offer.id.toString(),
