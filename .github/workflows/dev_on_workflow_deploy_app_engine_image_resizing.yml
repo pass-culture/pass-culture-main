@@ -56,7 +56,9 @@ jobs:
     name: "Deploy image resizing"
     needs: check-image-resizing-folder-changes
     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
-    environment: ${{ inputs.environment }}
+    environment:
+      name: ${{ inputs.environment }}
+      deployment: false
     runs-on: ubuntu-22.04
     steps:
       - name: "Checkout actual repository"

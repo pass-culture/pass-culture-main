@@ -146,7 +146,9 @@ jobs:
       - push-pcapi
       - deploy-pro-on-firebase-preview-env
     if: always() && !failure() && !cancelled() && inputs.front-only == false
-    environment: pullrequest
+    environment:
+      name: pullrequest
+      deployment: true
     permissions:
       id-token: write
       contents: read

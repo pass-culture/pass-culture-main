@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-22.04
     environment:
       name: api-doc-${{ inputs.environment }}
-      deployment: true
+      deployment: false
     permissions:
       id-token: write
       contents: read
