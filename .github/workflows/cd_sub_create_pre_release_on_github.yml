@@ -61,7 +61,7 @@ jobs:
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
-          pnpm version --no-commit-hooks --no-git-tag-version "$TAG_NUMBER"
+          contents="$(jq --arg v "$TAG_NUMBER" '.version = $v' package.json)" && echo "$contents" > package.json
           git add package.json
 
       - name: Add version to image-resizing
