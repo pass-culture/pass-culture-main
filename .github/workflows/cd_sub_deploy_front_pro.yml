@@ -44,7 +44,9 @@ defaults:
 
 jobs:
   deploy_on_firebase:
-    environment: pro-${{ inputs.ENV }}
+    environment:
+      name: pro-${{ inputs.ENV }}
+      deployment: false
     runs-on: ubuntu-22.04
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
     outputs:

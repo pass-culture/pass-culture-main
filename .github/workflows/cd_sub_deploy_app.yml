@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-22.04
     environment:
       name: pcapi-${{ inputs.environment_short_name }}
-      deployment: true
+      deployment: false
     permissions:
       id-token: write
       contents: read
@@ -183,7 +183,9 @@ jobs:
       - deploy-pro-on-firebase-testing
       - deploy-pro-on-firebase
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }} # GitHub will create a deployment for this environment
+    environment:
+      name: ${{ inputs.environment }}
+      deployment: true # Github creates a deployment for this environment only if all deploys succeed (pcapi, pro, doc)
     if: always()
     env:
       ENV: ${{ inputs.environment }}
