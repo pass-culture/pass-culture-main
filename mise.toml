@@ -16,3 +16,6 @@ semgrep = "1.165"
 gh = "2.93"
 kubectl = "1.36"
 kubectx = "0.11"
+
+[tasks."test:onboarding"]
+run = "podman build -f ./scripts/onboarding/linux.Containerfile -t poke-mise-linux ."
