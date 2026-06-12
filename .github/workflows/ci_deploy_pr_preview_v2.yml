@@ -72,19 +72,6 @@ jobs:
             echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           fi
 
-      # TODO: Recheck output
-      - name: Define pcapi image tags
-        id: pcapi-tags
-        run: |
-          DOCKER_IMAGE="${{ env.DOCKER_REGISTRY }}/pcapi"
-          API_CHECKSUM=$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')
-          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
-          API_TAG="checksum-tag=$API_CHECKSUM"
-          echo "PUSH_TAGS=$PUSH_TAGS"
-          echo "API_TAG=$API_TAG"
-          echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
-          echo "$API_TAG" >> "$GITHUB_OUTPUT"
-
       - name: Authentification to Google
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         id: openid-auth
@@ -92,14 +79,6 @@ jobs:
           token_format: access_token
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
-
-      - name: Check if pcapi already exists
-        id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ github.sha }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
 
   deploy-pro-on-firebase-preview-env:
     name: Deploy preview environment for PRO
