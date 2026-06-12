@@ -55,6 +55,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
 }
 
 const LABELS = {
+  EXPOSURE: /Visibilité/,
   DETAILS: /Détails/,
   USEFUL_INFORMATIONS: /Informations pratiques/,
   MEDIA: /Image et vidéo/,
@@ -200,6 +201,18 @@ describe('IndividualOfferNavigation', () => {
         .getAllByRole('listitem')
         .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
       expect(bookingStep).toBeDefined()
+    })
+
+    it('should display "Visibilité" step when FF is activated', () => {
+      renderIndividualOfferNavigation({
+        path,
+        options: { features: ['WIP_OFFER_EXPOSURE'] },
+      })
+
+      const exposureStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.EXPOSURE))
+      expect(exposureStep).toBeDefined()
     })
 
     it('should never display "Récapitulatif" step', () => {

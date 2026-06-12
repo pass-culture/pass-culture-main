@@ -475,6 +475,31 @@ describe('IndividualOfferLayout', () => {
         ).toBeInTheDocument()
       })
     })
+    it('should not display the enhancement cards when exposure is activated', () => {
+      const offer = getIndividualOfferFactory()
+
+      vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
+        shouldDisplayRecommendationCard: true,
+        shouldDisplayHighlightCard: true,
+        shouldDisplayHeadlineCard: true,
+      })
+
+      renderIndividualOfferLayout({
+        props: { offer },
+        options: { features: ['WIP_OFFER_EXPOSURE'] },
+      })
+
+      expect(
+        screen.queryByRole('button', { name: 'Ajouter une recommandation' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre l’offre à la une' })
+      ).not.toBeInTheDocument()
+    })
+
     it('should not display the enhancement cards', () => {
       const offer = getIndividualOfferFactory()
 

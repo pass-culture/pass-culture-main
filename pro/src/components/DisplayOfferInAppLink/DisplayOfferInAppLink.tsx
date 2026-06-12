@@ -10,7 +10,6 @@ type ButtonLinkProps = Partial<Omit<ButtonProps, 'id'>>
 interface DisplayOfferInAppLinkProps extends ButtonLinkProps {
   id: number
   onClick?: () => void
-  className?: string
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<

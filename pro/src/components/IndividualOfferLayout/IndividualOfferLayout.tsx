@@ -9,6 +9,7 @@ import {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -38,6 +39,7 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -124,34 +126,36 @@ export const IndividualOfferLayout = ({
           />
         </div>
       )}
-      {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
-        <div className={styles['banner-container']}>
-          {(shouldDisplayRecommendationCard ||
-            shouldDisplayHighlightCard ||
-            shouldDisplayHeadlineCard) && (
-            <h2 className={styles['banner-container-title']}>
-              Mises en avant de votre offre
-            </h2>
-          )}
-          <div className={styles['cards-container']}>
-            {shouldDisplayRecommendationCard && (
-              <OfferRecommendationCard offerId={offer.id} />
+      {offer &&
+        mode !== OFFER_WIZARD_MODE.CREATION &&
+        !isOfferExposureEnabled && (
+          <div className={styles['banner-container']}>
+            {(shouldDisplayRecommendationCard ||
+              shouldDisplayHighlightCard ||
+              shouldDisplayHeadlineCard) && (
+              <h2 className={styles['banner-container-title']}>
+                Mises en avant de votre offre
+              </h2>
             )}
-            {shouldDisplayHighlightCard && (
-              <OfferHighlightCard
-                offerId={offer.id}
-                highlightRequests={offer.highlightRequests}
-              />
-            )}
-            {shouldDisplayHeadlineCard && (
-              <OfferHeadlineCard
-                offerId={offer.id}
-                hasThumb={!!offer.thumbUrl}
-              />
-            )}
+            <div className={styles['cards-container']}>
+              {shouldDisplayRecommendationCard && (
+                <OfferRecommendationCard offerId={offer.id} />
+              )}
+              {shouldDisplayHighlightCard && (
+                <OfferHighlightCard
+                  offerId={offer.id}
+                  highlightRequests={offer.highlightRequests}
+                />
+              )}
+              {shouldDisplayHeadlineCard && (
+                <OfferHeadlineCard
+                  offerId={offer.id}
+                  hasThumb={!!offer.thumbUrl}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {offer?.lastProvider?.name && (
         <div className={styles['banner-container']}>
