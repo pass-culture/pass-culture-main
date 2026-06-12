@@ -9,7 +9,7 @@ import type {
 } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
-import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 
@@ -56,11 +56,12 @@ export const CollectiveOfferInformations = ({
         { revalidate: false }
       )
       navigate(stepUrls.next)
+      snackBar.success(PATCH_SUCCESS_MESSAGE)
     } catch (e) {
-      console.error(e)
-      if (isErrorAPIError(e) && e.status === 400) {
-        snackBar.error(FORM_ERROR_MESSAGE)
+      if (isErrorAPIError(e) && e.status < 500) {
+        throw e
       } else {
+        console.error(e)
         snackBar.error(
           "Une erreur est survenue lors de l'enregistrement de votre offre."
         )

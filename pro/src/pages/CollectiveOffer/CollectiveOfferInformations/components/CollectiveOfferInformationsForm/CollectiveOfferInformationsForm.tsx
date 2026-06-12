@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
@@ -57,7 +58,7 @@ export const CollectiveOfferInformationsForm = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const onSubmit = (formValues: CollectiveOfferInformationFormValues) => {
+  const onSubmit = async (formValues: CollectiveOfferInformationFormValues) => {
     const partialOffer = objectFromEntries(
       objectEntries(form.formState.dirtyFields)
         .filter(([_, isDirty]) => isDirty)
@@ -69,7 +70,13 @@ export const CollectiveOfferInformationsForm = ({
         ({ email }: Record<'email', string>) => email
       )
     }
-    saveAndContinue(partialOffer)
+    try {
+      await saveAndContinue(partialOffer)
+    } catch (e) {
+      if (isErrorAPIError(e) && e.status < 500) {
+        serializeApiErrors(e.body, form.setError)
+      }
+    }
   }
 
   return (
