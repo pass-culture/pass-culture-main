@@ -791,6 +791,19 @@ def create_collective_offer_templates_for_search(offerer: offerers_models.Offere
         offererAddress__address__latitude=48.59,
         offererAddress__address__longitude=2.49,
     )
+    # other address - close to Robert Doisneau institution
+    educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory.create(
+        **kwargs,
+        name="Avion - autre adresse proche lycée Doisneau",
+        interventionArea=[],
+        offererAddress__label="Autre adresse proche lycée",
+        offererAddress__address__departmentCode="91",
+        offererAddress__address__postalCode="91100",
+        offererAddress__address__city="Corbeil-Essonnes",
+        offererAddress__address__street="24 Av. Serge Dassault",
+        offererAddress__address__latitude=48.61,
+        offererAddress__address__longitude=2.46,
+    )
     # school, venue department
     educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory.create(
         **kwargs, name="Avion - dans l'école", interventionArea=[91]
