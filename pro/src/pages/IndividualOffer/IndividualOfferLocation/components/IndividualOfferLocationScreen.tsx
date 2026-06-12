@@ -12,6 +12,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -37,8 +38,9 @@ export const IndividualOfferLocationScreen = ({
 
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { hasPublishedOfferWithSameEan, subCategories } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
@@ -108,6 +110,7 @@ export const IndividualOfferLocationScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     }

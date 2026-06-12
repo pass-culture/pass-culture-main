@@ -7,6 +7,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -30,11 +31,12 @@ export function StocksCalendarActionsBar({
   updateCheckedStocks,
   deleteStocks,
   mode,
-}: StocksCalendarActionsBarProps) {
+}: Readonly<StocksCalendarActionsBarProps>) {
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   function handlePreviousStep() {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
@@ -44,6 +46,7 @@ export function StocksCalendarActionsBar({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
       return

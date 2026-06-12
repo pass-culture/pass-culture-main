@@ -16,6 +16,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
@@ -43,6 +44,7 @@ export const IndividualOfferPriceTableScreen = ({
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 
@@ -56,7 +58,7 @@ export const IndividualOfferPriceTableScreen = ({
     '`offerSubcategory` not found in subcategories.'
   )
 
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const schemaValidationContext: PriceTableFormContext = {
     isCaledonian,
     mode,
@@ -91,6 +93,7 @@ export const IndividualOfferPriceTableScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     } else {

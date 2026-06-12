@@ -1,3 +1,7 @@
+// TODO (rchaffal): once WIP_OFFER_EXPOSURE is enabled for everyone,
+//  we can simplify this util by removing all the isOfferExposureEnabled conditions
+// and delete the read only mode.
+
 import { generatePath } from 'react-router'
 
 import {
@@ -10,6 +14,7 @@ interface GetIndividualOfferPathArgs {
   mode: OFFER_WIZARD_MODE
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   isOnboarding?: boolean
+  isOfferExposureEnabled?: boolean
 }
 
 const routes = {
@@ -58,12 +63,12 @@ const routes = {
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS]: {
     [OFFER_WIZARD_MODE.CREATION]: '',
-    [OFFER_WIZARD_MODE.EDITION]: '',
+    [OFFER_WIZARD_MODE.EDITION]: '/offre/individuelle/:offerId/reservations',
     [OFFER_WIZARD_MODE.READ_ONLY]: '/offre/individuelle/:offerId/reservations',
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE]: {
     [OFFER_WIZARD_MODE.CREATION]: '',
-    [OFFER_WIZARD_MODE.EDITION]: '',
+    [OFFER_WIZARD_MODE.EDITION]: '/offre/individuelle/:offerId/visibilite',
     [OFFER_WIZARD_MODE.READ_ONLY]: '/offre/individuelle/:offerId/visibilite',
   },
 }
@@ -73,12 +78,18 @@ export const getIndividualOfferPath = ({
   mode,
   step,
   isOnboarding = false,
+  isOfferExposureEnabled = false,
 }: GetIndividualOfferPathArgs): string => {
   if (isCreation) {
     return `${isOnboarding ? '/onboarding' : ''}/offre/individuelle/creation/${step}`
   }
 
-  return `${isOnboarding ? '/onboarding' : ''}${routes[step][mode]}`
+  const modeToUse =
+    isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.READ_ONLY
+      ? OFFER_WIZARD_MODE.EDITION
+      : mode
+
+  return `${isOnboarding ? '/onboarding' : ''}${routes[step][modeToUse]}`
 }
 
 interface GetIndividualOfferUrlArgs {
@@ -86,6 +97,7 @@ interface GetIndividualOfferUrlArgs {
   mode: OFFER_WIZARD_MODE
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   isOnboarding?: boolean
+  isOfferExposureEnabled?: boolean
 }
 
 export const getIndividualOfferUrl = ({
@@ -93,6 +105,7 @@ export const getIndividualOfferUrl = ({
   mode,
   step,
   isOnboarding = false,
+  isOfferExposureEnabled = false,
 }: GetIndividualOfferUrlArgs) =>
   generatePath(
     getIndividualOfferPath({
@@ -100,6 +113,7 @@ export const getIndividualOfferUrl = ({
       mode,
       step,
       isOnboarding,
+      isOfferExposureEnabled,
     }),
     { offerId: offerId?.toString() }
   )

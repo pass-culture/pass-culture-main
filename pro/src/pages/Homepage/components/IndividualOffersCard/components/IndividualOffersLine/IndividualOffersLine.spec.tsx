@@ -115,7 +115,8 @@ describe('<IndividualOffersLine />', () => {
 
   describe('clickable behaviour', () => {
     const renderIndividualOffersLineWithRouter = (
-      offerStatus: OfferStatus = OfferStatus.PUBLISHED
+      offerStatus: OfferStatus = OfferStatus.PUBLISHED,
+      isOfferExposureEnabled = false
     ) => {
       const user = userEvent.setup()
       const offer: OfferHomeResponseModel = {
@@ -150,10 +151,15 @@ describe('<IndividualOffersLine />', () => {
               element: <FakeOfferDetailComponent />,
             },
             {
+              path: '/offre/individuelle/:offerId/visibilite',
+              element: <FakeOfferDetailComponent />,
+            },
+            {
               path: '/offre/individuelle/:offerId/edition/tarifs',
               element: <FakeTarifEditionComponent />,
             },
           ],
+          features: isOfferExposureEnabled ? ['WIP_OFFER_EXPOSURE'] : [],
         }),
         user,
         offer,
@@ -184,6 +190,26 @@ describe('<IndividualOffersLine />', () => {
       expect(
         screen.getByText(`Modification du tarif de mon offre ${offer.id}`)
       ).toBeVisible()
+    })
+
+    it('should redirect to exposure page when feature is enabled', async () => {
+      const { user, offer } = renderIndividualOffersLineWithRouter(
+        OfferStatus.PUBLISHED,
+        true
+      )
+
+      const offerLink = screen.getByRole('link', {
+        name: `12 réservations - ${offer.name} - Le 15/10/2021 14:00 - publiée`,
+      })
+
+      expect(offerLink).toHaveAttribute(
+        'href',
+        `/offre/individuelle/${offer.id}/visibilite`
+      )
+
+      await user.click(offerLink)
+
+      expect(screen.getByText(`Detail de mon offre ${offer.id}`)).toBeVisible()
     })
   })
 })

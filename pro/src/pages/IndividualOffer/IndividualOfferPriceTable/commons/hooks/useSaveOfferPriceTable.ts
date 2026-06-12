@@ -8,6 +8,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
@@ -30,23 +31,28 @@ export const useSaveOfferPriceTable = ({
   const { pathname } = useLocation()
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
 
   const saveAndContinue = async (
     formValues: PriceTableFormValues
   ): Promise<void> => {
+    let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
+
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+    } else if (offer.isEvent) {
+      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+    }
+
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-          : offer.isEvent
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
+      step: nextStep,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
+      isOfferExposureEnabled,
     })
 
     if (!form.formState.isDirty && mode === OFFER_WIZARD_MODE.EDITION) {

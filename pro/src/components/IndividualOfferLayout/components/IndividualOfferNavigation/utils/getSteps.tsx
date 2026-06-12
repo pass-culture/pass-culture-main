@@ -37,7 +37,8 @@ const STEP_DEFINITIONS: StepDefinition[] = [
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
     label: 'Visibilité',
     shouldInclude: (ctx) =>
-      (ctx.mode === OFFER_WIZARD_MODE.READ_ONLY &&
+      ((ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
+        ctx.mode === OFFER_WIZARD_MODE.EDITION) &&
         ctx.isOfferExposureEnabled) ??
       false,
   },
@@ -91,7 +92,10 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
     label: (ctx) => <LabelBooking bookingsCount={ctx.bookingsCount || 0} />,
-    shouldInclude: (ctx) => ctx.mode === OFFER_WIZARD_MODE.READ_ONLY,
+    shouldInclude: (ctx) =>
+      ctx.mode === OFFER_WIZARD_MODE.READ_ONLY ||
+      (ctx.mode === OFFER_WIZARD_MODE.EDITION &&
+        ctx.isOfferExposureEnabled === true),
   },
 ]
 

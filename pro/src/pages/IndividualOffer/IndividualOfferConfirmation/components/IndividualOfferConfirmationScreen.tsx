@@ -9,6 +9,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
@@ -32,6 +33,7 @@ export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
@@ -42,8 +44,11 @@ export const IndividualOfferConfirmationScreen = ({
 
   const offerReadOnlyUrl = getIndividualOfferUrl({
     offerId: offer.id,
-    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+    step: isOfferExposureEnabled
+      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE
+      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
+    isOfferExposureEnabled,
   })
 
   const offerCreationUrl = getIndividualOfferUrl({

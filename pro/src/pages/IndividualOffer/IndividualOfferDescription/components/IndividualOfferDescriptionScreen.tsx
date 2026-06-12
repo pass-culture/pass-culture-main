@@ -98,6 +98,7 @@ export const IndividualOfferDescriptionScreen = () => {
   const isCulturalOutreachEnabled = useActiveFeature(
     'WIP_ENABLE_CULTURAL_OUTREACH'
   )
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   const canClaimCulturalOutreach =
     isCulturalOutreachEnabled &&
@@ -174,6 +175,7 @@ export const IndividualOfferDescriptionScreen = () => {
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     } catch (error) {
@@ -198,6 +200,7 @@ export const IndividualOfferDescriptionScreen = () => {
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
+          isOfferExposureEnabled,
         })
       )
     }
