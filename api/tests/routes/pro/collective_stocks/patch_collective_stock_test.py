@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -8,6 +9,7 @@ import time_machine
 from pcapi import settings
 from pcapi.core.educational import factories
 from pcapi.core.educational import testing
+from pcapi.core.educational.models import CollectiveAdditionalFeeType
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -293,6 +295,59 @@ class Return200Test:
         assert response.status_code == 200
 
         assert stock.numberOfTeachers == 38
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_price_fields(self, client):
+        stock = factories.CollectiveStockFactory(price=10, servicePrice=10)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        fees = [
+            {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+            {"type": CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15},
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.50},
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
+        ]
+        stock_edition_payload = {
+            "price": 110.50,
+            "servicePrice": 40,
+            "additionalFees": fees,
+        }
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+        assert response.status_code == 200
+
+        assert stock.price == 110.50
+        assert stock.servicePrice == 40
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ] == fees
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_price_fields_no_fees(self, client):
+        stock = factories.CollectiveStockFactory(price=20, servicePrice=10)
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.TRAVEL, label=None, amount=10
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        stock_edition_payload = {
+            "price": 10.99,
+            "servicePrice": 10.99,
+            "additionalFees": [],
+        }
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+        assert response.status_code == 200
+        assert response.json["collectiveAdditionalFees"] == []
+
+        assert stock.price == decimal.Decimal("10.99")
+        assert stock.servicePrice == decimal.Decimal("10.99")
+        assert stock.collectiveAdditionalFees == []
 
 
 class Return403Test:
@@ -589,16 +644,16 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(8):
-            # query += 1 -> load session + user
-            # query += 1 -> load existing stock
-            # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> check the number of existing stock for the offer id
-            # query += 1 -> find education year for start date
-            # query += 1 -> find education year for end date
-            # query += 1 -> rollback
-            # query += 1 -> rollback
-
+        num_queries = 1  # load session + user
+        num_queries += 1  # load existing stock
+        num_queries += 1  # load additionalFees
+        num_queries += 1  # ensure the offerer is VALIDATED
+        num_queries += 1  # check the number of existing stock for the offer id
+        num_queries += 1  # find education year for start date
+        num_queries += 1  # find education year for end date
+        num_queries += 1  # rollback
+        num_queries += 1  # rollback
+        with assert_num_queries(num_queries):
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
             assert response.status_code == 400
@@ -633,16 +688,16 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(8):
-            # query += 1 -> load session + user
-            # query += 1 -> load existing stock
-            # query += 1 -> load existing offerer
-            # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> find education year for start date
-            # query += 1 -> rollback
-            # query += 1 -> rollback
-            # query += 1 -> load existing stock after rollback
-
+        num_queries = 1  # load session + user
+        num_queries += 1  # load existing stock
+        num_queries += 1  # load additionalFees
+        num_queries += 1  # load existing offerer
+        num_queries += 1  # ensure the offerer is VALIDATED
+        num_queries += 1  # find education year for start date
+        num_queries += 1  # rollback
+        num_queries += 1  # rollback
+        num_queries += 1  # load existing stock after rollback
+        with assert_num_queries(num_queries):
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
             assert response.status_code == 400
@@ -677,17 +732,17 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(9):
-            # query += 1 -> load session + user
-            # query += 1 -> load existing stock
-            # query += 1 -> load offerer
-            # query += 1 -> ensure the offerer is VALIDATED
-            # query += 1 -> find education year for start date
-            # query += 1 -> find education year for end date
-            # query += 1 -> rollback
-            # query += 1 -> rollback
-            # query += 1 -> load existing stock after rollback
-
+        num_queries = 1  # load session + user
+        num_queries += 1  # load existing stock
+        num_queries += 1  # load additionalFees
+        num_queries += 1  # load existing offerer
+        num_queries += 1  # ensure the offerer is VALIDATED
+        num_queries += 1  # find education year for start date
+        num_queries += 1  # find education year for end date
+        num_queries += 1  # rollback
+        num_queries += 1  # rollback
+        num_queries += 1  # load existing stock after rollback
+        with assert_num_queries(num_queries):
             response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
 
             assert response.status_code == 400
@@ -799,15 +854,158 @@ class Return400Test:
         assert response.json == {"numberOfTeachers": [error]}
 
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_number_of_teachers_not_allowed(self, client):
+    @pytest.mark.parametrize("field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("additionalFees", [])))
+    def test_price_fields_not_allowed(self, client, field, value):
         stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        payload = {"numberOfTeachers": 10}
+        payload = {field: value}
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTeachers": ["Ce champ ne peut pas être édité"]}
+        assert response.json == {field: ["Ce champ ne peut pas être édité"]}
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize(
+        "payload,error",
+        (
+            # missing price
+            (
+                {"servicePrice": 10, "additionalFees": []},
+                {
+                    "price": [
+                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                    ]
+                },
+            ),
+            # missing servicePrice
+            (
+                {
+                    "price": 10,
+                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}],
+                },
+                {
+                    "price": [
+                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                    ]
+                },
+            ),
+            # missing additionalFees
+            (
+                {"price": 10, "servicePrice": 10},
+                {
+                    "price": [
+                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                    ]
+                },
+            ),
+            # price = None
+            ({"price": None, "servicePrice": 10, "additionalFees": []}, {"price": ["Le prix ne peut pas être nul."]}),
+            # servicePrice = None
+            ({"price": 10, "servicePrice": None, "additionalFees": []}, {"servicePrice": ["Ce champ est requis"]}),
+            # additionalFees = None
+            ({"price": 10, "servicePrice": 10, "additionalFees": None}, {"additionalFees": ["Ce champ est requis"]}),
+            # additionalFees invalid
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.label": ["Le label ne peut pas être rempli pour ce type"]},
+            ),
+            # additionalFees type duplicate
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                    ],
+                },
+                {"additionalFees": ["Un type est en doublon"]},
+            ),
+            # additionalFees label duplicate
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"additionalFees": ["Un label est en doublon"]},
+            ),
+            # additionalFees negative amount
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 25,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": -5}
+                    ],
+                },
+                {"additionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+            ),
+            # additionalFees type OTHER label null
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 15,
+                    "additionalFees": [{"type": CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 5}],
+                },
+                {"additionalFees.0.label": ["Le label doit être rempli pour ce type"]},
+            ),
+            # servicePrice too low
+            (
+                {
+                    "price": 20,
+                    "servicePrice": -1,
+                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}],
+                },
+                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+            ),
+            # price total does not match
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"price": ["Le prix total ne correspond pas à la somme du prix de la prestation et des frais annexes"]},
+            ),
+            # price too high
+            (
+                {
+                    "price": settings.EAC_OFFER_PRICE_LIMIT + 5,
+                    "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"price": ["Le prix est trop élevé."]},
+            ),
+        ),
+    )
+    def test_price_errors(self, client, payload, error):
+        stock = factories.CollectiveStockFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
+        )
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == error

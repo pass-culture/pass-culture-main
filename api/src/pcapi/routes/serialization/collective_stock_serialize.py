@@ -85,7 +85,40 @@ class CollectiveAdditionalFeeModel(HttpBodyModel):
         if self.label is not None and self.type != models.CollectiveAdditionalFeeType.OTHER:
             raise_error_from_location(None, loc="label", msg="Le label ne peut pas être rempli pour ce type")
 
+        if self.label is None and self.type == models.CollectiveAdditionalFeeType.OTHER:
+            raise_error_from_location(None, loc="label", msg="Le label doit être rempli pour ce type")
+
         return self
+
+
+def _validate_total_price(
+    price: float, service_price: float, additional_fees: list[CollectiveAdditionalFeeModel]
+) -> None:
+    # check additional fees type and label duplicates
+    if additional_fees:
+        type_counter = collections.Counter(
+            fee.type for fee in additional_fees if fee.type != models.CollectiveAdditionalFeeType.OTHER
+        )
+        if any(type_count > 1 for type_count in type_counter.values()):
+            raise_error_from_location(None, loc="additionalFees", msg="Un type est en doublon")
+
+        label_counter = collections.Counter(
+            fee.label for fee in additional_fees if fee.type == models.CollectiveAdditionalFeeType.OTHER
+        )
+        if any(label_count > 1 for label_count in label_counter.values()):
+            raise_error_from_location(None, loc="additionalFees", msg="Un label est en doublon")
+
+    # check total price
+    total_price = float_to_decimal(service_price) + sum(float_to_decimal(fee.amount) for fee in additional_fees)
+    if total_price != float_to_decimal(price):
+        raise_error_from_location(
+            None,
+            loc="price",
+            msg="Le prix total ne correspond pas à la somme du prix de la prestation et des frais annexes",
+        )
+
+    if total_price > settings.EAC_OFFER_PRICE_LIMIT:
+        raise_error_from_location(None, loc="price", msg="Le prix est trop élevé")
 
 
 class CollectiveStockCreationBodyModel(HttpBodyModel):
@@ -126,35 +159,12 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
                 raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être présent")
 
         if new_price_ff_is_active:
-            # check additional fees type and label duplicates
-            if self.additionalFees:
-                type_counter = collections.Counter(
-                    fee.type for fee in self.additionalFees if fee.type != models.CollectiveAdditionalFeeType.OTHER
-                )
-                if any(type_count > 1 for type_count in type_counter.values()):
-                    raise_error_from_location(None, loc="additionalFees", msg="Un type est en doublon")
-
-                label_counter = collections.Counter(
-                    fee.label for fee in self.additionalFees if fee.type == models.CollectiveAdditionalFeeType.OTHER
-                )
-                if any(label_count > 1 for label_count in label_counter.values()):
-                    raise_error_from_location(None, loc="additionalFees", msg="Un label est en doublon")
-
-            # check total price
             assert self.servicePrice is not None  # checked above when ff is active
             assert self.additionalFees is not None  # same
-            total_price = float_to_decimal(self.servicePrice) + sum(
-                float_to_decimal(fee.amount) for fee in self.additionalFees
-            )
-            if total_price != float_to_decimal(self.price):
-                raise_error_from_location(
-                    None,
-                    loc="price",
-                    msg="Le prix total ne correspond pas à la somme du prix de la prestation et des frais annexes",
-                )
 
-            if total_price > settings.EAC_OFFER_PRICE_LIMIT:
-                raise_error_from_location(None, loc="price", msg="Le prix est trop élevé")
+            _validate_total_price(
+                price=self.price, service_price=self.servicePrice, additional_fees=self.additionalFees
+            )
 
         return self
 
@@ -166,6 +176,10 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
         datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
     ] = None
     price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(default=None)
+    servicePrice: float | None = pydantic_v2.Field(default=None, ge=0)
+    additionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
+        default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
+    )
     numberOfTickets: typing.Annotated[int | None, pydantic_v2.AfterValidator(validate_number_of_tickets)] = None
     numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
     priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
@@ -178,13 +192,33 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
         if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
 
-        # numberOfTeachers must not be present when FF is OFF
-        if not new_price_ff_is_active and "numberOfTeachers" in self.model_fields_set:
-            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ ne peut pas être édité")
+        for field_name, field_value in (
+            ("numberOfTeachers", self.numberOfTeachers),
+            ("servicePrice", self.servicePrice),
+            ("additionalFees", self.additionalFees),
+        ):
+            # must not be None when FF is ON
+            if new_price_ff_is_active and field_name in self.model_fields_set and field_value is None:
+                raise_error_from_location(None, loc=field_name, msg="Ce champ est requis")
 
-        # numberOfTeachers must not be set as None when FF is ON
-        if new_price_ff_is_active and "numberOfTeachers" in self.model_fields_set and self.numberOfTeachers is None:
-            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ est requis")
+            # must not be present when FF is OFF
+            if not new_price_ff_is_active and field_name in self.model_fields_set:
+                raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être édité")
+
+        if new_price_ff_is_active:
+            # price, servicePrice and additionalFees must all be present or all absent
+            updated_count = len({"price", "servicePrice", "additionalFees"} - self.model_fields_set)
+            if updated_count not in (0, 3):
+                raise_error_from_location(
+                    None,
+                    loc="price",
+                    msg="Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément",
+                )
+
+            if self.price is not None and self.servicePrice is not None and self.additionalFees is not None:
+                _validate_total_price(
+                    price=self.price, service_price=self.servicePrice, additional_fees=self.additionalFees
+                )
 
         return self
 

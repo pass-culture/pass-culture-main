@@ -7,6 +7,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational import testing
 from pcapi.core.educational.api import stock as educational_api_stock
+from pcapi.core.educational.models import CollectiveAdditionalFeeType
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -39,7 +40,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -65,7 +66,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -90,7 +91,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -111,7 +112,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -162,7 +163,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         booking_updated = db.session.query(CollectiveBooking).filter_by(id=booking.id).one()
@@ -184,7 +185,9 @@ class EditCollectiveOfferStocksTest:
 
         new_limit = now + datetime.timedelta(days=1)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(bookingLimitDatetime=new_limit)
-        educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
+        educational_api_stock.edit_collective_stock(
+            stock=stock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
 
         assert stock.bookingLimitDatetime == new_limit
         assert booking.status == CollectiveBookingStatus.PENDING
@@ -203,10 +206,60 @@ class EditCollectiveOfferStocksTest:
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(price=price + 100)
 
         educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         assert offer.collectiveStock.price == price + 100
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
+    def test_can_increase_service_price(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        price = offer.collectiveStock.price
+        service_price = offer.collectiveStock.servicePrice
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=price + 50, servicePrice=service_price + 50, additionalFees=[]
+        )
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == price + 50
+        assert offer.collectiveStock.servicePrice == service_price + 50
+        assert offer.collectiveStock.collectiveAdditionalFees == []
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
+    def test_can_add_fee(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        price = offer.collectiveStock.price
+        service_price = offer.collectiveStock.servicePrice
+        new_fees = [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}]
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=price + 10,
+            servicePrice=service_price,
+            additionalFees=new_fees,
+        )
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == price + 10
+        assert offer.collectiveStock.servicePrice == service_price
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in offer.collectiveStock.collectiveAdditionalFees
+        ] == new_fees
 
     @time_machine.travel("2020-11-17 15:00:00", tick=False)
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DATES)
@@ -224,7 +277,7 @@ class EditCollectiveOfferStocksTest:
             bookingLimitDatetime=new_limit, startDatetime=new_start, endDatetime=new_end
         )
         educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         assert offer.collectiveStock.bookingLimitDatetime == new_limit.replace(tzinfo=None)
@@ -247,7 +300,7 @@ class EditCollectiveOfferStocksTest:
             price=new_price, priceDetail="yes", numberOfTickets=1200
         )
         educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         assert offer.collectiveStock.price == new_price
@@ -262,12 +315,127 @@ class EditCollectiveOfferStocksTest:
             price=new_price, priceDetail="yes", numberOfTickets=1200
         )
         educational_api_stock.edit_collective_stock(
-            stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
         )
 
         assert offer.collectiveStock.price == new_price
         assert offer.collectiveStock.priceDetail == "yes"
         assert offer.collectiveStock.numberOfTickets == 1200
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
+    def test_can_lower_service_price(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        price = offer.collectiveStock.price
+        service_price = offer.collectiveStock.servicePrice
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=price - 10, servicePrice=service_price - 10, additionalFees=[]
+        )
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == price - 10
+        assert offer.collectiveStock.servicePrice == service_price - 10
+        assert offer.collectiveStock.collectiveAdditionalFees == []
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DISCOUNT)
+    def test_can_lower_fee(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            stock = factories.CollectiveStockFactory(collectiveOffer=offer, price=100, servicePrice=50)
+            factories.CollectiveAdditionalFeeFactory(collectiveStock=stock, amount=50)
+
+        price = 100
+        service_price = 50
+        new_fees = [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 40}]
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=price - 10, servicePrice=service_price, additionalFees=new_fees
+        )
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+
+        assert offer.collectiveStock.price == price - 10
+        assert offer.collectiveStock.servicePrice == service_price
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in offer.collectiveStock.collectiveAdditionalFees
+        ] == new_fees
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_additional_fees(self):
+        offer = factories.CollectiveOfferFactory()
+        stock = factories.CollectiveStockFactory(collectiveOffer=offer, price=150, servicePrice=50)
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.TRAVEL, label=None, amount=40
+        )
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.MEAL, label=None, amount=30
+        )
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.OTHER, label="first other fee", amount=20
+        )
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.OTHER, label="second other fee", amount=10
+        )
+
+        new_fees = [
+            # TRAVEL amount is lowered
+            {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 30},
+            # ACCOMMODATION is added
+            {"type": CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 40},
+            # first OTHER amount is increased
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "first other fee", "amount": 50},
+            # MEAL and second OTHER are removed
+        ]
+        new_price = 50 + 30 + 40 + 50
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=new_price, servicePrice=50, additionalFees=new_fees
+        )
+
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+        db.session.refresh(stock)
+
+        assert offer.collectiveStock.price == new_price
+        assert offer.collectiveStock.servicePrice == 50
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ] == new_fees
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_remove_additional_fees(self):
+        offer = factories.CollectiveOfferFactory()
+        stock = factories.CollectiveStockFactory(collectiveOffer=offer, price=150, servicePrice=50)
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.TRAVEL, label=None, amount=40
+        )
+        factories.CollectiveAdditionalFeeFactory(
+            collectiveStock=stock, type=CollectiveAdditionalFeeType.MEAL, label=None, amount=30
+        )
+
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            price=50, servicePrice=50, additionalFees=[]
+        )
+        educational_api_stock.edit_collective_stock(
+            stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+        )
+        db.session.refresh(stock)
+
+        assert offer.collectiveStock.price == 50
+        assert offer.collectiveStock.servicePrice == 50
+        assert stock.collectiveAdditionalFees == []
 
 
 @pytest.mark.usefixtures("db_session")
@@ -285,7 +453,7 @@ class ReturnErrorTest:
 
         with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
             educational_api_stock.edit_collective_stock(
-                stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+                stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
             )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -306,7 +474,7 @@ class ReturnErrorTest:
 
         with pytest.raises(offers_exceptions.BookingLimitDatetimeTooLate):
             educational_api_stock.edit_collective_stock(
-                stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+                stock=stock_to_be_updated, stock_data=new_stock_data.model_dump(exclude_unset=True)
             )
 
         stock = db.session.query(CollectiveStock).filter_by(id=stock_to_be_updated.id).one()
@@ -324,7 +492,7 @@ class ReturnErrorTest:
 
         with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
             educational_api_stock.edit_collective_stock(
-                stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
             )
 
     def test_cannot_increase_price_ended(self):
@@ -334,7 +502,7 @@ class ReturnErrorTest:
 
         with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
             educational_api_stock.edit_collective_stock(
-                stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
             )
 
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DATES)
@@ -351,7 +519,7 @@ class ReturnErrorTest:
 
             with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
                 educational_api_stock.edit_collective_stock(
-                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                    stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
                 )
 
     def test_cannot_edit_dates_ended(self):
@@ -364,7 +532,7 @@ class ReturnErrorTest:
 
             with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
                 educational_api_stock.edit_collective_stock(
-                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                    stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
                 )
 
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
@@ -384,7 +552,31 @@ class ReturnErrorTest:
 
             with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
                 educational_api_stock.edit_collective_stock(
-                    stock=offer.collectiveStock, stock_data=new_stock_data.dict(exclude_unset=True)
+                    stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+                )
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT)
+    def test_cannot_edit_price_fields(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        if offer.collectiveStock is None:
+            factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        changes = [
+            {"numberOfTeachers": 20},
+            {
+                "price": offer.collectiveStock.price - 10,
+                "servicePrice": offer.collectiveStock.price - 10,
+                "additionalFees": [],
+            },
+        ]
+        for change in changes:
+            new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(**change)
+
+            with pytest.raises(exceptions.CollectiveOfferForbiddenAction):
+                educational_api_stock.edit_collective_stock(
+                    stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
                 )
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -397,4 +589,6 @@ class ReturnErrorTest:
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(endDatetime=new_end)
 
         with pytest.raises(exceptions.EndDatetimeBeforeStartDatetime):
-            educational_api_stock.edit_collective_stock(stock=stock, stock_data=new_stock_data.dict(exclude_unset=True))
+            educational_api_stock.edit_collective_stock(
+                stock=stock, stock_data=new_stock_data.model_dump(exclude_unset=True)
+            )

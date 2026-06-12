@@ -894,6 +894,10 @@ export type CollectiveStockCreationBodyModel = {
  */
 export type CollectiveStockEditionBodyModel = {
     /**
+     * Additionalfees
+     */
+    additionalFees?: Array<CollectiveAdditionalFeeModel> | null;
+    /**
      * Bookinglimitdatetime
      */
     bookingLimitDatetime?: string | null;
@@ -917,6 +921,10 @@ export type CollectiveStockEditionBodyModel = {
      * Pricedetail
      */
     priceDetail?: string | null;
+    /**
+     * Serviceprice
+     */
+    servicePrice?: number | null;
     /**
      * Startdatetime
      */

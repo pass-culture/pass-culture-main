@@ -61,7 +61,7 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_new_price_fields(self, client):
+    def test_price_fields(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -95,7 +95,7 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_new_price_fields_no_fees(self, client):
+    def test_price_fields_no_fees(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -439,20 +439,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    def test_number_of_teachers_not_allowed(self, client):
-        _create_educational_year()
-        offer = factories.DraftCollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id, "numberOfTeachers": 10}
-        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"numberOfTeachers": ["Ce champ ne peut pas être présent"]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize("field,value", (("servicePrice", 10), ("additionalFees", [])))
+    @pytest.mark.parametrize("field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("additionalFees", [])))
     def test_price_fields_not_allowed(self, client, field, value):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
