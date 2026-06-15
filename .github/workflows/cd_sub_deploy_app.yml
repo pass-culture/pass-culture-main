@@ -156,7 +156,7 @@ jobs:
       continue_on_error: ${{ inputs.continue_on_error }}
       version: "${{ github.sha }}"
 
-  deploy-pro-on-firebase:
+  publish-pro-to-live-on-firebase:
     name: "Deploy pro"
     concurrency:
       group: deploy-pro-${{ inputs.environment }}
@@ -168,12 +168,9 @@ jobs:
       ( inputs.environment != 'testing' ) &&
       inputs.deploy_pro == true
     uses: ./.github/workflows/dev_on_workflow_configure_live_channel_pro_generic.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
-      ENV: ${{ inputs.environment }}
-      VERSION: ${{ inputs.app_version }}
+      environment: ${{ inputs.environment }}
+      app_version: ${{ inputs.app_version }}
       continue_on_error: ${{ inputs.continue_on_error }}
 
   deploys-outcome:
@@ -181,7 +178,7 @@ jobs:
       - deploy-api
       - deploy-api-doc-on-firebase
       - deploy-pro-on-firebase-testing
-      - deploy-pro-on-firebase
+      - publish-pro-to-live-on-firebase
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
