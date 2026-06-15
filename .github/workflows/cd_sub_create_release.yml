@@ -15,8 +15,6 @@ on:
         type: boolean
         required: true
     secrets:
-      GCP_EHP_SERVICE_ACCOUNT: { required: true }
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
 
@@ -29,7 +27,9 @@ jobs:
     with:
       base_ref: ${{ inputs.ref }}
       tag_number: ${{ inputs.tag-number }}
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   create-front-pro-releases-on-firebase:
     name: Create front pro releases
@@ -46,7 +46,6 @@ jobs:
       REF: ${{ inputs.ref }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       version: "${{ inputs.tag-number }}"
-    secrets: inherit
 
   create-pre-release-on-github:
     name: Create pre release on GitHub
@@ -58,4 +57,6 @@ jobs:
       base_ref: ${{ inputs.ref }}
       tag_number: ${{ inputs.tag-number }}
       base_ref_is_a_branch: ${{ inputs.base-ref-is-a-branch }}
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
