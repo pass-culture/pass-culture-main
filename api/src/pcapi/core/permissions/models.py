@@ -99,6 +99,9 @@ class Permissions(enum.Enum):
     MANAGE_INCIDENTS = "gérer les incidents"
     VALIDATE_COMMERCIAL_GESTURE = "valider les gestes commerciaux"
 
+    READ_SETTLEMENTS = "visualiser les virements"
+    MANAGE_SETTLEMENTS = "gérer les virements"
+
     READ_TECH_PARTNERS = "visualiser les partenaires techniques"
     MANAGE_TECH_PARTNERS = "gérer les partenaires techniques"
 

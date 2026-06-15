@@ -218,6 +218,11 @@ MENU_SECTIONS = [
         label="Finance",
         all_items=[
             MenuItem(
+                label="Lots de virements",
+                url_name="backoffice_web.settlements.list_settlement_batches",
+                permissions=["READ_SETTLEMENTS"],
+            ),
+            MenuItem(
                 label="Gestion des incidents",
                 url_name="backoffice_web.finance_incidents.list_incidents",
                 permissions=["READ_INCIDENTS"],

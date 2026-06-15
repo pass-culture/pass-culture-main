@@ -57,6 +57,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.CLOSE_OFFERER,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,
         perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.READ_SETTLEMENTS,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -134,6 +135,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "responsable_daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
+        perm_models.Permissions.READ_SETTLEMENTS,
+        perm_models.Permissions.MANAGE_SETTLEMENTS,
     ],
     "data": [
         perm_models.Permissions.READ_OFFERS,
@@ -310,6 +313,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES,
         perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN,
         perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN,
+        perm_models.Permissions.READ_SETTLEMENTS,
+        perm_models.Permissions.MANAGE_SETTLEMENTS,
     ],
     "dpo": [
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,

@@ -64,6 +64,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_products impo
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
     create_industrial_search_indexed_objects,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_settlements import create_industrial_settlements
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import create_industrial_thing_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import create_industrial_thing_stocks
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_user_tags import create_industrial_user_tags
@@ -216,6 +217,8 @@ def save_industrial_sandbox() -> None:
 
     # should be the last function called to create invoices
     build_many_extra_invoices()
+
+    create_industrial_settlements()
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
