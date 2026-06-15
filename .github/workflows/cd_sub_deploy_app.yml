@@ -64,10 +64,6 @@ on:
         required: false
         default: false
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        required: true
       PASSCULTURE_GITHUB_ACTION_APP_ID:
         required: true
         description: "Github Application ID to use to clone other repos"

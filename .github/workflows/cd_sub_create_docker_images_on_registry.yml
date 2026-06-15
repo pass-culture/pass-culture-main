@@ -17,7 +17,6 @@ on:
         type: string
 
     secrets:
-      WORKLOAD_IDENTITY_PRD: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
 
@@ -50,6 +49,5 @@ jobs:
       environment: pcapi-tst
       tag_latest: true
     secrets:
-      WORKLOAD_IDENTITY_PRD: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
