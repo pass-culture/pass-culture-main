@@ -18,8 +18,6 @@ describe('assertOrFrontendError', () => {
   // This test is a placeholder to check that TS type-checking correctly infers types after a call to `assertOrFrontendError()`.
   // If it was not, this code couldn't compile.
   it('should respect TypeScript type-checking', () => {
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-
     const items = [
       { id: 1, name: 'Item 1' },
       { id: 2, name: 'Item 2' },
@@ -44,8 +42,6 @@ describe('assertOrFrontendError', () => {
     const _calculation = firstMixedArrayItem / 2
 
     expect(handleUnexpectedError).toHaveBeenCalledTimes(0)
-
-    /* eslint-enable @typescript-eslint/no-unused-vars */
   })
 
   it('should NOT call handleUnexpectedError() when condition is truthy', () => {

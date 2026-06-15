@@ -26,7 +26,6 @@ export const EmailChangeValidation = () => {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     changeEmail()
   }, [location.search])
 

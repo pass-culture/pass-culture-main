@@ -50,11 +50,9 @@ export const App = (): JSX.Element => {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     authenticate()
 
     if (LOGS_DATA) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       logCatalogView({
         iframeFrom: location.pathname,
         source: siret || venueId ? 'partnersMap' : 'homepage',

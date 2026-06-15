@@ -131,7 +131,6 @@ export const OffersInstantSearch = (): JSX.Element | null => {
     }
 
     if (siretParam || venueParam) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setVenueFromUrl()
     }
   }, [venueParam, siretParam, relativeOffersIncludedParam, snackBar])

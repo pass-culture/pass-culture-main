@@ -103,7 +103,6 @@ export const IndividualOfferSummaryScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(offerConfirmationStepUrl)
       }
     } catch (error) {
@@ -137,7 +136,6 @@ export const IndividualOfferSummaryScreen = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,

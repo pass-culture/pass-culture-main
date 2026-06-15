@@ -34,7 +34,6 @@ export const CollectiveOffers = () => {
     delete filters.offererId
     delete filters.venueId
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       computeCollectiveOffersUrl(filters, DEFAULT_COLLECTIVE_SEARCH_FILTERS),
       {

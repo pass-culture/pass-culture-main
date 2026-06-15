@@ -49,7 +49,6 @@ export const CollectiveOfferCreationInstitution = ({
       revalidate: false,
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 

@@ -91,7 +91,6 @@ export const NoResetOnOpen: StoryObj<typeof SelectAutocomplete> = {
 
 export const WithOnsearchTrigger: StoryObj<typeof SelectAutocomplete> = {
   render: () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [searchText, setSearchText] = useState('')
 
     return (
@@ -125,7 +124,6 @@ export const WithinFormValidation: StoryObj<typeof SelectAutocomplete> = {
       register,
       watch,
       formState: { errors },
-      // eslint-disable-next-line react-hooks/rules-of-hooks
     } = useFormContext<WrapperFormValues>()
 
     const departement = watch('departement')

@@ -77,7 +77,6 @@ export const IndividualOfferLayout = ({
       return
     }
     snackBar.success('Votre brouillon a bien été supprimé')
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/offres')
   }
 

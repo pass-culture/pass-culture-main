@@ -146,7 +146,6 @@ export const IndividualOfferDescriptionScreen = () => {
       }
 
       // replace url to fix back button
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
@@ -166,7 +165,6 @@ export const IndividualOfferDescriptionScreen = () => {
         offerType: 'individual',
         subcategoryId: form.getValues('subcategoryId'),
       })
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId,

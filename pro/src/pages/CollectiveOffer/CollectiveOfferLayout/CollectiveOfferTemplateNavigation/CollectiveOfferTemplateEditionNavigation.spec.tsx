@@ -190,7 +190,6 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
 
   it('should return an error when trying to get offerer image', async () => {
     const user = userEvent.setup()
-    // eslint-disable-next-line no-undef
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
     const offer = getCollectiveOfferTemplateFactory({

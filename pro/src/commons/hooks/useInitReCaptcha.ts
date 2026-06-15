@@ -10,7 +10,6 @@ export const useInitReCaptcha = (): void => {
 
     return function cleanup() {
       // Can be undefined according to sentry errors
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (gcaptchaScript) {
         try {
           if (window.grecaptcha) {

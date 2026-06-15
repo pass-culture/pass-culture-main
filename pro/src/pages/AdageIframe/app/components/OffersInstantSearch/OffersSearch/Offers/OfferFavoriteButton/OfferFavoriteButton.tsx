@@ -109,10 +109,8 @@ export const OfferFavoriteButton = ({
     setIsLoading(true)
 
     if (isFavorite) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       removeFromFavorites()
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       addToFavorites()
     }
   }

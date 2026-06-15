@@ -39,7 +39,6 @@ export const Default: Story = {
     required: true,
   },
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { setValue, register } = useFormContext<WrapperFormValues>()
 
     return (

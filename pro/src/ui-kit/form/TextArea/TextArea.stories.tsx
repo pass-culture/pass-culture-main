@@ -79,7 +79,6 @@ export const WithinForm: Story = {
     ),
   ],
   render: (args: any) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { setValue, watch } = useFormContext<{ myField: string }>()
 
     return (

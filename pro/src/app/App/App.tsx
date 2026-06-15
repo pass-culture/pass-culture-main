@@ -44,7 +44,6 @@ export const App = (): JSX.Element | null => {
               if (location.pathname.startsWith('/adage-iframe')) {
                 return
               }
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               navigate('/404')
               return
             }

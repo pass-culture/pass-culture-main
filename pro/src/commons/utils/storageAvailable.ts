@@ -25,7 +25,6 @@ export function storageAvailable(
           // Firefox
           e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
         // acknowledge QuotaExceededError only if there's something already stored
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         storage &&
         storage.length !== 0
     )

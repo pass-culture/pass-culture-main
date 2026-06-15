@@ -76,7 +76,6 @@ export const WithinForm: Story = {
     ),
   ],
   render: (args) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { register } = useFormContext<{ myField: boolean }>()
 
     return <DayCheckbox {...args} {...register('myField')} />
