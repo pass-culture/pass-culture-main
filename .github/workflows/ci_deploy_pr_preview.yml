@@ -106,17 +106,16 @@ jobs:
   deploy-pro-on-firebase-preview-env:
     name: "[PRO] Deploy PR version for validation pr preview backend"
     needs: [deploy-preview-env-init]
-    uses: ./.github/workflows/cd_sub_deploy_front_pro.yml
+    uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     permissions:
       id-token: write
       contents: read
     with:
-      ENV: "testing"
-      CHANNEL: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-      resource_label: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
-      version: "${{ github.sha }}"
+      cache_bucket_name: "passculture-infra-prod-github-runner-cache"
+      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   build-pcapi:
     name: "[pcapi] build docker image."
