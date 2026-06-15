@@ -29,7 +29,6 @@ describe('StocksProviderForm', () => {
     }
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
   })
