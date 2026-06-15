@@ -2,6 +2,9 @@ import itertools
 import logging
 import traceback
 from dataclasses import dataclass
+from dataclasses import field
+from typing import Sequence
+from typing import TypeVar
 from typing import TypedDict
 
 from sqlalchemy import exc as sa_exc
@@ -27,6 +30,16 @@ class EventSeriesBatchResult:
     updated: int
     removed: int
     skipped: int
+
+
+@dataclass
+class EventSeriesImportLogs:
+    added: list[EventSeriesLog] = field(default_factory=list)
+    updated: list[EventSeriesLog] = field(default_factory=list)
+    removed: list[EventSeriesLog] = field(default_factory=list)
+    skipped_existing: list[EventSeriesLog] = field(default_factory=list)
+    skipped_update: list[EventSeriesLog] = field(default_factory=list)
+    skipped_remove: list[EventSeriesLog] = field(default_factory=list)
 
 
 class EventSeriesImporter:
@@ -64,8 +77,8 @@ class EventSeriesImporter:
         self, batch: tuple[bq_event_series_queries.DeltaEventSeriesModel, ...]
     ) -> EventSeriesBatchResult:
         ids = [item.id for item in batch]
-        existing_series = (
-            db.session.query(event_series_models.EventSeries).filter(event_series_models.EventSeries.id.in_(ids)).all()
+        existing_series = db.session.query(event_series_models.EventSeries).filter(
+            event_series_models.EventSeries.id.in_(ids)
         )
         existing_series_map = {s.id: s for s in existing_series}
 
@@ -73,59 +86,54 @@ class EventSeriesImporter:
         items_to_update: list[bq_event_series_queries.DeltaEventSeriesModel] = []
         ids_to_remove: list[str] = []
 
-        log_added: list[EventSeriesLog] = []
-        log_updated: list[EventSeriesLog] = []
-        log_removed: list[EventSeriesLog] = []
-        log_skipped_existing: list[EventSeriesLog] = []
-        log_skipped_update: list[EventSeriesLog] = []
-        log_skipped_remove: list[EventSeriesLog] = []
+        logs = EventSeriesImportLogs()
 
         for delta_item in batch:
             existing = existing_series_map.get(delta_item.id)
 
             if delta_item.action == DeltaAction.ADD:
                 if existing:
-                    log_skipped_existing.append({"id": delta_item.id, "name": delta_item.name})
+                    logs.skipped_existing.append({"id": delta_item.id, "name": delta_item.name})
                     continue
                 items_to_add.append(self._build_event_series(delta_item))
-                log_added.append({"id": delta_item.id, "name": delta_item.name})
+                logs.added.append({"id": delta_item.id, "name": delta_item.name})
 
             elif delta_item.action == DeltaAction.UPDATE:
                 if not existing:
-                    log_skipped_update.append({"id": delta_item.id, "name": delta_item.name})
+                    logs.skipped_update.append({"id": delta_item.id, "name": delta_item.name})
                     continue
                 items_to_update.append(delta_item)
-                log_updated.append({"id": delta_item.id, "name": delta_item.name})
+                logs.updated.append({"id": delta_item.id, "name": delta_item.name})
 
             elif delta_item.action == DeltaAction.REMOVE:
                 if not existing:
-                    log_skipped_remove.append({"id": delta_item.id, "name": delta_item.name})
+                    logs.skipped_remove.append({"id": delta_item.id, "name": delta_item.name})
                     continue
                 ids_to_remove.append(existing.id)
-                log_removed.append({"id": delta_item.id, "name": existing.name})
+                logs.removed.append({"id": delta_item.id, "name": existing.name})
 
-        added_count = self._bulk_save(items_to_add)
+        added_count = _bulk_save(items_to_add, event_series_models.EventSeries)
         updated_count = self._bulk_update(items_to_update, existing_series_map)
-        removed_count = self._bulk_delete(ids_to_remove)
+        removed_count = _bulk_delete(event_series_models.EventSeries, ids_to_remove)
 
-        if log_added:
-            logger.info("EventSeries added in batch", extra={"event_series": log_added})
-        if log_updated:
-            logger.info("EventSeries updated in batch", extra={"event_series": log_updated})
-        if log_removed:
-            logger.info("EventSeries removed in batch", extra={"event_series": log_removed})
-        if log_skipped_existing:
-            logger.info("EventSeries skipped (already exist) in batch", extra={"event_series": log_skipped_existing})
-        if log_skipped_update:
-            logger.info("EventSeries skipped (update, not found) in batch", extra={"event_series": log_skipped_update})
-        if log_skipped_remove:
-            logger.info("EventSeries skipped (remove, not found) in batch", extra={"event_series": log_skipped_remove})
+        if logs.added:
+            logger.info("EventSeries added in batch", extra={"event_series": logs.added})
+        if logs.updated:
+            logger.info("EventSeries updated in batch", extra={"event_series": logs.updated})
+        if logs.removed:
+            logger.info("EventSeries removed in batch", extra={"event_series": logs.removed})
+        if logs.skipped_existing:
+            logger.info("EventSeries skipped (already exist) in batch", extra={"event_series": logs.skipped_existing})
+        if logs.skipped_update:
+            logger.info("EventSeries skipped (update, not found) in batch", extra={"event_series": logs.skipped_update})
+        if logs.skipped_remove:
+            logger.info("EventSeries skipped (remove, not found) in batch", extra={"event_series": logs.skipped_remove})
 
         return EventSeriesBatchResult(
             added=added_count,
             updated=updated_count,
             removed=removed_count,
-            skipped=len(log_skipped_existing) + len(log_skipped_update) + len(log_skipped_remove),
+            skipped=len(logs.skipped_existing) + len(logs.skipped_update) + len(logs.skipped_remove),
         )
 
     # ------------------------------------------------------------------
@@ -149,45 +157,6 @@ class EventSeriesImporter:
         event_series.name = delta_model.name
         event_series.description = delta_model.description
         event_series.mediationUuid = delta_model.mediation_uuid
-
-    # ------------------------------------------------------------------
-    # Bulk operations
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _bulk_save(items: list[event_series_models.EventSeries]) -> int:
-        if not items:
-            return 0
-        try:
-            with atomic():
-                db.session.add_all(items)
-        except sa_exc.IntegrityError:
-            logger.warning("Failed to bulk import EventSeries, importing one by one", extra={"count": len(items)})
-            return _save_one_by_one(items, "EventSeries")
-
-        logger.info("Successfully imported EventSeries batch", extra={"count": len(items)})
-        return len(items)
-
-    @staticmethod
-    def _bulk_delete(item_ids: list[str]) -> int:
-        if not item_ids:
-            return 0
-        try:
-            with atomic():
-                deleted = (
-                    db.session.query(event_series_models.EventSeries)
-                    .filter(event_series_models.EventSeries.id.in_(item_ids))
-                    .delete(synchronize_session=False)
-                )
-        except Exception as err:
-            logger.exception(
-                "Failed to bulk delete EventSeries",
-                extra={"count": len(item_ids), "error": str(err), "traceback": traceback.format_exc()},
-            )
-            return 0
-
-        logger.info("Successfully deleted EventSeries batch", extra={"count": deleted})
-        return deleted
 
     def _bulk_update(
         self,
@@ -267,18 +236,14 @@ class EventSeriesOfferLinkImporter:
         series_ids = [item.event_series_id for item in batch]
         offer_ids = [item.offer_id for item in batch]
 
-        existing_links = (
-            db.session.query(event_series_models.EventSeriesOfferLink)
-            .filter(
-                event_series_models.EventSeriesOfferLink.eventSeriesId.in_(series_ids),
-                event_series_models.EventSeriesOfferLink.offerId.in_(offer_ids),
-            )
-            .all()
+        existing_links = db.session.query(event_series_models.EventSeriesOfferLink).filter(
+            event_series_models.EventSeriesOfferLink.eventSeriesId.in_(series_ids),
+            event_series_models.EventSeriesOfferLink.offerId.in_(offer_ids),
         )
         existing_links_map = {(link.eventSeriesId, link.offerId): link for link in existing_links}
 
         items_to_add: list[event_series_models.EventSeriesOfferLink] = []
-        items_to_remove: list[event_series_models.EventSeriesOfferLink] = []
+        ids_to_remove: list[int] = []
         skipped_keys: list[dict] = []
 
         for delta_item in batch:
@@ -306,7 +271,7 @@ class EventSeriesOfferLinkImporter:
                         }
                     )
                     continue
-                items_to_remove.append(existing)
+                ids_to_remove.append(existing.id)
 
             elif delta_item.action == DeltaAction.UPDATE:
                 logger.warning(
@@ -314,8 +279,8 @@ class EventSeriesOfferLinkImporter:
                     extra={"event_series_id": delta_item.event_series_id, "offer_id": delta_item.offer_id},
                 )
 
-        added_count = self._bulk_save(items_to_add)
-        removed_count = self._bulk_delete(items_to_remove)
+        added_count = _bulk_save(items_to_add, event_series_models.EventSeriesOfferLink)
+        removed_count = _bulk_delete(event_series_models.EventSeriesOfferLink, ids_to_remove)
 
         if skipped_keys:
             logger.warning(
@@ -343,56 +308,19 @@ class EventSeriesOfferLinkImporter:
             offerId=model.offer_id,
         )
 
-    # ------------------------------------------------------------------
-    # Bulk operations
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _bulk_save(items: list[event_series_models.EventSeriesOfferLink]) -> int:
-        if not items:
-            return 0
-        try:
-            with atomic():
-                db.session.add_all(items)
-        except sa_exc.IntegrityError:
-            logger.warning(
-                "Failed to bulk import EventSeriesOfferLink, importing one by one",
-                extra={"count": len(items)},
-            )
-            return _save_one_by_one(items, "EventSeriesOfferLink")
-
-        logger.info("Successfully imported EventSeriesOfferLink batch", extra={"count": len(items)})
-        return len(items)
-
-    @staticmethod
-    def _bulk_delete(items: list[event_series_models.EventSeriesOfferLink]) -> int:
-        if not items:
-            return 0
-        item_ids = [item.id for item in items]
-        try:
-            with atomic():
-                deleted = (
-                    db.session.query(event_series_models.EventSeriesOfferLink)
-                    .filter(event_series_models.EventSeriesOfferLink.id.in_(item_ids))
-                    .delete(synchronize_session=False)
-                )
-        except Exception as err:
-            logger.exception(
-                "Failed to bulk delete EventSeriesOfferLink",
-                extra={"count": len(item_ids), "error": str(err), "traceback": traceback.format_exc()},
-            )
-            return 0
-
-        logger.info("Successfully deleted EventSeriesOfferLink batch", extra={"count": deleted})
-        return deleted
-
 
 # ------------------------------------------------------------------
 # Shared helpers
 # ------------------------------------------------------------------
 
 
-def _save_one_by_one(items: list, class_name: str) -> int:
+T = TypeVar("T", event_series_models.EventSeries, event_series_models.EventSeriesOfferLink)
+
+
+def _save_one_by_one(
+    items: Sequence[T],
+    model_class: type[T],
+) -> int:
     count = 0
     errors: list[str] = []
     for item in items:
@@ -406,6 +334,50 @@ def _save_one_by_one(items: list, class_name: str) -> int:
     if errors:
         logger.warning(
             "Some items could not be imported individually",
-            extra={"class_name": class_name, "error_count": len(errors), "errors": errors},
+            extra={"class_name": model_class.__name__, "error_count": len(errors), "errors": errors},
         )
     return count
+
+
+def _bulk_save(
+    items: Sequence[T],
+    model_class: type[T],
+) -> int:
+    if not items:
+        return 0
+    try:
+        with atomic():
+            db.session.add_all(items)
+    except sa_exc.IntegrityError:
+        logger.warning(
+            "Failed to bulk import %s, importing one by one",
+            model_class.__name__,
+            extra={"count": len(items)},
+        )
+        return _save_one_by_one(items, model_class)
+
+    logger.info("Successfully imported %s batch", model_class.__name__, extra={"count": len(items)})
+    return len(items)
+
+
+def _bulk_delete(
+    model_class: type[event_series_models.EventSeries | event_series_models.EventSeriesOfferLink],
+    item_ids: Sequence[str] | Sequence[int],
+) -> int:
+    if not item_ids:
+        return 0
+    try:
+        with atomic():
+            deleted = (
+                db.session.query(model_class).filter(model_class.id.in_(item_ids)).delete(synchronize_session=False)
+            )
+    except Exception as err:
+        logger.exception(
+            "Failed to bulk delete %s",
+            model_class.__name__,
+            extra={"count": len(item_ids), "error": str(err), "traceback": traceback.format_exc()},
+        )
+        return 0
+
+    logger.info("Successfully deleted %s batch", model_class.__name__, extra={"count": deleted})
+    return deleted
