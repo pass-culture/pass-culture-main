@@ -1,0 +1,43 @@
+name: "9 [test] publish pro version to firebase"
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: string
+        required: true
+      sha:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-pro-on-firebase-testing:
+    name: Deploy pro on testing a dedicated channel
+    concurrency:
+      group: deploy-pro-testing
+      cancel-in-progress: false
+    uses: ./.github/workflows/cd_sub_deploy_front_pro.yml
+    with:
+      ENV: testing
+      CHANNEL: test-ci-cd
+      REF: "${{ inputs.branch }}"
+      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+      continue_on_error: false
+      version: "${{ inputs.sha }}"
+
+  publish-pro-to-live-on-firebase:
+    name: Publish pro
+    concurrency:
+      group: deploy-pro-testing
+      cancel-in-progress: false
+    needs:
+      - deploy-pro-on-firebase-testing
+    uses: ./.github/workflows/dev_on_workflow_configure_live_channel_pro_generic.yml
+    with:
+      environment: testing
+      app_version: test-ci-cd
+      continue_on_error: false
