@@ -1,3 +1,4 @@
+import type { ActivityOpenToPublic } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { yup } from '@/commons/utils/yup'
 
@@ -35,6 +36,7 @@ describe('VenueSettingsValidationSchema', () => {
     'search-addressAutocomplete': '123 Rue Principale, Ville Exemple',
     street: '123 Rue Principale',
     isOpenToPublic: 'true',
+    activity: 'ART_GALLERY' as ActivityOpenToPublic,
     accessibility: {
       visual: true,
       mental: false,
@@ -92,6 +94,19 @@ describe('VenueSettingsValidationSchema', () => {
       expectedErrors: [
         'Veuillez renseigner les coordonnées GPS',
         'Veuillez respecter le format attendu',
+      ],
+    },
+    {
+      description: 'invalid - activity required',
+      formValues: {
+        ...baseFormValues,
+        activity: null,
+      },
+      context: {
+        ...baseContext,
+      },
+      expectedErrors: [
+        'Veuillez sélectionner une activité parmi les suggestions',
       ],
     },
   ]
