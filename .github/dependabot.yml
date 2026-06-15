@@ -20,7 +20,6 @@ updates:
       semver-major-days: 14
     ignore:
       - dependency-name: "openapi-typescript-codegen"
-      - dependency-name: "@hey-api/openapi-ts"
 
   # Public API doc
   - package-ecosystem: 'npm'
