@@ -116,21 +116,6 @@ class DiscordSigninTest:
         response_data = response.data.decode("utf-8")
         assert "La vérification a échoué. Recharge la page et réessaie" in response_data
 
-    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
-    )
-    def test_callback_redirects_to_success_url(self, mock_retrieve_access_token, client):
-        user = users_factories.BeneficiaryFactory()
-        signed_state = self._build_signed_state(user.id)
-
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
-
-        assert mock_retrieve_access_token.call_count == 1
-        assert mock_retrieve_access_token.call_args[0][0] == "discord_code"
-
-        assert response.status_code == 303
-
     @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_callback_rejects_invalid_state(self, client):
         response = client.get(url_for("auth.discord_call_back", code="discord_code", state="forged_user_id"))
@@ -155,14 +140,22 @@ class DiscordSigninTest:
         assert response.status_code == 303
         assert "état de la requête non récupéré" in unquote(response.location)
 
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_discord_credentials_success_page(self, mock_add_to_server, mock_get_user_id, client, db_session):
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    def test_discord_credentials_callback_page(
+        self, mock_get_user_id, mock_add_to_server, mock_retrieve_access_token, client
+    ):
         user = users_factories.BeneficiaryFactory()
         discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
-        client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        signed_state = self._build_signed_state(user.id)
+        client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
+        assert mock_retrieve_access_token.call_count == 1
         assert mock_get_user_id.call_count == 1
         assert mock_get_user_id.call_args[0][0] == "access_token"
 
@@ -173,30 +166,22 @@ class DiscordSigninTest:
         db.session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.get_user_id",
-        side_effect=requests.exceptions.HTTPError(),
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    def test_xss_access_token_is_encoded_in_retry_page(self, _mock_get_user_id, client):
-        user = users_factories.BeneficiaryFactory()
-        malicious_token = "';alert(1)//"
-
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token=malicious_token))
-
-        assert response.status_code == 200
-        body = response.data.decode("utf-8")
-        assert malicious_token not in body
-        assert "onclick" not in body
-
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
-    def test_error_when_adding_to_server(self, _mock_add_to_server, _mock_get_user_id, client):
+    def test_error_when_adding_to_server(
+        self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client
+    ):
         user = users_factories.BeneficiaryFactory()
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        signed_state = self._build_signed_state(user.id)
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 200
         assert (
@@ -204,8 +189,14 @@ class DiscordSigninTest:
             in response.data.decode("utf-8")
         )
 
-    def test_success_without_session_redirects_with_error(self, client):
-        response = client.get(url_for("auth.discord_success"))
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="")
+    def test_success_without_session_redirects_with_error(self, _mock_get_user_id, _mock_retrieve_access_token, client):
+
+        user = users_factories.BeneficiaryFactory()
+        signed_state = self._build_signed_state(user.id)
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
         assert response.status_code == 303
         assert "session invalide ou expir" in unquote(response.location)
@@ -224,7 +215,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Le compte a été anonymisé" in response_data
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_wrong_password(self, client):
         form_data = {"email": "user@test.com", "password": "wrong_password", "recaptcha_token": "recaptcha_token"}
@@ -236,7 +227,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Identifiant ou Mot de passe incorrect" in response_data
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_account_deleted_account_state(self, client):
         form_data = {
@@ -251,7 +242,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Le compte a été supprimé" in response_data
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_inactive_user_signin(self, client):
         form_data = {
@@ -264,9 +255,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert (
-            "L&#39;email n&#39;a pas été validé. Valide ton compte sur le pass Culture pour continuer" in response_data
-        )
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_unknown_user_logs_in(self, client):
         form_data = {
@@ -278,7 +267,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Identifiant ou Mot de passe incorrect" in response_data
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_user_without_password_logs_in(self, client):
         user = users_factories.UserFactory(password=None, isActive=True)
@@ -291,7 +280,7 @@ class DiscordSigninTest:
         assert response.status_code == 200
 
         response_data = response.data.decode("utf-8")
-        assert "Identifiant ou Mot de passe incorrect" in response_data
+        assert "La connexion a ton compte pass Culture a" in response_data
 
     def test_user_logs_in_with_missing_fields(self, client):
         form_data = {"email": "user@test.com"}
@@ -301,17 +290,16 @@ class DiscordSigninTest:
         response_data = response.data.decode("utf-8")
         assert "Mot de passe : Information obligatoire" in response_data
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value=None)
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.add_to_server",
-        side_effect=requests.exceptions.HTTPError(),
+        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
-    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_error_adding_user_to_server_rollbacks(
-        self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client, db_session
+        self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
     ):
         user = users_factories.BeneficiaryFactory()
         discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
@@ -319,69 +307,93 @@ class DiscordSigninTest:
 
         response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert (
+            "Erreur lors de la récupération de l&#39;identifiant Discord: réessaye en cliquant sur le bouton ci-dessous"
+            in response.data.decode("utf-8")
+        )
 
         db.session.refresh(discord_user)
         assert discord_user.discordId is None
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_access_if_beneficiary(
-        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+        self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
     ):
         user = users_factories.BeneficiaryFactory()
+        signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 200
+        assert (
+            "Erreur lors de l&#39;ajout au serveur Discord: réessaye en cliquant sur le bouton ci-dessous"
+            in response.data.decode("utf-8")
+        )
 
         created_discord_link = db.session.query(DiscordUser).filter_by(userId=user.id).first()
         assert created_discord_link.hasAccess
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_not_access_if_non_beneficiary(
-        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+        self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
     ):
         non_beneficiary = users_factories.UserFactory()
+        signed_state = self._build_signed_state(non_beneficiary.id)
 
-        response = client.get(
-            url_for("auth.discord_success", user_id=str(non_beneficiary.id), access_token="access_token")
-        )
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert db.session.query(DiscordUser).filter_by(userId=non_beneficiary.id).count() == 0
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
     )
     def test_discord_user_has_not_access_if_beneficiary_under_17(
-        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+        self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
     ):
         not_eligible_user = users_factories.BeneficiaryFactory(age=16)
+        signed_state = self._build_signed_state(not_eligible_user.id)
 
-        response = client.get(
-            url_for("auth.discord_success", user_id=str(not_eligible_user.id), access_token="access_token")
-        )
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).count() == 0
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
     def test_discord_account_already_linked_to_same_user(
-        self, mock_add_to_server, mock_get_user_id, client, db_session
+        self, mock_add_to_server, _mock_retrieve_access_token, mock_get_user_id, client, db_session
     ):
         user = users_factories.BeneficiaryFactory()
         discord_user = users_factories.DiscordUserFactory(
             user=user, discordId="discord_user_id", hasAccess=True, isBanned=False
         )
+        signed_state = self._build_signed_state(user.id)
 
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
 
         assert mock_get_user_id.call_count == 1
@@ -394,34 +406,44 @@ class DiscordSigninTest:
         db.session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
     def test_discord_account_already_linked_to_another_user(
-        self, mock_add_to_server, mock_get_user_id, client, db_session
+        self, mock_add_to_server, _mock_retrieve_access_token, mock_get_user_id, client, db_session
     ):
         user = users_factories.BeneficiaryFactory()
         another_user = users_factories.BeneficiaryFactory()
         users_factories.DiscordUserFactory(user=user, discordId="discord_user_id", hasAccess=True, isBanned=False)
+        signed_state = self._build_signed_state(another_user.id)
 
-        response = client.get(
-            url_for("auth.discord_success", user_id=str(another_user.id), access_token="access_token")
-        )
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
-        assert "Impossible d" in unquote(response.location)
+        assert "Impossible" in unquote(response.location)
+        assert "Contacte le support" in unquote(response.location)
 
         assert mock_get_user_id.call_count == 1
         assert mock_get_user_id.call_args[0][0] == "access_token"
 
         assert mock_add_to_server.call_count == 0
 
+    @pytest.mark.settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
-    def test_association_errors_return_generic_message(self, _mock_get_user_id, client, db_session):
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_association_errors_return_generic_message(
+        self, _mock_add_to_server, _mock_retrieve_access_token, _mock_get_user_id, client, db_session
+    ):
         """All association errors should return the same generic message to prevent information leakage."""
         non_beneficiary = users_factories.UserFactory()
+        signed_state = self._build_signed_state(non_beneficiary.id)
 
-        response = client.get(
-            url_for("auth.discord_success", user_id=str(non_beneficiary.id), access_token="access_token")
-        )
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=signed_state))
         assert response.status_code == 303
         assert "Impossible" in unquote(response.location)
         assert "Contacte le support" in unquote(response.location)
