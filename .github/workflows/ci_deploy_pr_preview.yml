@@ -1,4 +1,4 @@
-name: 0 [CI] Deploy PR preview
+name: 0 [CI] Deploy PR preview (DEPRECATED)
 
 on:
   workflow_dispatch:

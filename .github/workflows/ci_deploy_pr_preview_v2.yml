@@ -1,10 +1,6 @@
 name: 0 [CI] Deploy PR preview v2
 
 on:
-  push:
-    branches:
-      - IC-1378/feature/deploy-preview-env-infra-v2
-
   workflow_dispatch:
     inputs:
       sandbox:
@@ -30,6 +26,7 @@ on:
         description: "Branch of pass-culture-deployment repository to use for helm charts."
         required: false
         default: "IC-1378/feature/deploy-preview-env-infra-v2"
+      # TODO: It is not used currently
       rebuild-staging:
         description: "When true, run the rebuild staging import steps on the preview environment"
         required: false
