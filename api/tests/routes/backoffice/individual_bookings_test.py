@@ -210,39 +210,34 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT", "REIMB3"}
 
     @pytest.mark.parametrize(
-        "incident_kind, incident_status, expected_text, expected_class",
+        "incident_kind, incident_status, expected_text",
         [
             (
                 finance_models.IncidentType.COMMERCIAL_GESTURE,
                 finance_models.IncidentStatus.CREATED,
-                "Geste Commercial",
-                "text-secondary",
+                "Geste Commercial (%s)",
             ),
             (
                 finance_models.IncidentType.OVERPAYMENT,
                 finance_models.IncidentStatus.VALIDATED,
-                "Trop Perçu",
-                "text-success",
+                "Trop Perçu (%s)",
             ),
             (
                 finance_models.IncidentType.COMMERCIAL_GESTURE,
                 finance_models.IncidentStatus.INVOICED,
-                "Geste Commercial",
-                "text-success",
+                "Geste Commercial (%s)",
             ),
             (
                 finance_models.IncidentType.OVERPAYMENT,
                 finance_models.IncidentStatus.CANCELLED,
-                "Trop Perçu",
-                "text-danger",
+                "Trop Perçu (%s)",
             ),
         ],
     )
-    def test_display_incident_badge(
-        self, authenticated_client, incident_kind, incident_status, expected_text, expected_class
-    ):
+    def test_display_incident_badge(self, authenticated_client, incident_kind, incident_status, expected_text):
+        incident = finance_factories.FinanceIncidentFactory(kind=incident_kind, status=incident_status)
         booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            incident=finance_factories.FinanceIncidentFactory(kind=incident_kind, status=incident_status),
+            incident=incident,
             booking=bookings_factories.ReimbursedBookingFactory(),
         )
         booking_id = booking_finance_incident.booking.id
@@ -252,10 +247,9 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         soup = html_parser.get_soup(response.data)
-        badges = soup.select("td > a > span.badge")
-        assert len(badges) == 1
-        assert badges[0].text == expected_text
-        assert expected_class in badges[0].attrs["class"]
+        incident_type = soup.select(".incident-link")
+        assert len(incident_type) == 1
+        assert incident_type[0].text.strip() == expected_text % incident.id
 
     @pytest.mark.parametrize(
         "query_args",

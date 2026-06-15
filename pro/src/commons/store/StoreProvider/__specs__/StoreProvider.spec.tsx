@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { UserRole } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -20,15 +20,13 @@ const renderStoreProvider = () => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getProfile: vi.fn(),
-    listOfferersNames: vi.fn(),
-    getOfferer: vi.fn(),
     getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
-  },
-  apiNew: {
+    getOfferer: vi.fn(),
     listFeatures: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 vi.mock('@/commons/utils/storageAvailable', () => ({
@@ -37,19 +35,19 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
 
 describe('src | App', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getProfile').mockResolvedValue({
+    vi.spyOn(apiNew, 'getProfile').mockResolvedValue({
       id: 1,
       email: 'email@example.com',
       roles: [UserRole.ADMIN],
       isEmailValidated: true,
       dateCreated: '2022-07-29T12:18:43.087097Z',
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 1,
       name: 'Offerer A',
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 2,
         managingOffererId: 1,
@@ -57,8 +55,8 @@ describe('src | App', () => {
       })
     )
     const offerersNames = [{ id: 1, name: 'Offerer A', validated: true }]
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({ offerersNames })
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 2,
@@ -76,11 +74,12 @@ describe('src | App', () => {
     await screen.findByText('Sub component')
 
     expect(apiNew.listFeatures).toHaveBeenCalledTimes(1)
-    expect(api.getProfile).toHaveBeenCalledTimes(1)
-    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
+    expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(apiNew.getProfile).toHaveBeenCalledTimes(1)
+    expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(apiNew.getVenuesLite).toHaveBeenCalledTimes(1)
     // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).
-    expect(api.getOfferer).toHaveBeenCalledTimes(2)
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(apiNew.getVenue).toHaveBeenCalledTimes(1)
+    expect(apiNew.getOfferer).toHaveBeenCalledTimes(2)
   })
 })

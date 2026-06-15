@@ -10,6 +10,7 @@ import pytest
 from flask import url_for
 
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -61,20 +62,21 @@ class GetProductDetailsTest(GetEndpointHelper):
     # Product and related data
     # 2) Product
     # 3) ProductMediation (via selectinload)
+    # 4) ArtistProductLink and Artist (via selectinload)
 
     # Linked offers and stock
-    # 4) Linked Offer
-    # 5) Linked Offer -> Criteria (via selectinload)
-    # 6) Linked Offer -> Stock (via selectinload)
+    # 5) Linked Offer
+    # 6) Linked Offer -> Criteria (via selectinload)
+    # 7) Linked Offer -> Stock (via selectinload)
 
     # Unlinked offers and stock
-    # 7) Unlinked Offer
-    # 8) Unlinked Offer -> Criteria (via selectinload)
-    # 9) Unlinked Offer -> Stock (via selectinload)
+    # 8) Unlinked Offer
+    # 9) Unlinked Offer -> Criteria (via selectinload)
+    # 10) Unlinked Offer -> Stock (via selectinload)
 
     # Whitelist
-    # 10) Whitelisted Product
-    expected_num_queries = 10
+    # 11) Whitelisted Product
+    expected_num_queries = 11
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
@@ -88,6 +90,11 @@ class GetProductDetailsTest(GetEndpointHelper):
             extraData={"author": "Jean-Christophe Rufin", "editeur": "Editor", "gtl_id": "08010000"},
             lastProvider=allocine_provider,
         )
+
+        artist_1 = artist_factories.ArtistFactory(name="Premier artiste")
+        artist_factories.ArtistProductLinkFactory(artist_id=artist_1.id, product_id=product.id)
+        artist_2 = artist_factories.ArtistFactory(name="Deuxième artiste")
+        artist_factories.ArtistProductLinkFactory(artist_id=artist_2.id, product_id=product.id)
 
         criteria = criteria_factories.CriterionFactory.create()
         linked_offer = offers_factories.OfferFactory.create(product=product, ean="1234567891234", criteria=[criteria])
@@ -117,6 +124,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert descriptions["EAN"] == "1234567891234"
         assert descriptions["Éditeur"] == "Editor"
         assert descriptions["Description"] == "Une offre pour tester"
+        assert descriptions["Artistes associés"] == "Deuxième artiste Premier artiste"
 
         soup = html_parser.get_soup(response.data)
         card_titles = html_parser.extract_cards_titles(response.data)

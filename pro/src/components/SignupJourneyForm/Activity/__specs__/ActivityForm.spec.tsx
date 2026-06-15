@@ -5,6 +5,7 @@ import type { SWRResponse } from 'swr'
 import useSWR from 'swr/immutable'
 import { expect, vi } from 'vitest'
 
+import { ActivityOpenToPublic } from '@/apiClient/v1/new'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,
@@ -124,7 +125,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
   it('should render activity form with initialValues', async () => {
     initialValues = {
-      activity: 'MUSEUM',
+      activity: ActivityOpenToPublic.MUSEUM,
       socialUrls: [
         { url: 'https://example.com' },
         { url: 'https://exampleTwo.fr' },

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetOffererResponseModel } from '@/apiClient/v1/new'
 import { FrontendError } from '@/commons/errors/FrontendError'
@@ -51,7 +51,9 @@ export const setSelectedAdminOffererById = createAsyncThunk<
 
       const nextOfferer =
         typeof offererOrOffererId === 'number'
-          ? await api.getOfferer(offererOrOffererId)
+          ? await apiNew.getOfferer({
+              path: { offerer_id: offererOrOffererId },
+            })
           : offererOrOffererId
       dispatch(setSelectedAdminOfferer(nextOfferer))
       localStorageManager.setItem(

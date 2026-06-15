@@ -43,9 +43,18 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
+        with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
 
       - name: Load docker image
@@ -89,7 +98,7 @@ jobs:
           timeout: 120000
       - name: "Install dependencies PRO"
         working-directory: pro
-        run: yarn install --immutable
+        run: pnpm ci
       - name: "Update api client"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
@@ -97,8 +106,8 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn generate:api:client:local:no:docker
-            yarn generate:api:client:local:no:docker:next
+            pnpm generate:api:client:local:no:docker
+            pnpm generate:api:client:local:no:docker:next
       - name: "Check if there are changes"
         id: "changes"
         working-directory: pro
@@ -107,7 +116,7 @@ jobs:
           if [[ "${diff}" != "" ]]; then
             echo "Found changes in the API."
             echo "${diff}" | awk '{ print "\t" $0 }'
-            echo "Please run 'yarn generate:api:client:local' AND 'yarn run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
+            echo "Please run 'pnpm generate:api:client:local' AND 'pnpm run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
             exit 1
           fi
       - name: "Show pcapi log when it fails"

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
 import { apiNew } from '@/apiClient/api'
-import type { CreateThumbnailResponseModel } from '@/apiClient/v1'
+import type { CreateThumbnailResponseModel } from '@/apiClient/v1/new'
 import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 

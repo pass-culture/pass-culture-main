@@ -83,7 +83,7 @@ def create_ubble_fraud_check(user: users_models.User, form: forms.UbbleConfigura
 def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFamilialConfigurationForm) -> None:
     mock_type = form.mock_type.data
     result_content = None
-    user_qf_person = bonus_schemas.QuotientFamilialPerson(
+    user_qf_person = bonus_schemas.BonusCreditPerson(
         last_name=user.lastName,
         first_names=[user.firstName] if user.firstName else [],
         birth_date=user.validatedBirthDate,

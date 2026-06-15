@@ -1,7 +1,5 @@
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  SubcategoryResponseModel,
-} from '@/apiClient/v1'
+import type { SubcategoryResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 
 import type { StepPattern } from './getSteps'
 

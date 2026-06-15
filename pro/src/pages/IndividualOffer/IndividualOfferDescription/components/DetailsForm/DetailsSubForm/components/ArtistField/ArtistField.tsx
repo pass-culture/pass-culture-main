@@ -1,7 +1,7 @@
 import { type UseFieldArrayReturn, useFormContext } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
-import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import { Button } from '@/design-system/Button/Button'
@@ -117,7 +117,9 @@ export function ArtistField({
                   )
                 }}
                 searchApi={async (searchText) => {
-                  const artists = await api.getArtists(searchText)
+                  const artists = await apiNew.getArtists({
+                    query: { search: searchText },
+                  })
 
                   return artists.map((artist) => ({
                     ...artist,

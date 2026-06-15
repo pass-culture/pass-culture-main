@@ -17,12 +17,12 @@ import type {
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
-  setVideoUrl: Dispatch<SetStateAction<string | undefined>>
+  setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
   videoData?: VideoData
   handleVideoOnSubmit: () => Promise<GetIndividualOfferWithAddressResponseModel>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
-  videoUrl?: string
+  videoUrl?: string | null
   offerId?: number
 }
 
@@ -114,6 +114,8 @@ export function VideoUploaderContextProvider({
   )
 
   return (
+    // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+    // @ts-expect-error
     <VideoUploaderContext.Provider value={contextValue}>
       {children}
     </VideoUploaderContext.Provider>

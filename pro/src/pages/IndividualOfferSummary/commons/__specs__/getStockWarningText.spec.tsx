@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { getStockWarningText } from '../getStockWarningText'

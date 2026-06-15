@@ -27,7 +27,7 @@ class ParticulierApiException(Exception):
         self,
         message: str = "",
         *,
-        status_code: int | None = None,
+        status_code: int,
         error_code: str | None = None,
         error_title: str | None = None,
     ) -> None:
@@ -61,7 +61,7 @@ class ParticulierApiRateLimitExceeded(ParticulierApiException):
     pass
 
 
-class QuotientFamilialPerson(BaseModel):
+class ApiParticulierPerson(BaseModel):
     nom_naissance: str | None = None
     nom_usage: str | None = None
     prenoms: str | None = None
@@ -91,8 +91,8 @@ class QuotientFamilial(BaseModel):
 
 
 class QuotientFamilialData(BaseModel):
-    allocataires: list[QuotientFamilialPerson]
-    enfants: list[QuotientFamilialPerson]
+    allocataires: list[ApiParticulierPerson]
+    enfants: list[ApiParticulierPerson]
     quotient_familial: QuotientFamilial
 
 
@@ -101,7 +101,7 @@ class QuotientFamilialResponse(BaseModel):
 
 
 def get_quotient_familial(
-    custodian: bonus_schemas.Person, at_date: datetime.date | None = None
+    custodian: bonus_schemas.BonusCreditPerson, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
     """
     Get the Quotient Familial from a tax household, using a custodian personal information.
@@ -110,11 +110,12 @@ def get_quotient_familial(
     """
     country_insee_code = custodian.birth_country_cog_code
     city_insee_code = custodian.birth_city_cog_code
-    if country_insee_code == countries_utils.FRANCE_INSEE_CODE and not city_insee_code:
-        raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
-    if country_insee_code != countries_utils.FRANCE_INSEE_CODE:
+    if country_insee_code not in [None, countries_utils.FRANCE_INSEE_CODE]:
         city_insee_code = None
+
+    if country_insee_code is None:
+        country_insee_code = countries_utils.FRANCE_INSEE_CODE
 
     query_params = {
         "recipient": settings.PASS_CULTURE_SIRET,
@@ -127,6 +128,7 @@ def get_quotient_familial(
         "sexeEtatCivil": custodian.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
+        "nomCommuneNaissance": custodian.birth_city,
         "annee": at_date.year if at_date else None,
         "mois": at_date.month if at_date else None,
     }
@@ -160,7 +162,7 @@ class DisabledAdultAllowanceResponse(BaseModel):
     data: DisabledAdultAllowanceData
 
 
-def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultAllowanceResponse:
+def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> DisabledAdultAllowanceResponse:
     """
     Get whether the person benefits from the disabled adult allowance.
 
@@ -168,11 +170,12 @@ def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultA
     """
     country_insee_code = person.birth_country_cog_code
     city_insee_code = person.birth_city_cog_code
-    if country_insee_code == countries_utils.FRANCE_INSEE_CODE and not city_insee_code:
-        raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
-    if country_insee_code != countries_utils.FRANCE_INSEE_CODE:
+    if country_insee_code not in [None, countries_utils.FRANCE_INSEE_CODE]:
         city_insee_code = None
+
+    if country_insee_code is None:
+        country_insee_code = countries_utils.FRANCE_INSEE_CODE
 
     query_params = {
         "recipient": settings.PASS_CULTURE_SIRET,
@@ -185,6 +188,7 @@ def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultA
         "sexeEtatCivil": person.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
+        "nomCommuneNaissance": person.birth_city,
     }
     response = requests.get(
         AAH_ENDPOINT,
@@ -199,7 +203,7 @@ def get_disabled_adult_allowance(person: bonus_schemas.Person) -> DisabledAdultA
 
 class DisabledChildEducationAllowanceStatus(enum.StrEnum):
     BENEFICIARY = "allocataire"
-    PENDING = "ouvrant_droit"
+    RIGHT_OPENING = "ouvrant_droit"
     NON_BENEFICIARY = "non_beneficiaire"
 
 
@@ -222,7 +226,9 @@ class DisabledChildEducationAllowanceResponse(BaseModel):
     data: DisabledChildEducationAllowanceData
 
 
-def get_disabled_child_education_allowance(person: bonus_schemas.Person) -> DisabledChildEducationAllowanceResponse:
+def get_disabled_child_education_allowance(
+    person: bonus_schemas.BonusCreditPerson,
+) -> DisabledChildEducationAllowanceResponse:
     """
     Get whether the person benefits from the disabled child education allowance.
 
@@ -230,23 +236,25 @@ def get_disabled_child_education_allowance(person: bonus_schemas.Person) -> Disa
     """
     country_insee_code = person.birth_country_cog_code
     city_insee_code = person.birth_city_cog_code
-    if country_insee_code == countries_utils.FRANCE_INSEE_CODE and not city_insee_code:
-        raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
-    if country_insee_code != countries_utils.FRANCE_INSEE_CODE:
+    if country_insee_code not in [None, countries_utils.FRANCE_INSEE_CODE]:
         city_insee_code = None
+
+    if country_insee_code is None:
+        country_insee_code = countries_utils.FRANCE_INSEE_CODE
 
     query_params = {
         "recipient": settings.PASS_CULTURE_SIRET,
         "nomNaissance": person.last_name.upper(),
         "prenoms[]": [first_name.upper() for first_name in person.first_names],
-        "nomUsage": person.common_name,
+        "nomUsage": person.common_name.upper() if person.common_name else None,
         "anneeDateNaissance": person.birth_date.year,
         "moisDateNaissance": person.birth_date.month,
         "jourDateNaissance": person.birth_date.day,
         "sexeEtatCivil": person.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
+        "nomCommuneNaissance": person.birth_city,
     }
     response = requests.get(
         AEEH_ENDPOINT,
@@ -266,7 +274,7 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
     try:
         api_particulier_error = response.json()["errors"][0]
         error_code, error_title = api_particulier_error["code"], api_particulier_error["title"]
-        message = f"{endpoint_label} {response.status_code} error_code={error_code} error_title={error_title}"
+        message = f"{endpoint_label} {int(response.status_code)} error_code={error_code} error_title={error_title}"
     except (ValueError, KeyError):  # JSON decode error
         error_code, error_title = None, None
         message = f"{endpoint_label} unparsable error"
@@ -278,7 +286,7 @@ def _raise_for_status(response: Response, endpoint_label: str) -> None:
         # the person was found, but no application was found
         ExceptionClass = ParticulierApiApplicationNotFound
     elif response.status_code == 422:
-        # what we usually think of 404 not found
+        # what we usually think of 404 not found: either nobody or more than one person was found
         ExceptionClass = ParticulierApiPersonNotFound
     elif response.status_code == 429:
         ExceptionClass = ParticulierApiRateLimitExceeded

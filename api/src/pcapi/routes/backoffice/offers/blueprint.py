@@ -24,6 +24,7 @@ from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
+from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
@@ -1738,6 +1739,9 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
             sa_orm.joinedload(offers_models.Offer.metaData),
             sa_orm.joinedload(offers_models.Offer.proAdvice),
             sa_orm.joinedload(offers_models.Offer.culturalOutreach),
+            sa_orm.selectinload(offers_models.Offer.artistOfferLinks)
+            .joinedload(artist_models.ArtistOfferLink.artist)
+            .load_only(artist_models.Artist.id, artist_models.Artist.name),
         )
     )
     offer = offer_query.one_or_none()

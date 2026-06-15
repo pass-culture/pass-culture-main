@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
+import { apiNew } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -52,7 +53,19 @@ const renderIndividualOfferSummary: RenderComponentFunction<
   )
 }
 
+const waitForRecommendationCardFetch = async () => {
+  await waitFor(() => {
+    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+  })
+}
+
 describe('<IndividualOfferSummary />', () => {
+  beforeEach(() => {
+    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: null,
+    })
+  })
+
   it('renders spinner when no offer in context', () => {
     const contextValues = {
       offer: null,
@@ -63,12 +76,13 @@ describe('<IndividualOfferSummary />', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
   })
 
-  it('renders summary screen when offer is in context', () => {
+  it('renders summary screen when offer is in context', async () => {
     const contextValues = {
       offer: getIndividualOfferFactory(),
     }
 
     renderIndividualOfferSummary({ contextValues })
+    await waitForRecommendationCardFetch()
 
     expect(screen.getByTestId('summary-screen')).toBeInTheDocument()
   })

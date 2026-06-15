@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
-import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1'
+import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1/new'
 import { defaultOfferHomeResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

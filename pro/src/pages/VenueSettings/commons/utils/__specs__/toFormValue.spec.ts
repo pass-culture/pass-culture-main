@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { toFormValues } from '../toFormValues'
@@ -57,6 +57,14 @@ describe('toFormValues', () => {
       publicName: 'Adresse de la venue',
       siret: '',
       withdrawalDetails: '',
+      accessibility: {
+        visual: true,
+        mental: true,
+        audio: false,
+        motor: false,
+        none: false,
+      },
+      isAccessibilityAppliedOnAllOffers: false,
     }
 
     expect(formValues).toEqual(expectedFormValues)

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient/api'
+import { apiAdageNew } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -15,7 +15,7 @@ import {
 } from '../OfferFavoriteButton'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
+  apiAdageNew: {
     logFavOfferButtonClick: vi.fn(),
     deleteFavoriteForCollectiveOfferTemplate: vi.fn(),
     postCollectiveTemplateFavorites: vi.fn(),
@@ -42,11 +42,13 @@ describe('OfferFavoriteButton', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Mettre en favoris' })
     )
-    expect(apiAdage.logFavOfferButtonClick).toHaveBeenCalledWith({
-      offerId: defaultProps.offer.id,
-      queryId: defaultProps.queryId,
-      iframeFrom: '/',
-      isFavorite: true,
+    expect(apiAdageNew.logFavOfferButtonClick).toHaveBeenCalledWith({
+      body: {
+        offerId: defaultProps.offer.id,
+        queryId: defaultProps.queryId,
+        iframeFrom: '/',
+        isFavorite: true,
+      },
     })
   })
 
@@ -59,11 +61,13 @@ describe('OfferFavoriteButton', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Supprimer des favoris' })
     )
-    expect(apiAdage.logFavOfferButtonClick).toHaveBeenCalledWith({
-      offerId: defaultProps.offer.id,
-      queryId: defaultProps.queryId,
-      iframeFrom: '/',
-      isFavorite: false,
+    expect(apiAdageNew.logFavOfferButtonClick).toHaveBeenCalledWith({
+      body: {
+        offerId: defaultProps.offer.id,
+        queryId: defaultProps.queryId,
+        iframeFrom: '/',
+        isFavorite: false,
+      },
     })
   })
 })

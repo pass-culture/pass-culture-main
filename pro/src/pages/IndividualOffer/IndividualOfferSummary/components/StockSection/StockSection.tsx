@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   GET_STOCKS_EVENT_STATS_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
@@ -42,7 +42,7 @@ export const StockSection = ({
 
   const getStockThingQuery = useSWR(
     !offer.isEvent ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
-    () => api.getStocks(offer.id),
+    () => apiNew.getStocks({ path: { offer_id: offer.id } }),
     {
       onError: () => snackBar.error(error),
     }
@@ -50,7 +50,7 @@ export const StockSection = ({
 
   const getStocksEventStatsQuery = useSWR(
     offer.isEvent ? [GET_STOCKS_EVENT_STATS_QUERY_KEY, offer.id] : null,
-    () => api.getStocksStats(offer.id),
+    () => apiNew.getStocksStats({ path: { offer_id: offer.id } }),
     {
       onError: () => snackBar.error(error),
     }

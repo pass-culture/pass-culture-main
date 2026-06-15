@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { RootState } from '@/commons/store/store'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { useOffererNamesQuery } from './useOffererNamesQuery'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     listOfferersNames: vi.fn(),
   },
 }))
@@ -52,14 +52,14 @@ describe('useOffererNamesQuery', () => {
       { id: 2, name: 'Offerer 2', validated: true },
       { id: 3, name: 'Offerer 3', validated: false },
     ]
-    vi.mocked(api.listOfferersNames).mockResolvedValueOnce({
+    vi.mocked(apiNew.listOfferersNames).mockResolvedValueOnce({
       offerersNames: expectedOfferersNames,
     })
 
     const { store } = renderComponent()
 
     await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+      expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
     })
 
     expect(store.getState().user.offererNames).toEqual(expectedOfferersNames)
@@ -87,6 +87,6 @@ describe('useOffererNamesQuery', () => {
       expect(screen.getByText('Offerer 4')).toBeInTheDocument()
     })
 
-    expect(api.listOfferersNames).not.toHaveBeenCalled()
+    expect(apiNew.listOfferersNames).not.toHaveBeenCalled()
   })
 })

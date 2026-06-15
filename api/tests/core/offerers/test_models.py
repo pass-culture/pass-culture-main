@@ -126,17 +126,63 @@ class VenueIsEligibleForSearchTest:
         assert venue.is_eligible_for_search == is_eligible_for_search
 
     @pytest.mark.parametrize(
-        "open_to_public,permanent,validation_status,active,venue_type_code,has_bookable_offer,is_eligible_for_search",
+        "open_to_public,permanent,validation_status,active,venue_type_code,has_bookable_offer,volunteering_url,is_eligible_for_search",
         [
-            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
-            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False, False),
-            (True, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
-            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
-            (False, True, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
-            (False, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
-            (False, False, ValidationStatus.VALIDATED, False, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
-            (True, True, ValidationStatus.NEW, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
-            (True, True, ValidationStatus.CLOSED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, False),
+            (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, None, True),
+            (
+                True,
+                True,
+                ValidationStatus.VALIDATED,
+                True,
+                offerers_schemas.VenueTypeCode.BOOKSTORE,
+                False,
+                None,
+                False,
+            ),
+            (True, False, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, None, True),
+            (False, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, None, True),
+            (
+                False,
+                True,
+                ValidationStatus.VALIDATED,
+                False,
+                offerers_schemas.VenueTypeCode.BOOKSTORE,
+                True,
+                None,
+                False,
+            ),
+            (
+                False,
+                False,
+                ValidationStatus.VALIDATED,
+                True,
+                offerers_schemas.VenueTypeCode.BOOKSTORE,
+                True,
+                None,
+                True,
+            ),
+            (
+                False,
+                False,
+                ValidationStatus.VALIDATED,
+                False,
+                offerers_schemas.VenueTypeCode.BOOKSTORE,
+                True,
+                None,
+                False,
+            ),
+            (True, True, ValidationStatus.NEW, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, None, False),
+            (True, True, ValidationStatus.CLOSED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, None, False),
+            (
+                True,
+                True,
+                ValidationStatus.VALIDATED,
+                True,
+                offerers_schemas.VenueTypeCode.BOOKSTORE,
+                False,
+                "https://example.com/volunteering",
+                True,
+            ),
         ],
     )
     def test_is_eligible_for_search(
@@ -147,6 +193,7 @@ class VenueIsEligibleForSearchTest:
         active,
         venue_type_code,
         has_bookable_offer,
+        volunteering_url,
         is_eligible_for_search,
     ):
         venue = factories.VenueFactory(
@@ -155,16 +202,17 @@ class VenueIsEligibleForSearchTest:
             managingOfferer__validationStatus=validation_status,
             isPermanent=permanent,
             venueTypeCode=venue_type_code,
+            volunteeringUrl=volunteering_url,
         )
         if has_bookable_offer:
             offers_factories.EventStockFactory(offer__venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
-        def test_caledonian_venue_is_eligible_for_search(self):
-            venue = factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
-            offers_factories.OfferFactory(venue=venue)
+    def test_caledonian_venue_is_eligible_for_search(self):
+        venue = factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
+        offers_factories.OfferFactory(venue=venue)
 
-            assert venue.is_eligible_for_search is False
+        assert venue.is_eligible_for_search is False
 
 
 class VenueHasActiveIndividualOffersTest:

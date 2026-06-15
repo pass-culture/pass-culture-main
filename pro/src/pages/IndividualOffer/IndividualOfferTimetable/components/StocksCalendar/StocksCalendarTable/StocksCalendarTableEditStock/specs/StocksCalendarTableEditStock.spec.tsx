@@ -79,6 +79,7 @@ describe('StocksCalendarTableEditStock', () => {
   it('should check the unlimited checkbox initially if the quantity does not exist', () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
+        // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
         remainingQuantity: null,
       }),
     })
@@ -101,6 +102,7 @@ describe('StocksCalendarTableEditStock', () => {
   it('should uncheck the unlimited checkbox when the quantity input is filled', async () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
+        // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
         remainingQuantity: null,
       }),
     })

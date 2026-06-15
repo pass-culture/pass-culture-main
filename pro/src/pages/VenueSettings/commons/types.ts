@@ -1,13 +1,19 @@
-import type { FlatAddressFormValues } from '@/commons/core/shared/types'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
+import type {
+  AccessibilityFormValues,
+  FlatAddressFormValues,
+} from '@/commons/core/shared/types'
+import type { Nullable } from '@/commons/utils/types'
 
 export type VenueSettingsFormContext = {
   isCaledonian: boolean
   siren: string | null
   withSiret: boolean
   isOpenToPublic?: string
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
 }
 
 export interface VenueSettingsFormValues extends FlatAddressFormValues {
@@ -20,7 +26,9 @@ export interface VenueSettingsFormValues extends FlatAddressFormValues {
   manuallySetAddress?: boolean
   bookingEmail?: string
   isOpenToPublic: string
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
   culturalDomains?: string[]
   description?: string
+  accessibility: Nullable<AccessibilityFormValues>
+  isAccessibilityAppliedOnAllOffers: boolean
 }

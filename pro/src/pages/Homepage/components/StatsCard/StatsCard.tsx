@@ -2,7 +2,7 @@ import cn from 'classnames'
 import useSWR from 'swr'
 
 import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { GET_VENUES_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Card } from '@/ui-kit/Card/Card'
 

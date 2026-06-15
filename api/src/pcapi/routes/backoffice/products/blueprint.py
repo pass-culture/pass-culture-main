@@ -17,6 +17,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.connectors.big_query.queries.product import TiteLiveBookWork
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.fraud import models as fraud_models
@@ -148,6 +149,9 @@ def get_product_details(product_id: int) -> response_utils.BackofficeResponse:
             sa_orm.selectinload(offers_models.Product.offers).options(*common_options),
             sa_orm.selectinload(offers_models.Product.productMediations),
             sa_orm.joinedload(offers_models.Product.lastProvider),
+            sa_orm.selectinload(offers_models.Product.artistLinks)
+            .joinedload(artist_models.ArtistProductLink.artist)
+            .load_only(artist_models.Artist.id, artist_models.Artist.name),
         )
         .one_or_none()
     )

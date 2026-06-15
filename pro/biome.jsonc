@@ -78,10 +78,6 @@
           "options": {
             "excludedComponents": ["h1", "main"]
           }
-        },
-        "noUnusedImports": {
-          "level": "error",
-          "fix": "safe" // no code fix suggested for noUnusedVariables
         }
       },
       "style": {
@@ -131,7 +127,6 @@
   "overrides": [
     // -------------------------------------------------------------------------
     // package.json
-    // We don't want Biome linting to conflict with Yarn `JSON.stringify` formatting when Yarn updates version or dependencies.
 
     {
       "includes": ["package.json"],

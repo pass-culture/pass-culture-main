@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs, redirect } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { addSnackBar } from '@/commons/store/snackBar/reducer'
@@ -28,8 +28,8 @@ const validateToken = (token: string): Promise<void> => {
 
   const call = (async () => {
     try {
-      await api.validateUser(token)
-      const user = await api.getProfile()
+      await apiNew.validateUser({ path: { token } })
+      const user = await apiNew.getProfile()
       await rootStore.dispatch(initializeUser({ user })).unwrap()
 
       rootStore.dispatch(

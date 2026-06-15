@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -60,9 +59,9 @@ export function OpeningHoursTimespans({
       <div className={styles['timespan']} key={field.id}>
         <div className={styles['timespan-inputs']}>
           <TimePicker
-            label="Ouvre à"
             required
-            isLabelHidden={i === 1}
+            isLabelHidden
+            label="Ouvre à"
             className={styles['time-picker']}
             {...form.register(`openingHours.${weekDay}.${i}.0`)}
             error={
@@ -72,18 +71,12 @@ export function OpeningHoursTimespans({
               (i === 1 ? hasOverlappingTimespans : '')
             }
           />
-          <span
-            className={classNames(styles['timespan-separator'], {
-              [styles['first-timespan']]: i === 0,
-            })}
-          >
-            -
-          </span>
+          <span className={styles['timespan-separator']}>-</span>
           <TimePicker
-            label="Ferme à"
             required
             className={styles['time-picker']}
-            isLabelHidden={i === 1}
+            isLabelHidden
+            label="Ferme à"
             {...form.register(`openingHours.${weekDay}.${i}.1`)}
             error={
               form.formState.errors.openingHours?.[weekDay]?.[i]?.[1]?.message
@@ -91,11 +84,7 @@ export function OpeningHoursTimespans({
           />
         </div>
 
-        <div
-          className={classNames(styles['timespan-actions'], {
-            [styles['first-timespan']]: i === 0,
-          })}
-        >
+        <div className={styles['timespan-actions']}>
           {timespans.fields.length > 0 && (
             <Button
               variant={ButtonVariant.TERTIARY}

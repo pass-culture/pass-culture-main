@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as getUserDefaultPathModule from '@/app/AppRouter/utils/getUserDefaultPath'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -30,11 +30,9 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getOfferer: vi.fn(),
-    getVenue: vi.fn(),
-  },
   apiNew: {
+    getVenue: vi.fn(),
+    getOfferer: vi.fn(),
     synchronizeOffererOnboarding: vi.fn(),
   },
 }))
@@ -75,14 +73,14 @@ describe('<OnboardingCollectiveModal />', () => {
     vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockResolvedValue(
       undefined as never
     )
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: SELECTED_VENUE_ID,
         managingOffererId: SELECTED_OFFERER_ID,
         isOnboarded: false,
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: SELECTED_OFFERER_ID,
       isOnboarded: false,
@@ -132,7 +130,7 @@ describe('<OnboardingCollectiveModal />', () => {
       vi.spyOn(getUserDefaultPathModule, 'getUserDefaultPath').mockReturnValue(
         '/accueil'
       )
-      vi.spyOn(api, 'getVenue').mockResolvedValue(
+      vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
           id: SELECTED_VENUE_ID,
           managingOffererId: SELECTED_OFFERER_ID,

@@ -55,7 +55,7 @@ class QuotientFamilialTest:
         assert quotient_familial_response == api_particulier.QuotientFamilialResponse(
             data=api_particulier.QuotientFamilialData(
                 allocataires=[
-                    api_particulier.QuotientFamilialPerson(
+                    api_particulier.ApiParticulierPerson(
                         nom_naissance="LEFEBVRE",
                         prenoms="ALEXIS GÉRÔME JEAN-PHILIPPE",
                         date_naissance=date(1982, 12, 27),
@@ -63,7 +63,7 @@ class QuotientFamilialTest:
                     )
                 ],
                 enfants=[
-                    api_particulier.QuotientFamilialPerson(
+                    api_particulier.ApiParticulierPerson(
                         nom_naissance="LEFEBVRE",
                         prenoms="LEO",
                         date_naissance=date(1990, 4, 20),
@@ -80,20 +80,6 @@ class QuotientFamilialTest:
                 ),
             )
         )
-
-    def test_get_quotient_familial_for_french_born_custodian_without_city_code(self, requests_mock):
-        custodian = subscription_factories.ApiParticulierPersonFactory.create(
-            birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE, birth_city_cog_code=None
-        )
-        requests_mock.get(
-            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
-            json=QUOTIENT_FAMILIAL_FIXTURE,
-        )
-
-        with pytest.raises(ValueError) as exception:
-            api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))
-
-            assert "City INSEE code is mandatory when the custodian is born in France" in str(exception)
 
     def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(self, requests_mock):
         custodian = subscription_factories.ApiParticulierPersonFactory.create(
@@ -126,6 +112,38 @@ class QuotientFamilialTest:
             "mois": ["6"],
         }
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+
+    def test_get_quotient_familial_autofills_birth_country(self, requests_mock):
+        custodian = subscription_factories.ApiParticulierPersonFactory.create(
+            last_name="lefebvre",
+            common_name=None,
+            first_names=["aleixs", "gréôme", "jean-philippe"],
+            birth_date=date(1982, 12, 27),
+            gender=users_models.GenderEnum.F,
+            birth_country_cog_code=None,
+            birth_city_cog_code=None,
+            birth_city=None,
+        )
+        requests_mock.get(
+            api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+            json=QUOTIENT_FAMILIAL_FIXTURE,
+        )
+
+        api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))
+
+        post_request = requests_mock.last_request
+        assert post_request.qs == {
+            "recipient": [settings.PASS_CULTURE_SIRET],
+            "nomNaissance": ["LEFEBVRE"],
+            "prenoms[]": ["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
+            "anneeDateNaissance": ["1982"],
+            "moisDateNaissance": ["12"],
+            "jourDateNaissance": ["27"],
+            "sexeEtatCivil": ["F"],
+            "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
+            "annee": ["2023"],
+            "mois": ["6"],
+        }
 
     @pytest.mark.parametrize(
         "status_code, exception",
@@ -178,16 +196,6 @@ class DisabledAdultAllowanceTest:
             data=api_particulier.DisabledAdultAllowanceData(est_beneficiaire=True, date_debut_droit=date(2022, 11, 29))
         )
 
-    def test_get_french_adult_disability_allowance_without_city_code(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
-            birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE, birth_city_cog_code=None
-        )
-
-        with pytest.raises(ValueError) as exception:
-            api_particulier.get_disabled_adult_allowance(person)
-
-            assert "City INSEE code is mandatory when the custodian is born in France" in str(exception)
-
     def test_get_abroad_born_adult_disability_allowance_ignores_city_code(self, requests_mock):
         person = subscription_factories.ApiParticulierPersonFactory.create(
             last_name="lefebvre",
@@ -214,6 +222,33 @@ class DisabledAdultAllowanceTest:
             "codeCogInseePaysNaissance": ["99243"],
         }
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+
+    def test_get_adult_disability_allowance_autofills_birth_country(self, requests_mock):
+        person = subscription_factories.ApiParticulierPersonFactory.create(
+            last_name="lefebvre",
+            common_name=None,
+            first_names=["aleixs", "gréôme", "jean-philippe"],
+            birth_date=date(1982, 12, 27),
+            gender=users_models.GenderEnum.F,
+            birth_country_cog_code=None,
+            birth_city_cog_code=None,
+            birth_city=None,
+        )
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_ELIGIBLE_RESPONSE)
+
+        api_particulier.get_disabled_adult_allowance(person)
+
+        post_request = requests_mock.last_request
+        assert post_request.qs == {
+            "recipient": [settings.PASS_CULTURE_SIRET],
+            "nomNaissance": ["LEFEBVRE"],
+            "prenoms[]": ["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
+            "anneeDateNaissance": ["1982"],
+            "moisDateNaissance": ["12"],
+            "jourDateNaissance": ["27"],
+            "sexeEtatCivil": ["F"],
+            "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
+        }
 
     @pytest.mark.parametrize(
         "status_code, exception",
@@ -267,17 +302,7 @@ class DisabledChildEducationAllowanceTest:
             )
         )
 
-    def test_get_french_child_disability_allowance_without_city_code(self, requests_mock):
-        person = subscription_factories.ApiParticulierPersonFactory.create(
-            birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE, birth_city_cog_code=None
-        )
-
-        with pytest.raises(ValueError) as exception:
-            api_particulier.get_disabled_child_education_allowance(person)
-
-            assert "City INSEE code is mandatory when the custodian is born in France" in str(exception)
-
-    def test_get_abroad_born_adult_disability_allowance_ignores_city_code(self, requests_mock):
+    def test_get_abroad_born_disabled_child_education_allowance_ignores_city_code(self, requests_mock):
         person = subscription_factories.ApiParticulierPersonFactory.create(
             last_name="lefebvre",
             common_name=None,
@@ -303,6 +328,32 @@ class DisabledChildEducationAllowanceTest:
             "codeCogInseePaysNaissance": ["99243"],
         }
         assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+
+    def test_get_child_disability_allowance_autofills_birth_country(self, requests_mock):
+        person = subscription_factories.ApiParticulierPersonFactory.create(
+            last_name="dupont",
+            first_names=["pierre"],
+            birth_date=date(2015, 3, 12),
+            gender=users_models.GenderEnum.M,
+            birth_country_cog_code=None,
+            birth_city_cog_code=None,
+            birth_city=None,
+        )
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_ELIGIBLE_RESPONSE)
+
+        api_particulier.get_disabled_child_education_allowance(person)
+
+        post_request = requests_mock.last_request
+        assert post_request.qs == {
+            "recipient": [settings.PASS_CULTURE_SIRET],
+            "nomNaissance": ["DUPONT"],
+            "prenoms[]": ["PIERRE"],
+            "anneeDateNaissance": ["2015"],
+            "moisDateNaissance": ["3"],
+            "jourDateNaissance": ["12"],
+            "sexeEtatCivil": ["M"],
+            "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
+        }
 
     @pytest.mark.parametrize(
         "status_code, exception",

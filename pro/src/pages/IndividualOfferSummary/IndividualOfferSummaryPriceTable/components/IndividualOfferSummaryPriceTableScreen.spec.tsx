@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
+import type { GetOfferStockResponseModel } from '@/apiClient/v1/new'
 import {
   type GetIndividualOfferWithAddressResponseModel,
-  type GetOfferStockResponseModel,
   OfferStatus,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,

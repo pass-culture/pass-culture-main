@@ -1,9 +1,7 @@
-import type {
-  GetVenueResponseModel,
-  LocationResponseModelV2,
-} from '@/apiClient/v1'
+import type { LocationResponseModelV2 } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
-import { SummarySubSubSection } from '@/ui-kit/SummaryLayout/SummarySubSubSection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import styles from './OpeningHoursAndAddressReadOnly.module.scss'
 import { OpeningHoursReadOnly } from './OpeningHoursReadOnly'
@@ -18,12 +16,12 @@ export function OpeningHoursAndAddressReadOnly({
   address,
 }: OpeningHoursAndAddressReadOnlyProps) {
   return (
-    <SummarySubSubSection title="Adresse et horaires">
+    <SummarySubSection title="Adresse et horaires" shouldShowDivider={false}>
       <span className={styles['opening-hours-address']}>
         {`Adresse : ${getFormattedAddress(address)}`}
       </span>
 
       <OpeningHoursReadOnly openingHours={openingHours} />
-    </SummarySubSubSection>
+    </SummarySubSection>
   )
 }

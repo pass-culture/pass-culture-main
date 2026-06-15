@@ -134,7 +134,7 @@ describe('IndividualOffers', () => {
     vi.spyOn(apiNew, 'getCategories').mockResolvedValue(
       categoriesAndSubcategories
     )
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
@@ -781,7 +781,7 @@ describe('IndividualOffers', () => {
   it('should have offerer address value when user filters by address', async () => {
     vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
     vi.spyOn(api, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValueOnce(
       defaultGetOffererResponseModel
     )
     await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)

@@ -1,4 +1,4 @@
-import { CollectiveLocationType } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1/new'
 import type { InstitutionFormValues } from '@/pages/CollectiveOfferInstitution/commons/validationSchema'
 
 import type { OfferEducationalFormValues } from './types'

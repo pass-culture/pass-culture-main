@@ -6,7 +6,7 @@ import {
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -20,19 +20,21 @@ describe('IndividualOfferSummary:serializer', () => {
   let categories: CategoryResponseModel[]
   let subCategoryList: SubcategoryResponseModel[]
 
+  const extraData = {
+    author: 'Offer author',
+    performer: 'Offer performer',
+    ean: '',
+    showSubType: '',
+    showType: '',
+    stageDirector: 'Offer stageDirector',
+    speaker: 'Offer speaker',
+    visa: '',
+  }
+
   beforeEach(() => {
     offer = getIndividualOfferFactory({
       id: 12,
-      extraData: {
-        author: 'Offer author',
-        performer: 'Offer performer',
-        ean: '',
-        showSubType: '',
-        showType: '',
-        stageDirector: 'Offer stageDirector',
-        speaker: 'Offer speaker',
-        visa: '',
-      },
+      extraData,
       bookingEmail: 'booking@email.com',
       bookingContact: 'alfonsoLeBg@exampple.com',
       description: 'Offer description',
@@ -114,7 +116,7 @@ describe('IndividualOfferSummary:serializer', () => {
     offer = {
       ...offer,
       extraData: {
-        ...offer.extraData,
+        ...extraData,
         showType: '400',
         showSubType: '401',
       },

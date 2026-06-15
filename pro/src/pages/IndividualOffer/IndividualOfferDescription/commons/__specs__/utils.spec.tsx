@@ -1,10 +1,10 @@
 import {
   type ArtistOfferLinkResponseModel,
   ArtistType,
+  DisplayableActivity,
   OfferStatus,
   SubcategoryIdEnum,
-} from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -188,6 +188,7 @@ describe('getInitialArtistOfferLinks', () => {
   it('should return defaults links', () => {
     const artists: ArtistOfferLinkResponseModel[] = []
 
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(artists, defaultLinks)
 
     expect(result).toStrictEqual(defaultLinks)
@@ -207,7 +208,7 @@ describe('getInitialArtistOfferLinks', () => {
         artistType: ArtistType.STAGE_DIRECTOR,
       },
     ]
-
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toStrictEqual(offerLinks)
@@ -218,6 +219,7 @@ describe('getInitialArtistOfferLinks', () => {
       { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
     ]
 
+    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toHaveLength(3)
@@ -489,7 +491,9 @@ describe('getFormReadOnlyFields', () => {
 describe('getAccessibilityFormValuesFromOffer', () => {
   it('should coerce all flags to false and set none as true when flags are all false, null or undefined', () => {
     const offer = getIndividualOfferFactory({
-      audioDisabilityCompliant: undefined,
+      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // @ts-expect-error
+      audioDisabilityCompliant: null,
       mentalDisabilityCompliant: undefined,
       motorDisabilityCompliant: false,
       visualDisabilityCompliant: false,

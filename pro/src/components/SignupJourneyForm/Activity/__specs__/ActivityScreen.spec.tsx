@@ -5,6 +5,7 @@ import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
 import { Target } from '@/apiClient/v1'
+import { ActivityOpenToPublic } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
@@ -88,7 +89,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     listEducationalDomains: vi.fn(),
   },
 }))
@@ -314,7 +315,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should display validation screen on click next step button', async () => {
     contextValue.activity = {
-      activity: 'MUSEUM',
+      activity: ActivityOpenToPublic.MUSEUM,
       socialUrls: ['http://example.com'],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
       phoneNumber: '0605120510',
@@ -339,7 +340,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with individual target customer', async () => {
     contextValue.activity = {
-      activity: 'MUSEUM',
+      activity: ActivityOpenToPublic.MUSEUM,
       socialUrls: ['http://example.com'],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '0605120510',
@@ -368,7 +369,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with educational target customer', async () => {
     contextValue.activity = {
-      activity: 'MUSEUM',
+      activity: ActivityOpenToPublic.MUSEUM,
       socialUrls: ['http://example.com'],
       targetCustomer: Target.EDUCATIONAL,
       phoneNumber: '0605120510',

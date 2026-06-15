@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -32,7 +32,7 @@ import {
 } from './IndividualOfferLocationScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchOffer: vi.fn(),
   },
 }))
@@ -153,7 +153,7 @@ describe('<IndividualOfferLocationScreen />', () => {
       })
 
       it('should submit the venue address payload when a venue address is selected', async () => {
-        vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
+        vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(offlineOffer)
 
         const props = { offer: offlineOffer }
 
@@ -169,10 +169,10 @@ describe('<IndividualOfferLocationScreen />', () => {
           screen.getByRole('button', { name: /Enregistrer/ })
         )
 
-        expect(api.patchOffer).toHaveBeenCalledOnce()
-        expect(api.patchOffer).toHaveBeenCalledWith(
-          3,
-          expect.objectContaining({
+        expect(apiNew.patchOffer).toHaveBeenCalledOnce()
+        expect(apiNew.patchOffer).toHaveBeenCalledWith({
+          path: { offer_id: 3 },
+          body: expect.objectContaining({
             location: expect.objectContaining({
               city: 'Paris',
               isManualEdition: false,
@@ -186,8 +186,8 @@ describe('<IndividualOfferLocationScreen />', () => {
               inseeCode: '75056',
             }),
             shouldSendMail: false,
-          })
-        )
+          }),
+        })
       })
     })
 
@@ -231,7 +231,7 @@ describe('<IndividualOfferLocationScreen />', () => {
         }
 
         beforeEach(async () => {
-          vi.spyOn(api, 'patchOffer').mockResolvedValue(
+          vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
             offlineOfferWithPendingBookings
           )
 
@@ -259,7 +259,7 @@ describe('<IndividualOfferLocationScreen />', () => {
               'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
             )
           ).toBeInTheDocument()
-          expect(api.patchOffer).not.toHaveBeenCalled()
+          expect(apiNew.patchOffer).not.toHaveBeenCalled()
         })
 
         // `shouldSendMail` checkbox is checked by default
@@ -269,10 +269,10 @@ describe('<IndividualOfferLocationScreen />', () => {
           )
 
           await waitFor(() => {
-            expect(api.patchOffer).toHaveBeenCalledWith(
-              offlineOfferWithPendingBookings.id,
-              expect.objectContaining({ shouldSendMail: true })
-            )
+            expect(apiNew.patchOffer).toHaveBeenCalledWith({
+              path: { offer_id: offlineOfferWithPendingBookings.id },
+              body: expect.objectContaining({ shouldSendMail: true }),
+            })
           })
         })
 
@@ -290,10 +290,10 @@ describe('<IndividualOfferLocationScreen />', () => {
           )
 
           await waitFor(() => {
-            expect(api.patchOffer).toHaveBeenCalledWith(
-              offlineOfferWithPendingBookings.id,
-              expect.objectContaining({ shouldSendMail: false })
-            )
+            expect(apiNew.patchOffer).toHaveBeenCalledWith({
+              path: { offer_id: offlineOfferWithPendingBookings.id },
+              body: expect.objectContaining({ shouldSendMail: false }),
+            })
           })
         })
 
@@ -311,7 +311,7 @@ describe('<IndividualOfferLocationScreen />', () => {
               'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
             )
           ).not.toBeInTheDocument()
-          expect(api.patchOffer).not.toHaveBeenCalled()
+          expect(apiNew.patchOffer).not.toHaveBeenCalled()
         })
       })
     })
@@ -347,6 +347,8 @@ describe('<IndividualOfferLocationScreen />', () => {
       it('should render without error even when url is null', async () => {
         const props = { offer: { ...onlineOffer, url: null } }
 
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
         renderIndividualOfferLocationScreen({ props })
 
         expect(

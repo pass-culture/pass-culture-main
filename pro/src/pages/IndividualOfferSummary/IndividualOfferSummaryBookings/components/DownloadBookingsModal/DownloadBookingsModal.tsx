@@ -2,12 +2,12 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   BookingExportType,
   BookingsExportStatusFilter,
   type EventDatesInfos,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
@@ -76,21 +76,29 @@ export const DownloadBookingsModal = ({
       ?.submitter?.dataset.export
 
     if (fileFormat === BookingExportType.CSV) {
+      const bookingsCsvText = (await apiNew.exportBookingsForOfferAsCsv({
+        path: { offer_id: offerId },
+        query: {
+          status: data.selectedBookingType,
+          eventDate: data.selectedDate,
+        },
+      })) as string
+      const bookingsCsvBlob = new Blob([bookingsCsvText], {
+        type: 'text/csv;charset=utf-8;',
+      })
       downloadFile(
-        await api.exportBookingsForOfferAsCsv(
-          offerId,
-          data.selectedBookingType,
-          data.selectedDate
-        ),
+        bookingsCsvBlob,
         `reservations-${data.selectedBookingType}-${data.selectedDate}.csv`
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
       downloadFile(
-        await api.exportBookingsForOfferAsExcel(
-          offerId,
-          data.selectedBookingType,
-          data.selectedDate
-        ),
+        (await apiNew.exportBookingsForOfferAsExcel({
+          path: { offer_id: offerId },
+          query: {
+            status: data.selectedBookingType,
+            eventDate: data.selectedDate,
+          },
+        })) as Blob,
         `reservations-${data.selectedBookingType}-${data.selectedDate}.xlsx`
       )
     }

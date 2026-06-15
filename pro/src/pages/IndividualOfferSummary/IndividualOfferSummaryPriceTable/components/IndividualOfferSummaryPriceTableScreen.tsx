@@ -1,7 +1,7 @@
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,

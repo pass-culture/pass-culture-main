@@ -20,11 +20,11 @@ import {
 import { IndividualOfferSummaryPriceTable } from './IndividualOfferSummaryPriceTable'
 
 vi.mock('@/apiClient/api', () => ({
-  api: { getStocks: vi.fn() },
+  apiNew: { getStocks: vi.fn() },
 }))
 
-import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
@@ -87,7 +87,7 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
   })
 
   it('should render layout, screen and action bar when stocks loaded', async () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         totalStockCount: 1,
         stocks: [getOfferStockFactory({ id: 2 })],
@@ -108,11 +108,13 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
         screen.getByRole('heading', { name: LABELS.headings.priceTable })
       ).toBeInTheDocument()
     )
-    expect(api.getStocks).toHaveBeenCalledWith(offer.id)
+    expect(apiNew.getStocks).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+    })
   })
 
   it('should not call stocks for an event offer', () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         totalStockCount: 1,
         stocks: [getOfferStockFactory({ id: 2 })],
@@ -128,6 +130,6 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
 
     renderIndividualOfferSummaryPriceTable({ offer })
 
-    expect(api.getStocks).not.toHaveBeenCalled()
+    expect(apiNew.getStocks).not.toHaveBeenCalled()
   })
 })

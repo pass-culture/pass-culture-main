@@ -5,7 +5,7 @@ import styles from './FieldHeader.module.scss'
 
 type FieldHeaderProps = {
   fieldId: string
-  label: string | JSX.Element
+  label?: string | JSX.Element
   required: boolean
   requiredIndicator?: RequiredIndicator
   description?: string
@@ -27,12 +27,14 @@ export function FieldHeader({
       })}
     >
       <div>
-        <label htmlFor={fieldId} className={styles['label']}>
-          {label}
-          {required && requiredIndicator === 'symbol' && (
-            <span className={styles['label-mandatory-symbol']}>*</span>
-          )}
-        </label>
+        {label && (
+          <label htmlFor={fieldId} className={styles['label']}>
+            {label}
+            {required && requiredIndicator === 'symbol' && (
+              <span className={styles['label-mandatory-symbol']}>*</span>
+            )}
+          </label>
+        )}
         {description && (
           <p id={descriptionId} className={styles['description']}>
             {description}

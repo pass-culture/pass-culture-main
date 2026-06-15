@@ -6,31 +6,31 @@ import {
   type BookingRecapResponseModel,
   type BookingRecapResponseStockModel,
   BookingRecapStatus,
-  type CategoryResponseModel,
   type GetBookingResponse,
-  type GetOffererNameResponseModel,
-  type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
-  type GetOfferStockResponseModel,
-  type GetStocksResponseModel,
   type GetVenueResponseModel,
   type ManagedVenue,
   type OfferHomeResponseModel,
-  type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   type VenueProviderResponse,
 } from '@/apiClient/v1'
 import {
+  type CategoryResponseModel,
   DisplayableActivity,
   type GetIndividualOfferWithAddressResponseModel,
+  type GetOffererNameResponseModel,
+  type GetOffererResponseModel,
   type GetOffererVenueResponseModel as GetOffererVenueResponseModelNew,
   type GetOfferManagingOffererResponseModel,
+  type GetOfferStockResponseModel,
   type GetOfferVenueResponseModel,
+  type GetStocksResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
   OfferStatus,
   type PriceCategoryResponseModel,
   SubcategoryIdEnum,
+  type SubcategoryResponseModel,
 } from '@/apiClient/v1/new'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
@@ -106,6 +106,9 @@ export const getIndividualOfferFactory = (
     isDuo: true,
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+    // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+    // @ts-expect-error
+    lastProvider: null,
     bookingsCount: 0,
     isNonFreeOffer: true,
     visualDisabilityCompliant: true,
@@ -360,6 +363,7 @@ export const getOfferStockFactory = (
   return {
     id: stockResponseId++,
     price: 10,
+    // @ts-expect-error - to remove when GetStockResponseModel will be migrated to pydanticV2
     activationCodesExpirationDatetime: null,
     hasActivationCode: false,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),

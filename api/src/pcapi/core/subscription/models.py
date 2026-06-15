@@ -34,7 +34,8 @@ class FraudCheckType(enum.Enum):
     PHONE_VALIDATION = "phone_validation"
     PROFILE_COMPLETION = "profile_completion"
     QF_BONUS_CREDIT = "qf_bonus_credit"
-    DISABILITY_BONUS_CREDIT = "disability_bonus_credit"
+    AAH_BONUS_CREDIT = "aah_bonus_credit"
+    AEEH_BONUS_CREDIT = "aeeh_bonus_credit"
     UBBLE = "ubble"
     # Deprecated but kept for backwards compatibility
     JOUVE = "jouve"
@@ -42,6 +43,11 @@ class FraudCheckType(enum.Enum):
 
 
 IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType.UBBLE, FraudCheckType.EDUCONNECT]
+BONUS_CREDIT_CHECK_TYPES = [
+    FraudCheckType.AAH_BONUS_CREDIT,
+    FraudCheckType.AEEH_BONUS_CREDIT,
+    FraudCheckType.QF_BONUS_CREDIT,
+]
 
 
 class FraudReasonCode(enum.Enum):
@@ -184,7 +190,8 @@ def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckCon
 
     return {
         FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContent,
-        FraudCheckType.DISABILITY_BONUS_CREDIT: DisabilityBonusCreditContent,
+        FraudCheckType.AAH_BONUS_CREDIT: DisabilityBonusCreditContent,
+        FraudCheckType.AEEH_BONUS_CREDIT: DisabilityBonusCreditContent,
         FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
         FraudCheckType.DMS: DMSContent,
         FraudCheckType.EDUCONNECT: EduconnectContent,

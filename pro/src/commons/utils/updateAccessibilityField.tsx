@@ -43,6 +43,7 @@ function updateAccessibilityField(
           audio: false,
         },
         {
+          shouldDirty: true,
           shouldValidate: true,
         }
       )
@@ -60,6 +61,7 @@ function updateAccessibilityField(
           none: false,
         },
         {
+          shouldDirty: true,
           shouldValidate: true,
         }
       )
@@ -75,6 +77,7 @@ function updateAccessibilityField(
         [name]: event.target.checked,
       },
       {
+        shouldDirty: true,
         shouldValidate: true,
       }
     )

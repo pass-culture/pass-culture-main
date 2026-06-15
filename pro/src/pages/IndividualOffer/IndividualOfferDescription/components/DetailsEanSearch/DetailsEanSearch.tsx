@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -94,10 +94,12 @@ export const DetailsEanSearch = ({
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
       try {
-        const product = await api.getProductByEan(
-          data.eanSearch,
-          selectedPartnerVenue.managingOfferer.id
-        )
+        const product = await apiNew.getProductByEan({
+          path: {
+            ean: data.eanSearch,
+            offerer_id: selectedPartnerVenue.managingOfferer.id,
+          },
+        })
         onEanSearch(data.eanSearch, product)
       } catch (err) {
         const fallbackMessage = 'Une erreur est survenue lors de la recherche'

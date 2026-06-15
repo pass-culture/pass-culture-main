@@ -1,37 +1,15 @@
 import type {
-  GetOfferVenueResponseModel,
   GetVenueAddressResponseModel,
   GetVenueManagingOffererResponseModel,
-  GetVenueResponseModel,
   LocationResponseModelV2,
   VenueListItemLiteResponseModel,
 } from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 
 import type { PartialExcept } from '../types'
-
-let VENUE_ID = 0
-
-export const offerVenueFactory = (
-  customOfferVenue: Partial<GetOfferVenueResponseModel> = {}
-): GetOfferVenueResponseModel => {
-  const id = customOfferVenue.id ?? VENUE_ID++
-
-  return {
-    id,
-    audioDisabilityCompliant: true,
-    managingOfferer: {
-      id: 1,
-      name: 'Le nom de l’offreur 1',
-    },
-    mentalDisabilityCompliant: true,
-    motorDisabilityCompliant: true,
-    name: `Nom de la structure ${id}`,
-    publicName: `Nom public de la structure ${id}`,
-    visualDisabilityCompliant: true,
-    ...customOfferVenue,
-  }
-}
 
 export const makeGetVenueManagingOffererResponseModel = <
   T extends PartialExcept<GetVenueManagingOffererResponseModel, 'id'>,

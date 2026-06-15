@@ -1,4 +1,3 @@
-import type { VideoData } from '@/apiClient/v1/new'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -16,8 +15,7 @@ const IndividualOfferMedia = (): JSX.Element | null => {
   return (
     <IndividualOfferLayout offer={offer}>
       <VideoUploaderContextProvider
-        // TODO (tpommellet): remove once `IndividualOfferContext` has been migrated to the new offer model
-        initialVideoData={offer.videoData as VideoData}
+        initialVideoData={offer.videoData}
         offerId={offer.id}
       >
         <IndividualOfferMediaScreen offer={offer} />

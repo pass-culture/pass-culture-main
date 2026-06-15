@@ -12,6 +12,7 @@ import pytest
 from flask import g
 from flask import url_for
 
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import pro_categories
@@ -4442,10 +4443,10 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + offer with joined data + stocks (selectinload) + criteria (selectinload)
-    expected_num_queries = 4
+    # session + offer with joined data + stocks (selectinload) + criteria (selectinload) + artists (selectinload)
+    expected_num_queries = 5
 
-    def test_get_detail_offer(self, authenticated_client):
+    def test_get_offer_details(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             description="Une offre pour tester",
             withdrawalDetails="Demander à la caisse",
@@ -4462,6 +4463,13 @@ class GetOfferDetailsTest(GetEndpointHelper):
             validation_status_prediction=offers_models.ComplianceValidationStatusPrediction.APPROVED,
             validation_status_prediction_reason="Cette offre est conforme aux règles de conformité",
         )
+
+        artist_1 = artist_factories.ArtistFactory(name="Premier artiste")
+        artist_factories.ArtistOfferLinkFactory(artist_id=artist_1.id, offer_id=offer.id)
+        artist_2 = artist_factories.ArtistFactory(name="Deuxième artiste")
+        artist_factories.ArtistOfferLinkFactory(artist_id=artist_2.id, offer_id=offer.id)
+        artist_factories.ArtistOfferLinkFactory(artist_id=None, custom_name="Artiste sans page", offer_id=offer.id)
+
         url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -4488,6 +4496,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Informations de retrait"] == "Demander à la caisse"
         assert descriptions["Email de contact"] == "contact@example.com"
         assert descriptions["Email auquel envoyer les notifications"] == "offre@example.com"
+        assert descriptions["Artistes associés"] == "Artiste sans page Deuxième artiste Premier artiste"
 
         buttons = html_parser.extract(response.data, "button")
         assert "Resync. Algolia" in buttons
@@ -4505,7 +4514,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         ),
     )
-    def test_get_detail_offer_display_music_type_only_for_music_support(self, subcategory_id, authenticated_client):
+    def test_get_offer_details_display_music_type_only_for_music_support(self, subcategory_id, authenticated_client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategory_id,
             extraData={"gtl_id": "08010000"},
@@ -4525,7 +4534,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         else:
             assert "Type de musique" not in descriptions
 
-    def test_get_detail_offer_with_product(self, authenticated_client):
+    def test_get_offer_details_with_product(self, authenticated_client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id)
@@ -4662,7 +4671,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Utilisateur de la dernière validation"] == legit_user.full_name
         assert descriptions["Date de la dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
-    def test_get_detail_offer_without_show_subtype(self, legit_user, authenticated_client):
+    def test_get_offer_details_without_show_subtype(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
             extraData={"showType": 1510},
@@ -4673,7 +4682,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-    def test_get_detail_offer_display_modify_offer_button(self, client):
+    def test_get_offer_details_display_modify_offer_button(self, client):
         offer = offers_factories.OfferFactory()
         manage_offers = (
             db.session.query(perm_models.Permission).filter_by(name=perm_models.Permissions.MANAGE_OFFERS.name).one()
@@ -4697,7 +4706,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Valider l'offre" not in buttons
         assert "Rejeter l'offre" not in buttons
 
-    def test_get_detail_offer_display_validation_buttons_fraud(self, client):
+    def test_get_offer_details_display_validation_buttons_fraud(self, client):
         offer = offers_factories.OfferFactory()
         pro_fraud_actions = (
             db.session.query(perm_models.Permission)
@@ -4723,7 +4732,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Valider" in buttons
         assert "Rejeter" in buttons
 
-    def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
+    def test_get_rejected_offer_details(self, legit_user, authenticated_client):
         validation_date = date_utils.get_naive_utc_now()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
@@ -5001,7 +5010,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         buttons = html_parser.extract(response.data, "button")
         assert "Modifier le partenaire culturel" in buttons
 
-    def test_get_offer_details(self, authenticated_client):
+    def test_get_offer_details_location(self, authenticated_client):
         address = geography_factories.AddressFactory(
             street="1v Place Jacques Rueff",
             postalCode="75007",

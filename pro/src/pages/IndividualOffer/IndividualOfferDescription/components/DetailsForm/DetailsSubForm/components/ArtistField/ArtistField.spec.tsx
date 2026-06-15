@@ -9,15 +9,18 @@ import {
 } from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
-import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import {
+  type ArtistOfferLinkResponseModel,
+  ArtistType,
+} from '@/apiClient/v1/new'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 
 import { ArtistField } from './ArtistField'
 
 vi.mock('@/apiClient/api', () => ({
-  api: { getArtists: vi.fn() },
+  apiNew: { getArtists: vi.fn() },
 }))
 
 vi.mock('@/commons/utils/resizeImageURL', () => ({
@@ -88,7 +91,7 @@ const renderArtistField = ({
 describe('ArtistField', () => {
   beforeEach(() => {
     apiSelectSpy.mockClear()
-    vi.mocked(api.getArtists).mockResolvedValue([
+    vi.mocked(apiNew.getArtists).mockResolvedValue([
       { id: '1', name: 'Alice', thumbUrl: 'any-url' },
       { id: '2', name: 'Bob', thumbUrl: 'any-url' },
     ])
@@ -159,7 +162,9 @@ describe('ArtistField', () => {
     const props = apiSelectSpy.mock.calls[0][0]
 
     const result = await props.searchApi('Al')
-    expect(api.getArtists).toHaveBeenCalledWith('Al')
+    expect(apiNew.getArtists).toHaveBeenCalledWith({
+      query: { search: 'Al' },
+    })
     expect(result).toEqual([
       expect.objectContaining({ value: '1', label: 'Alice' }),
       expect.objectContaining({ value: '2', label: 'Bob' }),
@@ -262,6 +267,9 @@ describe('ArtistField', () => {
     renderArtistField({
       defaultArtistOfferLinks: [
         {
+          // TODO(rchaffal): remove the @ts-expect-error once ArtistOfferLinkResponseModel is migrated
+          // to pydantic v2 and artistId can be null in generated types
+          // @ts-expect-error: waiting for backend to migrate to pydantic v2
           artistId: null,
           artistName: '',
           artistType: ArtistType.AUTHOR,

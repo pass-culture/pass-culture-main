@@ -158,6 +158,20 @@
               {% endif %}
             {% endcall %}
           {% endif %}
+          {% set artist_links = offer.artistOfferLinks | sort(attribute="artist_name") %}
+          {% if artist_links %}
+            {% call description_detail_horizontal("Artiste" + (artist_links | length | pluralize) + " associé" + (artist_links | length | pluralize)) %}
+              {% for artist_link in artist_links %}
+                <div>
+                  {% if artist_link.artist %}
+                    {{ links.build_artist_details_link(artist_link.artist, text_attr="name") }}
+                  {% else %}
+                    {{ artist_link.artist_name }}
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endcall %}
+          {% endif %}
           <h5>Informations pratiques</h5>
           {% call description_detail_horizontal("Informations de retrait") %}
             {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}

@@ -2,9 +2,9 @@ import cn from 'classnames'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
-import type { StructureDataBodyModel } from '@/apiClient/v1'
+import type { StructureDataBodyModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -141,7 +141,9 @@ export const Offerer = (): JSX.Element => {
 
     try {
       const venueOfOffererProvidersResponse =
-        await api.getVenuesOfOffererFromSiret(formattedSiret)
+        await apiNew.getVenuesOfOffererFromSiret({
+          path: { siret: formattedSiret },
+        })
 
       // Covers when the user came BACK there after having reached the "activity" step once.
       // When back here, he decides to set ANOTHER siret, we must then clear the previous context data and storage as it's outdated

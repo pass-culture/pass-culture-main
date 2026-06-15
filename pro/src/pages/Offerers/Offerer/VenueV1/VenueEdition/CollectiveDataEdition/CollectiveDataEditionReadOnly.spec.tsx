@@ -1,12 +1,9 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import {
-  DisplayableActivity,
-  type GetVenueResponseModel,
-  StudentLevels,
-} from '@/apiClient/v1'
-import { getActivityLabel } from '@/commons/mappings/mappings'
+import { DisplayableActivity, StudentLevels } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -76,7 +73,9 @@ describe('<CollectiveDataEditionReadOnly />', () => {
 
     expect(screen.getByText(/Activité/i)).toBeInTheDocument()
     expect(
-      screen.getByText(getActivityLabel(DisplayableActivity.PERFORMANCE_HALL))
+      screen.getByText(
+        DisplayableActivityMap.get(DisplayableActivity.PERFORMANCE_HALL) ?? ''
+      )
     ).toBeInTheDocument()
   })
 

@@ -6,7 +6,7 @@ import {
   AdageFrontRoles,
   type AuthenticatedResponse,
 } from '@/apiClient/adage/new'
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { StudentLevels } from '@/apiClient/v1/new'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -89,7 +89,7 @@ vi.mock('../Offers/Offers', () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
@@ -409,11 +409,13 @@ describe('offersSearch component', () => {
   })
 
   it('should show an error message notification when domains could not be fetched', async () => {
-    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce('error')
+    vi.spyOn(apiNew, 'listEducationalDomains').mockRejectedValueOnce('error')
 
     renderOffersSearchComponent(props, user)
 
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
+    )
 
     expect(snackBarError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })

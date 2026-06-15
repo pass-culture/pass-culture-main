@@ -1868,7 +1868,7 @@ def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
         origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
     )
 
-    payload = bonus_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
     flash("La demande de bonification est en cours.", "success")

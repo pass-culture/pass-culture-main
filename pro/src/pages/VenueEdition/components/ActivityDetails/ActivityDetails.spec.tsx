@@ -100,7 +100,7 @@ describe('ActivityDetails', () => {
 
   describe('cultural domains', () => {
     it('should render the multi-select with all available options', async () => {
-      renderActivityDetails()
+      renderActivityDetails({})
 
       const multiSelect = screen.getByLabelText(
         "Sélectionnez un ou plusieurs domaines d'activité"
@@ -115,7 +115,9 @@ describe('ActivityDetails', () => {
     })
 
     it('should pre-select domains from default form values', async () => {
-      renderActivityDetails({ culturalDomains: ['domaine 1'] })
+      renderActivityDetails({
+        culturalDomains: ['domaine 1'],
+      })
 
       await userEvent.click(screen.getByLabelText('domaine sélectionné'))
       await waitFor(() => {
@@ -125,7 +127,7 @@ describe('ActivityDetails', () => {
     })
 
     it('should allow selecting multiple cultural domains', async () => {
-      renderActivityDetails()
+      renderActivityDetails({})
 
       await userEvent.click(
         screen.getByLabelText(

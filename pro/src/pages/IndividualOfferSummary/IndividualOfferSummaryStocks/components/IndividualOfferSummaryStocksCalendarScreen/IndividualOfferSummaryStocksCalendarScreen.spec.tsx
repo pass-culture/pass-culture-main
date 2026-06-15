@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   getStocksResponseFactory,
@@ -12,7 +12,7 @@ import { IndividualOfferSummaryStocksCalendarScreen } from './IndividualOfferSum
 
 describe('IndividualOfferSummaryStocksCalendarScreen', () => {
   it('should show an information banner if the offer is not disabled', async () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValue(
+    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
 

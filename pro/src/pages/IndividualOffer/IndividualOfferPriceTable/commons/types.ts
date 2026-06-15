@@ -3,7 +3,7 @@ import type {
   EditPriceCategoryModel,
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import type { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 export type PriceTableEntryModel = Partial<

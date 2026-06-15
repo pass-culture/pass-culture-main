@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { api, apiNew } from '@/apiClient/api'
 import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -20,10 +20,12 @@ import { SignIn } from './SignIn'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getProfile: vi.fn(),
     signin: vi.fn(),
-    listOfferersNames: vi.fn(),
+  },
+  apiNew: {
     getOfferer: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getProfile: vi.fn(),
   },
 }))
 
@@ -68,7 +70,7 @@ const scrollIntoViewMock = vi.fn()
 describe('SignIn', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
+    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
     vi.spyOn(api, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
@@ -77,7 +79,7 @@ describe('SignIn', () => {
     } as unknown as HTMLScriptElement)
     vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
@@ -92,7 +94,7 @@ describe('SignIn', () => {
       ],
     })
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
   })

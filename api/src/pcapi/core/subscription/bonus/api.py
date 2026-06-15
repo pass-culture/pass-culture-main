@@ -1,5 +1,7 @@
+import dataclasses
 import datetime
 import logging
+import typing
 
 from dateutil.relativedelta import relativedelta
 
@@ -8,17 +10,34 @@ from pcapi.connectors import api_particulier
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import trigger_events
 from pcapi.core.finance import deposit_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass
+class _ApiParticulierResult[
+    ResponseT: (
+        api_particulier.QuotientFamilialResponse,
+        api_particulier.DisabledAdultAllowanceResponse,
+        api_particulier.DisabledChildEducationAllowanceResponse,
+    )
+]:
+    response: ResponseT | None
+    status: subscription_models.FraudCheckStatus
+    reason_codes: list[subscription_models.FraudReasonCode]
+    http_status_code: int
+    error_code: str | None = None
 
 
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
@@ -28,74 +47,42 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     """
     user = quotient_familial_fraud_check.user
     if not deposit_api.can_receive_bonus_credit(user):
+        logger.error("trying to apply for bonus when not able to receive said bonus")
         return
 
     source_data = quotient_familial_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
         raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
 
-    quotient_familial_response: api_particulier.QuotientFamilialResponse | None = None
-    status = subscription_models.FraudCheckStatus.KO
-    error_code = None
-    try:
-        quotient_familial_response = _get_user_quotient_familial_response(source_data.custodian, user)
-    except api_particulier.ParticulierApiApplicationNotFound as e:
-        reason_codes = [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
-        http_status_code = e.status_code
-        error_code = e.error_code
-    except api_particulier.ParticulierApiPersonNotFound as e:
-        reason_codes = [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
-        http_status_code = e.status_code
-        error_code = e.error_code
-    except Exception as e:
-        with atomic():
-            if isinstance(e, api_particulier.ParticulierApiException):
-                http_status_code = e.status_code
-                error_code = e.error_code
-                if quotient_familial_fraud_check.resultContent:
-                    quotient_familial_fraud_check.resultContent["http_status_code"] = http_status_code
-                    quotient_familial_fraud_check.resultContent["error_code"] = error_code
-
-            quotient_familial_fraud_check.updatedAt = datetime.datetime.now(tz=None)
-
-        raise
-    else:
-        status, reason_codes = _get_credit_bonus_status(user, quotient_familial_response.data)
-        http_status_code = 200
+    qf_result = _call_api_particulier(
+        quotient_familial_fraud_check,
+        lambda: _get_user_quotient_familial_response(source_data.custodian, user),
+    )
+    if qf_result.response:
+        qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(user, qf_result.response.data)
 
     with atomic():
-        quotient_familial_fraud_check.status = status
-        quotient_familial_fraud_check.reasonCodes = reason_codes
+        if qf_result.status == subscription_models.FraudCheckStatus.KO:
+            _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
+            _decline_bonus(quotient_familial_fraud_check, qf_result)
 
-        _update_bonus_fraud_check_content(
-            quotient_familial_fraud_check,
-            quotient_familial_response.data if quotient_familial_response else None,
-            http_status_code,
-            error_code,
-        )
+            transactional_mails.send_bonus_declined_email(user)
 
-        if status == subscription_models.FraudCheckStatus.OK:
-            given_recredit = deposit_api.recredit_bonus_credit(user)
+        elif qf_result.status == subscription_models.FraudCheckStatus.OK:
+            given_recredit = _grant_bonus(quotient_familial_fraud_check)
 
             if given_recredit:
-                logger.info("Recredited user %s with bonus credit", user.id)
                 trigger_events.track_has_received_bonus(user.id)
                 transactional_mails.send_bonus_granted_email(user)
-            elif deposit_api.can_receive_bonus_credit(user):
-                logger.error(
-                    "Failed to recredit user with bonus credit despite status = %s Quotient Familial fraud check",
-                    status,
-                    extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
-                )
 
-        if status == subscription_models.FraudCheckStatus.KO:
-            transactional_mails.send_bonus_declined_email(user)
+        else:
+            raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
 
         external_attributes_api.update_external_user(user)
 
 
 def _get_user_quotient_familial_response(
-    custodian: bonus_schemas.Person, user: users_models.User
+    custodian: bonus_schemas.BonusCreditPerson, user: users_models.User
 ) -> api_particulier.QuotientFamilialResponse:
     """
     Calls the Quotient Familial API twelve times, returning the lowest one.
@@ -140,8 +127,8 @@ def _get_user_quotient_familial_response(
 
 def _is_user_part_of_tax_household(
     user: users_models.User,
-    tax_household_children: list[api_particulier.QuotientFamilialPerson],
-    tax_householders: list[api_particulier.QuotientFamilialPerson],
+    tax_household_children: list[api_particulier.ApiParticulierPerson],
+    tax_householders: list[api_particulier.ApiParticulierPerson],
 ) -> bool:
     for child in tax_household_children:
         if _does_user_match_person(user, child):
@@ -160,7 +147,7 @@ def _does_names_match(name_1: str | None, name_2: str | None) -> bool:
     return clean_accents(name_1).upper() in clean_accents(name_2).upper()
 
 
-def _does_user_match_person(user: users_models.User, person: api_particulier.QuotientFamilialPerson) -> bool:
+def _does_user_match_person(user: users_models.User, person: api_particulier.ApiParticulierPerson) -> bool:
     has_first_name_match = _does_names_match(user.firstName, person.prenoms)
     has_last_name_match = _does_names_match(user.lastName, person.nom_naissance) or _does_names_match(
         user.lastName, person.nom_usage
@@ -171,7 +158,7 @@ def _does_user_match_person(user: users_models.User, person: api_particulier.Quo
     return has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match
 
 
-def _get_credit_bonus_status(
+def _get_quotient_familial_bonus_status(
     user: users_models.User, quotient_familial_data: api_particulier.QuotientFamilialData
 ) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
     if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants, quotient_familial_data.allocataires):
@@ -183,55 +170,234 @@ def _get_credit_bonus_status(
     return (subscription_models.FraudCheckStatus.OK, [])
 
 
-def _update_bonus_fraud_check_content(
+def _update_quotient_familial_fraud_check_content(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
-    quotient_familial_data: api_particulier.QuotientFamilialData | None,
-    http_status_code: int | None,
-    error_code: str | None,
+    qf_result: _ApiParticulierResult[api_particulier.QuotientFamilialResponse],
 ) -> None:
+    quotient_familial_data = qf_result.response.data if qf_result.response else None
+    if not quotient_familial_data:
+        return
+
     if not fraud_check.resultContent:
         fraud_check.resultContent = {}
 
-    if http_status_code:
-        fraud_check.resultContent["http_status_code"] = http_status_code
+    if not fraud_check.resultContent.get("quotient_familial"):
+        fraud_check.resultContent["quotient_familial"] = {}
 
-    if error_code:
-        fraud_check.resultContent["error_code"] = error_code
+    quotient_familial_content = bonus_schemas.QuotientFamilialContent.from_api_particulier_quotient_familial(
+        quotient_familial_data.quotient_familial
+    )
+    fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
 
-    if quotient_familial_data:
-        if not fraud_check.resultContent.get("quotient_familial"):
-            fraud_check.resultContent["quotient_familial"] = {}
+    tax_household_children = [
+        bonus_schemas.BonusCreditPerson.from_api_particulier_person(child) for child in quotient_familial_data.enfants
+    ]
+    fraud_check.resultContent["children"] = [child.model_dump() for child in tax_household_children]
 
-        quotient_familial_content = bonus_schemas.QuotientFamilialContent(
-            provider=quotient_familial_data.quotient_familial.fournisseur,
-            value=quotient_familial_data.quotient_familial.valeur,
-            year=quotient_familial_data.quotient_familial.annee,
-            month=quotient_familial_data.quotient_familial.mois,
-            computation_year=quotient_familial_data.quotient_familial.annee_calcul,
-            computation_month=quotient_familial_data.quotient_familial.mois_calcul,
+    tax_householders = [
+        bonus_schemas.BonusCreditPerson.from_api_particulier_person(householder)
+        for householder in quotient_familial_data.allocataires
+    ]
+    fraud_check.resultContent["householders"] = [householder.model_dump() for householder in tax_householders]
+
+
+def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    """
+    Checks eligibility to either the adult disability allowance (AAH).
+
+    The handling of the user health information must be very delicate to implement GDPR regulations, to avoid leaking
+    the info in any ways possible: through our own database leaks, or through external providers leaks like logging,
+    monitoring or email services.
+
+    Refer to the ADR about degraded implementation of health information if needed.
+    """
+    user = aah_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user):
+        logger.warning("trying to apply for bonus when not able to receive said bonus")
+        return
+
+    source_data = aah_fraud_check.source_data()
+    if not isinstance(source_data, bonus_schemas.DisabilityBonusCreditContent):
+        raise ValueError(f"DisabilityBonusCreditContent was expected while {type(source_data)} was given")
+
+    aah_result = _call_api_particulier(
+        aah_fraud_check, lambda: api_particulier.get_disabled_adult_allowance(source_data.person)
+    )
+    if aah_result.response:
+        aah_result.status, aah_result.reason_codes = _get_adult_disability_bonus_status(aah_result.response.data)
+
+    with atomic():
+        if aah_result.status == subscription_models.FraudCheckStatus.KO:
+            _decline_bonus(aah_fraud_check, aah_result)
+
+        elif aah_result.status == subscription_models.FraudCheckStatus.OK:
+            given_recredit = _grant_bonus(aah_fraud_check)
+
+            if given_recredit:
+                trigger_events.track_has_received_bonus(user.id)
+                transactional_mails.send_bonus_granted_email(user)
+
+        else:
+            raise NotImplementedError(f"no handler was implemented for {aah_result.status}")
+
+        external_attributes_api.update_external_user(user)
+
+
+def _get_adult_disability_bonus_status(
+    aah_data: api_particulier.DisabledAdultAllowanceData,
+) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
+    if aah_data.est_beneficiaire:
+        return subscription_models.FraudCheckStatus.OK, []
+
+    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
+
+def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    """
+    Checks eligibility to either the disabled child education allowance (AEEH).
+
+    The handling of the user health information must be very delicate to implement GDPR regulations, to avoid leaking
+    the info in any ways possible: through our own database leaks, or through external providers leaks like logging,
+    monitoring or email services.
+
+    Refer to the ADR about degraded implementation of health information if needed.
+    """
+    user = aeeh_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user):
+        logger.warning("trying to apply for bonus when not able to receive said bonus")
+        return
+
+    source_data = aeeh_fraud_check.source_data()
+    if not isinstance(source_data, bonus_schemas.DisabilityBonusCreditContent):
+        raise ValueError(f"DisabilityBonusCreditContent was expected while {type(source_data)} was given")
+
+    aeeh_result = _call_api_particulier(
+        aeeh_fraud_check, lambda: api_particulier.get_disabled_child_education_allowance(source_data.person)
+    )
+    if aeeh_result.response:
+        aeeh_result.status, aeeh_result.reason_codes = _get_disabled_child_education_bonus_status(
+            aeeh_result.response.data
         )
-        fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
 
-        tax_householders = [
-            bonus_schemas.QuotientFamilialPerson(
-                last_name=householder.nom_naissance,
-                common_name=householder.nom_usage,
-                first_names=householder.prenoms.split(" ") if householder.prenoms else [],
-                birth_date=householder.date_naissance,
-                gender=householder.sexe,
-            )
-            for householder in quotient_familial_data.allocataires
-        ]
-        fraud_check.resultContent["householders"] = [householder.model_dump() for householder in tax_householders]
+    with atomic():
+        if aeeh_result.status == subscription_models.FraudCheckStatus.KO:
+            _decline_bonus(aeeh_fraud_check, aeeh_result)
 
-        tax_household_children = [
-            bonus_schemas.QuotientFamilialPerson(
-                last_name=child.nom_naissance,
-                common_name=child.nom_usage,
-                first_names=child.prenoms.split(" ") if child.prenoms else [],
-                birth_date=child.date_naissance,
-                gender=child.sexe,
-            )
-            for child in quotient_familial_data.enfants
-        ]
-        fraud_check.resultContent["children"] = [child.model_dump() for child in tax_household_children]
+        elif aeeh_result.status == subscription_models.FraudCheckStatus.OK:
+            given_recredit = _grant_bonus(aeeh_fraud_check)
+
+            if given_recredit:
+                trigger_events.track_has_received_bonus(user.id)
+                transactional_mails.send_bonus_granted_email(user)
+
+        else:
+            raise NotImplementedError(f"no handler was implemented for {aeeh_result.status}")
+
+        external_attributes_api.update_external_user(user)
+
+
+def _get_disabled_child_education_bonus_status(
+    aeeh_data: api_particulier.DisabledChildEducationAllowanceData,
+) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
+    if aeeh_data.status in [
+        api_particulier.DisabledChildEducationAllowanceStatus.BENEFICIARY,
+        api_particulier.DisabledChildEducationAllowanceStatus.RIGHT_OPENING,
+    ]:
+        return subscription_models.FraudCheckStatus.OK, []
+    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+
+
+def _call_api_particulier[
+    ResponseT: (
+        api_particulier.QuotientFamilialResponse,
+        api_particulier.DisabledAdultAllowanceResponse,
+        api_particulier.DisabledChildEducationAllowanceResponse,
+    )
+](
+    fraud_check: subscription_models.BeneficiaryFraudCheck, fetch: typing.Callable[[], ResponseT]
+) -> _ApiParticulierResult[ResponseT]:
+    """
+    Run fetch() and format the API Particulier errors into a result.
+    Re-raises unexpected errors after bumping updatedAt so the recovery cron doesn't loop.
+    """
+    response: ResponseT | None = None
+    reason_codes = []
+    error_code: str | None = None
+
+    try:
+        response = fetch()
+    except api_particulier.ParticulierApiApplicationNotFound as e:
+        status = subscription_models.FraudCheckStatus.KO
+        reason_codes = [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+        http_status_code, error_code = e.status_code, e.error_code
+    except api_particulier.ParticulierApiPersonNotFound as e:
+        status = subscription_models.FraudCheckStatus.KO
+        reason_codes = [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
+        http_status_code, error_code = e.status_code, e.error_code
+    except api_particulier.ParticulierApiException as e:
+        with atomic():
+            fraud_check.updatedAt = datetime.datetime.now(tz=None)
+
+            if not fraud_check.resultContent:
+                fraud_check.resultContent = {}
+            fraud_check.resultContent["http_status_code"] = e.status_code
+            fraud_check.resultContent["error_code"] = e.error_code
+
+        raise
+    except Exception:
+        with atomic():
+            fraud_check.updatedAt = datetime.datetime.now(tz=None)
+
+        raise
+
+    else:
+        # the caller should apply business logic to the response to know the real status
+        status = subscription_models.FraudCheckStatus.SUSPICIOUS
+        http_status_code = 200
+
+    return _ApiParticulierResult(response, status, reason_codes, http_status_code, error_code)
+
+
+def _decline_bonus(
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+    result: _ApiParticulierResult[typing.Any],
+) -> None:
+    fraud_check.status = result.status
+    fraud_check.reasonCodes = result.reason_codes
+
+    if not fraud_check.resultContent:
+        fraud_check.resultContent = {}
+
+    if result.http_status_code:
+        fraud_check.resultContent["http_status_code"] = result.http_status_code
+
+    if result.error_code:
+        fraud_check.resultContent["error_code"] = result.error_code
+
+
+def _grant_bonus(fraud_check: subscription_models.BeneficiaryFraudCheck) -> finance_models.Recredit | None:
+    user = fraud_check.user
+    given_recredit = deposit_api.recredit_bonus_credit(user)
+
+    if given_recredit:
+        _delete_bonus_fraud_checks(user)
+    elif deposit_api.can_receive_bonus_credit(user):
+        raise ValueError(f"{fraud_check=} should have led to a credit bonus")
+
+    return given_recredit
+
+
+def _delete_bonus_fraud_checks(user: users_models.User) -> None:
+    """
+    We delete every bonus fraud checks to avoid retro engineering which bonus credit was granted through which process
+    (AAH/AEEH or QF).
+    """
+    bonus_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+    ]
+    for fraud_check in bonus_fraud_checks:
+        db.session.delete(fraud_check)
+
+    db.session.flush()

@@ -11,10 +11,10 @@ from dateutil.relativedelta import relativedelta
 
 import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.external.batch.testing as push_testing
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.bonus.api as bonus_api
-import pcapi.core.subscription.bonus.constants as bonus_constants
 import pcapi.core.subscription.bonus.schemas as bonus_schemas
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
@@ -57,46 +57,13 @@ class QuotientFamilialApplicationTest:
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
-        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
-        householder_data = with_18_child_quotient_familial["data"]["allocataires"][0]
-        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
-            custodian=bonus_schemas.Person(
-                last_name="LEFEBVRE",
-                common_name=None,
-                first_names=["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
-                birth_date=datetime.date(1982, 12, 27),
-                gender=users_models.GenderEnum.M,
-                birth_country_cog_code="99243",
-                birth_city_cog_code="08480",
-            ),
-            quotient_familial=bonus_schemas.QuotientFamilialContent(
-                provider="CNAF",
-                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
-                year=2023,
-                month=6,
-                computation_year=2024,
-                computation_month=12,
-            ),
-            householders=[
-                bonus_schemas.QuotientFamilialPerson(
-                    last_name=householder_data["nom_naissance"],
-                    common_name=None,
-                    first_names=householder_data["prenoms"].split(),
-                    birth_date=householder_data["date_naissance"],
-                    gender=users_models.GenderEnum.M,
-                )
-            ],
-            children=[
-                bonus_schemas.QuotientFamilialPerson(
-                    last_name="LEFEBVRE",
-                    common_name=None,
-                    first_names=["LEO"],
-                    birth_date=eighteen_years_ago,
-                    gender=users_models.GenderEnum.M,
-                )
-            ],
-            http_status_code=200,
-        )
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -150,37 +117,13 @@ class QuotientFamilialApplicationTest:
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
-        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
-        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
-            custodian=bonus_schemas.Person(
-                last_name=householder_data["nom_naissance"],
-                common_name=None,
-                first_names=householder_data["prenoms"].split(),
-                birth_date=householder_data["date_naissance"],
-                gender=users_models.GenderEnum.M,
-                birth_country_cog_code="99243",
-                birth_city_cog_code="08480",
-            ),
-            quotient_familial=bonus_schemas.QuotientFamilialContent(
-                provider="CNAF",
-                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
-                year=2023,
-                month=6,
-                computation_year=2024,
-                computation_month=12,
-            ),
-            householders=[
-                bonus_schemas.QuotientFamilialPerson(
-                    last_name=householder_data["nom_naissance"],
-                    common_name=None,
-                    first_names=householder_data["prenoms"].split(),
-                    birth_date=eighteen_years_ago,
-                    gender=users_models.GenderEnum.M,
-                )
-            ],
-            children=[],
-            http_status_code=200,
-        )
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -222,11 +165,13 @@ class QuotientFamilialApplicationTest:
 
             bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
-        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.OK
-        assert (
-            bonus_fraud_check.source_data().quotient_familial.value
-            == bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["quotient_familial"]["valeur"]
-        )
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -257,12 +202,13 @@ class QuotientFamilialApplicationTest:
 
     def test_application_not_found(self):
         user = users_factories.BeneficiaryFactory()
+        custodian = subscription_factories.ApiParticulierPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                quotient_familial=None
+                custodian=custodian, quotient_familial=None
             ).model_dump(),
         )
 
@@ -277,9 +223,14 @@ class QuotientFamilialApplicationTest:
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
-        assert bonus_fraud_check.source_data().quotient_familial is None
-        assert bonus_fraud_check.source_data().http_status_code == 404
-        assert bonus_fraud_check.source_data().error_code == "37003"
+        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
+            custodian=custodian,
+            quotient_familial=None,
+            householders=None,
+            children=None,
+            http_status_code=404,
+            error_code="37003",
+        )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -296,12 +247,13 @@ class QuotientFamilialApplicationTest:
 
     def test_person_not_found(self):
         user = users_factories.BeneficiaryFactory()
+        custodian = subscription_factories.ApiParticulierPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                quotient_familial=None
+                custodian=custodian, quotient_familial=None
             ).model_dump(),
         )
 
@@ -316,7 +268,14 @@ class QuotientFamilialApplicationTest:
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
-        assert bonus_fraud_check.source_data().quotient_familial is None
+        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
+            custodian=custodian,
+            quotient_familial=None,
+            householders=None,
+            children=None,
+            http_status_code=422,
+            error_code="00355",
+        )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -333,12 +292,13 @@ class QuotientFamilialApplicationTest:
 
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
+        custodian = subscription_factories.ApiParticulierPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                quotient_familial=None
+                custodian=custodian, quotient_familial=None
             ).model_dump(),
         )
 
@@ -350,6 +310,39 @@ class QuotientFamilialApplicationTest:
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
         assert bonus_fraud_check.source_data().quotient_familial is not None
+
+        householder_data = bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["allocataires"][0]
+        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
+            custodian=custodian,
+            quotient_familial=bonus_schemas.QuotientFamilialContent(
+                provider="CNAF",
+                value=700,
+                year=2023,
+                month=6,
+                computation_year=2024,
+                computation_month=12,
+            ),
+            householders=[
+                bonus_schemas.BonusCreditPerson(
+                    last_name=householder_data["nom_naissance"],
+                    common_name=None,
+                    first_names=householder_data["prenoms"].split(),
+                    birth_date=householder_data["date_naissance"],
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            children=[
+                bonus_schemas.BonusCreditPerson(
+                    last_name="LEFEBVRE",
+                    common_name=None,
+                    first_names=["LEO"],
+                    birth_date=datetime.date(1990, 4, 20),
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            http_status_code=200,
+        )
+
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -370,11 +363,14 @@ class QuotientFamilialApplicationTest:
         high_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
         high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
         user = _build_user_from_fixture(high_quotient_familial)
+        custodian = subscription_factories.ApiParticulierPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
-            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                custodian=custodian, quotient_familial=None
+            ).model_dump(),
         )
 
         with requests_mock.Mocker() as mock:
@@ -387,6 +383,39 @@ class QuotientFamilialApplicationTest:
         assert bonus_fraud_check.source_data().quotient_familial == bonus_schemas.QuotientFamilialContent(
             provider="CNAF", value=9_999_999, year=2023, month=6, computation_year=2024, computation_month=12
         )
+
+        householder_data = high_quotient_familial["data"]["allocataires"][0]
+        assert bonus_fraud_check.source_data() == bonus_schemas.QuotientFamilialBonusCreditContent(
+            custodian=custodian,
+            quotient_familial=bonus_schemas.QuotientFamilialContent(
+                provider="CNAF",
+                value=9_999_999,
+                year=2023,
+                month=6,
+                computation_year=2024,
+                computation_month=12,
+            ),
+            householders=[
+                bonus_schemas.BonusCreditPerson(
+                    last_name=householder_data["nom_naissance"],
+                    common_name=None,
+                    first_names=householder_data["prenoms"].split(),
+                    birth_date=householder_data["date_naissance"],
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            children=[
+                bonus_schemas.BonusCreditPerson(
+                    last_name="LEFEBVRE",
+                    common_name=None,
+                    first_names=["LEO"],
+                    birth_date=eighteen_years_ago,
+                    gender=users_models.GenderEnum.M,
+                )
+            ],
+            http_status_code=200,
+        )
+
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
@@ -401,6 +430,7 @@ class QuotientFamilialApplicationTest:
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
 
+    @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
         captured_events = []
 
@@ -443,14 +473,14 @@ class QuotientFamilialApplicationTest:
         assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
-        assert stacktrace_frames[1]["vars"]["quotient_familial_response"] == "[REDACTED]"
-        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+        for i in range(6):
+            stacktrace_vars = stacktrace_frames[i]["vars"]
+            assert stacktrace_vars.get("source_data") in [None, "[REDACTED]"]
 
-        assert stacktrace_frames[2]["vars"]["all_quotient_familial_responses"] == "[REDACTED]"
-        assert stacktrace_frames[2]["vars"]["custodian"] == "[REDACTED]"
+        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
+        # assert stacktrace_frames[4]["vars"] birth_date, seventeenth_birth_date, at_date are "[REDACTED]"
 
-        assert stacktrace_frames[3]["vars"]["custodian"] == "[REDACTED]"
-        assert stacktrace_frames[3]["vars"]["query_params"] == {
+        assert stacktrace_frames[5]["vars"]["query_params"] == {
             "anneeDateNaissance": "[REDACTED]",
             "codeCogInseeCommuneNaissance": "[REDACTED]",
             "codeCogInseePaysNaissance": "[REDACTED]",
@@ -462,6 +492,8 @@ class QuotientFamilialApplicationTest:
             "recipient": "[REDACTED]",
             "sexeEtatCivil": "[REDACTED]",
         }
+        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
+        # assert stacktrace_frames[5]["vars"] city_insee_code, country_insee_code, at_date are "[REDACTED]"
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
@@ -479,6 +511,28 @@ class QuotientFamilialApplicationTest:
 
         assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
+    @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
+    def test_has_already_received_bonus_credit(self, mock_recredit):
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        user = _build_user_from_fixture(with_18_child_quotient_familial)
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 0
+
+        mock_recredit.assert_not_called()
+        assert len(push_testing.requests) == 0
+        assert len(mails_testing.outbox) == 0
+
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:
     child_data = quotient_familial_json_response["data"]["enfants"][0]
@@ -486,3 +540,441 @@ def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_mod
     first_names = child_data["prenoms"]
     birth_date = datetime.date.fromisoformat(child_data["date_naissance"])
     return users_factories.BeneficiaryFactory(lastName=last_name, firstName=first_names, validatedBirthDate=birth_date)
+
+
+@pytest.mark.usefixtures("db_session")
+class DisabledAdultAllowanceTest:
+    @patch("pcapi.core.external.attributes.api.update_external_user")
+    def test_apply_for_disabled_adult_allowance_bonus(self, update_external_user_mock):
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+        # Ensure that a Batch notification is triggered
+        assert push_testing.requests == [
+            {
+                "can_be_asynchronously_retried": True,
+                "user_id": user.id,
+                "event_name": batch_models.BatchEvent.HAS_RECEIVED_BONUS.value,
+                "event_payload": {"has_received_bonus": True},
+            }
+        ]
+        update_external_user_mock.assert_called_once_with(user)
+
+        assert len(mails_testing.outbox) == 1
+
+    def test_not_eligible_for_disabled_adult_allowance_bonus(self):
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_INELIGIBLE_RESPONSE)
+
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.source_data().http_status_code == 200
+        assert bonus_fraud_check.source_data().error_code is None
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_person_not_found(self):
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=422, json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
+        assert bonus_fraud_check.source_data().http_status_code == 422
+        assert bonus_fraud_check.source_data().error_code == "00355"
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_application_not_found(self):
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+        assert bonus_fraud_check.resultContent["http_status_code"] == 404
+        assert bonus_fraud_check.resultContent["error_code"] == "37003"
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
+    def test_sentry_error_filtered(self):
+        captured_events = []
+
+        def mock_transport(event):
+            nonlocal captured_events
+
+            captured_events.append(event)
+
+        client = sentry_sdk.Client(
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+        )
+
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=500, json={})
+
+            with sentry_sdk.Hub(client):
+                try:
+                    bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+                except api_particulier.ParticulierApiUnavailable as exc:
+                    sentry_sdk.capture_exception(exc)
+
+        assert len(captured_events) == 1
+        event = captured_events[-1]
+        stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
+        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[4]["vars"]["person"] == "[REDACTED]"
+        assert stacktrace_frames[4]["vars"]["query_params"] == {
+            "anneeDateNaissance": "[REDACTED]",
+            "codeCogInseeCommuneNaissance": "[REDACTED]",
+            "codeCogInseePaysNaissance": "[REDACTED]",
+            "jourDateNaissance": "[REDACTED]",
+            "moisDateNaissance": "[REDACTED]",
+            "nomNaissance": "[REDACTED]",
+            "nomUsage": "[REDACTED]",
+            "prenoms[]": "[REDACTED]",
+            "recipient": "[REDACTED]",
+            "sexeEtatCivil": "[REDACTED]",
+        }
+        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
+        # assert stacktrace_frames[4]["vars"] city_insee_code, country_insee_code are "[REDACTED]"
+
+    def test_touch_fraud_check_despite_error(self):
+        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            updatedAt=twelve_hours_ago,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
+
+            with pytest.raises(api_particulier.ParticulierApiException):
+                bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.updatedAt > twelve_hours_ago
+
+    @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
+    def test_has_already_received_bonus_credit(self, mock_recredit):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 0
+
+        mock_recredit.assert_not_called()
+        assert len(push_testing.requests) == 0
+        assert len(mails_testing.outbox) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class DisabledChildEducationAllowanceTest:
+    @pytest.mark.parametrize(
+        "aeeh_response",
+        [bonus_fixtures.AEEH_ELIGIBLE_RESPONSE, bonus_fixtures.AEEH_OPENING_RIGHTS_RESPONSE],
+    )
+    @patch("pcapi.core.external.attributes.api.update_external_user")
+    def test_apply_for_disabled_child_education_allowance_bonus(self, update_external_user_mock, aeeh_response):
+        user = users_factories.BeneficiaryFactory()
+
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, json=aeeh_response)
+
+            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+        # Ensure that a Batch notification is triggered
+        assert push_testing.requests == [
+            {
+                "can_be_asynchronously_retried": True,
+                "user_id": user.id,
+                "event_name": batch_models.BatchEvent.HAS_RECEIVED_BONUS.value,
+                "event_payload": {"has_received_bonus": True},
+            }
+        ]
+        update_external_user_mock.assert_called_once_with(user)
+
+        assert len(mails_testing.outbox) == 1
+
+    def test_not_eligible_for_disabled_child_education_allowance_bonus(self):
+        user = users_factories.BeneficiaryFactory()
+
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_INELIGIBLE_RESPONSE)
+
+            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.source_data().http_status_code == 200
+        assert bonus_fraud_check.source_data().error_code is None
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_person_not_found(self):
+        user = users_factories.BeneficiaryFactory()
+
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=422, json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
+        assert bonus_fraud_check.source_data().http_status_code == 422
+        assert bonus_fraud_check.source_data().error_code == "00355"
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    def test_application_not_found(self):
+        user = users_factories.BeneficiaryFactory()
+
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
+        assert bonus_fraud_check.resultContent["http_status_code"] == 404
+        assert bonus_fraud_check.resultContent["error_code"] == "37003"
+
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
+
+        assert len(mails_testing.outbox) == 0
+
+    @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
+    def test_sentry_error_filtered(self):
+        captured_events = []
+
+        def mock_transport(event):
+            nonlocal captured_events
+
+            captured_events.append(event)
+
+        client = sentry_sdk.Client(
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+        )
+
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=500, json={})
+
+            with sentry_sdk.Hub(client):
+                try:
+                    bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+                except api_particulier.ParticulierApiUnavailable as exc:
+                    sentry_sdk.capture_exception(exc)
+
+        assert len(captured_events) == 1
+        event = captured_events[-1]
+        stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
+        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[4]["vars"]["person"] == "[REDACTED]"
+        assert stacktrace_frames[4]["vars"]["query_params"] == {
+            "anneeDateNaissance": "[REDACTED]",
+            "codeCogInseeCommuneNaissance": "[REDACTED]",
+            "codeCogInseePaysNaissance": "[REDACTED]",
+            "jourDateNaissance": "[REDACTED]",
+            "moisDateNaissance": "[REDACTED]",
+            "nomNaissance": "[REDACTED]",
+            "nomUsage": "[REDACTED]",
+            "prenoms[]": "[REDACTED]",
+            "recipient": "[REDACTED]",
+            "sexeEtatCivil": "[REDACTED]",
+        }
+        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
+        # assert stacktrace_frames[4]["vars"] city_insee_code, country_insee_code are "[REDACTED]"
+
+    def test_touch_fraud_check_despite_error(self):
+        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            updatedAt=twelve_hours_ago,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
+
+            with pytest.raises(api_particulier.ParticulierApiException):
+                bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.updatedAt > twelve_hours_ago
+
+    @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
+    def test_has_already_received_bonus_credit(self, mock_recredit):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+
+        with requests_mock.Mocker() as mock:
+            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+
+            assert mock.call_count == 0
+
+        mock_recredit.assert_not_called()
+        assert len(push_testing.requests) == 0
+        assert len(mails_testing.outbox) == 0

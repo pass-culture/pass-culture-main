@@ -7,7 +7,7 @@ import type {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'

@@ -1,6 +1,8 @@
-import type { StudentLevels } from '@/apiClient/v1'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+  StudentLevels,
+} from '@/apiClient/v1/new'
 
 export type CollectiveDataFormValues = {
   collectiveDescription?: string
@@ -11,5 +13,5 @@ export type CollectiveDataFormValues = {
   collectiveDomains?: string[]
   collectiveLegalStatus?: string
   collectiveInterventionArea?: string[]
-  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType | null
+  activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
 }

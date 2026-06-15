@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1/new'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { getOfferEnhancementCardsVisibility } from '../getOfferEnhancementCardsVisibility'
@@ -58,7 +58,9 @@ describe('getOfferEnhancementCardsVisibility', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       productId: 12,
-      thumbUrl: undefined,
+      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // @ts-expect-error
+      thumbUrl: null,
     })
 
     const result = getOfferEnhancementCardsVisibility(offer)

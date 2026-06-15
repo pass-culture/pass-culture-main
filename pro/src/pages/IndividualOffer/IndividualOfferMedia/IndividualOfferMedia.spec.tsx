@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -33,11 +33,11 @@ const renderIndividualOfferMedia = () => {
 
 describe('IndividialOfferMedia', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
+    vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offer)
   })
 
   it('should render a spinner until offer is fetched', async () => {

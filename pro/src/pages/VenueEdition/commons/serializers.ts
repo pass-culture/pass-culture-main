@@ -1,10 +1,9 @@
 import type {
+  ActivityNotOpenToPublic,
   ActivityOpenToPublic,
   EditVenueBodyModel,
   WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1'
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+} from '@/apiClient/v1/new'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'
@@ -53,21 +52,19 @@ function buildEditVenuePayload(
     isOpenToPublic: formValues.isOpenToPublic
       ? formValues.isOpenToPublic === 'true'
       : undefined,
-    activity:
-      normalizedActivity === null
-        ? null
-        : (normalizedActivity as ActivityOpenToPublic),
+    activity: normalizedActivity,
     culturalDomains: formValues.culturalDomains,
     volunteeringUrl:
       formValues.volunteeringUrl === undefined
         ? undefined
         : formValues.volunteeringUrl || null,
+    withdrawalDetails: formValues.withdrawalDetails,
   }
 }
 
 export function normalizeActivity(
   activity: VenueEditionFormValues['activity']
-): ActivityOpenToPublicType | ActivityNotOpenToPublicType | null | undefined {
+): ActivityOpenToPublic | ActivityNotOpenToPublic | null | undefined {
   if ((activity as string | null) === 'GAMES_CENTRE') {
     return null
   }

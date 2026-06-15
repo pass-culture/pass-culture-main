@@ -1,6 +1,6 @@
 import { format, startOfDay, subDays } from 'date-fns'
 
-import { BookingStatusFilter } from '@/apiClient/v1'
+import { BookingStatusFilter } from '@/apiClient/v1/new'
 import { ALL_OFFERER_ADDRESSES } from '@/commons/core/Offers/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'

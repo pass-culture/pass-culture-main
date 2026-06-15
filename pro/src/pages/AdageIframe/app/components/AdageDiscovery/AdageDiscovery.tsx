@@ -1,7 +1,7 @@
 import { createRef, useRef, useState } from 'react'
 
-import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage'
-import { apiAdage } from '@/apiClient/api'
+import { AdageFrontRoles, AdagePlaylistType } from '@/apiClient/adage/new'
+import { apiAdageNew } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
@@ -46,7 +46,9 @@ export const AdageDiscovery = () => {
     )
 
   if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
-    apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
+    apiAdageNew.logHasSeenAllPlaylist({
+      body: { iframeFrom: location.pathname },
+    })
     hasSeenAllPlaylist.current = true
   }
 
@@ -67,11 +69,13 @@ export const AdageDiscovery = () => {
     playlistType,
     numberOfTiles,
   }: PlaylistTracker) {
-    apiAdage.logHasSeenWholePlaylist({
-      iframeFrom: location.pathname,
-      playlistId,
-      playlistType,
-      numberOfTiles,
+    apiAdageNew.logHasSeenWholePlaylist({
+      body: {
+        iframeFrom: location.pathname,
+        playlistId,
+        playlistType,
+        numberOfTiles,
+      },
     })
   }
 
@@ -87,9 +91,11 @@ export const AdageDiscovery = () => {
   const trackPlaylistElementClicked = (
     playlistTrackerParameters: PlaylistTracker
   ) => {
-    apiAdage.logConsultPlaylistElement({
-      iframeFrom: location.pathname,
-      ...playlistTrackerParameters,
+    apiAdageNew.logConsultPlaylistElement({
+      body: {
+        iframeFrom: location.pathname,
+        ...playlistTrackerParameters,
+      },
     })
   }
 

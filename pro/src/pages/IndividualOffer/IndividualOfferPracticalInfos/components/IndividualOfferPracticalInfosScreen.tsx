@@ -4,11 +4,11 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -117,7 +117,9 @@ export const IndividualOfferPracticalInfosScreen = ({
 
       await mutate(
         [GET_OFFER_QUERY_KEY, offer.id],
-        api.patchOffer(offer.id, requestBody),
+        // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
+        // @ts-expect-error
+        apiNew.patchOffer({ path: { offer_id: offer.id }, body: requestBody }),
         { revalidate: false }
       )
 

@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {
   Banner,

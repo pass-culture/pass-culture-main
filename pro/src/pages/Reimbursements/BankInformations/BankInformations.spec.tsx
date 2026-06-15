@@ -75,7 +75,7 @@ const mockLogEvent = vi.fn()
 describe('BankInformations page', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
     vi.spyOn(
@@ -267,7 +267,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
@@ -388,7 +388,7 @@ describe('BankInformations page', () => {
       managedVenues: [{ ...defaultManagedVenue }],
     })
     const getVenueSpy = vi
-      .spyOn(api, 'getVenue')
+      .spyOn(apiNew, 'getVenue')
       .mockResolvedValueOnce(updatedVenue)
 
     renderWithProviders(
@@ -421,6 +421,6 @@ describe('BankInformations page', () => {
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await user.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(getVenueSpy).toHaveBeenCalledWith(venue.id)
+    expect(getVenueSpy).toHaveBeenCalledWith({ path: { venue_id: venue.id } })
   })
 })

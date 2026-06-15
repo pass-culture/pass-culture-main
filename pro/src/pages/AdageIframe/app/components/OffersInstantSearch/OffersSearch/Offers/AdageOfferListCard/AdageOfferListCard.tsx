@@ -38,7 +38,7 @@ export function AdageOfferListCard({
   queryId = '',
   viewType,
   onCardClicked,
-}: AdageOfferListCardProps) {
+}: Readonly<AdageOfferListCardProps>) {
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
@@ -55,9 +55,10 @@ export function AdageOfferListCard({
   const canAddOfferToFavorites =
     isOfferTemplate && adageUser.role !== AdageFrontRoles.READONLY
 
+  const offerIdPrefix = offer.isTemplate ? '' : 'B-'
   const offerLinkUrl =
     document.referrer && !document.referrer.includes('adage-iframe')
-      ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+      ? `${document.referrer}adage/passculture/offres/offerid/${offerIdPrefix}${offer.id}`
       : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
   return (

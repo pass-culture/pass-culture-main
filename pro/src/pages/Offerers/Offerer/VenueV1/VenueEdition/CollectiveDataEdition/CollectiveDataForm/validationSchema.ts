@@ -1,7 +1,9 @@
 import * as yup from 'yup'
 
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
@@ -19,7 +21,7 @@ export const validationSchema = yup.object<CollectiveDataFormValues>().shape({
   collectiveLegalStatus: yup.string(),
   collectiveInterventionArea: yup.array(),
   activity: yup
-    .mixed<ActivityOpenToPublicType | ActivityNotOpenToPublicType>()
+    .mixed<ActivityOpenToPublic | ActivityNotOpenToPublic>()
     .nullable()
     .required('Veuillez renseigner ce champ'),
 })

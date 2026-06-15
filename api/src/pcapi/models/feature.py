@@ -104,6 +104,9 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_ARTISTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des artistes via les tables BigQuery fournies par l'équipe Data"
     )
+    SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des séries d'évènements via les tables BigQuery fournies par l'équipe Data"
+    )
     SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
         "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
     )
@@ -136,8 +139,9 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_BATCH = (
         "Activer le backend de tâches asynchrones Celery pour la synchro et les notifs Batch"
     )
-    WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING = (
-        "Activer le backend de tâches asynchrones Celery pour l'envoi de notification aux providers"
+
+    WIP_USE_BUILT_IN_CELERY_RATE_LIMIT = (
+        "Activer le rate limit propre à Celery pour l'envoi de notification aux providers"
     )
     WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES = "Active l'utilisation du cron pour les màj des attributs pro"
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
@@ -148,6 +152,7 @@ class FeatureToggle(enum.Enum):
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
+    WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
@@ -211,10 +216,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
+    FeatureToggle.SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES,
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
@@ -223,6 +228,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
+    FeatureToggle.WIP_OFFER_EXPOSURE,
     # Please keep alphabetic order
 )
 

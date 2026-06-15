@@ -76,6 +76,10 @@
           {{ links.build_public_user_name_to_details_link(booking.user) }}
           {{ copy_to_clipboard(booking.user.full_name, "Copier le nom du bénéficiaire") }}
         {% endcall %}
+        {% call description_detail_horizontal("Contremarque") %}
+          {{ booking.token }}
+          {{ copy_to_clipboard(booking.token, "Copier la contremarque") }}
+        {% endcall %}
         {% if booking.stock.beginningDatetime %}
           {% call description_detail_horizontal("Date de l'évènement") %}
             {{ booking.stock.beginningDatetime | format_date_time(address) }}
@@ -96,10 +100,6 @@
   {% call nav_section("finance", "Informations financières") %}
     {% call description_detail_horizontal("Montant") %}
       {{ booking.amount | format_amount(booking.user) }}
-    {% endcall %}
-    {% call description_detail_horizontal("Contremarque") %}
-      {{ booking.token | placeholder_if_empty }}
-      {% if booking.token %}{{ copy_to_clipboard(booking.token, "Copier la contremarque") }}{% endif %}
     {% endcall %}
     {% if booking.cashflow_batch %}
       {% call description_detail_horizontal("N° de virement") %}
@@ -125,7 +125,7 @@
              class="link-primary"
              data-bs-toggle="tooltip"
              data-bs-placement="top"
-             data-bs-title="{{ incident.status | format_finance_incident_status }}">{{ incident.kind | format_finance_incident_type_str }} ({{ incident.id }})</a>
+             data-bs-title="{{ incident.status | format_finance_incident_status }}">{{ incident.kind | format_finance_incident_type }} ({{ incident.id }})</a>
           {{ incident.status | format_finance_incident_status_badge }}
         {% endfor %}
       {% endcall %}

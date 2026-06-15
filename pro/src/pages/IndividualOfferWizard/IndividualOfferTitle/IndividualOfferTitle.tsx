@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 import styles from './IndividualOfferTitle.module.scss'

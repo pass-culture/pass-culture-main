@@ -26,9 +26,6 @@ __pycache__/
 # VS-Code Synk plugin
 .dccache
 
-# Yarn
-.yarn-integrity
-
 # storybook build
 docs-build/
 
@@ -48,7 +45,8 @@ docs-build/
 # Script for VSCode local debugging
 /api/src/pcapi/scripts/local_debug_script.py
 
+# Ignore accidental root lockfile
+/pnpm-lock.yaml
 
-
-# Ignore accidental root yarn lockfile
-/yarn.lock
+npm-debug.log*
+pnpm-debug.log*

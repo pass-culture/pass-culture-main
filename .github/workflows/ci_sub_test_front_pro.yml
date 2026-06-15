@@ -13,21 +13,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
+        with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "pnpm-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
@@ -35,14 +44,14 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn install --immutable
+            pnpm ci
 
-      - run: yarn tsc -b
-      - run: yarn lint:dead-code
-      - run: yarn lint:dead-code:production
-      - run: yarn lint:js
-      - run: yarn lint:scss
-      - run: yarn lint:scss:checkunused
+      - run: pnpm tsc -b
+      - run: pnpm lint:dead-code
+      - run: pnpm lint:dead-code:production
+      - run: pnpm lint:js
+      - run: pnpm lint:scss
+      - run: pnpm lint:scss:checkunused
 
   run-unit-tests:
     name: Unit tests
@@ -54,10 +63,19 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
+        with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
 
       - name: "OpenID Connect Authentication"
@@ -67,16 +85,16 @@ jobs:
           service_account: ${{ vars.PRO_CI_SERVICE_ACCOUNT }}
 
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "pnpm-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -85,10 +103,10 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn install --immutable
+            pnpm ci
 
       - name: Run tests with coverage
-        run: yarn test:unit:ci --reporter=blob --reporter=dot --shard=${{ matrix.shardIndex }}/${{matrix.shardTotal }}
+        run: pnpm test:unit:ci --reporter=blob --reporter=dot --shard=${{ matrix.shardIndex }}/${{matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -118,23 +136,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
+        with:
+          version: 11
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: pnpm
           node-version-file: "pro/package.json"
+          cache-dependency-path: "pro/pnpm-lock.yaml"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
 
       - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
+        id: "pnpm-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
         with:
           compression-method: "gzip"
           bucket: ${{ vars.CACHE_BUCKET }}
           path: |
             **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+            v1-pnpm-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: "Install dependencies (3 attempts)"
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -143,7 +170,7 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn install --immutable
+            pnpm ci
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1

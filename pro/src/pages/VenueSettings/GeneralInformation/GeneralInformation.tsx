@@ -3,10 +3,15 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { getActivities } from '@/commons/mappings/mappings'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
-import { objectKeys } from '@/commons/utils/object'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -40,9 +45,11 @@ const GeneralInformation = () => {
     activity: venue.activity as VenueSettingsFormValues['activity'],
   }
 
+  const initialValues: VenueSettingsFormValues = toFormValues({ venue })
+
   const form = useForm<VenueSettingsFormValues>({
     context: formContext,
-    defaultValues: toFormValues({ venue }),
+    defaultValues: initialValues,
     resolver: yupResolver(
       // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
       venueSettingsValidationSchema as any
@@ -85,19 +92,35 @@ const GeneralInformation = () => {
     setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
+  const resetOpeningHoursAndAccessibility = () => {
+    const fieldsToReset: (keyof VenueSettingsFormValues)[] = [
+      'accessibility',
+      'isAccessibilityAppliedOnAllOffers',
+    ]
+
+    for (const field of fieldsToReset) {
+      form.setValue(field, initialValues[field])
+    }
+  }
+
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
 
     form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
 
-    const activityKeys = objectKeys(
-      getActivities(
-        isOpenToPublicValue === 'true' ? 'OPEN_TO_PUBLIC' : 'NOT_OPEN_TO_PUBLIC'
-      )
-    )
-    const isInitialActivityValid = formContext.activity
-      ? activityKeys.includes(formContext.activity)
-      : false
+    if (isOpenToPublicValue === 'false') {
+      resetOpeningHoursAndAccessibility()
+    }
+
+    const isInitialActivityValid =
+      formContext.activity != null &&
+      (isOpenToPublicValue === 'true'
+        ? getMapKeys(ActivityOpenToPublicMap).includes(
+            formContext.activity as ActivityOpenToPublic
+          )
+        : getMapKeys(ActivityNotOpenToPublicMap).includes(
+            formContext.activity as ActivityNotOpenToPublic
+          ))
 
     if (isInitialActivityValid) {
       form.setValue('activity', formContext.activity)
@@ -157,8 +180,9 @@ const GeneralInformation = () => {
                 />
               )}
             </FormLayout.SubSection>
-
-            <ActivityDetails />
+            <FormLayout.SubSection title="À propos de votre activité">
+              <ActivityDetails />
+            </FormLayout.SubSection>
 
             {venue.pricingPoint?.id && (
               <ReimbursementFields
@@ -169,7 +193,7 @@ const GeneralInformation = () => {
               />
             )}
           </FormLayout>
-          <VenueFormActionBar isSubmitting={isSubmitting} />
+          <VenueFormActionBar isSubmitting={isSubmitting} isSettingsPage />
           <RouteLeavingGuardVenueEdition
             shouldBlock={isDirty && !isSubmitting && !isSubmitted}
           />

@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { getExpirationText } from '@/commons/core/OfferEducational/utils/getExpirationText'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {

@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -64,28 +64,30 @@ export const IndividualOfferSummaryScreen = ({
     const departmentCode = getDepartmentCode(offer)
 
     try {
-      const publishIndividualOfferResponse = await api.patchPublishOffer({
-        id: offer.id,
-        publicationDatetime:
-          values.publicationMode === 'later' &&
-          values.publicationDate &&
-          values.publicationTime
-            ? serializeDateTimeToUTCFromLocalDepartment(
-                values.publicationDate,
-                values.publicationTime,
-                departmentCode
-              )
-            : undefined,
-        bookingAllowedDatetime:
-          values.bookingAllowedMode === 'later' &&
-          values.bookingAllowedDate &&
-          values.bookingAllowedTime
-            ? serializeDateTimeToUTCFromLocalDepartment(
-                values.bookingAllowedDate,
-                values.bookingAllowedTime,
-                departmentCode
-              )
-            : undefined,
+      const publishIndividualOfferResponse = await apiNew.patchPublishOffer({
+        body: {
+          id: offer.id,
+          publicationDatetime:
+            values.publicationMode === 'later' &&
+            values.publicationDate &&
+            values.publicationTime
+              ? serializeDateTimeToUTCFromLocalDepartment(
+                  values.publicationDate,
+                  values.publicationTime,
+                  departmentCode
+                )
+              : undefined,
+          bookingAllowedDatetime:
+            values.bookingAllowedMode === 'later' &&
+            values.bookingAllowedDate &&
+            values.bookingAllowedTime
+              ? serializeDateTimeToUTCFromLocalDepartment(
+                  values.bookingAllowedDate,
+                  values.bookingAllowedTime,
+                  departmentCode
+                )
+              : undefined,
+        },
       })
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
 

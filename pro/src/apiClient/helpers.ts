@@ -1,6 +1,6 @@
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form'
 
-import type { ApiError } from './v1'
+import type { ApiError } from '@/apiClient/compat'
 
 export function serializeApiErrors<T extends FieldValues>(
   errors: Record<string, string[]>,

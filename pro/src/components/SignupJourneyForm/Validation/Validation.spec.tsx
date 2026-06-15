@@ -2,8 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
-import { type PostOffererResponseModel, Target } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import {
+  ActivityOpenToPublic,
+  type PostOffererResponseModel,
+  Target,
+} from '@/apiClient/v1/new'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -61,11 +65,8 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getVenues: vi.fn(),
+  apiNew: {
     saveNewOnboardingData: vi.fn(),
-    listOfferersNames: vi.fn(),
-    getOfferer: vi.fn(),
   },
 }))
 
@@ -184,7 +185,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        activity: 'MUSEUM',
+        activity: ActivityOpenToPublic.MUSEUM,
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -215,7 +216,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        activity: 'MUSEUM',
+        activity: ActivityOpenToPublic.MUSEUM,
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -255,7 +256,7 @@ describe('ValidationScreen', () => {
         {
           ...contextValue,
           activity: {
-            activity: 'MUSEUM',
+            activity: ActivityOpenToPublic.MUSEUM,
             socialUrls: ['url1'],
             targetCustomer: Target.EDUCATIONAL,
             phoneNumber: '',
@@ -294,7 +295,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -341,7 +342,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -368,11 +369,7 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = 'nom public'
       }
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -381,28 +378,30 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        activity: 'MUSEUM',
-        otherActivityComment: null,
-        culturalDomains: undefined,
-        publicName: 'nom public',
-        siret: '123123123',
-        webPresence: 'url1, url2',
-        target: Target.EDUCATIONAL,
-        createVenueWithoutSiret: false,
-        address: {
-          street: '3 Rue de Valois',
-          banId: '75118_5995_00043',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
-          inseeCode: '75111',
-          isManualEdition: false,
+      expect(apiNew.saveNewOnboardingData).toHaveBeenCalledWith({
+        body: {
+          activity: 'MUSEUM',
+          otherActivityComment: null,
+          culturalDomains: undefined,
+          publicName: 'nom public',
+          siret: '123123123',
+          webPresence: 'url1, url2',
+          target: Target.EDUCATIONAL,
+          createVenueWithoutSiret: false,
+          address: {
+            street: '3 Rue de Valois',
+            banId: '75118_5995_00043',
+            city: 'Paris',
+            latitude: 0,
+            longitude: 0,
+            postalCode: '75001',
+            inseeCode: '75111',
+            isManualEdition: false,
+          },
+          token: 'token',
+          isOpenToPublic: false,
+          phoneNumber: '',
         },
-        token: 'token',
-        isOpenToPublic: false,
-        phoneNumber: '',
       })
     })
 
@@ -410,11 +409,7 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = ''
       }
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -423,28 +418,30 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        culturalDomains: undefined,
-        activity: 'MUSEUM',
-        otherActivityComment: null,
-        publicName: null,
-        siret: '123123123',
-        webPresence: 'url1, url2',
-        target: Target.EDUCATIONAL,
-        createVenueWithoutSiret: false,
-        address: {
-          street: '3 Rue de Valois',
-          banId: '75118_5995_00043',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
-          inseeCode: '75111',
-          isManualEdition: false,
+      expect(apiNew.saveNewOnboardingData).toHaveBeenCalledWith({
+        body: {
+          culturalDomains: undefined,
+          activity: 'MUSEUM',
+          otherActivityComment: null,
+          publicName: null,
+          siret: '123123123',
+          webPresence: 'url1, url2',
+          target: Target.EDUCATIONAL,
+          createVenueWithoutSiret: false,
+          address: {
+            street: '3 Rue de Valois',
+            banId: '75118_5995_00043',
+            city: 'Paris',
+            latitude: 0,
+            longitude: 0,
+            postalCode: '75001',
+            inseeCode: '75111',
+            isManualEdition: false,
+          },
+          token: 'token',
+          isOpenToPublic: false,
+          phoneNumber: '',
         },
-        token: 'token',
-        isOpenToPublic: false,
-        phoneNumber: '',
       })
     })
 
@@ -453,12 +450,8 @@ describe('ValidationScreen', () => {
         contextValue.offerer.publicName = 'nom public'
         contextValue.offerer.isOpenToPublic = 'true'
       }
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       const saveNewOnboardingDataMock = vi
-        .spyOn(api, 'saveNewOnboardingData')
+        .spyOn(apiNew, 'saveNewOnboardingData')
         .mockResolvedValue({} as PostOffererResponseModel)
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
@@ -470,7 +463,7 @@ describe('ValidationScreen', () => {
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
       const [[payload]] = saveNewOnboardingDataMock.mock.calls
-      expect(payload.activity).toBe('MUSEUM')
+      expect(payload.body.activity).toBe('MUSEUM')
     })
 
     it('should send cultural domains', async () => {
@@ -481,12 +474,8 @@ describe('ValidationScreen', () => {
           'Domaine C',
         ]
       }
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       const saveNewOnboardingDataMock = vi
-        .spyOn(api, 'saveNewOnboardingData')
+        .spyOn(apiNew, 'saveNewOnboardingData')
         .mockResolvedValue({} as PostOffererResponseModel)
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
@@ -501,7 +490,7 @@ describe('ValidationScreen', () => {
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
       const [[payload]] = saveNewOnboardingDataMock.mock.calls
-      expect(payload.culturalDomains).toEqual([
+      expect(payload.body.culturalDomains).toEqual([
         'Domaine 1',
         'Domaine II',
         'Domaine C',
@@ -510,14 +499,10 @@ describe('ValidationScreen', () => {
 
     it('should send other activity comment if activity is OTHER', async () => {
       if (contextValue.activity) {
-        contextValue.activity.activity = 'OTHER'
+        contextValue.activity.activity = ActivityOpenToPublic.OTHER
         contextValue.activity.otherActivityComment = 'urbex en pleine nature'
       }
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [],
-      })
-      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -526,38 +511,36 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        culturalDomains: undefined,
-        activity: 'OTHER',
-        otherActivityComment: 'urbex en pleine nature',
-        publicName: null,
-        siret: '123123123',
-        webPresence: 'url1, url2',
-        target: Target.EDUCATIONAL,
-        createVenueWithoutSiret: false,
-        address: {
-          street: '3 Rue de Valois',
-          banId: '75118_5995_00043',
-          city: 'Paris',
-          latitude: 0,
-          longitude: 0,
-          postalCode: '75001',
-          inseeCode: '75111',
-          isManualEdition: false,
+      expect(apiNew.saveNewOnboardingData).toHaveBeenCalledWith({
+        body: {
+          culturalDomains: undefined,
+          activity: 'OTHER',
+          otherActivityComment: 'urbex en pleine nature',
+          publicName: null,
+          siret: '123123123',
+          webPresence: 'url1, url2',
+          target: Target.EDUCATIONAL,
+          createVenueWithoutSiret: false,
+          address: {
+            street: '3 Rue de Valois',
+            banId: '75118_5995_00043',
+            city: 'Paris',
+            latitude: 0,
+            longitude: 0,
+            postalCode: '75001',
+            inseeCode: '75111',
+            isManualEdition: false,
+          },
+          token: 'token',
+          isOpenToPublic: false,
+          phoneNumber: '',
         },
-        token: 'token',
-        isOpenToPublic: false,
-        phoneNumber: '',
       })
     })
 
     describe('navigation after creation', () => {
       beforeEach(() => {
-        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-          offerersNames: [],
-        })
-        vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
           {} as PostOffererResponseModel
         )
         vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -582,7 +565,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -605,7 +588,9 @@ describe('ValidationScreen', () => {
 
     it('should call initializeUser with newOffererId and navigate to user default path', async () => {
       const createdOfferer = { id: 42 } as PostOffererResponseModel
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(createdOfferer)
+      vi.spyOn(apiNew, 'saveNewOnboardingData').mockResolvedValue(
+        createdOfferer
+      )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
       } as unknown as HTMLScriptElement)
@@ -633,7 +618,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          activity: 'MUSEUM',
+          activity: ActivityOpenToPublic.MUSEUM,
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -654,8 +639,8 @@ describe('ValidationScreen', () => {
       }
     })
 
-    it('should display error message on api error', async () => {
-      vi.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
+    it('should display error message on apiNew error', async () => {
+      vi.spyOn(apiNew, 'saveNewOnboardingData').mockRejectedValue({})
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
       } as unknown as HTMLScriptElement)

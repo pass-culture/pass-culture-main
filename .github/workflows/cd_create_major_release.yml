@@ -3,8 +3,8 @@ name: 0 [CD] Create major release
 on:
   schedule:
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onschedule
-    # “At 09:27 on every day-of-week from Monday through Friday.”
-    - cron: '27 9 * * 1-5'
+    # “At 08:27 on every day-of-week from Monday through Friday.”
+    - cron: '27 8 * * 1-5'
       timezone: "Europe/Paris"
   workflow_dispatch:
 
@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - id: check-date-exclusion
         run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> "$GITHUB_OUTPUT"
       - name: Check is allowed
@@ -38,7 +40,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with: { fetch-tags: true }
+        with: 
+          fetch-tags: true
+          persist-credentials: false
 
       - name: Get release-number major version
         id: version
@@ -92,6 +96,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
+          persist-credentials: true
       - name: Create new maintenance branch (v${{ needs.compute-major-version-variables.outputs.release-number }}.0.0)
         env:
           NEW_MAINTENANCE_BRANCH: maint/v${{ needs.compute-major-version-variables.outputs.release-number }}

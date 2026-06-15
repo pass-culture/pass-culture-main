@@ -240,7 +240,7 @@ class CDSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == venue_provider.venue.publicName
+        assert created_offers[0].offererAddress.label == None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert created_offers[0]._description is None
         assert created_offers[0].description == "Description du produit allociné 1"
@@ -329,7 +329,7 @@ class CDSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == venue_provider.venue.publicName
+        assert created_offers[0].offererAddress.label == None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111

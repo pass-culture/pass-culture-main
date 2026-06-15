@@ -1,16 +1,8 @@
-import type { VenueEditionFormValues } from '@/pages/VenueEdition/commons/types'
-
 import { serializeEditVenueBodyModel } from '../serializers'
 
 describe('Venue edition payload serializer', () => {
   it('should return an empty payload when nothing changed', () => {
-    expect(
-      serializeEditVenueBodyModel(
-        {} as Partial<VenueEditionFormValues>,
-        true,
-        false
-      )
-    ).toEqual({})
+    expect(serializeEditVenueBodyModel({}, true, false)).toEqual({})
   })
 
   it('should serialize newly added opening hours', () => {

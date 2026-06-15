@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -14,7 +14,7 @@ vi.mock('swr', async (importOriginal) => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchOffer: vi.fn(),
     upsertOfferStocks: vi.fn(),
   },
@@ -58,11 +58,14 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
-    expect(api.upsertOfferStocks).toHaveBeenCalledWith(
-      offer.id,
-      expect.objectContaining({ stocks: expect.any(Array) })
-    )
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
+    expect(apiNew.upsertOfferStocks).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: expect.objectContaining({ stocks: expect.any(Array) }),
+    })
   })
 
   it('should only patch offer when only isDuo is dirty', async () => {
@@ -79,7 +82,10 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
   })
 
   it('should revalidate offer data after upserting stocks', async () => {

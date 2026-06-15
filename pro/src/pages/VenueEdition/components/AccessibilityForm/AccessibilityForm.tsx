@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { isEqual } from '@/commons/utils/isEqual'
 import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
@@ -72,7 +72,8 @@ export const AccessibilityForm = ({
                 onChange={(e) =>
                   setValue(
                     'isAccessibilityAppliedOnAllOffers',
-                    e.target.checked
+                    e.target.checked,
+                    { shouldDirty: true }
                   )
                 }
                 className={styles['apply-on-all-offers-checkbox']}

@@ -3,8 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { OfferStatus } from '@/apiClient/v1'
+import {
+  type GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,

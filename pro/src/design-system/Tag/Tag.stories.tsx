@@ -69,6 +69,13 @@ export const Cineclub: Story = {
   },
 }
 
+export const ProEdito: Story = {
+  args: {
+    label: 'Pro Edito',
+    variant: TagVariant.PROEDITO,
+  },
+}
+
 export const Headline: Story = {
   args: {
     label: 'Reco par les lieux',

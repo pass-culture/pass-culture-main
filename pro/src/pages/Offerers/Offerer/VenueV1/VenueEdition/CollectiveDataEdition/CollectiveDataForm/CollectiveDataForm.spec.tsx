@@ -2,8 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
-import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -17,7 +20,7 @@ import { CollectiveDataForm } from '../CollectiveDataForm/CollectiveDataForm'
 const mockMutate = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     editVenueCollectiveData: vi.fn(),
   },
 }))
@@ -150,7 +153,7 @@ describe('CollectiveDataForm', () => {
       ...defaultGetVenue,
       collectiveDescription: 'Updated',
     }
-    vi.mocked(api.editVenueCollectiveData).mockResolvedValue(updatedVenue)
+    vi.mocked(apiNew.editVenueCollectiveData).mockResolvedValue(updatedVenue)
 
     const { store } = renderCollectiveDataForm()
 
@@ -158,10 +161,10 @@ describe('CollectiveDataForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(api.editVenueCollectiveData).toHaveBeenCalledWith(
-        defaultGetVenue.id,
-        expect.any(Object)
-      )
+      expect(apiNew.editVenueCollectiveData).toHaveBeenCalledWith({
+        path: { venue_id: defaultGetVenue.id },
+        body: expect.any(Object),
+      })
     })
 
     await waitFor(() => {

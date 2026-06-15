@@ -3471,3 +3471,11 @@ def get_user_pending_and_validated_offerers(
     validated = query.filter(offerers_models.UserOfferer.isValidated).all()
 
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
+
+
+def close_venue(venue: models.Venue) -> None:
+    if venue.is_closed:
+        return
+
+    venue.state = models.VenueState.CLOSED
+    db.session.flush()

@@ -19,7 +19,7 @@ It is built with :
 You need to have a version of node >= 18.0.
 
 ```shell
-npm install
+pnpm install
 ```
 
 ## Local Development

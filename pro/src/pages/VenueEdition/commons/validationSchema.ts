@@ -2,11 +2,14 @@ import { openToPublicValidationSchema } from 'components/OpenToPublicToggle/vali
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
-import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
-import { getActivities } from '@/commons/mappings/mappings'
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+} from '@/apiClient/v1/new'
+import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
+import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
+import { getMapKeys } from '@/commons/mappings/helpers'
 import { emailSchema } from '@/commons/utils/isValidEmail'
-import { objectKeys } from '@/commons/utils/object'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 
 import { getVolunteeringUrlError } from './getVolunteeringUrlError'
@@ -77,12 +80,12 @@ const openingHoursSchemaShape = {
 }
 
 export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
-  const activityTypeValuesOpenToPublic = objectKeys(
-    getActivities('OPEN_TO_PUBLIC')
-  )
-  const activityTypeValuesNotOpenToPublic = objectKeys(
-    getActivities('NOT_OPEN_TO_PUBLIC')
-  )
+  const activityTypeValuesOpenToPublic = getMapKeys(
+    ActivityOpenToPublicMap
+  ) as ActivityOpenToPublic[]
+  const activityTypeValuesNotOpenToPublic = getMapKeys(
+    ActivityNotOpenToPublicMap
+  ) as ActivityNotOpenToPublic[]
 
   return yup
     .object()
@@ -122,7 +125,7 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
           then: (schema) => schema.shape(openingHoursSchemaShape),
         }),
       activity: yup
-        .mixed<ActivityOpenToPublicType | ActivityNotOpenToPublicType>()
+        .mixed<ActivityNotOpenToPublic | ActivityOpenToPublic>()
         .nullable()
         .when(['isOpenToPublic'], {
           is: (open: string) => open === 'true',
@@ -155,6 +158,7 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
           otherwise: (schema) => schema,
         }),
       volunteeringUrl: yup.string().test(volunteeringUrlSchema).nullable(),
+      withdrawalDetails: yup.string().nullable(),
     })
     .concat(openToPublicValidationSchema)
 }

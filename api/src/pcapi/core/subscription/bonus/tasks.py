@@ -9,6 +9,8 @@ from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus.api import apply_for_adult_disability_bonus
+from pcapi.core.subscription.bonus.api import apply_for_disabled_child_education_bonus
 from pcapi.core.subscription.bonus.api import apply_for_quotient_familial_bonus
 from pcapi.models import db
 
@@ -20,25 +22,29 @@ logger = logging.getLogger(__name__)
 QUOTIENT_FAMILIAL_TASK_RATE_LIMIT = settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD // 12
 
 
-class GetQuotientFamilialTaskPayload(BaseModelV2):
+class BonusTaskPayload(BaseModelV2):
     fraud_check_id: int
 
 
 @celery_async_task(
-    name="tasks.api_particulier.default.get_quotient_familial",
-    model=GetQuotientFamilialTaskPayload,
+    name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
+    model=BonusTaskPayload,
     autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
     max_per_time_window=QUOTIENT_FAMILIAL_TASK_RATE_LIMIT,
     time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
 )
-def apply_for_quotient_familial_bonus_task(payload: GetQuotientFamilialTaskPayload) -> None:
+def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     fraud_check = (
         db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
             subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
         )
-        .one()
+        .one_or_none()
     )
+    if fraud_check is None:
+        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
+        return
+
     if fraud_check.type != subscription_models.FraudCheckType.QF_BONUS_CREDIT:
         logger.error(
             "Trying to fetch FraudCheck #%s of type BONUS_CREDIT resulted in a FraudCheck of type %s",
@@ -73,5 +79,73 @@ def recover_started_quotient_familial_application() -> None:
     started_qf_fraud_check_ids = db.session.scalars(started_qf_fraud_check_stmt).all()
 
     for fraud_check_id in started_qf_fraud_check_ids:
-        payload = GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check_id)
+        payload = BonusTaskPayload(fraud_check_id=fraud_check_id)
         apply_for_quotient_familial_bonus_task.delay(payload=payload.model_dump())
+
+
+@celery_async_task(
+    name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
+    model=BonusTaskPayload,
+    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
+    time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
+)
+def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
+    fraud_check = (
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
+        .filter(
+            subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
+        )
+        .one_or_none()
+    )
+    if fraud_check is None:
+        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
+        return
+
+    if fraud_check.type != subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
+        logger.error(
+            "Trying to fetch FraudCheck #%s of type AAH_BONUS_CREDIT resulted in a FraudCheck of type %s",
+            fraud_check.id,
+            fraud_check.type,
+        )
+        return
+
+    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
+        logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
+        return
+
+    apply_for_adult_disability_bonus(fraud_check)
+
+
+@celery_async_task(
+    name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
+    model=BonusTaskPayload,
+    autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
+    max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
+    time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
+)
+def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:
+    fraud_check = (
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
+        .filter(
+            subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
+        )
+        .one_or_none()
+    )
+    if fraud_check is None:
+        logger.warning("fraud check %s was deleted before a celery worker could pick it up", payload.fraud_check_id)
+        return
+
+    if fraud_check.type != subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
+        logger.error(
+            "Trying to fetch FraudCheck #%s of type AEEH_BONUS_CREDIT resulted in a FraudCheck of type %s",
+            fraud_check.id,
+            fraud_check.type,
+        )
+        return
+
+    if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
+        logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
+        return
+
+    apply_for_disabled_child_education_bonus(fraud_check)

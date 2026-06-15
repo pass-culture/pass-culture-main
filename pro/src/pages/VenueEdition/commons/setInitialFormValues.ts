@@ -1,5 +1,6 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
+import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'
 
@@ -20,12 +21,20 @@ export const setInitialFormValues = (
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
     isOpenToPublic: venue.isOpenToPublic.toString(),
-    openingHours: venue.openingHours ?? null,
+    openingHours: normalizeOpeningHoursForForm(venue),
     activity: venue.activity as VenueEditionFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayableActivity`, but not in `ActivityOpenToPublic`
     culturalDomains: venue.collectiveDomains.map((domain) => domain.name),
     volunteeringUrl: venue.volunteeringUrl ?? null,
+    withdrawalDetails: venue.withdrawalDetails ?? null,
   }
 }
+
+const normalizeOpeningHoursForForm = (
+  venue: GetVenueResponseModel
+): VenueEditionFormValues['openingHours'] =>
+  Object.fromEntries(
+    OPENING_HOURS_DAYS.map((day) => [day, venue.openingHours?.[day] ?? []])
+  )
 
 function setAccessibilityNone(venue: GetVenueResponseModel): boolean {
   // for now just acceslibre

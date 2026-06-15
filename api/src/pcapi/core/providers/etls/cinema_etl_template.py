@@ -213,7 +213,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             offerer_id=self.venue_provider.venue.managingOffererId,
             venue_id=self.venue_provider.venue.id,
             address_id=self.venue_provider.venue.offererAddress.addressId,
-            label=self.venue_provider.venue.publicName,
+            label=None,
         )
         offer.offererAddress = destination_oa
         offer.bookingEmail = self.venue_provider.venue.bookingEmail

@@ -1,0 +1,11 @@
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--size-spacing-s);
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.eac-stepper {
+  margin-bottom: var(--size-spacing-xxl);
+}

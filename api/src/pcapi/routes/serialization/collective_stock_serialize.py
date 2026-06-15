@@ -80,7 +80,35 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
     price: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
     numberOfTickets: typing.Annotated[int, pydantic_v2.AfterValidator(validate_number_of_tickets)]
-    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)]
+    numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
+    priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_model(self) -> typing.Self:
+        # priceDetail must be present only when FF is OFF
+        if (
+            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "priceDetail" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être présent")
+
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "priceDetail" not in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="priceDetail", msg="Ce champ est requis")
+
+        # numberOfTeachers must be present and not None only when FF is ON
+        if feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active() and self.numberOfTeachers is None:
+            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ est requis")
+
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "numberOfTeachers" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ ne peut pas être présent")
+
+        return self
 
 
 class CollectiveStockEditionBodyModel(HttpBodyModel):
@@ -91,15 +119,29 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     ] = None
     price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(default=None)
     numberOfTickets: typing.Annotated[int | None, pydantic_v2.AfterValidator(validate_number_of_tickets)] = None
+    numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
     priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
 
     @pydantic_v2.model_validator(mode="after")
-    def validate_price_detail(self) -> typing.Self:
+    def validate_model(self) -> typing.Self:
         if (
             feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
             and "priceDetail" in self.model_fields_set
         ):
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
+
+        if (
+            not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "numberOfTeachers" in self.model_fields_set
+        ):
+            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ ne peut pas être édité")
+
+        if (
+            feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active()
+            and "numberOfTeachers" in self.model_fields_set
+            and self.numberOfTeachers is None
+        ):
+            raise_error_from_location(None, loc="numberOfTeachers", msg="Ce champ est requis")
 
         return self
 

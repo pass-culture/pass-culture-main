@@ -1,12 +1,9 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
-import { api } from '@/apiClient/api'
-import {
-  type EventStockUpdateBodyModel,
-  type GetIndividualOfferWithAddressResponseModel,
-  StocksOrderedBy,
-} from '@/apiClient/v1'
+import { apiNew } from '@/apiClient/api'
+import { type EventStockUpdateBodyModel, StocksOrderedBy } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFER_QUERY_KEY,
@@ -79,18 +76,22 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const { data, isLoading } = useSWR(
     stockQueryKeys,
     ([, offerId, pageNum, filters, sortType]) =>
-      api.getStocks(
-        offerId,
-        filters.date || undefined,
-        filters.time
-          ? convertTimeFromVenueTimezoneToUtc(filters.time, departmentCode)
-          : undefined,
-        filters.priceCategoryId ? Number(filters.priceCategoryId) : undefined,
-        sortType.sort,
-        sortType.orderByDesc,
-        pageNum || 1,
-        STOCKS_PER_PAGE
-      ),
+      apiNew.getStocks({
+        path: { offer_id: offerId },
+        query: {
+          date: filters.date || undefined,
+          time: filters.time
+            ? convertTimeFromVenueTimezoneToUtc(filters.time, departmentCode)
+            : undefined,
+          price_category_id: filters.priceCategoryId
+            ? Number(filters.priceCategoryId)
+            : undefined,
+          order_by: sortType.sort,
+          order_by_desc: sortType.orderByDesc,
+          page: pageNum || 1,
+          stocks_limit_per_page: STOCKS_PER_PAGE,
+        },
+      }),
     {
       //  Display previous data in the table until the new data has loaded so that
       //  the scroll position in the table remains the same in-between pagination loads
@@ -104,7 +105,10 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   async function deleteStocks(ids: number[]) {
     await mutate(
       stockQueryKeys,
-      api.deleteStocks(offer.id, { ids_to_delete: ids }),
+      apiNew.deleteStocks({
+        path: { offer_id: offer.id },
+        body: { ids_to_delete: ids },
+      }),
       { revalidate: true }
     )
 
@@ -131,9 +135,11 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     try {
       const updatedStocks = await mutate(
         stockQueryKeys,
-        api.bulkUpdateEventStocks({
-          offerId: offer.id,
-          stocks: [stock],
+        apiNew.bulkUpdateEventStocks({
+          body: {
+            offerId: offer.id,
+            stocks: [stock],
+          },
         }),
         {
           revalidate: false,

@@ -1,7 +1,7 @@
 import type {
   GetOffererNameResponseModel,
   GetVenueResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,

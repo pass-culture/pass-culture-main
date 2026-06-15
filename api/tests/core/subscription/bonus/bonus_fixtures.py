@@ -50,7 +50,7 @@ QUOTIENT_FAMILIAL_FIXTURE = {
 QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
     data=api_particulier.QuotientFamilialData(
         allocataires=[
-            api_particulier.QuotientFamilialPerson(
+            api_particulier.ApiParticulierPerson(
                 nom_naissance="LEFEBVRE",
                 prenoms="ALEXIS GÉRÔME JEAN-PHILIPPE",
                 date_naissance=date(1982, 12, 27),
@@ -58,7 +58,7 @@ QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
             )
         ],
         enfants=[
-            api_particulier.QuotientFamilialPerson(
+            api_particulier.ApiParticulierPerson(
                 nom_naissance="LEFEBVRE",
                 prenoms="LEO",
                 date_naissance=date(1990, 4, 20),
@@ -120,5 +120,19 @@ AAH_ELIGIBLE_RESPONSE = {
     "meta": {},
 }
 
+AAH_INELIGIBLE_RESPONSE = {
+    "data": {"est_beneficiaire": False, "date_debut_droit": None},
+    "links": {},
+    "meta": {},
+}
+
 
 AEEH_ELIGIBLE_RESPONSE = {"data": {"status": "allocataire", "date_debut_droit": "2023-06-15"}, "links": {}, "meta": {}}
+
+AEEH_INELIGIBLE_RESPONSE = {"data": {"status": "non_beneficiaire", "date_debut_droit": None}, "links": {}, "meta": {}}
+
+AEEH_OPENING_RIGHTS_RESPONSE = {
+    "data": {"status": "ouvrant_droit", "date_debut_droit": "2022-11-29"},
+    "links": {},
+    "meta": {},
+}

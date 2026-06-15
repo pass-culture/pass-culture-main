@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { Target } from '@/apiClient/v1'
+import { ActivityOpenToPublic } from '@/apiClient/v1/new'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -126,7 +127,7 @@ describe('test SignupJourneyStepper', () => {
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {
-      activity: 'MUSEUM',
+      activity: ActivityOpenToPublic.MUSEUM,
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '',

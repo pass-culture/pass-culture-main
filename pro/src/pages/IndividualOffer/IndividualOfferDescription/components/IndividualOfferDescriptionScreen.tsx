@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { DisplayableActivity } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -15,6 +15,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
+import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
@@ -65,6 +66,7 @@ export const IndividualOfferDescriptionScreen = () => {
     hasPublishedOfferWithSameEan,
   } = useIndividualOfferContext()
   const initialOfferImage = getIndividualOfferImage(initialOffer)
+  const extraData = initialOffer?.extraData as OfferExtraData | undefined
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
 
   const isNewOfferDraft = !initialOffer
@@ -123,7 +125,7 @@ export const IndividualOfferDescriptionScreen = () => {
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.createOffer(serializeDetailsPostData(formValues)),
+          apiNew.createOffer({ body: serializeDetailsPostData(formValues) }),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -135,10 +137,10 @@ export const IndividualOfferDescriptionScreen = () => {
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchOffer(
-            initialOfferId,
-            serializeDetailsPatchData(formValues, readOnlyFields)
-          ),
+          apiNew.patchOffer({
+            path: { offer_id: initialOfferId },
+            body: serializeDetailsPatchData(formValues, readOnlyFields),
+          }),
           { revalidate: false }
         )
       }
@@ -264,7 +266,7 @@ export const IndividualOfferDescriptionScreen = () => {
       {isEanSearchInputDisplayed && (
         <DetailsEanSearch
           isDraftOffer={isNewOfferDraft}
-          initialEan={initialOffer?.extraData?.ean}
+          initialEan={extraData?.ean}
           isProductBased={hasSelectedProduct}
           onEanReset={resetFormAndEanImage}
           onEanSearch={updateProduct}

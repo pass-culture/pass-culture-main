@@ -92,8 +92,8 @@ describe('OpeningHoursAndAddressReadOnly', () => {
 
     const firstDay = MOCK_DATA.venue.openingHours.MONDAY
     expect(screen.getByText(/Lundi/)).toBeInTheDocument()
-    expect(screen.getByText(firstDay[0][0])).toBeInTheDocument()
-    expect(screen.getByText(firstDay[0][1])).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(firstDay[0][0]))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(firstDay[0][1]))).toBeInTheDocument()
   })
 
   it('should display an default message when opening hours are not set', () => {
@@ -141,9 +141,9 @@ describe('DayAndHours', () => {
 
     render(<OpeningHoursReadOnlyHours openingHoursForDay={openingHours} />)
 
-    expect(screen.getByText('14:00')).toBeInTheDocument()
-    expect(screen.getByText('19:30')).toBeInTheDocument()
-    expect(screen.queryByText(/et de/)).not.toBeInTheDocument()
+    expect(screen.getByText(/14:00/)).toBeInTheDocument()
+    expect(screen.getByText(/19:30/)).toBeInTheDocument()
+    expect(screen.queryByText(/et/)).not.toBeInTheDocument()
   })
 
   it('should display each hours and day when the whole day', () => {
@@ -154,10 +154,10 @@ describe('DayAndHours', () => {
 
     render(<OpeningHoursReadOnlyHours openingHoursForDay={openingHours} />)
 
-    expect(screen.getByText('10:00')).toBeInTheDocument()
-    expect(screen.getByText('12:30')).toBeInTheDocument()
-    expect(screen.getByText('14:00')).toBeInTheDocument()
-    expect(screen.getByText('19:30')).toBeInTheDocument()
-    expect(screen.getByText(/et de/)).toBeInTheDocument()
+    expect(screen.getByText(/10:00/)).toBeInTheDocument()
+    expect(screen.getByText(/12:30/)).toBeInTheDocument()
+    expect(screen.getByText(/14:00/)).toBeInTheDocument()
+    expect(screen.getByText(/19:30/)).toBeInTheDocument()
+    expect(screen.getByText(/et/)).toBeInTheDocument()
   })
 })

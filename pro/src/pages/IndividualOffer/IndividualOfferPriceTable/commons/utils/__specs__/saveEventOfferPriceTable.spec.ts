@@ -1,13 +1,13 @@
 import type { UseFormReturn } from 'react-hook-form'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import type { PriceTableFormValues } from '../../schemas'
 import { saveEventOfferPriceTable } from '../saveEventOfferPriceTable'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     patchOffer: vi.fn(),
     replaceOfferPriceCategories: vi.fn(),
   },
@@ -50,11 +50,14 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
-    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith(
-      offer.id,
-      expect.objectContaining({ priceCategories: expect.any(Array) })
-    )
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
+    expect(apiNew.replaceOfferPriceCategories).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: expect.objectContaining({ priceCategories: expect.any(Array) }),
+    })
   })
 
   it('should only patch offer when only isDuo is dirty', async () => {
@@ -71,7 +74,10 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: { isDuo: true },
+    })
   })
 
   it('should only post price categories when only entries are dirty', async () => {
@@ -87,10 +93,10 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(api.patchOffer).not.toHaveBeenCalled()
-    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith(
-      offer.id,
-      expect.objectContaining({ priceCategories: expect.any(Array) })
-    )
+    expect(apiNew.patchOffer).not.toHaveBeenCalled()
+    expect(apiNew.replaceOfferPriceCategories).toHaveBeenCalledWith({
+      path: { offer_id: offer.id },
+      body: expect.objectContaining({ priceCategories: expect.any(Array) }),
+    })
   })
 })

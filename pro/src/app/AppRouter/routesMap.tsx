@@ -11,7 +11,8 @@ import { parse } from '@/commons/utils/query-string'
 
 import { administrationRouteGroup } from './routes/administrationRouteGroup'
 import { partnerRouteGroup } from './routes/partnerRouteGroup'
-import { settingsRouteGroup } from './routes/settingsRouteGroup'
+import { venuePageRouteSubgroup } from './routes/venuePageRouteSubgroup'
+import { venueSettingsRouteSubgroup } from './routes/venueSettingsRouteSubgroup'
 import { routesEcoDesign } from './subroutesEcoDesignMap'
 import {
   routesIndividualOfferWizard,
@@ -44,7 +45,8 @@ export const routes: CustomRouteTree = [
   },
   administrationRouteGroup,
   partnerRouteGroup,
-  settingsRouteGroup,
+  venuePageRouteSubgroup,
+  venueSettingsRouteSubgroup,
   {
     lazy: () => import('@/pages/Hub/Hub'),
     loader: withUserPermissions(mustBeAuthenticated),
@@ -123,18 +125,10 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/partenaire/page-partenaire',
+    path: '/partenaire/page-partenaire/edition',
     handle: {
-      title: 'Page sur l’application',
+      title: 'Gérer ma page sur l’application',
     },
-    children: [
-      {
-        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
-        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-        path: '*',
-        title: 'Gérer ma page sur l’application',
-      },
-    ],
   },
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),

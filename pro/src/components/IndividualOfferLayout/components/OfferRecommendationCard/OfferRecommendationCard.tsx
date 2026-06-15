@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { type JSX, useState } from 'react'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -36,7 +36,7 @@ export const OfferRecommendationCard = ({
 
   const { data: proAdviceResponse } = useSWR(
     [GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId],
-    () => api.getOfferProAdvice(offerId)
+    () => apiNew.getOfferProAdvice({ path: { offer_id: offerId } })
   )
 
   const proAdvice = proAdviceResponse?.proAdvice

@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
-import { api } from '@/apiClient/api'
-import { ApiError } from '@/apiClient/v1'
+import { api, apiNew } from '@/apiClient/api'
+import { ApiError } from '@/apiClient/compat'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
@@ -21,11 +21,13 @@ import * as logoutModule from '../logout'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    listOfferersNames: vi.fn(),
+    signout: vi.fn(),
+  },
+  apiNew: {
     getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
+    listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
-    signout: vi.fn(),
   },
 }))
 
@@ -39,10 +41,10 @@ describe('initializeUser', () => {
   })
 
   it('should use saved venue id from localStorage when present and valid', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -55,7 +57,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -63,7 +65,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -85,10 +87,10 @@ describe('initializeUser', () => {
   })
 
   it('should auto-select venue when user has only one venue', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -97,7 +99,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -105,7 +107,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -120,10 +122,10 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when user has multiple venues and no localStorage selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -136,13 +138,13 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     const store = configureTestStore()
 
@@ -155,20 +157,20 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when user has no venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     const store = configureTestStore()
 
@@ -178,15 +180,15 @@ describe('initializeUser', () => {
   })
 
   it('should return early without selection when no offerers and no venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [],
       venuesWithPendingValidation: [],
     })
-    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
+    const apiGetOffererSpy = vi.spyOn(apiNew, 'getOfferer')
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '999')
 
@@ -205,10 +207,10 @@ describe('initializeUser', () => {
   })
 
   it('should auto-select single venue and set admin offerer when newOffererId is provided', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -217,7 +219,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -225,7 +227,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -241,10 +243,10 @@ describe('initializeUser', () => {
   })
 
   it('should unset venue and set admin offerer when newOffererId has multiple venues', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -257,13 +259,13 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
     })
 
-    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const apiGetVenueSpy = vi.spyOn(apiNew, 'getVenue')
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
 
@@ -280,17 +282,17 @@ describe('initializeUser', () => {
   })
 
   it('should set admin offerer from newOffererId even when venue is not selected', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
       ],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 200,
       isOnboarded: false,
@@ -306,10 +308,10 @@ describe('initializeUser', () => {
   })
 
   it('should ignore invalid venue id from localStorage and return early', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -322,7 +324,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -339,10 +341,10 @@ describe('initializeUser', () => {
   })
 
   it('should get the venue id from URL params for backoffice switcher', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -355,7 +357,7 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 201,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -363,7 +365,7 @@ describe('initializeUser', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -380,13 +382,13 @@ describe('initializeUser', () => {
   })
 
   it('should keep the admin offerer from localStorage independently from the partner venue selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
       ],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -395,19 +397,19 @@ describe('initializeUser', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockImplementation(
-      (offererId: number) =>
+    vi.spyOn(apiNew, 'getOfferer').mockImplementation(
+      ({ path: { offerer_id: offererId } }) =>
         Promise.resolve({
           ...defaultGetOffererResponseModel,
           id: offererId,
           isOnboarded: true,
-        }) as ReturnType<typeof api.getOfferer>
+        }) as ReturnType<typeof apiNew.getOfferer>
     )
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID, '200')
@@ -430,10 +432,10 @@ describe('error handling', () => {
 
   it('should logout when getOfferer rejects with non-403 error', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 101,
@@ -442,7 +444,7 @@ describe('error handling', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(api, 'getVenue').mockResolvedValue(
+    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 101,
         managingOfferer: makeGetVenueManagingOffererResponseModel({
@@ -450,7 +452,7 @@ describe('error handling', () => {
         }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockRejectedValue(
+    vi.spyOn(apiNew, 'getOfferer').mockRejectedValue(
       new ApiError(
         { method: 'DELETE', url: '' },
         {} as unknown as ApiResult,
@@ -468,7 +470,7 @@ describe('error handling', () => {
   })
 
   it('should dispatch logout when initialization fails before selection', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    vi.spyOn(apiNew, 'listOfferersNames').mockRejectedValue(new Error())
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
     vi.spyOn(api, 'signout').mockResolvedValue()
 

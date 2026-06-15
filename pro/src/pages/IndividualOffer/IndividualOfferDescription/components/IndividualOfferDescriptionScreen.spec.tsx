@@ -4,14 +4,14 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   ArtistType,
+  DisplayableActivity,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -41,12 +41,12 @@ import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescr
 import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    getMusicTypes: vi.fn(),
+  apiNew: {
     createOffer: vi.fn(),
-    patchOffer: vi.fn(),
-    getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
+    getProductByEan: vi.fn(),
+    getMusicTypes: vi.fn(),
+    patchOffer: vi.fn(),
   },
 }))
 
@@ -245,7 +245,9 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
+    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+      getIndividualOfferFactory()
+    )
   })
 
   it('should render the component', async () => {
@@ -290,12 +292,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'createOffer').mockResolvedValue(
+      vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
       )
-      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
         { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
       ])
 
@@ -377,12 +379,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'createOffer').mockRejectedValue({
+    vi.spyOn(apiNew, 'createOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
     })
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -431,12 +433,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'createOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
     )
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -445,31 +447,33 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(api.createOffer).toHaveBeenCalledOnce()
-    expect(api.createOffer).toHaveBeenCalledWith({
-      artistOfferLinks: [],
-      audioDisabilityCompliant: true,
-      description: 'My super description',
-      durationMinutes: null,
-      extraData: {
-        author: null,
-        ean: '1234567891234',
-        gtl_id: 'pop',
-        showSubType: '205',
-        showType: '200',
-        performer: null,
-        speaker: null,
-        stageDirector: null,
-        visa: null,
+    expect(apiNew.createOffer).toHaveBeenCalledOnce()
+    expect(apiNew.createOffer).toHaveBeenCalledWith({
+      body: {
+        artistOfferLinks: [],
+        audioDisabilityCompliant: true,
+        description: 'My super description',
+        durationMinutes: null,
+        extraData: {
+          author: null,
+          ean: '1234567891234',
+          gtl_id: 'pop',
+          showSubType: '205',
+          showType: '200',
+          performer: null,
+          speaker: null,
+          stageDirector: null,
+          visa: null,
+        },
+        hasCulturalOutreachClaim: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'My super offer',
+        subcategoryId: 'physical',
+        venueId: 189,
+        url: undefined,
+        visualDisabilityCompliant: true,
       },
-      hasCulturalOutreachClaim: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      name: 'My super offer',
-      subcategoryId: 'physical',
-      venueId: 189,
-      url: undefined,
-      visualDisabilityCompliant: true,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
       '/offre/individuelle/12/creation/description',
@@ -486,13 +490,13 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   it('should submit the form with correct payload in edition ', async () => {
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
     )
 
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
     contextValue.offer = getIndividualOfferFactory({
@@ -531,44 +535,47 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(api.patchOffer).toHaveBeenCalledOnce()
-    expect(api.patchOffer).toHaveBeenCalledWith(12, {
-      artistOfferLinks: [
-        {
-          artistId: '1',
-          artistName: 'Le Poing de Chuck',
-          artistType: 'performer',
+    expect(apiNew.patchOffer).toHaveBeenCalledOnce()
+    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+      path: { offer_id: 12 },
+      body: {
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: 'Le Poing de Chuck',
+            artistType: 'performer',
+          },
+          {
+            artistId: '2',
+            artistName: 'JCVD',
+            artistType: 'stage_director',
+          },
+          {
+            artistId: '3',
+            artistName: 'Chuck Norris',
+            artistType: 'author',
+          },
+        ],
+        audioDisabilityCompliant: true,
+        description: 'My super description',
+        durationMinutes: null,
+        extraData: {
+          author: 'Chuck Norris',
+          gtl_id: null,
+          ean: '1234567891234',
+          performer: 'Le Poing de Chuck',
+          showSubType: 'PEGI 18',
+          showType: 'Cinéma',
+          speaker: "Chuck Norris n'a pas besoin de doubleur",
+          stageDirector: 'JCVD',
+          visa: 'USA',
         },
-        {
-          artistId: '2',
-          artistName: 'JCVD',
-          artistType: 'stage_director',
-        },
-        {
-          artistId: '3',
-          artistName: 'Chuck Norris',
-          artistType: 'author',
-        },
-      ],
-      audioDisabilityCompliant: true,
-      description: 'My super description',
-      durationMinutes: null,
-      extraData: {
-        author: 'Chuck Norris',
-        gtl_id: null,
-        ean: '1234567891234',
-        performer: 'Le Poing de Chuck',
-        showSubType: 'PEGI 18',
-        showType: 'Cinéma',
-        speaker: "Chuck Norris n'a pas besoin de doubleur",
-        stageDirector: 'JCVD',
-        visa: 'USA',
+        hasCulturalOutreachClaim: false,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        name: 'My super offer',
+        visualDisabilityCompliant: true,
       },
-      hasCulturalOutreachClaim: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      name: 'My super offer',
-      visualDisabilityCompliant: true,
     })
   })
 
@@ -670,7 +677,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -700,7 +707,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -722,7 +729,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         })
 
         it('should disabled all fields if another offer with the same EAN is already published', async () => {
-          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+          vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
             id: 1,
             dateCreated: '',
             isActive: true,

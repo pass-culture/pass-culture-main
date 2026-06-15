@@ -2,9 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -19,6 +18,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import { ApiError } from 'apiClient/compat'
 import { SignupContainer } from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
@@ -27,7 +27,7 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 vi.mock('@/apiClient/api', () => ({
-  api: {
+  apiNew: {
     getProfile: vi.fn().mockResolvedValue({}),
     signupPro: vi.fn(),
     listOfferersNames: vi.fn(),
@@ -59,12 +59,12 @@ const renderSignUp = (options?: RenderWithProvidersOptions) =>
 
 describe('Signup', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'signupPro').mockResolvedValue()
+    vi.spyOn(apiNew, 'signupPro').mockResolvedValue()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
@@ -290,13 +290,15 @@ describe('Signup', () => {
 
           await userEvent.click(submitButton)
 
-          expect(api.signupPro).toHaveBeenCalledWith({
-            contactOk: false,
-            email: 'test@example.com',
-            firstName: 'Prénom',
-            lastName: 'Nom',
-            password: 'user@AZERTY123', // NOSONAR
-            token: 'token',
+          expect(apiNew.signupPro).toHaveBeenCalledWith({
+            body: {
+              contactOk: false,
+              email: 'test@example.com',
+              firstName: 'Prénom',
+              lastName: 'Nom',
+              password: 'user@AZERTY123', // NOSONAR
+              token: 'token',
+            },
           })
           await expect(
             screen.findByText('I’m the confirmation page')
@@ -347,13 +349,15 @@ describe('Signup', () => {
           expect(submitButton).toBeEnabled()
           await userEvent.click(submitButton)
 
-          expect(api.signupPro).toHaveBeenCalledWith({
-            contactOk: false,
-            email: 'test@example.com',
-            firstName: 'Prénom',
-            lastName: 'Nom',
-            password: 'user@AZERTY123', // NOSONAR
-            token: 'token',
+          expect(apiNew.signupPro).toHaveBeenCalledWith({
+            body: {
+              contactOk: false,
+              email: 'test@example.com',
+              firstName: 'Prénom',
+              lastName: 'Nom',
+              password: 'user@AZERTY123', // NOSONAR
+              token: 'token',
+            },
           })
           await expect(
             screen.findByText('I’m the confirmation page')
@@ -366,7 +370,7 @@ describe('Signup', () => {
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        vi.spyOn(api, 'signupPro').mockRejectedValue(
+        vi.spyOn(apiNew, 'signupPro').mockRejectedValue(
           new ApiError(
             {
               method: 'GET',
@@ -405,7 +409,7 @@ describe('Signup', () => {
         await userEvent.tab()
 
         await userEvent.click(submitButton)
-        expect(api.signupPro).toHaveBeenCalledTimes(1)
+        expect(apiNew.signupPro).toHaveBeenCalledTimes(1)
       })
 
       it('should display error message when RECAPTCHA_ERROR occurs', async () => {
@@ -455,7 +459,7 @@ describe('Signup', () => {
         await waitFor(() => {
           expect(snackBarError).toHaveBeenCalledWith(RECAPTCHA_ERROR_MESSAGE)
         })
-        expect(api.signupPro).not.toHaveBeenCalled()
+        expect(apiNew.signupPro).not.toHaveBeenCalled()
       })
 
       it('should handle non-ApiError errors', async () => {
@@ -469,7 +473,9 @@ describe('Signup', () => {
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        vi.spyOn(api, 'signupPro').mockRejectedValue(new Error('Network error'))
+        vi.spyOn(apiNew, 'signupPro').mockRejectedValue(
+          new Error('Network error')
+        )
 
         // when
         renderSignUp()
@@ -504,7 +510,7 @@ describe('Signup', () => {
 
         // then
         await waitFor(() => {
-          expect(api.signupPro).toHaveBeenCalledTimes(1)
+          expect(apiNew.signupPro).toHaveBeenCalledTimes(1)
         })
         expect(snackBarError).toHaveBeenCalledWith(
           'Une ou plusieurs erreurs sont présentes dans le formulaire.'

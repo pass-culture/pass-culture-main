@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import {
+  type DMSApplicationForEAC,
+  DMSApplicationstatus,
+} from '@/apiClient/v1/new'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

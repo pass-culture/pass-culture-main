@@ -44,6 +44,7 @@ jobs:
         with:
           ref: ${{ inputs.base_ref }}
           token: ${{ steps.github-token.outputs.token }}
+          persist-credentials: true
 
       - name: Add version to api
         env:
@@ -60,7 +61,7 @@ jobs:
           TAG_NUMBER: ${{ inputs.tag_number }}
         working-directory: pro
         run: |
-          yarn version --new-version "$TAG_NUMBER"
+          contents="$(jq --arg v "$TAG_NUMBER" '.version = $v' package.json)" && echo "$contents" > package.json
           git add package.json
 
       - name: Add version to image-resizing

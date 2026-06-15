@@ -158,7 +158,8 @@
       {% endif %}
       {% if last_incident %}
         {% call description_detail_horizontal("Incident comptable") %}
-          {{ links.build_finance_incident_to_details_link(last_incident) }} {{ last_incident.kind | format_finance_incident_type }} {{ last_incident.status | format_finance_incident_status_badge }}
+          <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=last_incident.id) }}"
+             class="link-primary">{{ last_incident.kind | format_finance_incident_type }} ({{ last_incident.id }})</a> {{ last_incident.status | format_finance_incident_status_badge }}
         {% endcall %}
       {% endif %}
     {% endcall %}

@@ -51,6 +51,7 @@ from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.transaction_manager import atomic
 
 import tests
 from tests.test_utils import gen_offerer_tags
@@ -4035,3 +4036,23 @@ class GetUserPendingAndValidatedOffererTest:
 
         res = offerers_api.get_user_pending_and_validated_offerers(user)
         assert res == offerers_api.PendingAndValidatedOfferers(pending=[pending_offerer], validated=[validated_offerer])
+
+
+class CloseVenueTest:
+    def test_open_venue_becomes_closed(self):
+        venue = offerers_factories.VenueFactory(state=None)
+
+        with atomic():
+            offerers_api.close_venue(venue)
+
+        db.session.refresh(venue)
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    def test_closed_venue_stays_closed(self):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+
+        with atomic():
+            offerers_api.close_venue(venue)
+
+        db.session.refresh(venue)
+        assert venue.state == offerers_models.VenueState.CLOSED

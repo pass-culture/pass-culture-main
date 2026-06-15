@@ -58,16 +58,6 @@
     }
   }
 
-  &-sub-sub-section {
-    margin-bottom: var(--size-spacing-xl);
-
-    &-title {
-      @include fonts.title4;
-
-      margin-bottom: var(--size-spacing-xl);
-    }
-  }
-
   &-row {
     margin-bottom: var(--size-spacing-s);
     max-width: 100%;

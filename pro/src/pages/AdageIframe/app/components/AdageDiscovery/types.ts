@@ -1,4 +1,4 @@
-import type { AdagePlaylistType } from '@/apiClient/adage'
+import type { AdagePlaylistType } from '@/apiClient/adage/new'
 
 export type PlaylistTracker = {
   playlistId: number
