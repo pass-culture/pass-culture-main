@@ -1,5 +1,4 @@
 import collections
-import decimal
 import typing
 from datetime import datetime
 from datetime import timezone
@@ -13,6 +12,7 @@ from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.serialization.exceptions import PydanticError
+from pcapi.utils.decimal import float_to_decimal
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -78,7 +78,7 @@ def validate_price_detail(price_detail: str | None) -> str | None:
 class CollectiveAdditionalFeeModel(HttpBodyModel):
     type: models.CollectiveAdditionalFeeType
     label: str | None
-    amount: float
+    amount: float = pydantic_v2.Field(ge=0)
 
     @pydantic_v2.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
@@ -143,11 +143,15 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
             # check total price
             assert self.servicePrice is not None  # checked above when ff is active
             assert self.additionalFees is not None  # same
-            total_price = decimal.Decimal(self.servicePrice) + sum(
-                decimal.Decimal(fee.amount) for fee in self.additionalFees
+            total_price = float_to_decimal(self.servicePrice) + sum(
+                float_to_decimal(fee.amount) for fee in self.additionalFees
             )
-            if total_price != decimal.Decimal(self.price):
-                raise_error_from_location(None, loc="price", msg="Le prix total ne correspond pas à la somme des frais")
+            if total_price != float_to_decimal(self.price):
+                raise_error_from_location(
+                    None,
+                    loc="price",
+                    msg="Le prix total ne correspond pas à la somme du prix de la prestation et des frais annexes",
+                )
 
             if total_price > settings.EAC_OFFER_PRICE_LIMIT:
                 raise_error_from_location(None, loc="price", msg="Le prix est trop élevé")
