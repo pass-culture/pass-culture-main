@@ -9,6 +9,7 @@ import pcapi.core.external.batch.tasks  # noqa: F401
 import pcapi.core.external.compliance.tasks  # noqa: F401
 import pcapi.core.external.zendesk.tasks  # noqa: F401
 import pcapi.core.external.zendesk_sell.tasks  # noqa: F401
+import pcapi.core.finance.tasks  # noqa: F401
 import pcapi.core.mails.tasks  # noqa: F401
 import pcapi.core.offerers.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401

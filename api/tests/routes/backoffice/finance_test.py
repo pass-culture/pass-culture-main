@@ -2670,3 +2670,116 @@ class CancelDebitNoteTest(PostEndpointHelper):
             db.session.query(finance_models.FinanceIncident).filter_by(id=original_finance_incident.id).one()
         )
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class ListSettlementBatchesTest(GetEndpointHelper):
+    endpoint = "backoffice_web.settlements.list_settlement_batches"
+    needed_permission = perm_models.Permissions.READ_SETTLEMENTS
+
+    # session + user
+    # settlement batches
+    expected_num_queries = 2
+
+    def test_list_settlement_batches(self, authenticated_client):
+        batch = finance_factories.SettlementBatchFactory(
+            name="VIR1234", label="VIR1234 01/01 - 15/01", dateValidated=datetime.datetime(2026, 1, 18, 12, 34)
+        )
+        finance_factories.SettlementFactory(batch=batch, amount=10000, status=finance_models.SettlementStatus.EXECUTED)
+        finance_factories.SettlementFactory(batch=batch, amount=15000, status=finance_models.SettlementStatus.EXECUTED)
+
+        batch = finance_factories.SettlementBatchFactory(
+            name="VIR1235", label="VIR1235 16/01 - 31/01", dateValidated=None
+        )
+        finance_factories.SettlementFactory(batch=batch, amount=12000)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["Référence"] == "VIR1235"
+        assert rows[0]["Libellé"] == "VIR1235 16/01 - 31/01"
+        assert rows[0]["Montant total"] == "120,00 €"
+        assert rows[0]["Date de validation"] == ""
+
+        assert rows[1]["Référence"] == "VIR1234"
+        assert rows[1]["Libellé"] == "VIR1234 01/01 - 15/01"
+        assert rows[1]["Montant total"] == "250,00 €"
+        assert rows[1]["Date de validation"] == "18/01/2026 à 13h34"
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class GetValidateSettlementBatchFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.settlements.get_validate_settlement_batch_form"
+    endpoint_kwargs = {"batch_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SETTLEMENTS
+
+    # session + user
+    # settlement batches
+    expected_num_queries = 2
+
+    def test_get_validate_settlement_batch_form(self, authenticated_client):
+        batch = finance_factories.SettlementBatchFactory(
+            name="VIR1235", label="VIR1235 16/01 - 31/01", dateValidated=None
+        )
+        finance_factories.SettlementFactory(batch=batch, amount=12000)
+        finance_factories.SettlementFactory(batch=batch, amount=3500)
+
+        batch_id = batch.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, batch_id=batch_id))
+            assert response.status_code == 200
+
+        assert (
+            "Validation du lot VIR1235 Vous vous apprêtez à valider le lot VIR1235 16/01 - 31/01 comme exécuté par la "
+            "banque.Ce lot regroupe 2 virements pour un total de 155,00 €.Cette action est irréversible. Une tâche "
+            "sera lancée pour la mise à jour de l'état des factures et l'envoi d'email aux acteurs culturels, dont la "
+            "fin sera notifiée sur le canal Slack #notifications-ehp." in html_parser.content_as_text(response.data)
+        )
+
+    def test_get_validate_settlement_batch_form_not_found(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries + 1):  # + rollback
+            response = authenticated_client.get(url_for(self.endpoint, batch_id=99999))
+            assert response.status_code == 404
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class ValidateSettlementBatchTest(PostEndpointHelper):
+    endpoint = "backoffice_web.settlements.validate_settlement_batch"
+    endpoint_kwargs = {"batch_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_SETTLEMENTS
+
+    @patch("pcapi.core.finance.api.validate_invoices")
+    def test_validate_settlement_batch(self, mock_validate_invoices, authenticated_client):
+        batch = finance_factories.SettlementBatchFactory()
+        invoices = finance_factories.InvoiceFactory.create_batch(2, status=finance_models.InvoiceStatus.PENDING_PAYMENT)
+        settlement = finance_factories.SettlementFactory(batch=batch, invoices=invoices)
+
+        other_batch = finance_factories.SettlementBatchFactory()
+        other_invoice = finance_factories.InvoiceFactory(status=finance_models.InvoiceStatus.PENDING_PAYMENT)
+        other_settlement = finance_factories.SettlementFactory(batch=other_batch, invoices=[other_invoice])
+
+        response = self.post_to_endpoint(authenticated_client, batch_id=batch.id)
+        assert response.status_code == 303
+
+        assert batch.dateValidated is not None
+        assert batch.dateValidated.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp(), rel=1)
+        assert settlement.status == finance_models.SettlementStatus.EXECUTED
+        assert other_batch.dateValidated is None
+        assert other_settlement.status == finance_models.SettlementStatus.ISSUED
+
+        mock_validate_invoices.assert_called_once()
+        assert set(mock_validate_invoices.call_args.args[0]) == {invoice.id for invoice in invoices}
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Le lot {batch.name} a été validé. Les virements, factures et réservations sont en cours de mise à jour"
+            in alerts["success"]
+        )
+
+    def test_validate_settlement_batch_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, batch_id=99999, expected_num_queries=3)
+        assert response.status_code == 404

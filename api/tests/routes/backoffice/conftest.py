@@ -87,6 +87,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.CLOSE_OFFERER,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,
         perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.READ_SETTLEMENTS,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -164,10 +165,13 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_INCIDENTS,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION,
+        perm_models.Permissions.READ_SETTLEMENTS,
     ],
     "responsable_daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
+        perm_models.Permissions.READ_SETTLEMENTS,
+        perm_models.Permissions.MANAGE_SETTLEMENTS,
     ],
     "data": [
         perm_models.Permissions.READ_OFFERS,

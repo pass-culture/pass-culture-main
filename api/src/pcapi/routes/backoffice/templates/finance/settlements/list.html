@@ -1,0 +1,53 @@
+{% extends "layouts/list.html" %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% set hide_search_block = True %}
+{% set rows_count = rows|length %}
+{% set table_id = "settlement-batch-table" %}
+{% block title %}Lots de virements{% endblock %}
+{% block table_header %}
+  {% if has_permission("MANAGE_SETTLEMENTS") %}<th></th>{% endif %}
+  <th>Référence</th>
+  <th>Libellé</th>
+  <th>Montant total</th>
+  <th>Date de validation</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% for row in rows %}
+    <tr id="settlement-batch-row-{{ row.id }}">
+      {% if has_permission("MANAGE_SETTLEMENTS") %}
+        <td>
+          {% if not row.dateValidated %}
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#validate-settlement-batch-modal-{{ row.id }}">Valider le lot</a>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+        </td>
+      {% endif %}
+      <td>{{ row.name }}</td>
+      <td>{{ row.label }}</td>
+      <td>{{ row.total_amount | format_cents }}</td>
+      <td>{{ row.dateValidated | format_date_time }}</td>
+    </tr>
+  {% endfor %}
+{% endblock table_body %}
+{% block after_table %}
+  {% if has_permission("MANAGE_SETTLEMENTS") %}
+    {% for row in rows %}
+      {% if not row.dateValidated %}
+        {{ build_dynamic_modal(url_for('backoffice_web.settlements.get_validate_settlement_batch_form', batch_id=row.id) , "validate-settlement-batch-modal-" + row.id|string) }}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endblock %}
