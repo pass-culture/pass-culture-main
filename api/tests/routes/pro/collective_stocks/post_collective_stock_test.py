@@ -93,6 +93,31 @@ class Return200Test:
             for fee in sorted(created_stock.collectiveAdditionalFees, key=lambda f: f.amount)
         ] == fees
 
+    @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_new_price_fields_no_fees(self, client):
+        _create_educational_year()
+        offer = factories.DraftCollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        stock_payload = {
+            **BASE_PAYLOAD_NO_DETAIL,
+            "offerId": offer.id,
+            "numberOfTeachers": 10,
+            "price": 10.99,
+            "servicePrice": 10.99,
+            "additionalFees": [],
+        }
+        response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
+
+        assert response.status_code == 201
+        created_stock = db.session.query(CollectiveStock).filter_by(id=response.json["id"]).one()
+        assert created_stock.priceDetail is None
+        assert created_stock.numberOfTeachers == 10
+        assert created_stock.price == decimal.Decimal("10.99")
+        assert created_stock.servicePrice == decimal.Decimal("10.99")
+        assert created_stock.collectiveAdditionalFees == []
+
 
 class Return404Test:
     @time_machine.travel("2020-11-17 15:00:00")
@@ -493,6 +518,18 @@ class Return400Test:
                 },
                 {"additionalFees": ["Un label est en doublon"]},
             ),
+            # additionalFees negative amount
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "additionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": -5},
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 15},
+                    ],
+                },
+                {"additionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+            ),
             # servicePrice too low
             (
                 {
@@ -512,7 +549,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
                 },
-                {"price": ["Le prix total ne correspond pas à la somme des frais"]},
+                {"price": ["Le prix total ne correspond pas à la somme du prix de la prestation et des frais annexes"]},
             ),
             # price too high
             (

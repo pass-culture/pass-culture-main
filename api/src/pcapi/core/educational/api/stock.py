@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import logging
 from functools import partial
 
@@ -15,6 +14,7 @@ from pcapi.models import db
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
+from pcapi.utils.decimal import float_to_decimal
 from pcapi.utils.transaction_manager import on_commit
 
 
@@ -26,8 +26,8 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
     start = stock_data.startDatetime
     end = stock_data.endDatetime
     booking_limit_datetime = stock_data.bookingLimitDatetime
-    price = decimal.Decimal(stock_data.price)
-    service_price = decimal.Decimal(stock_data.servicePrice) if stock_data.servicePrice is not None else None
+    price = float_to_decimal(stock_data.price)
+    service_price = float_to_decimal(stock_data.servicePrice) if stock_data.servicePrice is not None else None
     number_of_tickets = stock_data.numberOfTickets
     number_of_teachers = stock_data.numberOfTeachers
     price_detail = stock_data.priceDetail
@@ -60,7 +60,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
 
     if stock_data.additionalFees:
         collective_stock.collectiveAdditionalFees = [
-            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=decimal.Decimal(fee.amount))
+            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=float_to_decimal(fee.amount))
             for fee in stock_data.additionalFees
         ]
 
@@ -213,7 +213,7 @@ def _extract_updatable_fields_from_stock_data(
         "startDatetime": start_datetime,
         "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,
-        "price": decimal.Decimal(price) if price is not None else None,
+        "price": float_to_decimal(price) if price is not None else None,
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "numberOfTeachers": stock_data.get("numberOfTeachers"),
         "priceDetail": stock_data.get("priceDetail"),
