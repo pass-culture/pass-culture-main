@@ -93,16 +93,19 @@ def test_revoke_refresh_token_falls_back_to_other_client(mocker, requests_mock):
 
 
 @pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_falls_back_to_other_client_on_timeout(mocker, requests_mock):
+def test_revoke_refresh_token_does_not_fall_back_on_transport_error(mocker, requests_mock):
     mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
     matcher = requests_mock.post(
         "https://appleid.apple.com/auth/revoke",
         [{"exc": requests.exceptions.ConnectTimeout}, {"status_code": 200}],
     )
 
-    revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
+    # A transport failure means the endpoint is unreachable: retrying the same endpoint with the
+    # other client_id would only hold row locks longer, so the error propagates immediately.
+    with pytest.raises(requests.exceptions.ConnectTimeout):
+        revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
 
-    assert matcher.call_count == 2
+    assert matcher.call_count == 1
 
 
 @pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")

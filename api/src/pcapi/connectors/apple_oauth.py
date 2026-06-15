@@ -87,10 +87,15 @@ def revoke_refresh_token(encrypted_refresh_token: str) -> None:
             response = requests.post(settings.APPLE_REVOKE_ENDPOINT, data=data, timeout=3)
             response.raise_for_status()
             return
-        except requests.exceptions.RequestException as e:
-            # Catch timeouts and connection errors too: a network failure on one client_id must
-            # not prevent the fallback attempt on the other one.
+        except requests.exceptions.HTTPError as e:
+            # Functional rejection from Apple (e.g. invalid_client when the stored client_id is
+            # stale): the other client_id may succeed, so keep it as a fallback.
             last_error = e
+        except requests.exceptions.RequestException as e:
+            # Transport failure (timeout, connection error): the endpoint itself is unreachable,
+            # so retrying the same endpoint with another client_id would only hold row locks
+            # longer for no benefit. Stop here.
+            raise e
     if last_error is not None:
         raise last_error
 

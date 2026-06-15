@@ -50,10 +50,12 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.repository import transaction
 from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
 
@@ -908,6 +910,118 @@ def create_account_creation_token(
         data=data,
     )
     return token.encoded_token
+
+
+_SSO_ACCESS_DENIED_ERROR = {
+    "code": "SSO_ERROR",
+    "general": ["La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."],
+}
+
+
+def authorize_sso_user(sso_provider: str, authorization_code: str, is_web: bool) -> models.User:
+    """Resolve the user behind an SSO authorization, persisting the SSO link and the (encrypted)
+    refresh token. Raises `ApiErrors` for every functional rejection.
+
+    Shared by the native v1 and v2 `sso_authorize` routes so the SSO security logic (refresh token
+    capture/encryption, identification by (provider, sub) vs required email, token persistence)
+    cannot diverge between the two API versions.
+    """
+    # Imported locally: `google_oauth` pulls in `pcapi.flask_app`, which we must not load at the
+    # module level of a `core` module.
+    from pcapi.connectors import apple_oauth
+    from pcapi.connectors import google_oauth
+
+    refresh_token: str | None = None
+    if sso_provider == "apple":
+        try:
+            sso_user, refresh_token = apple_oauth.get_apple_user(authorization_code, is_web)
+        except apple_oauth.AppleSignInException:
+            raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
+    elif sso_provider == "google":
+        sso_user = google_oauth.get_google_user(authorization_code, is_web)
+    else:
+        raise ApiErrors({"error": "Unknown SSO provider"})
+
+    encrypted_refresh_token: str | None = None
+    if refresh_token and FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        # Encrypt at reception so the refresh token never sits in clear text, not even inside
+        # the short-lived account-creation token.
+        encrypted_refresh_token = apple_oauth.build_encrypted_refresh_token(refresh_token, is_web)
+
+    sso_user_id = sso_user.sub
+    single_sign_on = users_repository.get_single_sign_on(sso_provider, sso_user_id)
+
+    user: models.User | None
+    if single_sign_on:
+        # An existing SSO link identifies the user by (provider, sub) alone. Apple only returns the
+        # email on the first consent, so we must not require it again on subsequent logins (e.g. after
+        # a token revocation and re-consent). The id_token is already cryptographically verified.
+        user = single_sign_on.user
+    else:
+        # No existing SSO link: we rely on the email to match an existing account or to create one,
+        # so it must be present and verified by the provider.
+        if not sso_user.email_verified:
+            logger.warning(
+                "SSO access denied: email not verified",
+                extra={"sso_provider": sso_provider},
+            )
+            raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
+
+        if not sso_user.email:
+            raise ApiErrors(
+                {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
+            )
+
+        user = users_repository.find_user_by_email(sso_user.email)
+
+    if not user:
+        logger.info(
+            "Successful SSO authentication but no matching email found, sending account creation token",
+            extra={"sso_provider": sso_provider, "avoid_current_user": True},
+            technical_message_id=f"users.login.sso.{sso_provider}",
+        )
+        encoded_account_creation_token = create_account_creation_token(sso_user, encrypted_refresh_token, sso_provider)
+        # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
+        raise ApiErrors(
+            {
+                "code": "SSO_EMAIL_NOT_FOUND",
+                "accountCreationToken": encoded_account_creation_token,
+                "email": sso_user.email,
+                "general": [f"Aucun compte pass Culture lié à {sso_user.email} n'a été trouvé"],
+            },
+            status_code=401,
+        )
+
+    if user.account_state.is_deleted or user.account_state == models.AccountState.ANONYMIZED:
+        logger.warning(
+            "SSO access denied: account state is not allowed",
+            extra={"sso_provider": sso_provider, "account_state": user.account_state},
+        )
+        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
+
+    with transaction():
+        if not user.isEmailValidated:
+            # An account registered with a password and with its email not validated is a symptom
+            # of an account pre-hijacking attack waiting for an email validation. To prevent this
+            # we disable the email + password login when a SSO is enabled.
+            user.password = None
+            user.isEmailValidated = True
+
+        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
+        if user_ssos_for_provider:
+            current_provider_sso = user_ssos_for_provider[0]
+            current_provider_sso.ssoUserId = sso_user.sub
+        else:
+            current_provider_sso = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
+            db.session.add(current_provider_sso)
+
+        # Persist the refresh token (encrypted) so we can revoke it provider-side on account deletion.
+        # Always overwrite with the newest refresh_token we receive ; only skip when the provider
+        # does not return one (Apple only returns a refresh token on the first consent).
+        if encrypted_refresh_token:
+            current_provider_sso.encryptedRefreshToken = encrypted_refresh_token
+
+    return user
 
 
 def update_notification_subscription(
