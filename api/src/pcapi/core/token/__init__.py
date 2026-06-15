@@ -17,8 +17,8 @@ from flask import current_app
 
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
-from pcapi.core.users import utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import jwt as jwt_utils
 
 
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ class Token(AbstractToken):
     @classmethod
     def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
         try:
-            payload = utils.decode_jwt_token(encoded_token)
+            payload = jwt_utils.decode_jwt_token(encoded_token)
             type_ = TokenType(payload["token_type"])
             user_id = payload["user_id"]
         except jwt.exceptions.ExpiredSignatureError as e:
@@ -168,7 +168,7 @@ class Token(AbstractToken):
         if ttl:
             payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
 
-        encoded_token = utils.encode_jwt_payload(payload)
+        encoded_token = jwt_utils.encode_jwt_payload(payload)
         if ttl is None or ttl > timedelta(0):
             current_app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
         token = Token.load_without_checking(encoded_token)
@@ -196,7 +196,7 @@ class UUIDToken(AbstractToken):
         **kwargs: typing.Any,
     ) -> "UUIDToken":
         try:
-            payload = utils.decode_jwt_token(encoded_token)
+            payload = jwt_utils.decode_jwt_token(encoded_token)
         except jwt.exceptions.ExpiredSignatureError as e:
             raise users_exceptions.ExpiredToken() from e
         except (KeyError, ValueError, jwt.PyJWTError) as e:
@@ -217,7 +217,7 @@ class UUIDToken(AbstractToken):
         }
         if ttl:
             payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
-        encoded_token = utils.encode_jwt_payload(payload)
+        encoded_token = jwt_utils.encode_jwt_payload(payload)
 
         if ttl is None or ttl > timedelta(0):
             redis_key = cls.get_redis_key(type_, random_uuid)
@@ -275,7 +275,7 @@ class AsymetricToken(AbstractToken):
         cls, encoded_token: str, public_key: bytes, *args: typing.Any, **kwargs: typing.Any
     ) -> "AsymetricToken":
         try:
-            payload = utils.decode_jwt_token_rs256(
+            payload = jwt_utils.decode_jwt_token_rs256(
                 encoded_token, public_key=public_key
             )  # do we want to use the same key to all our tokens?
             type_ = TokenType(payload["token_type"])
@@ -293,7 +293,7 @@ class AsymetricToken(AbstractToken):
         """Decode the JWT token without verifying signature. If you want to be able to trust
         the data within the payload, you must use `load_and_check`
         """
-        payload = utils.decode_jwt_token_rs256(encoded_token, verify_signature=False)
+        payload = jwt_utils.decode_jwt_token_rs256(encoded_token, verify_signature=False)
         type_ = TokenType(payload["token_type"])
         uuid4 = payload["uuid"]
 
@@ -318,7 +318,7 @@ class AsymetricToken(AbstractToken):
         if ttl:
             payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
 
-        encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
+        encoded_token = jwt_utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):
             current_app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
         token = cls(type_, random_uuid, encoded_token, payload["data"])
@@ -366,7 +366,7 @@ def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
     }
     current_app.redis_client.set(redis_key, value, ex=ttl)
 
-    token = utils.encode_jwt_payload_rs256(
+    token = jwt_utils.encode_jwt_payload_rs256(
         {"sub": sub, "iat": iat, "exp": exp, "jti": jti},
         private_key=settings.PASSWORDLESS_LOGIN_PRIVATE_KEY,
         expiration_date=expiration_date,
@@ -385,7 +385,7 @@ def validate_passwordless_token(token: str) -> dict:
         InvalidToken (exception): If anything goes wrong while decoding or validating the token, we don’t want to give any additional hints, we raise `InvalidToken` in any cases.
     """
     try:
-        payload = utils.decode_jwt_token_rs256(
+        payload = jwt_utils.decode_jwt_token_rs256(
             token, public_key=settings.PASSWORDLESS_LOGIN_PUBLIC_KEY, require=["exp", "iat", "sub", "jti"]
         )
     except jwt.ExpiredSignatureError as exc:

@@ -4,13 +4,13 @@ import jwt
 import pytest
 
 from pcapi import settings
-from pcapi.core.users import utils as user_utils
-from pcapi.core.users.utils import ALGORITHM_HS_256
-from pcapi.core.users.utils import ALGORITHM_RS_256
-from pcapi.core.users.utils import decode_jwt_token_rs256
-from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_login_location
 from pcapi.utils import date as date_utils
+from pcapi.utils.jwt import ALGORITHM_HS_256
+from pcapi.utils.jwt import ALGORITHM_RS_256
+from pcapi.utils.jwt import JWT_ADAGE_PUBLIC_KEY_PATH
+from pcapi.utils.jwt import decode_jwt_token_rs256
+from pcapi.utils.jwt import encode_jwt_payload
 
 from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
@@ -43,7 +43,7 @@ class DecodeJWTPayloadRS256Test:
         payload = dict(data="value")
         with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
             valid_encoded_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
-        with open(user_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+        with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
             public_key = reader.read()
             decoded = decode_jwt_token_rs256(valid_encoded_token, public_key)
 
@@ -55,7 +55,7 @@ class DecodeJWTPayloadRS256Test:
             corrupted_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
 
         with pytest.raises(jwt.InvalidSignatureError) as error:
-            with open(user_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+            with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
                 public_key = reader.read()
                 decode_jwt_token_rs256(corrupted_token, public_key=public_key)
 

@@ -13,8 +13,8 @@ from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
+from pcapi.utils.jwt import encode_jwt_payload
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

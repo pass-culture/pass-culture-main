@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 from pcapi import settings
-from pcapi.core.users import utils as users_utils
 from pcapi.utils import date as date_utils
+from pcapi.utils import jwt as jwt_utils
 from pcapi.utils import requests
 
 
@@ -32,7 +32,7 @@ def build_discord_redirection_uri(user_id: int) -> str:
 def _sign_state(user_id: int) -> str:
     payload = {"user_id": user_id}
     expiration = date_utils.get_naive_utc_now() + DISCORD_STATE_TTL
-    return users_utils.encode_jwt_payload_rs256(
+    return jwt_utils.encode_jwt_payload_rs256(
         payload, private_key=settings.DISCORD_JWT_PRIVATE_KEY, expiration_date=expiration
     )
 
@@ -42,7 +42,7 @@ def verify_state(state: str) -> int:
 
     Raises jwt.PyJWTError on invalid or expired state.
     """
-    payload = users_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
+    payload = jwt_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
     return payload["user_id"]
 
 

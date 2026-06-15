@@ -15,9 +15,9 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import utils as users_utils
 from pcapi.core.users.models import DiscordUser
 from pcapi.models import db
+from pcapi.utils import jwt as jwt_utils
 from pcapi.utils import requests
 
 
@@ -94,7 +94,7 @@ class DiscordSigninTest:
         assert "&state=" in uri
         # Verify the state is a signed RS256 JWT containing the user_id
         state = uri.split("&state=")[1]
-        payload = users_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
+        payload = jwt_utils.decode_jwt_token_rs256(state, public_key=settings.DISCORD_JWT_PUBLIC_KEY)
         assert payload["user_id"] == 1
         assert "exp" in payload
 

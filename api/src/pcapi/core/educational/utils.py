@@ -11,11 +11,11 @@ from psycopg2.extras import DateTimeRange
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.offerers.utils import is_venue_address
-from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import requests
+from pcapi.utils.jwt import ALGORITHM_RS_256
 
 
 logger = logging.getLogger(__name__)
