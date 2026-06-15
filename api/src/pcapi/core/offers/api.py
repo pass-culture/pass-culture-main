@@ -2494,6 +2494,7 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
         users_models.Favorite,
         models.Mediation,
         finance_models.CustomReimbursementRule,
+        highlights_models.HighlightRequest,
     ]
 
     for model in related_models:

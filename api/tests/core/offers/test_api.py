@@ -47,6 +47,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.external.attributes.queue import REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE
 from pcapi.core.external.batch import testing as push_testing
+from pcapi.core.highlights import factories as highlights_factories
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
@@ -5381,6 +5382,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
 
     def build_many_eligible_for_search_offers_with_related_objects(self, count=3):
         offers = []
+        highlight = highlights_factories.HighlightFactory()
         for _ in range(count):
             offer = factories.StockFactory().offer
             offers.append(offer)
@@ -5388,6 +5390,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
 
             factories.StockFactory.create_batch(2, offer=offer)
             users_factories.FavoriteFactory(offer=offer)
+            highlights_factories.HighlightRequestFactory(highlight=highlight, offer=offer)
         return offers
 
     def test_delete_offer_with_price_categories(self, caplog):
