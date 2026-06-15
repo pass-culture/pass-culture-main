@@ -107,9 +107,6 @@ jobs:
     name: "[PRO] Deploy PR version for validation pr preview backend"
     needs: [deploy-preview-env-init]
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
-    permissions:
-      id-token: write
-      contents: read
     with:
       cache_bucket_name: "passculture-infra-prod-github-runner-cache"
       custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
