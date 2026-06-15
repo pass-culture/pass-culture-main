@@ -26,6 +26,7 @@ def get_artists(query: artist_serialize.ArtistQueryModel) -> artist_serialize.Ar
         artist_serialize.ArtistResponseModel(
             id=artist.id,
             name=artist.name,
+            description=artist.description,
             thumbUrl=artist.mediationUrl,
         )
         for artist in artist_repository.get_filtered_artists_for_search(query.search)

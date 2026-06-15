@@ -10,6 +10,7 @@ from pcapi.routes.serialization import HttpQueryParamsModel
 class ArtistResponseModel(HttpBodyModel):
     id: str
     name: str
+    description: str | None
     thumbUrl: str | None
 
 

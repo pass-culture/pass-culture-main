@@ -111,6 +111,10 @@ export type ArtistQueryModel = {
  */
 export type ArtistResponseModel = {
     /**
+     * Description
+     */
+    description: string | null;
+    /**
      * Id
      */
     id: string;

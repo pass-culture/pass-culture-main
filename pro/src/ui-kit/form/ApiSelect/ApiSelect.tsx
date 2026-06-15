@@ -55,9 +55,10 @@ export function ApiSelect<T extends ApiOption>({
         optionsMap.current = new Map(data.map((opt) => [opt.value, opt]))
 
         setOptions(
-          data.map(({ value, label, thumbUrl }) => ({
+          data.map(({ value, label, description, thumbUrl }) => ({
             value,
             label,
+            description,
             thumbUrl,
           }))
         )

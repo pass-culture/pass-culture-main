@@ -49,12 +49,24 @@
   .option-creatable-label {
     @include fonts.body-accent;
   }
+
+  .option-texts {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .option-description {
+    @include fonts.body-xs;
+
+    color: var(--color-text-subtle);
+  }
 }
 
 .options-img-wrapper {
   position: relative;
-  width: rem.torem(36px);
-  height: rem.torem(36px);
+  width: rem.torem(44px);
+  height: rem.torem(44px);
   flex-shrink: 0;
 }
 

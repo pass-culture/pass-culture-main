@@ -120,6 +120,25 @@ describe('<OptionsList />', () => {
       expect(imgs[0]).toHaveAttribute('src', '/placeholder.png')
     })
 
+    it('should render option description when provided', () => {
+      renderOptionsList({
+        ...DEFAULT_PROPS,
+        filteredOptions: [
+          {
+            value: '01',
+            label: 'Ain',
+            description: 'Département de la région...',
+          },
+          { value: '02', label: 'Aisne' },
+        ],
+      })
+
+      const options = screen.getAllByRole('option')
+      expect(options[0]).toHaveTextContent('Ain')
+      expect(options[0]).toHaveTextContent('Département de la région...')
+      expect(options[1]).toHaveTextContent('Aisne')
+    })
+
     it('should render both placeholder and thumbUrl', () => {
       renderOptionsList({
         ...DEFAULT_PROPS,
