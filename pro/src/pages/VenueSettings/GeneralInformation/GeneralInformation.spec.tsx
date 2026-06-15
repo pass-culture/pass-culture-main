@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import type { UseFormRegisterReturn } from 'react-hook-form'
 
+import { apiNew } from '@/apiClient/api'
 import { DisplayableActivity } from '@/apiClient/v1'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -28,15 +30,19 @@ vi.mock('@/commons/core/Venue/utils/getSiretData', () => ({
 
 vi.mock('@/components/AddressFields/AddressFields', () => ({
   AddressFields: ({
+    addressRegister,
     onManualChange,
     onAddressChosen,
   }: {
+    addressRegister: UseFormRegisterReturn
     onManualChange: () => void
     onAddressChosen: (
       data: import('@/apiClient/adresse/types').AdresseData
     ) => void
   }) => (
     <div data-testid="address-fields">
+      <label htmlFor="addressAutocomplete">Adresse postale</label>
+      <input id="addressAutocomplete" {...addressRegister} />
       <button type="button" onClick={onManualChange}>
         Entrer l'adresse manuellement
       </button>
@@ -254,6 +260,36 @@ describe('GeneralInformation', () => {
       await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
 
       expect(screen.getByTestId('address-fields')).toBeInTheDocument()
+    })
+
+    it('should restore previous addressAutocomplete on save when venue is closed to public with an empty address field', async () => {
+      renderGeneralInformation({
+        id: 1,
+        isOpenToPublic: true,
+        activity: DisplayableActivity.FESTIVAL,
+        location: {
+          ...defaultGetVenue.location,
+          street: '123 Rue Principale',
+          postalCode: '75001',
+          city: 'Paris',
+          latitude: 48.8566,
+          longitude: 2.3522,
+          inseeCode: '75056',
+          banId: 'ban-123',
+          isManualEdition: false,
+        },
+      })
+
+      await userEvent.clear(await screen.findByLabelText('Adresse postale'))
+
+      await userEvent.click(await screen.findByRole('radio', { name: /Non/ }))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      await waitFor(() => {
+        expect(apiNew.editVenue).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

@@ -66,12 +66,14 @@ const GeneralInformation = () => {
     register,
     setValue,
     watch,
+    getValues,
     clearErrors,
     formState: { isDirty, isSubmitting, isSubmitted, errors, disabled },
   } = form
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
+  const isOpenToPublic = watch('isOpenToPublic')
 
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
@@ -105,10 +107,16 @@ const GeneralInformation = () => {
 
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
+    const currentAddressAutocomplete = getValues('addressAutocomplete')
 
     form.setValue('isOpenToPublic', isOpenToPublicValue, { shouldDirty: true })
 
     if (isOpenToPublicValue === 'false') {
+      if (!currentAddressAutocomplete && initialValues.addressAutocomplete) {
+        setValue('addressAutocomplete', initialValues.addressAutocomplete)
+        clearErrors('addressAutocomplete')
+      }
+
       resetOpeningHoursAndAccessibility()
     }
 
@@ -164,10 +172,10 @@ const GeneralInformation = () => {
               <FormLayout.Row mdSpaceAfter>
                 <OpenToPublicToggle
                   onChange={toggleOpenToPublic}
-                  isOpenToPublic={form.watch('isOpenToPublic')}
+                  isOpenToPublic={isOpenToPublic}
                 />
               </FormLayout.Row>
-              {form.watch('isOpenToPublic') === 'true' && (
+              {isOpenToPublic === 'true' && (
                 <AddressFields
                   description="Indiquez ici l'adresse où vous recevez votre public."
                   addressRegister={register('addressAutocomplete')}

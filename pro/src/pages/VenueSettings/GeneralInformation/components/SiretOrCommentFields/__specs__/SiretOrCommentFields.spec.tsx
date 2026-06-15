@@ -1,8 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, type UseFormReturn, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
+import * as yup from 'yup'
 
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
@@ -38,15 +39,29 @@ const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
 const defaultInitialValues = {
   comment: '',
   siret: '12345678901234',
+  addressAutocomplete: null,
 }
+
+const SiretOrCommentTestValidationSchema = SiretOrCommentValidationSchema.shape(
+  {
+    comment: yup.string().default(''),
+    addressAutocomplete: yup.string().nullable().default(null),
+  }
+)
+
+type SiretOrCommentTestFormValues = yup.InferType<
+  typeof SiretOrCommentTestValidationSchema
+>
 
 function renderSiretOrComment(
   defaultProps: SiretOrCommentFieldsProps,
-  initalValues?: { comment: string; siret: string },
+  initalValues?: Partial<SiretOrCommentTestFormValues>,
   options?: RenderWithProvidersOptions
 ) {
+  let methodsRef!: UseFormReturn<SiretOrCommentTestFormValues>
+
   const Wrapper = () => {
-    const methods = useForm({
+    const methods = useForm<SiretOrCommentTestFormValues>({
       context: {
         ...defaultFormContext,
         ...defaultProps.formContext,
@@ -55,9 +70,12 @@ function renderSiretOrComment(
         ...defaultInitialValues,
         ...(initalValues || {}),
       },
-      resolver: yupResolver(SiretOrCommentValidationSchema),
+      resolver: yupResolver<SiretOrCommentTestFormValues, unknown, unknown>(
+        SiretOrCommentTestValidationSchema
+      ),
       mode: 'all',
     })
+    methodsRef = methods
 
     return (
       <FormProvider {...methods}>
@@ -70,6 +88,8 @@ function renderSiretOrComment(
   }
 
   renderWithProviders(<Wrapper />, options)
+
+  return methodsRef
 }
 
 describe('SiretOrCommentFields', () => {
@@ -344,6 +364,40 @@ describe('SiretOrCommentFields', () => {
         'Le code SIRET doit correspondre à un établissement de votre structure'
       )
       expect(errorMessage).toBeInTheDocument()
+    })
+
+    it('should keep previous addressAutocomplete when isOpenToPublic is false and location is null', async () => {
+      vi.mocked(getSiretData).mockResolvedValue({
+        ...structureDataBodyModelFactory(),
+        location: null,
+      })
+
+      const formMethods = renderSiretOrComment(
+        {
+          ...props,
+          formContext: {
+            ...props.formContext,
+            isOpenToPublic: 'false',
+          },
+        },
+        {
+          comment: '',
+          siret: '12345678901234',
+          addressAutocomplete: 'Ancienne adresse conservée',
+        }
+      )
+
+      const siretInput = screen.getByLabelText(/SIRET de la structure/i)
+      await userEvent.clear(siretInput)
+      await userEvent.type(siretInput, '123 456 789 01234')
+
+      await waitFor(() => {
+        expect(getSiretData).toHaveBeenCalledWith('123 456 789 01234')
+      })
+
+      expect(formMethods.getValues('addressAutocomplete')).toBe(
+        'Ancienne adresse conservée'
+      )
     })
   })
 })

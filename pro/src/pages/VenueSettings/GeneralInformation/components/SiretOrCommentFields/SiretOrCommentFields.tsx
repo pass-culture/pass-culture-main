@@ -36,6 +36,7 @@ export const SiretOrCommentFields = ({
 
   const hasComment = !formContext.withSiret
   const hasRidet = formContext.isCaledonian
+  const isOpenToPublic = formContext.isOpenToPublic
 
   const onSiretChange = async (siret: string) => {
     const cleanSiret = unhumanizeSiret(siret)
@@ -69,13 +70,15 @@ export const SiretOrCommentFields = ({
       )
       setValue('name', response?.name ?? '')
 
-      setValue('addressAutocomplete', address)
-      setValue('street', response.location?.street ?? '')
-      setValue('postalCode', response.location?.postalCode ?? '')
-      setValue('city', response.location?.city ?? '')
-      setValue('latitude', response.location?.latitude.toString() ?? '')
-      setValue('longitude', response.location?.longitude.toString() ?? '')
-      setValue('inseeCode', response.location?.inseeCode ?? '')
+      if (isOpenToPublic === 'true' || response.location) {
+        setValue('addressAutocomplete', address)
+        setValue('street', response.location?.street ?? '')
+        setValue('postalCode', response.location?.postalCode ?? '')
+        setValue('city', response.location?.city ?? '')
+        setValue('latitude', response.location?.latitude.toString() ?? '')
+        setValue('longitude', response.location?.longitude.toString() ?? '')
+        setValue('inseeCode', response.location?.inseeCode ?? '')
+      }
     } catch (_e) {
       if (isError(_e)) {
         setError('siret', {
