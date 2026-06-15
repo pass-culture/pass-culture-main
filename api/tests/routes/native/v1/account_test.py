@@ -43,11 +43,11 @@ from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users import young_status
 from pcapi.core.users.email.repository import get_email_update_latest_event
-from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.jwt import ALGORITHM_HS_256
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
 

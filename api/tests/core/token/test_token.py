@@ -15,8 +15,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from pcapi import settings
 from pcapi.core import token as token_tools
 from pcapi.core.users.exceptions import InvalidToken
-from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.utils import date as date_utils
+from pcapi.utils.jwt import encode_jwt_payload
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -346,7 +346,7 @@ class PasswordLessLoginTokenTest:
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
     @pytest.mark.parametrize("missing_claim", ["exp", "iat", "sub", "jti"])
-    @mock.patch("pcapi.core.users.utils.encode_jwt_payload_rs256")
+    @mock.patch("pcapi.utils.jwt.encode_jwt_payload_rs256")
     @mock.patch("flask.current_app.redis_client.set")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_token_with_missing_mandatory_claim_raise_decode_error_accordingly(

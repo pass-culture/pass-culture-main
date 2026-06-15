@@ -3,8 +3,8 @@ from datetime import timedelta
 
 import jwt
 
-from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import date as date_utils
+from pcapi.utils.jwt import ALGORITHM_RS_256
 
 from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH

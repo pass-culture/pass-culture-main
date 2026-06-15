@@ -6,11 +6,11 @@ import flask
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 
-from pcapi.core.users import utils as user_utils
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.adage_iframe.blueprint import JWT_AUTH
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.spec_tree import add_security_scheme
+from pcapi.utils import jwt as jwt_utils
 
 
 logger = logging.getLogger(__name__)
@@ -27,9 +27,9 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
         if authorization_header and mandatory_authorization_type in authorization_header:
             adage_jwt = authorization_header.replace(mandatory_authorization_type, "")
             try:
-                with open(user_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+                with open(jwt_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
                     public_key = reader.read()
-                    adage_jwt_decoded = user_utils.decode_jwt_token_rs256(adage_jwt, public_key)
+                    adage_jwt_decoded = jwt_utils.decode_jwt_token_rs256(adage_jwt, public_key)
             except InvalidSignatureError as invalid_signature_error:
                 logger.error("Signature of adage jwt cannot be verified", extra={"error": invalid_signature_error})
                 raise UnauthorizedError(errors={"msg": "Unrecognized token"})
