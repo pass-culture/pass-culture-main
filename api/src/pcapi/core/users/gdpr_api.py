@@ -1,4 +1,5 @@
 import datetime
+import functools
 import itertools
 import logging
 import random
@@ -50,7 +51,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
@@ -94,8 +94,7 @@ def _revoke_sso_tokens(user: models.User) -> None:
         if sso.ssoProvider != "apple" or not sso.encryptedRefreshToken:
             continue
         try:
-            refresh_token = crypto.decrypt(sso.encryptedRefreshToken)
-            apple_oauth.revoke_refresh_token(refresh_token)
+            apple_oauth.revoke_refresh_token(sso.encryptedRefreshToken)
             # Clear the stored token so the late-stage anonymization cron does not retry a
             # revocation that has already succeeded.
             sso.encryptedRefreshToken = None
@@ -104,6 +103,15 @@ def _revoke_sso_tokens(user: models.User) -> None:
                 "SSO token revocation failed",
                 extra={"user_id": user.id, "provider": sso.ssoProvider, "exc": str(exc)},
             )
+
+
+def _revoke_sso_tokens_by_user_id(user_id: int) -> None:
+    # Runs as an on_commit callback: open a fresh transaction so the token cleanup done by
+    # `_revoke_sso_tokens` is persisted.
+    with transaction_manager.atomic():
+        user = db.session.query(models.User).filter(models.User.id == user_id).one_or_none()
+        if user is not None:
+            _revoke_sso_tokens(user)
 
 
 def anonymize_user(
@@ -444,7 +452,9 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
 
     # Apple App Store Review Guideline 5.1.1(v) requires that token revocation happens
     # at the moment the user requests account deletion, not when the deferred anonymization runs.
-    _revoke_sso_tokens(user)
+    # Deferred to right after the commit so the Apple HTTP call (seconds, worst case) does not
+    # block the user-facing request transaction while holding row locks.
+    transaction_manager.on_commit(functools.partial(_revoke_sso_tokens_by_user_id, user.id), robust=True)
 
     api.suspend_account(
         user=user,

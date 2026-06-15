@@ -39,7 +39,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import crypto
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
@@ -266,28 +265,37 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     elif sso_provider == "google":
         sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
 
-    if not FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
-        refresh_token = None
+    encrypted_refresh_token: str | None = None
+    if refresh_token and FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        # Encrypt at reception so the refresh token never sits in clear text, not even inside
+        # the short-lived account-creation token.
+        encrypted_refresh_token = apple_oauth.build_encrypted_refresh_token(refresh_token, is_web)
 
-    if not sso_user.email_verified:
-        logger.warning(
-            "SSO access denied: email not verified",
-            extra={"sso_provider": sso_provider},
-        )
-        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
-
-    if not sso_user.email:
-        raise api_errors.ApiErrors(
-            {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
-        )
-
-    email = sso_user.email
     sso_user_id = sso_user.sub
     single_sign_on = users_repo.get_single_sign_on(sso_provider, sso_user_id)
-    if not single_sign_on:
-        user = users_repo.find_user_by_email(email)
-    else:
+
+    user: user_models.User | None
+    if single_sign_on:
+        # An existing SSO link identifies the user by (provider, sub) alone. Apple only returns the
+        # email on the first consent, so we must not require it again on subsequent logins (e.g. after
+        # a token revocation and re-consent). The id_token is already cryptographically verified.
         user = single_sign_on.user
+    else:
+        # No existing SSO link: we rely on the email to match an existing account or to create one,
+        # so it must be present and verified by the provider.
+        if not sso_user.email_verified:
+            logger.warning(
+                "SSO access denied: email not verified",
+                extra={"sso_provider": sso_provider},
+            )
+            raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
+
+        if not sso_user.email:
+            raise api_errors.ApiErrors(
+                {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
+            )
+
+        user = users_repo.find_user_by_email(sso_user.email)
 
     if not user:
         logger.info(
@@ -295,14 +303,16 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
             extra={"sso_provider": sso_provider, "avoid_current_user": True},
             technical_message_id=f"users.login.sso.{sso_provider}",
         )
-        encoded_account_creation_token = users_api.create_account_creation_token(sso_user, refresh_token)
+        encoded_account_creation_token = users_api.create_account_creation_token(
+            sso_user, encrypted_refresh_token, sso_provider
+        )
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
         raise ApiErrors(
             {
                 "code": "SSO_EMAIL_NOT_FOUND",
                 "accountCreationToken": encoded_account_creation_token,
-                "email": email,
-                "general": [f"Aucun compte pass Culture lié à {email} n'a été trouvé"],
+                "email": sso_user.email,
+                "general": [f"Aucun compte pass Culture lié à {sso_user.email} n'a été trouvé"],
             },
             status_code=401,
         )
@@ -314,7 +324,6 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         )
         raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
 
-    sso_user_id = sso_user.sub
     with transaction():
         if not user.isEmailValidated:
             # An account registered with a password and with its email not validated is a symptom
@@ -335,8 +344,8 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
         # Persist the refresh token (encrypted) so we can revoke it provider-side on account deletion.
         # Always overwrite with the newest refresh_token we receive ; only skip when the provider
         # does not return one (Apple only returns a refresh token on the first consent).
-        if refresh_token:
-            current_provider_sso.encryptedRefreshToken = crypto.encrypt(refresh_token)
+        if encrypted_refresh_token:
+            current_provider_sso.encryptedRefreshToken = encrypted_refresh_token
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 

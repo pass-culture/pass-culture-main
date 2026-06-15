@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 import typing
@@ -8,6 +9,7 @@ from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.core.users import schemas as users_schemas
+from pcapi.utils import crypto
 from pcapi.utils import requests
 
 
@@ -24,10 +26,10 @@ def get_apple_user(authorization_code: str, is_web: bool) -> tuple[users_schemas
 
     try:
         token_response = _fetch_token_response(client_id, client_secret, authorization_code)
+        id_token = token_response["id_token"]
     except Exception as e:
         raise AppleSignInException("Could not fetch identity token from Apple") from e
 
-    id_token = token_response["id_token"]
     refresh_token = token_response.get("refresh_token")
 
     jwks_client = PyJWKClient(settings.APPLE_KEYS_URL)
@@ -54,34 +56,41 @@ def get_apple_user(authorization_code: str, is_web: bool) -> tuple[users_schemas
     return _parse_identity_token(token_payload), refresh_token
 
 
-def revoke_refresh_token(refresh_token: str) -> None:
+def build_encrypted_refresh_token(refresh_token: str, is_web: bool) -> str:
+    # Apple ties tokens to the client_id (web vs mobile) that obtained them. Store it alongside
+    # the refresh token so the revocation can try the right client_id first.
+    client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
+    return crypto.encrypt(json.dumps({"refresh_token": refresh_token, "client_id": client_id}))
+
+
+def revoke_refresh_token(encrypted_refresh_token: str) -> None:
     # https://developer.apple.com/documentation/sign_in_with_apple/revoke_tokens
-    # Apple ties tokens to a specific client_id (web vs mobile). Try mobile first because the
-    # native app is the dominant entry point ; fall back to web before giving up.
+    payload = json.loads(crypto.decrypt(encrypted_refresh_token))
+    refresh_token = payload["refresh_token"]
+    # Try the client_id that obtained the token first ; keep the other one as a fallback in case
+    # the stored value is stale or misconfigured.
+    candidate_client_ids = (payload.get("client_id"), settings.APPLE_MOBILE_CLIENT_ID, settings.APPLE_WEB_CLIENT_ID)
+    client_ids = list(dict.fromkeys(client_id for client_id in candidate_client_ids if client_id))
+    if not client_ids:
+        raise AppleSignInException("No Apple client_id configured for revocation")
     last_error: Exception | None = None
-    attempted = False
-    for client_id in (settings.APPLE_MOBILE_CLIENT_ID, settings.APPLE_WEB_CLIENT_ID):
-        if not client_id:
-            continue
-        attempted = True
+    for client_id in client_ids:
         client_secret = _generate_client_secret(client_id)
-        payload = {
+        data = {
             "client_id": client_id,
             "client_secret": client_secret,
             "token": refresh_token,
             "token_type_hint": "refresh_token",
         }
         try:
-            # Short timeout: this runs inside the anonymization transaction, holding row locks.
-            response = requests.post(settings.APPLE_REVOKE_ENDPOINT, data=payload, timeout=3)
+            # Short timeout: this may run inside the anonymization transaction, holding row locks.
+            response = requests.post(settings.APPLE_REVOKE_ENDPOINT, data=data, timeout=3)
             response.raise_for_status()
             return
         except requests.exceptions.RequestException as e:
-            # Catch timeouts and connection errors too: a network failure on the mobile
-            # client_id must not prevent the fallback attempt on the web client_id.
+            # Catch timeouts and connection errors too: a network failure on one client_id must
+            # not prevent the fallback attempt on the other one.
             last_error = e
-    if not attempted:
-        raise AppleSignInException("No Apple client_id configured for revocation")
     if last_error is not None:
         raise last_error
 
@@ -111,20 +120,21 @@ def _fetch_token_response(client_id: str, client_secret: str, authorization_code
     try:
         response = requests.post(settings.APPLE_TOKEN_ENDPOINT, data=payload)
         response.raise_for_status()
+        return response.json()
     except requests.exceptions.HTTPError as e:
         status = e.response.status_code
         logger.error("Error fetching Apple token", extra={"response": str(e), "status_code": status})
         raise
 
-    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        logger.error("Network error reaching Apple", extra={"error": str(e)})
-        raise
-
-    except (KeyError, ValueError) as e:
+    except ValueError as e:
+        # requests' JSONDecodeError subclasses both ValueError and RequestException: keep this
+        # clause first so a malformed body is not logged as a network error.
         logger.error("Malformed response from Apple Token API", extra={"error": str(e)})
         raise
 
-    return response.json()
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        logger.error("Network error reaching Apple", extra={"error": str(e)})
+        raise
 
 
 def _parse_identity_token(payload: dict[str, typing.Any]) -> users_schemas.SSOUser:

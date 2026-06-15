@@ -249,6 +249,10 @@ def create_account_with_sso(sso_provider: str, body: serializers.SSOAccountReque
         raise api_errors.ApiErrors({"error": "Internal error"})
 
     sso_encrypted_refresh_token = account_creation_token.data.get("encrypted_refresh_token")
+    if account_creation_token.data.get("sso_provider") != sso_provider:
+        # The refresh token is bound to the provider that issued it: never persist it on a
+        # single_sign_on row of another provider, where it could never be revoked.
+        sso_encrypted_refresh_token = None
 
     account_creation_token.expire()
 

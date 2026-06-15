@@ -51,7 +51,6 @@ from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
-from pcapi.utils import crypto
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
@@ -892,12 +891,17 @@ def create_oauth_state_token() -> str:
     return token.encoded_token
 
 
-def create_account_creation_token(sso_user: users_schemas.SSOUser, refresh_token: str | None = None) -> str:
+def create_account_creation_token(
+    sso_user: users_schemas.SSOUser, encrypted_refresh_token: str | None = None, sso_provider: str | None = None
+) -> str:
+    # `encrypted_refresh_token` MUST already be encrypted by the caller — it is stored as-is in
+    # the token data, then on `single_sign_on.encryptedRefreshToken` at account creation.
     data = sso_user.model_dump()
-    if refresh_token:
-        # Encrypt at emission so the SSO refresh token never sits in clear text, not even inside
-        # the short-lived account-creation token.
-        data["encrypted_refresh_token"] = crypto.encrypt(refresh_token)
+    if encrypted_refresh_token:
+        # Bind the refresh token to the provider that issued it: the account creation route must
+        # not persist it under another provider, where it could never be revoked.
+        data["encrypted_refresh_token"] = encrypted_refresh_token
+        data["sso_provider"] = sso_provider
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
         constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
