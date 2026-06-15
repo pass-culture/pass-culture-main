@@ -53,12 +53,10 @@ export const CustomPagination = ({
 
         // Clicked page is the immediate previous page
         if (newPage === currentRefinement) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           logPagination(PaginationType.PREVIOUS)
         }
         // Clicked page is the immediate next page
         else if (newPage === currentRefinement + 2) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           logPagination(PaginationType.NEXT)
         }
       }}

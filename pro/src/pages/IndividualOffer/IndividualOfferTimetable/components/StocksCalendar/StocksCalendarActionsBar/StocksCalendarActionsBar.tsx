@@ -38,7 +38,6 @@ export function StocksCalendarActionsBar({
 
   function handlePreviousStep() {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
@@ -49,7 +48,6 @@ export function StocksCalendarActionsBar({
       )
       return
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
@@ -68,7 +66,6 @@ export function StocksCalendarActionsBar({
     }
 
     await mutate([GET_OFFER_QUERY_KEY, offerId])
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
@@ -117,7 +114,6 @@ export function StocksCalendarActionsBar({
         <ActionBar
           onClickPrevious={handlePreviousStep}
           onClickNext={() => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNextStep()
           }}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}

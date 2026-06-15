@@ -25,7 +25,6 @@ export const ResetPassword = (): JSX.Element => {
 
   const invalidTokenHandler = useCallback(() => {
     snackBar.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/demande-mot-de-passe')
   }, [navigate, snackBar])
 
@@ -47,7 +46,6 @@ export const ResetPassword = (): JSX.Element => {
       })
 
       snackBar.success('Mot de passe modifié.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/connexion')
     } catch {
       invalidTokenHandler()

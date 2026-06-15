@@ -52,7 +52,6 @@ export const WithinForm = {
     legend: 'Choisir une option',
   },
   render: (args: any) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const hookForm = useForm<{ question: string }>({
       defaultValues: { question: '1' },
     })

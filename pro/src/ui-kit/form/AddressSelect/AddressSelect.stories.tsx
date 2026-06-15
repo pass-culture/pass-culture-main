@@ -174,7 +174,6 @@ export const WithinFormValidation: StoryObj<typeof AddressSelect> = {
       setValue,
       register,
       formState: { errors },
-      // eslint-disable-next-line react-hooks/rules-of-hooks
     } = useFormContext<AddressFormValues>()
 
     return (

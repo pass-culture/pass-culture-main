@@ -191,7 +191,6 @@ export const OffersSearch = ({
 
   useEffect(() => {
     if (mainOffersSearchResults) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       logFiltersOnSearch(
         mainOffersSearchResults.nbHits,
         mainOffersSearchResults.queryID

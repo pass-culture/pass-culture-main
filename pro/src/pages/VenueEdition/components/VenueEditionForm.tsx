@@ -73,7 +73,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       await syncVenueWithData(venue.id, updatedVenue)
 
       const path = getVenuePagePathToNavigateTo()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(path)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {

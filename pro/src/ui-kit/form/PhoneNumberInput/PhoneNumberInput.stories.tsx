@@ -62,7 +62,6 @@ export const Default: Story = {
       register,
       watch,
       formState: { errors },
-      // eslint-disable-next-line react-hooks/rules-of-hooks
     } = useFormContext<WrapperFormValues>()
 
     const phoneNumber = watch('phone')

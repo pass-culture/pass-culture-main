@@ -52,7 +52,6 @@ export const duplicateBookableOffer = async (
 
     await postCollectiveOfferImage({ initialValues, snackBar, id: response.id })
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(`/offre/collectif/${response.id}/creation?structure=${offererId}`)
   } catch (error) {
     const message =

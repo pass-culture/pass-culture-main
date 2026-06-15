@@ -1,8 +1,7 @@
-// biome-ignore assist/source/organizeImports: Unfixable.
-import { expect, type APIRequestContext } from '@playwright/test'
+import { type APIRequestContext, expect } from '@playwright/test'
 
-import { test as base } from './common'
 import { createProUserWithCollectiveOffers } from '../helpers/sandbox'
+import { test as base } from './common'
 
 export const test = base.extend<{
   callSandbox: (ctx: APIRequestContext) => Promise<any>

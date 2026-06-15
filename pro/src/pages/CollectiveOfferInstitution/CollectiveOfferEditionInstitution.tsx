@@ -52,7 +52,6 @@ export const CollectiveOfferEditionInstitution = ({
     payload: GetCollectiveOfferResponseModel
   }) => {
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         payload.id,

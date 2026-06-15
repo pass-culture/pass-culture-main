@@ -56,7 +56,6 @@ export const createOfferFromTemplate = async (
         id: response.id,
       })
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         `/offre/collectif/${response.id}/creation?structure=${offererId}${
           requestId ? `&requete=${requestId}` : ''

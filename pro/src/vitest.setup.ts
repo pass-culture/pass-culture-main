@@ -21,7 +21,6 @@ axeCore.configure({
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 fetchMock.mockResponse((req) => {
-  // eslint-disable-next-line no-console
   console.error(String.raw`
   ----------------------------------------------------------------------------
   /!\ UNMOCKED FETCH CALL TO :  [${req.method}] ${req.url}

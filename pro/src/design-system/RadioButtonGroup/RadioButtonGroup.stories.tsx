@@ -192,7 +192,6 @@ export const WithCommonImage: StoryObj<typeof RadioButtonGroup> = {
 
 export const WithCollapsed: StoryObj<typeof RadioButtonGroup> = {
   render: () => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [checkedOption, setCheckedOption] = useState<string>(
       collapsedOption.value
     )

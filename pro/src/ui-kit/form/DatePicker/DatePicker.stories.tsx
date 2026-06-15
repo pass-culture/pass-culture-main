@@ -47,7 +47,6 @@ export const WithinForm: Story = {
     ),
   ],
   render: (args: any) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { register } = useFormContext<{ date: string }>()
 
     return <DatePicker {...args} {...register('date')} />

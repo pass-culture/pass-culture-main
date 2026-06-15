@@ -61,7 +61,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       offerType: 'collective',
       templateOfferId: offerId,
     })
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(
       navigate,
       snackBar,

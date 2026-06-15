@@ -131,7 +131,6 @@ export function AdageOfferListCard({
                 onCardClicked?.()
                 if (!e.metaKey) {
                   e.preventDefault()
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
                     state: { offer, queryId },
                   })

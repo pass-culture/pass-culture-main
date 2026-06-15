@@ -67,7 +67,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
           { revalidate: false }
         )
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(confirmationUrl)
         return
       }
@@ -114,7 +113,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(confirmationUrl)
       }
     } catch {

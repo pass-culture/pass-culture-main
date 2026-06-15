@@ -1,13 +1,12 @@
-// biome-ignore assist/source/organizeImports: Unfixable.
+import * as path from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import {
+  type APIRequestContext,
   test as base,
   expect,
-  request as playwrightRequest,
   type Page,
-  type APIRequestContext,
+  request as playwrightRequest,
 } from '@playwright/test'
-import * as path from 'node:path'
 
 import { doLogin } from '../helpers/auth'
 

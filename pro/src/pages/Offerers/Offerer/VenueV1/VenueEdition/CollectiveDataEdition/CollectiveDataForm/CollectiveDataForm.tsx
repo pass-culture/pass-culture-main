@@ -94,7 +94,6 @@ export const CollectiveDataForm = ({
 
       dispatch(setSelectedPartnerVenue(updatedVenue))
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(`/partenaire/page-collective`)
     } catch {
       snackBar.error(SENT_DATA_ERROR_MESSAGE)

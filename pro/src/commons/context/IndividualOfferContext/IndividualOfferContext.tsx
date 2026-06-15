@@ -80,7 +80,6 @@ export const IndividualOfferContextProvider = ({
     {
       onError: (error, key) => {
         if (error.status === 404) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/404', { state: { from: 'offer' } })
           return
         }

@@ -146,7 +146,6 @@ export const ModalImageUpsertOrEdit = ({
     // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
     // might never be displayed since the dialog is always rendered.
     if (dialogBuilderProps.open && previouslyUploadedImageUrl) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setImageFromUrl(previouslyUploadedImageUrl)
     }
   }, [dialogBuilderProps.open, previouslyUploadedImageUrl, snackBar])
