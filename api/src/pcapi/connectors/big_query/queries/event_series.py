@@ -1,8 +1,15 @@
+import enum
+
 from pydantic import BaseModel as BaseModelV2
 
 from pcapi import settings
-from pcapi.connectors.big_query.queries.artist import DeltaAction
 from pcapi.connectors.big_query.queries.base import BaseQuery
+
+
+class DeltaAction(str, enum.Enum):
+    ADD = "add"
+    REMOVE = "remove"
+    UPDATE = "update"
 
 
 class EventSeriesModel(BaseModelV2):
