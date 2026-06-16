@@ -128,6 +128,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING = (
         "Activer l'indexation asynchrone des offres pour les lieux et les artistes"
     )
+    PRO_AUTONOMOUS_ANONYMIZATION = (
+        "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
+    )
     USE_UNIVERSAL_LINKS = (
         "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
     )
@@ -148,9 +151,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_PRE_SIGNUP_SIMULATION = (
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
-    )
-    WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
-        "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
@@ -214,6 +214,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
+    FeatureToggle.PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES,
@@ -227,7 +228,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
-    FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_OFFER_EXPOSURE,
     # Please keep alphabetic order
 )

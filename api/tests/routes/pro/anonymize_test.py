@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
+@pytest.mark.features(PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns204Test:
     @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user", return_value=True)
@@ -32,7 +32,7 @@ class Returns204Test:
         mock_send_mail.assert_called_once_with(user.email)
 
 
-@pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
+@pytest.mark.features(PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns400Test:
     @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user", return_value=False)
@@ -52,7 +52,7 @@ class Returns400Test:
         mock_send_mail.assert_not_called()
 
 
-@pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
+@pytest.mark.features(PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns403Test:
     @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user")
@@ -70,7 +70,7 @@ class Returns403Test:
         mock_send_mail.assert_not_called()
 
 
-@pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=False)
+@pytest.mark.features(PRO_AUTONOMOUS_ANONYMIZATION=False)
 class Returns404Test:
     def test_feature_flag_disabled(self, client):
         user = users_factories.ProFactory()

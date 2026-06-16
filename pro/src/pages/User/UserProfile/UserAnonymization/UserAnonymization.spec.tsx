@@ -57,7 +57,7 @@ describe('UserAnonymization', () => {
   describe('feature flag handling', () => {
     it('should display the anonymization button when feature flag is enabled', () => {
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       expect(
@@ -85,7 +85,7 @@ describe('UserAnonymization', () => {
       })
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       expect(
@@ -103,7 +103,7 @@ describe('UserAnonymization', () => {
       })
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -128,7 +128,7 @@ describe('UserAnonymization', () => {
       })
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -155,7 +155,7 @@ describe('UserAnonymization', () => {
       })
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -187,7 +187,7 @@ describe('UserAnonymization', () => {
       } as any)
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -215,7 +215,7 @@ describe('UserAnonymization', () => {
       )
 
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -242,7 +242,7 @@ describe('UserAnonymization', () => {
   describe('anonymization form validation', () => {
     it('should display error when email is empty', async () => {
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -264,7 +264,7 @@ describe('UserAnonymization', () => {
 
     it('should display error when email format is invalid', async () => {
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -286,7 +286,7 @@ describe('UserAnonymization', () => {
 
     it('should display error when email does not match user email', async () => {
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
@@ -308,7 +308,7 @@ describe('UserAnonymization', () => {
 
     it('should prevent form submission', async () => {
       renderUserAnonymization({
-        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+        features: ['PRO_AUTONOMOUS_ANONYMIZATION'],
       })
 
       await userEvent.click(
