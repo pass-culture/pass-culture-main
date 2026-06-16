@@ -25,7 +25,7 @@ on:
       deployment_source_branch:
         description: "Branch of pass-culture-deployment repository to use for helm charts."
         required: false
-        default: "IC-1378/feature/deploy-preview-env-infra-v2"
+        default: "<name-of-your-branch>"
       # TODO: It is not used currently
       rebuild-staging:
         description: "When true, run the rebuild staging import steps on the preview environment"
@@ -165,7 +165,7 @@ jobs:
             echo "sandbox_name=${SANDBOX}" >> "$GITHUB_OUTPUT"
           else
             echo "sandbox_enabled=false" >> "$GITHUB_OUTPUT"
-            echo "sandbox_name=''" >> "$GITHUB_OUTPUT"
+            echo "sandbox_name=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy preview environment stack
