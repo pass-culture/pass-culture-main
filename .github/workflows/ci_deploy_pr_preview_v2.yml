@@ -1,0 +1,210 @@
+name: 0 [CI] Deploy PR preview v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      sandbox:
+        description: "Sandbox installed"
+        required: true
+        default: "empty"
+        type: choice
+        options:
+          - empty
+          - industrial
+          - tiny
+      sandbox-args:
+        description: "Arguments passed to the sandbox command"
+        required: false
+        default: ""
+        type: string
+      front-only:
+        description: "Deploy only frontend (skip API deploy)"
+        required: false
+        default: false
+        type: boolean
+      deployment_source_branch:
+        description: "Branch of pass-culture-deployment repository to use for helm charts."
+        required: false
+        default: "IC-1378/feature/deploy-preview-env-infra-v2"
+      # TODO: It is not used currently
+      rebuild-staging:
+        description: "When true, run the rebuild staging import steps on the preview environment"
+        required: false
+        default: false
+        type: boolean
+
+permissions: write-all
+
+env:
+  DOCKER_REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+
+jobs:
+  deploy-preview-env-init:
+    name: Init
+    environment:
+      name: pcapi-preview
+    runs-on: ubuntu-latest
+    outputs:
+      # resource_label names every resource created by this workflow. It is the sha1sum of the branch name
+      resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
+      # testing_label controls whether we connect to testing backend or a preview backend
+      testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-tags: false
+          ref: ${{ github.ref_name }}
+
+      - name: Set resources label name
+        id: set_resource_label
+        env:
+          FRONT_ONLY: ${{ inputs.front-only }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          # TODO: retrieve pr id and use it as label instead of branch name. It will be more readable and avoid sha1sum collision risk. It requires to change the workflow trigger to pull_request and to update the trigger of the workflow calling this one
+          BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          if [ "$FRONT_ONLY" == "true" ]; then
+            echo "testing_label=" >> "$GITHUB_OUTPUT"
+          else
+            echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-pro-on-firebase-preview-env:
+    name: Deploy preview environment for PRO
+    needs:
+      - deploy-preview-env-init
+    uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
+    with:
+      cache_bucket_name: passculture-infra-prod-github-runner-cache
+      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  build-pcapi:
+    name: Build pcapi docker image
+    needs:
+      - deploy-preview-env-init
+    if: inputs.front-only == false
+    uses: ./.github/workflows/docker_build_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
+    needs:
+      - deploy-preview-env-init
+      - build-pcapi
+    if: inputs.front-only == false
+    uses: ./.github/workflows/docker_push_image_passdirector.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+      environment: pcapi-preview
+      registry_repository: pcapi-preview
+    secrets:
+      WORKLOAD_IDENTITY_PRD: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  deploy-api:
+    name: Deploy preview environment
+    runs-on: ubuntu-latest
+    environment:
+      name: pcapi-preview
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      sandbox_enabled: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
+      backend_url: ${{ steps.deploy-api.outputs.backend_url }}
+      backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
+    needs:
+      - deploy-preview-env-init
+      - push-pcapi
+      - deploy-pro-on-firebase-preview-env
+    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: v0.4.1
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: Authentification to Google
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
+        with:
+          cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
+          project_id: ${{ vars.PROJECT_ID }}
+          location: ${{ vars.LOCATION }}
+          use_dns_based_endpoint: true
+
+      - name: Check if sandbox is enabled
+        id: is-sandbox-enabled
+        shell: bash
+        env:
+          SANDBOX: ${{ inputs.sandbox }}
+        run: |
+          if [ -n "${SANDBOX}" ] && [ "${SANDBOX}" != "empty" ]; then
+            echo "sandbox_enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "sandbox_enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy preview environment stack
+        id: deploy-api
+        shell: bash
+        env:
+          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
+          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PCAPI_IMAGE_TAG: ${{ github.sha }}
+          SANDBOX_ENABLED: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
+          SANDBOX_NAME: ${{ inputs.sandbox }}
+          SANDBOX_ARGS: ${{ inputs.sandbox-args }}
+        run: |
+          passdirector workflows submit \
+            --namespace "${NAMESPACE}" \
+            --template "${WORKFLOW_TEMPLATE}" \
+            --parameter pullRequestId="${PULL_REQUEST_ID}" \
+            --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" \
+            --parameter sandboxEnabled="${SANDBOX_ENABLED}" \
+            --parameter sandboxName="${SANDBOX_NAME}" \
+            --parameter sandboxArgs="${SANDBOX_ARGS}"
+
+          echo "backend_url=https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "backoffice_url=https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
+
+      - name: Publish Summary
+        shell: bash
+        env:
+          PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
+          BACKEND_URL: ${{ steps.deploy-api.outputs.backend_url }}
+          BACKOFFICE_URL: ${{ steps.deploy-api.outputs.backoffice_url }}
+        run: |
+          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
+          {
+            echo "### :rocket: Deploy PRO summary"
+            echo "| Results                              | Value |"
+            echo "| ------------------------------------ | ----- |"
+            echo "| Date                                 | ${DATE} |"
+            echo "| [Pro] url                            |  ${PRO_URL} |"
+            echo "| [Back] url                           |  ${BACKEND_URL} |"
+            echo "| [BO] url                             |  ${BACKOFFICE_URL} |"
+          } >> "$GITHUB_STEP_SUMMARY"

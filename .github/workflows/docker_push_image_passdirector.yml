@@ -17,7 +17,20 @@ on:
         required: false
         default: false
         type: boolean
+      registry_url:
+        required: false
+        type: string
+        default: europe-docker.pkg.dev
+      registry_project:
+        required: false
+        type: string
+        default: pc-infra-prd
+      registry_repository:
+        required: false
+        type: string
+        default: pass-culture-artifact-registry
     secrets:
+      # TODO: use variable in the environment: It should be name: WORKLOAD_IDENTIY_PROVIDER
       WORKLOAD_IDENTITY_PRD:
         description: "Workload Identity Provider for fetching secrets in Secret Manager"
         required: true
@@ -75,7 +88,7 @@ jobs:
         env:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
-          REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+          REGISTRY: ${{ inputs.registry_url }}/${{ inputs.registry_project }}/${{ inputs.registry_repository }}
         run: |
           passdirector docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}"
       - name: Push image with latest tag using passdirector
@@ -84,6 +97,6 @@ jobs:
         env:
           IMAGE: ${{ inputs.image }}
           TAG: ${{ inputs.tag }}
-          REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+          REGISTRY: ${{ inputs.registry_url }}/${{ inputs.registry_project }}/${{ inputs.registry_repository }}
         run: |
           passdirector docker push -s "${IMAGE}:${TAG}" -d "${REGISTRY}/${IMAGE}" -t "${TAG}" --tag-latest
