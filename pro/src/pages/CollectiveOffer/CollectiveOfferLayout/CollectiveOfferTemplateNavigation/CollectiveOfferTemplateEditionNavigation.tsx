@@ -34,7 +34,7 @@ import fullShowIcon from '@/icons/full-show.svg'
 
 import styles from './CollectiveOfferTemplateNavigation.module.scss'
 
-export interface CollectiveOfferTemplateEditionNavigationProps {
+interface CollectiveOfferTemplateEditionNavigationProps {
   offer?: GetCollectiveOfferTemplateResponseModel
 }
 

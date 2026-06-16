@@ -1,11 +1,8 @@
-import { useLocation } from 'react-router'
-
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
-import { VenueEditionReadOnly } from './VenueEditionReadOnly'
 
 interface VenueEditionProps {
   venue: GetVenueResponseModel
@@ -16,8 +13,6 @@ export const VenueEditionFormScreen = ({
 }: VenueEditionProps): JSX.Element => {
   const shouldDisplayAccessToPageWarning =
     venue.isPermanent && venue.hasOffers && !venue.hasActiveIndividualOffer
-
-  const location = useLocation()
 
   return (
     <>
@@ -31,11 +26,7 @@ export const VenueEditionFormScreen = ({
         </div>
       )}
 
-      {location.pathname.includes('/edition') ? (
-        <VenueEditionForm venue={venue} />
-      ) : (
-        <VenueEditionReadOnly venue={venue} />
-      )}
+      <VenueEditionForm venue={venue} />
     </>
   )
 }

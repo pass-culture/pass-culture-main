@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { apiNew } from '@/apiClient/api'
@@ -12,7 +11,6 @@ import { PartnerPageCollectiveSection } from '@/pages/CollectiveVenuePage/compon
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveDataEdition.module.scss'
-import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 
 export const CollectiveDataEdition = () => {
@@ -28,8 +26,6 @@ export const CollectiveDataEdition = () => {
       value: status.id.toString(),
       label: status.name,
     })) ?? []
-
-  const location = useLocation()
 
   if (educationalStatusesQuery.isLoading) {
     return <Spinner className={styles.spinner} />
@@ -66,11 +62,7 @@ export const CollectiveDataEdition = () => {
         <>
           <hr className={styles['separator']} />
 
-          {location.pathname.includes('/edition') ? (
-            <CollectiveDataForm statuses={statuses} />
-          ) : (
-            <CollectiveDataEditionReadOnly />
-          )}
+          <CollectiveDataForm statuses={statuses} />
         </>
       )}
     </>
