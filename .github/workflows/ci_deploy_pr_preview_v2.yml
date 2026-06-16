@@ -67,6 +67,7 @@ jobs:
             echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
           fi
 
+
   deploy-pro-on-firebase-preview-env:
     name: Deploy preview environment for PRO
     needs:
@@ -116,6 +117,7 @@ jobs:
       contents: read
     outputs:
       sandbox_enabled: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
+      sandbox_name: ${{ steps.is-sandbox-enabled.outputs.sandbox_name }}
       backend_url: ${{ steps.deploy-api.outputs.backend_url }}
       backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
     needs:
