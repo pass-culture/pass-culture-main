@@ -163,8 +163,10 @@ jobs:
         run: |
           if [ -n "${SANDBOX}" ] && [ "${SANDBOX}" != "empty" ]; then
             echo "sandbox_enabled=true" >> "$GITHUB_OUTPUT"
+            echo "sandbox_name=${SANDBOX}" >> "$GITHUB_OUTPUT"
           else
             echo "sandbox_enabled=false" >> "$GITHUB_OUTPUT"
+            echo "sandbox_name=''" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy preview environment stack
@@ -176,7 +178,7 @@ jobs:
           PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
           PCAPI_IMAGE_TAG: ${{ github.sha }}
           SANDBOX_ENABLED: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
-          SANDBOX_NAME: ${{ inputs.sandbox }}
+          SANDBOX_NAME: ${{ steps.is-sandbox-enabled.outputs.sandbox_name }}
           SANDBOX_ARGS: ${{ inputs.sandbox-args }}
         run: |
           passdirector workflows submit \
