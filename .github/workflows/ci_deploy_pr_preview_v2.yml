@@ -36,7 +36,7 @@ jobs:
       name: pcapi-preview
     runs-on: ubuntu-latest
     outputs:
-      preview_id: ${{ steps.compute-labels.outputs.resource_label }}
+      preview_id: ${{ steps.compute-labels.outputs.preview_id }}
       backend_id: ${{ steps.compute-labels.outputs.backend_id }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
