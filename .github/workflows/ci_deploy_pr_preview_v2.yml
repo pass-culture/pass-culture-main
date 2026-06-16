@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       sandbox:
-        description: "Sandbox installed"
+        description: "Sandbox to install (empty = no sandbox)"
         required: true
         default: "empty"
         type: choice
@@ -25,13 +25,7 @@ on:
       deployment_source_branch:
         description: "Branch of pass-culture-deployment repository to use for helm charts."
         required: false
-        default: "IC-1378/feature/deploy-preview-env-infra-v2"
-      # TODO: It is not used currently
-      rebuild-staging:
-        description: "When true, run the rebuild staging import steps on the preview environment"
-        required: false
-        default: false
-        type: boolean
+        default: "master"
 
 permissions: write-all
 
@@ -116,8 +110,6 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      sandbox_enabled: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
-      sandbox_name: ${{ steps.is-sandbox-enabled.outputs.sandbox_name }}
       backend_url: ${{ steps.deploy-api.outputs.backend_url }}
       backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
     needs:
@@ -154,20 +146,6 @@ jobs:
           location: ${{ vars.LOCATION }}
           use_dns_based_endpoint: true
 
-      - name: Check if sandbox is enabled
-        id: is-sandbox-enabled
-        shell: bash
-        env:
-          SANDBOX: ${{ inputs.sandbox }}
-        run: |
-          if [ -n "${SANDBOX}" ] && [ "${SANDBOX}" != "empty" ]; then
-            echo "sandbox_enabled=true" >> "$GITHUB_OUTPUT"
-            echo "sandbox_name=${SANDBOX}" >> "$GITHUB_OUTPUT"
-          else
-            echo "sandbox_enabled=false" >> "$GITHUB_OUTPUT"
-            echo "sandbox_name=''" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Deploy preview environment stack
         id: deploy-api
         shell: bash
@@ -176,8 +154,8 @@ jobs:
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
           PCAPI_IMAGE_TAG: ${{ github.sha }}
-          SANDBOX_ENABLED: ${{ steps.is-sandbox-enabled.outputs.sandbox_enabled }}
-          SANDBOX_NAME: ${{ steps.is-sandbox-enabled.outputs.sandbox_name }}
+          SANDBOX_ENABLED: ${{ inputs.sandbox != 'empty' }}
+          SANDBOX_NAME: ${{ inputs.sandbox != 'empty' && inputs.sandbox || '' }}
           SANDBOX_ARGS: ${{ inputs.sandbox-args }}
         run: |
           passdirector workflows submit \
