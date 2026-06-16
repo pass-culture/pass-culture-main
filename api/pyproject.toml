@@ -59,7 +59,7 @@ dependencies = [
   "pydantic[email]==2.13.4",
   "pyjwt[crypto]==2.13.0",
   "pyopenssl==26.2.0",
-  "pypdf==6.12.2",
+  "pypdf==6.13.0",
   "pyproj ==3.7.2",
   "pysaml2 ==7.5.0",
   # Used for iris importation
