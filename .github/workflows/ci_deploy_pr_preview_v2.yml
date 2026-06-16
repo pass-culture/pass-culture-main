@@ -36,9 +36,7 @@ jobs:
       name: pcapi-preview
     runs-on: ubuntu-latest
     outputs:
-      # resource_label names every resource created by this workflow. It is the sha1sum of the branch name
       preview_id: ${{ steps.compute-labels.outputs.resource_label }}
-      # testing_label controls whether we connect to testing backend or a preview backend
       testing_label: ${{ steps.compute-labels.outputs.testing_label }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
