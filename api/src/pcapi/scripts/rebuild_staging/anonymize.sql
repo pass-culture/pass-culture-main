@@ -41,8 +41,13 @@ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION pg_temp.fake_iban_from_id(id BIGINT)
   RETURNS TEXT AS $$
+  DECLARE num varchar(23);
+  DECLARE DC varchar(2);
 BEGIN
-  RETURN 'FR' || lpad(id::text, 25, '0');
+  SELECT lpad(id::text, 23, '0') INTO num;
+  --- 152700 stands for FR00 to compute the IBAN key from french IBAN accounts
+  SELECT LPAD(CAST(98 - MOD(CAST((num||152700 ) AS numeric), 97) AS varchar(2)), 2, '0') INTO DC;
+  RETURN 'FR' || DC || num;
 END; $$
 LANGUAGE plpgsql;
 
