@@ -35,9 +35,6 @@ on:
 
 permissions: write-all
 
-env:
-  DOCKER_REGISTRY: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
-
 jobs:
   deploy-preview-env-init:
     name: Init
