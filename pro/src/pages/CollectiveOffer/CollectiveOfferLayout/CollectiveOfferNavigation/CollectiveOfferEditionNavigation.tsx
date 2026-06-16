@@ -6,7 +6,7 @@ import { Tabs } from '@/ui-kit/Tabs/Tabs'
 import styles from './CollectiveOfferNavigation.module.scss'
 import { CollectiveOfferStep } from './constants'
 
-export interface CollectiveOfferEditionNavigationProps {
+interface CollectiveOfferEditionNavigationProps {
   activeStep: CollectiveOfferStep
   offerId?: number
 }
