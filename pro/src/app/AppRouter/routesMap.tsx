@@ -133,18 +133,10 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-    path: '/partenaire/page-collective',
+    path: '/partenaire/page-collective/edition',
     handle: {
-      title: 'Page dans ADAGE',
+      title: 'Gérer ma page sur ADAGE',
     },
-    children: [
-      {
-        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
-        loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-        path: '*',
-        title: 'Gérer ma page sur ADAGE',
-      },
-    ],
   },
   {
     lazy: () => import('@/pages/CollectiveOffer/CollectiveOfferType/OfferType'),

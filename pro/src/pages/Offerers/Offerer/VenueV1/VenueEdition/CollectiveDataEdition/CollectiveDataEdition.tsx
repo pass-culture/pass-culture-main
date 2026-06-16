@@ -8,7 +8,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Banner } from '@/design-system/Banner/Banner'
-import { PartnerPageCollectiveSection } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/PartnerPageCollectiveSection/PartnerPageCollectiveSection'
+import { PartnerPageCollectiveSection } from '@/pages/CollectiveVenuePage/components/PartnerPageCollectiveSection/PartnerPageCollectiveSection'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveDataEdition.module.scss'

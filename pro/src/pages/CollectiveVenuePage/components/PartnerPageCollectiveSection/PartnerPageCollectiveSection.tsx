@@ -7,8 +7,9 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Link } from '@/design-system/Link/Link'
 import { LinkColor } from '@/design-system/Link/types'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import { TagVariant } from '@/design-system/Tag/Tag'
 
+import { AdageSection } from './AdageSection'
 import styles from './PartnerPageCollectiveSection.module.scss'
 
 export const PartnerPageCollectiveSection = () => {
@@ -25,7 +26,7 @@ export const PartnerPageCollectiveSection = () => {
 
   if (selectedPartnerVenue.allowedOnAdage) {
     return (
-      <AdageInformations
+      <AdageSection
         tagText="Référencé dans ADAGE"
         variant={TagVariant.SUCCESS}
       />
@@ -34,7 +35,7 @@ export const PartnerPageCollectiveSection = () => {
 
   if (selectedPartnerVenue.lastCollectiveDmsApplication === null) {
     return (
-      <AdageInformations
+      <AdageSection
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.DEFAULT}
         description={
@@ -67,7 +68,7 @@ export const PartnerPageCollectiveSection = () => {
             label="Déposer un dossier ADAGE"
           />
         </div>
-      </AdageInformations>
+      </AdageSection>
     )
   }
 
@@ -78,7 +79,7 @@ export const PartnerPageCollectiveSection = () => {
       DMSApplicationstatus.SANS_SUITE
   ) {
     return (
-      <AdageInformations
+      <AdageSection
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.ERROR}
         description={
@@ -103,7 +104,7 @@ export const PartnerPageCollectiveSection = () => {
   }
 
   return (
-    <AdageInformations
+    <AdageSection
       tagText="Référencement en cours"
       variant={TagVariant.WARNING}
       description={
@@ -124,37 +125,6 @@ export const PartnerPageCollectiveSection = () => {
           label="En savoir plus sur le pass Culture à destination des scolaires"
         />
       </div>
-    </AdageInformations>
-  )
-}
-
-type AdageInformationsProps = {
-  children?: React.ReactNode
-  variant: TagVariant
-  tagText: string
-  description?: React.ReactNode
-}
-
-function AdageInformations({
-  children,
-  tagText,
-  variant,
-  description,
-}: Readonly<AdageInformationsProps>) {
-  return (
-    <section className={styles['details']}>
-      <div>
-        <span className={styles['details-normal']}>
-          État auprès des enseignants&nbsp;:
-        </span>
-        <div className={styles['tag']}>
-          <Tag label={tagText} variant={variant} />
-        </div>
-      </div>
-      {description && (
-        <div className={styles['details-description']}>{description}</div>
-      )}
-      {children}
-    </section>
+    </AdageSection>
   )
 }
