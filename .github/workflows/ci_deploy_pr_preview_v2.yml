@@ -36,31 +36,30 @@ jobs:
       name: pcapi-preview
     runs-on: ubuntu-latest
     outputs:
-      # resource_label names every resource created by this workflow. It is the sha1sum of the branch name
-      resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
-      # testing_label controls whether we connect to testing backend or a preview backend
-      testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
+      preview_id: ${{ steps.compute-labels.outputs.resource_label }}
+      testing_label: ${{ steps.compute-labels.outputs.testing_label }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-tags: false
           ref: ${{ github.ref_name }}
 
-      - name: Set resources label name
-        id: set_resource_label
+      - name: Compute preview environment identifiers
+        id: compute-labels
         env:
           FRONT_ONLY: ${{ inputs.front-only }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          # TODO: retrieve pr id and use it as label instead of branch name. It will be more readable and avoid sha1sum collision risk. It requires to change the workflow trigger to pull_request and to update the trigger of the workflow calling this one
-          BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
-          if [ "$FRONT_ONLY" == "true" ]; then
-            echo "testing_label=" >> "$GITHUB_OUTPUT"
+          # TODO: use PR number instead of branch SHA1 — more readable, no collision risk.
+          # Requires changing trigger to pull_request.
+          PREVIEW_ID=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          echo "preview_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
+          if [ "${FRONT_ONLY}" == "true" ]; then
+            # Empty = frontend connects to shared testing backend
+            echo "backend_id=" >> "$GITHUB_OUTPUT"
           else
-            echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+            echo "backend_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
           fi
-
 
   deploy-pro-on-firebase-preview-env:
     name: Deploy preview environment for PRO
@@ -69,7 +68,7 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.backend_id }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -152,7 +151,7 @@ jobs:
         env:
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
-          PULL_REQUEST_ID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
           PCAPI_IMAGE_TAG: ${{ github.sha }}
           SANDBOX_ENABLED: ${{ inputs.sandbox != 'empty' }}
           SANDBOX_NAME: ${{ inputs.sandbox != 'empty' && inputs.sandbox || '' }}
@@ -161,14 +160,14 @@ jobs:
           passdirector workflows submit \
             --namespace "${NAMESPACE}" \
             --template "${WORKFLOW_TEMPLATE}" \
-            --parameter pullRequestId="${PULL_REQUEST_ID}" \
+            --parameter previewId="${PREVIEW_ID}" \
             --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" \
             --parameter sandboxEnabled="${SANDBOX_ENABLED}" \
             --parameter sandboxName="${SANDBOX_NAME}" \
             --parameter sandboxArgs="${SANDBOX_ARGS}"
 
-          echo "backend_url=https://pr-${PULL_REQUEST_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
-          echo "backoffice_url=https://pr-${PULL_REQUEST_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "backend_url=https://pr-${PREVIEW_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          echo "backoffice_url=https://pr-${PREVIEW_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
 
       - name: Publish Summary
         shell: bash
