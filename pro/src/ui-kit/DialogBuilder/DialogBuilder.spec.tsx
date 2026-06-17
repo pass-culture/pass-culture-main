@@ -215,6 +215,7 @@ describe('DialogBuilder', () => {
   })
 
   it('should focus the title heading when the dialog opens', async () => {
+    const focusSpy = vi.spyOn(HTMLHeadingElement.prototype, 'focus')
     renderDialogBuilder()
 
     await userEvent.click(
@@ -222,6 +223,8 @@ describe('DialogBuilder', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Dialog title' })).toHaveFocus()
+    expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true })
+    focusSpy.mockRestore()
   })
 
   it('should focus external element on close when refToFocusOnClose is provided', async () => {

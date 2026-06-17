@@ -142,7 +142,8 @@ const DialogBuilderBase = ({
               const target = refToFocusOnOpen?.current ?? titleRef.current
               if (target) {
                 ev.preventDefault()
-                target.focus()
+                // `preventScroll` avoids the browser scrolling to the target while the drawer is still transformed
+                target.focus({ preventScroll: true })
               }
             }}
             onCloseAutoFocus={(ev: Event) => {
