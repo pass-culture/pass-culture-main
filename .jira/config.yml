@@ -3,7 +3,7 @@
 deployments:
   environmentMapping:
     development:
-      - "pullrequest"
+      - "pcapi-preview"
     testing:
       - "testing"
     staging:
