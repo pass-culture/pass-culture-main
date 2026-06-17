@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   type GetVenueAddressResponseModel,
   type ListOffersOfferResponseModel,
@@ -779,7 +779,7 @@ describe('IndividualOffers', () => {
   })
   it('should have offerer address value when user filters by address', async () => {
     vi.spyOn(apiNew, 'listOffers').mockResolvedValueOnce(offersRecap)
-    vi.spyOn(api, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
+    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValueOnce(venueAddress)
     vi.spyOn(apiNew, 'getOfferer').mockResolvedValueOnce(
       defaultGetOffererResponseModel
     )
