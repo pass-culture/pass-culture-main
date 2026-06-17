@@ -87,6 +87,9 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
 
       // TODO (nizac, 18/09/2025) clean after handling price in different currencies in the application with currency attribute
       const nextSchema = schema.transform((_value, originalValue) => {
+        if (originalValue === null || originalValue === undefined) {
+          return originalValue
+        }
         if (isCaledonian) {
           if (isCast) {
             return convertEuroToPacificFranc(originalValue)

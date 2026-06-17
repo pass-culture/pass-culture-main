@@ -103,6 +103,18 @@ describe('IndividualOffer::ActionBar', () => {
       expect(onClickNextMock).toHaveBeenCalled()
     })
 
+    it('should should not render "Annuler et quitter" when WIP_OFFER_EXPOSURE is active', () => {
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+
+      renderActionBar({
+        props,
+        url: '/edition/url',
+        features: ['WIP_OFFER_EXPOSURE'],
+      })
+
+      expect(screen.queryByText('Annuler et quitter')).not.toBeInTheDocument()
+    })
+
     it('should render the component for tarifs page', async () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
       props.isEvent = false

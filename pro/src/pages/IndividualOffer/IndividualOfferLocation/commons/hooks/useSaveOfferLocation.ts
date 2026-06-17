@@ -38,9 +38,11 @@ export function useSaveOfferLocation({
   const saveAndContinue = async ({
     formValues,
     shouldSendMail = false,
+    closeDialog,
   }: {
     formValues: LocationFormValues
     shouldSendMail?: boolean
+    closeDialog: () => void
   }) => {
     try {
       const requestBody = toPatchOfferBodyModel({
@@ -55,23 +57,29 @@ export function useSaveOfferLocation({
         { revalidate: false }
       )
 
+      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+        snackBar.success('Votre offre a bien été modifiée.')
+        closeDialog()
+      }
+
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
 
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
+      if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) {
+        navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: nextStep,
+            mode:
+              mode === OFFER_WIZARD_MODE.EDITION
+                ? OFFER_WIZARD_MODE.READ_ONLY
+                : mode,
+            isOnboarding,
+          })
+        )
+      }
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return

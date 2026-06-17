@@ -24,6 +24,7 @@ import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -58,6 +59,7 @@ export const IndividualOfferDescriptionScreen = () => {
   const { mutate } = useSWRConfig()
   const mode = useOfferWizardMode()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const snackBar = useSnackBar()
 
   const {
     categories,
@@ -166,18 +168,25 @@ export const IndividualOfferDescriptionScreen = () => {
         offerType: 'individual',
         subcategoryId: form.getValues('subcategoryId'),
       })
-      navigate(
-        getIndividualOfferUrl({
-          offerId,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
+      // Keep form state in sync after a successful save to avoid false
+      // unsaved-changes guards while staying on the same screen.
+      form.reset(formValues)
+      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+        snackBar.success('Votre offre a bien été modifiée.')
+      }
+      if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) {
+        navigate(
+          getIndividualOfferUrl({
+            offerId,
+            step: nextStep,
+            mode:
+              mode === OFFER_WIZARD_MODE.EDITION
+                ? OFFER_WIZARD_MODE.READ_ONLY
+                : mode,
+            isOnboarding,
+          })
+        )
+      }
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return
@@ -295,7 +304,10 @@ export const IndividualOfferDescriptionScreen = () => {
             isDisabled={
               form.formState.isSubmitting ||
               Boolean(initialOffer && isOfferDisabled(initialOffer)) ||
-              hasPublishedOfferWithSameEan
+              hasPublishedOfferWithSameEan ||
+              (isOfferExposureEnabled &&
+                !form.formState.isDirty &&
+                mode !== OFFER_WIZARD_MODE.CREATION)
             }
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION}

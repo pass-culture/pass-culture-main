@@ -38,7 +38,11 @@ export const NavLinkItems = <T extends string>({
           const isSelected = selectedKey === key
 
           return (
-            <li {...(isSelected ? { id: 'selected' } : {})} key={key}>
+            <li
+              className={styles['menu-item']}
+              {...(isSelected ? { id: 'selected' } : {})}
+              key={key}
+            >
               <Link
                 to={url}
                 className={cn(styles['menu-list-item'], {

@@ -76,8 +76,14 @@ export const useSaveOfferPriceTable = ({
 
       await syncVenue(offer.venue.id)
 
+      form.reset(formValues)
+
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        snackBar.success(getSuccessMessage(mode))
+        if (isOfferExposureEnabled) {
+          snackBar.success('Votre offre a bien été modifiée.')
+        } else {
+          snackBar.success(getSuccessMessage(mode))
+        }
       }
 
       navigate(nextStepUrl)

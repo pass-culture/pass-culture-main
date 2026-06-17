@@ -13,6 +13,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -60,7 +61,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   })
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const departmentCode = getDepartmentCode(offer)
@@ -293,15 +294,16 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
             />
           </div>
         )}
-
-        <StocksCalendarActionsBar
-          checkedStocks={checkedStocks}
-          hasStocks={offer.hasStocks}
-          deleteStocks={deleteStocks}
-          updateCheckedStocks={setCheckedStocks}
-          mode={mode}
-          offerId={offer.id}
-        />
+        {(!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) && (
+          <StocksCalendarActionsBar
+            checkedStocks={checkedStocks}
+            hasStocks={offer.hasStocks}
+            deleteStocks={deleteStocks}
+            updateCheckedStocks={setCheckedStocks}
+            mode={mode}
+            offerId={offer.id}
+          />
+        )}
       </div>
     </>
   )
@@ -314,7 +316,7 @@ function DialogBuilderButton({
   setIsDialogOpen,
   offer,
   handleSubmitRecurrenceFormDrawer,
-}: {
+}: Readonly<{
   triggerLabel: string
   triggerVariant: ButtonVariant
   isDialogOpen: boolean
@@ -323,7 +325,7 @@ function DialogBuilderButton({
   handleSubmitRecurrenceFormDrawer: (
     values: RecurrenceFormValues
   ) => Promise<void>
-}) {
+}>) {
   return (
     <DialogBuilder
       trigger={<Button variant={triggerVariant} label={triggerLabel} />}

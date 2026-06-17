@@ -150,7 +150,10 @@ export const IndividualOfferPriceTableScreen = ({
             isDisabled={
               isOfferDisabled(offer) ||
               hasPublishedOfferWithSameEan ||
-              form.formState.isSubmitting
+              form.formState.isSubmitting ||
+              (isOfferExposureEnabled &&
+                !form.formState.isDirty &&
+                mode !== OFFER_WIZARD_MODE.CREATION)
             }
             dirtyForm={form.formState.isDirty}
             isEvent={false}

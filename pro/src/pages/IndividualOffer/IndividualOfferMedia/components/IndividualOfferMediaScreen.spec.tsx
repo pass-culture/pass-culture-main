@@ -57,9 +57,11 @@ const waitForScrollToFirstErrorHookUseEffect = async () => {
 const renderIndividualOfferMediaScreen = async ({
   props = {},
   mode = OFFER_WIZARD_MODE.CREATION,
+  features = [],
 }: {
   props?: { offer?: GetIndividualOfferWithAddressResponseModel }
   mode?: OFFER_WIZARD_MODE
+  features?: string[]
 } = {}) => {
   const finalOffer = getIndividualOfferFactory(props.offer)
   const finalContextValue: IndividualOfferContextValues =
@@ -85,6 +87,7 @@ const renderIndividualOfferMediaScreen = async ({
           offerId: finalOffer.id,
         }),
       ],
+      features,
     }
   )
 
@@ -405,6 +408,34 @@ describe('IndividualOfferMediaScreen', () => {
         expect(mockNavigate).toHaveBeenCalledWith(
           `/offre/individuelle/${knownOffer.id}/media`
         )
+      })
+
+      it('on edition mode with WIP_OFFER_EXPOSURE, should show success snackbar and not navigate', async () => {
+        vi.spyOn(apiNew, 'getOfferVideoMetadata').mockResolvedValue({
+          videoDuration: 3,
+          videoThumbnailUrl: 'http://youtube.image.com',
+          videoTitle: 'Ma super vidéo',
+          videoUrl: 'http://youtube.url',
+        })
+        vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+          getIndividualOfferFactory()
+        )
+        const mode = OFFER_WIZARD_MODE.EDITION
+        const knownOffer = getIndividualOfferFactory()
+        await renderIndividualOfferMediaScreen({
+          props: { offer: knownOffer },
+          mode,
+          features: ['WIP_OFFER_EXPOSURE'],
+        })
+
+        await updateVideoUrlAndSubmit({ mode })
+
+        await waitFor(() => {
+          expect(
+            screen.getByText('Votre offre a bien été modifiée.')
+          ).toBeInTheDocument()
+        })
+        expect(mockNavigate).not.toHaveBeenCalled()
       })
 
       it('should log error when video upload fail in api', async () => {

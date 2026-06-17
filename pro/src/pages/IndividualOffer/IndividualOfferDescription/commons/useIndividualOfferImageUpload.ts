@@ -69,11 +69,21 @@ export const useIndividualOfferImageUpload = (
           offerId,
         }
 
-        return await apiNew.createThumbnail({ body: thumbnail })
+        const result = await apiNew.createThumbnail({ body: thumbnail })
+        setImageOffer({
+          url: result.url,
+          credit: result.credit ?? null,
+        })
+        setImageToUpsert(undefined)
+        setHasUpsertedImage(false)
+        return result
       }
 
       if (shouldDeleteThumbnail) {
         await apiNew.deleteThumbnail({ path: { offer_id: offerId } })
+        setImageOffer(undefined)
+        setImageToUpsert(undefined)
+        setHasUpsertedImage(false)
       }
 
       return undefined

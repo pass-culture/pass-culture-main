@@ -109,6 +109,12 @@ describe('useIndividualOfferImageUpload', () => {
       useIndividualOfferImageUpload(MOCK_DATA.initialImage)
     )
 
+    vi.mocked(apiNew.createThumbnail).mockResolvedValue({
+      id: 1,
+      url: 'new-thumbnail.jpg',
+      credit: 'John Do',
+    })
+
     const newImage = {
       imageFile: new File([''], 'test.jpg'),
       imageCroppedDataUrl: 'https://cropped.test.url',
@@ -130,6 +136,43 @@ describe('useIndividualOfferImageUpload', () => {
     })
 
     expect(apiNew.createThumbnail).toHaveBeenCalledOnce()
+  })
+
+  it('should keep uploaded image as displayed image after submit', async () => {
+    const { result } = renderHook(() =>
+      useIndividualOfferImageUpload(MOCK_DATA.initialImage)
+    )
+
+    vi.mocked(apiNew.createThumbnail).mockResolvedValue({
+      id: 1,
+      url: 'new-thumbnail.jpg',
+      credit: 'John Do',
+    })
+
+    const newImage = {
+      imageFile: new File([''], 'test.jpg'),
+      imageCroppedDataUrl: 'https://cropped.test.url',
+      cropParams: {
+        x: 0.5,
+        y: 0.5,
+        width: 100,
+        height: 100,
+      },
+      credit: 'John Do',
+    }
+
+    act(() => {
+      result.current.onImageUpload(newImage)
+    })
+
+    await act(async () => {
+      await result.current.handleImageOnSubmit(1)
+    })
+
+    expect(result.current.displayedImage).toEqual({
+      url: 'new-thumbnail.jpg',
+      credit: 'John Do',
+    })
   })
 
   it('should call deleteThumbnail when the image is deleted', async () => {

@@ -166,18 +166,21 @@ export const IndividualOfferMediaScreen = ({
       nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
     }
 
-    await navigate(
-      getIndividualOfferUrl({
-        offerId: offer.id,
-        step: nextStep,
-        mode:
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_MODE.READ_ONLY
-            : mode,
-        isOnboarding,
-        isOfferExposureEnabled,
-      })
-    )
+    if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+      snackBar.success('Votre offre a bien été modifiée.')
+    }
+    if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION)
+      await navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: nextStep,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
+          isOnboarding,
+        })
+      )
   }
 
   const logOnImageDropOrSelected = () => {
@@ -224,7 +227,13 @@ export const IndividualOfferMediaScreen = ({
         <ActionBar
           onClickPrevious={handlePreviousStep}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
-          isDisabled={form.formState.isSubmitting || isOfferDisabled(offer)}
+          isDisabled={
+            form.formState.isSubmitting ||
+            isOfferDisabled(offer) ||
+            (isOfferExposureEnabled &&
+              !isFormDirty &&
+              mode !== OFFER_WIZARD_MODE.CREATION)
+          }
         />
         <RouteLeavingGuardIndividualOffer
           when={isFormDirty && !form.formState.isSubmitting}
