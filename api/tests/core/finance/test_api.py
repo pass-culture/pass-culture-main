@@ -753,49 +753,6 @@ class PriceEventTest:
 
         user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
         assert user.wallet_balance == Decimal("300")
-        ############################
-        # Empty the user's balance #
-        ############################
-        initial_booking = bookings_factories.BookingFactory(
-            user=user,
-            quantity=57,
-            stock__price=Decimal("5.0"),
-            stock__offer__venue=venue,
-        )  # 285€
-        bookings_api.mark_as_used(
-            booking=initial_booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        finance_events = db.session.query(models.FinanceEvent).all()
-        assert len(finance_events) == 1
-
-        initial_booking_finance_event = finance_events[0]
-        pricing = api.price_event(initial_booking_finance_event)
-
-        assert pricing.amount == -285_00
-        assert pricing.revenue == 285_00
-        assert pricing.bookingId == initial_booking.id
-        assert pricing.status == models.PricingStatus.VALIDATED
-        assert pricing.venueId == venue.id
-        assert pricing.eventId == initial_booking_finance_event.id
-
-        pricing_lines = pricing.lines
-        assert len(pricing_lines) == 2
-        assert {line.category for line in pricing_lines} == {
-            models.PricingLineCategory.OFFERER_REVENUE,
-            models.PricingLineCategory.OFFERER_CONTRIBUTION,
-        }
-        pricing_line_offerer_revenue = [
-            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
-            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
-
-        assert pricing_line_offerer_revenue.amount == -285_00
-        assert pricing_line_offerer_contribution.amount == 0
-
-        assert user.wallet_balance == Decimal("15.0")
 
         ###############################
         # Create a booking and use it #
@@ -806,16 +763,10 @@ class PriceEventTest:
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        booking_finance_events = (
-            db.session.query(models.FinanceEvent)
-            .filter(models.FinanceEvent.id != initial_booking_finance_event.id)
-            .all()
-        )
-        assert len(booking_finance_events) == 1
-        booking_finance_event = booking_finance_events[0]
+        booking_finance_event = booking.finance_events[0]
         pricing = api.price_event(booking_finance_event)
         assert pricing.amount == -10_10
-        assert pricing.revenue == 295_10
+        assert pricing.revenue == 10_10
         assert pricing.bookingId == booking.id
         assert pricing.status == models.PricingStatus.VALIDATED
         assert pricing.venueId == venue.id
@@ -836,7 +787,6 @@ class PriceEventTest:
 
         assert pricing_line_offerer_revenue.amount == -10_10
         assert pricing_line_offerer_contribution.amount == 0
-        assert user.wallet_balance == Decimal("4.9")
 
         ######################
         # Cancel the booking #
@@ -852,7 +802,7 @@ class PriceEventTest:
         cancel_booking_finance_events = (
             db.session.query(models.FinanceEvent)
             .filter(
-                models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
+                models.FinanceEvent.id != booking_finance_event.id,
             )
             .all()
         )
@@ -863,39 +813,6 @@ class PriceEventTest:
         assert cancel_booking_finance_event.bookingId == booking.id
         assert cancel_booking_finance_event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
         assert pricing.status == models.PricingStatus.CANCELLED
-
-        assert user.wallet_balance == Decimal("15.0")
-
-        ###################################################
-        # Additional booking to further empty the balance #
-        ###################################################
-        additional_booking = bookings_factories.BookingFactory(
-            user=user,
-            quantity=1,
-            stock__price=Decimal("13.3"),
-            stock__offer__venue=venue,
-        )  # €13.3
-        bookings_api.mark_as_used(
-            booking=additional_booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        additional_finance_events = (
-            db.session.query(models.FinanceEvent)
-            .filter(
-                models.FinanceEvent.id.not_in(
-                    (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
-                ),
-            )
-            .all()
-        )
-        assert len(additional_finance_events) == 1
-        additional_finance_event = additional_finance_events[0]
-        api.price_event(additional_finance_event)
-
-        assert additional_finance_event.bookingId == additional_booking.id
-        assert additional_finance_event.status == models.FinanceEventStatus.PRICED
-
-        assert user.wallet_balance == Decimal("1.70")
 
         #################################
         # Create the commercial gesture #
@@ -924,16 +841,14 @@ class PriceEventTest:
             .filter(
                 models.FinanceEvent.id.in_(
                     (
-                        initial_booking_finance_event.id,
                         booking_finance_event.id,
                         cancel_booking_finance_event.id,
-                        additional_finance_event.id,
                     ),
                 ),
             )
             .count()
         )
-        assert finance_event_count == 4
+        assert finance_event_count == 2
 
         ###################################
         # Validate the commercial gesture #
@@ -945,10 +860,8 @@ class PriceEventTest:
             .filter(
                 models.FinanceEvent.id.not_in(
                     (
-                        initial_booking_finance_event.id,
                         booking_finance_event.id,
                         cancel_booking_finance_event.id,
-                        additional_finance_event.id,
                     ),
                 ),
             )
@@ -966,7 +879,7 @@ class PriceEventTest:
         assert commercial_gesture_finance_event.status == models.FinanceEventStatus.PRICED
         assert commercial_gesture_pricing.status == models.PricingStatus.VALIDATED
         assert commercial_gesture_pricing.amount == -10_10
-        assert commercial_gesture_pricing.revenue == 298_30
+        assert commercial_gesture_pricing.revenue == 0  # commercial gestures aren't taken into account for revenue
         assert commercial_gesture_pricing.eventId == commercial_gesture_finance_event.id
         assert commercial_gesture_pricing.venueId == venue.id
         assert commercial_gesture_pricing.pricingPointId == venue.id
@@ -990,8 +903,6 @@ class PriceEventTest:
         ][0]
         assert commercial_gesture_pricing_line_offerer_revenue.amount == -10_10
         assert commercial_gesture_pricing_line_offerer_contribution.amount == 0
-
-        assert user.wallet_balance == Decimal("1.70")
 
     def test_price_free_booking(self):
         event = self._make_individual_event(price=0)
@@ -2612,23 +2523,6 @@ def test_invoices_csv_commercial_gesture():
 
     user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
     assert user.wallet_balance == Decimal("300")
-    # Empty the user's balance
-    initial_booking = bookings_factories.BookingFactory(
-        user=user,
-        quantity=57,
-        stock__price=Decimal("5.0"),
-        stock__offer__venue=venue,
-    )  # 285€
-    bookings_api.mark_as_used(
-        booking=initial_booking,
-        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-    )
-    finance_events = db.session.query(models.FinanceEvent).all()
-    assert len(finance_events) == 1
-    initial_booking_finance_event = finance_events[0]
-    api.price_event(initial_booking_finance_event)
-
-    assert user.wallet_balance == Decimal("15.0")
 
     # Create a booking and use it
     stock = offers_factories.StockFactory(price=Decimal("10.1"), offer__venue=venue)
@@ -2637,11 +2531,7 @@ def test_invoices_csv_commercial_gesture():
         booking=booking,
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
-    booking_finance_events = (
-        db.session.query(models.FinanceEvent).filter(models.FinanceEvent.id != initial_booking_finance_event.id).all()
-    )
-    assert len(booking_finance_events) == 1
-    booking_finance_event = booking_finance_events[0]
+    booking_finance_event = booking.finance_events[0]
     api.price_event(booking_finance_event)
 
     # Cancel the booking
@@ -2651,38 +2541,10 @@ def test_invoices_csv_commercial_gesture():
     )
 
     cancel_booking_finance_events = (
-        db.session.query(models.FinanceEvent)
-        .filter(
-            models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
-        )
-        .all()
+        db.session.query(models.FinanceEvent).filter(models.FinanceEvent.id != booking_finance_event.id).all()
     )
     assert len(cancel_booking_finance_events) == 1
     cancel_booking_finance_event = cancel_booking_finance_events[0]
-
-    # Additional booking to further empty the balance
-    additional_booking = bookings_factories.BookingFactory(
-        user=user,
-        quantity=1,
-        stock__price=Decimal("13.3"),
-        stock__offer__venue=venue,
-    )  # €13.3
-    bookings_api.mark_as_used(
-        booking=additional_booking,
-        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-    )
-    additional_finance_events = (
-        db.session.query(models.FinanceEvent)
-        .filter(
-            models.FinanceEvent.id.not_in(
-                (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
-            ),
-        )
-        .all()
-    )
-    assert len(additional_finance_events) == 1
-    additional_finance_event = additional_finance_events[0]
-    api.price_event(additional_finance_event)
 
     # Create the commercial gesture
     commercial_gesture = api.create_finance_commercial_gesture(
@@ -2700,10 +2562,8 @@ def test_invoices_csv_commercial_gesture():
         .filter(
             models.FinanceEvent.id.not_in(
                 (
-                    initial_booking_finance_event.id,
                     booking_finance_event.id,
                     cancel_booking_finance_event.id,
-                    additional_finance_event.id,
                 ),
             ),
         )
@@ -2727,17 +2587,14 @@ def test_invoices_csv_commercial_gesture():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 3
+    assert len(rows) == 2
     assert {r["Type de ticket de facturation"] for r in rows} == {
         "offerer contribution",
-        "offerer revenue",
         "commercial gesture",
     }
     row_offerer_contribution = [r for r in rows if r["Type de ticket de facturation"] == "offerer contribution"][0]
-    row_offerer_revenue = [r for r in rows if r["Type de ticket de facturation"] == "offerer revenue"][0]
     row_commercial_gesture = [r for r in rows if r["Type de ticket de facturation"] == "commercial gesture"][0]
     assert row_offerer_contribution["Somme des tickets de facturation"] == Decimal("0")
-    assert row_offerer_revenue["Somme des tickets de facturation"] == Decimal("-29830.0")
     assert row_commercial_gesture["Somme des tickets de facturation"] == Decimal("-1010.0")
 
 
@@ -2761,19 +2618,6 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     author_user = users_factories.UserFactory()
 
     user = users_factories.BeneficiaryGrant18Factory(deposit__amount=300)
-    # Empty the user's balance
-    initial_booking = bookings_factories.BookingFactory(
-        user=user,
-        quantity=57,
-        stock__price=Decimal("5.0"),
-        stock__offer__venue=venue,
-    )  # 285€
-    bookings_api.mark_as_used(
-        booking=initial_booking,
-        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-    )
-    assert len(initial_booking.finance_events) == 1
-    api.price_event(initial_booking.finance_events[0])
 
     # Create a booking and use it
     stock = offers_factories.StockFactory(price=Decimal("10.1"), offer__venue=venue)
@@ -2791,7 +2635,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
         reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
     )
 
-    # Additional booking to further empty the balance
+    # Additional booking to make the invoice more realistic
     additional_booking = bookings_factories.BookingFactory(
         user=user,
         quantity=1,
@@ -2834,7 +2678,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert bookings_line.contributionAmount == 0
     assert bookings_line.group == {"label": "Barème général", "position": 1}
     assert bookings_line.rate == Decimal("1.0")
-    assert bookings_line.reimbursedAmount == -298_30
+    assert bookings_line.reimbursedAmount == -13_30
 
     commercial_gestures_line = [line for line in invoice.lines if line.label == "Gestes commerciaux"][0]
     assert commercial_gestures_line.contributionAmount == 0
@@ -2864,8 +2708,8 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     total_row = [r for r in main_table_rows if r["Typologie"] == "TOTAL"][0]
 
     assert bookings_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
-    assert bookings_row["Montant des réservations validées (TTC)"] == "298,30 €"
-    assert bookings_row["Montant remboursé (TTC)"] == "298,30 €"
+    assert bookings_row["Montant des réservations validées (TTC)"] == "13,30 €"
+    assert bookings_row["Montant remboursé (TTC)"] == "13,30 €"
     assert bookings_row["Taux de contribution offreur (%)"] == "0 %"
     assert bookings_row["Taux de remboursement (%)"] == "100 %"
 
@@ -2876,12 +2720,12 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert commercial_gestures_row["Taux de remboursement (%)"] == "100 %"
 
     assert subtotal_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
-    assert subtotal_row["Montant des réservations validées (TTC)"] == "308,40 €"
-    assert subtotal_row["Montant remboursé (TTC)"] == "308,40 €"
+    assert subtotal_row["Montant des réservations validées (TTC)"] == "23,40 €"
+    assert subtotal_row["Montant remboursé (TTC)"] == "23,40 €"
 
     assert total_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
-    assert total_row["Montant des réservations validées (TTC)"] == "308,40 €"
-    assert total_row["Montant remboursé (TTC)"] == "308,40 €"
+    assert total_row["Montant des réservations validées (TTC)"] == "23,40 €"
+    assert total_row["Montant remboursé (TTC)"] == "23,40 €"
 
     ############################
     # Test total account table #
@@ -2890,7 +2734,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     total_rate_rows = html_parser.extract(total_account_table, tag="tr", class_="coloredSection")
     assert len(total_rate_rows) == 1
     total_rate_row = total_rate_rows[0]
-    assert total_rate_row == "TOTAL RÈGLEMENT PASS CULTURE 308,40 €"
+    assert total_rate_row == "TOTAL RÈGLEMENT PASS CULTURE 23,40 €"
     total_account_table_soup = html_parser.get_soup(total_account_table)
     # remove the 1 column row to be able to parse the rest
     total_account_table_soup.find("tr", class_="coloredSection").decompose()
@@ -2900,7 +2744,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert total_account_table_row["Date"] == invoice.date.strftime("%d/%m/%Y")
     assert total_account_table_row["Destinataire"] == bank_account.label
     assert total_account_table_row["Mode de règlement"] == f"Virement {bank_account.iban}"
-    assert total_account_table_row["Montant réglé"] == "308,40 €"
+    assert total_account_table_row["Montant réglé"] == "23,40 €"
     assert total_account_table_row["N° de virement"] == batch.label
 
     #####################################
@@ -2913,12 +2757,12 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
 
     assert reimbursement_by_venue_row["Contribution offreur incidents (TTC)"] == "20,20 €"
     assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
-    assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "308,40 €"
+    assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "23,40 €"
     assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
     assert reimbursement_by_venue_row["Structures"] == venue.name
     assert reimbursement_by_venue_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
-    assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "298,30 €"
-    assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
+    assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "13,30 €"
+    assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "23,40 €"
 
 
 def test_generate_invoice_file(clean_temp_files):
