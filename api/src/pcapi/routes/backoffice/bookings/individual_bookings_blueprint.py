@@ -775,10 +775,10 @@ def _get_booking_details_actions(booking: bookings_models.Booking) -> DetailsAct
             [booking]
         ):
             booking_details_actions.add_action(BookingDetailsActionType.CREATE_INCIDENT)
-        if (
-            booking.status == bookings_models.BookingStatus.CANCELLED
-            and finance_validation.check_commercial_gesture_bookings([booking])
-        ):
+        if booking.status in (
+            bookings_models.BookingStatus.CANCELLED,
+            bookings_models.BookingStatus.REIMBURSED,
+        ) and finance_validation.check_commercial_gesture_bookings([booking]):
             booking_details_actions.add_action(BookingDetailsActionType.CREATE_COMMERCIAL_GESTURE)
     if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         if booking.fraudulentBookingTag:

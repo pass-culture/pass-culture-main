@@ -636,7 +636,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         pricing_collective_booking_id = None
         lines = [
             models.PricingLine(
-                amount=amount,
+                amount=offerer_revenue_amount,
                 category=models.PricingLineCategory.COMMERCIAL_GESTURE,
             ),
             models.PricingLine(
@@ -3530,7 +3530,7 @@ def validate_finance_commercial_gesture(
         author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
-        comment="Récupération sur les prochaines réservations.",
+        comment="Geste commercial remboursé au prochain virement",
         linked_incident_id=finance_incident.id,
     )
 

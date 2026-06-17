@@ -1761,10 +1761,11 @@ class GetIndividualBookingTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_BOOKINGS
     # session
     # booking (and joinedload)
-    # check if booking has current incident
+    # check if booking has current incident (for overpayments)
     # check if booking is external
+    # check if booking has current incident (for commercial gestures)
     # mediation
-    expected_num_queries = 5
+    expected_num_queries = 6
 
     def test_reimbursed_booking(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory(
@@ -1797,7 +1798,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory()
         booking_id = booking_incident.booking.id
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):  # lazy if means no check for overpayment and external
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
         descriptions = html_parser.extract_descriptions(response.data)
@@ -1812,7 +1813,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries - 2):  # do not check for incidents or external
+        with assert_num_queries(self.expected_num_queries - 3):  # do not check for incidents or external
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 
@@ -1831,7 +1832,7 @@ class GetIndividualBookingTest(GetEndpointHelper):
         booking.cancellationLimitDate = datetime.datetime(2025, 1, 5, 11, 30, 12)
 
         booking_id = booking.id
-        with assert_num_queries(self.expected_num_queries - 2):  # do not check for incidents or external
+        with assert_num_queries(self.expected_num_queries - 3):  # do not check for incidents or external
             response = authenticated_client.get(url_for(self.endpoint, booking_id=booking_id))
             assert response.status_code == 200
 

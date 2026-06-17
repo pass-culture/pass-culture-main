@@ -1018,7 +1018,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
-        assert validation_action.comment == "Récupération sur les prochaines réservations."
+        assert validation_action.comment == "Geste commercial remboursé au prochain virement"
 
         assert (
             beneficiary_action
@@ -1103,7 +1103,7 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
-        assert validation_action.comment == "Récupération sur les prochaines réservations."
+        assert validation_action.comment == "Geste commercial remboursé au prochain virement"
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == decimal.Decimal("0.10")
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == decimal.Decimal("0.10")
 
@@ -2114,7 +2114,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         assert (
             html_parser.content_as_text(response.data)
             == self.error_message_template
-            % """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial."""
+            % """Seules les réservations à l'état "annulée" ou "remboursée" peuvent faire l'objet d'un geste commercial."""
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
@@ -2138,14 +2138,10 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
     @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
+    def test_create_commercial_gesture_incident_from_one_booking(
         self, legit_user, authenticated_client, zendesk_id, comment
     ):
-        booking = bookings_factories.CancelledBookingFactory(
-            quantity=1,
-            amount=11,
-            user__deposit__amount=decimal.Decimal(2.0),
-        )
+        booking = bookings_factories.CancelledBookingFactory(quantity=1, amount=11)
 
         object_ids = str(booking.id)
         total_amount = 11
@@ -2179,6 +2175,52 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
+    def test_create_commercial_gesture_incident_from_one_booking_with_overpayment(
+        self, legit_user, authenticated_client
+    ):
+        booking = bookings_factories.ReimbursedBookingFactory(quantity=1, amount=15)
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.INVOICED,
+            booking=booking,
+            newTotalAmount=10,
+        )
+
+        object_ids = str(booking.id)
+        total_amount = 15
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_amount,
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": None,
+                "zendesk_id": None,
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
+        assert cells[2] == str(booking.id)
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 2
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 2
+        commercial_gesture_booking_finance_incident = (
+            db.session.query(finance_models.BookingFinanceIncident)
+            .filter(finance_models.BookingFinanceIncident.id != booking_finance_incident.id)
+            .one()
+        )
+        assert commercial_gesture_booking_finance_incident.newTotalAmount == 0
+        assert (
+            commercial_gesture_booking_finance_incident.incident.origin
+            == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
+        )
+
+        action_history = db.session.query(history_models.ActionHistory).one()
+        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.authorUser == legit_user
+
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 
@@ -2209,7 +2251,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
     def test_not_create_commercial_gesture_incident_too_expensive(self, authenticated_client):
-        booking = bookings_factories.UsedBookingFactory()
+        booking = bookings_factories.CancelledBookingFactory()
 
         object_ids = str(booking.id)
 
@@ -2234,7 +2276,8 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".' in alerts["warning"]
+            "Le montant du geste commercial ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée."
+            in alerts["warning"]
         )
 
     def test_not_create_commercial_gesture_greater_than_300_per_booking(self, authenticated_client):
@@ -2242,14 +2285,12 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
         selected_bookings = [
-            bookings_factories.ReimbursedBookingFactory(
+            bookings_factories.CancelledBookingFactory(
                 stock=stock,
-                pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)],
                 amount=300.0,
             ),
-            bookings_factories.ReimbursedBookingFactory(
+            bookings_factories.CancelledBookingFactory(
                 stock=stock,
-                pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)],
                 amount=300.0,
             ),
         ]
@@ -2275,7 +2316,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".' in alerts["warning"]
+            "Le montant du geste commercial ne peut jamais être supérieur à 300€ par réservation." in alerts["warning"]
         )
 
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
@@ -2359,7 +2400,8 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            """Cette réservation fait déjà l'objet d'un incident au statut "créé" ou "validé".""" in alerts["warning"]
+            """Cette réservation fait déjà l'objet d'un incident au statut "créé", "validé" ou "terminé"."""
+            in alerts["warning"]
         )
 
     def test_incident_already_exists_cancelled(self, authenticated_client):

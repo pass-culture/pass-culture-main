@@ -29,29 +29,33 @@ class Valid:
         return new_valid
 
 
-def _collective_booking_has_pending_incident(collective_booking: educational_models.CollectiveBooking) -> bool:
+def _collective_booking_has_incident(
+    collective_booking: educational_models.CollectiveBooking, include_invoiced: bool = True
+) -> bool:
+    status_filters = [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
+    if include_invoiced:
+        status_filters.append(finance_models.IncidentStatus.INVOICED)
     return db.session.query(
         db.session.query(finance_models.BookingFinanceIncident)
         .join(finance_models.FinanceIncident)
         .filter(
             finance_models.BookingFinanceIncident.collectiveBookingId == collective_booking.id,
-            finance_models.FinanceIncident.status.in_(
-                [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
-            ),
+            finance_models.FinanceIncident.status.in_(status_filters),
         )
         .exists()
     ).scalar()
 
 
-def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> bool:
+def _bookings_have_incident(bookings: list[bookings_models.Booking], include_invoiced: bool = True) -> bool:
+    status_filters = [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
+    if include_invoiced:
+        status_filters.append(finance_models.IncidentStatus.INVOICED)
     return db.session.query(
         db.session.query(finance_models.BookingFinanceIncident)
         .join(finance_models.FinanceIncident)
         .filter(
             finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
-            finance_models.FinanceIncident.status.in_(
-                [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
-            ),
+            finance_models.FinanceIncident.status.in_(status_filters),
         )
         .exists()
     ).scalar()
@@ -70,12 +74,6 @@ def _bookings_are_linked_to_incompatible_providers(bookings: list[bookings_model
 
 
 def get_overpayment_incident_amount_interval(
-    bookings: list[bookings_models.Booking],
-) -> tuple[decimal.Decimal, decimal.Decimal | typing.Literal[0]]:
-    return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
-
-
-def get_commercial_gesture_amount_interval(
     bookings: list[bookings_models.Booking],
 ) -> tuple[decimal.Decimal, decimal.Decimal | typing.Literal[0]]:
     return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
@@ -100,7 +98,7 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
             message="Impossible de créer un incident d'un montant de 0 €.",
         )
 
-    if _bookings_have_pending_incident(bookings):
+    if _bookings_have_incident(bookings):
         return Valid(
             is_valid=False,
             message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé.",
@@ -119,13 +117,13 @@ def check_commercial_gesture_bookings(bookings: list[bookings_models.Booking]) -
     if not bookings:
         return Valid(
             is_valid=False,
-            message="""Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial.""",
+            message="""Seules les réservations à l'état "annulée" ou "remboursée" peuvent faire l'objet d'un geste commercial.""",
         )
 
-    if _bookings_have_pending_incident(bookings):
+    if _bookings_have_incident(bookings, include_invoiced=False):
         return Valid(
             is_valid=False,
-            message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé.",
+            message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial encore en cours.",
         )
 
     if len({booking.stockId for booking in bookings}) > 1:
@@ -144,7 +142,7 @@ def check_commercial_gesture_bookings(bookings: list[bookings_models.Booking]) -
 
 
 def check_commercial_gesture_collective_booking(collective_booking: educational_models.CollectiveBooking) -> Valid:
-    if _collective_booking_has_pending_incident(collective_booking):
+    if _collective_booking_has_incident(collective_booking, include_invoiced=False):
         return Valid(
             is_valid=False,
             message="""Cette réservation fait déjà l'objet d'un geste commercial au statut "créé" ou "validé".""",
@@ -154,10 +152,10 @@ def check_commercial_gesture_collective_booking(collective_booking: educational_
 
 
 def check_incident_collective_booking(collective_booking: educational_models.CollectiveBooking) -> Valid:
-    if _collective_booking_has_pending_incident(collective_booking):
+    if _collective_booking_has_incident(collective_booking):
         return Valid(
             is_valid=False,
-            message="""Cette réservation fait déjà l'objet d'un incident au statut "créé" ou "validé".""",
+            message="""Cette réservation fait déjà l'objet d'un incident au statut "créé", "validé" ou "terminé".""",
         )
 
     return Valid(True)
@@ -196,16 +194,16 @@ def check_commercial_gesture_total_amount(
     amount_per_booking = input_amount / sum(booking.quantity for booking in bookings)
 
     for booking in bookings:
-        if booking.quantity * amount_per_booking > decimal.Decimal(1.20) * booking.total_amount:
+        if booking.quantity * amount_per_booking > decimal.Decimal("1.20") * booking.total_amount:
             return Valid(
                 is_valid=False,
                 message="Le montant du geste commercial ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée.",
             )
 
-        if booking.quantity * amount_per_booking > decimal.Decimal(300) * len(bookings):
+        if booking.quantity * amount_per_booking > decimal.Decimal("300"):
             return Valid(
                 is_valid=False,
-                message="Le montant du geste commercial ne peut JAMAIS être supérieur à 300€ par réservation.",
+                message="Le montant du geste commercial ne peut jamais être supérieur à 300€ par réservation.",
             )
 
     return Valid(True)
