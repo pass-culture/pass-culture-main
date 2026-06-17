@@ -578,14 +578,10 @@ class EMSStocksTest:
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
-        created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
-        )
 
         assert len(created_offers) == 1
         assert len(created_stocks) == 1
         assert len(created_price_categories) == 1
-        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue
@@ -638,14 +634,10 @@ class EMSStocksTest:
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
-        created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
-        )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Spider-Man : Across the Spider-Verse"
         assert created_offers[0].venue == venue_provider.venue
@@ -731,14 +723,10 @@ class EMSStocksTest:
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
-        created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
-        )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
@@ -788,14 +776,10 @@ class EMSStocksTest:
             .order_by(offers_models.PriceCategory.id)
             .all()
         )
-        created_price_categories_labels = (
-            db.session.query(offers_models.PriceCategoryLabel).filter_by(venueId=venue.id).all()
-        )
 
         assert len(created_offers) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue

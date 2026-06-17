@@ -25,10 +25,7 @@ class Returns200Test:
     def test_edit_one_stock(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         existing_stock = offers_factories.EventStockFactory(offer=offer, quantity=10)
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Carré Or")
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, price=23, priceCategoryLabel=price_cat_label
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=23, label="Carré Or")
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
 
@@ -77,10 +74,7 @@ class Returns200Test:
         offer = offers_factories.EventOfferFactory()
         beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         tomorrow = beginning + datetime.timedelta(days=1)
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=price_cat_label, price=10
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,
             beginningDatetime=format_into_utc_date(beginning),
@@ -224,8 +218,7 @@ class Returns200Test:
         offer = offers_factories.EventOfferFactory(
             venue__bookingEmail="venue@postponed.net", bookingEmail="offer@bookingemail.fr"
         )
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
         existing_stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -291,8 +284,7 @@ class Returns200Test:
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
 
         existing_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=event_in_4_days, priceCategory=price_cat
@@ -324,8 +316,7 @@ class Returns200Test:
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
 
         existing_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=event_in_4_days, priceCategory=price_cat
@@ -360,8 +351,7 @@ class Returns200Test:
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
 
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,

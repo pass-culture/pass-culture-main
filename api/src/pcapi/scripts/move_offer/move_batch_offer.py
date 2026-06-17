@@ -28,7 +28,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
-from pcapi.core.offers import models as offer_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.providers import models as providers_models
@@ -226,33 +225,6 @@ def _move_collective_offer_playlist(
         },
         technical_message_id="collective_offer_playlist.move",
     )
-
-
-def _move_price_category_label(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
-    origin_price_category_labels = (
-        db.session.query(offer_models.PriceCategoryLabel)
-        .filter(offer_models.PriceCategoryLabel.venueId == origin_venue.id)
-        .all()
-    )
-    for origin_price_category_label in origin_price_category_labels:
-        existing_price_category_label = (
-            db.session.query(offer_models.PriceCategoryLabel)
-            .filter(
-                offer_models.PriceCategoryLabel.venueId == destination_venue.id,
-                offer_models.PriceCategoryLabel.label == origin_price_category_label.label,
-            )
-            .one_or_none()
-        )
-        if existing_price_category_label:
-            db.session.query(offer_models.PriceCategory).filter(
-                offer_models.PriceCategory.priceCategoryLabelId == origin_price_category_label.id
-            ).update(
-                {"priceCategoryLabelId": existing_price_category_label.id},
-                synchronize_session=False,
-            )
-        else:
-            origin_price_category_label.venueId = destination_venue.id
-            db.session.add(origin_price_category_label)
 
 
 def _move_finance_incident(origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue) -> None:
@@ -506,7 +478,6 @@ def _move_all_venue_offers(apply: bool, origin: int | None, destination: int | N
                     _move_collective_offers(origin_venue, destination_venue)
                     _move_collective_offer_template(origin_venue, destination_venue)
                     _move_collective_offer_playlist(origin_venue, destination_venue)
-                    _move_price_category_label(origin_venue, destination_venue)
                     _move_finance_incident(origin_venue, destination_venue)
                     destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
                     _soft_delete_origin_venue(origin_venue)

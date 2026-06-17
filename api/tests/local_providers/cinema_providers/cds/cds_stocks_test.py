@@ -282,7 +282,6 @@ class CDSStocksTest:
         assert created_stocks[1].features == []
 
         assert all(category.label == "pass Culture" for category in created_price_categories)
-        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -367,7 +366,6 @@ class CDSStocksTest:
         assert created_stocks[1].features == []
 
         assert all(category.label == "pass Culture" for category in created_price_categories)
-        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -411,7 +409,6 @@ class CDSStocksTest:
         assert created_stocks[1].idAtProviders == f"51%{venue_provider.venueId}%CDS#2"
 
         assert all(category.label == "pass Culture" for category in created_price_categories)
-        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -495,7 +492,6 @@ class CDSStocksTest:
         assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)  # Nothing should have changed
 
         assert all(category.label == "pass Culture" for category in created_price_categories)
-        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
@@ -615,7 +611,6 @@ class CDSStocksTest:
 
         assert created_price_category.price == 4.0
         assert created_price_category.label == "My awesome festival"
-        assert created_price_category.priceCategoryLabel is None
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.providers.clients.cine_office_client.CineOfficeAPIClient.get_venue_movies")

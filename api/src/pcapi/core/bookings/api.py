@@ -148,9 +148,7 @@ def _get_booking_options() -> list[ExecutableOption]:
                 .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
                 .joinedload(offerers_models.OffererAddress.address),
             ),
-            sa_orm.joinedload(offers_models.Stock.priceCategory)
-            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-            .load_only(offers_models.PriceCategoryLabel.label),
+            sa_orm.joinedload(offers_models.Stock.priceCategory),
         ),
         sa_orm.joinedload(models.Booking.activationCode),
         sa_orm.joinedload(models.Booking.externalBookings),

@@ -48,11 +48,7 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
             )
             .selectinload(offers_models.Product.productMediations)
         )
-        .options(
-            sa_orm.selectinload(offers_models.Offer.priceCategories).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            )
-        )
+        .options(sa_orm.selectinload(offers_models.Offer.priceCategories))
         .options(
             sa_orm.joinedload(offers_models.Offer.offererAddress).load_only(
                 offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label
@@ -225,11 +221,7 @@ def get_event_with_details(event_id: int) -> offers_models.Offer | None:
         .filter(offers_models.Offer.isEvent)
         .outerjoin(offers_models.Offer.stocks.and_(sa.not_(offers_models.Stock.isEventExpired)))
         .options(sa_orm.contains_eager(offers_models.Offer.stocks))
-        .options(
-            sa_orm.joinedload(offers_models.Offer.priceCategories).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            )
-        )
+        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
         .one_or_none()
     )
 

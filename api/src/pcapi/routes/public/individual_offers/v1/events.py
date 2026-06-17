@@ -647,11 +647,7 @@ def get_event_stocks(
     stocks = (
         db.session.query(offers_models.Stock)
         .filter(offers_models.Stock.id.in_(total_stock_ids))
-        .options(
-            sa_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            )
-        )
+        .options(sa_orm.joinedload(offers_models.Stock.priceCategory))
         .order_by(offers_models.Stock.id)
         .limit(query.limit)
     )

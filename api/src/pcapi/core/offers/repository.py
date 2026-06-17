@@ -410,7 +410,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
                 models.Stock.dnBookedQuantity,
             )
             .joinedload(models.Stock.priceCategory)
-            .joinedload(models.PriceCategory.priceCategoryLabel)
         )
         .options(
             sa_orm.joinedload(models.Offer.venue)
@@ -1283,9 +1282,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "headline_offer" in load_options:
             query = query.options(sa_orm.selectinload(models.Offer.headlineOffers))
         if "price_category" in load_options:
-            query = query.options(
-                sa_orm.selectinload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
-            )
+            query = query.options(sa_orm.selectinload(models.Offer.priceCategories))
         if "venue" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.venue, innerjoin=True).joinedload(
@@ -1346,7 +1343,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
         )
         .options(sa_orm.contains_eager(models.Offer.stocks))
         .options(sa_orm.joinedload(models.Offer.mediations))
-        .options(sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
+        .options(sa_orm.joinedload(models.Offer.priceCategories))
         .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery()))
         .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery()))
         .options(

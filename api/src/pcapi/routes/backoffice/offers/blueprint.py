@@ -1721,9 +1721,7 @@ def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
             ),
             sa_orm.selectinload(offers_models.Offer.stocks)  # avoid cartesian product which causes OOM
             .joinedload(offers_models.Stock.priceCategory)
-            .load_only(offers_models.PriceCategory.price, offers_models.PriceCategory._label)
-            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-            .load_only(offers_models.PriceCategoryLabel.label),
+            .load_only(offers_models.PriceCategory.price, offers_models.PriceCategory.label),
             sa_orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
                 users_models.User.firstName, users_models.User.lastName
             ),
@@ -1861,9 +1859,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> response_utils.BackofficeR
             offers_models.Stock.id == stock_id,
         )
         .options(
-            sa_orm.joinedload(offers_models.Stock.priceCategory).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            ),
+            sa_orm.joinedload(offers_models.Stock.priceCategory),
         )
         .one()
     )

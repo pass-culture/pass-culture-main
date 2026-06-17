@@ -236,11 +236,9 @@ class CGRStocksTest:
         created_price_categories = (
             db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.id).all()
         )
-        created_price_categories_labels = db.session.query(offers_models.PriceCategoryLabel).all()
         assert len(created_offers) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 0
 
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
@@ -351,11 +349,9 @@ class CGRStocksTest:
         created_price_categories = (
             db.session.query(offers_models.PriceCategory).order_by(offers_models.PriceCategory.id).all()
         )
-        created_price_category_labels = db.session.query(offers_models.PriceCategoryLabel).all()
 
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
-        assert len(created_price_category_labels) == 0
 
         assert created_offer.name == "Produit allociné 2"
         assert created_offer.venue == venue_provider.venue
@@ -373,7 +369,6 @@ class CGRStocksTest:
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
         assert created_price_categories[0].price == 11.0
         assert created_price_categories[0].label == "Tarif standard 3D"
-        assert created_price_categories[0].priceCategoryLabel is None
 
         assert created_stocks[1].quantity == 56
         assert created_stocks[1].price == Decimal("7.2")
@@ -384,7 +379,6 @@ class CGRStocksTest:
         assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 5, 15)
         assert created_price_categories[1].price == Decimal("7.2")
         assert created_price_categories[1].label == "Tarif Standard ICE"
-        assert created_price_categories[1].priceCategoryLabel is None
 
         assert created_stocks[2].quantity == 132
         assert created_stocks[2].price == 11.00
@@ -395,7 +389,6 @@ class CGRStocksTest:
         assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 3, 6, 15)
         assert created_price_categories[2].price == 11.00
         assert created_price_categories[2].label == "Tarif Standard"
-        assert created_price_categories[2].priceCategoryLabel is None
 
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_reuse_price_category(self, ProcessClass, requests_mock):

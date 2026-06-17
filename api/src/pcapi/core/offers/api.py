@@ -2053,12 +2053,6 @@ def move_offer(
         offer.venue = destination_venue
         db.session.add(offer)
 
-        # TODO (prouzet, 2026-06-04) Remove this block along with PriceCategoryLabel class
-        for price_category in offer.priceCategories:
-            if price_category.priceCategoryLabel:
-                price_category.label = price_category.priceCategoryLabel.label
-                db.session.add(price_category)
-
         while updated_bookings := bookings.update({"venueId": destination_venue.id}, synchronize_session=False):
             logger.info("Updated %d bookings for offer %d", updated_bookings, offer_id)
 
@@ -2172,12 +2166,6 @@ def move_event_offer(
 
         offer.venue = destination_venue
         db.session.add(offer)
-
-        # TODO (prouzet, 2026-06-04) Remove this block along with PriceCategoryLabel class
-        for price_category in offer.priceCategories:
-            if price_category.priceCategoryLabel:
-                price_category.label = price_category.priceCategoryLabel.label
-                db.session.add(price_category)
 
         for booking in bookings:
             assert not booking.is_pending_reimbursement_or_reimbursed

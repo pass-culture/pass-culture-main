@@ -59,9 +59,8 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             lastProvider=provider,
             **datetimes_params,
         )
-        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=offer.venue)
         price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
+            offer=offer, price=decimal.Decimal("88.99"), label="carre or"
         )
         next_year = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(

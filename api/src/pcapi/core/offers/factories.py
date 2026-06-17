@@ -330,30 +330,6 @@ class HeadlineOfferFactory(BaseFactory[models.HeadlineOffer]):
                 MediationFactory(offer=self.offer)
 
 
-class PriceCategoryLabelFactory(BaseFactory[models.PriceCategoryLabel]):
-    class Meta:
-        model = models.PriceCategoryLabel
-
-    label = DEFAULT_PRICE_LABEL
-    venue = factory.SubFactory(offerers_factories.VenueFactory)
-
-    @classmethod
-    def _create(
-        cls,
-        model_class: type[models.PriceCategoryLabel],
-        *args: typing.Any,
-        **kwargs: typing.Any,
-    ) -> models.PriceCategoryLabel:
-        label = (
-            db.session.query(offers_models.PriceCategoryLabel)
-            .filter_by(label=kwargs.get("label"), venue=kwargs.get("venue"))
-            .one_or_none()
-        )
-        if label:
-            return label
-        return super()._create(model_class, *args, **kwargs)
-
-
 class PriceCategoryFactory(BaseFactory):
     class Meta:
         model = models.PriceCategory
@@ -361,11 +337,6 @@ class PriceCategoryFactory(BaseFactory):
     price = decimal.Decimal("10.1")
     offer = factory.SubFactory(EventOfferFactory)
     label: str | None = DEFAULT_PRICE_LABEL
-
-
-class PriceCategoryWithPriceCategoryLabelFactory(PriceCategoryFactory):
-    label = None
-    priceCategoryLabel = factory.SubFactory(PriceCategoryLabelFactory, venue=factory.SelfAttribute("..offer.venue"))
 
 
 _DAY_TO_WEEKDAY = {

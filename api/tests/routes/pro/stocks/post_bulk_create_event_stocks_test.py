@@ -120,10 +120,7 @@ class Returns201Test:
     def test_avoid_duplication_with_different_quantity(self, client):
         offer = offers_factories.EventOfferFactory()
         beginning = date_utils.get_naive_utc_now() + datetime.timedelta(hours=1)
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=price_cat_label, price=10
-        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer,
             beginningDatetime=format_into_utc_date(beginning),
@@ -155,14 +152,8 @@ class Returns201Test:
         offer = offers_factories.EventOfferFactory()
         beginning = date_utils.get_naive_utc_now() + relativedelta(hours=4)
         beginning_later = beginning + relativedelta(days=10)
-        price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
-        price_category_1 = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=price_cat_label_1, price=10
-        )
-        price_category_2 = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=price_cat_label_2, price=20
-        )
+        price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
+        price_category_2 = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 2", price=20)
         offers_factories.EventStockFactory(
             offer=offer,
             beginningDatetime=format_into_utc_date(beginning),
@@ -230,8 +221,7 @@ class Returns400Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        shared_label = offers_factories.PriceCategoryLabelFactory(label="Shared", venue=offer.venue)
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=shared_label, price=20)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=20)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
 
         stock_data = {
@@ -254,8 +244,7 @@ class Returns400Test:
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
-        price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
+        price_cat = offers_factories.PriceCategoryFactory(offer=offer, label="Tarif 1", price=10)
         beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         bookingLimitDatetime = date_utils.get_naive_utc_now() + relativedelta(days=10)
 

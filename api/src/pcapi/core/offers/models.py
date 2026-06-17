@@ -1698,11 +1698,12 @@ class BookMacroSection(PcObject, Model):
     __table_args__ = (sa.Index("book_macro_section_section_idx", sa.func.lower(section), unique=True),)
 
 
+# TODO (prouzet, 2026-06-17) Remove class and table in PC-42412
 class PriceCategoryLabel(PcObject, Model):
     __tablename__ = "price_category_label"
     label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
-        "PriceCategory", foreign_keys="PriceCategory.priceCategoryLabelId", back_populates="priceCategoryLabel"
+        "PriceCategory", foreign_keys="PriceCategory.priceCategoryLabelId"
     )
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
@@ -1729,13 +1730,11 @@ class PriceCategory(PcObject, Model):
     price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
-    # TODO (prouzet, 2026-06-04) Rename field into label when removing PriceCategoryLabel class
-    _label: sa_orm.Mapped[str | None] = sa_orm.mapped_column("label", sa.Text, nullable=True)
-    priceCategoryLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=True
-    )
-    priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa_orm.relationship(
-        "PriceCategoryLabel", foreign_keys=[priceCategoryLabelId], back_populates="priceCategories"
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    # TODO (prouzet, 2026-06-17) Remove priceCategoryLabelId in PC-42412
+    # Ensure that column is not fetched by default so that migration in PC-42412 does not make running tasks fail
+    priceCategoryLabelId: sa_orm.Mapped[int | None] = sa_orm.deferred(
+        sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=True)
     )
     stocks: sa_orm.Mapped[list["Stock"]] = sa_orm.relationship(
         "Stock", foreign_keys="Stock.priceCategoryId", back_populates="priceCategory", cascade="all"
@@ -1748,25 +1747,7 @@ class PriceCategory(PcObject, Model):
             "idAtProvider",
             name="unique_offer_id_id_at_provider",
         ),
-        # TODO (prouzet, 2026-06-04) Remove this constraint along with PriceCategoryLabel class
-        sa.CheckConstraint(
-            '(label IS NOT NULL) OR ("priceCategoryLabelId" IS NOT NULL)',
-            name="check_has_label_or_price_category_label",
-        ),
     )
-
-    @property
-    def label(self) -> str:
-        # TODO (prouzet, 2026-06-04) Remove this property along with PriceCategoryLabel class
-        if self._label is not None:
-            return self._label
-        return self.priceCategoryLabel.label
-
-    @label.setter
-    def label(self, value: str | None) -> None:
-        # TODO (prouzet, 2026-06-04) Remove this setter along with PriceCategoryLabel class
-        self._label = value
-        self.priceCategoryLabelId = None
 
 
 class TiteliveGtlType(enum.Enum):
