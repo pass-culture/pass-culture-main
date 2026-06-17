@@ -4,6 +4,6 @@
     "vitest.explorer",
     "stylelint.vscode-stylelint",
     "biomejs.biome",
-    "phoenisx.cssvar"
+    "vunguyentuan.vscode-css-variables"
   ]
 }
