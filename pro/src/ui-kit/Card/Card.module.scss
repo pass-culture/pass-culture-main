@@ -31,6 +31,22 @@
   &-header {
     display: flex;
     flex-direction: column;
+
+    &-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: var(--size-spacing-l);
+    }
+
+    &-icon {
+      width: rem.torem(40px);
+      height: rem.torem(40px);
+      padding: var(--size-spacing-s);
+      border-radius: var(--size-icon-l);
+      background-color: var(--color-background-info);
+    }
   }
 
   &-title {

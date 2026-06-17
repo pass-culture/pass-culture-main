@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -19,8 +20,11 @@ import {
 } from '../commons/__mocks__/constants'
 import { IndividualOfferExposureScreen } from './IndividualOfferExposureScreen'
 
-const renderIndividualOfferLocationScreen = () => {
-  const offer = getIndividualOfferFactory()
+const renderIndividualOfferLocationScreen = ({
+  offer,
+}: {
+  offer: GetIndividualOfferWithAddressResponseModel
+}) => {
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
@@ -53,7 +57,8 @@ const renderIndividualOfferLocationScreen = () => {
 
 describe('IndividualOfferExposureScreen', () => {
   it('should render and pass accessibility checks', async () => {
-    const { container } = renderIndividualOfferLocationScreen()
+    const offer = getIndividualOfferFactory({ bookingsCount: 42 })
+    const { container } = renderIndividualOfferLocationScreen({ offer })
 
     expect(
       await screen.findByRole('heading', { name: 'Actions de mise en avant' })
@@ -63,11 +68,25 @@ describe('IndividualOfferExposureScreen', () => {
   })
 
   it('should render the component', async () => {
-    renderIndividualOfferLocationScreen()
+    const offer = getIndividualOfferFactory({ bookingsCount: 42 })
+    renderIndividualOfferLocationScreen({ offer })
 
     expect(
       await screen.findByRole('heading', { name: 'Actions de mise en avant' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        name: 'Statistiques de votre offre',
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByText('42 réservations')).toBeInTheDocument()
     expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
+  })
+
+  it('should render the component with 0 bookings', async () => {
+    const offer = getIndividualOfferFactory({ bookingsCount: 0 })
+    renderIndividualOfferLocationScreen({ offer })
+
+    expect(await screen.findByText('0 réservation')).toBeInTheDocument()
   })
 })

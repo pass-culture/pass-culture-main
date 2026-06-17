@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import type { ReactNode } from 'react'
 
+import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './Card.module.scss'
 
 interface CardProps {
@@ -13,9 +14,10 @@ interface CardHeaderProps {
   title: string
   subtitle?: string
   className?: string
-  titleTag?: 'h2' | 'h3' | 'h4'
+  titleTag?: 'h2' | 'h3' | 'h4' | 'p'
   titleClassName?: string
   subtitleClassName?: string
+  icon?: string
 }
 
 interface CardContentProps {
@@ -41,16 +43,20 @@ const CardHeader = ({
   titleTag: TitleTag = 'h2',
   titleClassName,
   subtitleClassName,
+  icon,
 }: CardHeaderProps) => (
-  <div className={cn(styles['card-header'], className)}>
-    <TitleTag className={cn(styles['card-title'], titleClassName)}>
-      {title}
-    </TitleTag>
-    {subtitle && (
-      <p className={cn(styles['card-subtitle'], subtitleClassName)}>
-        {subtitle}
-      </p>
-    )}
+  <div className={cn(styles['card-header-container'], className)}>
+    {icon && <SvgIcon src={icon} className={styles['card-header-icon']} />}
+    <div className={cn(styles['card-header'], className)}>
+      <TitleTag className={cn(styles['card-title'], titleClassName)}>
+        {title}
+      </TitleTag>
+      {subtitle && (
+        <p className={cn(styles['card-subtitle'], subtitleClassName)}>
+          {subtitle}
+        </p>
+      )}
+    </div>
   </div>
 )
 

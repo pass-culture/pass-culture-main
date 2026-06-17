@@ -18,7 +18,7 @@ import { getSteps, type StepPattern } from './utils/getSteps'
 
 export const IndividualOfferNavigation = () => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const { offer, isEvent, subCategories } = useIndividualOfferContext()
   const activeStep = useActiveStep(
