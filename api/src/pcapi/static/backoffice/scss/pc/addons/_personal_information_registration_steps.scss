@@ -10,7 +10,7 @@ $step-border-width: 1px;
     top: 3.4rem;
     left: 0;
     right: 0;
-    height: .2rem !important;
+    height: 2px !important;
     border-width: 0;
     background: repeating-linear-gradient(
       90deg,
@@ -96,7 +96,7 @@ $step-border-width: 1px;
 
       @media(min-width: 568px) {
         display: flex;
-        font-size: 0.85rem;
+        font-size: 14px;
         justify-content: center;
         line-height: 1.5rem;
         text-align: center;
