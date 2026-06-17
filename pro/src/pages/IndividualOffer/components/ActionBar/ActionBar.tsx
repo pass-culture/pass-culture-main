@@ -32,7 +32,7 @@ export const ActionBar = ({
   step,
 }: ActionBarProps) => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
 
   return (

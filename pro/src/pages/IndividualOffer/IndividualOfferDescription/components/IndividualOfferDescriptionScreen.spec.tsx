@@ -36,6 +36,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
@@ -178,22 +179,25 @@ const renderDetailsScreen = ({
   )
 
   return renderWithProviders(
-    <Routes>
-      <Route
-        path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode,
-        })}
-        element={element}
-      />
-      <Route
-        path={`/onboarding${getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          mode,
-        })}`}
-        element={element}
-      />
-    </Routes>,
+    <>
+      <Routes>
+        <Route
+          path={getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode,
+          })}
+          element={element}
+        />
+        <Route
+          path={`/onboarding${getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            mode,
+          })}`}
+          element={element}
+        />
+      </Routes>
+      <SnackBarContainer />
+    </>,
     controlledOptions
   )
 }
@@ -863,6 +867,50 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       expect(
         await screen.findByRole('checkbox', { name: 'Visuel' })
       ).toBeDisabled()
+    })
+
+    it('should show a success snackbar and not navigate when WIP_OFFER_EXPOSURE is enabled', async () => {
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+        getIndividualOfferFactory({ id: 12 })
+      )
+
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          id: 12,
+          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+        options: { features: ['WIP_OFFER_EXPOSURE'] },
+      })
+
+      await userEvent.type(
+        await screen.findByLabelText(LABELS.title),
+        ' modifié'
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Enregistrer les modifications' })
+      )
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Votre offre a bien été modifiée.')
+        ).toBeInTheDocument()
+      })
+      // Only the back-button-fix navigate (replace: true) should be called,
+      // not the navigation to the next/read-only step
+      expect(mockNavigate).toHaveBeenCalledTimes(1)
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining('/edition/description'),
+        { replace: true }
+      )
     })
   })
 

@@ -71,9 +71,10 @@ describe('useSaveOfferLocation', () => {
     } as unknown as ReturnType<typeof useSWRConfig>)
     navigateMock = vi.fn()
     vi.mocked(useNavigate).mockReturnValue(navigateMock)
-    notificationMock = { error: vi.fn() } as unknown as ReturnType<
-      typeof useSnackBar
-    >
+    notificationMock = {
+      error: vi.fn(),
+      success: vi.fn(),
+    } as unknown as ReturnType<typeof useSnackBar>
     vi.mocked(useSnackBar).mockReturnValue(notificationMock)
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     vi.mocked(useActiveFeature).mockReturnValue(false)
@@ -93,6 +94,7 @@ describe('useSaveOfferLocation', () => {
     await saveAndContinue({
       formValues,
       shouldSendMail: true,
+      closeDialog: () => {},
     })
 
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
@@ -114,7 +116,6 @@ describe('useSaveOfferLocation', () => {
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding: false,
-      isOfferExposureEnabled: false,
     })
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
@@ -133,7 +134,7 @@ describe('useSaveOfferLocation', () => {
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({ formValues })
+    await saveAndContinue({ formValues, closeDialog: () => {} })
 
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
       offer: offerBase,
@@ -151,7 +152,6 @@ describe('useSaveOfferLocation', () => {
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       mode: OFFER_WIZARD_MODE.CREATION,
       isOnboarding: true,
-      isOfferExposureEnabled: false,
     })
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
@@ -169,7 +169,7 @@ describe('useSaveOfferLocation', () => {
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({ formValues })
+    await saveAndContinue({ formValues, closeDialog: () => {} })
 
     expect(apiNew.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
@@ -195,6 +195,7 @@ describe('useSaveOfferLocation', () => {
     })
     await saveAndContinue({
       formValues: makeLocationFormValues({ location: null }),
+      closeDialog: () => {},
     })
 
     expect(setErrorMock).toHaveBeenCalledWith('addressAutocomplete', {
@@ -204,6 +205,25 @@ describe('useSaveOfferLocation', () => {
       message: 'Invalid postal code',
     })
     expect(notificationMock.error).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
+    expect(navigateMock).not.toHaveBeenCalled()
+  })
+
+  it('should show success snackbar and close dialog without navigating in EDITION mode when WIP_OFFER_EXPOSURE is enabled', async () => {
+    vi.mocked(useActiveFeature).mockReturnValue(true)
+    const closeDialogMock = vi.fn()
+    const formValues = makeLocationFormValues({ location: null })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+    })
+    await saveAndContinue({ formValues, closeDialog: closeDialogMock })
+
+    expect(notificationMock.success).toHaveBeenCalledWith(
+      'Votre offre a bien été modifiée.'
+    )
+    expect(closeDialogMock).toHaveBeenCalledOnce()
+    expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
   })
 
@@ -217,6 +237,7 @@ describe('useSaveOfferLocation', () => {
     })
     await saveAndContinue({
       formValues: makeLocationFormValues({ location: null }),
+      closeDialog: () => {},
     })
 
     expect(setErrorMock).not.toHaveBeenCalled()

@@ -34,7 +34,7 @@ export function IndividualOfferPracticalInfosForm({
   offer,
   subCategory,
   stocks,
-}: IndividualOfferPracticalInfosFormProps) {
+}: Readonly<IndividualOfferPracticalInfosFormProps>) {
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 
   const currentUser = useAppSelector(ensureCurrentUser)
@@ -134,11 +134,14 @@ export function IndividualOfferPracticalInfosForm({
               if (e.target.checked && !bookingEmail) {
                 form.setValue(
                   'bookingEmail',
-                  offer?.venue.bookingEmail ?? currentUser.email
+                  offer?.venue.bookingEmail ?? currentUser.email,
+                  { shouldDirty: true }
                 )
               }
 
-              form.setValue('receiveNotificationEmails', e.target.checked)
+              form.setValue('receiveNotificationEmails', e.target.checked, {
+                shouldDirty: true,
+              })
             }}
           />
         </FormLayout.Row>

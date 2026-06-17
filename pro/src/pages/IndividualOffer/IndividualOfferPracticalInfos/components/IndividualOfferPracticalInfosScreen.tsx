@@ -125,24 +125,28 @@ export const IndividualOfferPracticalInfosScreen = ({
         apiNew.patchOffer({ path: { offer_id: offer.id }, body: requestBody }),
         { revalidate: false }
       )
-
+      form.reset(formValues)
+      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+        snackBar.success('Votre offre a bien été modifiée.')
+      }
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
 
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-          isOnboarding,
-          isOfferExposureEnabled,
-        })
-      )
+      if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) {
+        navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: nextStep,
+            mode:
+              mode === OFFER_WIZARD_MODE.EDITION
+                ? OFFER_WIZARD_MODE.READ_ONLY
+                : mode,
+            isOnboarding,
+          })
+        )
+      }
     } catch {
       snackBar.error(SENT_DATA_ERROR_MESSAGE)
       return
@@ -178,7 +182,11 @@ export const IndividualOfferPracticalInfosScreen = ({
           <ActionBar
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS}
-            isDisabled={form.formState.isSubmitting || isOfferDisabled(offer)}
+            isDisabled={
+              form.formState.isSubmitting ||
+              isOfferDisabled(offer) ||
+              (!form.formState.isDirty && mode !== OFFER_WIZARD_MODE.CREATION)
+            }
             saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           />
           <RouteLeavingGuardIndividualOffer

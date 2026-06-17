@@ -3,6 +3,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
@@ -27,6 +28,8 @@ export const ActionBarLeft = ({
   saveEditionChangesButtonRef,
   step,
 }: Readonly<ActionBarLeftProps>) => {
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+
   if (mode === OFFER_WIZARD_MODE.CREATION) {
     return (
       <Button
@@ -63,13 +66,14 @@ export const ActionBarLeft = ({
 
   return (
     <>
-      <Button
-        onClick={onClickPrevious}
-        variant={ButtonVariant.SECONDARY}
-        color={ButtonColor.NEUTRAL}
-        label="Annuler et quitter"
-      />
-
+      {!isOfferExposureEnabled && (
+        <Button
+          onClick={onClickPrevious}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler et quitter"
+        />
+      )}
       <Button
         type="submit"
         onClick={onClickNext}

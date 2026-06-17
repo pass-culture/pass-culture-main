@@ -90,7 +90,9 @@ export const IndividualOfferLocationScreen = ({
     await saveAndContinue({
       formValues,
       shouldSendMail,
+      closeDialog: () => setIsUpdateWarningDialogOpen(false),
     })
+    form.reset(formValues)
   }
 
   const handlePreviousStepOrBackToReadOnly = () => {
@@ -148,7 +150,10 @@ export const IndividualOfferLocationScreen = ({
             isDisabled={
               form.formState.isSubmitting ||
               isOfferDisabled(offer) ||
-              !!hasPublishedOfferWithSameEan
+              !!hasPublishedOfferWithSameEan ||
+              (isOfferExposureEnabled &&
+                !form.formState.isDirty &&
+                mode !== OFFER_WIZARD_MODE.CREATION)
             }
             dirtyForm={form.formState.isDirty}
             saveEditionChangesButtonRef={saveEditionChangesButtonRef}

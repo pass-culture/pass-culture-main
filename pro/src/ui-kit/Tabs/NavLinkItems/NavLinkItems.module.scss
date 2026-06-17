@@ -38,6 +38,11 @@
     flex-direction: row;
     gap: var(--size-spacing-xxl);
   }
+
+  .menu-item {
+    align-self: stretch;
+
+  }
 }
 
 .visually-hidden {

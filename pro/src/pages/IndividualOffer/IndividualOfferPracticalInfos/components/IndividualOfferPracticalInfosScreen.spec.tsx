@@ -13,6 +13,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   IndividualOfferPracticalInfosScreen,
@@ -68,6 +69,7 @@ function renderIndividualOfferPracticalInfosScreen(
         stocks={[]}
         {...props}
       />
+      <SnackBarContainer />
     </IndividualOfferContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
@@ -152,6 +154,37 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining('/creation/horaires')
     )
+  })
+
+  it('should show a success snackbar and not navigate in edition mode when WIP_OFFER_EXPOSURE is enabled', async () => {
+    vi.spyOn(useOfferWizardMode, 'useOfferWizardMode').mockImplementation(
+      () => OFFER_WIZARD_MODE.EDITION
+    )
+    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+      getIndividualOfferFactory()
+    )
+
+    renderIndividualOfferPracticalInfosScreen({}, ['WIP_OFFER_EXPOSURE'])
+
+    await waitFor(() => {
+      screen.getByRole('heading', { name: LABELS.heading })
+    })
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: /Informations complémentaires/ }),
+      'nouvelles infos'
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Votre offre a bien été modifiée.')
+      ).toBeInTheDocument()
+    })
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('should navigate to the practical info summary page whern clicking cancel while on edition mode', async () => {
