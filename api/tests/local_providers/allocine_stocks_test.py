@@ -363,7 +363,6 @@ class UpdateObjectsTest:
         assert first_price_category.offerId == unique_offer.id
         assert first_price_category.price == 10
         assert first_price_category.label is not None
-        assert first_price_category.priceCategoryLabel is None
 
         assert allocine_stocks_provider.erroredObjects == 0
         assert allocine_stocks_provider.erroredThumbs == 0
@@ -470,12 +469,10 @@ class UpdateObjectsTest:
             created_offer = db.session.query(offers_models.Offer).all()
             created_stock = db.session.query(offers_models.Stock).all()
             created_price_categories = db.session.query(offers_models.PriceCategory).all()
-            created_price_categories_labels = db.session.query(offers_models.PriceCategoryLabel).all()
 
             assert mock_poster_get_allocine.call_count == 2
             assert len(created_offer) == 2
             assert len(created_price_categories) == 2
-            assert len(created_price_categories_labels) == 0
             assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue1.id).count() == 1
             assert db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 6

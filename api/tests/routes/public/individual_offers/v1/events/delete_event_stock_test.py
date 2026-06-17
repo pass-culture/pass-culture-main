@@ -23,9 +23,8 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
 
     def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.Stock]:
         event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
-        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event.venue)
         price_category = offers_factories.PriceCategoryFactory(
-            offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
+            offer=event, price=decimal.Decimal("88.99"), label="carre or"
         )
         next_year = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(

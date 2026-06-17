@@ -13,7 +13,6 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import models as offers_models

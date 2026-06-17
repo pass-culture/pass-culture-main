@@ -4698,7 +4698,7 @@ class ReplacePriceCategoriesTest:
         price_category = factories.PriceCategoryFactory(
             offer=offer,
             price=Decimal("15.00"),
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Original", venue=offer.venue),
+            label="Original",
         )
         inputs: list[offers_schemas.PriceCategoryInput] = [
             {"id": price_category.id, "label": "Updated", "price": Decimal("25.00")},
@@ -4717,7 +4717,7 @@ class ReplacePriceCategoriesTest:
         existing_pc = factories.PriceCategoryFactory(
             offer=offer,
             price=Decimal("10.00"),
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Existing", venue=offer.venue),
+            label="Existing",
         )
         inputs: list[offers_schemas.PriceCategoryInput] = [
             {"id": existing_pc.id, "label": "Edited", "price": Decimal("15.00")},
@@ -4746,7 +4746,7 @@ class ReplacePriceCategoriesTest:
         offer = factories.DraftOfferFactory()
         factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="To delete", venue=offer.venue),
+            label="To delete",
         )
         inputs: list[offers_schemas.PriceCategoryInput] = []
 
@@ -4758,9 +4758,7 @@ class ReplacePriceCategoriesTest:
         offer = factories.EventOfferFactory(validation=OfferValidationStatus.APPROVED)
         factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(
-                label="Approved Offer Price Category", venue=offer.venue
-            ),
+            label="Approved Offer Price Category",
         )
         inputs: list[offers_schemas.PriceCategoryInput] = []
 
@@ -4773,7 +4771,7 @@ class ReplacePriceCategoriesTest:
         offer = factories.EventOfferFactory(validation=OfferValidationStatus.APPROVED)
         factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Offer Price Category", venue=offer.venue),
+            label="Offer Price Category",
         )
         inputs: list[offers_schemas.PriceCategoryInput] = []
 
@@ -4801,7 +4799,7 @@ class ReplacePriceCategoriesTest:
         price_category = factories.PriceCategoryFactory(
             offer=offer,
             price=Decimal("20.00"),
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+            label="Standard",
         )
         stock = factories.EventStockFactory(
             offer=offer,
@@ -4823,7 +4821,7 @@ class ReplacePriceCategoriesTest:
         price_category = factories.PriceCategoryFactory(
             offer=offer,
             price=Decimal("20.00"),
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+            label="Standard",
         )
         stock = factories.EventStockFactory(
             offer=offer,
@@ -4847,7 +4845,7 @@ class ReplacePriceCategoriesTest:
         price_category = factories.PriceCategoryFactory(
             offer=offer,
             price=Decimal("20.00"),
-            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+            label="Standard",
         )
         expired_stock = factories.EventStockFactory(
             offer=offer,
@@ -5395,21 +5393,15 @@ class DeleteOffersAndAllRelatedObjectsTest:
 
     def test_delete_offer_with_price_categories(self, caplog):
         venue = offerers_factories.VenueFactory()
-        shared_label = factories.PriceCategoryLabelFactory(label="Tarif partagé", venue=venue)
-        unique_label = factories.PriceCategoryLabelFactory(label="Tarif non partagé", venue=venue)
+        shared_label = "Tarif partagé"
+        unique_label = "Tarif non partagé"
         offer = factories.EventOfferFactory(venue=venue)
-        category_1 = factories.PriceCategoryWithPriceCategoryLabelFactory(
-            offer=offer, priceCategoryLabel=shared_label, price=10
-        )
-        category_2 = factories.PriceCategoryWithPriceCategoryLabelFactory(
-            offer=offer, priceCategoryLabel=unique_label, price=20
-        )
+        category_1 = factories.PriceCategoryFactory(offer=offer, label=shared_label, price=10)
+        category_2 = factories.PriceCategoryFactory(offer=offer, label=unique_label, price=20)
         factories.EventStockFactory(offer=offer, priceCategory=category_1)
         factories.EventStockFactory(offer=offer, priceCategory=category_2)
         other_offer = factories.EventOfferFactory(venue=venue)
-        other_category = factories.PriceCategoryWithPriceCategoryLabelFactory(
-            offer=other_offer, priceCategoryLabel=shared_label, price=30
-        )
+        other_category = factories.PriceCategoryFactory(offer=other_offer, label=shared_label, price=30)
         other_stock = factories.EventStockFactory(offer=other_offer, priceCategory=other_category)
         stock_with_wrong_category = factories.EventStockFactory(offer__venue=venue, priceCategory=category_1)
 

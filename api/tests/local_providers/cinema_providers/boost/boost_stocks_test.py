@@ -17,7 +17,6 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import ProductMediationFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
@@ -227,7 +226,6 @@ class BoostStocksTest:
         assert created_price_categories[2].price == decimal.Decimal("12.00")
 
         assert all(category.label == "PASS CULTURE" for category in created_price_categories)
-        assert all(category.priceCategoryLabel is None for category in created_price_categories)
 
         assert get_cinema_attr_adapter.call_count == 1
 
@@ -256,9 +254,7 @@ class BoostStocksTest:
         created_offer = db.session.query(Offer).order_by(Offer.id).one()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
-        created_price_category_labels = db.session.query(PriceCategoryLabel).all()
         assert len(created_price_categories) == 2
-        assert len(created_price_category_labels) == 0
 
         assert created_offer.name == "Produit allociné 1"
         assert created_offer.product == self._get_product_by_allocine_id(263242)
@@ -289,11 +285,9 @@ class BoostStocksTest:
 
         assert created_price_categories[0].price == decimal.Decimal("6.9")
         assert created_price_categories[0].label == "PASS CULTURE"
-        assert created_price_categories[0].priceCategoryLabel is None
 
         assert created_price_categories[1].price == 18.0
         assert created_price_categories[1].label == "PASS CULTURE 1"
-        assert created_price_categories[1].priceCategoryLabel is None
 
         assert get_cinema_attr_adapter.call_count == 1
 
@@ -318,7 +312,6 @@ class BoostStocksTest:
 
         created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
-        assert db.session.query(PriceCategoryLabel).count() == 0
 
         assert get_cinema_attr_adapter.call_count == 2
 

@@ -41,11 +41,9 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
             label="Carré d'or",
             price=decimal.Decimal("30"),
         )
-        price_category_2 = offers_factories.PriceCategoryWithPriceCategoryLabelFactory(
+        price_category_2 = offers_factories.PriceCategoryFactory(
             offer=event,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
-                label="Triangle d'argent", venue=venue_provider.venue
-            ),
+            label="Triangle d'argent",
             price=decimal.Decimal("15"),
             idAtProvider="silver_triangle",
         )

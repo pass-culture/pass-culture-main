@@ -100,7 +100,7 @@ class Returns200Test:
         )
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
+            label="Already exists",
         )
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
@@ -128,7 +128,7 @@ class Returns200Test:
 
         offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="To be deleted", venue=offer.venue),
+            label="To be deleted",
         )
 
         data = {
@@ -165,7 +165,7 @@ class Returns400Test:
         offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
+            label="Do not change",
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -187,7 +187,7 @@ class Returns400Test:
         offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
+            label="Do not change",
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -196,7 +196,7 @@ class Returns400Test:
         unreachable_offer = offers_factories.EventOfferFactory()
         unreachable_price_category = offers_factories.PriceCategoryFactory(
             offer=unreachable_offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change"),
+            label="Do not change",
         )
         offerers_factories.UserOffererFactory(
             user__email="unreachable@example.com",
@@ -240,7 +240,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="cat gold", venue=offer.venue),
+            label="cat gold",
             price=25,
         )
         data = {
@@ -276,7 +276,7 @@ class Returns400Test:
         offer = offers_factories.EventOfferFactory(validation=validation_status)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
+            label="Do not change",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -295,7 +295,7 @@ class Returns400Test:
         offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="To keep", venue=offer.venue),
+            label="To keep",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
