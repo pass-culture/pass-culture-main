@@ -41,9 +41,10 @@ export const ActivityDetails = () => {
 
   return (
     <>
-      <FormLayout.Row key={watch('activity')} mdSpaceAfter>
+      <FormLayout.Row mdSpaceAfter>
         <Select
           {...register('activity')}
+          value={watch('activity') ?? ''}
           options={[
             ...(watch('activity') === null // TODO: make `activity` not nullable after migrating all the venues with VenueTypeCode and no matching activity
               ? [

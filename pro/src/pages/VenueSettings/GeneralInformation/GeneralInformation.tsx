@@ -35,7 +35,7 @@ import type {
 import { scrollToTop } from './commons/utils/scrollToTop'
 import { toFormValues } from './commons/utils/toFormValues'
 import { AddressChangeDialog } from './components/AddressChangeDialog/AddressChangeDialog'
-import { ComplementaryInfosDialog } from './components/ComplementaryInfosDialog/ComplementaryInfosDilog'
+import { ComplementaryInfosDrawer } from './components/ComplementaryInfosDrawer/ComplementaryInfosDrawer'
 import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
 
 const GeneralInformation = () => {
@@ -64,7 +64,7 @@ const GeneralInformation = () => {
   const { saveAndContinue } = useSaveVenueSettings({ form, venue })
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
-  const [isComplementaryInfosDialogOpen, setIsComplementaryInfosDialogOpen] =
+  const [isComplementaryInfosDrawerOpen, setIsComplementaryInfosDrawerOpen] =
     useState(false)
   const [hasAddressChanged, setHasAddressChanged] = useState(false)
 
@@ -94,7 +94,7 @@ const GeneralInformation = () => {
         setIsAddressChangeDialogOpen(true)
       }
       if (shouldShowComplementaryInfosDialog) {
-        setIsComplementaryInfosDialogOpen(true)
+        setIsComplementaryInfosDrawerOpen(true)
       }
     }
     scrollToTop()
@@ -249,12 +249,11 @@ const GeneralInformation = () => {
         open={isAddressChangeDialogOpen}
         onOpenChange={setIsAddressChangeDialogOpen}
       />
-      <ComplementaryInfosDialog
-        open={isComplementaryInfosDialogOpen}
-        onOpenChange={setIsComplementaryInfosDialogOpen}
-        venue={venue}
+      <ComplementaryInfosDrawer
+        open={isComplementaryInfosDrawerOpen}
+        onOpenChange={setIsComplementaryInfosDrawerOpen}
         hasAddressChanged={hasAddressChanged}
-      ></ComplementaryInfosDialog>
+      ></ComplementaryInfosDrawer>
     </>
   )
 }

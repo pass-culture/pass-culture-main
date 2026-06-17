@@ -50,8 +50,9 @@ export const ConfirmDialog = ({
       variant={ButtonVariant.SECONDARY}
       color={
         // That's a Design-System rule for secondary buttons
+        cancelText &&
         ['annuler', 'annuler et quitter', 'fermer'].includes(
-          cancelText?.toLowerCase() ?? ''
+          cancelText.toLowerCase()
         )
           ? ButtonColor.NEUTRAL
           : ButtonColor.BRAND

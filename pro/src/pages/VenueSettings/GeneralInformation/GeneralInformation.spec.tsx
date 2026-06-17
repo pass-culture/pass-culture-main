@@ -340,4 +340,36 @@ describe('GeneralInformation', () => {
       ).toBeInTheDocument()
     })
   })
+  describe('complementary infos dialog', () => {
+    it('should open the complementary infos dialog when switching isOpenToPublic from false to true and saving', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Informations complémentaires',
+        })
+      ).toBeInTheDocument()
+    })
+  })
+  describe('address change dialog', () => {
+    it('should open the address change dialog when changing the address and saving', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: true })
+
+      await userEvent.click(await screen.findByText('Sélectionner une adresse'))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Important : Le changement d'adresse postale/,
+        })
+      ).toBeInTheDocument()
+    })
+  })
 })

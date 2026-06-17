@@ -2,13 +2,14 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -21,26 +22,26 @@ import { getValidationSchema } from '@/pages/VenueEdition/commons/validationSche
 import { AccessibilityForm } from '@/pages/VenueEdition/components/AccessibilityForm/AccessibilityForm'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import styles from './ComplementaryInfosDialog.module.scss'
+import styles from './ComplementaryInfosDrawer.module.scss'
 
-interface ComplementaryInfosDialogProps {
-  venue: GetVenueResponseModel
+interface ComplementaryInfosDrawerProps {
   hasAddressChanged: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export const ComplementaryInfosDialog = ({
+export const ComplementaryInfosDrawer = ({
   open,
   onOpenChange,
-  venue,
   hasAddressChanged,
-}: Readonly<ComplementaryInfosDialogProps>) => {
+}: Readonly<ComplementaryInfosDrawerProps>) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { syncVenueWithData } = useSyncVenueCache()
 
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
+  const initialValues: VenueEditionFormValues =
+    setInitialFormValues(selectedPartnerVenue)
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver(getValidationSchema()),
@@ -49,16 +50,21 @@ export const ComplementaryInfosDialog = ({
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
-      const updatedVenue = await apiNew.editVenue({
-        path: { venue_id: venue.id },
+      const updatedVenue = await api.editVenue({
+        path: { venue_id: selectedPartnerVenue.id },
         body: serializeEditVenueBodyModel(
-          values,
-          !venue.siret,
-          venue.openingHours !== null
+          {
+            accessibility: values.accessibility,
+            isAccessibilityAppliedOnAllOffers:
+              values.isAccessibilityAppliedOnAllOffers,
+            openingHours: values.openingHours,
+          },
+          !selectedPartnerVenue.siret,
+          selectedPartnerVenue.openingHours !== null
         ),
       })
 
-      await syncVenueWithData(venue.id, updatedVenue)
+      await syncVenueWithData(selectedPartnerVenue.id, updatedVenue)
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         saved: true,
@@ -66,6 +72,7 @@ export const ComplementaryInfosDialog = ({
       })
 
       snackBar.success('Vos modifications ont été sauvegardées')
+      onOpenChange(false)
     } catch (error) {
       let formErrors: Record<string, string> | undefined
       if (isErrorAPIError(error)) {
@@ -102,9 +109,15 @@ export const ComplementaryInfosDialog = ({
   return (
     <DialogBuilder
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(open) => {
+        onOpenChange(open)
+        if (!open) {
+          methods.reset()
+        }
+      }}
       title="Informations complémentaires"
       className={styles['dialog']}
+      variant="drawer"
     >
       <div className={styles['dialog-description']}>
         Améliorez l'expérience de votre public en précisant vos modalités
@@ -115,8 +128,12 @@ export const ComplementaryInfosDialog = ({
           <FormLayout>
             <FormLayout.Section>
               <AccessibilityForm
-                externalAccessibilityId={venue.externalAccessibilityId}
-                externalAccessibilityData={venue.externalAccessibilityData}
+                externalAccessibilityId={
+                  selectedPartnerVenue.externalAccessibilityId
+                }
+                externalAccessibilityData={
+                  selectedPartnerVenue.externalAccessibilityData
+                }
                 isSubSubSection
               ></AccessibilityForm>
               <FormLayout.SubSection title="Horaires d’ouverture">

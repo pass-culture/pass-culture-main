@@ -1,20 +1,19 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
-import { ComplementaryInfosDialog } from './ComplementaryInfosDilog'
+import { ComplementaryInfosDrawer } from './ComplementaryInfosDrawer'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { editVenue: vi.fn() },
+  api: { editVenue: vi.fn() },
 }))
 
 vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
@@ -35,7 +34,6 @@ vi.mock('@/components/OpeningHours/OpeningHours', () => ({
 const mockLogEvent = vi.fn()
 
 const defaultProps = {
-  venue: defaultGetVenue,
   hasAddressChanged: false,
   open: true,
   onOpenChange: vi.fn(),
@@ -44,18 +42,25 @@ const defaultProps = {
 const renderDialog = (props: Partial<typeof defaultProps> = {}) => {
   renderWithProviders(
     <>
-      <ComplementaryInfosDialog {...defaultProps} {...props} />
+      <ComplementaryInfosDrawer {...defaultProps} {...props} />
       <SnackBarContainer />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: defaultGetVenue,
+        },
+      },
+    }
   )
 }
 
-describe('ComplementaryInfosDialog', () => {
+describe('ComplementaryInfosDrawer', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.mocked(apiNew.editVenue).mockResolvedValue(defaultGetVenue)
+    vi.mocked(api.editVenue).mockResolvedValue(defaultGetVenue)
   })
 
   describe('address changed banner', () => {
@@ -106,7 +111,7 @@ describe('ComplementaryInfosDialog', () => {
       )
 
       await waitFor(() => {
-        expect(apiNew.editVenue).toHaveBeenCalledWith({
+        expect(api.editVenue).toHaveBeenCalledWith({
           path: { venue_id: defaultGetVenue.id },
           body: expect.anything(),
         })
@@ -141,7 +146,7 @@ describe('ComplementaryInfosDialog', () => {
     })
 
     it('should show generic error snackbar when API returns a global error', async () => {
-      vi.mocked(apiNew.editVenue).mockRejectedValue(
+      vi.mocked(api.editVenue).mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { status: 500, body: {} } as ApiResult,
@@ -171,7 +176,7 @@ describe('ComplementaryInfosDialog', () => {
         } as unknown as ApiResult,
         'Bad Request'
       )
-      vi.mocked(apiNew.editVenue).mockRejectedValue(apiError)
+      vi.mocked(api.editVenue).mockRejectedValue(apiError)
 
       renderDialog()
 
@@ -187,7 +192,7 @@ describe('ComplementaryInfosDialog', () => {
     })
 
     it('should log a save event with saved: false on error', async () => {
-      vi.mocked(apiNew.editVenue).mockRejectedValue(
+      vi.mocked(api.editVenue).mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { status: 500, body: {} } as ApiResult,
@@ -210,7 +215,7 @@ describe('ComplementaryInfosDialog', () => {
     })
 
     it('should show generic error snackbar for non-API errors', async () => {
-      vi.mocked(apiNew.editVenue).mockRejectedValue(new Error('network error'))
+      vi.mocked(api.editVenue).mockRejectedValue(new Error('network error'))
 
       renderDialog()
 
