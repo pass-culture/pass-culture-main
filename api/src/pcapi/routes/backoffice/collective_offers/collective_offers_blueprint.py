@@ -1008,9 +1008,9 @@ def _get_collective_offer_details_actions(collective_offer: educational_models.C
     if access_control.has_current_user_permission(perm_models.Permissions.CREATE_INCIDENTS) and collective_booking:
         if (
             collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
-            and finance_validation.check_commercial_gesture_collective_booking(collective_booking)
+            and finance_validation.check_incident_collective_booking(collective_booking)
         ):
-            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_COMMERCIAL_GESTURE)
+            allowed_actions.add_action(CollectiveOfferDetailsActionType.CREATE_OVERPAYMENT)
     if access_control.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT) and collective_stock:
         if _is_collective_offer_price_editable(collective_offer):
             allowed_actions.add_action(CollectiveOfferDetailsActionType.ADJUST_PRICE)

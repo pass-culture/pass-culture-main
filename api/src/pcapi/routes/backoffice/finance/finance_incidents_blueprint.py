@@ -1,3 +1,4 @@
+import decimal
 import typing
 from collections import defaultdict
 from datetime import datetime
@@ -516,7 +517,9 @@ def get_individual_bookings_commercial_gesture_creation_form() -> response_utils
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
-                bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
+                bookings_models.Booking.status.in_(
+                    [bookings_models.BookingStatus.CANCELLED, bookings_models.BookingStatus.REIMBURSED]
+                ),
             )
             .all()
         )
@@ -528,10 +531,10 @@ def get_individual_bookings_commercial_gesture_creation_form() -> response_utils
                 messages=valid.messages,
             )
 
-        min_amount, max_amount = validation.get_commercial_gesture_amount_interval(bookings)
-        form.total_amount.data = max_amount
-        form.total_amount.flags.max = max_amount
-        form.total_amount.flags.min = min_amount
+        total_amount = sum(booking.total_amount for booking in bookings)
+        form.total_amount.data = total_amount
+        form.total_amount.flags.max = total_amount * decimal.Decimal("1.2")  # max 120% of original price
+        form.total_amount.flags.min = decimal.Decimal(0)
 
         additional_data = _initialize_additional_data(bookings)
 
@@ -760,7 +763,9 @@ def create_individual_booking_commercial_gesture() -> response_utils.BackofficeR
         )
         .filter(
             bookings_models.Booking.id.in_(form.object_ids_list),
-            bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
+            bookings_models.Booking.status.in_(
+                [bookings_models.BookingStatus.CANCELLED, bookings_models.BookingStatus.REIMBURSED]
+            ),
         )
         .all()
     )
