@@ -91,7 +91,7 @@ describe('LateralMenu', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show partner page link when the selected venue has a partner page', () => {
+  it('should show partner page link when the selected venue has a partner page', async () => {
     renderSideNavLinks({
       storeOverrides: {
         user: {
@@ -102,6 +102,11 @@ describe('LateralMenu', () => {
         },
       },
     })
+
+    const individualSection = screen.getByRole('button', {
+      name: /Individuel/,
+    })
+    await userEvent.click(individualSection) // Open the section
 
     expect(
       screen.getByRole('link', { name: /Page sur l’application/ })

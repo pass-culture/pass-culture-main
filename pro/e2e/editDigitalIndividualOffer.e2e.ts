@@ -45,6 +45,7 @@ test.describe('Edit digital individual offers', () => {
       await expect(
         page.getByRole('link', { name: 'Informations pratiques' })
       ).toBeVisible()
+      await page.getByRole('button', { name: 'Individuel' }).click() // Open section
       await expect(
         page.getByRole('link', { name: 'Réservations' }).nth(1)
       ).toBeVisible()

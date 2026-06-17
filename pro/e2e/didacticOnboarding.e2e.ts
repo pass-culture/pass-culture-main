@@ -49,6 +49,7 @@ test.describe('Didactic Onboarding feature', () => {
     ).toBeVisible()
 
     // I should be able to navigate without being redirected to onboarding
+    await page.getByRole('button', { name: 'Individuel' }).click() // Open the section
     await page.getByRole('link', { name: 'Réservations' }).click()
     await expect(
       page.getByRole('heading', { name: 'Réservations individuelles' })
