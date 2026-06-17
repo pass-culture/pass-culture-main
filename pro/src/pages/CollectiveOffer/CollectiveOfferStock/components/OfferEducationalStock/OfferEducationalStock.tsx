@@ -25,6 +25,8 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import { buildDatetimesForStock } from '../utils/buildDatetimesForStock'
+import { extractFormDates } from '../utils/extractFormDates'
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   DETAILS_PRICE_LABEL,
@@ -32,8 +34,6 @@ import {
 } from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import { buildDatetimesForStock } from './utils/buildDatetimesForStock'
-import { extractFormDates } from './utils/extractFormDates'
 import {
   type CollectiveOfferStockFormValues,
   generateValidationSchema,

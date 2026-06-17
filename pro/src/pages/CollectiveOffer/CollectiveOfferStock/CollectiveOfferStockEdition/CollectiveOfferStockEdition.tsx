@@ -19,6 +19,7 @@ import {
   type CollectiveOfferFromParamsProps,
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 import styles from './CollectiveOfferStockEdition.module.scss'
 
@@ -80,13 +81,23 @@ export const CollectiveOfferStockEdition = ({
       {offer.isPublicApi && (
         <BannerPublicApi className={styles['banner-space']} />
       )}
-      <OfferEducationalStock
-        initialStock={offer.collectiveStock ?? {}}
-        departementCode={departementCode}
-        mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
-        allowedActions={offer.allowedActions}
-        onSubmit={handleSubmitStock}
-      />
+      {isNewCollectivePriceEnabled ? (
+        <CollectiveOfferStockForm
+          initialStock={offer.collectiveStock ?? {}}
+          departementCode={departementCode}
+          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
+          allowedActions={offer.allowedActions}
+          onSubmit={handleSubmitStock}
+        />
+      ) : (
+        <OfferEducationalStock
+          initialStock={offer.collectiveStock ?? {}}
+          departementCode={departementCode}
+          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
+          allowedActions={offer.allowedActions}
+          onSubmit={handleSubmitStock}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }

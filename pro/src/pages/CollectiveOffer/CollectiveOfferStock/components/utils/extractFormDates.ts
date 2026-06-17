@@ -6,7 +6,7 @@ import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 import type {
   CollectiveStockDatetimes,
   CollectiveStockFormDates,
-} from '../types'
+} from './types'
 
 export const extractFormDates = (
   {
