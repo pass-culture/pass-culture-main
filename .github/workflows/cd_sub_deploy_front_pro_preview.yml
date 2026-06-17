@@ -14,10 +14,11 @@ on:
         type: string
         required: false
         default: "2d"
-      custom_pcapi_backend_id:
-        type: string
-        default: ""
+      pcapi_backend_url:
+        description: "Backend URL to inject into .env.testing (empty = no override)"
         required: false
+        default: ""
+        type: string
   workflow_call:
     inputs:
       cache_bucket_name:
@@ -31,13 +32,21 @@ on:
         type: string
         required: false
         default: "2d"
-      custom_pcapi_backend_id:
-        type: string
-        default: ""
+      pcapi_backend_url:
+        description: "Backend URL to inject into .env.testing (empty = no override)"
         required: false
+        default: ""
+        type: string
+
+      source_branch:
+        type: string
+        required: false
+        default: ${{ github.ref_name }}
     secrets:
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: { required: true }
-      PASSCULTURE_GITHUB_ACTION_APP_ID: { required: true }
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
+        required: true
+      PASSCULTURE_GITHUB_ACTION_APP_ID:
+        required: true
     outputs:
       pro_url:
         description: "The pro (firebase) preview URL"
@@ -63,6 +72,8 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          fetch-tags: false
+          ref: ${{ inputs.source_branch }}
           persist-credentials: false
 
       - uses: pnpm/action-setup@8912a9102ac27614460f54aedde9e1e7f9aec20d # v6.0.5
@@ -93,12 +104,16 @@ jobs:
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
           service_account: ${{ vars.PRO_PREVIEW_SERVICE_ACCOUNT }}
 
-      - name: Change backend if a custom backend was required
-        if: inputs.custom_pcapi_backend_id != ''
+      - name: Override backend URL in .env.testing
+        if: inputs.pcapi_backend_url != ''
         env:
-          CUSTOM_BACKEND_ID: ${{ inputs.custom_pcapi_backend_id }}
+          DEFAULT_BACKEND_URL: https://backend.testing.passculture.team
+          BACKEND_URL: ${{ inputs.pcapi_backend_url }}
         run: |
-          sed -i "s/https:\/\/backend.testing.passculture.team/https:\/\/backend-$CUSTOM_BACKEND_ID.testing.passculture.team/g" src/.env.testing
+          echo "Rewriting backend URL"
+          echo "  from: ${DEFAULT_BACKEND_URL}"
+          echo "  to:   ${BACKEND_URL}"
+          sed -i "s|${DEFAULT_BACKEND_URL}|${BACKEND_URL}|g" src/.env.testing
 
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
@@ -107,7 +122,7 @@ jobs:
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
 
-      - name: "Install dependencies (3 attempts)"
+      - name: Install dependencies (3 attempts)
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: 2
@@ -127,13 +142,15 @@ jobs:
       - name: Deploy Pro preview
         working-directory: pro
         env:
-          REF_NAME: ${{ github.ref_name }}
+          REF_NAME: ${{ inputs.source_branch }}
+          PROJECT_ID: pc-pro-testing
+          TARGET: pc-pro-testing
         id: deploy
         run: |
-          URL=$(passdirector firebase deploy-preview --project-id "pc-pro-testing" --target "pc-pro-testing" --channel "${REF_NAME}")
+          URL=$(passdirector firebase deploy-preview --project-id "${PROJECT_Id}" --target "${TARGET}" --channel "${REF_NAME}")
           echo "preview_url=$URL" | tee -a "$GITHUB_OUTPUT"
 
-      - name: "Publish Summary"
+      - name: Publish Summary
         run: |
           {
             echo "### :rocket: Deploy PRO summary"
