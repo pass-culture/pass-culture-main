@@ -3,6 +3,9 @@ name: 0 [CI] Deploy PR preview v2
 on:
   workflow_dispatch:
     inputs:
+      source_branch:
+        description: "Branch of pass-culture-main repository to deploy"
+        required: true
       sandbox:
         description: "Sandbox to install (empty = no sandbox)"
         required: true
@@ -22,10 +25,6 @@ on:
         required: false
         default: false
         type: boolean
-      deployment_source_branch:
-        description: "Branch of pass-culture-deployment repository to use for helm charts."
-        required: false
-        default: "master"
 
 permissions: write-all
 
@@ -39,21 +38,25 @@ jobs:
     outputs:
       preview_id: ${{ steps.compute-labels.outputs.preview_id }}
       backend_id: ${{ steps.compute-labels.outputs.backend_id }}
+      commit_sha: ${{ steps.checkout.outputs.commit }}
+
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        id: checkout
         with:
           fetch-tags: false
-          ref: ${{ github.ref_name }}
+          ref: ${{ inputs.source_branch }}
+          persist-credentials: false
 
       - name: Compute preview environment identifiers
         id: compute-labels
         env:
           FRONT_ONLY: ${{ inputs.front-only }}
-          BRANCH_NAME: ${{ github.ref_name }}
+          SOURCE_BRANCH: ${{ github.source_branch }}
         run: |
           # TODO: use PR number instead of branch SHA1 — more readable, no collision risk.
           # Requires changing trigger to pull_request.
-          PREVIEW_ID=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
           if [ "${FRONT_ONLY}" == "true" ]; then
             # Empty = frontend connects to shared testing backend
@@ -82,7 +85,7 @@ jobs:
     uses: ./.github/workflows/docker_build_image.yml
     with:
       image: pcapi
-      tag: ${{ github.sha }}
+      tag: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
 
   push-pcapi:
     name: Push pcapi docker image to artifact registry
@@ -93,7 +96,7 @@ jobs:
     uses: ./.github/workflows/docker_push_image_passdirector.yml
     with:
       image: pcapi
-      tag: ${{ github.sha }}
+      tag: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
       environment: pcapi-preview
       registry_repository: pcapi-preview
     secrets:
@@ -154,7 +157,7 @@ jobs:
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
-          PCAPI_IMAGE_TAG: ${{ github.sha }}
+          PCAPI_IMAGE_TAG: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
           SANDBOX_ENABLED: ${{ inputs.sandbox != 'empty' }}
           SANDBOX_NAME: ${{ inputs.sandbox != 'empty' && inputs.sandbox || '' }}
           SANDBOX_ARGS: ${{ inputs.sandbox-args }}
