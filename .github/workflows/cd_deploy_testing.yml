@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       checksum-tag: ${{ steps.compute-api-checksum.outputs.checksum-tag }}
-      pcapi-exists: ${{ fromJSON(steps.check-images-exist.outputs.tag-exists).pcapi }}
-      pcapi-console-exists: ${{ fromJSON(steps.check-images-exist.outputs.tag-exists).pcapi-console }}
+      pcapi-exists: ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi }}
+      pcapi-console-exists: ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi-console }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:
-          version: IC-1390-check-docker-image-existence # TODO : change before merge
+          version: v0.5.0
           github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
           github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
       - name: "Authentification to Google"
@@ -51,15 +51,15 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: |
           OUTPUT=$(passdirector pcapi image-exists -t "${GITHUB_SHA}")
-          echo "images=$OUTPUT" >> "$GITHUB_OUTPUT"
+          echo images="$OUTPUT" | tee -a "$GITHUB_OUTPUT"
       - name: "Summary"
         run: |
           echo "checksum-tag : \`${{ steps.compute-api-checksum.outputs.checksum-tag }}\`"
           echo ""
           echo "| Image           | Exists                                                                                             |"
           echo "|-----------------|----------------------------------------------------------------------------------------------------|"
-          echo "|\`pcapi\`        | ${{ fromJSON(steps.check-images-exist.outputs.tag-exists).pcapi && ':white_check_mark: Yes' || ':x: No' }}         |"
-          echo "|\`pcapi-console\`| ${{ fromJSON(steps.check-images-exist.outputs.tag-exists).pcapi-console && ':white_check_mark: Yes' || ':x: No' }} |"
+          echo "|\`pcapi\`        | ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi && ':white_check_mark: Yes' || ':x: No' }}         |"
+          echo "|\`pcapi-console\`| ${{ fromJSON(steps.check-images-exist.outputs.images).pcapi-console && ':white_check_mark: Yes' || ':x: No' }} |"
 
   create-docker-images-on-registry:
     name: Build and tag version
@@ -98,15 +98,3 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  notify-deployment-failure-on-slack:
-    name: Post failure notification on \#alertes-deploiement
-    needs: deploy
-    if: ${{ always() && failure() }}
-    uses: ./.github/workflows/slack_post_message_workflow.yml
-    with:
-      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      message: ":github-failure: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `master` sur `testing` a échoué"
-    secrets:
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
