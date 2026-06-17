@@ -44,6 +44,8 @@ jobs:
       pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       # testing_label controls wether we connect to testing backend or a preview backend
       testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
+      backend_url: ${{ steps.set_resource_label.outputs.backend_url }}
+      backoffice_url: ${{ steps.set_resource_label.outputs.backoffice_url }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -58,11 +60,16 @@ jobs:
         run: |
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          
+          echo "backoffice_url=https://backoffice-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
+        
           if [ "$FRONT_ONLY" == "true" ]; then
-            echo "testing_label=" >> "$GITHUB_OUTPUT"
+            # Empty = frontend connects to shared testing backend
+            echo "backend_url=https://backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
           else
-            echo "testing_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+            echo "backend_url=https://backend-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
           fi
+
       - name: "Define pcapi image tags."
         id: pcapi-tags
         run: |
@@ -108,8 +115,8 @@ jobs:
     needs: [deploy-preview-env-init]
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
-      cache_bucket_name: "passculture-infra-prod-github-runner-cache"
-      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
+      cache_bucket_name: passculture-infra-prod-github-runner-cache
+      pcapi_backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
