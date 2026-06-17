@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
-import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1/new'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'

@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from '@/apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,

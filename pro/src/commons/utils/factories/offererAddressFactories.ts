@@ -1,6 +1,6 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
-import type { GetOffererAddressResponseModel } from '@/apiClient/v1'
+import type { GetOffererAddressResponseModel } from '@/apiClient/v1/new'
 
 let offererAddressId = 1
 

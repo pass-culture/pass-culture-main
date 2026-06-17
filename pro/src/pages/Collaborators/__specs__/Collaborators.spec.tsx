@@ -2,9 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
-import { ApiError, OffererMemberStatus } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
+import { OffererMemberStatus } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1'
+import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,

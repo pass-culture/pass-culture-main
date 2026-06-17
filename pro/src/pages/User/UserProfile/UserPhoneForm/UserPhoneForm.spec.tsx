@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
+import type { ApiRequestOptions } from '@/apiClient/compat'
 import { ApiError, type ApiResult } from '@/apiClient/compat'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

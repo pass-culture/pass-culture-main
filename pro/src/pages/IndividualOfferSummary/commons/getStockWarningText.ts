@@ -1,7 +1,7 @@
 import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 
 export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {

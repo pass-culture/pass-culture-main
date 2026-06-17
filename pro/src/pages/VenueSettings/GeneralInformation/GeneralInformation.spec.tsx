@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
-import { DisplayableActivity } from '@/apiClient/v1'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {

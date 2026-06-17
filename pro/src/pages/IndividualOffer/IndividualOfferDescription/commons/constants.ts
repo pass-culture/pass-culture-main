@@ -1,4 +1,4 @@
-import { ArtistType } from '@/apiClient/v1'
+import { ArtistType } from '@/apiClient/v1/new'
 
 import type { DetailsFormValues } from './types'
 

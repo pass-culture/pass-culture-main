@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { apiNew } from '@/apiClient/api'
-import type { VenueProviderResponse } from '@/apiClient/v1'
+import type { VenueProviderResponse } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

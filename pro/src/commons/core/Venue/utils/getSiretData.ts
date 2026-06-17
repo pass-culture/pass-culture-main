@@ -1,8 +1,9 @@
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { StructureDataBodyModel } from '@/apiClient/v1/models/StructureDataBodyModel'
 import { memoize } from '@/commons/utils/memoize'
 import { unhumanizeSiret } from '@/commons/utils/siren'
+
+import type { StructureDataBodyModel } from 'apiClient/v1/new'
 
 const validateSiret = (siret: string): string => {
   if (siret.length < 14) {

@@ -3,7 +3,7 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
+import type { SharedLoginUserResponseModel } from '@/apiClient/v1/new'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -19,10 +19,8 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import { SignIn } from './SignIn'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    signin: vi.fn(),
-  },
   apiNew: {
+    signin: vi.fn(),
     getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),
     getProfile: vi.fn(),

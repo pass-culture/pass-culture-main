@@ -1,5 +1,5 @@
 import { apiNew } from '@/apiClient/api'
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 

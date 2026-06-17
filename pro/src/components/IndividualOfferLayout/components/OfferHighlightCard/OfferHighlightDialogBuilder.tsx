@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import type { ShortHighlightResponseModel } from '@/apiClient/v1/new'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { OfferHighlightForm } from '../OfferHighlightForm/OfferHighlightForm'

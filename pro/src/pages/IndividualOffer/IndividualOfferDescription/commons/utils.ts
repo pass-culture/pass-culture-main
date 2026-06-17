@@ -1,3 +1,5 @@
+import type { OfferExtraData } from 'commons/core/Offers/types'
+
 import {
   type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
@@ -104,6 +106,7 @@ export const completeSubcategoryConditionalFields = (
 export function getInitialValuesFromVenue(
   venue: GetVenueResponseModel
 ): DetailsFormValues {
+  // @ts-expect-error - Waiting for pydanticV2 migration
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     accessibility: getAccessibilityInfoFromVenue(venue).accessibility,
@@ -120,8 +123,8 @@ export function getInitialValuesFromOffer({
       subcategory.id === offer.subcategoryId
   )
   assertOrFrontendError(subcategory, 'La categorie de l’offre est introuvable.')
-
-  const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
+  const extraData = offer.extraData as OfferExtraData
+  const ean = extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
@@ -131,32 +134,29 @@ export function getInitialValuesFromOffer({
     venueId: String(offer.venue.id),
     categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
-    showType: offer.extraData?.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
+    showType: extraData?.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
-      offer.extraData?.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
+      extraData?.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
     subcategoryConditionalFields:
       completeSubcategoryConditionalFields(subcategory),
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
     ean,
-    visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
-    gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
-    speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
-    author: offer.extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
+    visa: extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
+    gtl_id: extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
+    speaker: extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
+    author: extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
     artistOfferLinks: getInitialArtistOfferLinks(
-      // @ts-expect-error - Waiting for pydanticV2 migration
       offer.artistOfferLinks,
+      // @ts-expect-error - Waiting for pydanticV2 migration
       DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
     ),
-    performer:
-      offer.extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
+    performer: extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
     stageDirector:
-      offer.extraData?.stageDirector ??
-      DEFAULT_DETAILS_FORM_VALUES.stageDirector,
+      extraData?.stageDirector ?? DEFAULT_DETAILS_FORM_VALUES.stageDirector,
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
-    // @ts-expect-error - Waiting for pydanticV2 migration
     accessibility: getAccessibilityFormValuesFromOffer(offer),
   }
 }

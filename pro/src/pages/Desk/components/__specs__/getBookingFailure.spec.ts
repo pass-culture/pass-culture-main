@@ -1,7 +1,6 @@
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
+import { ApiError } from '@/apiClient/compat'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import { ApiError } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 
 import { getBookingFailure } from '../getBookingFailure'
 

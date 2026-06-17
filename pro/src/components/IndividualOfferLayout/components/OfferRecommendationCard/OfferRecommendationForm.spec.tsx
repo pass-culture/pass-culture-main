@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
 import { apiNew } from '@/apiClient/api'
-import type { ProAdviceModel } from '@/apiClient/v1'
+import type { ProAdviceModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { type JSX, useState } from 'react'
 
-import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import type { ShortHighlightResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'

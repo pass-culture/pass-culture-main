@@ -4,8 +4,7 @@ import { Route, Routes } from 'react-router'
 import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
-import { Target } from '@/apiClient/v1'
-import { ActivityOpenToPublic } from '@/apiClient/v1/new'
+import { ActivityOpenToPublic, Target } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {

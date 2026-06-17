@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { apiNew } from '@/apiClient/api'
-import type { BankAccountResponseModel } from '@/apiClient/v1'
+import type { BankAccountResponseModel } from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'

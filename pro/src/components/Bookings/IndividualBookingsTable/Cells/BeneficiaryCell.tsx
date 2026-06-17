@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import type { BookingRecapResponseBeneficiaryModel } from '@/apiClient/v1'
+import type { BookingRecapResponseBeneficiaryModel } from '@/apiClient/v1/new'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 
 import styles from './BeneficiaryCell.module.scss'

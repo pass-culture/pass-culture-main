@@ -1,4 +1,4 @@
-import type { EventStockUpdateBodyModel } from '@/apiClient/v1'
+import type { EventStockUpdateBodyModel } from '@/apiClient/v1/new'
 import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import type { EditStockFormValues } from '../StocksCalendarTableEditStock'

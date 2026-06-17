@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { WithdrawalTypeEnum } from '@/apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

@@ -1,4 +1,4 @@
-import type { EditVenueBodyModel } from '@/apiClient/v1'
+import type { EditVenueBodyModel } from '@/apiClient/v1/new'
 
 import type {
   VenueSettingsFormContext,

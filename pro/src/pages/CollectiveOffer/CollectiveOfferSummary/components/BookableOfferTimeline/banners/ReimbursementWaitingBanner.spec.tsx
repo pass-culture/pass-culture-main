@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { describe, expect, it } from 'vitest'
 
-import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1/new'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 

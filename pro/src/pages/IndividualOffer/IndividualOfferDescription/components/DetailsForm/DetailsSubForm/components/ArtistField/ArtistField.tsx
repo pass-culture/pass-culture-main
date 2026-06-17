@@ -104,6 +104,8 @@ export function ArtistField({
                   setValue(
                     `artistOfferLinks.${index}`,
                     {
+                      // TODO (amine) to remove once model migrated to Pydantic V2
+                      // @ts-expect-error
                       artistId: null,
                       artistName: artistName,
                       artistType,
@@ -114,6 +116,8 @@ export function ArtistField({
                 onReset={() => {
                   setValue(
                     `artistOfferLinks.${index}`,
+                    // TODO (amine) to remove once model migrated to Pydantic V2
+                    // @ts-expect-error
                     { artistId: null, artistName: '', artistType },
                     { shouldValidate: true }
                   )
@@ -173,6 +177,8 @@ export function ArtistField({
           label={`Ajouter un ${ARTIST_TYPE_LABELS[artistType].toLowerCase()}`}
           onClick={() =>
             append(
+              // TODO (amine) to remove once model migrated to Pydantic V2
+              // @ts-expect-error
               { artistId: null, artistName: '', artistType },
               { shouldFocus: true }
             )

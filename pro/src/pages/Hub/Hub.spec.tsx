@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { apiNew } from '@/apiClient/api'
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
+import type { VenueListItemLiteResponseModel } from '@/apiClient/v1/new'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,

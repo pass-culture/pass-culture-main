@@ -19,14 +19,12 @@ import { initializeUser } from '../initializeUser'
 import * as logoutModule from '../logout'
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    signout: vi.fn(),
-  },
   apiNew: {
     getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
+    signout: vi.fn(),
   },
 }))
 

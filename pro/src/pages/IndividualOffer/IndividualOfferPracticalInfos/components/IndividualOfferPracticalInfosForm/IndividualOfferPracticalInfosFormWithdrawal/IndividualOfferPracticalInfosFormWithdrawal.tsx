@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { WithdrawalTypeEnum } from '@/apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'

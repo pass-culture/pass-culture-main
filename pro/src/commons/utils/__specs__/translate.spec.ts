@@ -1,5 +1,8 @@
-import { CollectiveOfferDisplayedStatus, EacFormat } from '@/apiClient/v1'
-import { OfferStatus } from '@/apiClient/v1/new'
+import {
+  CollectiveOfferDisplayedStatus,
+  EacFormat,
+  OfferStatus,
+} from '@/apiClient/v1/new'
 import { Audience } from '@/commons/core/shared/types'
 import {
   translateApiParamsToQueryParams,

@@ -1,4 +1,4 @@
-import type { WithdrawalTypeEnum } from '@/apiClient/v1'
+import type { WithdrawalTypeEnum } from '@/apiClient/v1/new'
 
 export type IndividualOfferPracticalInfosFormValues = {
   withdrawalType: WithdrawalTypeEnum | null

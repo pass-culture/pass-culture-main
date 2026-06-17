@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { pluralizeFr } from '@/commons/utils/pluralize'

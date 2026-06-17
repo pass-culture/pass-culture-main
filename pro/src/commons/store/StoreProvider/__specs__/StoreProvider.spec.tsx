@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { apiNew } from '@/apiClient/api'
-import { UserRole } from '@/apiClient/v1'
+import { UserRole } from '@/apiClient/v1/new'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   makeGetVenueResponseModel,

@@ -1,6 +1,8 @@
-import { ApiError } from '@/apiClient/v1/core/ApiError'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import {
+  ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
+} from '@/apiClient/compat'
 
 interface ApiErrorFactoryOptions {
   status?: number

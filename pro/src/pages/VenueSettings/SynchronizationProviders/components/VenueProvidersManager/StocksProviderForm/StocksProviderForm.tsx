@@ -1,7 +1,7 @@
 import type React from 'react'
 import { useRef, useState } from 'react'
 
-import type { PostVenueProviderBody } from '@/apiClient/v1'
+import type { PostVenueProviderBody } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'

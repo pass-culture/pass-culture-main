@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
+import type { ProUserCreationBodyV2Model } from '@/apiClient/v1/new'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { AlreadyHasAccount } from '@/components/AlreadyHasAccount/AlreadyHasAccount'
