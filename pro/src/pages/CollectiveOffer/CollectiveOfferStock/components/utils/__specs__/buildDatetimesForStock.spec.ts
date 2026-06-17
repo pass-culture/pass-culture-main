@@ -1,5 +1,5 @@
-import type { CollectiveStockFormDates } from '../../types'
 import { buildDatetimesForStock } from '../buildDatetimesForStock'
+import type { CollectiveStockFormDates } from '../types'
 
 const BASE_DATES: CollectiveStockFormDates = {
   startDate: '2024-06-15',

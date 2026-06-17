@@ -10,7 +10,7 @@ import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 import type {
   CollectiveStockDatetimes,
   CollectiveStockFormDates,
-} from '../types'
+} from './types'
 
 const getBookingLimitDatetime = (
   bookingLimitDatetime: string,
