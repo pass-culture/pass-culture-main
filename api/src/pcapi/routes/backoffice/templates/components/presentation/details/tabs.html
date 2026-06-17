@@ -3,7 +3,7 @@
     {# set by context #}
     <li class="nav-item"
         role="presentation">
-      <button class="nav-link {{ 'active' if is_active else '' }} fw-bolder px-4 pt-1 pb-12"
+      <button class="nav-link {{ 'active' if is_active else '' }} px-4 pt-1 pb-12"
               id="{{ name ~ '-tab' }}"
               data-bs-toggle="tab"
               data-bs-target="{{ '.' ~ name ~ '-tab-pane' }}"
@@ -15,7 +15,7 @@
   {% else %}
     <li class="nav-item"
         role="presentation">
-      <button class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link fw-bolder' }}"
+      <button class="'nav-link {{ 'active' if is_active else '' }}"
               id="{{ name ~ '-tab' }}"
               data-bs-toggle="tab"
               data-bs-target="{{ '.' ~ name ~ '-tab-pane' }}"
