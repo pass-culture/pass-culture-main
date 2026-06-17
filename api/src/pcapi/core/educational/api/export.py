@@ -32,7 +32,11 @@ class CollectiveOfferExportHeader(enum.Enum):
     start_datetime = "Date de début de l'évènement"
     end_datetime = "Date de fin de l'évènement"
     price = "Prix"
-    number_of_tickets = "Nombre de participants"
+    service_price = "Tarif de la prestation"
+    additional_fees_total = "Total des frais annexes"
+    number_of_participants = "Nombre de participants"
+    number_of_tickets = "Nombre d'élèves"
+    number_of_teachers = "Nombre d'accompagnateurs"
     prebooking_datetime = "Date de préréservation de l'offre"
     booking_datetime = "Date de réservation de l'offre"
     reimbursement_datetime = "Date de remboursement"
@@ -87,7 +91,11 @@ class CollectiveOfferExportData:
     start_datetime: str | None = None
     end_datetime: str | None = None
     price: decimal.Decimal | None = None
+    service_price: decimal.Decimal | None = None
+    additional_fees_total: decimal.Decimal | typing.Literal[0] | None = None
+    number_of_participants: int | None = None
     number_of_tickets: int | None = None
+    number_of_teachers: int | None = None
     prebooking_datetime: str | None = None
     booking_datetime: str | None = None
     reimbursement_datetime: str | None = None
@@ -124,7 +132,11 @@ def _get_collective_offer_export_data(
         result.start_datetime = _format_export_datetime(collective_stock.startDatetime, timezone)
         result.end_datetime = _format_export_datetime(collective_stock.endDatetime, timezone)
         result.price = collective_stock.price
+        result.service_price = collective_stock.servicePrice
+        result.additional_fees_total = sum(fee.amount for fee in collective_stock.collectiveAdditionalFees)
+        result.number_of_participants = collective_stock.numberOfTickets + collective_stock.numberOfTeachers
         result.number_of_tickets = collective_stock.numberOfTickets
+        result.number_of_teachers = collective_stock.numberOfTeachers
 
     if collective_booking is not None:
         result.teacher_email = collective_booking.educationalRedactor.email
@@ -138,6 +150,7 @@ def _get_collective_offer_export_data(
 
         if collective_booking.reimbursementDate is not None:
             result.reimbursement_datetime = _format_export_datetime(collective_booking.reimbursementDate, timezone)
+
     elif collective_offer.teacher:
         result.teacher_email = collective_offer.teacher.email
         result.teacher_first_name = collective_offer.teacher.firstName
@@ -147,14 +160,14 @@ def _get_collective_offer_export_data(
 
 
 def _get_query_with_loading_for_export(
-    collective_offers_query: "sa_orm.Query[models.CollectiveOffer]",
-) -> "typing.Iterator[models.CollectiveOffer]":
+    collective_offers_query: sa_orm.Query[models.CollectiveOffer],
+) -> typing.Iterator[models.CollectiveOffer]:
     CHUNK_SIZE = 1000
     all_ids = [
         c.id
-        for c in collective_offers_query.with_entities(models.CollectiveOffer.id)
-        .order_by(models.CollectiveOffer.dateCreated.desc())
-        .all()
+        for c in collective_offers_query.with_entities(models.CollectiveOffer.id).order_by(
+            models.CollectiveOffer.dateCreated.desc()
+        )
     ]
 
     start = 0
@@ -168,16 +181,18 @@ def _get_query_with_loading_for_export(
                 sa_orm.joinedload(models.CollectiveOffer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.CollectiveOffer.collectiveStock)
-                .selectinload(models.CollectiveStock.collectiveBookings)
-                .joinedload(models.CollectiveBooking.educationalRedactor),
+                sa_orm.joinedload(models.CollectiveOffer.collectiveStock).options(
+                    sa_orm.selectinload(models.CollectiveStock.collectiveBookings).joinedload(
+                        models.CollectiveBooking.educationalRedactor
+                    ),
+                    sa_orm.selectinload(models.CollectiveStock.collectiveAdditionalFees),
+                ),
                 sa_orm.joinedload(models.CollectiveOffer.institution),
                 sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
                 ),
             )
             .order_by(models.CollectiveOffer.dateCreated.desc())
-            .all()
         )
 
 

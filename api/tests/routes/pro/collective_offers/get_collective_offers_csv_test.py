@@ -33,7 +33,11 @@ EXPECTED_HEADER = [
     "Date de début de l'évènement",
     "Date de fin de l'évènement",
     "Prix",
+    "Tarif de la prestation",
+    "Total des frais annexes",
     "Nombre de participants",
+    "Nombre d'élèves",
+    "Nombre d'accompagnateurs",
     "Date de préréservation de l'offre",
     "Date de réservation de l'offre",
     "Date de remboursement",
@@ -56,6 +60,7 @@ class Returns200Test:
     num_queries += 1  # select collective_offer ids
     num_queries += 1  # select collective_offer
     num_queries_with_bookings = num_queries + 1  # selectinload collective_booking
+    num_queries_with_bookings += 1  # selectinload collective_additional_details
 
     def test_one_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -63,6 +68,8 @@ class Returns200Test:
         offer = factories.ReimbursedCollectiveOfferFactory(
             venue=venue, locationType=models.CollectiveLocationType.ADDRESS, offererAddress=venue.offererAddress
         )
+        fee_1 = factories.CollectiveAdditionalFeeFactory(collectiveStock=offer.collectiveStock)
+        fee_2 = factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=offer.collectiveStock)
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries_with_bookings):
@@ -91,7 +98,11 @@ class Returns200Test:
             "Date de début de l'évènement": _format_date(stock.startDatetime, tz),
             "Date de fin de l'évènement": _format_date(stock.endDatetime, tz),
             "Prix": stock.price,
-            "Nombre de participants": stock.numberOfTickets,
+            "Tarif de la prestation": stock.servicePrice,
+            "Total des frais annexes": fee_1.amount + fee_2.amount,
+            "Nombre de participants": stock.numberOfTickets + stock.numberOfTeachers,
+            "Nombre d'élèves": stock.numberOfTickets,
+            "Nombre d'accompagnateurs": stock.numberOfTeachers,
             "Date de préréservation de l'offre": _format_date(booking.dateCreated, tz),
             "Date de réservation de l'offre": _format_date(booking.confirmationDate, tz),
             "Date de remboursement": _format_date(booking.reimbursementDate, tz),
@@ -131,7 +142,11 @@ class Returns200Test:
             "Date de début de l'évènement": "",
             "Date de fin de l'évènement": "",
             "Prix": "",
+            "Tarif de la prestation": "",
+            "Total des frais annexes": "",
             "Nombre de participants": "",
+            "Nombre d'élèves": "",
+            "Nombre d'accompagnateurs": "",
             "Date de préréservation de l'offre": "",
             "Date de réservation de l'offre": "",
             "Date de remboursement": "",
@@ -172,7 +187,11 @@ class Returns200Test:
                 "Date de début de l'évènement": _format_date(stock.startDatetime, tz),
                 "Date de fin de l'évènement": _format_date(stock.endDatetime, tz),
                 "Prix": stock.price,
-                "Nombre de participants": stock.numberOfTickets,
+                "Tarif de la prestation": stock.servicePrice,
+                "Total des frais annexes": 0,
+                "Nombre de participants": stock.numberOfTickets + stock.numberOfTeachers,
+                "Nombre d'élèves": stock.numberOfTickets,
+                "Nombre d'accompagnateurs": stock.numberOfTeachers,
                 "Date de préréservation de l'offre": _format_date(booking.dateCreated, tz),
                 "Date de réservation de l'offre": _format_date(booking.confirmationDate, tz),
                 "Date de remboursement": "",

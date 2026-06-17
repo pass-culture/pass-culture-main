@@ -33,7 +33,11 @@ EXPECTED_HEADER = [
     "Date de début de l'évènement",
     "Date de fin de l'évènement",
     "Prix",
+    "Tarif de la prestation",
+    "Total des frais annexes",
     "Nombre de participants",
+    "Nombre d'élèves",
+    "Nombre d'accompagnateurs",
     "Date de préréservation de l'offre",
     "Date de réservation de l'offre",
     "Date de remboursement",
@@ -59,6 +63,7 @@ class Returns200Test:
     num_queries += 1  # select collective_offer ids
     num_queries += 1  # select collective_offer
     num_queries_with_bookings = num_queries + 1  # selectinload collective_booking
+    num_queries_with_bookings += 1  # selectinload collective_additional_fees
 
     def test_one_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -66,6 +71,8 @@ class Returns200Test:
         offer = factories.ReimbursedCollectiveOfferFactory(
             venue=venue, locationType=models.CollectiveLocationType.ADDRESS, offererAddress=venue.offererAddress
         )
+        fee_1 = factories.CollectiveAdditionalFeeFactory(collectiveStock=offer.collectiveStock)
+        fee_2 = factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=offer.collectiveStock)
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries_with_bookings):
@@ -95,7 +102,11 @@ class Returns200Test:
             _format_date(stock.startDatetime, tz),
             _format_date(stock.endDatetime, tz),
             stock.price,
+            stock.servicePrice,
+            fee_1.amount + fee_2.amount,
+            stock.numberOfTickets + stock.numberOfTeachers,
             stock.numberOfTickets,
+            stock.numberOfTeachers,
             _format_date(booking.dateCreated, tz),
             _format_date(booking.confirmationDate, tz),
             _format_date(booking.reimbursementDate, tz),
@@ -126,6 +137,10 @@ class Returns200Test:
             "À déterminer avec l'enseignant",
             "Chez toi",
             venue.publicName,
+            None,
+            None,
+            None,
+            None,
             None,
             None,
             None,
@@ -180,7 +195,11 @@ class Returns200Test:
                 _format_date(stock.startDatetime, tz),
                 _format_date(stock.endDatetime, tz),
                 stock.price,
+                stock.servicePrice,
+                0,
+                stock.numberOfTickets + stock.numberOfTeachers,
                 stock.numberOfTickets,
+                stock.numberOfTeachers,
                 _format_date(booking.dateCreated, tz),
                 _format_date(booking.confirmationDate, tz),
                 None,

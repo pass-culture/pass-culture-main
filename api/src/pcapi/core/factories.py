@@ -28,6 +28,10 @@ class BaseFactory[T](factory.alchemy.SQLAlchemyModelFactory):
         return super().create(**kwargs)
 
     @classmethod
+    def create_batch(cls, size: int, **kwargs: typing.Any) -> list[T]:
+        return super().create_batch(size, **kwargs)
+
+    @classmethod
     def build(cls, **kwargs: typing.Any) -> T:
         return super().build(**kwargs)
 
