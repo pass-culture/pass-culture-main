@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

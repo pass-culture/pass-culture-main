@@ -1,4 +1,4 @@
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
 
 import { EMPTY_FILTER_VALUE } from '../Filters/constants'
 import type { BookingsFilters } from '../types'

@@ -1,4 +1,4 @@
-import type { BookingStatusFilter } from '@/apiClient/v1'
+import type { BookingStatusFilter } from '@/apiClient/v1/new'
 import { BOOKING_STATUS_FILTER_OPTIONS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'

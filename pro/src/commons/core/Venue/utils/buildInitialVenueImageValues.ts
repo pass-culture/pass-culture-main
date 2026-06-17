@@ -1,4 +1,4 @@
-import type { BannerMetaModel } from '@/apiClient/v1'
+import type { BannerMetaModel } from '@/apiClient/v1/new'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 
 export const buildInitialVenueImageValues = (

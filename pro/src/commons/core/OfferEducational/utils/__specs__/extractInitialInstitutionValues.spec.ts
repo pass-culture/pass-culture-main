@@ -1,4 +1,4 @@
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1/new'
 import { defaultGetCollectiveOfferRequest } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { extractInitialInstitutionValues } from '../extractInitialInstitutionValues'

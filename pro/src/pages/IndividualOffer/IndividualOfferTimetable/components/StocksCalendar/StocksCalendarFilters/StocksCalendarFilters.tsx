@@ -1,5 +1,7 @@
-import { StocksOrderedBy } from '@/apiClient/v1'
-import type { PriceCategoryResponseModel } from '@/apiClient/v1/models/PriceCategoryResponseModel'
+import {
+  type PriceCategoryResponseModel,
+  StocksOrderedBy,
+} from '@/apiClient/v1/new'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { Button } from '@/design-system/Button/Button'

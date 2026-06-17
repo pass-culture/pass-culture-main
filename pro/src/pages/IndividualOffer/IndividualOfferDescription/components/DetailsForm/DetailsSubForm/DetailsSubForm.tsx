@@ -1,6 +1,6 @@
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import { ArtistType } from '@/apiClient/v1'
+import { ArtistType } from '@/apiClient/v1/new'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

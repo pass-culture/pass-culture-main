@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import * as reactRouter from 'react-router'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { makeUseLocationReturn } from '@/commons/utils/tests/mocks/react-router'

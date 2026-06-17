@@ -5,8 +5,7 @@ import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiNew } from '@/apiClient/api'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,

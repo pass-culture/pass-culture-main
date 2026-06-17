@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { apiNew } from '@/apiClient/api'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiResult } from '@/apiClient/compat'
 import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1/new'
 import {
   SignupJourneyContext,

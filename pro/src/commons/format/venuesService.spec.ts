@@ -37,6 +37,7 @@ describe('formatAndOrderVenues', () => {
 describe('computeAddressDisplayName', () => {
   it('should format the address without the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
+      // @ts-expect-error - Waiting for pydanticV2 migration
       getLocationResponseModelV2({ label: undefined })
     )
 
@@ -45,6 +46,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address with the the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
+      // @ts-expect-error - Waiting for pydanticV2 migration
       getLocationResponseModelV2({ label: 'Mon Label' })
     )
 
@@ -55,6 +57,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address without the the label if `showAddress` is false', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
+      // @ts-expect-error - Waiting for pydanticV2 migration
       getLocationResponseModelV2({ label: 'Mon Label' }),
       false
     )

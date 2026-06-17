@@ -118,8 +118,6 @@ export function serializeDetailsPostData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    // TODO (rchaffal) to remove once ArtistOfferLinks is migrated to Pydantic V2
-    // @ts-expect-error
     artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
@@ -165,8 +163,6 @@ export function serializeDetailsPatchData(
       visualDisabilityCompliant: formValues.accessibility.visual,
     }),
     ...(!isReadOnly('artistOfferLinks') && {
-      // TODO (rchaffal) to remove once ArtistOfferLinks is migrated to Pydantic V2
-      // @ts-expect-error
       artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
     }),
   })

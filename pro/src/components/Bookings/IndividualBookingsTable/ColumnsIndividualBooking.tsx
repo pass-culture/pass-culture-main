@@ -1,4 +1,4 @@
-import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,

@@ -2,8 +2,10 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { DMSApplicationstatus } from '@/apiClient/v1/models/DMSApplicationstatus'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import {
+  DMSApplicationstatus,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1/new'
 import { defaultDMSApplicationForEACV2 } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'

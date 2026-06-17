@@ -7,7 +7,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
-import type { PriceCategoryResponseModel } from '@/apiClient/v1'
+import type { PriceCategoryResponseModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { SelectOption } from '@/commons/custom_types/form'

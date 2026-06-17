@@ -1,7 +1,7 @@
 import type {
   GetVenueResponseModel,
   VenueListItemLiteResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 
 export function withVenueHelpers(
   venue: GetVenueResponseModel

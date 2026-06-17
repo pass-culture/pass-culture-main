@@ -6,7 +6,7 @@ import { useSWRConfig } from 'swr'
 import * as yup from 'yup'
 
 import { apiNew } from '@/apiClient/api'
-import type { ProAdviceModel } from '@/apiClient/v1'
+import type { ProAdviceModel } from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'

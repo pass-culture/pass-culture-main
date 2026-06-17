@@ -4,7 +4,7 @@ import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -34,12 +34,10 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  api: {
-    listEducationalOfferers: vi.fn(),
-  },
   apiNew: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
+    listEducationalOfferers: vi.fn(),
   },
 }))
 

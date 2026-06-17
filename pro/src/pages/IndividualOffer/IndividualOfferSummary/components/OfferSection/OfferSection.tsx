@@ -225,7 +225,9 @@ export const OfferSection = ({
                 {
                   title: 'Adresse',
                   text: offerData.location
-                    ? computeAddressDisplayName(offerData.location, false)
+                    ? // TODO (amine) to remove once model migrated to Pydantic V2
+                      // @ts-expect-error
+                      computeAddressDisplayName(offerData.location, false)
                     : EMPTY_TEXT,
                 },
               ]}

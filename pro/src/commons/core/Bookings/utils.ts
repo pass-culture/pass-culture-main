@@ -1,4 +1,4 @@
-import type { GetBookingsProQueryModel } from '@/apiClient/v1'
+import type { GetBookingsProQueryModel } from '@/apiClient/v1/new'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 

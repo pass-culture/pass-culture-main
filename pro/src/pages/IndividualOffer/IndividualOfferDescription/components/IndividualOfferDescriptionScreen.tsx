@@ -85,6 +85,7 @@ export const IndividualOfferDescriptionScreen = () => {
   const form = useForm<DetailsFormValues>({
     defaultValues: getInitialValues(),
     resolver: yupResolver<DetailsFormValues, unknown, unknown>(
+      // @ts-expect-error - Waiting for pydanticV2 migration
       getValidationSchema()
     ),
     mode: 'onBlur',

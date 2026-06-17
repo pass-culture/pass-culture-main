@@ -7,15 +7,18 @@ import { expect } from 'vitest'
 import { apiNew } from '@/apiClient/api'
 import {
   ApiError,
+  type ApiRequestOptions,
+  type ApiResult,
   CancelablePromise,
+} from '@/apiClient/compat'
+import {
+  DisplayableActivity,
   type GetIndividualOfferResponseModel,
+  OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
   SubcategoryIdEnum,
-} from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import { DisplayableActivity, OfferStatus } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -256,7 +259,6 @@ describe('IndividualOfferSummaryScreen', () => {
       getIndividualOfferFactory()
     )
     vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue(musicTypes)
-    // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
     vi.spyOn(apiNew, 'getStocksStats').mockResolvedValue(stocksStats)
     vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
@@ -387,7 +389,6 @@ describe('IndividualOfferSummaryScreen', () => {
           }, 200)
         )
       vi.spyOn(apiNew, 'patchPublishOffer').mockImplementationOnce(
-        // @ts-expect-error -- to remove once the api client is migrated to Pydantic V2
         () => mockResponse
       )
       await userEvent.click(buttonPublish)

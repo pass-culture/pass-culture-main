@@ -1,4 +1,4 @@
-import type { LocationResponseModel } from '@/apiClient/v1'
+import type { LocationResponseModel } from '@/apiClient/v1/new'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 
 import style from './VenueDetails.module.scss'

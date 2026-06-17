@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { CancelablePromise } from '@/apiClient/v1'
+import { CancelablePromise } from '@/apiClient/compat'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'

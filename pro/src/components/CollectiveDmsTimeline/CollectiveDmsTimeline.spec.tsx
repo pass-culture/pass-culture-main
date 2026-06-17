@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
+import {
+  type DMSApplicationForEAC,
+  DMSApplicationstatus,
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'

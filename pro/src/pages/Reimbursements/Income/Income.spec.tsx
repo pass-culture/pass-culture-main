@@ -6,7 +6,7 @@ import type {
   AggregatedRevenueModel,
   StatisticsModel,
   VenueListItemLiteResponseModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'

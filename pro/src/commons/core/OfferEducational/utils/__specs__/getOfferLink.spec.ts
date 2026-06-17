@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 
 import { getCollectiveOfferLink } from '../getCollectiveOfferLink'
 

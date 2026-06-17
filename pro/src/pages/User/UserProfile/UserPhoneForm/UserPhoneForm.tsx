@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { apiNew } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { UserPhoneBodyModel } from '@/apiClient/v1'
+import type { UserPhoneBodyModel } from '@/apiClient/v1/new'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'

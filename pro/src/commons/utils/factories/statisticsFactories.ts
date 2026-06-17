@@ -1,4 +1,4 @@
-import type { StatisticsModel } from '@/apiClient/v1'
+import type { StatisticsModel } from '@/apiClient/v1/new'
 
 export const statisticsFactory = ({
   emptyYear = '',

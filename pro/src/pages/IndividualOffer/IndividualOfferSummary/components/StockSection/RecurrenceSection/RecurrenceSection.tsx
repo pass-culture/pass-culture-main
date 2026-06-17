@@ -1,4 +1,4 @@
-import type { StockStatsResponseModel } from '@/apiClient/v1'
+import type { StockStatsResponseModel } from '@/apiClient/v1/new'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'

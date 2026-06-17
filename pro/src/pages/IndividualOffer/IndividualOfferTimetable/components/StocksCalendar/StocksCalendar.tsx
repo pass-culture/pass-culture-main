@@ -2,8 +2,11 @@ import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
-import { type EventStockUpdateBodyModel, StocksOrderedBy } from '@/apiClient/v1'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import {
+  type EventStockUpdateBodyModel,
+  StocksOrderedBy,
+} from '@/apiClient/v1/new'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFER_QUERY_KEY,

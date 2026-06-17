@@ -1,4 +1,4 @@
-import { ArtistType } from '@/apiClient/v1'
+import { ArtistType } from '@/apiClient/v1/new'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 import type { DetailsFormValues } from '../types' // Assuming types are in a sibling file

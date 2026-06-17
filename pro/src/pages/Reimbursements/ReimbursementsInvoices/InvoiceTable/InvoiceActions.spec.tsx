@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
-import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseV2Model } from '@/apiClient/v1/new'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'

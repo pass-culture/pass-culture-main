@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { BookingsExportStatusFilter } from '@/apiClient/v1'
+import { BookingsExportStatusFilter } from '@/apiClient/v1/new'
 
 export const validationSchema = yup.object().shape({
   selectedDate: yup.string().required('Vous devez sélectionner  une date'),

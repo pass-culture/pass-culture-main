@@ -3,7 +3,7 @@ import type {
   CollectiveRevenue,
   IndividualRevenue,
   TotalRevenue,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,

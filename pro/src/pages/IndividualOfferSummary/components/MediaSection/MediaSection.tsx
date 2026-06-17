@@ -1,4 +1,4 @@
-import type { VideoData } from '@/apiClient/v1'
+import type { VideoData } from '@/apiClient/v1/new'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

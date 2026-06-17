@@ -1,4 +1,4 @@
-import type { GetVenuePricingPointResponseModel } from '@/apiClient/v1'
+import type { GetVenuePricingPointResponseModel } from '@/apiClient/v1/new'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 export interface PricingPointProps {

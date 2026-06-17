@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { WithdrawalTypeEnum } from '@/apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../../commons/types'

@@ -7,9 +7,8 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { apiNew } from '@/apiClient/api'
+import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   DisplayableActivity,
   type GetVenueResponseModel,

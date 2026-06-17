@@ -3,10 +3,10 @@ import { useSWRConfig } from 'swr'
 
 import { apiNew } from '@/apiClient/api'
 import type {
+  GetVenueResponseModel,
   PutVenueProviderBody,
   VenueProviderResponse,
-} from '@/apiClient/v1'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+} from '@/apiClient/v1/new'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { apiNew } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { CollectiveOffersCardVariant } from '../types'

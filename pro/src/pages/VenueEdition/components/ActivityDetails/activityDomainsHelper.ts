@@ -1,12 +1,10 @@
 import type { FormState } from 'react-hook-form'
 
 import type {
-  EducationalDomainsResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
-import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
+  EducationalDomainsResponseModel,
+  GetVenueResponseModel,
 } from '@/apiClient/v1/new'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 

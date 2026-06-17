@@ -6,7 +6,7 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {

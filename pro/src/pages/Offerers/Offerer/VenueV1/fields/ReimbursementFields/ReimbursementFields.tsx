@@ -1,6 +1,6 @@
 import { useCallback, useId } from 'react'
 
-import type { GetVenuePricingPointResponseModel } from '@/apiClient/v1'
+import type { GetVenuePricingPointResponseModel } from '@/apiClient/v1/new'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 
 import { PricingPoint } from '../PricingPoint/PricingPoint'

@@ -5,7 +5,7 @@ import type {
   GetEducationalOffererVenueResponseModel,
   LocationModelV2,
   StructureDataBodyModel,
-} from '@/apiClient/v1'
+} from '@/apiClient/v1/new'
 
 let venueId = 1
 
