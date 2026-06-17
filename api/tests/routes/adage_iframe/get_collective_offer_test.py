@@ -4,7 +4,7 @@ import pytest
 import time_machine
 from flask import url_for
 
-from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
@@ -27,7 +27,7 @@ def eac_client_fixture(client):
 
 @pytest.fixture(name="redactor")
 def redactor_fixture():
-    return educational_factories.EducationalRedactorFactory(email=EMAIL)
+    return factories.EducationalRedactorFactory(email=EMAIL)
 
 
 class CollectiveOfferTest:
@@ -38,18 +38,18 @@ class CollectiveOfferTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_collective_offer(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
-        institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
-        stock = educational_factories.CollectiveStockFactory(
+        institution = factories.EducationalInstitutionFactory(institutionId="12890AI")
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
             servicePrice=10,
             collectiveOffer__students=[models.StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            collectiveOffer__educational_domains=[factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
-            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
-            collectiveOffer__nationalProgramId=educational_factories.NationalProgramFactory().id,
+            collectiveOffer__teacher=factories.EducationalRedactorFactory(),
+            collectiveOffer__nationalProgramId=factories.NationalProgramFactory().id,
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=venue.offererAddress,
@@ -147,7 +147,7 @@ class CollectiveOfferTest:
 
     def test_location_address_venue(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
-        offer = educational_factories.PublishedCollectiveOfferFactory(
+        offer = factories.PublishedCollectiveOfferFactory(
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
@@ -180,23 +180,23 @@ class CollectiveOfferTest:
         ],
     )
     def test_should_return_404_when_collective_offer_template_is_not_approved(self, eac_client, redactor, validation):
-        offer = educational_factories.CollectiveOfferTemplateFactory(validation=validation)
+        offer = factories.CollectiveOfferTemplateFactory(validation=validation)
         response = eac_client.get(f"/adage-iframe/collective/offers/{offer.id}")
         assert response.status_code == 404
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_collective_offer_price_fields(self, eac_client, redactor):
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 5, 15),
             price=200,
             servicePrice=120,
             numberOfTeachers=3,
             collectiveOffer__additionalDetails="Informations pratiques importantes",
         )
-        educational_factories.CollectiveAdditionalFeeFactory(
+        factories.CollectiveAdditionalFeeFactory(
             collectiveStock=stock, type=models.CollectiveAdditionalFeeType.TRAVEL, amount=50
         )
-        educational_factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
+        factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
 
         dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
         response = eac_client.get(dst)
@@ -215,7 +215,7 @@ class CollectiveOfferTest:
         """Ensure that an authenticated user that is a not an
         educational redactor can still fetch offers informations.
         """
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
+        offer = factories.CollectiveStockFactory().collectiveOffer
         dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
 
         with assert_num_queries(self.num_queries):

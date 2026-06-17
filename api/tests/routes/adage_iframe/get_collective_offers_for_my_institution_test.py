@@ -4,7 +4,7 @@ from datetime import timedelta
 import pytest
 from flask import url_for
 
-from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
@@ -29,7 +29,7 @@ def eac_client_fixture(client):
 
 @pytest.fixture(name="redactor")
 def redactor_fixture():
-    return educational_factories.EducationalRedactorFactory(email=EMAIL)
+    return factories.EducationalRedactorFactory(email=EMAIL)
 
 
 class CollectiveOfferTest:
@@ -40,8 +40,8 @@ class CollectiveOfferTest:
     def test_get_collective_offer_for_my_institution(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
         venue = offerers_factories.VenueFactory()
-        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
-        stocks = educational_factories.CollectiveStockFactory.create_batch(
+        institution = factories.EducationalInstitutionFactory(institutionId=UAI)
+        stocks = factories.CollectiveStockFactory.create_batch(
             3,
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
@@ -56,14 +56,14 @@ class CollectiveOfferTest:
         stocks[2].collectiveOffer.isActive = False
 
         # cancelled booking should not appear in the result
-        stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
+        stock_with_cancelled_booking = factories.CollectiveStockFactory(
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=stocks[0].collectiveOffer.offererAddress,
         )
-        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
+        factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
 
@@ -117,9 +117,9 @@ class CollectiveOfferTest:
         }
 
     def test_location_address_venue(self, eac_client, redactor):
-        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
+        institution = factories.EducationalInstitutionFactory(institutionId=UAI)
         venue = offerers_factories.VenueFactory()
-        educational_factories.PublishedCollectiveOfferFactory(
+        factories.PublishedCollectiveOfferFactory(
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
@@ -142,9 +142,9 @@ class CollectiveOfferTest:
         assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_price_fields(self, eac_client, redactor):
-        institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
+        institution = factories.EducationalInstitutionFactory(institutionId=UAI)
         venue = offerers_factories.VenueFactory()
-        stock = educational_factories.CollectiveStockFactory(
+        stock = factories.CollectiveStockFactory(
             price=200,
             servicePrice=120,
             numberOfTeachers=3,
@@ -152,10 +152,10 @@ class CollectiveOfferTest:
             collectiveOffer__venue=venue,
             collectiveOffer__institution=institution,
         )
-        educational_factories.CollectiveAdditionalFeeFactory(
+        factories.CollectiveAdditionalFeeFactory(
             collectiveStock=stock, type=models.CollectiveAdditionalFeeType.TRAVEL, amount=50
         )
-        educational_factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
+        factories.CollectiveAdditionalFeeCustomFactory(collectiveStock=stock, label="nice fee", amount=30)
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
         with assert_num_queries(self.num_queries):
