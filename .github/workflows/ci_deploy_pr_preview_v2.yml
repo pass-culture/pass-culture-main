@@ -34,6 +34,7 @@ jobs:
     name: Init
     environment:
       name: pcapi-preview
+      deployment: false
     runs-on: ubuntu-latest
     outputs:
       preview_id: ${{ steps.compute-labels.outputs.preview_id }}
@@ -105,6 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pcapi-preview
+      deployment: true
     permissions:
       id-token: write
       contents: read
