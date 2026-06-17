@@ -7,9 +7,9 @@ function createApiErrorInterceptor() {
   return async (
     error: unknown,
     response: Response | undefined,
-    request: Request
+    request: Request | undefined
   ) =>
-    response?.status
+    response?.status && request
       ? new ApiError(
           request.url,
           response.status,

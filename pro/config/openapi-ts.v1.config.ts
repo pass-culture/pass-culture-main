@@ -34,7 +34,7 @@ export default defineConfig({
     },
     {
       name: '@hey-api/client-fetch',
-      runtimeConfigPath: '../clientConfig',
+      runtimeConfigPath: '@/apiClient/clientConfig',
       throwOnError: true,
     },
   ],
