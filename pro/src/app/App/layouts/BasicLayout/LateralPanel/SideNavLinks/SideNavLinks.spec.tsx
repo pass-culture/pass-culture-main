@@ -42,12 +42,20 @@ vi.mock('./components/HelpDropdownNavItem', () => ({
   ),
 }))
 
-vi.mock('react-router', async () => ({
-  ...(await vi.importActual('react-router')),
-  useLocation: () => ({
+const useLocationMock = vi.hoisted(() => ({
+  useLocation: vi.fn(() => ({
     pathname: '/offres',
-  }),
+  })),
 }))
+
+vi.mock('react-router', async () => {
+  const routerData = await vi.importActual('react-router')
+
+  return {
+    ...routerData,
+    useLocation: useLocationMock.useLocation,
+  }
+})
 
 const navItems: NavItem[] = [
   { key: '1', group: 'main', type: 'section', title: 'Main 1' },
@@ -95,7 +103,12 @@ describe('SideNavLinks', () => {
     const toggleBtn1 = screen.getByTestId('toggle-1')
     const toggleBtn2 = screen.getByTestId('toggle-2')
 
-    // La première section est ouverte par défaut
+    // Aucune section n'est ouverte par défaut
+    expect(toggleBtn1).toHaveTextContent('CLOSED')
+    expect(toggleBtn2).toHaveTextContent('CLOSED')
+
+    // Ouvrir la section 1
+    await user.click(toggleBtn1)
     expect(toggleBtn1).toHaveTextContent('OPEN')
     expect(toggleBtn2).toHaveTextContent('CLOSED')
 
@@ -107,5 +120,101 @@ describe('SideNavLinks', () => {
     // Cliquer à nouveau sur la section 2 la ferme
     await user.click(toggleBtn2)
     expect(toggleBtn2).toHaveTextContent('CLOSED')
+  })
+
+  it('should open the section matching the current route (individual)', () => {
+    const navItems: NavItem[] = [
+      {
+        key: 'individual',
+        group: 'main',
+        type: 'section',
+        title: 'Section individuel',
+        children: [
+          {
+            key: 'offers',
+            type: 'link',
+            group: 'main',
+            title: 'Offres',
+            to: '/offres',
+            end: true,
+          },
+        ],
+      },
+      {
+        key: 'collective',
+        group: 'main',
+        type: 'section',
+        title: 'Section collective',
+        children: [
+          {
+            key: 'showcase_offers',
+            type: 'link',
+            group: 'main',
+            title: 'Offres vitrines',
+            to: '/offres/vitrines',
+          },
+        ],
+      },
+    ]
+    render(<SideNavLinks navItems={navItems} />)
+
+    expect(screen.getByText('Section individuel')).toBeInTheDocument()
+    expect(screen.getByText('Section collective')).toBeInTheDocument()
+
+    const toggleBtnIndividual = screen.getByTestId('toggle-individual')
+    const toggleBtnCollective = screen.getByTestId('toggle-collective')
+
+    expect(toggleBtnIndividual).toHaveTextContent('OPEN') // Mocked route is /offres
+    expect(toggleBtnCollective).toHaveTextContent('CLOSED')
+  })
+
+  it('should open the section matching the current route (collective)', () => {
+    useLocationMock.useLocation.mockReturnValue({
+      pathname: '/offres/vitrines',
+    })
+
+    const navItems: NavItem[] = [
+      {
+        key: 'individual',
+        group: 'main',
+        type: 'section',
+        title: 'Section individuel',
+        children: [
+          {
+            key: 'offers',
+            type: 'link',
+            group: 'main',
+            title: 'Offres',
+            to: '/offres',
+            end: true,
+          },
+        ],
+      },
+      {
+        key: 'collective',
+        group: 'main',
+        type: 'section',
+        title: 'Section collective',
+        children: [
+          {
+            key: 'showcase_offers',
+            type: 'link',
+            group: 'main',
+            title: 'Offres vitrines',
+            to: '/offres/vitrines',
+          },
+        ],
+      },
+    ]
+    render(<SideNavLinks navItems={navItems} />)
+
+    expect(screen.getByText('Section individuel')).toBeInTheDocument()
+    expect(screen.getByText('Section collective')).toBeInTheDocument()
+
+    const toggleBtnIndividual = screen.getByTestId('toggle-individual')
+    const toggleBtnCollective = screen.getByTestId('toggle-collective')
+
+    expect(toggleBtnIndividual).toHaveTextContent('CLOSED')
+    expect(toggleBtnCollective).toHaveTextContent('OPEN') // Mocked route is /offres/vitrines
   })
 })
