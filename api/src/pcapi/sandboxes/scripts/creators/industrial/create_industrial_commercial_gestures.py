@@ -36,20 +36,6 @@ def _create_total_commercial_gesture_individual_offer(
     # Create the users
     users = users_factories.BeneficiaryGrant18Factory.create_batch(users_count)
 
-    # Empty the balances
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=10,
-            stock__price=decimal.Decimal("5.0"),
-            stock__offer__venue=venue,
-        )  # 50€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        _price_event(booking.finance_events[0])
-
     # Create the bookings and cancel them
     bookings = []
     for i, user in enumerate(users):
@@ -70,20 +56,6 @@ def _create_total_commercial_gesture_individual_offer(
         )
 
         bookings.append(booking)
-
-    # Empty the remaining credits leaving only 10 cents in each balance
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=1,
-            stock__price=decimal.Decimal("99.9"),
-            stock__offer__venue=venue,
-        )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        _price_event(booking.finance_events[0])
 
     # Generate the commercial gestures
     for booking in bookings:
@@ -186,21 +158,6 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
 ) -> None:
     # Create the users
     users = users_factories.BeneficiaryGrant18Factory.create_batch(users_count)
-    # Empty the balances
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=10,
-            stock__price=decimal.Decimal("5.0"),
-            stock__offer__venue=venue,
-        )  # 50€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-
-        for finance_event in booking.finance_events:
-            _price_event(finance_event)
 
     # Create the bookings to cancel
     bookings = []
@@ -225,21 +182,6 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
         )
 
         bookings.append(booking)
-
-    # Empty the remaining credits leaving only 10 cents in each balance
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=1,
-            stock__price=decimal.Decimal("99.9"),
-            stock__offer__venue=venue,
-        )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        for finance_event in booking.finance_events:
-            _price_event(finance_event)
 
     # Generate the commercial gestures
     for bookings_batch in get_chunks(bookings, 2):
@@ -268,21 +210,6 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
 def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Venue, users_count: int) -> None:
     # Create the users
     users = users_factories.BeneficiaryGrant18Factory.create_batch(users_count)
-    # Empty the balances
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=10,
-            stock__price=decimal.Decimal("5.0"),
-            stock__offer__venue=venue,
-        )  # 50€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-
-        for finance_event in booking.finance_events:
-            _price_event(finance_event)
 
     # Create the bookings to cancel
     for i, user in enumerate(users):
@@ -303,21 +230,6 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             booking=booking,
             reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
         )
-
-    # Empty the remaining credits leaving only 10 cents in each balance
-    for user in users:
-        booking = bookings_factories.BookingFactory.create(
-            user=user,
-            quantity=1,
-            stock__price=decimal.Decimal("99.9"),
-            stock__offer__venue=venue,
-        )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
-        for finance_event in booking.finance_events:
-            _price_event(finance_event)
 
     ################################
     # Generate collective bookings #
