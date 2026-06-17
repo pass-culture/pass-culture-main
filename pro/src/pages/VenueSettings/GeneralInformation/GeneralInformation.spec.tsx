@@ -48,8 +48,8 @@ vi.mock('@/components/AddressFields/AddressFields', () => ({
       </button>
       <button
         type="button"
-        onClick={() =>
-          onAddressChosen({
+        onClick={() => {
+          const addressData = {
             address: '1 Rue de la Paix',
             city: 'Paris',
             inseeCode: '75056',
@@ -58,8 +58,12 @@ vi.mock('@/components/AddressFields/AddressFields', () => ({
             longitude: 2.3522,
             label: '1 Rue de la Paix 75001 Paris',
             postalCode: '75001',
+          }
+          void addressRegister.onChange({
+            target: { name: addressRegister.name, value: addressData.label },
           })
-        }
+          onAddressChosen(addressData)
+        }}
       >
         Sélectionner une adresse
       </button>
@@ -302,6 +306,38 @@ describe('GeneralInformation', () => {
         name: "Disposez-vous d'un lieu ouvert au public ?",
       })
       expect(toggle).toHaveTextContent('Non')
+    })
+  })
+  describe('complementary infos dialog', () => {
+    it('should open the complementary infos dialog when switching isOpenToPublic from false to true and saving', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Informations complémentaires',
+        })
+      ).toBeInTheDocument()
+    })
+  })
+  describe('address change dialog', () => {
+    it('should open the address change dialog when changing the address and saving', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: true })
+
+      await userEvent.click(await screen.findByText('Sélectionner une adresse'))
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Enregistrer/ })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Important : Le changement d'adresse postale/,
+        })
+      ).toBeInTheDocument()
     })
   })
 })

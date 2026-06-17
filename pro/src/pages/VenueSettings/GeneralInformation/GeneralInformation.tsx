@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
@@ -33,6 +34,8 @@ import type {
 } from './commons/types'
 import { scrollToTop } from './commons/utils/scrollToTop'
 import { toFormValues } from './commons/utils/toFormValues'
+import { AddressChangeDialog } from './components/AddressChangeDialog/AddressChangeDialog'
+import { ComplementaryInfosDialog } from './components/ComplementaryInfosDialog/ComplementaryInfosDilog'
 import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
 
 const GeneralInformation = () => {
@@ -59,14 +62,41 @@ const GeneralInformation = () => {
   })
 
   const { saveAndContinue } = useSaveVenueSettings({ form, venue })
-
-  const onSubmit = (formValues: VenueSettingsFormValues) => {
-    saveAndContinue(formValues, formContext)
-    scrollToTop()
-  }
+  const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
+    useState(false)
+  const [isComplementaryInfosDialogOpen, setIsComplementaryInfosDialogOpen] =
+    useState(false)
+  const [hasAddressChanged, setHasAddressChanged] = useState(false)
 
   const onCancel = () => {
     form.reset()
+    scrollToTop()
+  }
+
+  const onSubmit = async (formValues: VenueSettingsFormValues) => {
+    const isSaved = await saveAndContinue(formValues, formContext)
+
+    const hasAddressChanged =
+      formValues.addressAutocomplete !== initialValues.addressAutocomplete
+    const shouldShowAddressChangeWarning =
+      formValues.isOpenToPublic === 'true' &&
+      initialValues.isOpenToPublic === 'true' &&
+      venue.hasActiveIndividualOffer &&
+      hasAddressChanged
+    const shouldShowComplementaryInfosDialog =
+      formValues.isOpenToPublic === 'true' &&
+      initialValues.isOpenToPublic === 'false' &&
+      venue.hasActiveIndividualOffer
+
+    if (isSaved) {
+      setHasAddressChanged(hasAddressChanged)
+      if (shouldShowAddressChangeWarning) {
+        setIsAddressChangeDialogOpen(true)
+      }
+      if (shouldShowComplementaryInfosDialog) {
+        setIsComplementaryInfosDialogOpen(true)
+      }
+    }
     scrollToTop()
   }
 
@@ -215,6 +245,16 @@ const GeneralInformation = () => {
           />
         </form>
       </FormProvider>
+      <AddressChangeDialog
+        open={isAddressChangeDialogOpen}
+        onOpenChange={setIsAddressChangeDialogOpen}
+      />
+      <ComplementaryInfosDialog
+        open={isComplementaryInfosDialogOpen}
+        onOpenChange={setIsComplementaryInfosDialogOpen}
+        venue={venue}
+        hasAddressChanged={hasAddressChanged}
+      ></ComplementaryInfosDialog>
     </>
   )
 }
