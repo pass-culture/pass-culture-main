@@ -273,9 +273,11 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch income data with the selected venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(apiNew, 'getStatistics').mockResolvedValue({
-        incomeByYear: MOCK_DATA.incomeByYear,
-      })
+      vi.spyOn(apiNew, 'getStatistics')
+        .mockResolvedValueOnce({
+          incomeByYear: MOCK_DATA.incomeByYear,
+        })
+        .mockImplementationOnce(() => new Promise(() => {}))
 
       renderIncome()
 
@@ -293,9 +295,7 @@ describe('Income', () => {
       const unselectedVenue = deleteVenueButtons[0]
       await userEvent.click(unselectedVenue)
 
-      await waitFor(() =>
-        expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
-      )
+      expect(await screen.findByTestId('income-spinner')).toBeInTheDocument()
       expect(apiNew.getStatistics).toHaveBeenNthCalledWith(2, {
         query: { venueIds: [2] },
       })
