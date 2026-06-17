@@ -1698,27 +1698,6 @@ class BookMacroSection(PcObject, Model):
     __table_args__ = (sa.Index("book_macro_section_section_idx", sa.func.lower(section), unique=True),)
 
 
-# TODO (prouzet, 2026-06-17) Remove class and table in PC-42412
-class PriceCategoryLabel(PcObject, Model):
-    __tablename__ = "price_category_label"
-    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
-    priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
-        "PriceCategory", foreign_keys="PriceCategory.priceCategoryLabelId"
-    )
-    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "label",
-            "venueId",
-            name="unique_label_venue",
-        ),
-    )
-
-
 class PriceCategory(PcObject, Model):
     __tablename__ = "price_category"
     offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -1731,11 +1710,6 @@ class PriceCategory(PcObject, Model):
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
     label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    # TODO (prouzet, 2026-06-17) Remove priceCategoryLabelId in PC-42412
-    # Ensure that column is not fetched by default so that migration in PC-42412 does not make running tasks fail
-    priceCategoryLabelId: sa_orm.Mapped[int | None] = sa_orm.deferred(
-        sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=True)
-    )
     stocks: sa_orm.Mapped[list["Stock"]] = sa_orm.relationship(
         "Stock", foreign_keys="Stock.priceCategoryId", back_populates="priceCategory", cascade="all"
     )
