@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
@@ -81,7 +81,7 @@ describe('CollectiveOfferSummaryCreation', () => {
   beforeEach(() => {
     vi.spyOn(apiNew, 'getCollectiveOffer')
     vi.spyOn(apiNew, 'getCollectiveOfferTemplate')
-    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
   })

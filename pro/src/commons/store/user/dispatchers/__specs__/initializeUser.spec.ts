@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { ApiError, type ApiResult } from '@/apiClient/compat'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
@@ -471,7 +471,7 @@ describe('error handling', () => {
   it('should dispatch logout when initialization fails before selection', async () => {
     vi.spyOn(apiNew, 'listOfferersNames').mockRejectedValue(new Error())
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
-    vi.spyOn(api, 'signout').mockResolvedValue()
+    vi.spyOn(apiNew, 'signout').mockResolvedValue()
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '34')
 

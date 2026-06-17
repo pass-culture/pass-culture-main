@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1/new'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -97,8 +97,8 @@ const baseVenue: GetVenueResponseModel = {
 describe('VenueEdition', () => {
   beforeEach(() => {
     vi.spyOn(apiNew, 'getVenue').mockResolvedValue(baseVenue)
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
-    vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
+    vi.spyOn(apiNew, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(apiNew, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [],
     })
     mockUseNavigate.mockClear()

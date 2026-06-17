@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
@@ -27,7 +27,9 @@ vi.mock('@/app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 
 function TestBrokenCallComponent() {
-  useSWR([GET_OFFER_QUERY_KEY], () => api.getOffer(17))
+  useSWR([GET_OFFER_QUERY_KEY], () =>
+    apiNew.getOffer({ path: { offer_id: 17 } })
+  )
 
   return 'broken page'
 }
@@ -98,7 +100,7 @@ describe('App', () => {
   })
 
   it('should redirect to page 404 when api has not found', async () => {
-    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
       status: 404,
       name: 'ApiError',
       message: 'oh no',
@@ -116,7 +118,7 @@ describe('App', () => {
   })
 
   it('should not redirect to page 404 when api has not found on adage-iframe', async () => {
-    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
       status: 404,
       name: 'ApiError',
       message: 'oh no',
@@ -139,7 +141,7 @@ describe('App', () => {
       error: snackBarError,
     }))
 
-    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
       status: 500,
       name: 'ApiError',
       message: 'Internal server error',

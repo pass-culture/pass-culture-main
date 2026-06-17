@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
@@ -71,7 +71,7 @@ describe('SignIn', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     vi.spyOn(apiNew, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
-    vi.spyOn(api, 'signin').mockResolvedValue(
+    vi.spyOn(apiNew, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
     vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({

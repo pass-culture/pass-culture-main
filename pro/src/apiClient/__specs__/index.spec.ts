@@ -1,6 +1,6 @@
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import { URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 
 const fetchMock = createFetchMock(vi)
@@ -19,7 +19,7 @@ describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-    await api.getBookingsPro(1)
+    await apiNew.getBookingsPro({ query: { venueId: 1 } })
 
     expect(mockLocationAssign).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })
@@ -27,7 +27,7 @@ describe('Maintenance', () => {
   it('should redirect to maintenance page api v2 responds with status 503', async () => {
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-    await api.getBookingByToken('')
+    await apiNew.getBookingByToken({ path: { token: '' } })
 
     expect(mockLocationAssign).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })

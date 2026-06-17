@@ -5,7 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -64,7 +64,7 @@ describe('CollectiveDataEdition', () => {
         },
       ],
     })
-    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
+    vi.spyOn(apiNew, 'listEducationalDomains').mockResolvedValue([
       { id: 1, name: 'domain 1', nationalPrograms: [] },
       { id: 2, name: 'domain 2', nationalPrograms: [] },
     ])

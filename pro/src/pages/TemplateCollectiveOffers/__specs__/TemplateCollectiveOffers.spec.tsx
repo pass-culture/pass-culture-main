@@ -5,7 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateResponseModel,
@@ -144,7 +144,9 @@ describe('TemplateCollectiveOffers', () => {
       })
 
       it('should not display column titles when no offers are returned', async () => {
-        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce([])
+        vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+          []
+        )
 
         await renderOffers()
 

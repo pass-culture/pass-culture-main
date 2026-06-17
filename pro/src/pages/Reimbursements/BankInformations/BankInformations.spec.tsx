@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api, apiNew } from '@/apiClient/api'
+import { apiNew } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
@@ -74,7 +74,7 @@ const mockLogEvent = vi.fn()
 
 describe('BankInformations page', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
@@ -340,7 +340,7 @@ describe('BankInformations page', () => {
 
   it('should update displayed link venue after closing link venue dialog', async () => {
     const user = userEvent.setup()
-    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
     const getOffererBankAccountsSpy = vi
       .spyOn(apiNew, 'getOffererBankAccountsAndAttachedVenues')
       .mockResolvedValue({
@@ -378,7 +378,7 @@ describe('BankInformations page', () => {
       },
     })
 
-    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(
       apiNew,
       'getOffererBankAccountsAndAttachedVenues'
