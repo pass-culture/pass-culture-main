@@ -15,7 +15,7 @@ export const UserAnonymization = (): JSX.Element | null => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const canDisplayAnonymizeButton = useActiveFeature(
-    'WIP_PRO_AUTONOMOUS_ANONYMIZATION'
+    'PRO_AUTONOMOUS_ANONYMIZATION'
   )
 
   const { isLoading, isEligible, isSoleUserWithOngoingActivities } =

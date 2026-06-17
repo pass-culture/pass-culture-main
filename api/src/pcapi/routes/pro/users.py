@@ -264,7 +264,7 @@ def signout() -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400, 404], api=blueprint.pro_private_schema)
 def anonymize() -> None:
-    if not FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION.is_active():
+    if not FeatureToggle.PRO_AUTONOMOUS_ANONYMIZATION.is_active():
         raise ResourceNotFoundError(errors={"global": "Cette fonctionnalité n'est pas disponible"})
 
     user = current_user._get_current_object()
