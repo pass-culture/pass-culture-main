@@ -15,15 +15,6 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
-APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
-    last_name="dupont",
-    common_name=None,
-    first_names=["alexis"],
-    birth_date=datetime.date(1982, 12, 7),
-    gender=users_models.GenderEnum.F,
-    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
-    birth_city_cog_code="08480",
-)
 PERSON_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     last_name="a_very_very_very_very_very_very_very_very_very_very_ver_very_very_very_very_very_long_name",
     common_name=None,
@@ -33,6 +24,15 @@ PERSON_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     birth_country_cog_code="B&543",
     birth_city_cog_code="AAAAA",
 )
+QF_APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
+    last_name="dupont",
+    common_name=None,
+    first_names=["alexis"],
+    birth_date=datetime.date(1982, 12, 7),
+    gender=users_models.GenderEnum.F,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
 CUSTODIAN_WITH_CHILDREN = bonus_schemas.BonusCreditPerson(
     last_name="lefebvre",
     common_name=None,
@@ -41,6 +41,57 @@ CUSTODIAN_WITH_CHILDREN = bonus_schemas.BonusCreditPerson(
     gender=users_models.GenderEnum.F,
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
+)
+DISABILITY_APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
+    last_name="duboche",
+    common_name=None,
+    first_names=["jerome"],
+    birth_date=datetime.date(2002, 12, 5),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
+ADULT_DISABILITY_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+    last_name="dupont",
+    common_name="martin",
+    first_names=["pierre", "richard"],
+    birth_date=datetime.date(1987, 12, 1),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
+ADULT_DISABILITY_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+    last_name="chirac",
+    common_name="martin",
+    first_names=["jacques"],
+    birth_date=datetime.date(1987, 12, 1),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
+DISABLED_CHILD_EDUCATION_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+    last_name="dupont",
+    first_names=["pierre"],
+    birth_date=datetime.date(2015, 3, 12),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="75112",
+)
+DISABLED_CHILD_EDUCATION_RIGHT_OPENING = bonus_schemas.BonusCreditPerson(
+    last_name="martin",
+    first_names=["sophie", "marie"],
+    birth_date=datetime.date(2012, 7, 22),
+    gender=users_models.GenderEnum.F,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="69123",
+)
+DISABLED_CHILD_EDUCATION_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+    last_name="bernard",
+    first_names=["lucas"],
+    birth_date=datetime.date(2010, 1, 5),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="13055",
 )
 
 
@@ -61,14 +112,14 @@ def get_and_mock_quotient_familial(
         raise ValueError("Mocked API Response calls must have a defined http_status_code")
 
     if mock_config.http_status_code == 404:
-        mocked_custodian = APPLICATION_NOT_FOUND
+        mocked_custodian = QF_APPLICATION_NOT_FOUND
     elif mock_config.http_status_code == 422:
         mocked_custodian = PERSON_NOT_FOUND
     else:
         mocked_custodian = CUSTODIAN_WITH_CHILDREN
     api_particulier_response = api_particulier.get_quotient_familial(mocked_custodian)
 
-    _inject_mock_config(api_particulier_response, mock_config)
+    _inject_quotient_familial_mock_config(api_particulier_response, mock_config)
 
     return api_particulier_response
 
@@ -94,7 +145,7 @@ def _get_last_quotient_familial_config(
     return source_data
 
 
-def _inject_mock_config(
+def _inject_quotient_familial_mock_config(
     api_particulier_response: api_particulier.QuotientFamilialResponse,
     mock_config: bonus_schemas.QuotientFamilialBonusCreditContent,
 ) -> None:
@@ -133,3 +184,106 @@ def _build_api_person_response(person: bonus_schemas.BonusCreditPerson) -> api_p
         date_naissance=person.birth_date,
         sexe=person.gender,
     )
+
+
+def get_and_mock_disabled_adult_allowance(
+    person: bonus_schemas.BonusCreditPerson,
+    user: users_models.User,
+) -> api_particulier.DisabledAdultAllowanceResponse:
+    """
+    Calls the API Particulier Disabled Adult Allowance staging endpoint with their staging dataset, to test the HTTP roundtrip.
+    Their response is then mocked through previous config fraud check.
+    """
+    mock_config = _get_last_adult_disability_config(user)
+    if not mock_config:
+        return api_particulier.get_disabled_adult_allowance(person)
+
+    if not mock_config.http_status_code:
+        raise ValueError("Mocked API Response calls must have a defined http_status_code")
+
+    if mock_config.http_status_code == 404:
+        mocked_person = DISABILITY_APPLICATION_NOT_FOUND
+    elif mock_config.http_status_code == 422:
+        mocked_person = PERSON_NOT_FOUND
+    elif not mock_config.is_disability_beneficiary:
+        mocked_person = ADULT_DISABILITY_NON_BENEFICIARY
+    else:
+        mocked_person = ADULT_DISABILITY_BENEFICIARY
+
+    return api_particulier.get_disabled_adult_allowance(mocked_person)
+
+
+def _get_last_adult_disability_config(
+    user: users_models.User,
+) -> bonus_schemas.AdultDisabilityBonusCreditContent | None:
+    config_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        and fraud_check.status == subscription_models.FraudCheckStatus.MOCK_CONFIG
+    ]
+    if not config_fraud_checks:
+        return None
+
+    last_config = config_fraud_checks[-1]  # the user.beneficiaryFraudChecks relationship is ordered
+
+    source_data = last_config.source_data()
+    if not isinstance(source_data, bonus_schemas.AdultDisabilityBonusCreditContent):
+        raise ValueError(f"AdultDisabilityBonusCreditContent was expected while {type(source_data)} was given")
+
+    return source_data
+
+
+def get_and_mock_disabled_child_education_allowance(
+    person: bonus_schemas.BonusCreditPerson,
+    user: users_models.User,
+) -> api_particulier.DisabledChildEducationAllowanceResponse:
+    """
+    Calls the API Particulier Disabled Child Education Allowance staging endpoint with their staging dataset, to test the HTTP roundtrip.
+    Their response is then mocked through previous config fraud check.
+    """
+    mock_config = _get_last_disabled_child_education_config(user)
+    if not mock_config:
+        return api_particulier.get_disabled_child_education_allowance(person)
+
+    if not mock_config.http_status_code:
+        raise ValueError("Mocked API Response calls must have a defined http_status_code")
+
+    if mock_config.http_status_code == 404:
+        mocked_person = DISABILITY_APPLICATION_NOT_FOUND
+    elif mock_config.http_status_code == 422:
+        mocked_person = PERSON_NOT_FOUND
+    elif (
+        mock_config.disability_beneficiary_status
+        == bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY
+    ):
+        mocked_person = DISABLED_CHILD_EDUCATION_NON_BENEFICIARY
+    elif (
+        mock_config.disability_beneficiary_status == bonus_schemas.DisabledChildEducationBeneficiaryStatus.RIGHT_OPENING
+    ):
+        mocked_person = DISABLED_CHILD_EDUCATION_RIGHT_OPENING
+    else:
+        mocked_person = DISABLED_CHILD_EDUCATION_BENEFICIARY
+
+    return api_particulier.get_disabled_child_education_allowance(mocked_person)
+
+
+def _get_last_disabled_child_education_config(
+    user: users_models.User,
+) -> bonus_schemas.DisabledChildEducationBonusCreditContent | None:
+    config_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        and fraud_check.status == subscription_models.FraudCheckStatus.MOCK_CONFIG
+    ]
+    if not config_fraud_checks:
+        return None
+
+    last_config = config_fraud_checks[-1]  # the user.beneficiaryFraudChecks relationship is ordered
+
+    source_data = last_config.source_data()
+    if not isinstance(source_data, bonus_schemas.DisabledChildEducationBonusCreditContent):
+        raise ValueError(f"DisabledChildEducationBonusCreditContent was expected while {type(source_data)} was given")
+
+    return source_data

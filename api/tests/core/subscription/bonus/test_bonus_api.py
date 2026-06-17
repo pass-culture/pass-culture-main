@@ -430,6 +430,46 @@ class QuotientFamilialApplicationTest:
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
 
+    def test_bonus_fraud_checks_deletion_when_granted(self):
+        eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
+        with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
+        user = _build_user_from_fixture(with_18_child_quotient_familial)
+        qf_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.KO,
+            resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory().model_dump(),
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=with_18_child_quotient_familial)
+
+            bonus_api.apply_for_quotient_familial_bonus(qf_bonus_fraud_check)
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
         captured_events = []
@@ -671,6 +711,42 @@ class DisabledAdultAllowanceTest:
 
         assert len(mails_testing.outbox) == 0
 
+    def test_bonus_fraud_checks_deletion_when_granted(self):
+        user = users_factories.BeneficiaryFactory()
+        aah_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.KO,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory().model_dump(),
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+
+            bonus_api.apply_for_adult_disability_bonus(aah_bonus_fraud_check)
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):
         captured_events = []
@@ -893,6 +969,42 @@ class DisabledChildEducationAllowanceTest:
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
         assert len(mails_testing.outbox) == 0
+
+    def test_bonus_fraud_checks_deletion_when_granted(self):
+        user = users_factories.BeneficiaryFactory()
+        aeeh_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory().model_dump(),
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=user,
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.KO,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_ELIGIBLE_RESPONSE)
+
+            bonus_api.apply_for_disabled_child_education_bonus(aeeh_bonus_fraud_check)
+
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=0)
     def test_sentry_error_filtered(self):

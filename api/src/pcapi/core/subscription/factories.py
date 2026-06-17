@@ -180,9 +180,16 @@ class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
 
 
-class DisabilityBonusCreditContentFactory(factory.Factory):
+class AdultDisabilityBonusCreditContentFactory(factory.Factory):
     class Meta:
-        model = bonus_schemas.DisabilityBonusCreditContent
+        model = bonus_schemas.AdultDisabilityBonusCreditContent
+
+    person = factory.SubFactory(ApiParticulierPersonFactory)
+
+
+class DisabledChildEducationBonusCreditContentFactory(factory.Factory):
+    class Meta:
+        model = bonus_schemas.DisabledChildEducationBonusCreditContent
 
     person = factory.SubFactory(ApiParticulierPersonFactory)
 
@@ -194,8 +201,8 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, typ
     subscription_models.FraudCheckType.HONOR_STATEMENT: None,
     subscription_models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
     subscription_models.FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContentFactory,
-    subscription_models.FraudCheckType.AAH_BONUS_CREDIT: DisabilityBonusCreditContentFactory,
-    subscription_models.FraudCheckType.AEEH_BONUS_CREDIT: DisabilityBonusCreditContentFactory,
+    subscription_models.FraudCheckType.AAH_BONUS_CREDIT: AdultDisabilityBonusCreditContentFactory,
+    subscription_models.FraudCheckType.AEEH_BONUS_CREDIT: DisabledChildEducationBonusCreditContentFactory,
 }
 
 

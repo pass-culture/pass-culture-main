@@ -50,7 +50,8 @@ SCRUBBED_KEYS = (
 
 SCRUBBED_VALUE_PREFIXES = (
     "QuotientFamilialBonusCreditContent(",
-    "DisabilityBonusCreditContent(",
+    "AdultDisabilityBonusCreditContent(",
+    "DisabledChildEducationBonusCreditContent(",
     "BonusCreditPerson(",
 )
 
