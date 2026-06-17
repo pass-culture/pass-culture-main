@@ -52,7 +52,7 @@ jobs:
         id: compute-labels
         env:
           FRONT_ONLY: ${{ inputs.front-only }}
-          SOURCE_BRANCH: ${{ github.source_branch }}
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
         run: |
           # TODO: use PR number instead of branch SHA1 — more readable, no collision risk.
           # Requires changing trigger to pull_request.
