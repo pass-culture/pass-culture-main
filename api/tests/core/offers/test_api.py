@@ -2325,6 +2325,17 @@ class UpdateOfferTest:
         mocked_update_claim.assert_called_once_with(datetime(2026, 4, 21, 12, 0, 0), offer)
 
     @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
+    @time_machine.travel("2026-04-21 12:00:00", tick=False)
+    def test_update_offer_does_not_update_cultural_outreach_claim_datetime(self, mocked_update_claim):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+        cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
+
+        body = offers_schemas.UpdateOffer(hasCulturalOutreachClaim=True)
+        api.update_offer(offer, body)
+
+        mocked_update_claim.assert_not_called()
+
+    @mock.patch("pcapi.core.cultural_outreach.api.update_cultural_outreach_claim")
     def test_update_offer_turns_cultural_outreach_claim_to_false(self, mocked_update_claim):
         offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
         cultural_outreach_factories.ClaimedCulturalOutreachFactory(offer=offer)
