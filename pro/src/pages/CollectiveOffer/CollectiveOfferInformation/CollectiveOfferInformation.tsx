@@ -12,6 +12,7 @@ import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/ge
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 import {
   type CollectiveOfferFromParamsProps,
@@ -61,7 +62,7 @@ export const CollectiveOfferInformation = ({
       if (isErrorAPIError(e) && e.status < 500) {
         throw e
       } else {
-        console.error(e)
+        sendSentryCustomError(e)
         snackBar.error(
           "Une erreur est survenue lors de l'enregistrement de votre offre."
         )
