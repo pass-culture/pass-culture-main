@@ -11,6 +11,7 @@ import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveA
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 import { CollectiveOfferInformation } from './CollectiveOfferInformation'
 import { CollectiveOfferInformationForm } from './components/CollectiveOfferInformationForm/CollectiveOfferInformationForm'
@@ -32,6 +33,11 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
     error: mockSnackBarError,
   }),
 }))
+
+vi.mock('@/commons/utils/sendSentryCustomError', () => ({
+  sendSentryCustomError: vi.fn(),
+}))
+
 const mockNavigate = vi.fn()
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
@@ -118,13 +124,12 @@ describe('<CollectiveOfferInformation />', () => {
     )
   })
 
-  it('should show pass along API errors 4** to the form', async () => {
+  it('should pass along API errors 4** to the form', async () => {
     const user = userEvent.setup()
     const error = new ApiError('', 400, 'Bad Request', {
       contactEmail: ["L'email est invalide"],
     })
     vi.mocked(apiNew.editCollectiveOffer).mockRejectedValueOnce(error)
-    vi.spyOn(console, 'error').mockImplementationOnce(() => {})
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })
@@ -135,7 +140,7 @@ describe('<CollectiveOfferInformation />', () => {
       path: { offer_id: offer.id },
       body: { contactEmail: 'test@email' },
     })
-    expect(console.error).not.toHaveBeenCalled()
+    expect(sendSentryCustomError).not.toHaveBeenCalled()
     expect(mockSnackBarError).not.toHaveBeenCalled()
     expect(mockSnackBarSuccess).not.toHaveBeenCalled()
     expect(mockNavigate).not.toHaveBeenCalled()
@@ -153,14 +158,13 @@ describe('<CollectiveOfferInformation />', () => {
     const user = userEvent.setup()
     const error = new Error('Something happened')
     vi.mocked(apiNew.editCollectiveOffer).mockRejectedValueOnce(error)
-    vi.spyOn(console, 'error').mockImplementationOnce(() => {})
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })
     renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(console.error).toHaveBeenCalledExactlyOnceWith(
+    expect(sendSentryCustomError).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({ message: 'Something happened' })
     )
     expect(mockSnackBarError).toHaveBeenCalledExactlyOnceWith(
