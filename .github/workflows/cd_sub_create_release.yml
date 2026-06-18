@@ -34,6 +34,7 @@ jobs:
   create-front-pro-releases-on-firebase:
     name: Create front pro releases
     strategy:
+      fail-fast: true
       matrix:
         environment: [staging, production, integration]
     uses: ./.github/workflows/cd_sub_deploy_front_pro.yml

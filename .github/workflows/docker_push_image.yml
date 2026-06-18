@@ -25,6 +25,7 @@ jobs:
     name: Push Docker image to Artifact Registry
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: true
       matrix:
         include:
           - registry: europe-west1-docker.pkg.dev
