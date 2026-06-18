@@ -5,6 +5,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
@@ -26,6 +27,7 @@ import { SummaryAside } from '@/ui-kit/SummaryLayout/SummaryAside'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
 
+import { OfferExposureTimeline } from './components/OfferExposureTimeline/OfferExposureTimeline'
 import styles from './IndividualOfferExposureScreen.module.scss'
 
 export type IndividualOfferExposureScreenProps = {
@@ -84,6 +86,11 @@ export const IndividualOfferExposureScreen = ({
             <OfferHeadlineCard offerId={offer.id} hasThumb={!!offer.thumbUrl} />
           )}
         </div>
+        <OfferExposureTimeline
+          offerId={offer.id}
+          creationDate={offer.dateCreated}
+          departmentCode={getDepartmentCode(offer)}
+        />
       </SummaryContent>
 
       <SummaryAside>
