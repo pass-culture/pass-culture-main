@@ -31,9 +31,7 @@ from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
-from pcapi.serialization.utils import NOW_LITERAL
-from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_timezoned_datetime
+from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -63,7 +61,7 @@ class SubcategoryResponseModel(BaseModel):
     can_have_opening_hours: bool
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         getter_dict = SubcategoryGetterDict
         orm_mode = True
@@ -75,7 +73,7 @@ class CategoryResponseModel(BaseModel):
     is_selectable: bool
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
 
@@ -98,7 +96,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None
-    publicationDatetime: datetime.datetime | NOW_LITERAL | None
+    publicationDatetime: datetime.datetime | serialization_utils.NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
     subcategory_id: str | None
     video_url: HttpUrl | None
@@ -107,8 +105,8 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     motor_disability_compliant: bool | None
     visual_disability_compliant: bool | None
 
-    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
-    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = serialization_utils.validate_timezoned_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = serialization_utils.validate_timezoned_datetime("publicationDatetime")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -135,7 +133,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return subcategory_id
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
@@ -144,8 +142,8 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
-    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = serialization_utils.validate_timezoned_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = serialization_utils.validate_timezoned_datetime("bookingAllowedDatetime")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
@@ -153,7 +151,7 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
     ids: list[int]
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
 
 
 class PatchAllOffersActiveStatusBodyModel(BaseModel):
@@ -172,7 +170,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     offerer_address_id: int | None
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
 
 
 class PatchAllOffersActiveStatusResponseModel(BaseModel):
@@ -297,7 +295,7 @@ class ListOffersQueryModel(BaseModel):
     offerer_address_id: int | None
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
 
@@ -670,7 +668,7 @@ class PriceCategoryBody(BaseModel):
         return price_categories
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
 
 
 class MusicTypeResponse(BaseModel):
@@ -701,7 +699,7 @@ class GetProductInformations(BaseModel):
         return super().from_orm(product)
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
 
@@ -710,7 +708,7 @@ class VideoMetatdataQueryModel(BaseModel):
     video_url: HttpUrl
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
@@ -742,7 +740,7 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
         return name
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
