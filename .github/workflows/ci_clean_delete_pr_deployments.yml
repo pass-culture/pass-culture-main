@@ -3,14 +3,8 @@ name: 2 [CI] Delete PR deployments
 on:
   workflow_dispatch:
   schedule:
-    # This cron is defined in UTC timezone. It means that it will run :
-    # - during summer hours between 7:26am - 7:26pm
-    # - during winter hours between 6:26am - 6:26pm
-    # we cannot yet specify timezone :
-    # https://github.com/orgs/community/discussions/13454
-    # Why 26? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
-    # Cron jobs might be delayed or even completely skipped.
     - cron: "26 5-17 * * *"
+      timezone: "Europe/Paris"
 
 permissions: write-all
 
