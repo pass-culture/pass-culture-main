@@ -231,3 +231,4 @@ class OfferGeneratorForm(utils.PCForm):
         choices=[(subcategories.SEANCE_CINE.id, subcategories.SEANCE_CINE.app_label)],
         default=subcategories.SEANCE_CINE.id,
     )
+    is_duo = fields.PCSwitchBooleanField("Offre Duo", default=False)

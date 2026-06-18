@@ -567,6 +567,7 @@ def generate_offer() -> response_utils.BackofficeResponse:
         offer_name=form.name.data,
         price=form.price.data,
         subcategory_id=form.subcategory_id.data,
+        is_duo=form.is_duo.data,
     )
 
     flash("Offre créée avec succès", "success")

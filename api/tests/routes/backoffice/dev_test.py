@@ -311,6 +311,16 @@ class OfferGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermi
         assert offer.publicationDatetime is not None
         assert offer.name == "Test Offer"
 
+    @pytest.mark.settings(ENABLE_TEST_OFFER_GENERATION=True)
+    @pytest.mark.parametrize("is_duo", [True, False])
+    def test_offer_creation_duo(self, authenticated_client, is_duo):
+        form = {"name": "Test Offer", "price": 13.4, "subcategory_id": "SEANCE_CINE", "is_duo": is_duo}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        offer_id = response.request.path.rsplit("/")[-1]
+        offer = db.session.query(offers_models.Offer).get(offer_id)
+        assert offer.isDuo == is_duo
+
 
 class OfferGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.dev.get_generated_offer"
