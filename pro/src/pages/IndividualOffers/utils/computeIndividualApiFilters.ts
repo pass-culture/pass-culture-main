@@ -3,10 +3,16 @@ import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 
 import type { IndividualOffersFilters } from '../common/types'
 
-export function computeIndividualApiFilters(
-  finalSearchFilters: Partial<IndividualOffersFilters>,
+type ComputeIndividualApiFiltersParams = {
+  finalSearchFilters: Partial<IndividualOffersFilters>
   selectedVenueId: number
+}
+
+export function computeIndividualApiFilters(
+  params: ComputeIndividualApiFiltersParams
 ): ListOffersQueryModel {
+  const { finalSearchFilters, selectedVenueId } = params
+
   const { page: _, ...apiFilters } = {
     ...DEFAULT_SEARCH_FILTERS,
     ...finalSearchFilters,

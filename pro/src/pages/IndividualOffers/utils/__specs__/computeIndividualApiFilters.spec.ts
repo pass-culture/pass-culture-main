@@ -12,9 +12,12 @@ describe('computeIndividualApiFilters', () => {
     vi.restoreAllMocks()
   })
 
-  it('returns defaults with offererId set to selected offerer and removes page', () => {
+  it('returns defaults with venueId set to selected venue and removes page', () => {
     const selectedVenueId = 123
-    const result = computeIndividualApiFilters({}, selectedVenueId)
+    const result = computeIndividualApiFilters({
+      finalSearchFilters: {},
+      selectedVenueId,
+    })
 
     expect('page' in result).toBe(false)
     expect(result.venueId).toBe(123)
@@ -31,8 +34,8 @@ describe('computeIndividualApiFilters', () => {
 
   it('applies overrides from finalSearchFilters and still removes page', () => {
     const selectedVenueId = 5
-    const result = computeIndividualApiFilters(
-      {
+    const result = computeIndividualApiFilters({
+      finalSearchFilters: {
         nameOrIsbn: 'harry',
         creationMode: 'manual',
         periodBeginningDate: '2020-01-01',
@@ -40,8 +43,8 @@ describe('computeIndividualApiFilters', () => {
         offererAddressId: 1,
         page: 7,
       },
-      selectedVenueId
-    )
+      selectedVenueId,
+    })
 
     expect('page' in result).toBe(false)
 
@@ -56,13 +59,13 @@ describe('computeIndividualApiFilters', () => {
     expect(result.venueId).toBe(5)
   })
 
-  it('selected offererId overrides any provided offererId in finalSearchFilters', () => {
-    const result = computeIndividualApiFilters(
-      {
+  it('selected venueId overrides any provided venueId in finalSearchFilters', () => {
+    const result = computeIndividualApiFilters({
+      finalSearchFilters: {
         venueId: 42,
       },
-      999
-    )
+      selectedVenueId: 999,
+    })
 
     expect(result.venueId).toBe(999)
   })

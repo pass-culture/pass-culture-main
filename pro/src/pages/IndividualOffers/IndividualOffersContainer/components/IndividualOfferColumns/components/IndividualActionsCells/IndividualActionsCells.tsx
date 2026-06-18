@@ -79,10 +79,10 @@ export const IndividualActionsCells = ({
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }, [])
 
-  const apiFilters = computeIndividualApiFilters(
+  const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
-    selectedPartnerVenue.managingOfferer.id
-  )
+    selectedVenueId: selectedPartnerVenue.id,
+  })
 
   const onConfirmDeleteDraftOffer = async () => {
     try {
