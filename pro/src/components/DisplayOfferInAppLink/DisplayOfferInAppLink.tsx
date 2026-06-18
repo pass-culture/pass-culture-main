@@ -28,24 +28,14 @@ export const DisplayOfferInAppLink: FunctionComponent<
       color={color}
       icon={icon}
       iconAlt={iconAlt}
-      onClick={(event) => {
-        event.preventDefault()
+      onClick={() => {
         logEvent(Events.CLICKED_VIEW_APP_OFFER, {
           offerId: id,
         })
         onClick?.()
-
-        window
-          .open(
-            offerPreviewUrl,
-            'targetWindow',
-            'toolbar=no, width=375, height=667'
-          )
-          ?.focus()
-
-        return false
       }}
       fullWidth={fullWidth}
+      opensInNewTab
     />
   )
 }
