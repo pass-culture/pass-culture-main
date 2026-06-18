@@ -12,8 +12,8 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferInformations } from './CollectiveOfferInformations'
-import { CollectiveOfferInformationsForm } from './components/CollectiveOfferInformationsForm/CollectiveOfferInformationsForm'
+import { CollectiveOfferInformation } from './CollectiveOfferInformation'
+import { CollectiveOfferInformationForm } from './components/CollectiveOfferInformationForm/CollectiveOfferInformationForm'
 
 const { editOfferMock, mockSnackBarSuccess, mockSnackBarError } = vi.hoisted(
   () => ({
@@ -39,9 +39,9 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock(
-  './components/CollectiveOfferInformationsForm/CollectiveOfferInformationsForm',
+  './components/CollectiveOfferInformationForm/CollectiveOfferInformationForm',
   () => ({
-    CollectiveOfferInformationsForm: vi.fn(() => (
+    CollectiveOfferInformationForm: vi.fn(() => (
       <div data-testid="infos-form" />
     )),
   })
@@ -50,7 +50,7 @@ vi.mock(
 const goBackLinkVerificationMock = vi.fn()
 const catchApiErrorVerificationMock = vi.fn()
 const setSubmitResponse = (partialOffer: PatchCollectiveOfferBodyModel) => {
-  vi.mocked(CollectiveOfferInformationsForm).mockImplementationOnce(
+  vi.mocked(CollectiveOfferInformationForm).mockImplementationOnce(
     vi.fn(({ saveAndContinue, goBackLink }) => {
       goBackLinkVerificationMock(goBackLink)
       return (
@@ -70,7 +70,7 @@ const setSubmitResponse = (partialOffer: PatchCollectiveOfferBodyModel) => {
   )
 }
 
-const renderCollectiveStockCreation = (
+const renderCollectiveOfferInformation = (
   offer: GetCollectiveOfferResponseModel,
   isEdition: boolean = false,
   hasRequete: boolean = false
@@ -83,7 +83,7 @@ const renderCollectiveStockCreation = (
     path += '?requete=1'
   }
   const venue = makeGetVenueResponseModel({ id: 1, allowedOnAdage: true })
-  return renderWithProviders(<CollectiveOfferInformations offer={offer} />, {
+  return renderWithProviders(<CollectiveOfferInformation offer={offer} />, {
     initialRouterEntries: [path],
     storeOverrides: {
       user: {
@@ -94,10 +94,10 @@ const renderCollectiveStockCreation = (
   })
 }
 
-describe('<CollectiveOfferInformations />', () => {
-  it('should render CollectiveOfferInformationsForm', () => {
+describe('<CollectiveOfferInformation />', () => {
+  it('should render CollectiveOfferInformationForm', () => {
     const offer = getCollectiveOfferFactory()
-    renderCollectiveStockCreation(offer)
+    renderCollectiveOfferInformation(offer)
 
     expect(screen.getByTestId('infos-form')).toBeVisible()
   })
@@ -106,7 +106,7 @@ describe('<CollectiveOfferInformations />', () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email.com' })
-    renderCollectiveStockCreation(offer)
+    renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
     expect(apiNew.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
@@ -128,7 +128,7 @@ describe('<CollectiveOfferInformations />', () => {
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })
-    renderCollectiveStockCreation(offer)
+    renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
     expect(apiNew.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
@@ -157,7 +157,7 @@ describe('<CollectiveOfferInformations />', () => {
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })
-    renderCollectiveStockCreation(offer)
+    renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
     expect(console.error).toHaveBeenCalledExactlyOnceWith(
@@ -176,7 +176,7 @@ describe('<CollectiveOfferInformations />', () => {
     const offer = getCollectiveOfferFactory()
     const isEdition = false
     setSubmitResponse({ contactEmail: 'test@email.com' })
-    renderCollectiveStockCreation(offer, isEdition)
+    renderCollectiveOfferInformation(offer, isEdition)
 
     expect(goBackLinkVerificationMock).toHaveBeenCalledWith(
       `/offre/${offer.id}/collectif/stocks`
@@ -193,7 +193,7 @@ describe('<CollectiveOfferInformations />', () => {
     const isEdition = false
     const hasRequete = true
     setSubmitResponse({ contactEmail: 'test@email.com' })
-    renderCollectiveStockCreation(offer, isEdition, hasRequete)
+    renderCollectiveOfferInformation(offer, isEdition, hasRequete)
 
     expect(goBackLinkVerificationMock).toHaveBeenCalledWith(
       `/offre/${offer.id}/collectif/stocks?requete=1`
@@ -209,7 +209,7 @@ describe('<CollectiveOfferInformations />', () => {
     const offer = getCollectiveOfferFactory()
     const isEdition = true
     setSubmitResponse({ contactEmail: 'test@email.com' })
-    renderCollectiveStockCreation(offer, isEdition)
+    renderCollectiveOfferInformation(offer, isEdition)
 
     expect(goBackLinkVerificationMock).toHaveBeenCalledWith(
       `/offre/${offer.id}/collectif/recapitulatif`

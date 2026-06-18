@@ -18,9 +18,9 @@ import {
   withOnlyCollectiveOfferFromParams,
 } from '../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '../CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferInformationsForm } from './components/CollectiveOfferInformationsForm/CollectiveOfferInformationsForm'
+import { CollectiveOfferInformationForm } from './components/CollectiveOfferInformationForm/CollectiveOfferInformationForm'
 
-export const CollectiveOfferInformations = ({
+export const CollectiveOfferInformation = ({
   offer,
 }: CollectiveOfferFromParamsProps): JSX.Element => {
   const snackBar = useSnackBar()
@@ -76,7 +76,7 @@ export const CollectiveOfferInformations = ({
       requestId={requestId}
       offer={offer}
     >
-      <CollectiveOfferInformationsForm
+      <CollectiveOfferInformationForm
         offer={offer}
         isCreation={!isEdition}
         saveAndContinue={saveAndContinue}
@@ -89,5 +89,5 @@ export const CollectiveOfferInformations = ({
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withOnlyCollectiveOfferFromParams(
-  CollectiveOfferInformations
+  CollectiveOfferInformation
 )

@@ -11,7 +11,7 @@ describe('getCollectiveOfferActiveStep', () => {
     )
     expect(
       getCollectiveOfferActiveStep('/blablabla/informations-pratiques')
-    ).toBe(CollectiveOfferStep.INFORMATIONS)
+    ).toBe(CollectiveOfferStep.INFORMATION)
     expect(getCollectiveOfferActiveStep('/blablabla/etablissement')).toBe(
       CollectiveOfferStep.INSTITUTION
     )

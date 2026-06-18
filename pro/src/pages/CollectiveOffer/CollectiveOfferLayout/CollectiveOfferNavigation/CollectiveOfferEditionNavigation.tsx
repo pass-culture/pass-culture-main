@@ -32,7 +32,7 @@ export const CollectiveOfferEditionNavigation = ({
       url: `/offre/${offerId}/collectif/stocks/edition`,
     },
     {
-      key: CollectiveOfferStep.INFORMATIONS,
+      key: CollectiveOfferStep.INFORMATION,
       label: 'Informations pratiques',
       url: `/offre/${offerId}/collectif/informations-pratiques/edition`,
     },
@@ -44,7 +44,7 @@ export const CollectiveOfferEditionNavigation = ({
   ]
 
   if (!isNewCollectivePriceEnabled) {
-    tabs = tabs.filter((s) => s.key !== CollectiveOfferStep.INFORMATIONS)
+    tabs = tabs.filter((s) => s.key !== CollectiveOfferStep.INFORMATION)
   }
 
   const allTabs = tabs.map((t) => t.key)

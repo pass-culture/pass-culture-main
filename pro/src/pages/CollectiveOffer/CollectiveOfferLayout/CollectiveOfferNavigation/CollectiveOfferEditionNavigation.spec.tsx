@@ -46,7 +46,7 @@ describe('<CollectiveOfferEditionNavigation />', () => {
     const offerId = 1
     renderWithProviders(
       <CollectiveOfferEditionNavigation
-        activeStep={CollectiveOfferStep.INFORMATIONS}
+        activeStep={CollectiveOfferStep.INFORMATION}
         offerId={offerId}
       />,
       { features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'] }

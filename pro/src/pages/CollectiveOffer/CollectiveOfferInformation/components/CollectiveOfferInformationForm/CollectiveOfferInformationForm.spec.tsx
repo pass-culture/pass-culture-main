@@ -8,9 +8,9 @@ import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveA
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  CollectiveOfferInformationsForm,
-  type CollectiveOfferInformationsFormProps,
-} from './CollectiveOfferInformationsForm'
+  CollectiveOfferInformationForm,
+  type CollectiveOfferInformationFormProps,
+} from './CollectiveOfferInformationForm'
 
 vi.mock(
   '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/OfferEducationalForm/FormContact/FormContactNew',
@@ -27,7 +27,7 @@ vi.mock(
 )
 
 function renderCollectiveOfferInformationForm(
-  props: Partial<CollectiveOfferInformationsFormProps>
+  props: Partial<CollectiveOfferInformationFormProps>
 ) {
   const allProps = {
     offer: getCollectiveOfferFactory(),
@@ -36,10 +36,10 @@ function renderCollectiveOfferInformationForm(
     goBackLink: '/test/go/back/link',
     ...props,
   }
-  return renderWithProviders(<CollectiveOfferInformationsForm {...allProps} />)
+  return renderWithProviders(<CollectiveOfferInformationForm {...allProps} />)
 }
 
-describe('<CollectiveOfferInformationsForm />', () => {
+describe('<CollectiveOfferInformationForm />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderCollectiveOfferInformationForm({})
 
