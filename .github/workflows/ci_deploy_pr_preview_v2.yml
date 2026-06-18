@@ -58,7 +58,6 @@ jobs:
           # Requires changing trigger to pull_request.
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
-          
           if [ "${FRONT_ONLY}" == "true" ]; then
             # Empty = frontend connects to shared testing backend
             echo "backend_id=" >> "$GITHUB_OUTPUT"
