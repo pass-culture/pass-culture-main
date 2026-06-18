@@ -222,7 +222,7 @@ class EditCollectiveOfferStocksTest:
         price = offer.collectiveStock.price
         service_price = offer.collectiveStock.servicePrice
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=price + 50, servicePrice=service_price + 50, additionalFees=[]
+            price=price + 50, servicePrice=service_price + 50, collectiveAdditionalFees=[]
         )
 
         educational_api_stock.edit_collective_stock(
@@ -247,7 +247,7 @@ class EditCollectiveOfferStocksTest:
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             price=price + 10,
             servicePrice=service_price,
-            additionalFees=new_fees,
+            collectiveAdditionalFees=new_fees,
         )
 
         educational_api_stock.edit_collective_stock(
@@ -333,7 +333,7 @@ class EditCollectiveOfferStocksTest:
         price = offer.collectiveStock.price
         service_price = offer.collectiveStock.servicePrice
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=price - 10, servicePrice=service_price - 10, additionalFees=[]
+            price=price - 10, servicePrice=service_price - 10, collectiveAdditionalFees=[]
         )
 
         educational_api_stock.edit_collective_stock(
@@ -357,7 +357,7 @@ class EditCollectiveOfferStocksTest:
         service_price = 50
         new_fees = [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 40}]
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=price - 10, servicePrice=service_price, additionalFees=new_fees
+            price=price - 10, servicePrice=service_price, collectiveAdditionalFees=new_fees
         )
 
         educational_api_stock.edit_collective_stock(
@@ -399,7 +399,7 @@ class EditCollectiveOfferStocksTest:
         ]
         new_price = 50 + 30 + 40 + 50
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=new_price, servicePrice=50, additionalFees=new_fees
+            price=new_price, servicePrice=50, collectiveAdditionalFees=new_fees
         )
 
         educational_api_stock.edit_collective_stock(
@@ -426,7 +426,7 @@ class EditCollectiveOfferStocksTest:
         )
 
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            price=50, servicePrice=50, additionalFees=[]
+            price=50, servicePrice=50, collectiveAdditionalFees=[]
         )
         educational_api_stock.edit_collective_stock(
             stock=offer.collectiveStock, stock_data=new_stock_data.model_dump(exclude_unset=True)
@@ -568,7 +568,7 @@ class ReturnErrorTest:
             {
                 "price": offer.collectiveStock.price - 10,
                 "servicePrice": offer.collectiveStock.price - 10,
-                "additionalFees": [],
+                "collectiveAdditionalFees": [],
             },
         ]
         for change in changes:

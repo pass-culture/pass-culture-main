@@ -848,13 +848,13 @@ export type CollectiveRevenue = {
  */
 export type CollectiveStockCreationBodyModel = {
     /**
-     * Additionalfees
-     */
-    additionalFees?: Array<CollectiveAdditionalFeeModel> | null;
-    /**
      * Bookinglimitdatetime
      */
     bookingLimitDatetime: string | null;
+    /**
+     * Collectiveadditionalfees
+     */
+    collectiveAdditionalFees?: Array<CollectiveAdditionalFeeModel> | null;
     /**
      * Enddatetime
      */
@@ -894,13 +894,13 @@ export type CollectiveStockCreationBodyModel = {
  */
 export type CollectiveStockEditionBodyModel = {
     /**
-     * Additionalfees
-     */
-    additionalFees?: Array<CollectiveAdditionalFeeModel> | null;
-    /**
      * Bookinglimitdatetime
      */
     bookingLimitDatetime?: string | null;
+    /**
+     * Collectiveadditionalfees
+     */
+    collectiveAdditionalFees?: Array<CollectiveAdditionalFeeModel> | null;
     /**
      * Enddatetime
      */

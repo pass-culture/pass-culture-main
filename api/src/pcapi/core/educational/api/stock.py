@@ -63,10 +63,10 @@ def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> m
         priceDetail=price_detail,
     )
 
-    if stock_data.additionalFees:
+    if stock_data.collectiveAdditionalFees:
         collective_stock.collectiveAdditionalFees = [
             models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=float_to_decimal(fee.amount))
-            for fee in stock_data.additionalFees
+            for fee in stock_data.collectiveAdditionalFees
         ]
 
     db.session.add(collective_stock)
@@ -157,7 +157,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
                 stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
-    discount_fields = ("numberOfTickets", "numberOfTeachers", "servicePrice", "additionalFees", "priceDetail")
+    discount_fields = ("numberOfTickets", "numberOfTeachers", "servicePrice", "collectiveAdditionalFees", "priceDetail")
     if any(field in stock_data for field in discount_fields):
         validation.check_collective_offer_action_is_allowed(
             stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
@@ -174,7 +174,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     stock = repository.get_and_lock_collective_stock(stock_id=stock.id)
 
     # update the additional fees
-    additional_fees: list[dict] | None = updatable_fields.pop("additionalFees", None)
+    additional_fees: list[dict] | None = updatable_fields.pop("collectiveAdditionalFees", None)
     if additional_fees is not None:
         new_amount_by_type_label = {
             (fee["type"], fee["label"]): float_to_decimal(fee["amount"]) for fee in additional_fees
@@ -255,7 +255,7 @@ def _extract_updatable_fields_from_stock_data(
         "bookingLimitDatetime": booking_limit_datetime,
         "price": float_to_decimal(price) if price is not None else None,
         "servicePrice": float_to_decimal(service_price) if service_price is not None else None,
-        "additionalFees": stock_data.get("additionalFees"),
+        "collectiveAdditionalFees": stock_data.get("collectiveAdditionalFees"),
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "numberOfTeachers": stock_data.get("numberOfTeachers"),
         "priceDetail": stock_data.get("priceDetail"),
