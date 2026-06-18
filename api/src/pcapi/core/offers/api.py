@@ -760,6 +760,7 @@ def create_stock(
     price: decimal.Decimal | None = None,
     price_category: models.PriceCategory | None = None,
     id_at_provider: str | None = None,
+    price_error_key: str = "price",
 ) -> models.Stock:
     if booking_limit_datetime:
         validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
@@ -792,7 +793,7 @@ def create_stock(
     validation.check_required_dates_for_stock(offer, beginning_datetime, booking_limit_datetime)
     validation.check_validation_status(offer)
     validation.check_provider_can_create_stock(offer, creating_provider)
-    validation.check_stock_price(price, offer)
+    validation.check_stock_price(price, offer, error_key=price_error_key)
     validation.check_stock_quantity(quantity)
 
     created_stock = models.Stock(
@@ -854,6 +855,7 @@ def edit_stock(
     editing_provider: providers_models.Provider | None = None,
     price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
     id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
+    price_error_key: str = "price",
 ) -> tuple[models.Stock | None, bool]:
     """If anything has changed, return the stock and whether the
     "beginning datetime" has changed. Otherwise, return `(None, False)`.
@@ -870,7 +872,7 @@ def edit_stock(
 
     if price is not UNCHANGED and price is not None and price != stock.price:
         modifications["price"] = price
-        validation.check_stock_price(price, stock.offer, old_price=stock.price)
+        validation.check_stock_price(price, stock.offer, old_price=stock.price, error_key=price_error_key)
 
     if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:
         modifications["priceCategory"] = price_category
@@ -879,6 +881,7 @@ def edit_stock(
             price_category.price,
             stock.offer,
             old_price=stock.priceCategory.price if stock.priceCategory else stock.price,
+            error_key=price_error_key,
         )
 
     if quantity is not UNCHANGED and quantity != stock.quantity:
@@ -970,14 +973,20 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
 
     existing_stocks = {stock.id: stock for stock in offer.activeStocks if not stock.offer.isEvent}
 
-    stock_inputs_to_create = [stock_input for stock_input in stock_inputs if stock_input.get("id") is None]
-    stock_inputs_to_update = [stock_input for stock_input in stock_inputs if stock_input.get("id") is not None]
-    for stock_input in stock_inputs_to_update:
+    indexed_stock_inputs_to_create = [
+        (index, stock_input) for index, stock_input in enumerate(stock_inputs) if stock_input.get("id") is None
+    ]
+    indexed_stock_inputs_to_update = [
+        (index, stock_input) for index, stock_input in enumerate(stock_inputs) if stock_input.get("id") is not None
+    ]
+    for _, stock_input in indexed_stock_inputs_to_update:
         if stock_input["id"] not in existing_stocks:
             raise exceptions.OfferException({"global": "Trying to update a non-existing stock."})
-    stock_ids_to_delete = set(existing_stocks) - {stock_input["id"] for stock_input in stock_inputs_to_update}
+    stock_ids_to_delete = set(existing_stocks) - {
+        stock_input["id"] for _, stock_input in indexed_stock_inputs_to_update
+    }
 
-    for stock_input in stock_inputs_to_create:
+    for index, stock_input in indexed_stock_inputs_to_create:
         create_stock(
             offer,
             activation_codes=stock_input["activation_codes"],
@@ -985,9 +994,10 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
             booking_limit_datetime=stock_input["booking_limit_datetime"],
             price=stock_input["price"],
             quantity=stock_input["quantity"],
+            price_error_key=f"priceCategories.{index}.price",
         )
 
-    for stock_input in stock_inputs_to_update:
+    for index, stock_input in indexed_stock_inputs_to_update:
         assert stock_input["id"]
         stock_to_edit = existing_stocks[stock_input["id"]]
         # Workaround to avoid updating bookingLimitDatetime if the date has not changed, because the time part can be different when created via public api
@@ -1006,6 +1016,7 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
             booking_limit_datetime=booking_limit_datetime,
             price=stock_input.get("price", UNCHANGED),
             quantity=stock_input.get("quantity", UNCHANGED),
+            price_error_key=f"priceCategories.{index}.price",
         )
 
     for stock_id in stock_ids_to_delete:

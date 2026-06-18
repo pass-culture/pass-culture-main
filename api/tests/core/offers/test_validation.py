@@ -1,5 +1,6 @@
 import datetime
 import pathlib
+import types
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
@@ -198,15 +199,11 @@ class CheckPricesForStockTest:
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(121, offer)
-        assert error.value.errors["priceLimitationRule"] == [
-            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
-        ]
+        assert error.value.errors["price"] == ["Prix invalide"]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(39, offer)
-        assert error.value.errors["priceLimitationRule"] == [
-            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
-        ]
+        assert error.value.errors["price"] == ["Prix invalide"]
 
     def test_price_limitation_rule_ok_with_draft_offer(self):
         offers_factories.OfferPriceLimitationRuleFactory(
@@ -236,14 +233,28 @@ class CheckPricesForStockTest:
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(121, offer)
-        assert error.value.errors["priceLimitationRule"] == [
-            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
-        ]
+        assert error.value.errors["price"] == ["Prix invalide"]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(39, offer)
-        assert error.value.errors["priceLimitationRule"] == [
-            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
+        assert error.value.errors["price"] == ["Prix invalide"]
+
+    def test_check_stocks_price_should_return_indexed_price_categories_error_key(self):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offers_factories.PriceCategoryFactory(offer=offer, price=20)
+        too_high_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=310)
+
+        stock = types.SimpleNamespace(price_category_id=too_high_price_category.id)
+        expected_index = next(
+            index for index, pc in enumerate(offer.priceCategories) if pc.id == too_high_price_category.id
+        )
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stocks_price([stock], offer)
+
+        assert f"priceCategories.{expected_index}.price" in error.value.errors
+        assert error.value.errors[f"priceCategories.{expected_index}.price"] == [
+            "Le prix d’une offre ne peut excéder 300 euros."
         ]
 
 
