@@ -6,7 +6,10 @@ import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
 } from '@/apiClient/v1'
-import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFERS_QUERY_KEY,
+  GET_VENUE_HEADLINE_OFFER_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -117,6 +120,7 @@ const updateIndividualOffersStatus = async (
     }
   }
   await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
+  await mutate([GET_VENUE_HEADLINE_OFFER_QUERY_KEY, apiFilters.venueId])
 }
 
 export const IndividualOffersActionsBar = ({
@@ -147,10 +151,10 @@ export const IndividualOffersActionsBar = ({
     useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const apiFilters = computeIndividualApiFilters(
+  const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
-    selectedPartnerVenue.managingOfferer.id
-  )
+    selectedVenueId: selectedPartnerVenue.id,
+  })
 
   const handleClose = () => {
     clearSelectedOffers()
