@@ -1,6 +1,6 @@
 import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 
-import { OfferStatus } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'

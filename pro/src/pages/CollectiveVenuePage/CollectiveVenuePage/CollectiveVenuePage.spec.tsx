@@ -4,7 +4,7 @@ import {
   DisplayableActivity,
   type GetVenueResponseModel,
   StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

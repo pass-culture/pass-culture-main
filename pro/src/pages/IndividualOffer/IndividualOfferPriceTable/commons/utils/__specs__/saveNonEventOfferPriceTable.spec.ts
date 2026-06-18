@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -14,7 +14,7 @@ vi.mock('swr', async (importOriginal) => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchOffer: vi.fn(),
     upsertOfferStocks: vi.fn(),
   },
@@ -58,11 +58,11 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: { isDuo: true },
     })
-    expect(apiNew.upsertOfferStocks).toHaveBeenCalledWith({
+    expect(api.upsertOfferStocks).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: expect.objectContaining({ stocks: expect.any(Array) }),
     })
@@ -82,7 +82,7 @@ describe('saveNonEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: { isDuo: true },
     })

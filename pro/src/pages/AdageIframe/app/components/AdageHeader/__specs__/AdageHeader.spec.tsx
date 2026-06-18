@@ -5,8 +5,8 @@ import {
   AdageFrontRoles,
   AdageHeaderLink,
   type AuthenticatedResponse,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
 import {
@@ -35,7 +35,7 @@ const renderAdageHeader = (
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logHeaderLinkClick: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),
   },
@@ -59,10 +59,9 @@ describe('AdageHeader', () => {
       ...snackBarsImport,
       error: snackBarError,
     }))
-    vi.spyOn(
-      apiAdageNew,
-      'getEducationalInstitutionWithBudget'
-    ).mockResolvedValue(defaultEducationalInstitution)
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget').mockResolvedValue(
+      defaultEducationalInstitution
+    )
     vi.spyOn(Date, 'now').mockReturnValue(
       new Date('2025-10-01T10:00:00').getTime()
     )
@@ -72,7 +71,7 @@ describe('AdageHeader', () => {
     renderAdageHeader(user)
     await waitFor(() =>
       expect(
-        apiAdageNew.getEducationalInstitutionWithBudget
+        apiAdage.getEducationalInstitutionWithBudget
       ).toHaveBeenCalledTimes(1)
     )
 
@@ -90,7 +89,7 @@ describe('AdageHeader', () => {
     renderAdageHeader(user)
     await waitFor(() =>
       expect(
-        apiAdageNew.getEducationalInstitutionWithBudget
+        apiAdage.getEducationalInstitutionWithBudget
       ).toHaveBeenCalledTimes(1)
     )
 
@@ -148,8 +147,8 @@ describe('AdageHeader', () => {
     await userEvent.click(
       screen.getByRole('link', { name: headerLink.headerLinkLabel })
     )
-    expect(apiAdageNew.logHeaderLinkClick).toHaveBeenCalledTimes(1)
-    expect(apiAdageNew.logHeaderLinkClick).toHaveBeenCalledWith({
+    expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledTimes(1)
+    expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         header_link_name: headerLink.headerLinkName,
@@ -161,7 +160,7 @@ describe('AdageHeader', () => {
 
     await waitFor(() => {
       expect(
-        apiAdageNew.getEducationalInstitutionWithBudget
+        apiAdage.getEducationalInstitutionWithBudget
       ).not.toHaveBeenCalled()
     })
   })
@@ -187,7 +186,7 @@ describe('AdageHeader', () => {
   })
 
   it('should display a favorites tab in the header', async () => {
-    vi.spyOn(apiAdageNew, 'getEducationalInstitutionWithBudget')
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(user)
 
@@ -199,7 +198,7 @@ describe('AdageHeader', () => {
   })
 
   it('should display the user favorite count after the favorite tab name', async () => {
-    vi.spyOn(apiAdageNew, 'getEducationalInstitutionWithBudget')
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader({ ...user, favoritesCount: 10 })
 

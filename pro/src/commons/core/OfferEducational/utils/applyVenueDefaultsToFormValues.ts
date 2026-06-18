@@ -1,7 +1,7 @@
 import {
   CollectiveLocationType,
   type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 import { getDefaultEducationalValues } from '../constants'
 import type { OfferEducationalFormValues } from '../types'

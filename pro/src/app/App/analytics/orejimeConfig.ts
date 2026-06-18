@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { toISOStringWithoutMilliseconds } from '@/commons/utils/date'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
@@ -52,7 +52,7 @@ export const orejimeConfig = {
       }
 
       // l’api orejime n’est pas asynchrone
-      apiNew.cookiesConsent({ body: cookieConsent })
+      api.cookiesConsent({ body: cookieConsent })
 
       return JSON.stringify(contents)
     },

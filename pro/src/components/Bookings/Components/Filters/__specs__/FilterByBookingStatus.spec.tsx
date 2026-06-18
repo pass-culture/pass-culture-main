@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import {
   type BookingRecapResponseModel,
   BookingRecapStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,

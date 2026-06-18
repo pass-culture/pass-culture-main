@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { type Params, useNavigate, useParams } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -30,7 +30,7 @@ export const ResetPassword = (): JSX.Element => {
 
   useEffect(() => {
     if (token) {
-      apiNew.postCheckToken({ body: { token } }).then(() => {
+      api.postCheckToken({ body: { token } }).then(() => {
         setIsLoading(false)
       }, invalidTokenHandler)
     }
@@ -41,7 +41,7 @@ export const ResetPassword = (): JSX.Element => {
     try {
       // `as string` is used because TS it can be undefined
       // token is always defined as `submitChangePassword` is callable only in that case.
-      await apiNew.postNewPassword({
+      await api.postNewPassword({
         body: { newPassword, token: token as string },
       })
 

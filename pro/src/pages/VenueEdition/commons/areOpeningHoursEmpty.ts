@@ -1,4 +1,4 @@
-import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1/new'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 
 export function areOpeningHoursEmpty(
   openingHours?: WeekdayOpeningHoursTimespans | null

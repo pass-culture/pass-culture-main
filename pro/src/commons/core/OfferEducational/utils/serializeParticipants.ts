@@ -1,4 +1,4 @@
-import { StudentLevels } from '@/apiClient/v1/new'
+import { StudentLevels } from '@/apiClient/v1'
 
 import type { OfferEducationalFormValues } from '../types'
 

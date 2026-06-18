@@ -10,9 +10,9 @@ echo "Generating adage API client from http://${PCAPI_HOST}/adage-iframe/openapi
 ./node_modules/.bin/openapi-ts -f config/openapi-ts.adage.config.ts
 
 echo "Sanitizing enum keys..."
-node scripts/sanitize_enum_keys.js src/apiClient/v1/new/types.gen.ts src/apiClient/adage/new/types.gen.ts
+node scripts/sanitize_enum_keys.js src/apiClient/v1/types.gen.ts src/apiClient/adage/types.gen.ts
 
 echo "Formatting generated index files..."
-node scripts/format_generated_index_exports.js src/apiClient/v1/new/index.ts src/apiClient/adage/new/index.ts
+node scripts/format_generated_index_exports.js src/apiClient/v1/index.ts src/apiClient/adage/index.ts
 
 echo "Done."

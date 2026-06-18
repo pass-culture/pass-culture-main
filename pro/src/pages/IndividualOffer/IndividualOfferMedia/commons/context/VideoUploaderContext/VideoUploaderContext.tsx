@@ -8,12 +8,12 @@ import {
   useState,
 } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   VideoData,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
@@ -65,7 +65,7 @@ export function VideoUploaderContextProvider({
     async ({ onSuccess, onError }: onVideoUploadProps) => {
       if (videoUrl) {
         try {
-          const response = await apiNew.getOfferVideoMetadata({
+          const response = await api.getOfferVideoMetadata({
             query: { videoUrl },
           })
           setVideoData(response)
@@ -85,7 +85,7 @@ export function VideoUploaderContextProvider({
   }, [])
 
   const handleVideoOnSubmit = useCallback(async () => {
-    return await apiNew.patchOffer({
+    return await api.patchOffer({
       path: { offer_id: offerId },
       body: {
         videoUrl: videoUrl ?? '',

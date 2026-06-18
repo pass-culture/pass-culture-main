@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdageNew } from '@/apiClient/api'
+import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -15,7 +15,7 @@ vi.mock('@/commons/utils/config', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     saveRedactorPreferences: vi.fn(),
     logOpenSatisfactionSurvey: vi.fn(),
   },
@@ -76,7 +76,7 @@ describe('SurveySatisfaction', () => {
       error: snackBarError,
     }))
 
-    vi.spyOn(apiAdageNew, 'saveRedactorPreferences').mockRejectedValue({
+    vi.spyOn(apiAdage, 'saveRedactorPreferences').mockRejectedValue({
       isOk: false,
     })
 
@@ -104,7 +104,7 @@ describe('SurveySatisfaction', () => {
 
     await user.click(openButton)
 
-    expect(apiAdageNew.logOpenSatisfactionSurvey).toHaveBeenCalledWith({
+    expect(apiAdage.logOpenSatisfactionSurvey).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         queryId: '123',

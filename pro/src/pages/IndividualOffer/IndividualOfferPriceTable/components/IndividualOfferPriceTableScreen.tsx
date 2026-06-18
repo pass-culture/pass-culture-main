@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import {

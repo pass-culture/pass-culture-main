@@ -1,12 +1,9 @@
 import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
-import {
-  type EventStockUpdateBodyModel,
-  StocksOrderedBy,
-} from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import { type EventStockUpdateBodyModel, StocksOrderedBy } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFER_QUERY_KEY,
@@ -80,7 +77,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const { data, isLoading } = useSWR(
     stockQueryKeys,
     ([, offerId, pageNum, filters, sortType]) =>
-      apiNew.getStocks({
+      api.getStocks({
         path: { offer_id: offerId },
         query: {
           date: filters.date || undefined,
@@ -109,7 +106,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   async function deleteStocks(ids: number[]) {
     await mutate(
       stockQueryKeys,
-      apiNew.deleteStocks({
+      api.deleteStocks({
         path: { offer_id: offer.id },
         body: { ids_to_delete: ids },
       }),
@@ -139,7 +136,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     try {
       const updatedStocks = await mutate(
         stockQueryKeys,
-        apiNew.bulkUpdateEventStocks({
+        api.bulkUpdateEventStocks({
           body: {
             offerId: offer.id,
             stocks: [stock],

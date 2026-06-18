@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import {
   CollectiveBookingCancellationReasons,
   CollectiveOfferDisplayedStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'

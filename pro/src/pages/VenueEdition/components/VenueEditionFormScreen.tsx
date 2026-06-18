@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import { VenueEditionForm } from './VenueEditionForm'

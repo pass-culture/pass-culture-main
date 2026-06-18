@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useCollectiveOffersSwrKeys } from '@/commons/core/Offers/hooks/useCollectiveOffersSwrKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -73,7 +73,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
   const collectiveOfferTemplateIds = selectedOffers.map((offer) => offer.id)
 
   if (collectiveOfferTemplateIds.length > 0) {
-    await apiNew.patchCollectiveOffersTemplateActiveStatus({
+    await api.patchCollectiveOffersTemplateActiveStatus({
       body: {
         ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
         isActive: newStatus === CollectiveOfferDisplayedStatus.PUBLISHED,
@@ -205,7 +205,7 @@ export function CollectiveOffersActionsBar<
     }
 
     if (offersWithCanPublishAction.length > 0) {
-      await apiNew.patchCollectiveOffersTemplateActiveStatus({
+      await api.patchCollectiveOffersTemplateActiveStatus({
         body: {
           ids: offersWithCanPublishAction.map((offer) => Number(offer.id)),
           isActive: true,
@@ -235,13 +235,13 @@ export function CollectiveOffersActionsBar<
     }
 
     if (collectiveOfferTemplateIds.length > 0) {
-      await apiNew.patchCollectiveOffersTemplateArchive({
+      await api.patchCollectiveOffersTemplateArchive({
         body: { ids: [...collectiveOfferTemplateIds] },
       })
     }
 
     if (collectiveOfferIds.length > 0) {
-      await apiNew.patchCollectiveOffersArchive({
+      await api.patchCollectiveOffersArchive({
         body: { ids: [...collectiveOfferIds] },
       })
     }

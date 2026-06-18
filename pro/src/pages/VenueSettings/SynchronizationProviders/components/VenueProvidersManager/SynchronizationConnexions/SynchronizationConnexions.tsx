@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import type {
   GetVenueResponseModel,
   VenueProviderResponse,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -30,7 +30,7 @@ describe('AddVenueProviderButton', () => {
       selectSoftwareButtonRef: createRef(),
     }
 
-    vi.spyOn(apiNew, 'getProvidersByVenue').mockResolvedValue([
+    vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
       {
         name: 'Ciné Office',
         id: 12,

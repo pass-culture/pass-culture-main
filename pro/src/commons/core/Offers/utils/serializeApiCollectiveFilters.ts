@@ -2,7 +2,7 @@ import {
   CollectiveLocationType,
   EacFormat,
   type ListCollectiveOffersQueryModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { nullifyEmptyProps } from '@/commons/utils/nullifyEmptyProps'
 import { toEnumOrNull } from '@/commons/utils/toEnumOrNull'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'

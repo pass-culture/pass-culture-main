@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import {
   checkSiret,
@@ -42,7 +42,7 @@ describe('getsiretData', () => {
   })
 
   it('should return an error when the SIRET is inactive', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValue({})
+    vi.spyOn(api, 'getStructureData').mockRejectedValue({})
 
     const siret = '11111111111111'
 
@@ -92,7 +92,7 @@ describe('checkSiretRequest', () => {
   })
 
   it('should return an error when the SIRET is inactive', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValue({})
+    vi.spyOn(api, 'getStructureData').mockRejectedValue({})
 
     const siret = '11111111111111'
 
@@ -107,7 +107,7 @@ describe('checkSiretRequest', () => {
   })
 
   it('should return an error when the call fails', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValueOnce({
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce({
       status: 400,
       name: 'ApiError',
       message: 'oh no',

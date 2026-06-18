@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 
 /**
  * Build the link to the offer details page :

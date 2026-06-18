@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 
 export const getEducationalInstitutions = async (): Promise<
   EducationalInstitutionResponseModel[]
@@ -10,7 +10,7 @@ export const getEducationalInstitutions = async (): Promise<
 
   do {
     currentPage += 1
-    const institutions = await apiNew.getEducationalInstitutions({
+    const institutions = await api.getEducationalInstitutions({
       query: { page: currentPage },
     })
     currentPage = institutions.page

@@ -1,7 +1,7 @@
 import type {
   GetOffererAddressesResponseModel,
   LocationResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 type MinimalAddressResponseModelToDisplay = Pick<
   LocationResponseModel,

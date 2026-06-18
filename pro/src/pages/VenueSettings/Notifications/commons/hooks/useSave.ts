@@ -1,8 +1,8 @@
 import type { UseFormReturn } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -27,7 +27,7 @@ export const useSave = ({
 
   const save = async (formValues: EditVenueBodyModelNotificationsPatch) => {
     try {
-      const updatedVenue = await apiNew.editVenue({
+      const updatedVenue = await api.editVenue({
         path: { venue_id: Number(venue.id) },
         body: VenueSettingsNotificationsValidationSchema.cast(formValues),
       })

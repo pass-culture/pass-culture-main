@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetCollectiveOfferResponseModel,
   PatchCollectiveOfferBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
@@ -46,7 +46,7 @@ export const CollectiveOfferInformation = ({
 
   async function saveAndContinue(partialOffer: PatchCollectiveOfferBodyModel) {
     try {
-      const response = await apiNew.editCollectiveOffer({
+      const response = await api.editCollectiveOffer({
         path: { offer_id: offer.id },
         body: partialOffer,
       })

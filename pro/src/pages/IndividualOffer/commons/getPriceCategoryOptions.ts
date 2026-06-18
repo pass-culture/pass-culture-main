@@ -1,4 +1,4 @@
-import type { PriceCategoryResponseModel } from '@/apiClient/v1/new'
+import type { PriceCategoryResponseModel } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import {
   convertEuroToPacificFranc,

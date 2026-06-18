@@ -3,7 +3,7 @@ import {
   OfferContactFormEnum,
   type PatchCollectiveOfferBodyModel,
   type PatchCollectiveOfferTemplateBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { serializeDates } from '@/commons/core/OfferEducational/utils/createOfferPayload'
 import { parseDuration } from '@/commons/core/OfferEducational/utils/parseDuration'

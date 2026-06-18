@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -116,7 +116,7 @@ describe('CollectiveOfferStockEdition', () => {
   })
 
   it('should call editCollectiveStock and show success on submit', async () => {
-    vi.spyOn(apiNew, 'editCollectiveStock').mockResolvedValueOnce({} as any)
+    vi.spyOn(api, 'editCollectiveStock').mockResolvedValueOnce({} as any)
 
     renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
       offer: defaultOffer,
@@ -128,7 +128,7 @@ describe('CollectiveOfferStockEdition', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(apiNew.editCollectiveStock).toHaveBeenCalledTimes(1)
+      expect(api.editCollectiveStock).toHaveBeenCalledTimes(1)
     })
 
     await waitFor(() => {
@@ -144,7 +144,7 @@ describe('CollectiveOfferStockEdition', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       price: ['Le prix est invalide'],
     })
-    vi.spyOn(apiNew, 'editCollectiveStock').mockRejectedValueOnce(error)
+    vi.spyOn(api, 'editCollectiveStock').mockRejectedValueOnce(error)
 
     renderCollectiveStockEdition('/offre/A1/collectif/stocks/edition', {
       offer: defaultOffer,
@@ -165,7 +165,7 @@ describe('CollectiveOfferStockEdition', () => {
   })
 
   it('should show generic error on API error with status 500', async () => {
-    vi.spyOn(apiNew, 'editCollectiveStock').mockRejectedValueOnce(
+    vi.spyOn(api, 'editCollectiveStock').mockRejectedValueOnce(
       new ApiError('', 500, 'Internal Server Error', {})
     )
 
@@ -202,7 +202,7 @@ describe('CollectiveOfferStockEdition', () => {
 
   it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'editCollectiveStock').mockResolvedValueOnce({} as any)
+    vi.spyOn(api, 'editCollectiveStock').mockResolvedValueOnce({} as any)
 
     vi.mocked(OfferEducationalStock).mockImplementationOnce(
       vi.fn(({ onSubmit }) => {
@@ -222,7 +222,7 @@ describe('CollectiveOfferStockEdition', () => {
       name: 'Enregistrer',
     })
     await user.click(submitButton)
-    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+    expect(api.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       path: { collective_stock_id: defaultOffer.collectiveStock?.id },
       body: { numberOfTickets: 12 },
     })

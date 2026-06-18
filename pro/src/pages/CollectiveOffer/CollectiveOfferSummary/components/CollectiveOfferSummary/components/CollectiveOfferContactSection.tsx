@@ -1,7 +1,7 @@
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import {

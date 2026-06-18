@@ -3,7 +3,7 @@ import { addDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { axe } from 'vitest-axe'
 
-import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1/new'
+import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1'
 import { defaultOfferHomeResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { getDepartmentTimezone } from '@/commons/utils/timezone'
 

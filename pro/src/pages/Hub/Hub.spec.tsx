@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -22,9 +22,6 @@ import { Hub } from './Hub'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    signout: vi.fn(),
-  },
-  apiNew: {
     getOfferer: vi.fn(),
     getVenue: vi.fn(),
     signout: vi.fn(),
@@ -137,7 +134,7 @@ describe('Hub', () => {
   })
 
   it('should call setSelectedPartnerVenueById when clicking on any venue', async () => {
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
         publicName: 'Café des Arts',
@@ -150,7 +147,7 @@ describe('Hub', () => {
         },
       })
     )
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,
@@ -161,12 +158,12 @@ describe('Hub', () => {
     await userEvent.click(screen.getByRole('button', { name: /Café des Arts/ }))
 
     await waitFor(() => {
-      expect(apiNew.getVenue).toHaveBeenCalledWith({ path: { venue_id: 102 } })
+      expect(api.getVenue).toHaveBeenCalledWith({ path: { venue_id: 102 } })
     })
   })
 
   it('should show spinner after venue selection', async () => {
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
         managingOfferer: {
@@ -178,7 +175,7 @@ describe('Hub', () => {
         },
       })
     )
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
       isOnboarded: true,

@@ -1,9 +1,6 @@
 import { addDays, isBefore } from 'date-fns'
 
-import {
-  type DMSApplicationForEAC,
-  DMSApplicationstatus,
-} from '@/apiClient/v1/new'
+import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'

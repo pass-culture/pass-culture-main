@@ -6,13 +6,10 @@ import { expect, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
-import {
-  DisplayableActivity,
-  type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
@@ -56,7 +53,7 @@ function renderForm(
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
     editVenue: vi.fn(),
@@ -240,7 +237,7 @@ describe('VenueEditionFormScreen', () => {
 
     it('should display an error when the venue could not be updated', async () => {
       renderForm(baseVenue)
-      vi.spyOn(apiNew, 'editVenue').mockRejectedValue(
+      vi.spyOn(api, 'editVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -300,7 +297,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should not send opening hours if the field was not filled, and if there were no opening hours already added previously', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
 
       renderForm({ ...baseVenue, openingHours: null })
 
@@ -313,7 +310,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should send opening hours if the field was not filled, but the openingHours already existed', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
       renderForm({
         ...baseVenue,
         openingHours: {
@@ -368,7 +365,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should let the actor submit then when synchronized with acceslibre even if accessibility was never set', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
       renderForm({
         ...baseVenue,
         audioDisabilityCompliant: null,
@@ -384,7 +381,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should let the actor submit with volunteering url', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
       renderForm({
         ...baseVenue,
       })
@@ -428,7 +425,7 @@ describe('VenueEditionFormScreen', () => {
     })
 
     it('should not let the actor submit then when not synchronized with acceslibre if accessibility was never set', async () => {
-      const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
       renderForm({
         ...baseVenue,
         audioDisabilityCompliant: null,
@@ -499,7 +496,7 @@ describe('VenueEditionFormScreen', () => {
       })
 
       it('should not produce an error when accessibility is not filled nor externally defined on submit form', async () => {
-        const editVenueSpy = vi.spyOn(apiNew, 'editVenue')
+        const editVenueSpy = vi.spyOn(api, 'editVenue')
         renderForm({
           ...baseVenue,
           audioDisabilityCompliant: null,

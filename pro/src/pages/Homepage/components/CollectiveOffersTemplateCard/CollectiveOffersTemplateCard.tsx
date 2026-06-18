@@ -1,4 +1,4 @@
-import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferTemplateHomeResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'

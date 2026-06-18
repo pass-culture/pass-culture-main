@@ -1,7 +1,7 @@
 import type React from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
 
-import type { Target } from '@/apiClient/v1/new'
+import type { Target } from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import type { OffererAuthenticationFormValues } from '@/components/SignupJourneyForm/Authentication/OffererAuthenticationForm'

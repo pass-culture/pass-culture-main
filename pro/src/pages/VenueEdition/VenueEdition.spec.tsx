@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -96,9 +96,9 @@ const baseVenue: GetVenueResponseModel = {
 
 describe('VenueEdition', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(baseVenue)
-    vi.spyOn(apiNew, 'listEducationalDomains').mockResolvedValue([])
-    vi.spyOn(apiNew, 'getVenuesEducationalStatuses').mockResolvedValue({
+    vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [],
     })
     mockUseNavigate.mockClear()
@@ -135,7 +135,7 @@ describe('VenueEdition', () => {
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
     })
-    expect(apiNew.getVenue).toHaveBeenCalledWith({
+    expect(api.getVenue).toHaveBeenCalledWith({
       path: { venue_id: defaultGetVenue.id },
     })
     expect(venuePublicName).toBeInTheDocument()

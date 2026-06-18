@@ -2,8 +2,8 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY,
@@ -40,7 +40,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
   const stockSchedulesAndPricesByDateQuery = useSWR(
     [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY],
     () =>
-      apiNew.getOfferPriceCategoriesAndSchedulesByDates({
+      api.getOfferPriceCategoriesAndSchedulesByDates({
         path: { offer_id: offer.id },
       }),
     { fallbackData: [] }

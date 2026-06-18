@@ -9,7 +9,7 @@ vi.mock('swr', async (importOriginal) => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProAnonymizationEligibility: vi.fn(),
   },
 }))

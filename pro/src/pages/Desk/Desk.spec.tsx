@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   type ApiRequestOptions,
@@ -44,7 +44,7 @@ describe('Desk', () => {
 
   describe('token typing behaviour', () => {
     it('removes QR code prefix', async () => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -58,7 +58,7 @@ describe('Desk', () => {
     })
 
     it('extracts token from QR code content with prefix', async () => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -69,13 +69,13 @@ describe('Desk', () => {
       await user.type(input, 'PASSCULTURE:v3,TOKEN:AAAAAA')
 
       expect(input).toHaveValue('AAAAAA')
-      expect(apiNew.getBookingByToken).toHaveBeenCalledWith({
+      expect(api.getBookingByToken).toHaveBeenCalledWith({
         path: { token: 'AAAAAA' },
       })
     })
 
     it('calls API and displays booking details when token valid', async () => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
 
@@ -85,7 +85,7 @@ describe('Desk', () => {
       const input = screen.getByRole('textbox', { name: 'Contremarque' })
       await user.type(input, 'AAAAAA')
 
-      expect(apiNew.getBookingByToken).toHaveBeenCalledWith({
+      expect(api.getBookingByToken).toHaveBeenCalledWith({
         path: {
           token: 'AAAAAA',
         },
@@ -103,7 +103,7 @@ describe('Desk', () => {
 
   describe('form validation', () => {
     beforeEach(() => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
     })
@@ -151,13 +151,13 @@ describe('Desk', () => {
 
   describe('validate contremarque', () => {
     beforeEach(() => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
     })
 
     it('validates token successfully', async () => {
-      vi.spyOn(apiNew, 'patchBookingUseByToken').mockResolvedValueOnce()
+      vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
 
       const user = userEvent.setup()
       renderDesk()
@@ -177,7 +177,7 @@ describe('Desk', () => {
     })
 
     it('shows API error message when validation fails', async () => {
-      vi.spyOn(apiNew, 'patchBookingUseByToken').mockRejectedValue(
+      vi.spyOn(api, 'patchBookingUseByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -210,7 +210,7 @@ describe('Desk', () => {
 
   describe('invalidate contremarque', () => {
     beforeEach(() => {
-      vi.spyOn(apiNew, 'getBookingByToken').mockRejectedValue(
+      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { body: {}, status: HTTP_STATUS.GONE } as ApiResult,
@@ -220,7 +220,7 @@ describe('Desk', () => {
     })
 
     it('invalidates token successfully', async () => {
-      vi.spyOn(apiNew, 'patchBookingKeepByToken').mockResolvedValueOnce()
+      vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
 
       const user = userEvent.setup()
       renderDesk()
@@ -240,7 +240,7 @@ describe('Desk', () => {
     })
 
     it('shows error when invalidation fails', async () => {
-      vi.spyOn(apiNew, 'patchBookingKeepByToken').mockRejectedValue(
+      vi.spyOn(api, 'patchBookingKeepByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           { body: {}, status: 410 } as ApiResult,

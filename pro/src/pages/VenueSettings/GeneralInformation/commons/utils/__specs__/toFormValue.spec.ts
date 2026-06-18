@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { toFormValues } from '../toFormValues'

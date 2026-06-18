@@ -5,7 +5,7 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   GetVenueAddressesWithOffersOption,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,

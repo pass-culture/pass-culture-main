@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { GetVenueAddressesWithOffersOption } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -42,7 +42,7 @@ export const IndividualOffers = () => {
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    () => apiNew.getCategories(),
+    () => api.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
   )
 
@@ -74,7 +74,7 @@ export const IndividualOffers = () => {
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
-    apiNew.listOffers({ query: apiFilters })
+    api.listOffers({ query: apiFilters })
   )
 
   useEffect(() => {

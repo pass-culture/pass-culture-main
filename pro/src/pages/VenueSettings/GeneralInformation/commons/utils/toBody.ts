@@ -1,7 +1,4 @@
-import type {
-  ActivityOpenToPublic,
-  EditVenueBodyModel,
-} from '@/apiClient/v1/new'
+import type { ActivityOpenToPublic, EditVenueBodyModel } from '@/apiClient/v1'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
 import { normalizeActivity } from '@/pages/VenueEdition/commons/serializers'

@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
 
-import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -36,7 +36,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),
     logContactUrlClick: vi.fn(),
@@ -172,7 +172,7 @@ describe('RequestFormDialog', () => {
       screen.getByRole('button', { name: 'Envoyer ma demande' })
     )
 
-    expect(apiAdageNew.createCollectiveRequest).toHaveBeenNthCalledWith(1, {
+    expect(apiAdage.createCollectiveRequest).toHaveBeenNthCalledWith(1, {
       body: {
         comment: 'Test description',
         phoneNumber: undefined,
@@ -188,7 +188,7 @@ describe('RequestFormDialog', () => {
     expect(mockCloseModal).toHaveBeenCalled()
   })
   it('should display error message when api reject call', async () => {
-    vi.spyOn(apiAdageNew, 'createCollectiveRequest').mockRejectedValueOnce({})
+    vi.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
     const snackBarError = vi.fn()
     const mockCloseModal = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
@@ -269,7 +269,7 @@ describe('RequestFormDialog', () => {
       })
     )
 
-    expect(apiAdageNew.logRequestFormPopinDismiss).toHaveBeenCalledWith({
+    expect(apiAdage.logRequestFormPopinDismiss).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         collectiveOfferTemplateId: 1,
@@ -290,7 +290,7 @@ describe('RequestFormDialog', () => {
 
     await userEvent.click(buttonLink)
 
-    expect(apiAdageNew.logContactUrlClick).toHaveBeenCalledWith({
+    expect(apiAdage.logContactUrlClick).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         offerId: 1,

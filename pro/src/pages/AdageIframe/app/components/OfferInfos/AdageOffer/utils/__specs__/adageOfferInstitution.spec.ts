@@ -1,4 +1,4 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/adage/new'
+import type { CollectiveOfferResponseModel } from '@/apiClient/adage'
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
 
 import { getBookableOfferInstitutionAndTeacherName } from '../adageOfferInstitution'

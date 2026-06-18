@@ -2,7 +2,7 @@ import {
   CollectiveLocationType,
   EacFormat,
   StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 

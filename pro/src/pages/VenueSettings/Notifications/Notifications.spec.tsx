@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -16,7 +16,7 @@ vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { editVenue: vi.fn(), getVenue: vi.fn() },
+  api: { editVenue: vi.fn(), getVenue: vi.fn() },
 }))
 
 const renderNotifications = (

@@ -1,7 +1,7 @@
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import type { ComponentProps } from 'react'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

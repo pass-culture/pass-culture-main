@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
@@ -62,7 +62,7 @@ export const SignIn = (): JSX.Element => {
     const { email, password } = values
     try {
       const captchaToken = await getReCaptchaToken('loginUser')
-      const user = await apiNew.signin({
+      const user = await api.signin({
         body: {
           identifier: email,
           password,

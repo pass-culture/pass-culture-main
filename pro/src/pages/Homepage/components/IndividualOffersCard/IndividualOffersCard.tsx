@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERS_HOME_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -25,7 +25,7 @@ export const IndividualOffersCard = ({
 }: IndividualOffersCardProps): JSX.Element => {
   const { isLoading, data: offers } = useSWR(
     [GET_OFFERS_HOME_QUERY_KEY, venueId],
-    () => apiNew.listOffersHome({ query: { venueId } }),
+    () => api.listOffersHome({ query: { venueId } }),
     { fallbackData: [] }
   )
   const { logEvent } = useAnalytics()

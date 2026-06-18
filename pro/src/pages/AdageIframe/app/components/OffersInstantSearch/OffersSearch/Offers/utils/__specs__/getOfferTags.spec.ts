@@ -3,7 +3,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   StudentLevels,
-} from '@/apiClient/adage/new'
+} from '@/apiClient/adage'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,

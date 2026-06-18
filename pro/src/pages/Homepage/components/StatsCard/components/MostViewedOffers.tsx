@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import type { TopOffersResponseData } from '@/apiClient/v1/new'
+import type { TopOffersResponseData } from '@/apiClient/v1'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'

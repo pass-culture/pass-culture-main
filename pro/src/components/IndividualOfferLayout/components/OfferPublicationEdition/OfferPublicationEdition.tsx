@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { mutate } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -70,7 +70,7 @@ export function OfferPublicationEdition({
     try {
       await mutate(
         [GET_OFFER_QUERY_KEY, offer.id],
-        apiNew.patchOffer({
+        api.patchOffer({
           path: { offer_id: offer.id },
           // TODO (tpommellet) to remove once PatchOfferBodyModel is migrated to Pydantic V2
           // @ts-expect-error

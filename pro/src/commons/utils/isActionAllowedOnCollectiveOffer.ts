@@ -5,7 +5,7 @@ import {
   type CollectiveOfferTemplateResponseModel,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 
 type AnyCollectiveOffer =

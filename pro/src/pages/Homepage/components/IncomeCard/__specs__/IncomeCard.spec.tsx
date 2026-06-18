@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { CancelablePromise } from '@/apiClient/compat'
-import { SimplifiedBankAccountStatus } from '@/apiClient/v1/new'
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
@@ -14,7 +14,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { IncomeCard } from '../IncomeCard'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getStatistics: vi.fn(),
   },
 }))
@@ -48,11 +48,11 @@ const renderIncomeCard = (
 describe('IncomeCard', () => {
   beforeEach(() => {
     vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(false)
-    vi.spyOn(apiNew, 'getStatistics').mockResolvedValue(MOCK_STATISTICS)
+    vi.spyOn(api, 'getStatistics').mockResolvedValue(MOCK_STATISTICS)
   })
 
   it('should display a skeleton while income data is loading', () => {
-    vi.spyOn(apiNew, 'getStatistics').mockReturnValue(
+    vi.spyOn(api, 'getStatistics').mockReturnValue(
       new CancelablePromise(() => {})
     )
 
@@ -62,7 +62,7 @@ describe('IncomeCard', () => {
   })
 
   it('should display an error banner when the API call fails', async () => {
-    vi.spyOn(apiNew, 'getStatistics').mockRejectedValueOnce(new Error('error'))
+    vi.spyOn(api, 'getStatistics').mockRejectedValueOnce(new Error('error'))
 
     renderIncomeCard()
 
@@ -124,7 +124,7 @@ describe('IncomeCard', () => {
 
   it('should display the individual revenue total when venue has only individual revenue', async () => {
     const currentYear = new Date().getFullYear()
-    vi.spyOn(apiNew, 'getStatistics').mockResolvedValueOnce(
+    vi.spyOn(api, 'getStatistics').mockResolvedValueOnce(
       statisticsFactory({
         individualRevenueOnlyYear: String(currentYear),
         lastYear: String(currentYear),
@@ -138,7 +138,7 @@ describe('IncomeCard', () => {
 
   it('should display the collective revenue total when venue has only collective revenue', async () => {
     const currentYear = new Date().getFullYear()
-    vi.spyOn(apiNew, 'getStatistics').mockResolvedValueOnce(
+    vi.spyOn(api, 'getStatistics').mockResolvedValueOnce(
       statisticsFactory({
         collectiveRevenueOnlyYear: String(currentYear),
         lastYear: String(currentYear),

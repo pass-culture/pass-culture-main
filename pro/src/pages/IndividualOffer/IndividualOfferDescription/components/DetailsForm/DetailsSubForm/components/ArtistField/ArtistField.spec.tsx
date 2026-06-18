@@ -9,18 +9,15 @@ import {
 } from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
-import {
-  type ArtistOfferLinkResponseModel,
-  ArtistType,
-} from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 
 import { ArtistField } from './ArtistField'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { getArtists: vi.fn() },
+  api: { getArtists: vi.fn() },
 }))
 
 vi.mock('@/commons/utils/resizeImageURL', () => ({
@@ -91,7 +88,7 @@ const renderArtistField = ({
 describe('ArtistField', () => {
   beforeEach(() => {
     apiSelectSpy.mockClear()
-    vi.mocked(apiNew.getArtists).mockResolvedValue([
+    vi.mocked(api.getArtists).mockResolvedValue([
       {
         id: '1',
         name: 'Alice',
@@ -167,7 +164,7 @@ describe('ArtistField', () => {
     const props = apiSelectSpy.mock.calls[0][0]
 
     const result = await props.searchApi('Al')
-    expect(apiNew.getArtists).toHaveBeenCalledWith({
+    expect(api.getArtists).toHaveBeenCalledWith({
       query: { search: 'Al' },
     })
     expect(result).toEqual([

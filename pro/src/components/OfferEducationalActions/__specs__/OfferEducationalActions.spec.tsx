@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -19,7 +19,7 @@ import {
 } from '../OfferEducationalActions'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
@@ -81,9 +81,9 @@ describe('OfferEducationalActions', () => {
 
     await userEvent.click(activateOffer)
 
-    expect(
-      apiNew.patchCollectiveOffersTemplateActiveStatus
-    ).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
     expect(mockMutate).toHaveBeenNthCalledWith(1, [
       GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
       offer.id,
@@ -92,7 +92,7 @@ describe('OfferEducationalActions', () => {
 
   it('should show error notification when patchCollectiveOffersTemplateActiveStatus api call fails', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValue({ isOk: false })
 
@@ -109,16 +109,16 @@ describe('OfferEducationalActions', () => {
 
     await userEvent.click(activateOffer)
 
-    expect(
-      apiNew.patchCollectiveOffersTemplateActiveStatus
-    ).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
     await waitFor(() => expect(snackBarError).toHaveBeenCalledTimes(1))
   })
 
   it('should show error notification with error message when activation fails with Error instance', async () => {
     const errorMessage = 'Erreur réseau'
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValue(new Error(errorMessage))
 
@@ -145,7 +145,7 @@ describe('OfferEducationalActions', () => {
   it('should show error notification with error message when deactivation fails with Error instance', async () => {
     const errorMessage = 'Erreur serveur'
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValue(new Error(errorMessage))
 
@@ -171,7 +171,7 @@ describe('OfferEducationalActions', () => {
 
   it('should show error notification without error message when activation fails with non-Error instance', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValue({ isOk: false, code: 500 })
 
@@ -197,7 +197,7 @@ describe('OfferEducationalActions', () => {
 
   it('should show error notification without error message when deactivation fails with non-Error instance', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValue({ isOk: false, code: 500 })
 

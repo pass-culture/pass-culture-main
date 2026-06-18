@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -46,13 +46,13 @@ const renderIndividualOfferDescription = (
 
 const waitForRecommendationCardFetch = async () => {
   await waitFor(() => {
-    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+    expect(api.getOfferProAdvice).toHaveBeenCalled()
   })
 }
 
 describe('<IndividualOfferDescription />', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,
     })
   })

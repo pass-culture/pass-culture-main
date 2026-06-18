@@ -1,4 +1,4 @@
-import { ArtistType } from '@/apiClient/v1/new'
+import { ArtistType } from '@/apiClient/v1'
 
 import {
   deSerializeDurationMinutes,

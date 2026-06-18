@@ -4,7 +4,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   SimplifiedBankAccountStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,

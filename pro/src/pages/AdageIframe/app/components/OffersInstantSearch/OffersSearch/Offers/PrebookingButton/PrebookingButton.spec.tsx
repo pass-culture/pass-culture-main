@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdageNew } from '@/apiClient/api'
+import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -13,7 +13,7 @@ import {
 } from './PrebookingButton'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     bookCollectiveOffer: vi.fn(),
     logBookingModalButtonClick: vi.fn(),
   },
@@ -108,7 +108,7 @@ describe('offer item', () => {
       screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
     ).toBeInTheDocument()
 
-    vi.spyOn(apiAdageNew, 'bookCollectiveOffer').mockRejectedValueOnce({
+    vi.spyOn(apiAdage, 'bookCollectiveOffer').mockRejectedValueOnce({
       statusCode: 400,
       body: { code: 'WRONG_UAI_CODE' },
     })
@@ -122,7 +122,7 @@ describe('offer item', () => {
   })
 
   it('should display a success message notification when booking worked', async () => {
-    vi.spyOn(apiAdageNew, 'bookCollectiveOffer').mockResolvedValue({
+    vi.spyOn(apiAdage, 'bookCollectiveOffer').mockResolvedValue({
       bookingId: 123,
     })
 
@@ -151,7 +151,7 @@ describe('offer item', () => {
     })
     await userEvent.click(preBookButton)
 
-    expect(apiAdageNew.logBookingModalButtonClick).toHaveBeenCalledWith({
+    expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         isFromNoResult: false,
@@ -169,7 +169,7 @@ describe('offer item', () => {
     })
     await userEvent.click(preBookButton)
 
-    expect(apiAdageNew.logBookingModalButtonClick).toHaveBeenCalledWith({
+    expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
       body: {
         iframeFrom: '/',
         isFromNoResult: true,

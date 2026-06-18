@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_PRO_ANONYMIZATION_ELIGIBILITY_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 type UseUserAnonymizationEligibilityResult = {
@@ -21,7 +21,7 @@ export const useUserAnonymizationEligibility =
   (): UseUserAnonymizationEligibilityResult => {
     const { data, isLoading } = useSWR(
       [GET_PRO_ANONYMIZATION_ELIGIBILITY_QUERY_KEY],
-      () => apiNew.getProAnonymizationEligibility()
+      () => api.getProAnonymizationEligibility()
     )
 
     const isEligible = !!(

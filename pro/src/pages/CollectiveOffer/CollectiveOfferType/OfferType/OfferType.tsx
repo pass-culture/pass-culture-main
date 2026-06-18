@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -67,7 +67,7 @@ export const OfferTypeScreen = () => {
       } = serializeApiCollectiveFilters(apiFilters)
 
       const templateOffersOnSelectedVenue =
-        await apiNew.getCollectiveOfferTemplates({
+        await api.getCollectiveOfferTemplates({
           query: {
             name,
             offererId,

@@ -2,13 +2,13 @@ import { format } from 'date-fns'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   CollectiveStockCreationBodyModel,
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -65,7 +65,7 @@ export const CollectiveOfferStockCreation = ({
       ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
       : null,
     ([, offerTemplateIdParam]) => {
-      return apiNew.getCollectiveOfferTemplate({
+      return api.getCollectiveOfferTemplate({
         path: { offer_id: offerTemplateIdParam },
       })
     }
@@ -77,7 +77,7 @@ export const CollectiveOfferStockCreation = ({
         ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
         : null,
     ([, id]) =>
-      apiNew.getCollectiveOfferRequest({
+      api.getCollectiveOfferRequest({
         path: { request_id: Number(id) },
       })
   )
@@ -125,12 +125,12 @@ export const CollectiveOfferStockCreation = ({
     try {
       let response: CollectiveStockResponseModel | null = null
       if (offer.collectiveStock) {
-        response = await apiNew.editCollectiveStock({
+        response = await api.editCollectiveStock({
           path: { collective_stock_id: offer.collectiveStock.id },
           body: newCollectiveStock,
         })
       } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
-        response = await apiNew.createCollectiveStock({
+        response = await api.createCollectiveStock({
           body: { ...newCollectiveStock, offerId: offer.id },
         })
       } else {

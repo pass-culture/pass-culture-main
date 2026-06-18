@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import {
   getStocksResponseFactory,
@@ -349,7 +349,7 @@ describe('onSubmit', () => {
   cases.forEach(
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
-        vi.spyOn(apiNew, 'bulkCreateEventStocks').mockResolvedValueOnce(
+        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
           getStocksResponseFactory({
             totalStockCount: expectedStocks.length,
             editedStockCount: expectedStocks.length,
@@ -357,7 +357,7 @@ describe('onSubmit', () => {
         )
         await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
 
-        expect(apiNew.bulkCreateEventStocks).toHaveBeenCalledWith({
+        expect(api.bulkCreateEventStocks).toHaveBeenCalledWith({
           body: {
             offerId: 66,
             stocks: expectedStocks.map(
@@ -470,7 +470,7 @@ describe('onSubmit', () => {
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    vi.spyOn(apiNew, 'bulkCreateEventStocks').mockRejectedValueOnce({
+    vi.spyOn(api, 'bulkCreateEventStocks').mockRejectedValueOnce({
       stocks: ['Erreur'],
     })
 

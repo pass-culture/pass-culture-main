@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 import * as utils from '@/commons/utils/recaptcha'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -11,7 +11,7 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import { LostPassword } from './LostPassword'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProfile: vi.fn().mockResolvedValue({}),
     resetPassword: vi.fn().mockResolvedValue({}),
   },
@@ -131,17 +131,17 @@ describe('LostPassword', () => {
 
       // then
       await waitFor(() => {
-        expect(apiNew.resetPassword).toHaveBeenCalledTimes(2)
+        expect(api.resetPassword).toHaveBeenCalledTimes(2)
       })
 
-      expect(apiNew.resetPassword).toHaveBeenNthCalledWith(1, {
+      expect(api.resetPassword).toHaveBeenNthCalledWith(1, {
         body: {
           token: 'token',
           email: 'coucou@example.com',
         },
       })
 
-      expect(apiNew.resetPassword).toHaveBeenNthCalledWith(2, {
+      expect(api.resetPassword).toHaveBeenNthCalledWith(2, {
         body: {
           token: 'token',
           email: 'coucou@example.com',

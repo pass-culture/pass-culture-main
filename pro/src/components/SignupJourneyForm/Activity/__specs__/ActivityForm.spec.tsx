@@ -5,7 +5,7 @@ import type { SWRResponse } from 'swr'
 import useSWR from 'swr/immutable'
 import { expect, vi } from 'vitest'
 
-import { ActivityOpenToPublic } from '@/apiClient/v1/new'
+import { ActivityOpenToPublic } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,

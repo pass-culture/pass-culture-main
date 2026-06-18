@@ -1,4 +1,4 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/adage/new'
+import type { CollectiveOfferResponseModel } from '@/apiClient/adage'
 
 import styles from '../AdageOffer.module.scss'
 

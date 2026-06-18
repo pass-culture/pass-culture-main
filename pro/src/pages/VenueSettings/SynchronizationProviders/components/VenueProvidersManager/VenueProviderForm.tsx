@@ -1,10 +1,10 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
   GetVenueResponseModel,
   PostVenueProviderBody,
   ProviderResponse,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   isAllocineProvider,
   isCinemaProvider,
@@ -35,7 +35,7 @@ export const VenueProviderForm = ({
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      await apiNew.createVenueProvider({
+      await api.createVenueProvider({
         path: { venue_id: Number(venue.id) },
         body: payload,
       })

@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { OfferType } from './OfferType'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getOfferer: vi.fn(),
   },
 }))

@@ -1,7 +1,7 @@
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
+import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 

@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -31,7 +31,7 @@ vi.mock('react-router', async () => ({
   useNavigate: vi.fn(),
 }))
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenue: vi.fn(),
     getOfferer: vi.fn(),
   },
@@ -81,13 +81,13 @@ describe('<RedirectToBankAccountDialog />', () => {
     }))
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     // Default mocks so the venue refresh path (when triggered) resolves cleanly.
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: SELECTED_PARTNER_VENUE_ID,
         managingOffererId: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
       })
     )
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID,
     })
@@ -138,10 +138,10 @@ describe('<RedirectToBankAccountDialog />', () => {
           '/administration/remboursements/informations-bancaires'
         )
       })
-      expect(apiNew.getVenue).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getVenue).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: SELECTED_PARTNER_VENUE_ID },
       })
-      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+      expect(api.getOfferer).toHaveBeenCalledWith({
         path: { offerer_id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID },
       })
     })
@@ -156,8 +156,8 @@ describe('<RedirectToBankAccountDialog />', () => {
           '/administration/remboursements/informations-bancaires'
         )
       })
-      expect(apiNew.getVenue).not.toHaveBeenCalled()
-      expect(apiNew.getOfferer).not.toHaveBeenCalled()
+      expect(api.getVenue).not.toHaveBeenCalled()
+      expect(api.getOfferer).not.toHaveBeenCalled()
     })
 
     it('should navigate only after the venue refresh has resolved (order guarantee)', async () => {
@@ -172,8 +172,7 @@ describe('<RedirectToBankAccountDialog />', () => {
       })
       // `mock.invocationCallOrder` exposes a monotonic global counter across all
       // vitest mocks. A smaller number means the call happened earlier.
-      const getVenueOrder = vi.mocked(apiNew.getVenue).mock
-        .invocationCallOrder[0]
+      const getVenueOrder = vi.mocked(api.getVenue).mock.invocationCallOrder[0]
       const navigateOrder = mockNavigate.mock.invocationCallOrder[0]
       expect(getVenueOrder).toBeLessThan(navigateOrder)
     })
@@ -191,10 +190,10 @@ describe('<RedirectToBankAccountDialog />', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/custom-cancel')
       })
-      expect(apiNew.getVenue).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getVenue).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: SELECTED_PARTNER_VENUE_ID },
       })
-      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+      expect(api.getOfferer).toHaveBeenCalledWith({
         path: { offerer_id: SELECTED_PARTNER_VENUE_MANAGING_OFFERER_ID },
       })
     })
@@ -210,8 +209,8 @@ describe('<RedirectToBankAccountDialog />', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledExactlyOnceWith('/custom-cancel')
       })
-      expect(apiNew.getVenue).not.toHaveBeenCalled()
-      expect(apiNew.getOfferer).not.toHaveBeenCalled()
+      expect(api.getVenue).not.toHaveBeenCalled()
+      expect(api.getOfferer).not.toHaveBeenCalled()
     })
 
     it('should navigate only after the venue refresh has resolved (order guarantee)', async () => {
@@ -224,8 +223,7 @@ describe('<RedirectToBankAccountDialog />', () => {
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalled()
       })
-      const getVenueOrder = vi.mocked(apiNew.getVenue).mock
-        .invocationCallOrder[0]
+      const getVenueOrder = vi.mocked(api.getVenue).mock.invocationCallOrder[0]
       const navigateOrder = mockNavigate.mock.invocationCallOrder[0]
       expect(getVenueOrder).toBeLessThan(navigateOrder)
     })

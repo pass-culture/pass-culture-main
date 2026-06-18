@@ -1,4 +1,4 @@
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
 import type { UserSliceState } from '../../store/user/reducer'
 

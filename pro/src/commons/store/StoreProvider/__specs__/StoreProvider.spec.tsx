@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
-import { UserRole } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { UserRole } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   makeGetVenueResponseModel,
@@ -20,7 +20,7 @@ const renderStoreProvider = () => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProfile: vi.fn(),
     getVenue: vi.fn(),
     getVenuesLite: vi.fn(),
@@ -35,19 +35,19 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
 
 describe('src | App', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getProfile').mockResolvedValue({
+    vi.spyOn(api, 'getProfile').mockResolvedValue({
       id: 1,
       email: 'email@example.com',
       roles: [UserRole.ADMIN],
       isEmailValidated: true,
       dateCreated: '2022-07-29T12:18:43.087097Z',
     })
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 1,
       name: 'Offerer A',
     })
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 2,
         managingOffererId: 1,
@@ -55,8 +55,8 @@ describe('src | App', () => {
       })
     )
     const offerersNames = [{ id: 1, name: 'Offerer A', validated: true }]
-    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({ offerersNames })
-    vi.spyOn(apiNew, 'getVenuesLite').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames })
+    vi.spyOn(api, 'getVenuesLite').mockResolvedValue({
       venues: [
         makeVenueListItemLiteResponseModel({
           id: 2,
@@ -65,7 +65,7 @@ describe('src | App', () => {
       ],
       venuesWithPendingValidation: [],
     })
-    vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
+    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
 
   it('should load current user, its offerers and venues', async () => {
@@ -73,13 +73,13 @@ describe('src | App', () => {
 
     await screen.findByText('Sub component')
 
-    expect(apiNew.listFeatures).toHaveBeenCalledTimes(1)
-    expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(apiNew.getProfile).toHaveBeenCalledTimes(1)
-    expect(apiNew.listOfferersNames).toHaveBeenCalledTimes(1)
-    expect(apiNew.getVenuesLite).toHaveBeenCalledTimes(1)
+    expect(api.listFeatures).toHaveBeenCalledTimes(1)
+    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(api.getProfile).toHaveBeenCalledTimes(1)
+    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(api.getVenuesLite).toHaveBeenCalledTimes(1)
     // TODO (igabriele, 2026-05-11): Change back to `1` once `nextSelectedPartnerVenue` is removed from `setSelectedPartnerVenueById` (`WIP_SWITCH_VENUE`).
-    expect(apiNew.getVenue).toHaveBeenCalledTimes(1)
-    expect(apiNew.getOfferer).toHaveBeenCalledTimes(2)
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(2)
   })
 })

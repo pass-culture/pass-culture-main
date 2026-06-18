@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -84,7 +84,7 @@ const renderOffer = (
 
 const waitForRecommendationCardFetch = async () => {
   await waitFor(() => {
-    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+    expect(api.getOfferProAdvice).toHaveBeenCalled()
   })
 }
 
@@ -108,10 +108,10 @@ describe('IndividualOfferConfirmation', () => {
     contextOverride = {
       offer: offer,
     }
-    vi.spyOn(apiNew, 'getOffer').mockResolvedValue(
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferWithAddressResponseModel
     )
-    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,
     })
     vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({

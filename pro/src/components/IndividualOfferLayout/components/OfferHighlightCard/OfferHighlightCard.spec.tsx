@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -16,7 +16,7 @@ import {
 const mockLogEvent = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getHighlights: vi.fn(),
   },
 }))
@@ -56,7 +56,7 @@ describe('OfferHighlightCard', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(apiNew, 'getHighlights').mockResolvedValueOnce([])
+      vi.spyOn(api, 'getHighlights').mockResolvedValueOnce([])
 
       renderOfferHighlightCard({ offerId: 1, highlightRequests: [] })
       await userEvent.click(
@@ -99,7 +99,7 @@ describe('OfferHighlightCard', () => {
     })
 
     it('should open the modal when clicking the button and log edit event', async () => {
-      vi.spyOn(apiNew, 'getHighlights').mockResolvedValueOnce([])
+      vi.spyOn(api, 'getHighlights').mockResolvedValueOnce([])
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))

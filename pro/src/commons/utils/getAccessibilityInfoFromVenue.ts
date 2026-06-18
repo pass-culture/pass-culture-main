@@ -1,7 +1,7 @@
 import type {
   GetVenueResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 export function getAccessibilityInfoFromVenue(

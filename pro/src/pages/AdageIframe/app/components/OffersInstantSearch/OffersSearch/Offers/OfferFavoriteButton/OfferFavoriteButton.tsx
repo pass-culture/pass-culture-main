@@ -3,8 +3,8 @@ import { type MouseEvent, useState } from 'react'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -41,7 +41,7 @@ export const OfferFavoriteButton = ({
   const removeFromFavorites = async () => {
     setIsFavorite(false)
     try {
-      await apiAdageNew.deleteFavoriteForCollectiveOfferTemplate({
+      await apiAdage.deleteFavoriteForCollectiveOfferTemplate({
         path: { offer_template_id: offer.id },
       })
       //  Decrease adage user favorite count for header
@@ -49,7 +49,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Supprimé de vos favoris')
 
-      apiAdageNew.logFavOfferButtonClick({
+      apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,
@@ -71,7 +71,7 @@ export const OfferFavoriteButton = ({
   const addToFavorites = async () => {
     setIsFavorite(true)
     try {
-      await apiAdageNew.postCollectiveTemplateFavorites({
+      await apiAdage.postCollectiveTemplateFavorites({
         path: { offer_id: offer.id },
       })
 
@@ -80,7 +80,7 @@ export const OfferFavoriteButton = ({
 
       snackBar.success('Ajouté à vos favoris')
 
-      apiAdageNew.logFavOfferButtonClick({
+      apiAdage.logFavOfferButtonClick({
         body: {
           offerId: offer.id,
           queryId,

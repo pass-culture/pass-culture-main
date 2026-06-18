@@ -1,9 +1,6 @@
 import * as yup from 'yup'
 
-import type {
-  ArtistOfferLinkResponseModel,
-  ArtistType,
-} from '@/apiClient/v1/new'
+import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 
 import type { DetailsFormValues } from './types'
 

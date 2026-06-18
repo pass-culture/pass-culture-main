@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1/new'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { StatusToggleButton } from '@/components/IndividualOfferLayout/components/Status/StatusToggleButton'
 import { StatusLabel } from '@/components/StatusLabel/StatusLabel'
 

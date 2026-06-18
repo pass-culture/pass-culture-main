@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { ProUserCreationBodyV2Model } from '@/apiClient/v1/new'
+import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -53,7 +53,7 @@ export const SignupContainer = (): JSX.Element => {
     try {
       /* istanbul ignore next : ENV dependant */
       const token = await getReCaptchaToken('signup')
-      await apiNew.signupPro({
+      await api.signupPro({
         body: {
           ...values,
           token, // set token at form submission

@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -123,7 +123,7 @@ describe('VideoUploaderContext', () => {
   })
 
   it('should upload new data on click on update', async () => {
-    vi.spyOn(apiNew, 'getOfferVideoMetadata').mockResolvedValue({
+    vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
       videoDuration: 3,
       videoThumbnailUrl: 'http://youtube.image.com',
       videoTitle: 'Ma super vidéo',
@@ -151,9 +151,7 @@ describe('VideoUploaderContext', () => {
   })
 
   it('should update offer on click on submit', async () => {
-    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
-      getIndividualOfferFactory()
-    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
 
     const offer = getIndividualOfferFactory({
       videoData: {},
@@ -167,7 +165,7 @@ describe('VideoUploaderContext', () => {
     )
     await userEvent.click(screen.getByText(LABELS.controls.submit))
 
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: {
         videoUrl: 'http://youtube.url',

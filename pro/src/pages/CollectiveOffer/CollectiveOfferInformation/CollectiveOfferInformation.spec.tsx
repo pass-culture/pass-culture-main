@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
 import type {
   GetCollectiveOfferResponseModel,
   PatchCollectiveOfferBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -24,7 +24,7 @@ const { editOfferMock, mockSnackBarSuccess, mockSnackBarError } = vi.hoisted(
   })
 )
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { editCollectiveOffer: editOfferMock },
+  api: { editCollectiveOffer: editOfferMock },
 }))
 
 vi.mock('@/commons/hooks/useSnackBar', () => ({
@@ -115,7 +115,7 @@ describe('<CollectiveOfferInformation />', () => {
     renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(apiNew.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
       path: { offer_id: offer.id },
       body: { contactEmail: 'test@email.com' },
     })
@@ -129,14 +129,14 @@ describe('<CollectiveOfferInformation />', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       contactEmail: ["L'email est invalide"],
     })
-    vi.mocked(apiNew.editCollectiveOffer).mockRejectedValueOnce(error)
+    vi.mocked(api.editCollectiveOffer).mockRejectedValueOnce(error)
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })
     renderCollectiveOfferInformation(offer)
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(apiNew.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
       path: { offer_id: offer.id },
       body: { contactEmail: 'test@email' },
     })
@@ -157,7 +157,7 @@ describe('<CollectiveOfferInformation />', () => {
   it('should log the other errors and display a snackbar', async () => {
     const user = userEvent.setup()
     const error = new Error('Something happened')
-    vi.mocked(apiNew.editCollectiveOffer).mockRejectedValueOnce(error)
+    vi.mocked(api.editCollectiveOffer).mockRejectedValueOnce(error)
 
     const offer = getCollectiveOfferFactory()
     setSubmitResponse({ contactEmail: 'test@email' })

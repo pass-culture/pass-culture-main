@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveStatusLabel } from './CollectiveStatusLabel'

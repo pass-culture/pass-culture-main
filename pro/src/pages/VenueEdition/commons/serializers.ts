@@ -3,7 +3,7 @@ import type {
   ActivityOpenToPublic,
   EditVenueBodyModel,
   WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'

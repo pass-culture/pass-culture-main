@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import type {
   CategoryResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'

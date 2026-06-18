@@ -2,7 +2,7 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 import {
   translateApiParamsToQueryParams,

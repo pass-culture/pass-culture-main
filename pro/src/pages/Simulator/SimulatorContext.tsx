@@ -4,7 +4,7 @@ import { createContext, useContext, useMemo, useState } from 'react'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
 
 import type { SimulatorTargetCustomerFormValues } from './SimulatorTarget/validationSchema'

@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -19,7 +19,7 @@ import {
 } from '../OfferEducational'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     editCollectiveOffer: vi.fn(),
   },
 }))
@@ -71,7 +71,7 @@ describe('screens | OfferEducational : creation', () => {
   })
 
   it('should redirect to stock on submit', async () => {
-    vi.spyOn(apiNew, 'editCollectiveOffer').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props)
     const buttonNextStep = await screen.findByText('Enregistrer et continuer')
 
@@ -81,7 +81,7 @@ describe('screens | OfferEducational : creation', () => {
   })
 
   it('should redirect to right url if requete params exist on submit', async () => {
-    vi.spyOn(apiNew, 'editCollectiveOffer').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props, '/offre/collectif/3/creation?requete=1')
 
     const buttonNextStep = screen.getByText('Enregistrer et continuer')

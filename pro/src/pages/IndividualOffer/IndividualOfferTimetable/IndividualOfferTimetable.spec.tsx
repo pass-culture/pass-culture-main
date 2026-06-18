@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -59,7 +59,7 @@ describe('IndividualOfferTimetable', () => {
       offer,
     })
 
-    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 0,

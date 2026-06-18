@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import {
   RECAPTCHA_ERROR,
@@ -59,7 +59,7 @@ export const LostPassword = (): JSX.Element => {
 
   const sendChangePasswordRequest = async (email: string): Promise<void> => {
     const token = await getReCaptchaToken('resetPassword')
-    return apiNew.resetPassword({ body: { token, email: email } })
+    return api.resetPassword({ body: { token, email: email } })
   }
 
   const mainHeading = email

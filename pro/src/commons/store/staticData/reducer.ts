@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { MusicTypeResponse } from '@/apiClient/v1/new'
+import type { MusicTypeResponse } from '@/apiClient/v1'
 
 interface StaticState {
   musicTypes: MusicTypeResponse[] | undefined

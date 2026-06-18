@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
@@ -12,7 +12,7 @@ import {
   type EducationalRedactor,
   type GetCollectiveOfferResponseModel,
   type PatchCollectiveOfferEducationalInstitution,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
@@ -123,7 +123,7 @@ export const CollectiveOfferInstitutionScreen = ({
         ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
         : null,
     ([, id]) =>
-      apiNew.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
+      api.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
   )
 
   const manualFormValidation = (
@@ -171,7 +171,7 @@ export const CollectiveOfferInstitutionScreen = ({
 
     try {
       const collectiveOffer =
-        await apiNew.patchCollectiveOffersEducationalInstitution({
+        await api.patchCollectiveOffersEducationalInstitution({
           path: { offer_id: offer.id },
           body: {
             educationalInstitutionId: Number(values.educationalInstitution),
@@ -248,7 +248,7 @@ export const CollectiveOfferInstitutionScreen = ({
     async ([, institutionUai]) => {
       try {
         if (institutionUai) {
-          await apiNew.getAutocompleteEducationalRedactorsForUai({
+          await api.getAutocompleteEducationalRedactorsForUai({
             query: { uai: institutionUai, candidate: 'preload' },
           })
         }
@@ -309,7 +309,7 @@ export const CollectiveOfferInstitutionScreen = ({
     }
 
     try {
-      const payload = await apiNew.getAutocompleteEducationalRedactorsForUai({
+      const payload = await api.getAutocompleteEducationalRedactorsForUai({
         query: {
           uai: selectedInstitution.institutionId,
           candidate: searchTeacherValue,

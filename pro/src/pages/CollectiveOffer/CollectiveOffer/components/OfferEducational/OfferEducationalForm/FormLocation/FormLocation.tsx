@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
-import { CollectiveLocationType } from '@/apiClient/v1/new'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'

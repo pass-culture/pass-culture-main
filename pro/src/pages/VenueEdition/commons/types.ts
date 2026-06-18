@@ -2,7 +2,7 @@ import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
   WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { Nullable } from '@/commons/utils/types'
 

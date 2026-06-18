@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -229,7 +229,7 @@ describe('VenueEditionHeader', () => {
 
   it('should call delete endpoint and mutate venue when deleting image', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueBanner').mockResolvedValueOnce()
+    vi.spyOn(api, 'deleteVenueBanner').mockResolvedValueOnce()
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
     )
@@ -270,7 +270,7 @@ describe('VenueEditionHeader', () => {
 
     await user.click(deleteButton)
 
-    expect(apiNew.deleteVenueBanner).toHaveBeenCalledWith({
+    expect(api.deleteVenueBanner).toHaveBeenCalledWith({
       path: { venue_id: defaultGetVenue.id },
     })
     expect(mockMutate).toHaveBeenCalledWith(
@@ -285,9 +285,7 @@ describe('VenueEditionHeader', () => {
 
   it('should show snackbar error when image deletion fails', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueBanner').mockRejectedValueOnce(
-      'Deletion error'
-    )
+    vi.spyOn(api, 'deleteVenueBanner').mockRejectedValueOnce('Deletion error')
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
     )

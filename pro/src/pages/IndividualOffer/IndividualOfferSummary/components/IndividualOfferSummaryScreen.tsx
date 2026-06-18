@@ -4,9 +4,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -64,7 +64,7 @@ export const IndividualOfferSummaryScreen = ({
     const departmentCode = getDepartmentCode(offer)
 
     try {
-      const publishIndividualOfferResponse = await apiNew.patchPublishOffer({
+      const publishIndividualOfferResponse = await api.patchPublishOffer({
         body: {
           id: offer.id,
           publicationDatetime:

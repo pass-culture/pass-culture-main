@@ -5,7 +5,7 @@ import * as yup from 'yup'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { phoneNumberSchema } from '@/commons/utils/yup/phoneNumberSchema'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 

@@ -47,7 +47,7 @@ vi.mock('@/apiClient/api', () => ({
     logHasSeenWholePlaylist: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),
   },
-  apiNew: {
+  api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },

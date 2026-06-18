@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -47,7 +47,7 @@ export const CollectiveOffers = () => {
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
 
-      return apiNew.getCollectiveOffers({ query: { ...params } })
+      return api.getCollectiveOffers({ query: { ...params } })
     },
     { fallbackData: [] }
   )

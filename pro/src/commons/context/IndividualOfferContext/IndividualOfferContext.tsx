@@ -3,12 +3,12 @@ import { createContext, useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
   GET_CATEGORIES_QUERY_KEY,
@@ -76,7 +76,7 @@ export const IndividualOfferContextProvider = ({
     offerId && offerIdAsString !== 'creation'
       ? [GET_OFFER_QUERY_KEY, Number(offerId)]
       : null,
-    ([, offerIdParam]) => apiNew.getOffer({ path: { offer_id: offerIdParam } }),
+    ([, offerIdParam]) => api.getOffer({ path: { offer_id: offerIdParam } }),
     {
       onError: (error, key) => {
         if (error.status === 404) {
@@ -101,7 +101,7 @@ export const IndividualOfferContextProvider = ({
         ]
       : null,
     ([, venueId, ean]) =>
-      apiNew.getActiveVenueOfferByEan({
+      api.getActiveVenueOfferByEan({
         path: { venue_id: venueId, ean },
       }),
     {
@@ -116,7 +116,7 @@ export const IndividualOfferContextProvider = ({
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    () => apiNew.getCategories(),
+    () => api.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
   )
 

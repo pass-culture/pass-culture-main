@@ -2,7 +2,7 @@ import type {
   ArtistOfferLinkResponseModel,
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 // TODO (igabriele, 2025-07-24): Make this type stricter (regarding optionals & null vs undefined).

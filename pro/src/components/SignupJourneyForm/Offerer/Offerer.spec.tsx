@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import {
   SignupJourneyContext,
@@ -170,11 +170,11 @@ describe('Offerer', () => {
       setInitialAddress: mockSetInitialAddress,
     }
 
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [],
     })
 
-    vi.spyOn(apiNew, 'getStructureData').mockResolvedValue(
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
   })
@@ -288,7 +288,7 @@ describe('Offerer', () => {
   })
 
   it('should not display authentication screen on submit with form error', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValue(
+    vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -338,7 +338,7 @@ describe('Offerer', () => {
   })
 
   it('should submit the form when clicking the continue button', async () => {
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [
         {
@@ -388,11 +388,11 @@ describe('Offerer', () => {
       street: '4 rue Carnot',
       isDiffusible: true,
     })
-    expect(apiNew.getVenuesOfOffererFromSiret).toHaveBeenCalled()
+    expect(api.getVenuesOfOffererFromSiret).toHaveBeenCalled()
   })
 
   it('should redirect to offerers page if the offerer has a venue with the same siret', async () => {
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [
         {
@@ -433,7 +433,7 @@ describe('Offerer', () => {
   })
 
   it('should redirect to identification page if the offerer has no venue with the same siret', async () => {
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [
         {
@@ -473,12 +473,12 @@ describe('Offerer', () => {
   })
 
   it('should display errors on api failure', async () => {
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
           status: 500,
-          body: [{ error: ['apiNew Error message'] }],
+          body: [{ error: ['api Error message'] }],
         } as ApiResult,
         ''
       )
@@ -535,7 +535,7 @@ describe('Offerer', () => {
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
       structureDataBodyModelFactory({ name: null })
     )
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [],
     })
@@ -561,7 +561,7 @@ describe('Offerer', () => {
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
       structureDataBodyModelFactory({ apeCode: null })
     )
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [],
     })
@@ -587,7 +587,7 @@ describe('Offerer', () => {
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockRejectedValue(
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -615,7 +615,7 @@ describe('Offerer', () => {
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockRejectedValue(
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
       'string error'
     )
 

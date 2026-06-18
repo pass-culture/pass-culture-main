@@ -3,9 +3,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -129,7 +129,7 @@ export const IndividualOfferDescriptionScreen = () => {
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          apiNew.createOffer({ body: serializeDetailsPostData(formValues) }),
+          api.createOffer({ body: serializeDetailsPostData(formValues) }),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -141,7 +141,7 @@ export const IndividualOfferDescriptionScreen = () => {
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          apiNew.patchOffer({
+          api.patchOffer({
             path: { offer_id: initialOfferId },
             body: serializeDetailsPatchData(formValues, readOnlyFields),
           }),

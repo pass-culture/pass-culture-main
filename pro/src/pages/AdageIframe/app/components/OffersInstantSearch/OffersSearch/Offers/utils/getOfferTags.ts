@@ -3,7 +3,7 @@ import {
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
+} from '@/apiClient/adage'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import fullLocationIcon from '@/icons/full-location.svg'
 import fullProfileIcon from '@/icons/full-profil.svg'

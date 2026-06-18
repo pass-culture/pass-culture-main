@@ -1,10 +1,10 @@
 import { act, renderHook } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     createThumbnail: vi.fn(),
     deleteThumbnail: vi.fn(),
   },
@@ -109,7 +109,7 @@ describe('useIndividualOfferImageUpload', () => {
       useIndividualOfferImageUpload(MOCK_DATA.initialImage)
     )
 
-    vi.mocked(apiNew.createThumbnail).mockResolvedValue({
+    vi.mocked(api.createThumbnail).mockResolvedValue({
       id: 1,
       url: 'new-thumbnail.jpg',
       credit: 'John Do',
@@ -135,7 +135,7 @@ describe('useIndividualOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(1)
     })
 
-    expect(apiNew.createThumbnail).toHaveBeenCalledOnce()
+    expect(api.createThumbnail).toHaveBeenCalledOnce()
   })
 
   it('should keep uploaded image as displayed image after submit', async () => {
@@ -143,7 +143,7 @@ describe('useIndividualOfferImageUpload', () => {
       useIndividualOfferImageUpload(MOCK_DATA.initialImage)
     )
 
-    vi.mocked(apiNew.createThumbnail).mockResolvedValue({
+    vi.mocked(api.createThumbnail).mockResolvedValue({
       id: 1,
       url: 'new-thumbnail.jpg',
       credit: 'John Do',
@@ -188,6 +188,6 @@ describe('useIndividualOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(1)
     })
 
-    expect(apiNew.deleteThumbnail).toHaveBeenCalledOnce()
+    expect(api.deleteThumbnail).toHaveBeenCalledOnce()
   })
 })

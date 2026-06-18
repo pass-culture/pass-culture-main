@@ -5,7 +5,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,

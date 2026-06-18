@@ -1,4 +1,4 @@
-import type { StudentLevels } from '@/apiClient/v1/new'
+import type { StudentLevels } from '@/apiClient/v1'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 

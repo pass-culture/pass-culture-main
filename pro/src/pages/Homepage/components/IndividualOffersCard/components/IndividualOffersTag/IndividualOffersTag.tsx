@@ -1,6 +1,6 @@
 import { isAfter } from 'date-fns'
 
-import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1/new'
+import { type OfferHomeResponseModel, OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'

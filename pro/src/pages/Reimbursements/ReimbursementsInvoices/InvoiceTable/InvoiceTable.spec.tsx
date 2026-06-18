@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import * as apiModule from '@/apiClient/api'
-import type { InvoiceResponseV2Model } from '@/apiClient/v1/new'
+import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 
@@ -115,11 +115,11 @@ describe('InvoiceTable', () => {
     const user = userEvent.setup()
 
     const getCombinedInvoicesMock = vi
-      .spyOn(apiModule.apiNew, 'getCombinedInvoices')
+      .spyOn(apiModule.api, 'getCombinedInvoices')
       .mockResolvedValueOnce(new Blob(['dummy-pdf']))
 
     const getReimbursementsCsvV2Mock = vi
-      .spyOn(apiModule.apiNew, 'getReimbursementsCsvV2')
+      .spyOn(apiModule.api, 'getReimbursementsCsvV2')
       .mockResolvedValueOnce(new Blob(['dummy-csv']))
 
     renderReimbursementsInvoicesTable(invoices)

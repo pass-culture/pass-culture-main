@@ -1,7 +1,7 @@
 import type {
   GetVenueResponseModel,
   WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 import { areOpeningHoursEmpty } from '@/pages/VenueEdition/commons/areOpeningHoursEmpty'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'

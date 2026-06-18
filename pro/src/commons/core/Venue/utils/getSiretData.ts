@@ -1,9 +1,9 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { memoize } from '@/commons/utils/memoize'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 
-import type { StructureDataBodyModel } from 'apiClient/v1/new'
+import type { StructureDataBodyModel } from 'apiClient/v1'
 
 const validateSiret = (siret: string): string => {
   if (siret.length < 14) {
@@ -33,7 +33,7 @@ const getSiretDataRequest = async (
     throw new Error(error)
   }
   try {
-    return await apiNew.getStructureData({ path: { search_input: siret } })
+    return await api.getStructureData({ path: { search_input: siret } })
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
@@ -57,7 +57,7 @@ const checkSiretRequest = async (humanSiret: string) => {
     throw new Error(error)
   }
   try {
-    await apiNew.checkStructure({ path: { search_input: siret } })
+    await api.checkStructure({ path: { search_input: siret } })
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {

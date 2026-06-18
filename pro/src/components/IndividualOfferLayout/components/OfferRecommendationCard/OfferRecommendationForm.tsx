@@ -5,8 +5,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useSWRConfig } from 'swr'
 import * as yup from 'yup'
 
-import { apiNew } from '@/apiClient/api'
-import type { ProAdviceModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { ProAdviceModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -84,12 +84,12 @@ export function OfferRecommendationForm({
       }
 
       if (proAdvice) {
-        await apiNew.updateOfferProAdvice({
+        await api.updateOfferProAdvice({
           path: { offer_id: offerId },
           body,
         })
       } else {
-        await apiNew.createOfferProAdvice({
+        await api.createOfferProAdvice({
           path: { offer_id: offerId },
           body,
         })
@@ -109,7 +109,7 @@ export function OfferRecommendationForm({
 
   const onDelete = async () => {
     try {
-      await apiNew.deleteOfferProAdvice({
+      await api.deleteOfferProAdvice({
         path: { offer_id: offerId },
       })
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])

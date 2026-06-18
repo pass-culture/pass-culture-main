@@ -2,13 +2,13 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -149,7 +149,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
       return
     }
     try {
-      await apiNew.cancelCollectiveOfferBooking({
+      await api.cancelCollectiveOfferBooking({
         path: { offer_id: offer.id },
       })
       await mutate(collectiveOffersQueryKeys)
@@ -178,11 +178,11 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     }
     try {
       if (isTemplateTable) {
-        await apiNew.patchCollectiveOffersTemplateArchive({
+        await api.patchCollectiveOffersTemplateArchive({
           body: { ids: [offer.id] },
         })
       } else {
-        await apiNew.patchCollectiveOffersArchive({ body: { ids: [offer.id] } })
+        await api.patchCollectiveOffersArchive({ body: { ids: [offer.id] } })
       }
       await mutate(collectiveOffersQueryKeys)
 
@@ -253,7 +253,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     )
 
     try {
-      await apiNew.patchCollectiveOffersTemplateActiveStatus({
+      await api.patchCollectiveOffersTemplateActiveStatus({
         body: {
           ids: [id],
           isActive,

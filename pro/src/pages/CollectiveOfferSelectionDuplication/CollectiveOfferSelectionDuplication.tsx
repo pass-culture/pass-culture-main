@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
@@ -76,7 +76,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, name],
     () =>
-      apiNew.getCollectiveOfferTemplates({
+      api.getCollectiveOfferTemplates({
         query: {
           name,
           offererId,

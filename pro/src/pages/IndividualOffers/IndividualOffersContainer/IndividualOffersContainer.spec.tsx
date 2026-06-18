@@ -2,12 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   GetVenueAddressResponseModel,
   ListOffersOfferResponseModel,
-} from '@/apiClient/v1/new'
-import { OfferStatus } from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -91,7 +91,7 @@ vi.mock('@/commons/utils/date', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
@@ -489,7 +489,7 @@ describe('IndividualOffersScreen', () => {
         })
       )
 
-      const patchSpy = vi.spyOn(apiNew, 'patchAllOffersActiveStatus')
+      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
 
       renderOffers({
         ...props,
@@ -521,7 +521,7 @@ describe('IndividualOffersScreen', () => {
     })
 
     it('should activate only inactive offers when trying to activate draft or active offers', async () => {
-      const patchSpy = vi.spyOn(apiNew, 'patchAllOffersActiveStatus')
+      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
 
       const offers = [
         listOffersOfferFactory({ status: OfferStatus.DRAFT }),
@@ -602,7 +602,7 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should delete anyway even with active status', async () => {
-    vi.spyOn(apiNew, 'deleteDraftOffers').mockResolvedValueOnce()
+    vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
 
     renderOffers({
       ...props,
@@ -617,14 +617,14 @@ describe('IndividualOffersScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
-    expect(apiNew.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(snackBarSuccess).toHaveBeenCalledWith(
       '2 brouillons ont bien été supprimés'
     )
   })
 
   it('should display headline offer block when feature is available', async () => {
-    vi.spyOn(apiNew, 'getVenueHeadlineOffer').mockResolvedValue({
+    vi.spyOn(api, 'getVenueHeadlineOffer').mockResolvedValue({
       id: 42,
       name: 'My offer',
       venueId: 1,

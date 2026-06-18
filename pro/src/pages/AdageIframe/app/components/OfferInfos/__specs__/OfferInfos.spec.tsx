@@ -1,11 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as router from 'react-router'
 
-import {
-  AdageFrontRoles,
-  type AuthenticatedResponse,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -20,7 +17,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { OfferInfos } from '../OfferInfos'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
     logConsultOffer: vi.fn(),
@@ -156,7 +153,7 @@ describe('OfferInfos', () => {
     })
 
     const fetchOfferSpy = vi
-      .spyOn(apiAdageNew, 'getCollectiveOfferTemplate')
+      .spyOn(apiAdage, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
 
     renderOfferInfos()
@@ -197,11 +194,11 @@ describe('OfferInfos', () => {
     })
 
     const fetchOfferTemplateSpy = vi
-      .spyOn(apiAdageNew, 'getCollectiveOfferTemplate')
+      .spyOn(apiAdage, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
 
     const fetchOfferSpy = vi
-      .spyOn(apiAdageNew, 'getCollectiveOffer')
+      .spyOn(apiAdage, 'getCollectiveOffer')
       .mockResolvedValueOnce(defaultCollectiveOffer)
 
     renderOfferInfos()

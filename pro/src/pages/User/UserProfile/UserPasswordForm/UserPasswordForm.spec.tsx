@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -20,7 +20,7 @@ const renderUserPasswordForm = (props: UserPasswordFormProps) => {
 describe('components:UserPasswordForm', () => {
   let props: UserPasswordFormProps
   beforeEach(() => {
-    vi.spyOn(apiNew, 'postChangePassword').mockResolvedValue()
+    vi.spyOn(api, 'postChangePassword').mockResolvedValue()
     props = {
       closeForm: vi.fn(),
     }
@@ -53,7 +53,7 @@ describe('components:UserPasswordForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    expect(apiNew.postChangePassword).toHaveBeenNthCalledWith(1, {
+    expect(api.postChangePassword).toHaveBeenNthCalledWith(1, {
       body: {
         newConfirmationPassword: 'MyNewSuper1Password,',
         newPassword: 'MyNewSuper1Password,',
@@ -63,7 +63,7 @@ describe('components:UserPasswordForm', () => {
   })
 
   it('should displays API fields errors', async () => {
-    vi.spyOn(apiNew, 'postChangePassword').mockRejectedValue({
+    vi.spyOn(api, 'postChangePassword').mockRejectedValue({
       message: 'Une erreur est survenue',
       name: 'ApiError',
       status: 400,
@@ -111,7 +111,7 @@ describe('components:UserPasswordForm', () => {
       error: snackBarError,
     }))
 
-    vi.spyOn(apiNew, 'postChangePassword').mockRejectedValue({
+    vi.spyOn(api, 'postChangePassword').mockRejectedValue({
       message: 'Une erreur est survenue',
       name: 'ApiError',
       status: 500,

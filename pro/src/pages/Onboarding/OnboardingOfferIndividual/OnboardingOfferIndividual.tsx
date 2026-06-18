@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
@@ -28,7 +28,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
     () => {
-      return apiNew.listOffers({
+      return api.listOffers({
         query: { venueId: selectedPartnerVenue.id, status: OfferStatus.DRAFT },
       })
     },

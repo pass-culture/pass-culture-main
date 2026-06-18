@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { isEqual } from '@/commons/utils/isEqual'
 import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'

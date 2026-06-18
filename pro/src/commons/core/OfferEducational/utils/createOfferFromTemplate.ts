@@ -1,7 +1,7 @@
 import type { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -20,14 +20,14 @@ export const createOfferFromTemplate = async (
   setIsCreatingNewOffer?: (isCreating: boolean) => void
 ) => {
   try {
-    const offerTemplateResponse = await apiNew.getCollectiveOfferTemplate({
+    const offerTemplateResponse = await api.getCollectiveOfferTemplate({
       path: { offer_id: templateOfferId },
     })
 
     const offererId = offerTemplateResponse.venue.managingOfferer.id
     const targetOffererId =
       offerTemplateResponse.venue.managingOfferer.id || offererId
-    const { educationalOfferers } = await apiNew.listEducationalOfferers({
+    const { educationalOfferers } = await api.listEducationalOfferers({
       query: { offererId: targetOffererId },
     })
 
@@ -48,7 +48,7 @@ export const createOfferFromTemplate = async (
     const payload = createCollectiveOfferPayload(initialValues, templateOfferId)
 
     try {
-      const response = await apiNew.createCollectiveOffer({ body: payload })
+      const response = await api.createCollectiveOffer({ body: payload })
 
       await postCollectiveOfferImage({
         initialValues,

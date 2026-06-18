@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
@@ -41,7 +41,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const { data: offerTemplate } = useSWR(
     () => (offerId ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId] : null),
     ([, offerIdParams]) =>
-      apiNew.getCollectiveOfferTemplate({
+      api.getCollectiveOfferTemplate({
         path: { offer_id: Number(offerIdParams) },
       })
   )
@@ -52,7 +52,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
         ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
         : null,
     ([, id]) =>
-      apiNew.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
+      api.getCollectiveOfferRequest({ path: { request_id: Number(id) } })
   )
 
   const handleButtonClick = () => {

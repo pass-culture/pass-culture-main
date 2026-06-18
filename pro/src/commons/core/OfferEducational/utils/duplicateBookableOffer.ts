@@ -1,8 +1,8 @@
 import type { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
@@ -19,12 +19,12 @@ export const duplicateBookableOffer = async (
   let initialValues: OfferEducationalFormValues
   let offererId: number | null = null
   try {
-    const offerResponse = await apiNew.getCollectiveOffer({
+    const offerResponse = await api.getCollectiveOffer({
       path: { offer_id: offerId },
     })
 
     offererId = offerResponse.venue.managingOfferer.id
-    const { educationalOfferers } = await apiNew.listEducationalOfferers({
+    const { educationalOfferers } = await api.listEducationalOfferers({
       query: { offererId },
     })
 
@@ -46,7 +46,7 @@ export const duplicateBookableOffer = async (
   }
 
   try {
-    const response = await apiNew.duplicateCollectiveOffer({
+    const response = await api.duplicateCollectiveOffer({
       path: { offer_id: offerId },
     })
 

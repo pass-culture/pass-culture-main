@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import type { StockStatsResponseModel } from '@/apiClient/v1/new'
+import type { StockStatsResponseModel } from '@/apiClient/v1'
 
 import { RecurrenceSection } from './RecurrenceSection'
 

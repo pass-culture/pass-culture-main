@@ -4,7 +4,7 @@ import {
   type PostCollectiveOfferBodyModel,
   type PostCollectiveOfferTemplateBodyModel,
   type PostDateRangeModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   buildDateTime,
   formatBrowserTimezonedDateAsUTC,

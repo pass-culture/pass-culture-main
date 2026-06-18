@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
-import { BookingStatusFilter } from '@/apiClient/v1/new'
+import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { useCurrentRoute } from '@/commons/hooks/useCurrentRoute'

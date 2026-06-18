@@ -3,13 +3,13 @@ import useSWR from 'swr'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
-import { apiNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { api } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
@@ -63,7 +63,7 @@ export const AdagePreviewLayout = ({
   const { data: venueData, isLoading } = useSWR(
     [GET_VENUE_QUERY_KEY, String(offer.venue.id)],
     ([, venueIdParam]) =>
-      apiNew.getVenue({ path: { venue_id: Number(venueIdParam) } })
+      api.getVenue({ path: { venue_id: Number(venueIdParam) } })
   )
   if (isLoading) {
     return <Spinner />

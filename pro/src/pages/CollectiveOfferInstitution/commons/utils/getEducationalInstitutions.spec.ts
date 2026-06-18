@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { EducationalInstitutionsResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { EducationalInstitutionsResponseModel } from '@/apiClient/v1'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 
@@ -43,7 +43,7 @@ describe('getEducationalInstitutions', () => {
   })
 
   it('should return an error when the institutions could not be retrieved', async () => {
-    vi.spyOn(apiNew, 'getEducationalInstitutions').mockRejectedValueOnce(
+    vi.spyOn(api, 'getEducationalInstitutions').mockRejectedValueOnce(
       new Error('no institution found')
     )
 
@@ -51,7 +51,7 @@ describe('getEducationalInstitutions', () => {
   })
 
   it('should return an error if any page returns an error', async () => {
-    vi.spyOn(apiNew, 'getEducationalInstitutions')
+    vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockRejectedValueOnce(new Error('no institution found'))
@@ -60,7 +60,7 @@ describe('getEducationalInstitutions', () => {
   })
 
   it('should return a confirmation when all results are retrieved', async () => {
-    vi.spyOn(apiNew, 'getEducationalInstitutions')
+    vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 3 })

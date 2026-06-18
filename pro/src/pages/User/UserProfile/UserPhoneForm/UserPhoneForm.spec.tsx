@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions } from '@/apiClient/compat'
 import { ApiError, type ApiResult } from '@/apiClient/compat'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -35,7 +35,7 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should render api error when submitting', async () => {
-    vi.spyOn(apiNew, 'patchUserPhone').mockRejectedValue(
+    vi.spyOn(api, 'patchUserPhone').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -57,7 +57,7 @@ describe('components:UserPhoneForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
+    expect(api.patchUserPhone).toHaveBeenCalledWith({
       body: {
         phoneNumber: '+330621790350',
       },
@@ -99,7 +99,7 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should trigger onSubmit callback when submitting', async () => {
-    vi.spyOn(apiNew, 'patchUserPhone')
+    vi.spyOn(api, 'patchUserPhone')
 
     renderUserPhoneForm(props)
 
@@ -112,7 +112,7 @@ describe('components:UserPhoneForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiNew.patchUserPhone).toHaveBeenCalledWith({
+    expect(api.patchUserPhone).toHaveBeenCalledWith({
       body: {
         phoneNumber: '+330621790350',
       },

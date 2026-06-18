@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { setSelectedAdminOfferer } from '@/commons/store/user/reducer'
@@ -20,7 +20,7 @@ import { AdministrationLayout } from '@/layouts/AdministrationLayout/Administrat
 import { Component as IndividualActivityData } from './IndividualActivityData'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getBookingsCsv: vi.fn(),
     getBookingsExcel: vi.fn(),
   },
@@ -104,7 +104,7 @@ describe('IndividualActivityData', () => {
   })
 
   it('should pass admin offerer id to CSV download', async () => {
-    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
     renderIndividualActivityData()
 
     await userEvent.click(
@@ -115,7 +115,7 @@ describe('IndividualActivityData', () => {
     })
     await userEvent.click(downloadSubButton)
 
-    expect(apiNew.getBookingsCsv).toHaveBeenCalledWith({
+    expect(api.getBookingsCsv).toHaveBeenCalledWith({
       query: {
         offererId: defaultGetOffererResponseModel.id,
         page: 1,
@@ -149,8 +149,8 @@ describe('IndividualActivityData', () => {
   })
 
   it('should track download clicks', async () => {
-    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
-    vi.spyOn(apiNew, 'getBookingsExcel').mockResolvedValue({})
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getBookingsExcel').mockResolvedValue({})
     renderIndividualActivityData()
 
     await userEvent.click(

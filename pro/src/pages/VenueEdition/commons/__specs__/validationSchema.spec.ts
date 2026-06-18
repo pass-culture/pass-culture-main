@@ -1,7 +1,4 @@
-import {
-  ActivityNotOpenToPublic,
-  ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+import { ActivityNotOpenToPublic, ActivityOpenToPublic } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { getVolunteeringUrlError } from '../getVolunteeringUrlError'

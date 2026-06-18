@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdageNew } from '@/apiClient/api'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -15,7 +15,7 @@ import {
 } from '../OfferFavoriteButton'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logFavOfferButtonClick: vi.fn(),
     deleteFavoriteForCollectiveOfferTemplate: vi.fn(),
     postCollectiveTemplateFavorites: vi.fn(),
@@ -42,7 +42,7 @@ describe('OfferFavoriteButton', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Mettre en favoris' })
     )
-    expect(apiAdageNew.logFavOfferButtonClick).toHaveBeenCalledWith({
+    expect(apiAdage.logFavOfferButtonClick).toHaveBeenCalledWith({
       body: {
         offerId: defaultProps.offer.id,
         queryId: defaultProps.queryId,
@@ -61,7 +61,7 @@ describe('OfferFavoriteButton', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Supprimer des favoris' })
     )
-    expect(apiAdageNew.logFavOfferButtonClick).toHaveBeenCalledWith({
+    expect(apiAdage.logFavOfferButtonClick).toHaveBeenCalledWith({
       body: {
         offerId: defaultProps.offer.id,
         queryId: defaultProps.queryId,

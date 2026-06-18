@@ -5,8 +5,8 @@ import { expect } from 'vitest'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -47,7 +47,7 @@ function renderAdageOffer({
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logConsultOffer: vi.fn(),
   },
 }))
@@ -91,7 +91,7 @@ describe('AdageOffer', () => {
 
     renderAdageOffer({ offer: defaultCollectiveOffer })
 
-    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith({
       body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,
@@ -108,7 +108,7 @@ describe('AdageOffer', () => {
 
     renderAdageOffer({ offer: defaultCollectiveOffer })
 
-    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith({
       body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,
@@ -125,7 +125,7 @@ describe('AdageOffer', () => {
       playlistId: 42,
     })
 
-    expect(apiAdageNew.logConsultOffer).toHaveBeenCalledWith({
+    expect(apiAdage.logConsultOffer).toHaveBeenCalledWith({
       body: expect.objectContaining({
         iframeFrom: '/adage-iframe/recherche',
         offerId: defaultCollectiveOffer.id,

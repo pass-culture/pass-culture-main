@@ -1,4 +1,4 @@
-import { AdageHeaderLink } from '@/apiClient/adage/new'
+import { AdageHeaderLink } from '@/apiClient/adage'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 

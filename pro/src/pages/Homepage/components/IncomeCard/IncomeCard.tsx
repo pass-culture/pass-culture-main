@@ -3,7 +3,7 @@ import {
   type IndividualRevenue,
   SimplifiedBankAccountStatus,
   type TotalRevenue,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'

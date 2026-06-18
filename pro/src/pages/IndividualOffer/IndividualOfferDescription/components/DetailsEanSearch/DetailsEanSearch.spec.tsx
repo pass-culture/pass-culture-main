@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -83,7 +83,7 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { getProductByEan: vi.fn() },
+  api: { getProductByEan: vi.fn() },
 }))
 
 const successMessage = /Ces informations ont été récupérées depuis l’EAN./
@@ -127,7 +127,7 @@ describe('DetailsEanSearch', () => {
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
 
-        expect(apiNew.getProductByEan).toHaveBeenCalledWith({
+        expect(api.getProductByEan).toHaveBeenCalledWith({
           path: {
             ean: '9781234567897',
             offerer_id: 1,
@@ -232,9 +232,7 @@ describe('DetailsEanSearch', () => {
 
     describe('when an EAN search is performed and ends with a product API error', () => {
       it('should display an error message', async () => {
-        vi.spyOn(apiNew, 'getProductByEan').mockRejectedValue(
-          new Error('error')
-        )
+        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
         renderDetailsEanSearch({ isDraftOffer: true })
 
         expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
@@ -246,9 +244,7 @@ describe('DetailsEanSearch', () => {
       })
 
       it('should disable the submit button', async () => {
-        vi.spyOn(apiNew, 'getProductByEan').mockRejectedValue(
-          new Error('error')
-        )
+        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
         renderDetailsEanSearch({ isDraftOffer: true })
 
         await userEvent.type(getInput(), '9781234567897')

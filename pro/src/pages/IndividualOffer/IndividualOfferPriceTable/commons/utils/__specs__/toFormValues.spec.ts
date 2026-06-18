@@ -1,7 +1,7 @@
 import type {
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 

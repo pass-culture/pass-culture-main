@@ -4,7 +4,7 @@ import { addDays } from 'date-fns'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { formatDateTimeParts } from '@/commons/utils/date'
 import { buildCollectiveOfferHome } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

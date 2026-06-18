@@ -4,7 +4,7 @@ import { useId, useState } from 'react'
 import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'

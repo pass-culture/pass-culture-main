@@ -6,8 +6,8 @@ import {
   AdageFrontRoles,
   type AuthenticatedResponse,
   type CatalogViewBody,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { LOG_CATALOG_VIEW_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { AppLayout } from '@/pages/AdageIframe/app/components/AppLayout/AppLayout'
@@ -31,14 +31,14 @@ export const App = (): JSX.Element => {
       options: {
         arg: CatalogViewBody
       }
-    ) => apiAdageNew.logCatalogView({ body: options.arg })
+    ) => apiAdage.logCatalogView({ body: options.arg })
   )
 
   useEffect(() => {
     async function authenticate() {
       setIsLoading(true)
       try {
-        const user = await apiAdageNew.authenticate()
+        const user = await apiAdage.authenticate()
         setUser(user)
         if (user.email) {
           setSentryUser({ email: user.email })

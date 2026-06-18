@@ -1,7 +1,7 @@
 import type {
   ThingStocksBulkUpsertBodyModel,
   ThingStockUpsertBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { isDateValid } from '@/commons/utils/date'
 import type { Defined } from '@/commons/utils/types'
 

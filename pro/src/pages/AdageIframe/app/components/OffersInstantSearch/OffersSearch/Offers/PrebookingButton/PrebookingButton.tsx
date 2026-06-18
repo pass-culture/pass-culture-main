@@ -3,8 +3,8 @@ import { format } from 'date-fns-tz'
 import type React from 'react'
 import { useRef, useState } from 'react'
 
-import type { OfferStockResponse } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import type { OfferStockResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { hasErrorCode } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { LOGS_DATA } from '@/commons/utils/config'
@@ -56,7 +56,7 @@ export const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA && !isPreview) {
-      apiAdageNew.logBookingModalButtonClick({
+      apiAdage.logBookingModalButtonClick({
         body: {
           iframeFrom: location.pathname,
           stockId,
@@ -80,7 +80,7 @@ export const PrebookingButton = ({
 
   const preBookCurrentStock = async () => {
     try {
-      await apiAdageNew.bookCollectiveOffer({ body: { stockId: stock.id } })
+      await apiAdage.bookCollectiveOffer({ body: { stockId: stock.id } })
     } catch (error) {
       if (hasErrorCode(error)) {
         if (error.body.code === 'WRONG_UAI_CODE') {

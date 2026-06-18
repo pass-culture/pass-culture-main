@@ -1,7 +1,7 @@
 import useSWR, { type SWRResponse } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetOffererNameResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import { GET_OFFERER_NAMES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { updateOffererNames } from '@/commons/store/user/reducer'
 
@@ -34,7 +34,7 @@ export const useOffererNamesQuery = (): SWRResponse<
       if (storeOffererNames) {
         return storeOffererNames
       } else {
-        const response = await apiNew.listOfferersNames()
+        const response = await api.listOfferersNames()
         dispatch(updateOffererNames(response.offerersNames))
         return response.offerersNames
       }

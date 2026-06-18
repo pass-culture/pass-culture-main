@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
-import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage/new'
+import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'

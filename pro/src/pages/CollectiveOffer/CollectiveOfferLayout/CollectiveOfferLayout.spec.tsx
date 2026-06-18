@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
   },

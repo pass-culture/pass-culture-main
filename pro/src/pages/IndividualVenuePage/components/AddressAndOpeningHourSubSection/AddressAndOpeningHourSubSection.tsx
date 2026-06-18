@@ -1,7 +1,7 @@
 import type {
   GetVenueResponseModel,
   LocationResponseModelV2,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateHomeResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'

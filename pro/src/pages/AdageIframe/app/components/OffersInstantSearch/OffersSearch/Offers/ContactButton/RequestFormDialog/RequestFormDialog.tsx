@@ -3,8 +3,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
 import { useForm } from 'react-hook-form'
 
-import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -74,7 +74,7 @@ export const RequestFormDialog = ({
   const onSubmit = async () => {
     const payload = createCollectiveRequestPayload(hookForm.getValues())
     try {
-      await apiAdageNew.createCollectiveRequest({
+      await apiAdage.createCollectiveRequest({
         path: { offer_id: offerId },
         body: payload,
       })
@@ -92,7 +92,7 @@ export const RequestFormDialog = ({
 
   const onCancel = async () => {
     if (!isPreview) {
-      await apiAdageNew.logRequestFormPopinDismiss({
+      await apiAdage.logRequestFormPopinDismiss({
         body: {
           iframeFrom: location.pathname,
           collectiveOfferTemplateId: offerId,
@@ -110,7 +110,7 @@ export const RequestFormDialog = ({
   }
 
   const logContactUrl = () => {
-    apiAdageNew.logContactUrlClick({
+    apiAdage.logContactUrlClick({
       body: {
         iframeFrom: location.pathname,
         offerId,

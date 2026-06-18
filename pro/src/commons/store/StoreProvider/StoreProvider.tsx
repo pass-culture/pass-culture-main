@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateFeatures } from '@/commons/store/features/reducer'
 import { updateUser } from '@/commons/store/user/reducer'
@@ -24,7 +24,7 @@ export const StoreProvider = ({
   useEffect(() => {
     const getUser = async () => {
       try {
-        return await apiNew.getProfile()
+        return await api.getProfile()
       } catch {
         return null
       }
@@ -32,7 +32,7 @@ export const StoreProvider = ({
 
     const getFeatures = async () => {
       try {
-        return await apiNew.listFeatures()
+        return await api.listFeatures()
       } catch {
         return []
       }

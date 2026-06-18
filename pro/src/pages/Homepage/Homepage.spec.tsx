@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { defaultDMSApplicationForEACV2 } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'

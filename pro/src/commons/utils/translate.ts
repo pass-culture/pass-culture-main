@@ -1,6 +1,6 @@
 import invert from 'lodash.invert'
 
-import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient/v1'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { Audience } from '@/commons/core/shared/types'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'

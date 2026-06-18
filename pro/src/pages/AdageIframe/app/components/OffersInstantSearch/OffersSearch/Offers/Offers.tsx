@@ -12,8 +12,8 @@ import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   VenueResponse,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -100,7 +100,7 @@ export const Offers = ({
       ? [GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY, ...hitsIds]
       : null,
     ([, ...hitsIds]) =>
-      apiAdageNew.getCollectiveOfferTemplates({ query: { ids: hitsIds } })
+      apiAdage.getCollectiveOfferTemplates({ query: { ids: hitsIds } })
   )
 
   const fetchedOffers = data?.collectiveOffers ?? []
@@ -114,7 +114,7 @@ export const Offers = ({
 
   useEffect(() => {
     if (isMobileScreen !== undefined) {
-      apiAdageNew.logOfferListViewSwitch({
+      apiAdage.logOfferListViewSwitch({
         body: {
           iframeFrom: location.pathname,
           source: adageViewType,
@@ -154,7 +154,7 @@ export const Offers = ({
     const source = button.id === 'list' ? 'grid' : 'list'
     dispatch(setSearchView(viewType))
     if (adageViewType !== viewType) {
-      apiAdageNew.logOfferListViewSwitch({
+      apiAdage.logOfferListViewSwitch({
         body: {
           iframeFrom: location.pathname,
           source,
@@ -171,7 +171,7 @@ export const Offers = ({
       return
     }
 
-    apiAdageNew.logOfferTemplateDetailsButtonClick({
+    apiAdage.logOfferTemplateDetailsButtonClick({
       body: {
         iframeFrom: location.pathname,
         offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
@@ -183,7 +183,7 @@ export const Offers = ({
   }
 
   const logOpenHighlightBanner = (bannerName: string) => {
-    apiAdageNew.logOpenHighlightBanner({
+    apiAdage.logOpenHighlightBanner({
       body: {
         iframeFrom: location.pathname,
         queryId: results.queryID,

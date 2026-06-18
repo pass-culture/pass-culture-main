@@ -3,8 +3,8 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   type GetCollectiveOfferLocationModel,
-} from '@/apiClient/adage/new'
-import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1/new'
+} from '@/apiClient/adage'
+import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'

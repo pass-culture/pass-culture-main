@@ -1,7 +1,7 @@
 import type {
   EducationalDomainsResponseModel,
   GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 export const mapVenueDomains = (

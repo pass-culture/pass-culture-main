@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { OfferStatus } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'

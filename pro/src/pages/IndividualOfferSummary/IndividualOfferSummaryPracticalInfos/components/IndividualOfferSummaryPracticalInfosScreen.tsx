@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,

@@ -1,8 +1,8 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
@@ -24,7 +24,7 @@ export const saveEventOfferPriceTable = async (
   if (dirtyFields.isDuo) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
-      apiNew.patchOffer({
+      api.patchOffer({
         path: { offer_id: offer.id },
         // TODO (rchaffal) to remove once PatchOfferBodyModel is migrated to Pydantic V2
         // @ts-expect-error
@@ -36,7 +36,7 @@ export const saveEventOfferPriceTable = async (
   if (dirtyFields) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
-      apiNew.replaceOfferPriceCategories({
+      api.replaceOfferPriceCategories({
         path: { offer_id: offer.id },
         body: toPriceCategoryBody(formValues),
       }),

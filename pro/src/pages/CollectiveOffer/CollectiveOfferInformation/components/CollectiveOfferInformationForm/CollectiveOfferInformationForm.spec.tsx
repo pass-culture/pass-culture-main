@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { ApiError } from '@/apiClient/compat'
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

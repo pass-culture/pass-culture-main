@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import type { SharedLoginUserResponseModel } from '@/apiClient/v1/new'
+import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -30,8 +30,6 @@ import { SignIn } from './SignIn'
 vi.mock('@/apiClient/api', () => ({
   api: {
     signout: vi.fn(),
-  },
-  apiNew: {
     listOfferersNames: vi.fn(),
     getProfile: vi.fn(),
     getOfferer: vi.fn(),
@@ -81,8 +79,8 @@ const scrollIntoViewMock = vi.fn()
 describe('SignIn', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
-    vi.spyOn(apiNew, 'signin').mockResolvedValue(
+    vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
+    vi.spyOn(api, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
     vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -90,7 +88,7 @@ describe('SignIn', () => {
     } as unknown as HTMLScriptElement)
     vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
-    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
@@ -105,7 +103,7 @@ describe('SignIn', () => {
       ],
     })
 
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
   })
@@ -217,7 +215,7 @@ describe('SignIn', () => {
       })
     )
 
-    expect(apiNew.signin).toHaveBeenCalledExactlyOnceWith({
+    expect(api.signin).toHaveBeenCalledExactlyOnceWith({
       body: {
         identifier: 'MonPetitEmail@example.com',
         password: 'fakePassword',
@@ -263,7 +261,7 @@ describe('SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'fakePassword')
 
-    vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
         body: { identifier: ['password is invalid'] },
         status: 401,
@@ -293,7 +291,7 @@ describe('SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'password123')
 
-    vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
         body: {
           email: ['Email invalide'],
@@ -323,7 +321,7 @@ describe('SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'fakePassword')
 
-    vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
         body: {
           identifier: [
@@ -374,7 +372,7 @@ describe('SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'fakePassword')
 
-    vi.spyOn(apiNew, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       makeApiError({
         body: { identifier: ['password is invalid'] },
         status: 401,

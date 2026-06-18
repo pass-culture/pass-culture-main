@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { apiAdageNew } from '@/apiClient/api'
+import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { VITE_ADAGE_SURVEY_SATISFACTION_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
@@ -26,7 +26,7 @@ export const SurveySatisfaction = ({
 
   const onCloseSurvey = async () => {
     try {
-      await apiAdageNew.saveRedactorPreferences({
+      await apiAdage.saveRedactorPreferences({
         body: {
           feedback_form_closed: true,
         },
@@ -39,7 +39,7 @@ export const SurveySatisfaction = ({
   }
 
   const logOpenSatisfactionSurvey = () => {
-    apiAdageNew.logOpenSatisfactionSurvey({
+    apiAdage.logOpenSatisfactionSurvey({
       body: {
         iframeFrom: location.pathname,
         queryId,

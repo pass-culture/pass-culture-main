@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
-import type { StructureDataBodyModel } from '@/apiClient/v1/new'
+import type { StructureDataBodyModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as getSiretData from '@/commons/core/Venue/utils/getSiretData'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
@@ -57,10 +57,10 @@ const renderInputForm = (initialValues = DEFAULT_OFFERER_FORM_VALUES) => {
 }
 describe('<SiretInputForm />', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getStructureData').mockResolvedValue(
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
       structureDataBodyModelFactory()
     )
-    vi.spyOn(apiNew, 'checkStructure').mockResolvedValue()
+    vi.spyOn(api, 'checkStructure').mockResolvedValue()
   })
 
   it('should render without accessibility violations', async () => {
@@ -117,7 +117,7 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(apiNew.getStructureData).toHaveBeenCalledOnce()
+    expect(api.getStructureData).toHaveBeenCalledOnce()
 
     expect(screen.getByRole('alert')).not.toHaveTextContent(
       "Le SIRET n'existe pas"
@@ -156,11 +156,11 @@ describe('<SiretInputForm />', () => {
 
     expect(mockBeforeFalse).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
-    expect(apiNew.getStructureData).not.toHaveBeenCalled()
+    expect(api.getStructureData).not.toHaveBeenCalled()
   })
 
   it('should not continue submit on api error', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValueOnce(
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -182,19 +182,19 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(apiNew.getStructureData).toHaveBeenCalledOnce()
+    expect(api.getStructureData).toHaveBeenCalledOnce()
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(
         "Le SIRET n'existe pas"
       )
     })
-    expect(apiNew.getStructureData).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(mockHandleSiretData).not.toHaveBeenCalled()
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(apiNew, 'getStructureData').mockRejectedValueOnce(
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -228,7 +228,7 @@ describe('<SiretInputForm />', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(apiNew.getStructureData).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(
       screen.getByRole('link', { name: /Modifier la visibilité de mon SIRET/ })
     ).toBeInTheDocument()
@@ -328,8 +328,8 @@ describe('<SiretInputForm />', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'submit' }))
 
-    expect(apiNew.getStructureData).not.toHaveBeenCalled()
-    expect(apiNew.checkStructure).toHaveBeenCalledOnce()
+    expect(api.getStructureData).not.toHaveBeenCalled()
+    expect(api.checkStructure).toHaveBeenCalledOnce()
 
     expect(mockHandleSiretData).not.toHaveBeenCalled()
     expect(checkSiretMock).toHaveBeenCalled()

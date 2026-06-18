@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import {
@@ -38,14 +38,14 @@ const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
 describe('IndividualOfferSummaryBookingsScreen', () => {
   beforeEach(() => {
     vi.spyOn(
-      apiNew,
+      api,
       'getOfferPriceCategoriesAndSchedulesByDates'
     ).mockResolvedValue([])
   })
   it('should render a list of bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValueOnce({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [
         bookingRecapFactory({
           stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
@@ -78,7 +78,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
   it('should render 1 bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValueOnce({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [
         bookingRecapFactory({
           stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
@@ -105,7 +105,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
   it('should render a message when no bookings', () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValueOnce({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [],
       page: 1,
       pages: 1,
@@ -126,7 +126,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
         managingOfferer: getOfferManagingOffererFactory({ id: 42 }),
       })
     )
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValueOnce({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [
         bookingRecapFactory({
           stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
@@ -140,7 +140,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     render(offer)
 
     await screen.findAllByRole('link', { name: 'Offre de test' })
-    expect(apiNew.getBookingsPro).toHaveBeenCalledWith({
+    expect(api.getBookingsPro).toHaveBeenCalledWith({
       query: {
         bookingPeriodBeginningDate: '2015-01-01',
         bookingPeriodEndingDate: expect.any(String),
@@ -157,7 +157,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
   it('should open a download modal', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValueOnce({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [
         bookingRecapFactory({
           stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),

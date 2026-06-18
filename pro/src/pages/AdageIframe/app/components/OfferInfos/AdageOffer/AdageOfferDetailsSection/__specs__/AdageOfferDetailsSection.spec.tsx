@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { EacFormat } from '@/apiClient/adage/new'
+import { EacFormat } from '@/apiClient/adage'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

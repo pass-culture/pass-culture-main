@@ -6,7 +6,7 @@ import type { AdresseData } from '@/apiClient/adresse/types'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'

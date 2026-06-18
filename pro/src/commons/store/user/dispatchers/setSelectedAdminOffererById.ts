@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetOffererResponseModel } from '@/apiClient/v1/new'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {
@@ -51,7 +51,7 @@ export const setSelectedAdminOffererById = createAsyncThunk<
 
       const nextOfferer =
         typeof offererOrOffererId === 'number'
-          ? await apiNew.getOfferer({
+          ? await api.getOfferer({
               path: { offerer_id: offererOrOffererId },
             })
           : offererOrOffererId

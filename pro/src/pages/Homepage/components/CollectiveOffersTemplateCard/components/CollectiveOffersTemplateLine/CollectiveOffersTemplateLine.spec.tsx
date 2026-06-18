@@ -7,7 +7,7 @@ import { axe } from 'vitest-axe'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferTemplateHomeResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { formatDateTimeParts } from '@/commons/utils/date'

@@ -2,7 +2,7 @@ import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
   type ManagedVenue,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'

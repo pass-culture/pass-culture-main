@@ -1,6 +1,6 @@
 import { ValidationError } from 'yup'
 
-import { ActivityNotOpenToPublic, ActivityOpenToPublic } from 'apiClient/v1/new'
+import { ActivityNotOpenToPublic, ActivityOpenToPublic } from 'apiClient/v1'
 import { activityValidator } from '../activity'
 
 describe('activity', () => {

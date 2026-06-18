@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { defaultOfferHomeResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -11,7 +11,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { OffersCardVariant } from '../types'
 import { IndividualOffersCard } from './IndividualOffersCard'
 
-vi.mock('@/apiClient/api', () => ({ apiNew: { listOffersHome: vi.fn() } }))
+vi.mock('@/apiClient/api', () => ({ api: { listOffersHome: vi.fn() } }))
 vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
   OffersRetentionCard: () => <div>OffersRetentionCard</div>,
 }))
@@ -25,7 +25,7 @@ describe('<IndividualOffersCard />', () => {
     }))
   })
   it('should render without accessibility violations', async () => {
-    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValueOnce([
+    vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([
       defaultOfferHomeResponseModel,
     ])
     const { container } = renderWithProviders(
@@ -39,7 +39,7 @@ describe('<IndividualOffersCard />', () => {
   })
 
   it('should render the retention card if no offers are returned', async () => {
-    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValueOnce([])
+    vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([])
     renderWithProviders(
       <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
     )
@@ -48,7 +48,7 @@ describe('<IndividualOffersCard />', () => {
 
   it('should have a CTA that sends to individual offer list', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValueOnce([
+    vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([
       defaultOfferHomeResponseModel,
     ])
 
@@ -80,7 +80,7 @@ describe('<IndividualOffersCard />', () => {
 
   it('should log event on press CTA that sends to individual offer list', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'listOffersHome').mockResolvedValueOnce([
+    vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([
       defaultOfferHomeResponseModel,
     ])
 

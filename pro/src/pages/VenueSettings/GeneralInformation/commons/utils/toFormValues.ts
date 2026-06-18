@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { humanizeSiret, unhumanizeRidet } from '@/commons/utils/siren'
 

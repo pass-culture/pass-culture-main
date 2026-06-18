@@ -2,12 +2,12 @@ import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
-import { Target } from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
+import { Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -156,7 +156,7 @@ export const Validation = (): JSX.Element | undefined => {
           token,
         },
       }
-      const createdOfferer = await apiNew.saveNewOnboardingData(data)
+      const createdOfferer = await api.saveNewOnboardingData(data)
 
       cleanSignupJourneyStorage()
 

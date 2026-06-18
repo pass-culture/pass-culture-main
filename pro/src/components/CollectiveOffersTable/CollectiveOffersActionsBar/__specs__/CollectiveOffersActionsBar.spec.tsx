@@ -1,17 +1,17 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferStockResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -89,12 +89,12 @@ describe('ActionsBar', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockResolvedValue()
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockResolvedValue()
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockResolvedValue()
-    vi.spyOn(apiNew, 'patchCollectiveOffersTemplateArchive').mockResolvedValue()
+    vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockResolvedValue()
   })
 
   it('should have publish, hide, archive, cancel CTAs offers are template', () => {
@@ -178,7 +178,7 @@ describe('ActionsBar', () => {
       }
     )
     expect(
-      apiNew.patchCollectiveOffersTemplateActiveStatus
+      api.patchCollectiveOffersTemplateActiveStatus
     ).toHaveBeenLastCalledWith({
       body: { ids: [1, 2], isActive: false },
     })
@@ -198,7 +198,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Archiver" button when some offers are selected', async () => {
-    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
     renderActionsBar({
       ...props,
       selectedOffers: [
@@ -243,7 +243,7 @@ describe('ActionsBar', () => {
     await userEvent.click(confirmDeactivateButton)
 
     expect(
-      apiNew.patchCollectiveOffersTemplateActiveStatus
+      api.patchCollectiveOffersTemplateActiveStatus
     ).toHaveBeenLastCalledWith({
       body: { ids: [1, 2], isActive: false },
     })
@@ -318,7 +318,7 @@ describe('ActionsBar', () => {
     const confirmArchivingButton = screen.getByText('Archiver les offres')
     await userEvent.click(confirmArchivingButton)
 
-    expect(apiNew.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
+    expect(api.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
       body: { ids: [1, 2] },
     })
 
@@ -410,9 +410,9 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(
-      apiNew.patchCollectiveOffersTemplateActiveStatus
-    ).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      1
+    )
 
     expect(screen.getByText('1 offre a bien été publiée')).toBeInTheDocument()
   })
@@ -460,12 +460,10 @@ describe('ActionsBar', () => {
     const confirmArchivingButton = screen.getByText('Archiver les offres')
     await userEvent.click(confirmArchivingButton)
 
-    expect(
-      apiNew.patchCollectiveOffersTemplateArchive
-    ).toHaveBeenLastCalledWith({
+    expect(api.patchCollectiveOffersTemplateArchive).toHaveBeenLastCalledWith({
       body: { ids: [10, 20] },
     })
-    expect(apiNew.patchCollectiveOffersArchive).not.toHaveBeenCalled()
+    expect(api.patchCollectiveOffersArchive).not.toHaveBeenCalled()
     expect(screen.getByText('2 offres ont bien été archivées')).toBeVisible()
   })
 })

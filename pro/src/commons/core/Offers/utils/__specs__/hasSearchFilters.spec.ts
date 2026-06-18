@@ -1,5 +1,5 @@
-import { EacFormat } from '@/apiClient/adage/new'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { EacFormat } from '@/apiClient/adage'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 
 import type { CollectiveSearchFiltersParams } from '../../types'
 import { hasCollectiveSearchFilters } from '../hasSearchFilters'

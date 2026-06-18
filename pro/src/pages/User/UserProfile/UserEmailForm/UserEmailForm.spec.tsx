@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -16,7 +16,7 @@ const renderUserEmailForm = (props: UserEmailFormProps) => {
 describe('components:UserEmailForm', () => {
   let props: UserEmailFormProps
   beforeEach(() => {
-    vi.spyOn(apiNew, 'postUserEmail').mockResolvedValue()
+    vi.spyOn(api, 'postUserEmail').mockResolvedValue()
     props = {
       closeForm: vi.fn(),
     }
@@ -39,11 +39,11 @@ describe('components:UserEmailForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    expect(apiNew.postUserEmail).toHaveBeenCalledTimes(1)
+    expect(api.postUserEmail).toHaveBeenCalledTimes(1)
   })
 
   it('should display a custom error from api if the email could not be sent', async () => {
-    vi.spyOn(apiNew, 'postUserEmail').mockRejectedValueOnce({
+    vi.spyOn(api, 'postUserEmail').mockRejectedValueOnce({
       message: 'error message',
       body: { email: 'wrong email address' },
       name: 'ApiError',

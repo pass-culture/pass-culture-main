@@ -4,7 +4,7 @@ import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   type ApiRequestOptions,
@@ -18,7 +18,7 @@ import {
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
   SubcategoryIdEnum,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -255,15 +255,15 @@ describe('IndividualOfferSummaryScreen', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       getIndividualOfferFactory()
     )
-    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue(musicTypes)
-    vi.spyOn(apiNew, 'getStocksStats').mockResolvedValue(stocksStats)
-    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
+    vi.spyOn(api, 'getStocksStats').mockResolvedValue(stocksStats)
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
     )
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 1 })
     )
   })
@@ -388,11 +388,11 @@ describe('IndividualOfferSummaryScreen', () => {
             resolve(getIndividualOfferFactory())
           }, 200)
         )
-      vi.spyOn(apiNew, 'patchPublishOffer').mockImplementationOnce(
+      vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
         () => mockResponse
       )
       await userEvent.click(buttonPublish)
-      expect(apiNew.patchPublishOffer).toHaveBeenCalled()
+      expect(api.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()
       await waitFor(() => expect(pageTitle).not.toBeInTheDocument())
       expect(
@@ -439,7 +439,7 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
-      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
         body: {
           id: 1,
           publicationDatetime: `${publicationDate}T10:00:00Z`,
@@ -495,7 +495,7 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
-      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
         body: {
           id: 1,
           bookingAllowedDatetime: `${bookingAllowedDate}T10:00:00Z`,
@@ -511,7 +511,7 @@ describe('IndividualOfferSummaryScreen', () => {
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      vi.spyOn(apiNew, 'patchPublishOffer').mockRejectedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -533,7 +533,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal when the partner venue has no bank account and the offer is non-free', async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({
           isNonFreeOffer: true,
         })
@@ -576,7 +576,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal when the partner venue already has a bank account', async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
@@ -599,7 +599,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal if offer is free', async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
@@ -621,7 +621,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should not display redirect modal if the partner venue already has non-free offers', async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
@@ -644,7 +644,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal in onboarding mode regardless of bank account or non-free offers', async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
@@ -775,7 +775,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should validate publication date and time when it's a scheduled publication", async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -830,7 +830,7 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
         body: {
           id: 1,
           publicationDatetime: expect.any(String),
@@ -840,7 +840,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should require publication date to be in the future when it's a scheduled publication", async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -888,7 +888,7 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
         body: {
           id: 1,
           publicationDatetime: expect.any(String),
@@ -1010,7 +1010,7 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it("should require publication date to be within two years when it's a scheduled publication", async () => {
-      vi.spyOn(apiNew, 'patchPublishOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory()
       )
 
@@ -1062,7 +1062,7 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
       )
 
-      expect(apiNew.patchPublishOffer).toHaveBeenCalledWith({
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
         body: {
           id: 1,
           publicationDatetime: expect.any(String),

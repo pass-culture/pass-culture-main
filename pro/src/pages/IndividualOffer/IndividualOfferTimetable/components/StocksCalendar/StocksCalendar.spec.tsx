@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -16,7 +16,7 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 import { StocksCalendar, type StocksCalendarProps } from './StocksCalendar'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     deleteStocks: vi.fn(),
     getStocks: vi.fn(),
     bulkUpdateEventStocks: vi.fn(),
@@ -32,14 +32,14 @@ function renderStocksCalendar(
   stocks = defaultStocks,
   props?: Partial<StocksCalendarProps>
 ) {
-  vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+  vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
     getStocksResponseFactory({
       stocks: stocks,
       totalStockCount: stocks.length,
     })
   )
 
-  vi.spyOn(apiNew, 'bulkCreateEventStocks').mockResolvedValue(
+  vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue(
     getStocksResponseFactory({
       stocks: stocks,
       totalStockCount: stocks.length,
@@ -174,7 +174,7 @@ describe('StocksCalendar', () => {
   it('should delete a stock from the stock line trash button', async () => {
     renderStocksCalendar()
 
-    const deleteSpy = vi.spyOn(apiNew, 'deleteStocks').mockResolvedValueOnce(
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 0,
@@ -201,7 +201,7 @@ describe('StocksCalendar', () => {
   it('should delete all the checked stocks', async () => {
     renderStocksCalendar()
 
-    const deleteSpy = vi.spyOn(apiNew, 'deleteStocks').mockResolvedValueOnce(
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 0,
@@ -345,7 +345,7 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     )
 
-    const updateStockSpy = vi.spyOn(apiNew, 'bulkUpdateEventStocks')
+    const updateStockSpy = vi.spyOn(api, 'bulkUpdateEventStocks')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
@@ -419,7 +419,7 @@ describe('StocksCalendar', () => {
   })
 
   it('should show an error message when none of the stocks were updated', async () => {
-    vi.spyOn(apiNew, 'bulkUpdateEventStocks').mockResolvedValueOnce(
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 0,
@@ -482,14 +482,14 @@ describe('StocksCalendar', () => {
       .fill(null)
       .map((_, index) => getOfferStockFactory({ id: index }))
 
-    vi.spyOn(apiNew, 'getStocks').mockResolvedValue(
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({
         stocks,
         totalStockCount: stocks.length,
       })
     )
 
-    vi.spyOn(apiNew, 'deleteStocks').mockResolvedValueOnce(
+    vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 2,
@@ -530,7 +530,7 @@ describe('StocksCalendar', () => {
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    const deleteSpy = vi.spyOn(apiNew, 'deleteStocks').mockResolvedValueOnce(
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
         totalStockCount: 0,
@@ -571,7 +571,7 @@ describe('StocksCalendar', () => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    vi.spyOn(apiNew, 'bulkUpdateEventStocks').mockRejectedValueOnce(
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockRejectedValueOnce(
       new Error('Network error')
     )
 
@@ -597,7 +597,7 @@ describe('StocksCalendar', () => {
     })
 
     const getStocksSpy = vi
-      .spyOn(apiNew, 'getStocks')
+      .spyOn(api, 'getStocks')
       .mockResolvedValueOnce(stocksResponse)
       .mockResolvedValueOnce(stocksResponse)
 

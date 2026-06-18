@@ -1,4 +1,4 @@
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { DisplayableActivity } from '@/apiClient/v1'
 
 import { createMap } from '.'
 

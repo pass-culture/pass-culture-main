@@ -1,7 +1,7 @@
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
+} from '@/apiClient/adage'
 import {
   getDateTimeToFrenchText,
   getRangeToFrenchText,

@@ -1,14 +1,14 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { UserProfile } from './UserProfile'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     anonymize: vi.fn(),
     getUserEmailPendingValidation: vi.fn(),
   },
@@ -71,7 +71,7 @@ describe('UserProfile', () => {
   })
 
   it('should display pending email validation banner', async () => {
-    vi.spyOn(apiNew, 'getUserEmailPendingValidation').mockResolvedValue({
+    vi.spyOn(api, 'getUserEmailPendingValidation').mockResolvedValue({
       newEmail: 'newEmail@example.com',
     })
 
@@ -81,9 +81,7 @@ describe('UserProfile', () => {
   })
 
   it('should not display pending email validation banner', () => {
-    vi.spyOn(apiNew, 'getUserEmailPendingValidation').mockResolvedValue(
-      undefined
-    )
+    vi.spyOn(api, 'getUserEmailPendingValidation').mockResolvedValue(undefined)
 
     renderProfile()
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
-import { CollectiveLocationType } from '@/apiClient/adage/new'
+import { CollectiveLocationType } from '@/apiClient/adage'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from '@/commons/utils/config'
 import { isNumber } from '@/commons/utils/types'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'

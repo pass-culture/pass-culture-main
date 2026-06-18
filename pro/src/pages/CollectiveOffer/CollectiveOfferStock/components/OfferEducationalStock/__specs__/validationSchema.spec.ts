@@ -1,6 +1,6 @@
 import { addDays, addYears, format, subMinutes } from 'date-fns'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import {

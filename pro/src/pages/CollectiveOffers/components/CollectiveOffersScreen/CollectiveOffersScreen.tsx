@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import {
   type CollectiveOffersSortingColumn,
   isCollectiveOfferBookable,

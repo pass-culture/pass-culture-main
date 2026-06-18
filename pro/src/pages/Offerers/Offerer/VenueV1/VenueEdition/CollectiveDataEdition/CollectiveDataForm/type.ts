@@ -2,7 +2,7 @@ import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
   StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 export type CollectiveDataFormValues = {
   collectiveDescription?: string

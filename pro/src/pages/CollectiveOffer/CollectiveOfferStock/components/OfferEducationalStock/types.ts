@@ -1,4 +1,4 @@
-import type { CollectiveStockResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveStockResponseModel } from '@/apiClient/v1'
 
 import type { CollectiveOfferStockFormValues } from './validationSchema'
 

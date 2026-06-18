@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -40,7 +40,7 @@ const renderLayout = ({
 
 describe('FunnelLayout', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       isValidated: true,
     })

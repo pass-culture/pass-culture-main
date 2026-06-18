@@ -1,12 +1,12 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { GET_EDUCATIONAL_OFFERERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 
@@ -39,8 +39,7 @@ export const useOfferEducationalFormData = (
       targetOffererId
         ? [GET_EDUCATIONAL_OFFERERS_QUERY_KEY, targetOffererId]
         : null,
-      ([, offererId]) =>
-        apiNew.listEducationalOfferers({ query: { offererId } }),
+      ([, offererId]) => api.listEducationalOfferers({ query: { offererId } }),
       { fallback: [] }
     )
 

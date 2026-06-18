@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1'
 
 import { computeIndividualOffersUrl } from '../computeIndividualOffersUrl'
 

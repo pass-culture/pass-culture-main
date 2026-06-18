@@ -1,5 +1,5 @@
-import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1/new'
-import { CollectiveLocationType } from '@/apiClient/v1/new'
+import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1'
 
 import styles from './OfferLocationCell.module.scss'
 

@@ -1,4 +1,4 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 
 import styles from './PriceAndParticipantsCell.module.scss'

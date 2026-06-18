@@ -1,11 +1,11 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as reactRouter from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   defaultEducationalInstitution,
   getCollectiveOfferFactory,
@@ -22,7 +22,7 @@ import { Component as CollectiveOfferConfirmation } from './CollectiveOfferConfi
 const mockedOfferId = 1
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
   },
@@ -58,7 +58,7 @@ const renderCollectiveOfferConfirmation = async (
 
 describe('CollectiveOfferConfirmation', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: {
@@ -70,7 +70,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is pending', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
       })
@@ -94,7 +94,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is not associated to an institution', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: null,
@@ -135,7 +135,7 @@ describe('CollectiveOfferConfirmation', () => {
 
 describe('CollectiveOfferConfirmation - template', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
       collectiveOfferTemplate
     )
     vi.spyOn(reactRouter, 'useParams').mockReturnValue({
@@ -144,7 +144,7 @@ describe('CollectiveOfferConfirmation - template', () => {
   })
 
   it('should display ShareTemplateOfferLink when offer is template', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
       ...collectiveOfferTemplate,
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
     })

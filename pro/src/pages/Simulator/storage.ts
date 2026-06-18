@@ -1,7 +1,7 @@
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,

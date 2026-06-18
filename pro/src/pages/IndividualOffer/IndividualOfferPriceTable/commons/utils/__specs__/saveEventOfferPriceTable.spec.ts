@@ -1,13 +1,13 @@
 import type { UseFormReturn } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import type { PriceTableFormValues } from '../../schemas'
 import { saveEventOfferPriceTable } from '../saveEventOfferPriceTable'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchOffer: vi.fn(),
     replaceOfferPriceCategories: vi.fn(),
   },
@@ -50,11 +50,11 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: { isDuo: true },
     })
-    expect(apiNew.replaceOfferPriceCategories).toHaveBeenCalledWith({
+    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: expect.objectContaining({ priceCategories: expect.any(Array) }),
     })
@@ -74,7 +74,7 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: { isDuo: true },
     })
@@ -93,8 +93,8 @@ describe('saveEventOfferPriceTable', () => {
       { offer }
     )
 
-    expect(apiNew.patchOffer).not.toHaveBeenCalled()
-    expect(apiNew.replaceOfferPriceCategories).toHaveBeenCalledWith({
+    expect(api.patchOffer).not.toHaveBeenCalled()
+    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
       body: expect.objectContaining({ priceCategories: expect.any(Array) }),
     })

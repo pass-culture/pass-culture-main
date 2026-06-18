@@ -11,7 +11,7 @@ import {
 } from 'pages/Simulator/storage'
 import { vi } from 'vitest'
 
-import { ActivityOpenToPublic } from 'apiClient/v1/new'
+import { ActivityOpenToPublic } from 'apiClient/v1'
 
 const inMemoryLocalStorage = new Map<string, string>()
 

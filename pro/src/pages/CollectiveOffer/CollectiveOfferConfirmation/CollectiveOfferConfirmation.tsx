@@ -3,7 +3,7 @@ import cn from 'classnames'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { ShareTemplateOfferLink } from '@/components/CollectiveOffer/ShareTemplateOfferLink/ShareTemplateOfferLink'

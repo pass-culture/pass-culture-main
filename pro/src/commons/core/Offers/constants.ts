@@ -1,4 +1,4 @@
-import { DisplayableActivity, WithdrawalTypeEnum } from '@/apiClient/v1/new'
+import { DisplayableActivity, WithdrawalTypeEnum } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 
