@@ -91,7 +91,9 @@ export const Button = forwardRef<
       <>
         {iconPosition === IconPositionEnum.LEFT && iconElement}
         {isLoading && <Spinner />}
+        {label && iconElement && iconPosition === IconPositionEnum.LEFT}
         {label && <span className={styles['btn-label']}>{label}</span>}
+        {label && iconElement && iconPosition === IconPositionEnum.RIGHT}
         {iconPosition === IconPositionEnum.RIGHT && iconElement}
       </>
     )

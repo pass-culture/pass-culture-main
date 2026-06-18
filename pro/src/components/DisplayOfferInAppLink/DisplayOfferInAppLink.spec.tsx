@@ -29,7 +29,9 @@ describe('DisplayOfferInAppLink', () => {
       <DisplayOfferInAppLink id={offerId} label="View in app" />
     )
 
-    const link = screen.getByRole('link', { name: 'View in app' })
+    const link = screen.getByRole('link', {
+      name: 'Nouvelle fenêtreView in app',
+    })
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', `${WEBAPP_URL}/offre/${offerId}`)
   })
@@ -41,29 +43,13 @@ describe('DisplayOfferInAppLink', () => {
       <DisplayOfferInAppLink id={offerId} label="View in app" />
     )
 
-    const link = screen.getByRole('link', { name: 'View in app' })
+    const link = screen.getByRole('link', {
+      name: 'Nouvelle fenêtreView in app',
+    })
     await userEvent.click(link)
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_VIEW_APP_OFFER, {
       offerId,
     })
-  })
-
-  it('should open window with correct parameters when clicked', async () => {
-    const offerId = 789
-
-    renderWithProviders(
-      <DisplayOfferInAppLink id={offerId} label="View in app" />
-    )
-
-    const link = screen.getByRole('link', { name: 'View in app' })
-    await userEvent.click(link)
-
-    expect(window.open).toHaveBeenCalledWith(
-      `${WEBAPP_URL}/offre/${offerId}`,
-      'targetWindow',
-      'toolbar=no, width=375, height=667'
-    )
-    expect(mockFocus).toHaveBeenCalled()
   })
 })

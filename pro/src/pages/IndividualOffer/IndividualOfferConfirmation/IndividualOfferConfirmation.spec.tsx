@@ -158,7 +158,9 @@ describe('IndividualOfferConfirmation', () => {
         screen.getByText('Scannez le QR code ou cliquez ci-dessous')
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: 'Visualiser sur le web' })
+        screen.getByRole('link', {
+          name: 'Nouvelle fenêtreVisualiser sur le web',
+        })
       ).toBeInTheDocument()
     })
 
