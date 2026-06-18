@@ -4140,3 +4140,28 @@ class DeactivateVenueOffersTest:
             log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
             record = next(rec for rec in caplog.records if rec.message == log_msg)
             assert record.extra == expected_backup_data
+
+
+class IsVenueAnothersVenuePricingPointTest:
+    def test_venue_is_not_anothers_venue_pricing_point(self):
+        venue = offerers_factories.VenueFactory()
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(venue)
+
+    def test_venue_is_its_own_pricing_point_no_one_elses(self):
+        venue = offerers_factories.VenuePricingPointLinkFactory().venue
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(venue)
+
+    def test_venue_is_anothers_venue_expired_pricing_point(self):
+        now = datetime.datetime.now(datetime.UTC)
+        timespan = [now - datetime.timedelta(days=90), now - datetime.timedelta(days=10)]
+
+        pricing_point = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(pricingPoint=pricing_point, timespan=timespan)
+
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(pricing_point)
+
+    def test_venue_anothers_active_venue_pricing_point(self):
+        pricing_point = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(pricingPoint=pricing_point)
+
+        assert offerers_api.is_venue_anothers_venue_pricing_point(pricing_point)

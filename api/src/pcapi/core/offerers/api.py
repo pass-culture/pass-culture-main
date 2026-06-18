@@ -7,6 +7,7 @@ import secrets
 import time
 import typing
 from collections import defaultdict
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -3524,3 +3525,16 @@ def deactivate_venue_offers(venue: models.Venue) -> None:
         log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
         log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
         logger.info(log_msg, extra=log_extra)
+
+
+def is_venue_anothers_venue_pricing_point(venue: offerers_models.Venue) -> bool:
+    naive_now = datetime.now(UTC).replace(tzinfo=None)
+    return db.session.query(
+        db.session.query(models.VenuePricingPointLink)
+        .filter(
+            models.VenuePricingPointLink.pricingPoint == venue,
+            models.VenuePricingPointLink.venue != venue,
+            models.VenuePricingPointLink.timespan.contains(naive_now),
+        )
+        .exists()
+    ).scalar()

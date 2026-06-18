@@ -902,16 +902,18 @@ def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> models.Ca
     return batch
 
 
-def _get_next_cashflow_batch_label() -> str:
-    """Return the label of the next CashflowBatch."""
+def get_latest_cashflow_batch() -> int:
     latest_batch = (
         db.session.query(models.CashflowBatch).order_by(models.CashflowBatch.cutoff.desc()).limit(1).one_or_none()
     )
     if latest_batch is None:
-        latest_number = 0
-    else:
-        latest_number = int(latest_batch.label[len(CASHFLOW_BATCH_LABEL_PREFIX) :])
+        return 0
+    return int(latest_batch.label[len(CASHFLOW_BATCH_LABEL_PREFIX) :])
 
+
+def _get_next_cashflow_batch_label() -> str:
+    """Return the label of the next CashflowBatch."""
+    latest_number = get_latest_cashflow_batch()
     next_number = latest_number + 1
     return CASHFLOW_BATCH_LABEL_PREFIX + str(next_number)
 
@@ -3717,3 +3719,19 @@ def clean_duplicate_bank_accounts() -> None:
             synchronize_session=False
         )
         db.session.delete(bank_account)
+
+
+def has_venue_incoming_cashflows(venue: offerers_models.Venue) -> bool:
+    bank_account_ids = [link.bankAccountId for link in venue.bankAccountLinks]
+    if not bank_account_ids:
+        return False
+
+    latest_number = get_latest_cashflow_batch()
+    latest_label = CASHFLOW_BATCH_LABEL_PREFIX + str(latest_number)
+
+    return db.session.query(
+        db.session.query(models.Cashflow)
+        .join(models.Cashflow.batch)
+        .filter(models.Cashflow.bankAccount.in_(bank_account_ids), models.CashflowBatch.label == latest_label)
+        .exists()
+    ).scalar()
