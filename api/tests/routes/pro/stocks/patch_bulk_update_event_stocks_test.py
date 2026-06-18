@@ -551,7 +551,7 @@ class Returns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json["priceCategoryId"] == ["Le prix d’une offre ne peut excéder 300 euros."]
+        assert response.json["priceCategories.1.price"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
 
 @pytest.mark.usefixtures("db_session")

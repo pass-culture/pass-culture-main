@@ -190,9 +190,7 @@ class CreateStockTest:
                 api.create_stock(offer=offer_with_no_stock, price=new_price, quantity=12)
 
         # Then
-        assert error.value.errors == {
-            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
-        }
+        assert error.value.errors == {"price": ["Prix invalide"]}
 
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Stock update blocked because of price limitation"
@@ -220,9 +218,7 @@ class CreateStockTest:
                 api.create_stock(offer=offer, price=new_price, quantity=12)
 
         # Then
-        assert error.value.errors == {
-            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
-        }
+        assert error.value.errors == {"price": ["Prix invalide"]}
 
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Stock update blocked because of price limitation"
@@ -573,9 +569,7 @@ class EditStockTest:
                 api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
-        assert error.value.errors == {
-            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
-        }
+        assert error.value.errors == {"price": ["Prix invalide"]}
 
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Stock update blocked because of price limitation"
@@ -603,9 +597,7 @@ class EditStockTest:
                 api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
-        assert error.value.errors == {
-            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
-        }
+        assert error.value.errors == {"price": ["Prix invalide"]}
 
         assert len(caplog.records) == 1
         assert caplog.records[0].message == "Stock update blocked because of price limitation"

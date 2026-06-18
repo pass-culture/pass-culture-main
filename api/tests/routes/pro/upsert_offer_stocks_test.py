@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.categories import subcategories
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
@@ -200,6 +201,71 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": "Trying to update a non-existing stock."}
+
+    def test_creating_stock_with_invalid_price(self, client):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            rate=decimal.Decimal("0.5"),
+        )
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationPrice=decimal.Decimal("100"),
+        )
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        payload = {
+            "stocks": [
+                {
+                    "id": None,
+                    "offerId": offer.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    "bookingLimitDatetime": None,
+                    "price": 49,
+                    "quantity": 1,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories.0.price": ["Prix invalide"]}
+
+    def test_updating_stock_with_invalid_price(self, client):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            rate=decimal.Decimal("0.5"),
+        )
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationPrice=decimal.Decimal("100"),
+        )
+        existing_stock = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("100"), quantity=1)
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        payload = {
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "offerId": offer.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    "bookingLimitDatetime": None,
+                    "price": 49,
+                    "quantity": 1,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories.0.price": ["Prix invalide"]}
 
 
 @pytest.mark.usefixtures("db_session")

@@ -133,12 +133,17 @@ def check_stocks_price(
     offer: models.Offer,
 ) -> None:
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
+    price_categories_index_by_id = {price_category.id: idx for idx, price_category in enumerate(offer.priceCategories)}
     for stock in stocks:
         if stock.price_category_id not in price_categories:
             raise api_errors.ApiErrors(
                 {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]}
             )
-        check_stock_price(price_categories[stock.price_category_id].price, offer, error_key="priceCategoryId")
+        check_stock_price(
+            price_categories[stock.price_category_id].price,
+            offer,
+            error_key=f"priceCategories.{price_categories_index_by_id[stock.price_category_id]}.price",
+        )
 
 
 def check_stock_price(
@@ -193,12 +198,10 @@ def check_stock_price(
                 technical_message_id="stock.price.forbidden",
             )
 
-            if error_key == "price":
-                error_key += "LimitationRule"
             errors = api_errors.ApiErrors()
             errors.add_error(
                 error_key,
-                "Le prix indiqué est invalide, veuillez créer une nouvelle offre",
+                "Prix invalide",
             )
             raise errors
 
