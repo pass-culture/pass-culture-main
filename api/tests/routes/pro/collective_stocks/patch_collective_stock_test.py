@@ -312,7 +312,7 @@ class Return200Test:
         stock_edition_payload = {
             "price": 110.50,
             "servicePrice": 40,
-            "additionalFees": fees,
+            "collectiveAdditionalFees": fees,
         }
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
@@ -338,7 +338,7 @@ class Return200Test:
         stock_edition_payload = {
             "price": 10.99,
             "servicePrice": 10.99,
-            "additionalFees": [],
+            "collectiveAdditionalFees": [],
         }
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
@@ -646,7 +646,7 @@ class Return400Test:
 
         num_queries = 1  # load session + user
         num_queries += 1  # load existing stock
-        num_queries += 1  # load additionalFees
+        num_queries += 1  # load collectiveAdditionalFees
         num_queries += 1  # ensure the offerer is VALIDATED
         num_queries += 1  # check the number of existing stock for the offer id
         num_queries += 1  # find education year for start date
@@ -690,7 +690,7 @@ class Return400Test:
 
         num_queries = 1  # load session + user
         num_queries += 1  # load existing stock
-        num_queries += 1  # load additionalFees
+        num_queries += 1  # load collectiveAdditionalFees
         num_queries += 1  # load existing offerer
         num_queries += 1  # ensure the offerer is VALIDATED
         num_queries += 1  # find education year for start date
@@ -734,7 +734,7 @@ class Return400Test:
 
         num_queries = 1  # load session + user
         num_queries += 1  # load existing stock
-        num_queries += 1  # load additionalFees
+        num_queries += 1  # load collectiveAdditionalFees
         num_queries += 1  # load existing offerer
         num_queries += 1  # ensure the offerer is VALIDATED
         num_queries += 1  # find education year for start date
@@ -854,7 +854,9 @@ class Return400Test:
         assert response.json == {"numberOfTeachers": [error]}
 
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
-    @pytest.mark.parametrize("field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("additionalFees", [])))
+    @pytest.mark.parametrize(
+        "field,value", (("numberOfTeachers", 10), ("servicePrice", 10), ("collectiveAdditionalFees", []))
+    )
     def test_price_fields_not_allowed(self, client, field, value):
         stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
@@ -874,10 +876,10 @@ class Return400Test:
         (
             # missing price
             (
-                {"servicePrice": 10, "additionalFees": []},
+                {"servicePrice": 10, "collectiveAdditionalFees": []},
                 {
                     "price": [
-                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                        "Les champs price, servicePrice et collectiveAdditionalFees doivent tous être modifiés simultanément"
                     ]
                 },
             ),
@@ -885,90 +887,105 @@ class Return400Test:
             (
                 {
                     "price": 10,
-                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}],
+                    "collectiveAdditionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10}
+                    ],
                 },
                 {
                     "price": [
-                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                        "Les champs price, servicePrice et collectiveAdditionalFees doivent tous être modifiés simultanément"
                     ]
                 },
             ),
-            # missing additionalFees
+            # missing collectiveAdditionalFees
             (
                 {"price": 10, "servicePrice": 10},
                 {
                     "price": [
-                        "Les champs price, servicePrice et additionalFees doivent tous être modifiés simultanément"
+                        "Les champs price, servicePrice et collectiveAdditionalFees doivent tous être modifiés simultanément"
                     ]
                 },
             ),
             # price = None
-            ({"price": None, "servicePrice": 10, "additionalFees": []}, {"price": ["Le prix ne peut pas être nul."]}),
+            (
+                {"price": None, "servicePrice": 10, "collectiveAdditionalFees": []},
+                {"price": ["Le prix ne peut pas être nul."]},
+            ),
             # servicePrice = None
-            ({"price": 10, "servicePrice": None, "additionalFees": []}, {"servicePrice": ["Ce champ est requis"]}),
-            # additionalFees = None
-            ({"price": 10, "servicePrice": 10, "additionalFees": None}, {"additionalFees": ["Ce champ est requis"]}),
-            # additionalFees invalid
+            (
+                {"price": 10, "servicePrice": None, "collectiveAdditionalFees": []},
+                {"servicePrice": ["Ce champ est requis"]},
+            ),
+            # collectiveAdditionalFees = None
+            (
+                {"price": 10, "servicePrice": 10, "collectiveAdditionalFees": None},
+                {"collectiveAdditionalFees": ["Ce champ est requis"]},
+            ),
+            # collectiveAdditionalFees invalid
             (
                 {
                     "price": 20,
                     "servicePrice": 10,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
                     ],
                 },
-                {"additionalFees.0.label": ["Le label ne peut pas être rempli pour ce type"]},
+                {"collectiveAdditionalFees.0.label": ["Le label ne peut pas être rempli pour ce type"]},
             ),
-            # additionalFees type duplicate
+            # collectiveAdditionalFees type duplicate
             (
                 {
                     "price": 20,
                     "servicePrice": 10,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
                     ],
                 },
-                {"additionalFees": ["Un type est en doublon"]},
+                {"collectiveAdditionalFees": ["Un type est en doublon"]},
             ),
-            # additionalFees label duplicate
+            # collectiveAdditionalFees label duplicate
             (
                 {
                     "price": 20,
                     "servicePrice": 10,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
                 },
-                {"additionalFees": ["Un label est en doublon"]},
+                {"collectiveAdditionalFees": ["Un label est en doublon"]},
             ),
-            # additionalFees negative amount
+            # collectiveAdditionalFees negative amount
             (
                 {
                     "price": 20,
                     "servicePrice": 25,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": -5}
                     ],
                 },
-                {"additionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+                {"collectiveAdditionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
             ),
-            # additionalFees type OTHER label null
+            # collectiveAdditionalFees type OTHER label null
             (
                 {
                     "price": 20,
                     "servicePrice": 15,
-                    "additionalFees": [{"type": CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 5}],
+                    "collectiveAdditionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 5}
+                    ],
                 },
-                {"additionalFees.0.label": ["Le label doit être rempli pour ce type"]},
+                {"collectiveAdditionalFees.0.label": ["Le label doit être rempli pour ce type"]},
             ),
             # servicePrice too low
             (
                 {
                     "price": 20,
                     "servicePrice": -1,
-                    "additionalFees": [{"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}],
+                    "collectiveAdditionalFees": [
+                        {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}
+                    ],
                 },
                 {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0.0"]},
             ),
@@ -977,7 +994,7 @@ class Return400Test:
                 {
                     "price": 20,
                     "servicePrice": 10,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
@@ -989,7 +1006,7 @@ class Return400Test:
                 {
                     "price": settings.EAC_OFFER_PRICE_LIMIT + 5,
                     "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 10,
-                    "additionalFees": [
+                    "collectiveAdditionalFees": [
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
