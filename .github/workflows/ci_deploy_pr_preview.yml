@@ -44,6 +44,7 @@ jobs:
       pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       # testing_label controls wether we connect to testing backend or a preview backend
       testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
+      pcapi_backend_url_for_pro: ${{ steps.set_resource_label.outputs.pcapi_backend_url_for_pro }}
       backend_url: ${{ steps.set_resource_label.outputs.backend_url }}
       backoffice_url: ${{ steps.set_resource_label.outputs.backoffice_url }}
     steps:
@@ -65,9 +66,9 @@ jobs:
         
           if [ "$FRONT_ONLY" == "true" ]; then
             # Empty = frontend connects to shared testing backend
-            echo "backend_url=https://backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "pcapi_backend_url_for_pro=https://backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
           else
-            echo "backend_url=https://backend-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "pcapi_backend_url_for_pro=https://backend-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
           fi
 
       - name: "Define pcapi image tags."
@@ -116,7 +117,7 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      pcapi_backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+      pcapi_backend_url: ${{ needs.deploy-preview-env-init.outputs.pcapi_backend_url_for_pro }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -429,6 +430,6 @@ jobs:
             echo "| Results                              | Value |"
             echo "| ------------------------------------ | ----- |"
             echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
-            echo "| [Back] url                           |  https://backend-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
-            echo "| [BO] url                             |  https://backoffice-${{ needs.deploy-preview-env-init.outputs.resource_label }}.testing.passculture.team/ |"
+            echo "| [Back] url                           |  ${{ needs.deploy-preview-env-init.outputs.backend_url }} |"
+            echo "| [BO] url                             |  ${{ needs.deploy-preview-env-init.outputs.backoffice_url }} |"
           } >> "$GITHUB_STEP_SUMMARY"
