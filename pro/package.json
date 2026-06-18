@@ -87,7 +87,7 @@
     "@biomejs/biome": "2.4.16",
     "@hey-api/openapi-ts": "0.96.0",
     "@playwright/test": "1.60.0",
-    "@storybook/addon-a11y": "10.4.1",
+    "@storybook/addon-a11y": "10.4.2",
     "@storybook/addon-docs": "10.4.0",
     "@storybook/react-vite": "10.4.2",
     "@testing-library/dom": "10.4.1",
