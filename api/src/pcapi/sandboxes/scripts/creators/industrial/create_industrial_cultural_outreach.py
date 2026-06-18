@@ -4,6 +4,7 @@ import pcapi.core.cultural_outreach.factories as cultural_outreach_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
+from pcapi.core.cultural_outreach.constants import CULTURAL_OUTREACH_ALLOWED_ACTIVITIES
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -55,7 +56,10 @@ def create_industrial_cultural_outreach() -> None:
         db.session.query(offerers_models.Venue)
         .join(offerers_models.Offerer, offerers_models.Offerer.id == offerers_models.Venue.managingOffererId)
         .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
-        .filter(offerers_models.UserOfferer.userId == retention_user.id)
+        .filter(
+            offerers_models.UserOfferer.userId == retention_user.id,
+            offerers_models.Venue.activity.in_(CULTURAL_OUTREACH_ALLOWED_ACTIVITIES),
+        )
         .all()
     )
 

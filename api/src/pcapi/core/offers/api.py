@@ -395,12 +395,14 @@ def update_offer(
             )
 
     if has_cultural_outreach_claim is not None:
-        if offer.culturalOutreach is None:
-            if has_cultural_outreach_claim:
+        outreach = offer.culturalOutreach
+        is_currently_claimed = outreach is not None and outreach.claimedDatetime is not None
+        if has_cultural_outreach_claim != is_currently_claimed:
+            if outreach is None:
                 cultural_outreach_api.create_cultural_outreach_claim(offer)
-        else:
-            claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
-            cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
+            else:
+                claim_datetime = get_naive_utc_now() if has_cultural_outreach_claim else None
+                cultural_outreach_api.update_cultural_outreach_claim(claim_datetime, offer)
 
     if not updates:
         return offer
