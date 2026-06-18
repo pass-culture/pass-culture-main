@@ -47,7 +47,7 @@ export const CollectiveOfferCreationNavigation = ({
           : '',
     },
     {
-      id: CollectiveOfferStep.INFORMATIONS,
+      id: CollectiveOfferStep.INFORMATION,
       label: 'Informations pratiques',
       url: hasPassedStocksStep
         ? `/offre/${offer.id}/collectif/informations-pratiques`
@@ -77,7 +77,7 @@ export const CollectiveOfferCreationNavigation = ({
   ]
 
   if (!isNewCollectivePriceEnabled) {
-    steps = steps.filter((s) => s.id !== CollectiveOfferStep.INFORMATIONS)
+    steps = steps.filter((s) => s.id !== CollectiveOfferStep.INFORMATION)
   }
 
   return (

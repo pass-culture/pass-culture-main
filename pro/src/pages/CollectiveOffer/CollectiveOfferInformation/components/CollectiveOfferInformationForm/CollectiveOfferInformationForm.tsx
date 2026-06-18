@@ -24,7 +24,7 @@ import {
   validationSchema,
 } from './validationSchema'
 
-export type CollectiveOfferInformationsFormProps = {
+export type CollectiveOfferInformationFormProps = {
   offer: GetCollectiveOfferResponseModel
   isCreation: boolean
   saveAndContinue: (
@@ -33,12 +33,12 @@ export type CollectiveOfferInformationsFormProps = {
   goBackLink: string
 }
 
-export const CollectiveOfferInformationsForm = ({
+export const CollectiveOfferInformationForm = ({
   offer,
   isCreation,
   saveAndContinue,
   goBackLink,
-}: CollectiveOfferInformationsFormProps): JSX.Element => {
+}: CollectiveOfferInformationFormProps): JSX.Element => {
   const canEditDetails = offer.allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )

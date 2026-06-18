@@ -9,7 +9,7 @@ export const getCollectiveOfferActiveStep = (
   }
 
   if (locationPathname.includes('informations-pratiques')) {
-    return CollectiveOfferStep.INFORMATIONS
+    return CollectiveOfferStep.INFORMATION
   }
 
   if (locationPathname.includes('etablissement')) {
