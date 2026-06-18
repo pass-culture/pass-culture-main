@@ -225,13 +225,14 @@ class CreateOfferBase:
     success_num_queries += 1  # user offerer check
     success_num_queries += 1  # fetch product
     success_num_queries += 1  # create offer
-    success_num_queries += 1  # fetch mediation
-    success_num_queries += 1  # fetch artists
+    success_num_queries += 1  # fetch highlight requests
     success_num_queries += 1  # fetch stocks
     success_num_queries += 1  # fetch price categories
-    success_num_queries += 1  # fetch offer meta data
-    success_num_queries += 1  # fetch highlight requests
+    success_num_queries += 1  # fetch mediation
+    success_num_queries += 1  # fetch artists
     success_num_queries += 1  # fetch cultural outreach
+    success_num_queries += 1  # fetch headline
+    success_num_queries += 1  # fetch offer meta data
     success_num_queries += 1  # fetch user
     success_num_queries += 2  # fetch offerer + selectinload on eductional_domain
     success_num_queries += 1  # check national program (?)
@@ -656,7 +657,7 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"toto": "text", "showType": "200", "showSubType": "201"},
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
@@ -671,7 +672,7 @@ class Returns200Test:
         assert offer.bookingEmail == None
         assert offer.publicationDatetime is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"showType": 200, "showSubType": 201}
+        assert offer.extraData == {"showType": "200", "showSubType": "201"}
         assert offer.externalTicketOfficeUrl == None
         assert offer.venue == venue
         assert offer.motorDisabilityCompliant is False

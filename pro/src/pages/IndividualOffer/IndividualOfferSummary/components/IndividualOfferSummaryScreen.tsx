@@ -7,7 +7,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   StocksOrderedBy,
 } from '@/apiClient/v1'
 import {
@@ -51,7 +51,7 @@ import { OfferSection } from './OfferSection/OfferSection'
 import { StockSection } from './StockSection/StockSection'
 
 interface IndividualOfferSummaryScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export const IndividualOfferSummaryScreen = ({
   offer,

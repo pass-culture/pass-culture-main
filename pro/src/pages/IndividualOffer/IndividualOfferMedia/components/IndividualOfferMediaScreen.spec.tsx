@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   VenueState,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -67,7 +67,7 @@ const renderIndividualOfferMediaScreen = async ({
   features = [],
   isVenueClosed = false,
 }: {
-  props?: { offer?: GetIndividualOfferWithAddressResponseModel }
+  props?: { offer?: GetIndividualOfferResponseModelV2 }
   mode?: OFFER_WIZARD_MODE
   features?: string[]
   isVenueClosed?: boolean

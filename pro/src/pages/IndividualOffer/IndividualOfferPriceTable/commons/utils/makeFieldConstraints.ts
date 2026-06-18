@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -36,7 +36,7 @@ export const makeFieldConstraints = ({
   venue,
 }: {
   venue: GetVenueResponseModel
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   mode: OFFER_WIZARD_MODE
 }) => {
   const nowAsDate = getLocalDepartementDateTimeFromUtc(

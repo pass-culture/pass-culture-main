@@ -8,7 +8,7 @@ export type Pagination = {
   page?: number
 }
 
-// TODO (tpommellet) check if it is still necessary once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+// TODO (tpommellet) check if it is still necessary once GetIndividualOfferResponseModelV2 is migrated to Pydantic V2
 /**
  * Type of an individual offer's `extraData`, which the API exposes as an untyped object.
  */

@@ -1,10 +1,11 @@
 import type {
   GetOffererAddressesResponseModel,
   LocationResponseModel,
+  LocationResponseModelV2,
 } from '@/apiClient/v1'
 
 type MinimalAddressResponseModelToDisplay = Pick<
-  LocationResponseModel,
+  LocationResponseModelV2 | LocationResponseModel,
   'label' | 'city' | 'street' | 'postalCode'
 >
 export const computeAddressDisplayName = (
@@ -24,7 +25,6 @@ export const formatAndOrderAddresses = (
   addresses
     .map((offerAddress) => ({
       value: offerAddress.id,
-      // @ts-expect-error - Waiting for pydanticV2 migration
       label: computeAddressDisplayName(offerAddress),
     }))
     .sort((a, b) =>

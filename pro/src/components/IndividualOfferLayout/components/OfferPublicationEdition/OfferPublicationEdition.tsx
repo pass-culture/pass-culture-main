@@ -3,7 +3,7 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -28,11 +28,11 @@ import type { EventPublicationEditionFormValues } from './OfferPublicationEditio
 import { OfferPublicationEditionTags } from './OfferPublicationEditionTags/OfferPublicationEditionTags'
 
 export type OfferPublicationEditionProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function getPatchOfferPayloadFromFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   venue: GetVenueResponseModel,
   values: EventPublicationEditionFormValues
 ) {

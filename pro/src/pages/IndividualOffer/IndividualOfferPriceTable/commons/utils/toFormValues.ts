@@ -2,10 +2,10 @@ import { format } from 'date-fns'
 import type { CastOptions } from 'yup'
 
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
   GetVenueResponseModel,
-  PriceCategoryResponseModel,
+  PriceCategoryResponseModelV2,
 } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -20,36 +20,36 @@ import {
 import type { PriceTableFormContext } from '../types'
 
 const isGetOfferStockResponseModel = (
-  entry: PriceCategoryResponseModel | GetOfferStockResponseModel
+  entry: PriceCategoryResponseModelV2 | GetOfferStockResponseModel
 ): entry is GetOfferStockResponseModel => {
   return 'quantity' in entry
 }
 
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
-  priceCategories: PriceCategoryResponseModel[],
+  offer: GetIndividualOfferResponseModelV2,
+  priceCategories: PriceCategoryResponseModelV2[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   offerStocks: GetOfferStockResponseModel[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   priceCategoriesOrOfferStocks:
-    | PriceCategoryResponseModel[]
+    | PriceCategoryResponseModelV2[]
     | GetOfferStockResponseModel[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel
 ): PriceTableFormValues
 
 export function toFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   priceCategoriesOrOfferStocks:
-    | PriceCategoryResponseModel[]
+    | PriceCategoryResponseModelV2[]
     | GetOfferStockResponseModel[],
   context: PriceTableFormContext,
   venue: GetVenueResponseModel

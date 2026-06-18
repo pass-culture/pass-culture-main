@@ -3,7 +3,7 @@ import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY,
@@ -24,7 +24,7 @@ import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsM
 import styles from './IndividualOfferSummaryBookingsScreen.module.scss'
 
 interface IndividualOfferSummaryBookingsScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export const IndividualOfferSummaryBookingsScreen = ({

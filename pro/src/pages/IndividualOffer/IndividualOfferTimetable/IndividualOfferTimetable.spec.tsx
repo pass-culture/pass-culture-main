@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -45,7 +45,7 @@ const renderIndividualOfferTimetable = (
 
 describe('IndividualOfferTimetable', () => {
   let contextOverride: IndividualOfferContextValues
-  let offer: GetIndividualOfferWithAddressResponseModel
+  let offer: GetIndividualOfferResponseModelV2
   const offerId = 12
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 
@@ -10,7 +10,7 @@ export const getLastSubmittedStepIndex = ({
   subCategory,
   orderedSteps,
 }: {
-  offer: GetIndividualOfferWithAddressResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
   subCategory?: SubcategoryResponseModel
   orderedSteps: StepPattern[]
 }) => {

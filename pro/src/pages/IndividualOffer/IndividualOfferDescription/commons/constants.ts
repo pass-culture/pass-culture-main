@@ -30,17 +30,17 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   author: '',
   artistOfferLinks: [
     {
-      artistId: null,
+      artistId: undefined,
       artistName: '',
       artistType: ArtistType.AUTHOR,
     },
     {
-      artistId: null,
+      artistId: undefined,
       artistName: '',
       artistType: ArtistType.PERFORMER,
     },
     {
-      artistId: null,
+      artistId: undefined,
       artistName: '',
       artistType: ArtistType.STAGE_DIRECTOR,
     },

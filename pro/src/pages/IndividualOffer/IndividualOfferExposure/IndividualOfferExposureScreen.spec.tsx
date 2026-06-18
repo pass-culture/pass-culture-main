@@ -3,7 +3,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   type GetVenueResponseModel,
   VenueState,
 } from '@/apiClient/v1'
@@ -35,7 +35,7 @@ const renderIndividualOfferLocationScreen = ({
   offer,
   venueOverrides,
 }: {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   venueOverrides?: Partial<GetVenueResponseModel>
 }) => {
   const contextValues: IndividualOfferContextValues = {

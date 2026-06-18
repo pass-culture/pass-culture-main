@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CULTURAL_OUTREACH_ALLOWED_ACTIVITIES,
@@ -35,7 +35,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
 
 export interface IndividualOfferSummaryDetailsScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function IndividualOfferSummaryDetailsScreen({
