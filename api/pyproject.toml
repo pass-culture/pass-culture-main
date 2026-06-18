@@ -81,7 +81,7 @@ dependencies = [
   "time-machine ==3.2.0",
   "transitions ==0.9.3",
   "urllib3 ==2.7.0",
-  "weasyprint ==68.1",
+  "weasyprint==69.0",
   "werkzeug ==3.1.8",
   "wtforms ==3.2.2",
   "wtforms-sqlalchemy ==0.4.2",
