@@ -34,36 +34,42 @@ export class ApiError extends Error {
   public readonly status: number
   public readonly statusText: string
   // biome-ignore lint/suspicious/noExplicitAny: matches original openapi-typescript-codegen signature
-  public readonly body: any
+  public readonly body: Record<string, any>
+  public readonly originalError: unknown
 
   constructor(request: ApiRequestOptions, response: ApiResult, message: string)
   constructor(
     url: string,
     status: number,
     statusText: string,
-    body: unknown,
-    message?: string
+    originalError: unknown
   )
   constructor(
     urlOrRequest: string | ApiRequestOptions,
     statusOrResponse: number | ApiResult,
     statusTextOrMessage: string,
-    body?: unknown,
-    message?: string
+    originalError?: unknown
   ) {
     if (typeof urlOrRequest === 'string') {
-      super(message ?? `${statusOrResponse} ${statusTextOrMessage}`)
+      super(`${statusOrResponse} ${statusTextOrMessage}`)
       this.url = urlOrRequest
       this.status = statusOrResponse as number
       this.statusText = statusTextOrMessage
-      this.body = body
+      this.body =
+        typeof originalError === 'object' && originalError !== null
+          ? originalError
+          : {}
+      this.originalError = originalError
     } else {
       const response = statusOrResponse as ApiResult
       super(statusTextOrMessage)
       this.url = response.url
       this.status = response.status
       this.statusText = response.statusText
-      this.body = response.body
+      this.body =
+        typeof response.body === 'object' && response.body !== null
+          ? response.body
+          : {}
     }
     this.name = 'ApiError'
   }
