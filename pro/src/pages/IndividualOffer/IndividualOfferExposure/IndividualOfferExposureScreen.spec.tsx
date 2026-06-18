@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -30,7 +30,7 @@ vi.mock('@/apiClient/api', () => ({
 const renderIndividualOfferLocationScreen = ({
   offer,
 }: {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }) => {
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,

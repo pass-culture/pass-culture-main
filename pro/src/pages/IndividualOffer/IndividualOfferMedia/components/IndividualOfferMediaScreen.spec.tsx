@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -59,7 +59,7 @@ const renderIndividualOfferMediaScreen = async ({
   mode = OFFER_WIZARD_MODE.CREATION,
   features = [],
 }: {
-  props?: { offer?: GetIndividualOfferWithAddressResponseModel }
+  props?: { offer?: GetIndividualOfferResponseModelV2 }
   mode?: OFFER_WIZARD_MODE
   features?: string[]
 } = {}) => {

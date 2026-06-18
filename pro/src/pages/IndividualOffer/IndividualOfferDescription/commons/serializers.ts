@@ -1,6 +1,6 @@
 import {
   type ArtistOfferLinkBodyModel,
-  type ArtistOfferLinkResponseModel,
+  type ArtistOfferLinkResponseModelV2,
   ArtistType,
   type PatchOfferBodyModel,
   type PostOfferBodyModel,
@@ -78,7 +78,7 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 }
 
 const serializeArtistOfferLinks = (
-  artistOfferLinks: ArtistOfferLinkResponseModel[]
+  artistOfferLinks: ArtistOfferLinkBodyModel[]
 ): ArtistOfferLinkBodyModel[] | undefined => {
   const links: ArtistOfferLinkBodyModel[] = []
   const validArtistOfferLinks = artistOfferLinks.filter((artist) =>
@@ -86,7 +86,7 @@ const serializeArtistOfferLinks = (
   )
   validArtistOfferLinks.forEach((link) => {
     links.push({
-      artistId: link.artistId,
+      artistId: link.artistId || undefined,
       artistName: link.artistName.trim(),
       artistType: link.artistType,
     })

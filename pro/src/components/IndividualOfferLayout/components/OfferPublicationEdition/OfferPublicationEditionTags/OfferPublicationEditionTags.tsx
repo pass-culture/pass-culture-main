@@ -1,7 +1,7 @@
 import { isAfter } from 'date-fns'
 
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
@@ -14,7 +14,7 @@ import fullWaitIcon from '@/icons/full-wait.svg'
 import styles from './OfferPublicationEditionTags.module.scss'
 
 export type OfferPublicationEditionProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function OfferPublicationEditionTags({

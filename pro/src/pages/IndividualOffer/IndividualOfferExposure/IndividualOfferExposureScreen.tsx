@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
@@ -22,7 +22,7 @@ import { OfferExposureTimeline } from './components/OfferExposureTimeline/OfferE
 import styles from './IndividualOfferExposureScreen.module.scss'
 
 export type IndividualOfferExposureScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export const IndividualOfferExposureScreen = ({
   offer,

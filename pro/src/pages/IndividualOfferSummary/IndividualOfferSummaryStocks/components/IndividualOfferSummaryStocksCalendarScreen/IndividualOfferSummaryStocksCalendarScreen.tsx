@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -9,7 +9,7 @@ import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getS
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 
 type StocksCalendarSummaryScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function IndividualOfferSummaryStocksCalendarScreen({

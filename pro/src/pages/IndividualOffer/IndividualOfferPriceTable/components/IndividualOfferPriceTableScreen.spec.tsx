@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -30,7 +30,7 @@ vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
 }))
 
 interface ScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   offerStocks: GetOfferStockResponseModel[]
 }
 const renderPriceTableScreen: RenderComponentFunction<
@@ -205,8 +205,6 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       props: {
         offer: getIndividualOfferFactory({
           subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
-          // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-          // @ts-expect-error
           lastProvider: null,
         }),
       },

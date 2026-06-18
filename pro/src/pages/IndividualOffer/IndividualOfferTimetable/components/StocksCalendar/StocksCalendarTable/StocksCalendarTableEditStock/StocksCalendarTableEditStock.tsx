@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import type {
   EventStockUpdateBodyModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
@@ -38,9 +38,9 @@ export type EditStockFormValues = {
 export type StocksCalendarTableEditStockProps = {
   stock: GetOfferStockResponseModel
   departmentCode: string
-  priceCategories: GetIndividualOfferResponseModel['priceCategories']
+  priceCategories: GetIndividualOfferResponseModelV2['priceCategories']
   onUpdateStock: (body: EventStockUpdateBodyModel) => void
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function StocksCalendarTableEditStock({

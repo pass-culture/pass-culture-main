@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import {
@@ -90,7 +90,7 @@ const waitForRecommendationCardFetch = async () => {
 
 describe('IndividualOfferConfirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
-  let offer: GetIndividualOfferWithAddressResponseModel
+  let offer: GetIndividualOfferResponseModelV2
   const venueId = 45
   const offererId = 51
 
@@ -109,7 +109,7 @@ describe('IndividualOfferConfirmation', () => {
       offer: offer,
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferWithAddressResponseModel
+      {} as GetIndividualOfferResponseModelV2
     )
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,

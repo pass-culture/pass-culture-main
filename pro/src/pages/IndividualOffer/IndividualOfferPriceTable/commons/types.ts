@@ -1,7 +1,7 @@
 import type {
   CreatePriceCategoryModel,
   EditPriceCategoryModel,
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import type { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -13,5 +13,5 @@ export type PriceTableEntryModel = Partial<
 export interface PriceTableFormContext {
   isCaledonian: boolean | undefined
   mode: OFFER_WIZARD_MODE
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
