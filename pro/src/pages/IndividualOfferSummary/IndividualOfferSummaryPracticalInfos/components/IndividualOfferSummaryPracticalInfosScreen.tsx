@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,
@@ -18,7 +18,7 @@ import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 import styles from './IndividualOfferSummaryPracticalInfosScreen.module.scss'
 
 export type IndividualOfferSummaryPracticalInfosScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function IndividualOfferSummaryPracticalInfosScreen({

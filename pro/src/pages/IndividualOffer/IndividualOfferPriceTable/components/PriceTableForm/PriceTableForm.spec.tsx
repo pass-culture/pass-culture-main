@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
 
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -42,7 +42,7 @@ const renderPriceTableForm: RenderComponentFunction<
   PriceTableFormProps,
   PriceTableFormContext,
   {
-    offer: GetIndividualOfferWithAddressResponseModel
+    offer: GetIndividualOfferResponseModelV2
     defaultValues?: PriceTableFormValues
   }
 > = (params) => {
@@ -523,7 +523,7 @@ describe('PriceTableForm', () => {
             <PriceTableForm
               isCaledonian={false}
               mode={OFFER_WIZARD_MODE.CREATION}
-              offer={offer as GetIndividualOfferWithAddressResponseModel}
+              offer={offer as GetIndividualOfferResponseModelV2}
               schemaValidationContext={{
                 isCaledonian: false,
                 mode: OFFER_WIZARD_MODE.CREATION,

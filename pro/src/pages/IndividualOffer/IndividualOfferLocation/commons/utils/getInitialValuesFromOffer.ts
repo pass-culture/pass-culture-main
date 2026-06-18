@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
@@ -9,7 +9,7 @@ import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 
 // TODO (igabriele, 2025-08-25): Integrate the last rules in Yup schema and use schema.cast() here instead.
 function getPhysicalAddressSubformInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   {
     offerVenue,
   }: {
@@ -46,8 +46,6 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       offerLocation,
       postalCode: offer.location.postalCode,
       'search-addressAutocomplete': addressAutocomplete,
-      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive an offer address without street since it's mandatory.
-      // @ts-expect-error
       street: offer.location.street,
     }
   }
@@ -72,7 +70,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
 }
 
 export function getInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   {
     offerVenue,
   }: {

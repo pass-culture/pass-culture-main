@@ -5,7 +5,7 @@ import useSWR, { type SWRResponse } from 'swr'
 import { api } from '@/apiClient/api'
 import type { CancelablePromise } from '@/apiClient/compat'
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   HighlightResponseModel,
   ShortHighlightResponseModel,
 } from '@/apiClient/v1'
@@ -101,7 +101,7 @@ describe('OfferHighlightForm', () => {
   beforeEach(() => {
     getHighlightsMock.mockResolvedValue(mockedHighlights)
     postHighlightRequestOfferMock.mockResolvedValue(
-      {} as GetIndividualOfferWithAddressResponseModel
+      {} as GetIndividualOfferResponseModelV2
     )
 
     useSWRMock.mockReturnValue({
@@ -313,7 +313,7 @@ describe('OfferHighlightForm', () => {
     postHighlightRequestOfferMock.mockReturnValue(
       new Promise(
         () => {}
-      ) as unknown as CancelablePromise<GetIndividualOfferWithAddressResponseModel>
+      ) as unknown as CancelablePromise<GetIndividualOfferResponseModelV2>
     )
 
     renderOfferHighlightForm({ offerId: 1 })

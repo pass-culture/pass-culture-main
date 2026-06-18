@@ -330,14 +330,10 @@ describe('IndividualOffersScreen', () => {
       },
       {
         id: [venueAddress[0].id],
-        // TODO (amine) to remove once model migrated to Pydantic V2
-        // @ts-expect-error
         value: computeAddressDisplayName(venueAddress[0]),
       },
       {
         id: [venueAddress[1].id],
-        // TODO (amine) to remove once model migrated to Pydantic V2
-        // @ts-expect-error
         value: computeAddressDisplayName(venueAddress[1]),
       },
     ]

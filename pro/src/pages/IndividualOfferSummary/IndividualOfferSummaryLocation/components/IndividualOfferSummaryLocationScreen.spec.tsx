@@ -60,6 +60,7 @@ describe('<IndividualOfferSummaryLocationScreen />', () => {
         label: "Le lieu de l'offre",
         street: '1 rue de la paix',
         postalCode: '75001',
+        departmentCode: '75',
         city: 'Paris',
         latitude: 48.8,
         longitude: 2.3,

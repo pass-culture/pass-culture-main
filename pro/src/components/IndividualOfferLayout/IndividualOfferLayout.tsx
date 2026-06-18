@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -29,7 +29,7 @@ import styles from './IndividualOfferLayout.module.scss'
 
 export interface IndividualOfferLayoutProps {
   children: ReactNode
-  offer: GetIndividualOfferWithAddressResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
 }
 
 // TODO (igabriele, 2025-08-18): Get `offer` directly from context (DRY, complexity).
