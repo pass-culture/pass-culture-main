@@ -1,0 +1,39 @@
+name: 2 [CI] Delete PR preview deployment
+
+on:
+  pull_request: 
+    types: closed
+
+jobs:
+  delete-pro-firebase-preview-deployment:
+    name: "Delete pro preview deployment"
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+
+      - name: "Authentification to Google"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
+          service_account: ${{ vars.PRO_PREVIEW_SERVICE_ACCOUNT }}
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: v0.6.0
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+
+      - name: "Delete preview channel if it exists"
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: passdirector pro delete-preview --head-ref "${HEAD_REF}"
+
