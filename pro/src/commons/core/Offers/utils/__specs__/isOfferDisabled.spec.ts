@@ -1,4 +1,4 @@
-import { OfferStatus } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { isOfferDisabled } from '../isOfferDisabled'

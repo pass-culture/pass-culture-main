@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import type { SWRResponse } from 'swr'
 import { expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetOffererNameResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import * as useOffererNamesQueryModule from '@/commons/hooks/swr/useOffererNamesQuery'
 import {
   defaultGetOffererResponseModel,
@@ -19,7 +19,7 @@ import { OffererSelect } from './OffererSelect'
 
 vi.mock('@/commons/hooks/swr/useOffererNamesQuery')
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getOfferer: vi.fn(),
   },
 }))
@@ -139,7 +139,7 @@ describe('OffererSelect', () => {
       name: 'Offerer B',
     }
 
-    vi.mocked(apiNew.getOfferer).mockResolvedValue(fullOfferer2)
+    vi.mocked(api.getOfferer).mockResolvedValue(fullOfferer2)
 
     const { store } = renderOffererSelect({
       storeOverrides: {
@@ -156,7 +156,7 @@ describe('OffererSelect', () => {
     await waitFor(() => {
       const state = store.getState()
       expect(state.user.selectedAdminOfferer?.id).toBe(2)
-      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+      expect(api.getOfferer).toHaveBeenCalledWith({
         path: { offerer_id: 2 },
       })
     })

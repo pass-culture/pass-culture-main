@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
 import { vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -12,7 +12,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DeleteVenueProviderButton } from './DeleteVenueProviderButton'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     deleteVenueProvider: vi.fn(),
   },
 }))
@@ -71,7 +71,7 @@ describe('DeleteVenueProviderButton', () => {
 
   it('should successfully delete venue provider and close dialog', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueProvider').mockResolvedValueOnce(undefined)
+    vi.spyOn(api, 'deleteVenueProvider').mockResolvedValueOnce(undefined)
     mockMutate.mockResolvedValueOnce(undefined)
 
     renderDeleteVenueProviderButton()
@@ -93,7 +93,7 @@ describe('DeleteVenueProviderButton', () => {
     await user.click(confirmButton)
 
     await waitFor(() => {
-      expect(apiNew.deleteVenueProvider).toHaveBeenCalledWith({
+      expect(api.deleteVenueProvider).toHaveBeenCalledWith({
         path: { venue_provider_id: 123 },
       })
     })
@@ -122,7 +122,7 @@ describe('DeleteVenueProviderButton', () => {
 
   it('should display error message when deletion fails', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueProvider').mockRejectedValueOnce(
+    vi.spyOn(api, 'deleteVenueProvider').mockRejectedValueOnce(
       new Error('API Error')
     )
 
@@ -145,7 +145,7 @@ describe('DeleteVenueProviderButton', () => {
     await user.click(confirmButton)
 
     await waitFor(() => {
-      expect(apiNew.deleteVenueProvider).toHaveBeenCalledWith({
+      expect(api.deleteVenueProvider).toHaveBeenCalledWith({
         path: { venue_provider_id: 123 },
       })
     })
@@ -202,6 +202,6 @@ describe('DeleteVenueProviderButton', () => {
     })
 
     // API should not be called
-    expect(apiNew.deleteVenueProvider).not.toHaveBeenCalled()
+    expect(api.deleteVenueProvider).not.toHaveBeenCalled()
   })
 })

@@ -1,4 +1,4 @@
-import type { BookingStatusFilter } from '@/apiClient/v1/new'
+import type { BookingStatusFilter } from '@/apiClient/v1'
 
 export type PreFiltersParams = {
   offererAddressId: string

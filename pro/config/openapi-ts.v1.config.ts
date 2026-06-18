@@ -16,7 +16,7 @@ function camelCaseFromOperationId(operation: {
 export default defineConfig({
   input: `http://${PCAPI_HOST}/pro/openapi.json`,
   output: {
-    path: 'src/apiClient/v1/new/',
+    path: 'src/apiClient/v1/',
     clean: true,
   },
   plugins: [
@@ -34,7 +34,7 @@ export default defineConfig({
     },
     {
       name: '@hey-api/client-fetch',
-      runtimeConfigPath: '../../clientConfig',
+      runtimeConfigPath: '../clientConfig',
       throwOnError: true,
     },
   ],

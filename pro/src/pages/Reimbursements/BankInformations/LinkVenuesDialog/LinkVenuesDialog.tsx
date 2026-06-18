@@ -2,9 +2,9 @@ import cn from 'classnames'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1/new'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -90,7 +90,7 @@ export const LinkVenuesDialog = ({
     }
 
     try {
-      await apiNew.linkVenueToBankAccount({
+      await api.linkVenueToBankAccount({
         body: { venuesIds },
         path: {
           offerer_id: offererId,

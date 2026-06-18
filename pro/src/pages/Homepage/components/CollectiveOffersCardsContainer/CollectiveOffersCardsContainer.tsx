@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   GET_COLLECTIVE_OFFER_TEMPLATES_HOME_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_HOME_QUERY_KEY,
@@ -15,7 +15,7 @@ export const CollectiveOffersCardsContainer = ({
 }) => {
   const bookableOffersQuery = useSWR(
     [GET_COLLECTIVE_OFFERS_HOME_QUERY_KEY, venueId],
-    () => apiNew.getCollectiveOffersHome({ query: { venueId } }),
+    () => api.getCollectiveOffersHome({ query: { venueId } }),
     {
       fallbackData: { hasOffers: false, offers: [] },
     }
@@ -26,7 +26,7 @@ export const CollectiveOffersCardsContainer = ({
 
   const templateOffersQuery = useSWR(
     [GET_COLLECTIVE_OFFER_TEMPLATES_HOME_QUERY_KEY, venueId],
-    () => apiNew.getCollectiveOfferTemplatesHome({ query: { venueId } }),
+    () => api.getCollectiveOfferTemplatesHome({ query: { venueId } }),
     {
       fallbackData: { hasOffers: false, offers: [] },
     }

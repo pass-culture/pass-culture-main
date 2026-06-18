@@ -107,7 +107,6 @@ jobs:
           command: |
             cd pro
             pnpm generate:api:client:local:no:docker
-            pnpm generate:api:client:local:no:docker:next
       - name: "Check if there are changes"
         id: "changes"
         working-directory: pro
@@ -116,7 +115,7 @@ jobs:
           if [[ "${diff}" != "" ]]; then
             echo "Found changes in the API."
             echo "${diff}" | awk '{ print "\t" $0 }'
-            echo "Please run 'pnpm generate:api:client:local' AND 'pnpm run generate:api:client:local:no:docker:next' and add the changes to the commit(s) that change the API."
+            echo "Please run 'pnpm generate:api:client:local' or 'pnpm run generate:api:client:local:no:docker' and add the changes to the commit(s) that change the API."
             exit 1
           fi
       - name: "Show pcapi log when it fails"

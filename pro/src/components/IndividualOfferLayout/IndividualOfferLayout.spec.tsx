@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -103,7 +103,7 @@ describe('IndividualOfferLayout', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
       shouldDisplayRecommendationCard: true,
@@ -290,7 +290,7 @@ describe('IndividualOfferLayout', () => {
 
     it('should remove the draft offer if the user clicks on "Supprimer ce brouillon"', async () => {
       const deleteDraftOffersSpy = vi
-        .spyOn(apiNew, 'deleteDraftOffers')
+        .spyOn(api, 'deleteDraftOffers')
         .mockResolvedValueOnce()
 
       const offer = getIndividualOfferFactory({ status: OfferStatus.DRAFT })
@@ -316,7 +316,7 @@ describe('IndividualOfferLayout', () => {
 
     it('should not remove the draft offer if the offer does not exist', async () => {
       const deleteDraftOffers = vi
-        .spyOn(apiNew, 'deleteDraftOffers')
+        .spyOn(api, 'deleteDraftOffers')
         .mockResolvedValueOnce()
 
       const contextValues = {
@@ -333,7 +333,7 @@ describe('IndividualOfferLayout', () => {
     })
 
     it('should show an error message if the deletion failed', async () => {
-      vi.spyOn(apiNew, 'deleteDraftOffers').mockRejectedValueOnce(
+      vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(
         new Error('error')
       )
 

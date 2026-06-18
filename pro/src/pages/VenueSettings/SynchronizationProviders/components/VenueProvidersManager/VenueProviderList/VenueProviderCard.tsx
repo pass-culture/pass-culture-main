@@ -1,7 +1,7 @@
 import type {
   GetVenueResponseModel,
   VenueProviderResponse,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,

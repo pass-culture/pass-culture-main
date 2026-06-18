@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -14,7 +14,7 @@ const mockLogEvent = vi.fn()
 
 describe('ModalHighlight', () => {
   it('should render and pass accessibility checks', async () => {
-    vi.spyOn(apiNew, 'getHighlights').mockResolvedValue([
+    vi.spyOn(api, 'getHighlights').mockResolvedValue([
       {
         name: 'my name',
         description: 'my description',
@@ -58,7 +58,7 @@ describe('ModalHighlight', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(apiNew, 'getHighlights').mockResolvedValue([
+    vi.spyOn(api, 'getHighlights').mockResolvedValue([
       {
         name: 'my name',
         description: 'my description',

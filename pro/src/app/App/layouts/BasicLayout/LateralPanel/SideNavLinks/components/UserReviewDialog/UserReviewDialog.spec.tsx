@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -59,7 +59,7 @@ describe('UserReviewDialog', () => {
   })
 
   it('should submit data when submit button is clicked', async () => {
-    vi.spyOn(apiNew, 'submitUserReview').mockResolvedValueOnce()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
@@ -71,7 +71,7 @@ describe('UserReviewDialog', () => {
 
     await userEvent.click(submitButton)
 
-    expect(apiNew.submitUserReview).toHaveBeenCalledWith({
+    expect(api.submitUserReview).toHaveBeenCalledWith({
       body: {
         userSatisfaction: 'Excellente',
         userComment: 'Commentaire utilisateur',
@@ -83,7 +83,7 @@ describe('UserReviewDialog', () => {
   })
 
   it('should show confirmation dialog when submitting data', async () => {
-    vi.spyOn(apiNew, 'submitUserReview').mockResolvedValueOnce()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
@@ -100,7 +100,7 @@ describe('UserReviewDialog', () => {
   })
 
   it('should close confirmation dialog when close button is clicked', async () => {
-    vi.spyOn(apiNew, 'submitUserReview').mockResolvedValueOnce()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog()
 
     await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
@@ -117,7 +117,7 @@ describe('UserReviewDialog', () => {
   })
 
   it('should submit with the selected admin offerer id in admin space', async () => {
-    vi.spyOn(apiNew, 'submitUserReview').mockResolvedValueOnce()
+    vi.spyOn(api, 'submitUserReview').mockResolvedValueOnce()
     renderUserReviewDialog({
       isAdminSpace: true,
       storeUserOverrides: {
@@ -133,7 +133,7 @@ describe('UserReviewDialog', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Envoyer' }))
 
-    expect(apiNew.submitUserReview).toHaveBeenCalledWith({
+    expect(api.submitUserReview).toHaveBeenCalledWith({
       body: expect.objectContaining({ offererId: 42 }),
     })
   })
@@ -142,7 +142,7 @@ describe('UserReviewDialog', () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})
-    const submitSpy = vi.spyOn(apiNew, 'submitUserReview').mockResolvedValue()
+    const submitSpy = vi.spyOn(api, 'submitUserReview').mockResolvedValue()
     renderUserReviewDialog({
       isAdminSpace: true,
       storeUserOverrides: {
@@ -167,7 +167,7 @@ describe('UserReviewDialog', () => {
   })
 
   it('should show error message and close dialog on error', async () => {
-    vi.spyOn(apiNew, 'submitUserReview').mockRejectedValueOnce(new Error())
+    vi.spyOn(api, 'submitUserReview').mockRejectedValueOnce(new Error())
 
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'

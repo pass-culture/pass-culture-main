@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -77,7 +77,7 @@ const updateIndividualOffersStatus = async (
   if (areAllOffersSelected) {
     //  Bulk edit if all editable offers are selected
     try {
-      await apiNew.patchAllOffersActiveStatus({
+      await api.patchAllOffersActiveStatus({
         body: {
           ...payload,
           isActive,
@@ -97,7 +97,7 @@ const updateIndividualOffersStatus = async (
     }
   } else {
     try {
-      await apiNew.patchOffersActiveStatus({
+      await api.patchOffersActiveStatus({
         body: {
           ids: selectedOfferIds.map((id) => Number(id)),
           isActive,
@@ -191,7 +191,7 @@ export const IndividualOffersActionsBar = ({
 
   const handleDelete = async () => {
     try {
-      await apiNew.deleteDraftOffers({
+      await api.deleteDraftOffers({
         body: {
           ids: selectedOffers.map((offer) => offer.id),
         },

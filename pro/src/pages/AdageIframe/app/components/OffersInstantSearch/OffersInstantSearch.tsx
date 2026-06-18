@@ -2,8 +2,8 @@ import { liteClient } from 'algoliasearch/lite'
 import { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 
-import type { VenueResponse } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import type { VenueResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -113,11 +113,11 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
       try {
         const result = siretParam
-          ? await apiAdageNew.getVenueBySiret({
+          ? await apiAdage.getVenueBySiret({
               path: { siret: siretParam },
               query: { getRelative: relativeOffersIncludedParam },
             })
-          : await apiAdageNew.getVenueById({
+          : await apiAdage.getVenueById({
               path: { venue_id: venueParam },
               query: { getRelative: relativeOffersIncludedParam },
             })

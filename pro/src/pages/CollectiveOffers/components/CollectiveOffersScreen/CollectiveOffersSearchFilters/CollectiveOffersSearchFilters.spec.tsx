@@ -15,7 +15,7 @@ import {
 } from './CollectiveOffersSearchFilters'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenueAddresses: vi.fn(),
   },
 }))

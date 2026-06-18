@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'
@@ -41,7 +41,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
 
   const handleOnImageDelete = async () => {
     try {
-      await apiNew.deleteVenueBanner({
+      await api.deleteVenueBanner({
         path: { venue_id: selectedPartnerVenue.id },
       })
       setImageValues(buildInitialVenueImageValues(null, null))

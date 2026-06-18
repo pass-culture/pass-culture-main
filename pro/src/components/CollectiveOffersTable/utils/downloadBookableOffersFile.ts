@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 
-import { apiNew } from '@/apiClient/api'
-import type { getCollectiveOffersCsvData } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { getCollectiveOffersCsvData } from '@/apiClient/v1'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { downloadFile } from '@/commons/utils/downloadFile'
@@ -39,7 +39,7 @@ export const downloadBookableOffersFile = async (
   const dateTime = format(new Date(), 'yyyyMMdd')
 
   if (type === 'CSV') {
-    const content = (await apiNew.getCollectiveOffersCsv({
+    const content = (await api.getCollectiveOffersCsv({
       query: apiParams,
     })) as string
 
@@ -48,7 +48,7 @@ export const downloadBookableOffersFile = async (
 
     downloadFile(blob, fileName)
   } else {
-    const content = (await apiNew.getCollectiveOffersExcel({
+    const content = (await api.getCollectiveOffersExcel({
       query: apiParams,
     })) as Blob
 

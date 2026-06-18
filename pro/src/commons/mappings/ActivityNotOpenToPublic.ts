@@ -1,4 +1,4 @@
-import { ActivityNotOpenToPublic } from '@/apiClient/v1/new'
+import { ActivityNotOpenToPublic } from '@/apiClient/v1'
 
 import { createMap } from '.'
 import { putKeyAtTheEnd, sortEntriesByValue } from './helpers'

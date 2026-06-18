@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, subDays } from 'date-fns'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -16,7 +16,7 @@ import {
 import type { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchOffer: vi.fn(),
   },
 }))
@@ -46,7 +46,7 @@ describe('OfferPublicationEdition', () => {
   })
 
   it('should patch the offer when submitting the form', async () => {
-    const patchSpy = vi.spyOn(apiNew, 'patchOffer')
+    const patchSpy = vi.spyOn(api, 'patchOffer')
 
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 
@@ -58,7 +58,7 @@ describe('OfferPublicationEdition', () => {
   })
 
   it('should display an error message if the patch fails', async () => {
-    vi.spyOn(apiNew, 'patchOffer').mockRejectedValueOnce('error')
+    vi.spyOn(api, 'patchOffer').mockRejectedValueOnce('error')
 
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 

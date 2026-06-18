@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router'
 import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
-import { ActivityOpenToPublic, Target } from '@/apiClient/v1/new'
+import { ActivityOpenToPublic, Target } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
@@ -88,7 +88,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     listEducationalDomains: vi.fn(),
   },
 }))

@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
@@ -47,11 +47,11 @@ export const useCollectiveOfferImageUpload = (
 
         try {
           if (isTemplate) {
-            await apiNew.deleteOfferTemplateImage({
+            await api.deleteOfferTemplateImage({
               path: { offer_id: offerId },
             })
           } else {
-            await apiNew.deleteOfferImage({ path: { offer_id: offerId } })
+            await api.deleteOfferImage({ path: { offer_id: offerId } })
           }
         } catch {
           snackBar.error(
@@ -78,11 +78,11 @@ export const useCollectiveOfferImageUpload = (
         }
 
         const payload = isTemplate
-          ? await apiNew.attachOfferTemplateImage({
+          ? await api.attachOfferTemplateImage({
               path: { offer_id: offerId },
               body: params,
             })
-          : await apiNew.attachOfferImage({
+          : await api.attachOfferImage({
               path: { offer_id: offerId },
               body: params,
             })

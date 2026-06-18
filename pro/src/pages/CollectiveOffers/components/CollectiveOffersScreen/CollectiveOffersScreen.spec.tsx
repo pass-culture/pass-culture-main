@@ -6,7 +6,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   UserRole,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'

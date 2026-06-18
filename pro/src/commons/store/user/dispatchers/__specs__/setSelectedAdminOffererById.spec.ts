@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as handleErrorModule from '@/commons/errors/handleError'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
@@ -15,8 +15,6 @@ import { setSelectedAdminOffererById } from '../setSelectedAdminOffererById'
 vi.mock('@/apiClient/api', () => ({
   api: {
     signout: vi.fn(),
-  },
-  apiNew: {
     getOfferer: vi.fn(),
   },
 }))
@@ -33,7 +31,7 @@ describe('setSelectedAdminOffererById', () => {
         id: 100,
         name: 'Test Offerer',
       }
-      vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(offerer)
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
 
       const store = configureTestStore({
         user: {
@@ -43,7 +41,7 @@ describe('setSelectedAdminOffererById', () => {
 
       await store.dispatch(setSelectedAdminOffererById(100)).unwrap()
 
-      expect(apiNew.getOfferer).toHaveBeenCalledWith({
+      expect(api.getOfferer).toHaveBeenCalledWith({
         path: { offerer_id: 100 },
       })
 
@@ -63,7 +61,7 @@ describe('setSelectedAdminOffererById', () => {
         id: 200,
         name: 'Provided Offerer',
       }
-      const apiGetOffererSpy = vi.spyOn(apiNew, 'getOfferer')
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
 
       const store = configureTestStore({
         user: {
@@ -89,7 +87,7 @@ describe('setSelectedAdminOffererById', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
       const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
       const logoutSpy = vi.spyOn(logoutModule, 'logout')
-      vi.spyOn(apiNew, 'getOfferer').mockRejectedValue({
+      vi.spyOn(api, 'getOfferer').mockRejectedValue({
         status: 500,
         message: 'Server Error',
         name: 'ApiError',
@@ -114,9 +112,7 @@ describe('setSelectedAdminOffererById', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
       const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
       const logoutSpy = vi.spyOn(logoutModule, 'logout')
-      vi.spyOn(apiNew, 'getOfferer').mockRejectedValue(
-        new Error('Network error')
-      )
+      vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error('Network error'))
 
       const store = configureTestStore({
         user: {
@@ -135,7 +131,7 @@ describe('setSelectedAdminOffererById', () => {
 
     it('should create a minimal offerer without API call when offerer is not attached to display the banners', async () => {
       const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
-      const getOffererSpy = vi.spyOn(apiNew, 'getOfferer')
+      const getOffererSpy = vi.spyOn(api, 'getOfferer')
 
       const store = configureTestStore({
         user: {

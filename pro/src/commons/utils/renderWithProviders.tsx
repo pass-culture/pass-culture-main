@@ -13,7 +13,7 @@ import { SWRConfig } from 'swr'
 import type {
   FeatureResponseModel,
   SharedCurrentUserResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { RootState } from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'

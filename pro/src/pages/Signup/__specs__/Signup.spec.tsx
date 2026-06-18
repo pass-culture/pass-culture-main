@@ -11,10 +11,6 @@ import { Signup } from '../Signup'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    listFeatures: vi.fn(),
-    getSirenInfo: vi.fn(),
-  },
-  apiNew: {
     getSirenInfo: vi.fn(),
     getProfile: vi.fn(),
     listOfferersNames: vi.fn(),

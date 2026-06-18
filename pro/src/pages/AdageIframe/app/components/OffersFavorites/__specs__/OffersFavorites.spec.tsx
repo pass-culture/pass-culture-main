@@ -6,8 +6,8 @@ import {
   AdageFrontRoles,
   type AuthenticatedResponse,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -58,10 +58,10 @@ describe('OffersFavorites', () => {
   }
 
   beforeEach(() => {
-    vi.spyOn(apiAdageNew, 'getCollectiveFavorites').mockResolvedValue({
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
       favoritesTemplate: [],
     })
-    vi.spyOn(apiAdageNew, 'logFavOfferButtonClick').mockResolvedValue()
+    vi.spyOn(apiAdage, 'logFavOfferButtonClick').mockResolvedValue()
   })
 
   it('should render favorites title', async () => {
@@ -91,7 +91,7 @@ describe('OffersFavorites', () => {
   })
 
   it('should display the list of favorites', async () => {
-    vi.spyOn(apiAdageNew, 'getCollectiveFavorites').mockResolvedValueOnce({
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
       favoritesTemplate: [mockOffer],
     })
 
@@ -107,7 +107,7 @@ describe('OffersFavorites', () => {
   })
 
   it('should redirect to main adage page when clicking the catalogue button', async () => {
-    vi.spyOn(apiAdageNew, 'getCollectiveFavorites').mockResolvedValueOnce({
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
       favoritesTemplate: [],
     })
 
@@ -123,7 +123,7 @@ describe('OffersFavorites', () => {
   })
 
   it('should show an offer card', async () => {
-    vi.spyOn(apiAdageNew, 'getCollectiveFavorites').mockResolvedValueOnce({
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
       favoritesTemplate: [mockOffer],
     })
 
@@ -139,11 +139,11 @@ describe('OffersFavorites', () => {
   })
 
   it('should reload favorites when favorite is removed', async () => {
-    vi.spyOn(apiAdageNew, 'getCollectiveFavorites').mockResolvedValue({
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
       favoritesTemplate: [mockOffer],
     })
     vi.spyOn(
-      apiAdageNew,
+      apiAdage,
       'deleteFavoriteForCollectiveOfferTemplate'
     ).mockResolvedValue()
 

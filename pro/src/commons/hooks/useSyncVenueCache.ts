@@ -1,7 +1,7 @@
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
@@ -15,7 +15,7 @@ export const useSyncVenueCache = () => {
     await mutate(
       [GET_VENUE_QUERY_KEY, String(venueId)],
       async () => {
-        const updatedVenue = await apiNew.getVenue({
+        const updatedVenue = await api.getVenue({
           path: { venue_id: venueId },
         })
         dispatch(setSelectedPartnerVenue(updatedVenue))

@@ -1,7 +1,7 @@
 import { isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { isDateValid } from '@/commons/utils/date'
 

@@ -2,11 +2,11 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -74,14 +74,11 @@ const mockLogEvent = vi.fn()
 
 describe('BankInformations page', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
-    vi.spyOn(
-      apiNew,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValue({
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       bankAccounts: [defaultBankAccountResponseModel],
       id: 1,
       managedVenues: [
@@ -236,16 +233,14 @@ describe('BankInformations page', () => {
 
   it('should render default page if error on getOffererBankAccountsAndAttachedVenues request', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'getOffererBankAccountsAndAttachedVenues'
     ).mockRejectedValueOnce({})
 
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(
-      apiNew.getOffererBankAccountsAndAttachedVenues
-    ).toHaveBeenCalledTimes(1)
+    expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText(
         'Impossible de récupérer les informations relatives à vos comptes bancaires.'
@@ -267,7 +262,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select', async () => {
-    vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
           id: 1,
@@ -340,9 +335,9 @@ describe('BankInformations page', () => {
 
   it('should update displayed link venue after closing link venue dialog', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     const getOffererBankAccountsSpy = vi
-      .spyOn(apiNew, 'getOffererBankAccountsAndAttachedVenues')
+      .spyOn(api, 'getOffererBankAccountsAndAttachedVenues')
       .mockResolvedValue({
         id: 1,
         bankAccounts: [{ ...defaultBankAccount }],
@@ -378,17 +373,14 @@ describe('BankInformations page', () => {
       },
     })
 
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(
-      apiNew,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValue({
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
       bankAccounts: [{ ...defaultBankAccount }],
       managedVenues: [{ ...defaultManagedVenue }],
     })
     const getVenueSpy = vi
-      .spyOn(apiNew, 'getVenue')
+      .spyOn(api, 'getVenue')
       .mockResolvedValueOnce(updatedVenue)
 
     renderWithProviders(

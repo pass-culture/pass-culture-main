@@ -4,7 +4,7 @@ import {
   ArtistType,
   type PatchOfferBodyModel,
   type PostOfferBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'

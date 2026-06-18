@@ -1,4 +1,4 @@
-import type { EducationalDomainsResponseModel } from '@/apiClient/v1/new'
+import type { EducationalDomainsResponseModel } from '@/apiClient/v1'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { mapVenueDomains } from '../mapVenueDomains'

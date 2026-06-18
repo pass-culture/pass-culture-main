@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
-import { CollectiveLocationType } from '@/apiClient/adage/new'
+import { CollectiveLocationType } from '@/apiClient/adage'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,

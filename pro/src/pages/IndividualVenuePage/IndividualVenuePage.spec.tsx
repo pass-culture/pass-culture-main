@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import type { SWRResponse } from 'swr'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useEducationalDomainsModule from '@/commons/hooks/swr/useEducationalDomains'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'

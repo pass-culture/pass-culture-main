@@ -5,7 +5,7 @@ import {
   DisplayableActivity,
   type EducationalDomainsResponseModel,
   type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useEducationalDomainsModule from '@/commons/hooks/swr/useEducationalDomains'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'

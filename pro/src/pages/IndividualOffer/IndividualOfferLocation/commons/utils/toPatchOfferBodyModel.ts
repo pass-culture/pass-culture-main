@@ -1,7 +1,7 @@
 import type {
   GetIndividualOfferResponseModel,
   PatchOfferBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 
 import type { LocationFormValues } from '../types'

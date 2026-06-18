@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import type {
   CategoryResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner } from '@/design-system/Banner/Banner'

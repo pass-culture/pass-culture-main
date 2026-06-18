@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from '@/apiClient/v1/new'
+import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../types'

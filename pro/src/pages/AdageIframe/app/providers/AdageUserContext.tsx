@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react'
 
-import type { AuthenticatedResponse } from '@/apiClient/adage/new'
+import type { AuthenticatedResponse } from '@/apiClient/adage'
 
 type AdageUserContextType = {
   adageUser: AuthenticatedResponse | null

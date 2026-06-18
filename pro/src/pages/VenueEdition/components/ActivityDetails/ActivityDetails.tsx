@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'

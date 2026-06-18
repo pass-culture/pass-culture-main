@@ -2,7 +2,7 @@ import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   type ApiRequestOptions,
@@ -12,7 +12,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import {
@@ -53,14 +53,14 @@ const renderOfferTemplateEditionNavigation = (
 
 describe('<CollectiveOfferTemplateEditionNavigation />', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
       getCollectiveOfferTemplateFactory()
     )
-    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
 
-    vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
   })
 
   it('should render without accessibility violations', async () => {
@@ -73,12 +73,12 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
 
   it('should log event when clicking "Dupliquer" button', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'duplicateCollectiveOffer').mockResolvedValueOnce(
+    vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValueOnce(
       getCollectiveOfferFactory({
         id: 999,
       })
     )
-    vi.spyOn(apiNew, 'attachOfferImage').mockResolvedValueOnce({
+    vi.spyOn(api, 'attachOfferImage').mockResolvedValueOnce({
       imageUrl: 'my url',
     })
 
@@ -147,9 +147,7 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
 
   it('should return an error when the collective offer could not be retrieved', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockRejectedValueOnce(
-      'error'
-    )
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('error')
 
     const offer = getCollectiveOfferTemplateFactory({
       allowedActions: [
@@ -170,7 +168,7 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
 
   it('should show an error notification when the duplication failed', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'createCollectiveOffer').mockRejectedValueOnce(
+    vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 
@@ -255,10 +253,9 @@ describe('<CollectiveOfferTemplateEditionNavigation />', () => {
     })
     renderOfferTemplateEditionNavigation(offer)
 
-    vi.spyOn(
-      apiNew,
-      'patchCollectiveOffersTemplateArchive'
-    ).mockRejectedValueOnce({})
+    vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(
+      {}
+    )
 
     await user.click(screen.getByRole('button', { name: 'Archiver' }))
     await user.click(screen.getByText('Archiver l’offre'))

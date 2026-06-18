@@ -1,4 +1,4 @@
-import type { EducationalInstitutionResponseModel } from '@/apiClient/v1/new'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 
 import styles from './OfferInstitutionCell.module.scss'
 

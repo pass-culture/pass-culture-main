@@ -2,12 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
 
-import {
-  AdageFrontRoles,
-  type AuthenticatedResponse,
-} from '@/apiClient/adage/new'
-import { apiNew } from '@/apiClient/api'
-import { StudentLevels } from '@/apiClient/v1/new'
+import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
+import { api } from '@/apiClient/api'
+import { StudentLevels } from '@/apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -89,14 +86,14 @@ vi.mock('../Offers/Offers', () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
       { id: 3, name: 'Arts' },
     ]),
   },
-  apiAdageNew: {
+  apiAdage: {
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
     logTrackingFilter: vi.fn(),
   },
@@ -409,13 +406,11 @@ describe('offersSearch component', () => {
   })
 
   it('should show an error message notification when domains could not be fetched', async () => {
-    vi.spyOn(apiNew, 'listEducationalDomains').mockRejectedValueOnce('error')
+    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce('error')
 
     renderOffersSearchComponent(props, user)
 
-    await waitFor(() =>
-      expect(apiNew.listEducationalDomains).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(snackBarError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })

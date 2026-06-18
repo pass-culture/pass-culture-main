@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -11,7 +11,7 @@ import { defaultGetOffererResponseModel } from '@/commons/utils/factories/indivi
 import { useCollectiveOfferFromParams } from '../useCollectiveOfferFromParams'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
     getOfferer: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock('react-router', async () => ({
 
 describe('useCollectiveOfferFromParams', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
   })
@@ -35,7 +35,7 @@ describe('useCollectiveOfferFromParams', () => {
   it('should retrieve a template offer from the url', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     const getCollectiveOfferTemplateSpy = vi
-      .spyOn(apiNew, 'getCollectiveOfferTemplate')
+      .spyOn(api, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(offer)
 
     const { result } = renderHook(() =>
@@ -61,7 +61,7 @@ describe('useCollectiveOfferFromParams', () => {
 
     const offer = getCollectiveOfferFactory()
     const getCollectiveOfferSpy = vi
-      .spyOn(apiNew, 'getCollectiveOffer')
+      .spyOn(api, 'getCollectiveOffer')
       .mockResolvedValueOnce(offer)
 
     const { result } = renderHook(() =>

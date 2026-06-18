@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 
 import type {
   VenueSettingsFormContext,
@@ -12,7 +12,7 @@ export const saveVenueSettings = async (
   formContext: VenueSettingsFormContext,
   { venue }: { venue: GetVenueResponseModel }
 ): Promise<GetVenueResponseModel> => {
-  return await apiNew.editVenue({
+  return await api.editVenue({
     path: { venue_id: Number(venue.id) },
     body: toBody(formValues, formContext),
   })

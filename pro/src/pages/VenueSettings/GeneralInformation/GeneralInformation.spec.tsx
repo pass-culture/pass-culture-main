@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
-import { DisplayableActivity } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { DisplayableActivity } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -19,7 +19,7 @@ vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { editVenue: vi.fn(), getVenue: vi.fn() },
+  api: { editVenue: vi.fn(), getVenue: vi.fn() },
 }))
 
 vi.mock('@/commons/core/Venue/siretApiValidate')
@@ -288,7 +288,7 @@ describe('GeneralInformation', () => {
       )
 
       await waitFor(() => {
-        expect(apiNew.editVenue).toHaveBeenCalledTimes(1)
+        expect(api.editVenue).toHaveBeenCalledTimes(1)
       })
     })
   })

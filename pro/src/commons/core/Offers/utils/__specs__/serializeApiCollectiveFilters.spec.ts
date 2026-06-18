@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 
-import { CollectiveLocationType } from 'apiClient/v1/new'
+import { CollectiveLocationType } from 'apiClient/v1'
 
 describe('serializeApiCollectiveFilters', () => {
   it('should set computed fields to null when no filters are provided', () => {

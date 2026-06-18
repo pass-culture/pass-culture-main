@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { OfferStatus } from '@/apiClient/v1/new'
+import { OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {

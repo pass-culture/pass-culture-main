@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { EmailChangeValidation } from '@/pages/EmailChangeValidation/EmailChangeValidation'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchValidateEmail: vi.fn(),
   },
 }))
@@ -22,10 +22,10 @@ const renderValidation = () => {
 
 describe('screens:EmailChangeValidation', () => {
   it('renders component successfully when success', async () => {
-    vi.spyOn(apiNew, 'patchValidateEmail').mockResolvedValueOnce()
+    vi.spyOn(api, 'patchValidateEmail').mockResolvedValueOnce()
     renderValidation()
 
-    expect(apiNew.patchValidateEmail).toHaveBeenCalledWith({
+    expect(api.patchValidateEmail).toHaveBeenCalledWith({
       body: { token: '123' },
     })
 
@@ -40,7 +40,7 @@ describe('screens:EmailChangeValidation', () => {
   })
 
   it('renders component successfully when not success', async () => {
-    vi.spyOn(apiNew, 'patchValidateEmail').mockRejectedValueOnce({})
+    vi.spyOn(api, 'patchValidateEmail').mockRejectedValueOnce({})
     renderValidation()
     expect(
       await screen.findByText(

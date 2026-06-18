@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,

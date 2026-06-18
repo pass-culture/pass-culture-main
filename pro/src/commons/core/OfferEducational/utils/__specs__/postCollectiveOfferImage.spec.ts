@@ -1,13 +1,13 @@
 import { type Mock, vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 
 import type { OfferEducationalFormValues } from '../../types'
 import { postCollectiveOfferImage } from '../postCollectiveOfferImage'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     attachOfferImage: vi.fn(),
   },
 }))
@@ -64,7 +64,7 @@ describe('postCollectiveOfferImage', () => {
     expect(snackBarError).toHaveBeenCalledWith(
       'Impossible de récupérer votre image'
     )
-    expect(apiNew.attachOfferImage).not.toHaveBeenCalled()
+    expect(api.attachOfferImage).not.toHaveBeenCalled()
   })
 
   it('should show error when blob() fails', async () => {
@@ -80,16 +80,14 @@ describe('postCollectiveOfferImage', () => {
     expect(snackBarError).toHaveBeenCalledWith(
       'Impossible de récupérer votre image'
     )
-    expect(apiNew.attachOfferImage).not.toHaveBeenCalled()
+    expect(api.attachOfferImage).not.toHaveBeenCalled()
   })
 
   it('should show error when attachOfferImage fails', async () => {
     const mockBlob = new Blob(['image data'], { type: contentType })
     const mockResponse = createMockResponse(mockBlob)
     ;(global.fetch as Mock).mockResolvedValue(mockResponse)
-    vi.spyOn(apiNew, 'attachOfferImage').mockRejectedValue(
-      new Error('API error')
-    )
+    vi.spyOn(api, 'attachOfferImage').mockRejectedValue(new Error('API error'))
 
     await postCollectiveOfferImage({
       initialValues: getInitialValues(imageUrl),

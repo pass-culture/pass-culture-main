@@ -3,14 +3,14 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type {
   CollectiveOfferResponseIdModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -107,7 +107,7 @@ export const OfferEducational = ({
         if (offer === undefined) {
           const payload = createCollectiveOfferTemplatePayload(offerValues)
 
-          response = await apiNew.createCollectiveOfferTemplate({
+          response = await api.createCollectiveOfferTemplate({
             body: payload,
           })
         } else {
@@ -115,7 +115,7 @@ export const OfferEducational = ({
             offerValues,
             initialValues
           )
-          response = await apiNew.editCollectiveOfferTemplate({
+          response = await api.editCollectiveOfferTemplate({
             path: { offer_id: offer.id },
             body: payload,
           })
@@ -124,12 +124,12 @@ export const OfferEducational = ({
         if (offer === undefined) {
           const payload = createCollectiveOfferPayload(offerValues)
 
-          response = await apiNew.createCollectiveOffer({
+          response = await api.createCollectiveOffer({
             body: payload,
           })
         } else {
           const payload = createPatchOfferPayload(offerValues, initialValues)
-          response = await apiNew.editCollectiveOffer({
+          response = await api.editCollectiveOffer({
             path: { offer_id: offer.id },
             body: payload,
           })

@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
@@ -31,7 +31,7 @@ export const getFilteredIndividualBookingsAdapter = async (
       offererAddressId,
     } = buildBookingsRecapQuery(nextPageFilters)
 
-    const bookings = await apiNew.getBookingsPro({
+    const bookings = await api.getBookingsPro({
       query: {
         venueId,
         page,

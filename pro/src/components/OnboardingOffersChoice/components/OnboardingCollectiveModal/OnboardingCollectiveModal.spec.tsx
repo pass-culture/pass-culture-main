@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as getUserDefaultPathModule from '@/app/AppRouter/utils/getUserDefaultPath'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -30,7 +30,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenue: vi.fn(),
     getOfferer: vi.fn(),
     synchronizeOffererOnboarding: vi.fn(),
@@ -70,17 +70,17 @@ describe('<OnboardingCollectiveModal />', () => {
     }))
     // Default mocks so the synchronization + venue refresh succeed by default.
     // Individual tests override `isOnboarded` to exercise specific branches.
-    vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockResolvedValue(
+    vi.spyOn(api, 'synchronizeOffererOnboarding').mockResolvedValue(
       undefined as never
     )
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: SELECTED_VENUE_ID,
         managingOffererId: SELECTED_OFFERER_ID,
         isOnboarded: false,
       })
     )
-    vi.spyOn(apiNew, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: SELECTED_OFFERER_ID,
       isOnboarded: false,
@@ -117,9 +117,7 @@ describe('<OnboardingCollectiveModal />', () => {
         await screen.findByRole('button', { name: /J’ai déposé un dossier/ })
       )
 
-      expect(
-        apiNew.synchronizeOffererOnboarding
-      ).toHaveBeenCalledExactlyOnceWith({
+      expect(api.synchronizeOffererOnboarding).toHaveBeenCalledExactlyOnceWith({
         path: { offerer_id: SELECTED_OFFERER_ID },
       })
     })
@@ -130,7 +128,7 @@ describe('<OnboardingCollectiveModal />', () => {
       vi.spyOn(getUserDefaultPathModule, 'getUserDefaultPath').mockReturnValue(
         '/accueil'
       )
-      vi.spyOn(apiNew, 'getVenue').mockResolvedValue(
+      vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
           id: SELECTED_VENUE_ID,
           managingOffererId: SELECTED_OFFERER_ID,
@@ -162,7 +160,7 @@ describe('<OnboardingCollectiveModal />', () => {
     })
 
     it('should show a generic error message if the synchronization endpoint fails', async () => {
-      vi.spyOn(apiNew, 'synchronizeOffererOnboarding').mockRejectedValue({})
+      vi.spyOn(api, 'synchronizeOffererOnboarding').mockRejectedValue({})
 
       renderOnboardingCollectiveModal()
 

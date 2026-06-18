@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import useSWR from 'swr'
 
-import { AdagePlaylistType } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdagePlaylistType } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 import { Carousel } from '../../Carousel/Carousel'
@@ -39,7 +39,7 @@ export const VenuePlaylist = ({
 }: VenuePlaylistProps) => {
   const { data: playlist, isLoading } = useSWR(
     [GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY],
-    () => apiAdageNew.getLocalOfferersPlaylist(),
+    () => apiAdage.getLocalOfferersPlaylist(),
     { fallbackData: { venues: [] } }
   )
 

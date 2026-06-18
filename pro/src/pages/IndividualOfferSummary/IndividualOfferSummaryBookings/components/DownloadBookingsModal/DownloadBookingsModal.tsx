@@ -2,12 +2,12 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   BookingExportType,
   BookingsExportStatusFilter,
   type EventDatesInfos,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
@@ -76,7 +76,7 @@ export const DownloadBookingsModal = ({
       ?.submitter?.dataset.export
 
     if (fileFormat === BookingExportType.CSV) {
-      const bookingsCsvText = (await apiNew.exportBookingsForOfferAsCsv({
+      const bookingsCsvText = (await api.exportBookingsForOfferAsCsv({
         path: { offer_id: offerId },
         query: {
           status: data.selectedBookingType,
@@ -92,7 +92,7 @@ export const DownloadBookingsModal = ({
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
       downloadFile(
-        (await apiNew.exportBookingsForOfferAsExcel({
+        (await api.exportBookingsForOfferAsExcel({
           path: { offer_id: offerId },
           query: {
             status: data.selectedBookingType,

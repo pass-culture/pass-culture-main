@@ -6,7 +6,7 @@ import {
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
   type PatchCollectiveOfferBodyModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { objectEntries, objectFromEntries } from '@/commons/utils/object'

@@ -1,4 +1,4 @@
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1/new'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import { NBSP } from '@/commons/core/shared/constants'
 import fullInfoIcon from '@/icons/full-info.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

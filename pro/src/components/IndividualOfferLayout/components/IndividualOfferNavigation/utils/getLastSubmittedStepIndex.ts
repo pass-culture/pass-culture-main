@@ -1,7 +1,7 @@
 import type {
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 import type { StepPattern } from './getSteps'
 

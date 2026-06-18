@@ -6,7 +6,7 @@ import type {
   GetVenueResponseModel,
   SharedCurrentUserResponseModel,
   VenueListItemLiteResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 export interface UserSliceState {
   currentUser: SharedCurrentUserResponseModel | null

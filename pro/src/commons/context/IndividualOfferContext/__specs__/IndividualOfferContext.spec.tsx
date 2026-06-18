@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { useParams } from 'react-router'
 import { SWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   type ApiRequestOptions,
@@ -80,12 +80,12 @@ describe('IndividualOfferContextProvider', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getActiveVenueOfferByEan')
-    vi.spyOn(apiNew, 'getCategories').mockResolvedValue({
+    vi.spyOn(api, 'getActiveVenueOfferByEan')
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: MOCKED_CATEGORIES,
       subcategories: MOCKED_SUBCATEGORIES,
     })
-    vi.spyOn(apiNew, 'getOffer')
+    vi.spyOn(api, 'getOffer')
   })
 
   describe.each([
@@ -99,9 +99,9 @@ describe('IndividualOfferContextProvider', () => {
     it('should call the expected api endpoints and return the expected context values', async () => {
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(apiNew.getOffer).not.toHaveBeenCalled()
-      expect(apiNew.getCategories).toHaveBeenCalledOnce()
-      expect(apiNew.getActiveVenueOfferByEan).not.toHaveBeenCalled()
+      expect(api.getOffer).not.toHaveBeenCalled()
+      expect(api.getCategories).toHaveBeenCalledOnce()
+      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled()
 
       expect(result.current.categories.length).toBeGreaterThan(0)
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
@@ -133,17 +133,17 @@ describe('IndividualOfferContextProvider', () => {
       vi.mocked(useParams).mockReturnValue({
         offerId: '1',
       })
-      vi.spyOn(apiNew, 'getOffer').mockResolvedValue(offerBase)
+      vi.spyOn(api, 'getOffer').mockResolvedValue(offerBase)
     })
 
     it('should call the expected api endpoints and return the expected context values', async () => {
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith({
         path: { offer_id: 1 },
       })
-      expect(apiNew.getCategories).toHaveBeenCalledOnce()
-      expect(apiNew.getActiveVenueOfferByEan).not.toHaveBeenCalled() // because `offerBase` doesn't meet EAN check criteria
+      expect(api.getCategories).toHaveBeenCalledOnce()
+      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled() // because `offerBase` doesn't meet EAN check criteria
 
       expect(result.current.categories.length).toBeGreaterThan(0)
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
@@ -154,7 +154,7 @@ describe('IndividualOfferContextProvider', () => {
     })
 
     it('should redirect to an error page when the offer does not exist', async () => {
-      vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
+      vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
         status: 404,
       })
 
@@ -166,23 +166,23 @@ describe('IndividualOfferContextProvider', () => {
     })
 
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to true when there is one', async () => {
-      vi.spyOn(apiNew, 'getOffer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
         extraData: { ean: 2 },
         productId: 3,
         venue: getOfferVenueFactory({ id: 4 }),
       })
-      vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+      vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
         ...offerBase,
         id: 5,
       })
 
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith({
         path: { offer_id: 1 },
       })
-      expect(apiNew.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: 4, ean: 2 },
       })
 
@@ -190,22 +190,22 @@ describe('IndividualOfferContextProvider', () => {
     })
 
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to false when there is none', async () => {
-      vi.spyOn(apiNew, 'getOffer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
         extraData: { ean: 2 },
         productId: 3,
         venue: getOfferVenueFactory({ id: 4 }),
       })
-      vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
+      vi.spyOn(api, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
         new ApiError({} as ApiRequestOptions, { status: 404 } as ApiResult, '')
       )
 
       const { result } = await renderUseIndividualOfferContext()
 
-      expect(apiNew.getOffer).toHaveBeenCalledExactlyOnceWith({
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith({
         path: { offer_id: 1 },
       })
-      expect(apiNew.getActiveVenueOfferByEan).toHaveBeenCalledWith({
+      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledWith({
         path: { venue_id: 4, ean: 2 },
       })
 

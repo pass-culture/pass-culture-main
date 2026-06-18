@@ -3,7 +3,7 @@ import cn from 'classnames'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

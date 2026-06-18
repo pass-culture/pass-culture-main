@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -40,9 +40,7 @@ describe('StatusToggleButton', () => {
 
   it('should deactivate an offer and confirm', async () => {
     // given
-    const toggle = vi
-      .spyOn(apiNew, 'patchOffersActiveStatus')
-      .mockResolvedValue()
+    const toggle = vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValue()
     const snackBarSuccess = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       success: snackBarSuccess,
@@ -73,7 +71,7 @@ describe('StatusToggleButton', () => {
       logEvent: mockLogEvent,
     }))
     const toggleFunction = vi
-      .spyOn(apiNew, 'patchOffersActiveStatus')
+      .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const snackBarSuccess = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
@@ -106,7 +104,7 @@ describe('StatusToggleButton', () => {
   it('should display error', async () => {
     // given
     const toggleFunction = vi
-      .spyOn(apiNew, 'patchOffersActiveStatus')
+      .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
     const snackBarError = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
@@ -157,9 +155,7 @@ describe('StatusToggleButton', () => {
   })
 
   it('should not display publication confirmation modal when offer is already published', async () => {
-    const toggle = vi
-      .spyOn(apiNew, 'patchOffersActiveStatus')
-      .mockResolvedValue()
+    const toggle = vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValue()
 
     const futureDate = addDays(new Date(), 1)
     props.offer = getIndividualOfferFactory({

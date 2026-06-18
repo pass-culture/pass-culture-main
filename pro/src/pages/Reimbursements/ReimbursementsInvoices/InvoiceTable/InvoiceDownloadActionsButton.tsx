@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -35,7 +35,7 @@ export const InvoiceDownloadActionsButton = ({
         buttonType: 'multiple',
       })
       downloadFile(
-        (await apiNew.getReimbursementsCsvV2({
+        (await api.getReimbursementsCsvV2({
           query: {
             invoicesReferences: references,
           },
@@ -62,7 +62,7 @@ export const InvoiceDownloadActionsButton = ({
         buttonType: 'multiple',
       })
       downloadFile(
-        (await apiNew.getCombinedInvoices({
+        (await api.getCombinedInvoices({
           query: {
             invoiceReferences: references,
           },

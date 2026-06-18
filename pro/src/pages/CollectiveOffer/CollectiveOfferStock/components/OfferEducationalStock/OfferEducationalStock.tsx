@@ -9,7 +9,7 @@ import {
   CollectiveOfferAllowedAction,
   type CollectiveStockCreationBodyModel,
   type CollectiveStockResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'

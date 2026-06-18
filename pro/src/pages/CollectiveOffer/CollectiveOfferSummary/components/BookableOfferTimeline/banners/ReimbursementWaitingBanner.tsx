@@ -1,7 +1,7 @@
 import fullEditIcon from 'icons/full-edit.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
-import { SimplifiedBankAccountStatus } from '@/apiClient/v1/new'
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {

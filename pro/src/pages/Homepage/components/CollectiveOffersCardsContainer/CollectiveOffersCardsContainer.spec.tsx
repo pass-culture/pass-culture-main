@@ -1,14 +1,14 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { CollectiveOffersCardVariant } from '../types'
 import { CollectiveOffersCardsContainer } from './CollectiveOffersCardsContainer'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffersHome: vi.fn(),
     getCollectiveOfferTemplatesHome: vi.fn(),
   },
@@ -24,14 +24,14 @@ vi.mock('../CollectiveOffersCard/CollectiveOffersCard', () => ({
 
 describe('CollectiveOffersCardsContainer', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplatesHome').mockResolvedValue({
+    vi.spyOn(api, 'getCollectiveOfferTemplatesHome').mockResolvedValue({
       hasOffers: true,
       offers: [],
     })
   })
 
   it('should render template offers before bookable offers when venue has no bookable offers to display', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOffersHome').mockResolvedValueOnce({
+    vi.spyOn(api, 'getCollectiveOffersHome').mockResolvedValueOnce({
       hasOffers: true,
       offers: [],
     })
@@ -59,7 +59,7 @@ describe('CollectiveOffersCardsContainer', () => {
   })
 
   it('should render bookable offers before template offers when venue has only bookable offers to display', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOffersHome').mockResolvedValueOnce({
+    vi.spyOn(api, 'getCollectiveOffersHome').mockResolvedValueOnce({
       hasOffers: true,
       offers: [
         {

@@ -4,14 +4,14 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ArtistType,
   DisplayableActivity,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -42,7 +42,7 @@ import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescr
 import { IndividualOfferDescriptionScreen } from './IndividualOfferDescriptionScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     createOffer: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
     getProductByEan: vi.fn(),
@@ -249,9 +249,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
-    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
-      getIndividualOfferFactory()
-    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
   })
 
   it('should render the component', async () => {
@@ -296,12 +294,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
+      vi.spyOn(api, 'createOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
       )
-      vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
+      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
         { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
       ])
 
@@ -383,12 +381,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(apiNew, 'createOffer').mockRejectedValue({
+    vi.spyOn(api, 'createOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
     })
-    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -437,12 +435,12 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(apiNew, 'createOffer').mockResolvedValue(
+    vi.spyOn(api, 'createOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
     )
-    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
 
@@ -451,8 +449,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(apiNew.createOffer).toHaveBeenCalledOnce()
-    expect(apiNew.createOffer).toHaveBeenCalledWith({
+    expect(api.createOffer).toHaveBeenCalledOnce()
+    expect(api.createOffer).toHaveBeenCalledWith({
       body: {
         artistOfferLinks: [],
         audioDisabilityCompliant: true,
@@ -494,13 +492,13 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   it('should submit the form with correct payload in edition ', async () => {
-    vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
     )
 
-    vi.spyOn(apiNew, 'getMusicTypes').mockResolvedValue([
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
     contextValue.offer = getIndividualOfferFactory({
@@ -539,8 +537,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(apiNew.patchOffer).toHaveBeenCalledOnce()
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: 12 },
       body: {
         artistOfferLinks: [
@@ -681,7 +679,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -711,7 +709,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
               recto: 'https://www.example.com/image.jpg',
             },
           }
-          vi.spyOn(apiNew, 'getProductByEan').mockResolvedValue(productData)
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
           renderWithRecordStoreVenue()
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -733,7 +731,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         })
 
         it('should disabled all fields if another offer with the same EAN is already published', async () => {
-          vi.spyOn(apiNew, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+          vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
             id: 1,
             dateCreated: '',
             isActive: true,
@@ -871,7 +869,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
 
     it('should show a success snackbar and not navigate when WIP_OFFER_EXPOSURE is enabled', async () => {
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-      vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+      vi.spyOn(api, 'patchOffer').mockResolvedValue(
         getIndividualOfferFactory({ id: 12 })
       )
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { BannerMetaModel } from '@/apiClient/v1/new'
+import type { BannerMetaModel } from '@/apiClient/v1'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
 import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'

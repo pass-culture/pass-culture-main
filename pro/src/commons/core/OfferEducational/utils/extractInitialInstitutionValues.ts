@@ -3,7 +3,7 @@ import type {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { InstitutionFormValues } from '@/pages/CollectiveOfferInstitution/commons/validationSchema'
 
 export const formatInstitutionDisplayName = (

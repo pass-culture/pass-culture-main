@@ -6,7 +6,7 @@ import {
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,

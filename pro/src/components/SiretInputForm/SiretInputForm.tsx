@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import type { StructureDataBodyModel } from '@/apiClient/v1/new'
+import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {

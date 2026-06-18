@@ -3,7 +3,7 @@ import { isAfter } from 'date-fns'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'

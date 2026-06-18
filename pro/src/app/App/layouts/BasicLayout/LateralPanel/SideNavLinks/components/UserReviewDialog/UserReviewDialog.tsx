@@ -4,7 +4,7 @@ import { type ReactNode, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -67,7 +67,7 @@ export const UserReviewDialog = ({
         )
       }
 
-      await apiNew.submitUserReview({
+      await api.submitUserReview({
         body: {
           offererId: selectedOffererId,
           location: location.pathname,

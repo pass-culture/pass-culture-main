@@ -2,9 +2,9 @@ import type { UseFormSetError } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { PatchOfferBodyModel } from '@/apiClient/v1/new'
+import type { PatchOfferBodyModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -30,7 +30,7 @@ vi.mock('swr', () => ({
   useSWRConfig: vi.fn(),
 }))
 vi.mock('@/apiClient/api', () => ({
-  apiNew: { patchOffer: vi.fn() },
+  api: { patchOffer: vi.fn() },
 }))
 vi.mock('@/apiClient/helpers', () => ({
   isErrorAPIError: vi.fn(),
@@ -60,7 +60,7 @@ describe('useSaveOfferLocation', () => {
   let notificationMock: ReturnType<typeof useSnackBar>
 
   beforeEach(() => {
-    vi.mocked(apiNew.patchOffer).mockResolvedValue(offerBase)
+    vi.mocked(api.patchOffer).mockResolvedValue(offerBase)
     vi.mocked(getIndividualOfferUrl).mockReturnValue('/mock-url')
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/offers',
@@ -102,7 +102,7 @@ describe('useSaveOfferLocation', () => {
       formValues,
       shouldSendMail: true,
     })
-    expect(apiNew.patchOffer).toHaveBeenCalledWith({
+    expect(api.patchOffer).toHaveBeenCalledWith({
       path: { offer_id: offerBase.id },
       body: requestBody,
     })
@@ -141,7 +141,7 @@ describe('useSaveOfferLocation', () => {
       formValues,
       shouldSendMail: false,
     })
-    expect(apiNew.patchOffer).toHaveBeenCalled()
+    expect(api.patchOffer).toHaveBeenCalled()
     expect(mutateMock).toHaveBeenCalledWith(
       [GET_OFFER_QUERY_KEY, offerBase.id],
       expect.anything(),
@@ -171,7 +171,7 @@ describe('useSaveOfferLocation', () => {
     })
     await saveAndContinue({ formValues, closeDialog: () => {} })
 
-    expect(apiNew.patchOffer).not.toHaveBeenCalled()
+    expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
     expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
@@ -186,7 +186,7 @@ describe('useSaveOfferLocation', () => {
         postalCode: 'Invalid postal code',
       },
     }
-    vi.mocked(apiNew.patchOffer).mockRejectedValueOnce(apiError)
+    vi.mocked(api.patchOffer).mockRejectedValueOnce(apiError)
     vi.mocked(isErrorAPIError).mockReturnValue(true)
 
     const { saveAndContinue } = useSaveOfferLocation({
@@ -228,7 +228,7 @@ describe('useSaveOfferLocation', () => {
   })
 
   it('should silently return on non-API errors (no notifications or field errors)', async () => {
-    vi.mocked(apiNew.patchOffer).mockRejectedValueOnce(new Error('network'))
+    vi.mocked(api.patchOffer).mockRejectedValueOnce(new Error('network'))
     vi.mocked(isErrorAPIError).mockReturnValue(false)
 
     const { saveAndContinue } = useSaveOfferLocation({

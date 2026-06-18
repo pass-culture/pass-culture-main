@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { buildCollectiveStock } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

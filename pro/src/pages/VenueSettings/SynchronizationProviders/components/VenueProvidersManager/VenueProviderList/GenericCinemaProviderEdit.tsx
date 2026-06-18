@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   GetVenueResponseModel,
   PostVenueProviderBody,
   VenueProviderResponse,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
@@ -39,7 +39,7 @@ export const GenericCinemaProviderEdit = ({
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      await apiNew.updateVenueProvider({
+      await api.updateVenueProvider({
         path: { venue_provider_id: venueProvider.id },
         body: {
           // we must get rid of payload.providerId

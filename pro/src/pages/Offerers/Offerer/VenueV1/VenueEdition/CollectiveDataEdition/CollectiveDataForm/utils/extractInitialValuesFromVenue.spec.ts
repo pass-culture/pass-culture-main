@@ -3,7 +3,7 @@ import {
   DisplayableActivity,
   type GetVenueResponseModel,
   StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import type { CollectiveDataFormValues } from '../type'

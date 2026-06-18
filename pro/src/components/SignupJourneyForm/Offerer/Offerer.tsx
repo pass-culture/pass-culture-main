@@ -2,9 +2,9 @@ import cn from 'classnames'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
-import type { StructureDataBodyModel } from '@/apiClient/v1/new'
+import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -141,7 +141,7 @@ export const Offerer = (): JSX.Element => {
 
     try {
       const venueOfOffererProvidersResponse =
-        await apiNew.getVenuesOfOffererFromSiret({
+        await api.getVenuesOfOffererFromSiret({
           path: { siret: formattedSiret },
         })
 

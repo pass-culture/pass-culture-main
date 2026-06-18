@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiResult } from '@/apiClient/compat'
-import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1/new'
+import type { VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
@@ -62,7 +62,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     createOfferer: vi.fn(),
     getVenuesOfOffererFromSiret: vi.fn(),
     getOfferer: vi.fn(),
@@ -171,7 +171,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
     ]
 
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererName: 'Offerer Name',
       offererSiren: '123456789',
       venues,
@@ -403,7 +403,7 @@ describe('screens:SignupJourney::Offerers', () => {
       expect(
         screen.queryByText('Rejoindre cet espace ?')
       ).not.toBeInTheDocument()
-      expect(apiNew.createOfferer).not.toHaveBeenCalled()
+      expect(api.createOfferer).not.toHaveBeenCalled()
     })
 
     it('should link offerer to user when they confirm', async () => {
@@ -411,9 +411,9 @@ describe('screens:SignupJourney::Offerers', () => {
         () => false
       )
       await renderOfferersScreen(contextValue)
-      vi.spyOn(apiNew, 'createOfferer').mockResolvedValue(expect.anything())
-      vi.spyOn(apiNew, 'listOfferersNames').mockResolvedValue(expect.anything())
-      vi.spyOn(apiNew, 'getOfferer').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(expect.anything())
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 
@@ -425,7 +425,7 @@ describe('screens:SignupJourney::Offerers', () => {
         await screen.findByRole('button', { name: 'Rejoindre cet espace' })
       )
 
-      expect(apiNew.createOfferer).toHaveBeenCalledWith({
+      expect(api.createOfferer).toHaveBeenCalledWith({
         body: {
           city: 'lille',
           name: 'Offerer Name',
@@ -456,7 +456,7 @@ describe('screens:SignupJourney::Offerers', () => {
         } as ApiResult,
         ''
       )
-      vi.spyOn(apiNew, 'createOfferer').mockRejectedValueOnce(apiError)
+      vi.spyOn(api, 'createOfferer').mockRejectedValueOnce(apiError)
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 

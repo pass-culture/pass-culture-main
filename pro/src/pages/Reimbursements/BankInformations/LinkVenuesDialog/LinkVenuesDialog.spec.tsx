@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
 import * as apiHelpers from '@/apiClient/helpers'
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1/new'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -99,7 +99,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should update venue selection when selecting pricing point', async () => {
-    vi.spyOn(apiNew, 'linkVenueToPricingPoint').mockResolvedValue()
+    vi.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, hasPricingPoint: true },
       {
@@ -136,7 +136,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should display error message when attach pricing point fail', async () => {
-    vi.spyOn(apiNew, 'linkVenueToPricingPoint').mockRejectedValue({})
+    vi.spyOn(api, 'linkVenueToPricingPoint').mockRejectedValue({})
     const snackBarError = vi.fn()
     vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       ...snackBarsImport,
@@ -302,7 +302,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should close dialog with update on successful form submission', async () => {
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     const closeDialog = vi.fn()
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
@@ -326,7 +326,7 @@ describe('LinkVenueDialog', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       venuesIds: ['Erreur de validation'],
     })
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(error)
+    vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValue(error)
     vi.spyOn(apiHelpers, 'serializeApiErrors')
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
@@ -352,7 +352,7 @@ describe('LinkVenueDialog', () => {
   it('should display the venuesIds error message when linkVenueToBankAccount returns 400', async () => {
     const errorMessage =
       'Une ou plusieurs structures sélectionnées sont déjà rattachées à un autre compte bancaire.'
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+    vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValue(
       new ApiError('', 400, 'Bad Request', {
         venuesIds: [errorMessage],
       })
@@ -377,7 +377,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should display error snackbar when linkVenueToBankAccount fails with a non-400 ApiError', async () => {
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+    vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValue(
       new ApiError('', 500, 'Internal Server Error', {})
     )
     const snackBarError = vi.fn()
@@ -404,7 +404,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should display error snackbar when linkVenueToBankAccount fails with a non-400 error', async () => {
-    vi.spyOn(apiNew, 'linkVenueToBankAccount').mockRejectedValue(
+    vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValue(
       new Error('Server error')
     )
     const snackBarError = vi.fn()

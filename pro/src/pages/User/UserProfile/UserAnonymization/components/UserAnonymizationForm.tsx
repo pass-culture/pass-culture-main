@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
@@ -35,7 +35,7 @@ export const UserAnonymizationForm = (): JSX.Element => {
 
   const onSubmit = async () => {
     try {
-      await apiNew.anonymize()
+      await api.anonymize()
       await logout()
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')

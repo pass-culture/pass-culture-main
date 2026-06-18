@@ -29,7 +29,7 @@ import {
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   type VenueProviderResponse,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'

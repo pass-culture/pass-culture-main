@@ -6,8 +6,8 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -61,7 +61,7 @@ const renderStockSection = (
 describe('Summary stock section', () => {
   describe('for general case', () => {
     it('should render sold out warning', async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
           stocks: [
             getOfferStockFactory({
@@ -102,7 +102,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render expired warning', async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
           stocks: [
             getOfferStockFactory({
@@ -141,7 +141,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render no stock warning', async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
       )
 
@@ -177,7 +177,7 @@ describe('Summary stock section', () => {
 
   describe('for stock thing', () => {
     it('should render creation summary', async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
           stocks: [
             getOfferStockFactory({
@@ -224,7 +224,7 @@ describe('Summary stock section', () => {
     })
 
     it("should render booking limit date when it's given", async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
           stocks: [
             getOfferStockFactory({
@@ -251,7 +251,7 @@ describe('Summary stock section', () => {
     })
 
     it('should render quantity as "Illimité" when quantity is null or undefined', async () => {
-      vi.spyOn(apiNew, 'getStocks').mockResolvedValueOnce(
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
           // @ts-expect-error - to remove when GetStocksResponseModel will be migrated to pydanticV2
           stocks: [getOfferStockFactory({ quantity: null })],
@@ -281,9 +281,7 @@ describe('Summary stock section', () => {
         ...snackBarsImport,
         error: snackBarError,
       }))
-      vi.spyOn(apiNew, 'getStocks').mockRejectedValueOnce(
-        new Error('API Error')
-      )
+      vi.spyOn(api, 'getStocks').mockRejectedValueOnce(new Error('API Error'))
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -306,7 +304,7 @@ describe('Summary stock section', () => {
 
   describe('for stock event', () => {
     it('should render creation summary', async () => {
-      vi.spyOn(apiNew, 'getStocksStats').mockResolvedValueOnce({})
+      vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -328,7 +326,7 @@ describe('Summary stock section', () => {
       )
 
       await waitFor(() => {
-        expect(apiNew.getStocksStats).toHaveBeenCalled()
+        expect(api.getStocksStats).toHaveBeenCalled()
       })
 
       expect(
@@ -357,7 +355,7 @@ describe('Summary stock section', () => {
         error: snackBarError,
       }))
 
-      vi.spyOn(apiNew, 'getStocksStats').mockRejectedValueOnce(
+      vi.spyOn(api, 'getStocksStats').mockRejectedValueOnce(
         new Error('API Error')
       )
 

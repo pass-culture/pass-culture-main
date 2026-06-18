@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router'
 
-import type { ListOffersQueryModel } from '@/apiClient/v1/new'
+import type { ListOffersQueryModel } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 import { parseUrlParams } from '@/commons/utils/parseUrlParams'
 import { translateQueryParamsToApiParams } from '@/commons/utils/translate'

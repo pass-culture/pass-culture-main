@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -64,7 +64,7 @@ const renderOfferActionsCell = (
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffer: vi.fn(),
     duplicateCollectiveOffer: vi.fn(),
     createCollectiveOffer: vi.fn(),
@@ -132,7 +132,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Archiver l’offre' })
     )
 
-    expect(apiNew.patchCollectiveOffersArchive).toHaveBeenCalledTimes(1)
+    expect(api.patchCollectiveOffersArchive).toHaveBeenCalledTimes(1)
   })
 
   it('should show action buttons when action is allowed on bookable offer', async () => {
@@ -215,13 +215,13 @@ describe('OfferActionsCells', () => {
 
   describe('CollectiveActionsCells:Duplicate', () => {
     beforeEach(() => {
-      vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValueOnce({
+      vi.spyOn(api, 'listEducationalOfferers').mockResolvedValueOnce({
         educationalOfferers: [],
       })
     })
 
     it('should show an error when bookable offer duplication fails', async () => {
-      vi.spyOn(apiNew, 'getCollectiveOffer').mockRejectedValueOnce({})
+      vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce({})
       renderOfferActionsCell({
         offer: collectiveOfferFactory({
           id: 200,
@@ -239,14 +239,14 @@ describe('OfferActionsCells', () => {
     })
 
     it('should duplicate a bookable', async () => {
-      vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({
           imageUrl: 'https://http.cat/201',
           imageCredit: 'chats',
         })
       )
 
-      vi.spyOn(apiNew, 'duplicateCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({ id: 201 })
       )
       renderOfferActionsCell({
@@ -260,11 +260,11 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Dupliquer'))
-      expect(apiNew.duplicateCollectiveOffer).toHaveBeenCalledWith({
+      expect(api.duplicateCollectiveOffer).toHaveBeenCalledWith({
         path: { offer_id: 200 },
       })
       expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
-      expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+      expect(api.attachOfferImage).toHaveBeenCalledWith({
         path: { offer_id: 201 },
         body: {
           credit: 'chats',
@@ -281,7 +281,7 @@ describe('OfferActionsCells', () => {
     })
 
     it('should log event when duplicating a bookable offer', async () => {
-      vi.spyOn(apiNew, 'getCollectiveOffer').mockResolvedValueOnce(
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
         getCollectiveOfferFactory({
           imageUrl: 'https://http.cat/201',
           imageCredit: 'chats',
@@ -328,10 +328,10 @@ describe('OfferActionsCells', () => {
           locationComment: null,
         },
       })
-      vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
         collectiveOfferTemplate
       )
-      vi.spyOn(apiNew, 'createCollectiveOffer').mockResolvedValueOnce({
+      vi.spyOn(api, 'createCollectiveOffer').mockResolvedValueOnce({
         id: 202,
       })
       renderOfferActionsCell({
@@ -347,7 +347,7 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Créer une offre réservable'))
-      expect(apiNew.createCollectiveOffer).toHaveBeenCalledWith({
+      expect(api.createCollectiveOffer).toHaveBeenCalledWith({
         body: {
           audioDisabilityCompliant: false,
           bookingEmails: ['toto@example.com'],
@@ -375,7 +375,7 @@ describe('OfferActionsCells', () => {
         },
       })
       expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
-      expect(apiNew.attachOfferImage).toHaveBeenCalledWith({
+      expect(api.attachOfferImage).toHaveBeenCalledWith({
         path: { offer_id: 202 },
         body: {
           credit: 'chats',
@@ -510,7 +510,7 @@ describe('OfferActionsCells', () => {
 
   it('should show error notification if toggling template active state fails', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValueOnce(new Error('fail'))
 
@@ -534,7 +534,7 @@ describe('OfferActionsCells', () => {
 
   it('should show error notification if toggling template to active state fails', async () => {
     vi.spyOn(
-      apiNew,
+      api,
       'patchCollectiveOffersTemplateActiveStatus'
     ).mockRejectedValueOnce(new Error('fail'))
 
@@ -572,7 +572,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Annuler la réservation' })
     )
 
-    expect(apiNew.cancelCollectiveOfferBooking).toHaveBeenCalledWith({
+    expect(api.cancelCollectiveOfferBooking).toHaveBeenCalledWith({
       path: { offer_id: 200 },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
@@ -581,7 +581,7 @@ describe('OfferActionsCells', () => {
   })
 
   it('should show NO_BOOKING error notification when cancellation fails with NO_BOOKING code', async () => {
-    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce({
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce({
       message: 'error',
       name: 'ApiError',
       body: { code: 'NO_BOOKING' },
@@ -609,7 +609,7 @@ describe('OfferActionsCells', () => {
   })
 
   it('should show error notification when cancellation fails', async () => {
-    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
       new Error('fail')
     )
 
@@ -635,7 +635,7 @@ describe('OfferActionsCells', () => {
   })
 
   it('should show error notification when archiving fails', async () => {
-    vi.spyOn(apiNew, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
       new Error('fail')
     )
 
@@ -673,7 +673,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Archiver l’offre' })
     )
 
-    expect(apiNew.patchCollectiveOffersTemplateArchive).toHaveBeenCalledWith({
+    expect(api.patchCollectiveOffersTemplateArchive).toHaveBeenCalledWith({
       body: { ids: [200] },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
@@ -682,10 +682,9 @@ describe('OfferActionsCells', () => {
   })
 
   it('should show error notification when template offer archiving fails', async () => {
-    vi.spyOn(
-      apiNew,
-      'patchCollectiveOffersTemplateArchive'
-    ).mockRejectedValueOnce(new Error('fail'))
+    vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(
+      new Error('fail')
+    )
 
     renderOfferActionsCell({
       offer: collectiveOfferTemplateFactory({

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -28,9 +28,7 @@ describe('GenericCinemaProviderEdit', () => {
       showAdvancedFields: false,
     }
 
-    vi.spyOn(apiNew, 'updateVenueProvider').mockResolvedValue(
-      defaultVenueProvider
-    )
+    vi.spyOn(api, 'updateVenueProvider').mockResolvedValue(defaultVenueProvider)
   })
 
   const renderComponent = async () => {
@@ -67,7 +65,7 @@ describe('GenericCinemaProviderEdit', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(apiNew.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith({
         path: { venue_provider_id: defaultVenueProvider.id },
         body: {
           isDuo: defaultVenueProvider.isDuo,

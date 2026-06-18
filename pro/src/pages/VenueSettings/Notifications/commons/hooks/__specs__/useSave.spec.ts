@@ -3,7 +3,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Provider } from 'react-redux'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiRequestOptions, ApiResult } from '@/apiClient/compat'
 import { ApiError } from '@/apiClient/compat'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -17,7 +17,7 @@ import type { VenueSettingsNotificationsFormValues } from '../../schemas'
 import { useSave } from '../useSave'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     editVenue: vi.fn(),
   },
 }))
@@ -80,7 +80,7 @@ describe('useSave', () => {
 
   it('should patch the venue, sync the cache, log success and show a success snackbar', async () => {
     const updatedVenue = { ...defaultGetVenue, bookingEmail: 'new@example.com' }
-    vi.mocked(apiNew.editVenue).mockResolvedValueOnce(updatedVenue)
+    vi.mocked(api.editVenue).mockResolvedValueOnce(updatedVenue)
 
     const { result } = renderUseSave()
 
@@ -88,7 +88,7 @@ describe('useSave', () => {
       await result.current.save({ bookingEmail: 'new@example.com' })
     })
 
-    expect(apiNew.editVenue).toHaveBeenCalledWith({
+    expect(api.editVenue).toHaveBeenCalledWith({
       path: { venue_id: Number(defaultGetVenue.id) },
       body: { bookingEmail: 'new@example.com' },
     })
@@ -106,7 +106,7 @@ describe('useSave', () => {
   })
 
   it('should cast an empty bookingEmail to null before patching', async () => {
-    vi.mocked(apiNew.editVenue).mockResolvedValueOnce(defaultGetVenue)
+    vi.mocked(api.editVenue).mockResolvedValueOnce(defaultGetVenue)
 
     const { result } = renderUseSave()
 
@@ -114,14 +114,14 @@ describe('useSave', () => {
       await result.current.save({ bookingEmail: '' })
     })
 
-    expect(apiNew.editVenue).toHaveBeenCalledWith({
+    expect(api.editVenue).toHaveBeenCalledWith({
       path: { venue_id: Number(defaultGetVenue.id) },
       body: { bookingEmail: null },
     })
   })
 
   it('should set form errors when the API returns field-level errors', async () => {
-    vi.mocked(apiNew.editVenue).mockRejectedValueOnce(
+    vi.mocked(api.editVenue).mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -156,7 +156,7 @@ describe('useSave', () => {
   })
 
   it('should show a generic error when the API returns a global error', async () => {
-    vi.mocked(apiNew.editVenue).mockRejectedValueOnce(
+    vi.mocked(api.editVenue).mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -185,7 +185,7 @@ describe('useSave', () => {
   })
 
   it('should show a generic error when the thrown error is not an ApiError', async () => {
-    vi.mocked(apiNew.editVenue).mockRejectedValueOnce(new Error('network down'))
+    vi.mocked(api.editVenue).mockRejectedValueOnce(new Error('network down'))
 
     const { result } = renderUseSave()
     const setError = vi.spyOn(result.current.form, 'setError')

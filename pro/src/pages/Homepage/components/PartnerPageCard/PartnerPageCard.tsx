@@ -1,4 +1,4 @@
-import type { BannerMetaModel } from '@/apiClient/v1/new'
+import type { BannerMetaModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events, HomepageEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useOnVenueImageUpload } from '@/commons/core/Venue/hooks/useOnVenueImageUpload'

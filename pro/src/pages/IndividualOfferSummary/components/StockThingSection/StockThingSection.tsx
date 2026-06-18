@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 
-import type { GetOfferStockResponseModel } from '@/apiClient/v1/new'
+import type { GetOfferStockResponseModel } from '@/apiClient/v1'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,

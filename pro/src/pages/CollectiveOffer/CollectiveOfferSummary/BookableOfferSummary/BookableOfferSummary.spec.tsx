@@ -1,12 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -27,7 +27,7 @@ import {
 } from './BookableOfferSummary'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchCollectiveOffersArchive: vi.fn(),
     cancelCollectiveOfferBooking: vi.fn(),
   },
@@ -270,7 +270,7 @@ describe('BookableOfferSummary', () => {
 
   it('should call the API to archive the offer when confirming in the modal', async () => {
     const mockPatchCollectiveOffersArchive = vi
-      .spyOn(apiNew, 'patchCollectiveOffersArchive')
+      .spyOn(api, 'patchCollectiveOffersArchive')
       .mockResolvedValueOnce()
 
     renderBookableOfferSummary(props)
@@ -300,7 +300,7 @@ describe('BookableOfferSummary', () => {
 
   it('should open the confirmation modal and call the API when confirming cancellation', async () => {
     const mockCancelCollectiveOfferBooking = vi
-      .spyOn(apiNew, 'cancelCollectiveOfferBooking')
+      .spyOn(api, 'cancelCollectiveOfferBooking')
       .mockResolvedValueOnce()
 
     renderBookableOfferSummary(props)
@@ -335,7 +335,7 @@ describe('BookableOfferSummary', () => {
   })
 
   it('should display an error notification if the cancellation API fails', async () => {
-    vi.spyOn(apiNew, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
       new Error('Erreur API')
     )
 

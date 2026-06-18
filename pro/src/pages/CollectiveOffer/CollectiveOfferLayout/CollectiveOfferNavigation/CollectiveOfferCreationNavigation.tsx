@@ -1,4 +1,4 @@
-import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
+import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'

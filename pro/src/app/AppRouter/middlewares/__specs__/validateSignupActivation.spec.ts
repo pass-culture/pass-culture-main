@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as handleUnexpectedErrorModule from '@/commons/errors/handleUnexpectedError'
 import * as storeModule from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
@@ -21,7 +21,7 @@ vi.mock('react-router', async () => {
   }
 })
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProfile: vi.fn(),
     validateUser: vi.fn(),
   },
@@ -63,14 +63,14 @@ describe('validateSignupActivation', () => {
       path: '/connexion',
     })
 
-    expect(apiNew.validateUser).not.toHaveBeenCalled()
+    expect(api.validateUser).not.toHaveBeenCalled()
   })
 
   it('should validate user, initialize profile, show success snackbar and redirect to /connexion', async () => {
     const store = setupStore()
     const mockUser = sharedCurrentUserFactory()
-    vi.spyOn(apiNew, 'validateUser').mockResolvedValueOnce(undefined)
-    vi.spyOn(apiNew, 'getProfile').mockResolvedValueOnce(mockUser)
+    vi.spyOn(api, 'validateUser').mockResolvedValueOnce(undefined)
+    vi.spyOn(api, 'getProfile').mockResolvedValueOnce(mockUser)
     vi.spyOn(store, 'dispatch').mockReturnValue({
       unwrap: vi.fn().mockResolvedValueOnce(undefined),
     } as unknown as ReturnType<typeof store.dispatch>)
@@ -81,10 +81,10 @@ describe('validateSignupActivation', () => {
       path: '/connexion',
     })
 
-    expect(apiNew.validateUser).toHaveBeenCalledWith({
+    expect(api.validateUser).toHaveBeenCalledWith({
       path: { token: 'valid-token' },
     })
-    expect(apiNew.getProfile).toHaveBeenCalled()
+    expect(api.getProfile).toHaveBeenCalled()
     expect(store.dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'snackBar/addSnackBar',
@@ -102,7 +102,7 @@ describe('validateSignupActivation', () => {
       .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
       .mockImplementation(vi.fn())
     const store = setupStore()
-    vi.spyOn(apiNew, 'validateUser').mockRejectedValueOnce(
+    vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       makeApiError({ body: { global: 'Token expired' } })
     )
     vi.spyOn(store, 'dispatch')
@@ -113,10 +113,10 @@ describe('validateSignupActivation', () => {
       path: '/connexion',
     })
 
-    expect(apiNew.validateUser).toHaveBeenCalledWith({
+    expect(api.validateUser).toHaveBeenCalledWith({
       path: { token: 'expired-token' },
     })
-    expect(apiNew.getProfile).not.toHaveBeenCalled()
+    expect(api.getProfile).not.toHaveBeenCalled()
     expect(store.dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'snackBar/addSnackBar',
@@ -134,7 +134,7 @@ describe('validateSignupActivation', () => {
       .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
       .mockImplementation(vi.fn())
     const store = setupStore()
-    vi.spyOn(apiNew, 'validateUser').mockRejectedValueOnce(
+    vi.spyOn(api, 'validateUser').mockRejectedValueOnce(
       new Error('Network error')
     )
     vi.spyOn(store, 'dispatch')
@@ -146,10 +146,10 @@ describe('validateSignupActivation', () => {
       path: '/connexion',
     })
 
-    expect(apiNew.validateUser).toHaveBeenCalledWith({
+    expect(api.validateUser).toHaveBeenCalledWith({
       path: { token: 'some-token' },
     })
-    expect(apiNew.getProfile).not.toHaveBeenCalled()
+    expect(api.getProfile).not.toHaveBeenCalled()
     expect(store.dispatch).not.toHaveBeenCalled()
     expect(handleUnexpectedErrorSpy).toHaveBeenCalledExactlyOnceWith(
       new Error('Network error'),
@@ -163,8 +163,8 @@ describe('validateSignupActivation', () => {
       .mockImplementation(vi.fn())
     const store = setupStore()
     const mockUser = sharedCurrentUserFactory()
-    vi.spyOn(apiNew, 'validateUser').mockResolvedValue(undefined)
-    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(mockUser)
+    vi.spyOn(api, 'validateUser').mockResolvedValue(undefined)
+    vi.spyOn(api, 'getProfile').mockResolvedValue(mockUser)
     vi.spyOn(store, 'dispatch').mockReturnValue({
       unwrap: vi.fn().mockResolvedValue(undefined),
     } as unknown as ReturnType<typeof store.dispatch>)
@@ -184,8 +184,8 @@ describe('validateSignupActivation', () => {
       path: '/connexion',
     })
 
-    expect(apiNew.validateUser).toHaveBeenCalledTimes(1)
-    expect(apiNew.getProfile).toHaveBeenCalledTimes(1)
+    expect(api.validateUser).toHaveBeenCalledTimes(1)
+    expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(handleUnexpectedErrorSpy).not.toHaveBeenCalled()
   })
 })

@@ -1,9 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { UserPhoneBodyModel } from '@/apiClient/v1/new'
+import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -48,7 +48,7 @@ export const UserPhoneForm = ({
 
   const onSubmit = async (values: UserPhoneBodyModel) => {
     try {
-      const response = await apiNew.patchUserPhone({ body: values })
+      const response = await api.patchUserPhone({ body: values })
       dispatch(
         updateUser({
           ...currentUser,

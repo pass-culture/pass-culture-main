@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   CollectiveStockCreationBodyModel,
   CollectiveStockResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferCollectiveStockFactory,
@@ -21,7 +21,7 @@ import { OfferEducationalStock } from '../../components/OfferEducationalStock/Of
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
@@ -78,7 +78,7 @@ describe('CollectiveOfferStockCreation', () => {
   })
 
   it('should render collective offer stock form from template', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
       getCollectiveOfferTemplateFactory({
         priceDetail: 'Details from template',
       })
@@ -90,7 +90,7 @@ describe('CollectiveOfferStockCreation', () => {
       }),
     })
     await waitFor(() => {
-      expect(apiNew.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
     })
     expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
     expect(OfferEducationalStock).toHaveBeenLastCalledWith(
@@ -106,7 +106,7 @@ describe('CollectiveOfferStockCreation', () => {
       offer: getCollectiveOfferFactory(),
     })
     await waitFor(() => {
-      expect(apiNew.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -139,7 +139,7 @@ describe('CollectiveOfferStockCreation', () => {
     partialRequest,
     expectedStock,
   }) => {
-    vi.spyOn(apiNew, 'getCollectiveOfferRequest').mockResolvedValue({
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValue({
       ...defaultGetCollectiveOfferRequest,
       ...partialRequest,
     })
@@ -148,7 +148,7 @@ describe('CollectiveOfferStockCreation', () => {
       offer: getCollectiveOfferFactory({ collectiveStock: null }),
     })
     await waitFor(() => {
-      expect(apiNew.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
     })
     expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
     expect(OfferEducationalStock).toHaveBeenLastCalledWith(
@@ -168,12 +168,12 @@ describe('CollectiveOfferStockCreation', () => {
     setSubmitResponse(collectiveStock)
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
 
-    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
+    expect(api.createCollectiveStock).not.toHaveBeenCalled()
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
-    expect(apiNew.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+    expect(api.editCollectiveStock).not.toHaveBeenCalled()
+    expect(api.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       body: {
         ...collectiveStock,
         offerId: offer.id,
@@ -187,12 +187,12 @@ describe('CollectiveOfferStockCreation', () => {
     setSubmitResponse({ numberOfTickets: 12 })
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer })
 
-    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
+    expect(api.editCollectiveStock).not.toHaveBeenCalled()
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
-    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+    expect(api.createCollectiveStock).not.toHaveBeenCalled()
+    expect(api.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       path: { collective_stock_id: offer.collectiveStock?.id },
       body: { numberOfTickets: 12 },
     })
@@ -212,8 +212,8 @@ describe('CollectiveOfferStockCreation', () => {
         message: 'Missing required values',
       })
     )
-    expect(apiNew.createCollectiveStock).not.toHaveBeenCalled()
-    expect(apiNew.editCollectiveStock).not.toHaveBeenCalled()
+    expect(api.createCollectiveStock).not.toHaveBeenCalled()
+    expect(api.editCollectiveStock).not.toHaveBeenCalled()
   })
 
   it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock post', async () => {
@@ -231,7 +231,7 @@ describe('CollectiveOfferStockCreation', () => {
 
     const expectedStockSent = { ...collectiveStock }
     delete expectedStockSent.priceDetail
-    expect(apiNew.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+    expect(api.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       body: {
         ...expectedStockSent,
         offerId: offer.id,
@@ -249,7 +249,7 @@ describe('CollectiveOfferStockCreation', () => {
     ])
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(apiNew.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+    expect(api.editCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       path: { collective_stock_id: offer.collectiveStock?.id },
       body: { numberOfTickets: 12 },
     })

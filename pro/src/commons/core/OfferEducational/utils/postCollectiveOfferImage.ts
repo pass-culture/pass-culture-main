@@ -1,4 +1,4 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import type { OfferEducationalFormValues } from '../types'
@@ -29,7 +29,7 @@ export const postCollectiveOfferImage = async ({
       /* istanbul ignore next: DEBT to fix */
       const imageFile = new File([blob], '', { type: contentType ?? '' })
 
-      await apiNew.attachOfferImage({
+      await api.attachOfferImage({
         path: { offer_id: id },
         body: {
           thumb: imageFile,

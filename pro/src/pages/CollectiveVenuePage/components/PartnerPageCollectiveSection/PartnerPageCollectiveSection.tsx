@@ -1,4 +1,4 @@
-import { DMSApplicationstatus } from '@/apiClient/v1/new'
+import { DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'

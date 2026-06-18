@@ -2,8 +2,8 @@ import classNames from 'classnames'
 import { useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { BankAccountResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { BankAccountResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
@@ -60,7 +60,7 @@ const BankInformations = (): JSX.Element => {
   const bankAccountVenuesQuery = useSWR(
     [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId],
     ([, offererId]) =>
-      apiNew.getOffererBankAccountsAndAttachedVenues({
+      api.getOffererBankAccountsAndAttachedVenues({
         path: { offerer_id: Number(offererId) },
       }),
     {

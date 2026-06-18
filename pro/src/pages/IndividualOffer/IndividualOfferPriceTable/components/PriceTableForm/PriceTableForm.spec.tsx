@@ -6,7 +6,7 @@ import { vi } from 'vitest'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,

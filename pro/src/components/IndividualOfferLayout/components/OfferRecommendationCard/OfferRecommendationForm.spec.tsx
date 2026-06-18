@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
-import type { ProAdviceModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { ProAdviceModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -15,7 +15,7 @@ import { OfferRecommendationForm } from './OfferRecommendationForm'
 const mockLogEvent = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     createOfferProAdvice: vi.fn(),
     updateOfferProAdvice: vi.fn(),
     deleteOfferProAdvice: vi.fn(),
@@ -76,7 +76,7 @@ describe('OfferRecommendationForm', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    const createOfferProAdviceMock = vi.mocked(apiNew.createOfferProAdvice)
+    const createOfferProAdviceMock = vi.mocked(api.createOfferProAdvice)
     createOfferProAdviceMock.mockResolvedValueOnce({
       proAdvice: { content: 'test', author: 'test', updatedAt: '' },
     } as any)
@@ -107,7 +107,7 @@ describe('OfferRecommendationForm', () => {
   })
 
   it('should call updateOfferProAdvice when updating an existing recommendation', async () => {
-    const updateOfferProAdviceMock = vi.mocked(apiNew.updateOfferProAdvice)
+    const updateOfferProAdviceMock = vi.mocked(api.updateOfferProAdvice)
     updateOfferProAdviceMock.mockResolvedValueOnce({
       proAdvice: { content: 'new content', author: 'Jean-Mi', updatedAt: '' },
     } as any)
@@ -140,7 +140,7 @@ describe('OfferRecommendationForm', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    const deleteOfferProAdviceMock = vi.mocked(apiNew.deleteOfferProAdvice)
+    const deleteOfferProAdviceMock = vi.mocked(api.deleteOfferProAdvice)
     deleteOfferProAdviceMock.mockResolvedValueOnce({} as any)
 
     renderOfferRecommendationForm({
@@ -180,7 +180,7 @@ describe('OfferRecommendationForm', () => {
 
   it('should call onSuccess', async () => {
     const onSuccess = vi.fn()
-    vi.mocked(apiNew.createOfferProAdvice).mockResolvedValueOnce({} as any)
+    vi.mocked(api.createOfferProAdvice).mockResolvedValueOnce({} as any)
 
     renderOfferRecommendationForm({
       offerId: 1,

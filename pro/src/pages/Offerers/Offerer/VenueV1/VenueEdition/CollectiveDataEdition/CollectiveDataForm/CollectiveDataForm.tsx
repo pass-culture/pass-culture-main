@@ -2,8 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
-import { StudentLevels } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { StudentLevels } from '@/apiClient/v1'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
@@ -80,7 +80,7 @@ export const CollectiveDataForm = ({
 
   const onSubmit = async (values: CollectiveDataFormValues): Promise<void> => {
     try {
-      const updatedVenue = await apiNew.editVenueCollectiveData({
+      const updatedVenue = await api.editVenueCollectiveData({
         path: { venue_id: selectedPartnerVenue.id },
         body: {
           ...values,

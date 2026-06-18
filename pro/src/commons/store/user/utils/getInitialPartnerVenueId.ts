@@ -1,4 +1,4 @@
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1/new'
+import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,

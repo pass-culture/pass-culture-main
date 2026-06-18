@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1/new'
+import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
@@ -45,7 +45,7 @@ export const CollectiveOfferStockEdition = ({
       return snackBar.error('Impossible de mettre à jour le stock.')
     }
     try {
-      await apiNew.editCollectiveStock({
+      await api.editCollectiveStock({
         path: { collective_stock_id: offer.collectiveStock.id },
         body: newCollectiveStock,
       })

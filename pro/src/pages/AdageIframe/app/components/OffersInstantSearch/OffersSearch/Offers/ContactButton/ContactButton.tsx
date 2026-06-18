@@ -1,8 +1,8 @@
 import type React from 'react'
 import { useRef, useState } from 'react'
 
-import type { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import type { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMailIcon from '@/icons/full-mail.svg'
@@ -49,7 +49,7 @@ export const ContactButton = ({
 
   const handleButtonClick = () => {
     if (!isPreview) {
-      apiAdageNew.logContactModalButtonClick({
+      apiAdage.logContactModalButtonClick({
         body: {
           iframeFrom: location.pathname,
           offerId,

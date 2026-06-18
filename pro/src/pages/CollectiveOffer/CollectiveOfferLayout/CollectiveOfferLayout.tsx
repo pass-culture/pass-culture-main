@@ -4,7 +4,7 @@ import { useLocation } from 'react-router'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'

@@ -1,8 +1,8 @@
 import { useLocation, useParams, useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
-import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -42,7 +42,7 @@ export const OfferInfos = () => {
       ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, Number(offerId)]
       : null,
     ([, offerIdParam]) =>
-      apiAdageNew.getCollectiveOfferTemplate({
+      apiAdage.getCollectiveOfferTemplate({
         path: { offer_id: offerIdParam },
       })
   )
@@ -53,7 +53,7 @@ export const OfferInfos = () => {
       ? [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offerId)]
       : null,
     ([, offerIdParam]) =>
-      apiAdageNew.getCollectiveOffer({
+      apiAdage.getCollectiveOffer({
         path: { offer_id: offerIdParam },
       })
   )

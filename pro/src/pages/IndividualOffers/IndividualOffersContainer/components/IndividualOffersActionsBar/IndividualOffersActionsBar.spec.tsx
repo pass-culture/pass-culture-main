@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
-import { OfferStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
@@ -47,7 +47,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
@@ -84,7 +84,7 @@ describe('ActionsBar', () => {
       logEvent: mockLogEvent,
     }))
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
-    vi.spyOn(apiNew, 'patchAllOffersActiveStatus').mockResolvedValue({})
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
   })
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
@@ -136,7 +136,7 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(apiNew.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
       body: {
         ids: [1, 2],
         isActive: true,
@@ -160,13 +160,13 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Supprimer'))
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
-    expect(apiNew.deleteDraftOffers).toHaveBeenLastCalledWith({
+    expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
       body: {
         ids: [1, 2],
       },
     })
-    expect(apiNew.deleteDraftOffers).toHaveBeenCalledTimes(1)
-    expect(apiNew.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
+    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
       body: {
         ids: [1, 2],
       },
@@ -202,7 +202,7 @@ describe('ActionsBar', () => {
         has_selected_all_offers: false,
       }
     )
-    expect(apiNew.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
       body: {
         ids: [1, 2, 3],
         isActive: false,
@@ -245,7 +245,7 @@ describe('ActionsBar', () => {
     const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
-    expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -283,7 +283,7 @@ describe('ActionsBar', () => {
         has_selected_all_offers: true,
       }
     )
-    expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -329,7 +329,7 @@ describe('ActionsBar', () => {
 
   it('should show an error message when an error occurs after clicking on "Publier" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-    vi.spyOn(apiNew, 'patchAllOffersActiveStatus').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Publier')
@@ -343,7 +343,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
-    vi.spyOn(apiNew, 'patchOffersActiveStatus').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'patchOffersActiveStatus').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Publier')
@@ -357,7 +357,7 @@ describe('ActionsBar', () => {
   })
 
   it('should show an error message when an error occurs after clicking on "Supprimer" button when some offers are selected', async () => {
-    vi.spyOn(apiNew, 'deleteDraftOffers').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(null)
     renderActionsBar(props)
 
     const activateButton = screen.getByText('Supprimer')
@@ -412,7 +412,7 @@ describe('ActionsBar', () => {
       const activateButton = screen.getByText('Publier')
       await userEvent.click(activateButton)
 
-      expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
         expectedBody
       )
       expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)
@@ -444,7 +444,7 @@ describe('ActionsBar', () => {
       const activateButton = screen.getByText('Publier')
       await userEvent.click(activateButton)
 
-      expect(apiNew.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+      expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
         expectedBody
       )
       expect(props.clearSelectedOffers).toHaveBeenCalledTimes(1)

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -32,7 +32,7 @@ import {
 } from './IndividualOfferLocationScreen'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     patchOffer: vi.fn(),
   },
 }))
@@ -153,7 +153,7 @@ describe('<IndividualOfferLocationScreen />', () => {
       })
 
       it('should submit the venue address payload when a venue address is selected', async () => {
-        vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(offlineOffer)
+        vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
 
         const props = { offer: offlineOffer }
 
@@ -169,8 +169,8 @@ describe('<IndividualOfferLocationScreen />', () => {
           screen.getByRole('button', { name: /Enregistrer/ })
         )
 
-        expect(apiNew.patchOffer).toHaveBeenCalledOnce()
-        expect(apiNew.patchOffer).toHaveBeenCalledWith({
+        expect(api.patchOffer).toHaveBeenCalledOnce()
+        expect(api.patchOffer).toHaveBeenCalledWith({
           path: { offer_id: 3 },
           body: expect.objectContaining({
             location: expect.objectContaining({
@@ -231,7 +231,7 @@ describe('<IndividualOfferLocationScreen />', () => {
         }
 
         beforeEach(async () => {
-          vi.spyOn(apiNew, 'patchOffer').mockResolvedValue(
+          vi.spyOn(api, 'patchOffer').mockResolvedValue(
             offlineOfferWithPendingBookings
           )
 
@@ -259,7 +259,7 @@ describe('<IndividualOfferLocationScreen />', () => {
               'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
             )
           ).toBeInTheDocument()
-          expect(apiNew.patchOffer).not.toHaveBeenCalled()
+          expect(api.patchOffer).not.toHaveBeenCalled()
         })
 
         // `shouldSendMail` checkbox is checked by default
@@ -269,7 +269,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           )
 
           await waitFor(() => {
-            expect(apiNew.patchOffer).toHaveBeenCalledWith({
+            expect(api.patchOffer).toHaveBeenCalledWith({
               path: { offer_id: offlineOfferWithPendingBookings.id },
               body: expect.objectContaining({ shouldSendMail: true }),
             })
@@ -290,7 +290,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           )
 
           await waitFor(() => {
-            expect(apiNew.patchOffer).toHaveBeenCalledWith({
+            expect(api.patchOffer).toHaveBeenCalledWith({
               path: { offer_id: offlineOfferWithPendingBookings.id },
               body: expect.objectContaining({ shouldSendMail: false }),
             })
@@ -311,7 +311,7 @@ describe('<IndividualOfferLocationScreen />', () => {
               'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
             )
           ).not.toBeInTheDocument()
-          expect(apiNew.patchOffer).not.toHaveBeenCalled()
+          expect(api.patchOffer).not.toHaveBeenCalled()
         })
       })
     })

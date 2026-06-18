@@ -4,7 +4,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import type {
   ActivityNotOpenToPublic,
   ActivityOpenToPublic,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'

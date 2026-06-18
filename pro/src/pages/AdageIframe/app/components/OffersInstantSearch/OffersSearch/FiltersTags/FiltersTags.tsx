@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { CollectiveLocationType } from '@/apiClient/v1/new'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'

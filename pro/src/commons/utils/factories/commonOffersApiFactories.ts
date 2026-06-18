@@ -2,7 +2,7 @@ import type {
   ListOffersVenueResponseModelV2,
   LocationResponseModel,
   LocationResponseModelV2,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 export const getLocationResponseModel = (
   addressResponse: Partial<LocationResponseModel> = {}

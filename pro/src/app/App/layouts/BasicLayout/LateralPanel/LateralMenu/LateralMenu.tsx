@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { useState } from 'react'
 import { Link } from 'react-router'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

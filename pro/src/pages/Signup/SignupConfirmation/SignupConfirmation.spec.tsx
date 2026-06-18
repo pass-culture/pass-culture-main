@@ -6,10 +6,6 @@ import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConf
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    listFeatures: vi.fn(),
-    getSirenInfo: vi.fn(),
-  },
-  apiNew: {
     getSirenInfo: vi.fn(),
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

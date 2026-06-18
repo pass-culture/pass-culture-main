@@ -16,7 +16,7 @@ function camelCaseFromOperationId(operation: {
 export default defineConfig({
   input: `http://${PCAPI_HOST}/adage-iframe/openapi.json`,
   output: {
-    path: 'src/apiClient/adage/new/',
+    path: 'src/apiClient/adage/',
     clean: true,
   },
   plugins: [
@@ -34,7 +34,7 @@ export default defineConfig({
     },
     {
       name: '@hey-api/client-fetch',
-      runtimeConfigPath: '../../clientConfigAdage',
+      runtimeConfigPath: '../clientConfigAdage',
       throwOnError: true,
     },
   ],

@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -24,7 +24,7 @@ vi.mock('@firebase/remote-config', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOfferTemplates: vi.fn(),
   },
 }))
@@ -70,7 +70,7 @@ const renderOfferTypes = (venueOverrides?: Partial<GetVenueResponseModel>) => {
 
 describe('OfferType', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue([])
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -163,7 +163,7 @@ describe('OfferType', () => {
 
   it('should select duplicate template offer', async () => {
     const offersRecap = [collectiveOfferTemplateFactory()]
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
       offersRecap
     )
 
@@ -192,7 +192,7 @@ describe('OfferType', () => {
     )
 
     await waitFor(() => {
-      expect(apiNew.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
+      expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
         query: {
           format: null,
           locationType: null,

@@ -1,7 +1,7 @@
 import { format, sub } from 'date-fns'
 import { mutate } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
@@ -58,7 +58,7 @@ export const onSubmit = async (
     try {
       const data = await mutate(
         stockQueryKeys,
-        apiNew.bulkCreateEventStocks({
+        api.bulkCreateEventStocks({
           body: {
             offerId,
             stocks: serializedStocksToAdd,

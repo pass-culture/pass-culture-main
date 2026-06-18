@@ -1,8 +1,8 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1/new'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   type SubcategoryResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 import type { IndividualOfferPracticalInfosFormValues } from './types'
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as serializeApiCollectiveFiltersModule from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import * as downloadFileModule from '@/commons/utils/downloadFile'
 
@@ -53,11 +53,11 @@ describe('downloadBookableOffersFile', () => {
   describe('CSV', () => {
     it('should call getCollectiveOffersCsv and download the file with correct name', async () => {
       const csvContent = 'col1,col2\nval1,val2'
-      vi.spyOn(apiNew, 'getCollectiveOffersCsv').mockResolvedValue(csvContent)
+      vi.spyOn(api, 'getCollectiveOffersCsv').mockResolvedValue(csvContent)
 
       await downloadBookableOffersFile(baseFilters, 'CSV')
 
-      expect(apiNew.getCollectiveOffersCsv).toHaveBeenCalledWith({
+      expect(api.getCollectiveOffersCsv).toHaveBeenCalledWith({
         query: serializedFilters,
       })
 
@@ -74,11 +74,11 @@ describe('downloadBookableOffersFile', () => {
         type: 'application/vnd.ms-excel',
       })
 
-      vi.spyOn(apiNew, 'getCollectiveOffersExcel').mockResolvedValue(excelBlob)
+      vi.spyOn(api, 'getCollectiveOffersExcel').mockResolvedValue(excelBlob)
 
       await downloadBookableOffersFile(baseFilters, 'XLS')
 
-      expect(apiNew.getCollectiveOffersExcel).toHaveBeenCalledWith({
+      expect(api.getCollectiveOffersExcel).toHaveBeenCalledWith({
         query: serializedFilters,
       })
 

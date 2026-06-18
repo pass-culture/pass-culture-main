@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
@@ -14,7 +14,7 @@ import { ToggleVenueProviderStatusButton } from '../ToggleVenueProviderStatusBut
 const snackBarError = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     updateVenueProvider: vi.fn(),
   },
 }))
@@ -94,10 +94,8 @@ describe('ToggleVenueProviderStatusButton', () => {
   })
 
   describe('updateVenueProviderStatus - success case', () => {
-    it('should call apiNew.updateVenueProvider with inverted isActive status, mutate SWR cache and close modal when active', async () => {
-      vi.spyOn(apiNew, 'updateVenueProvider').mockResolvedValue(
-        mockVenueProvider
-      )
+    it('should call api.updateVenueProvider with inverted isActive status, mutate SWR cache and close modal when active', async () => {
+      vi.spyOn(api, 'updateVenueProvider').mockResolvedValue(mockVenueProvider)
 
       renderToggleVenueProviderStatusButton()
 
@@ -112,11 +110,11 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(apiNew.updateVenueProvider).toHaveBeenCalledTimes(1)
+        expect(api.updateVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       // Verify that the payload is correct
-      expect(apiNew.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith({
         path: { venue_provider_id: mockVenueProvider.id },
         body: {
           quantity: mockVenueProvider.quantity,
@@ -145,12 +143,12 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
     })
 
-    it('should call apiNew.updateVenueProvider with inverted isActive status, mutate SWR cache and close modal when inactive', async () => {
+    it('should call api.updateVenueProvider with inverted isActive status, mutate SWR cache and close modal when inactive', async () => {
       const inactiveVenueProvider = {
         ...mockVenueProvider,
         isActive: false,
       }
-      vi.spyOn(apiNew, 'updateVenueProvider').mockResolvedValue(
+      vi.spyOn(api, 'updateVenueProvider').mockResolvedValue(
         inactiveVenueProvider
       )
 
@@ -167,11 +165,11 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(apiNew.updateVenueProvider).toHaveBeenCalledTimes(1)
+        expect(api.updateVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       // Verify that the payload is correct (isActive is inverted)
-      expect(apiNew.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith({
         path: { venue_provider_id: mockVenueProvider.id },
         body: {
           quantity: mockVenueProvider.quantity,
@@ -202,9 +200,9 @@ describe('ToggleVenueProviderStatusButton', () => {
   })
 
   describe('updateVenueProviderStatus - error case', () => {
-    it('should show error message, not mutate SWR cache and close modal when apiNew.updateVenueProvider fails', async () => {
+    it('should show error message, not mutate SWR cache and close modal when api.updateVenueProvider fails', async () => {
       const error = new Error('API Error')
-      vi.spyOn(apiNew, 'updateVenueProvider').mockRejectedValue(error)
+      vi.spyOn(api, 'updateVenueProvider').mockRejectedValue(error)
 
       renderToggleVenueProviderStatusButton()
 
@@ -219,7 +217,7 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
-        expect(apiNew.updateVenueProvider).toHaveBeenCalledTimes(1)
+        expect(api.updateVenueProvider).toHaveBeenCalledTimes(1)
       })
 
       // Verify that the error is displayed

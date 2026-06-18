@@ -25,7 +25,7 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type GetVenueResponseModel,
   StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 

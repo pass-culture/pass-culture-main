@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1/new'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   type RenderWithProvidersOptions,

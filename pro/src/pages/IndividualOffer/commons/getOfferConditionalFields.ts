@@ -1,4 +1,4 @@
-import type { SubcategoryResponseModel } from '@/apiClient/v1/new'
+import type { SubcategoryResponseModel } from '@/apiClient/v1'
 
 export const getOfferConditionalFields = ({
   offerSubcategory: offerSubCategory,

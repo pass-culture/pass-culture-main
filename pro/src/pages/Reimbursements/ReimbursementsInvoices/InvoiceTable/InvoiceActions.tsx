@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { InvoiceResponseV2Model } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -41,7 +41,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
         buttonType: 'unique',
       })
       downloadFile(
-        (await apiNew.getReimbursementsCsvV2({
+        (await api.getReimbursementsCsvV2({
           query: {
             invoicesReferences: [reference],
           },

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
@@ -30,7 +30,7 @@ export const DeleteVenueProviderButton = ({
   const tryToDeleteVenueProvider = async () => {
     setIsLoading(true)
     try {
-      await apiNew.deleteVenueProvider({
+      await api.deleteVenueProvider({
         path: { venue_provider_id: venueProviderId },
       })
 

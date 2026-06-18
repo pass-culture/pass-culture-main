@@ -1,7 +1,7 @@
 import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 
 type OfferEnhancementCardsVisibility = {
   shouldDisplayRecommendationCard: boolean

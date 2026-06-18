@@ -2,12 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
-import {
-  DisplayableActivity,
-  type GetVenueResponseModel,
-} from '@/apiClient/v1/new'
+import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -186,7 +183,7 @@ describe('Header', () => {
 
   it('should call the delete endpoint and notify success when deleting the image', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueBanner').mockResolvedValueOnce()
+    vi.spyOn(api, 'deleteVenueBanner').mockResolvedValueOnce()
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
     )
@@ -207,7 +204,7 @@ describe('Header', () => {
     await user.click(screen.getByRole('button', { name: /Modifier/ }))
     await user.click(await screen.findByRole('button', { name: /Supprimer/ }))
 
-    expect(apiNew.deleteVenueBanner).toHaveBeenCalledWith({
+    expect(api.deleteVenueBanner).toHaveBeenCalledWith({
       path: { venue_id: 1 },
     })
     await waitFor(() => {
@@ -219,9 +216,7 @@ describe('Header', () => {
 
   it('should notify an error when image deletion fails', async () => {
     const user = userEvent.setup()
-    vi.spyOn(apiNew, 'deleteVenueBanner').mockRejectedValueOnce(
-      'Deletion error'
-    )
+    vi.spyOn(api, 'deleteVenueBanner').mockRejectedValueOnce('Deletion error')
     vi.mocked(apiHelpers.getFileFromURL).mockResolvedValueOnce(
       new File([''], 'mocked_file.jpg', { type: 'image/jpeg' })
     )

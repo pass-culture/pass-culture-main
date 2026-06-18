@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -41,7 +41,7 @@ export const UserIdentityForm = ({
 
   const onSubmit = async (values: UserIdentityFormValues) => {
     try {
-      const response = await apiNew.patchUserIdentity({ body: values })
+      const response = await api.patchUserIdentity({ body: values })
       dispatch(
         updateUser({
           ...currentUser,

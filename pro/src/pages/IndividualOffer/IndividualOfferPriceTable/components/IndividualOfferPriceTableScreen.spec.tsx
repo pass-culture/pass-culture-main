@@ -4,7 +4,7 @@ import { axe } from 'vitest-axe'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,

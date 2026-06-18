@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -34,7 +34,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     listEducationalOfferers: vi.fn(),
@@ -77,9 +77,9 @@ describe('CollectiveOfferSummaryCreation', () => {
   })
 
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getCollectiveOffer')
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplate')
-    vi.spyOn(apiNew, 'listEducationalOfferers').mockResolvedValue({
+    vi.spyOn(api, 'getCollectiveOffer')
+    vi.spyOn(api, 'getCollectiveOfferTemplate')
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
   })

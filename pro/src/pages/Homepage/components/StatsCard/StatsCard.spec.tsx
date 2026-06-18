@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { StatsCard } from './StatsCard'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenueOffersStats: vi.fn(),
   },
 }))
@@ -28,7 +28,7 @@ const renderStatsCard = (hasOffers = true) =>
 
 describe('StatsCard', () => {
   it('should not render the card when there is less than 2 days of data', async () => {
-    vi.spyOn(apiNew, 'getVenueOffersStats').mockResolvedValue({
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
       venueId: 1,
     })
@@ -36,14 +36,14 @@ describe('StatsCard', () => {
     const { container } = renderStatsCard()
 
     await waitFor(() => {
-      expect(apiNew.getVenueOffersStats).toHaveBeenCalled()
+      expect(api.getVenueOffersStats).toHaveBeenCalled()
     })
 
     expect(container.innerHTML).toBe('')
   })
 
   it('should not render the card when there is only 1 day of data', async () => {
-    vi.spyOn(apiNew, 'getVenueOffersStats').mockResolvedValue({
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: {
         dailyViews: [{ day: '2020-10-10', views: 10 }],
         topOffers: [],
@@ -55,14 +55,14 @@ describe('StatsCard', () => {
     const { container } = renderStatsCard()
 
     await waitFor(() => {
-      expect(apiNew.getVenueOffersStats).toHaveBeenCalled()
+      expect(api.getVenueOffersStats).toHaveBeenCalled()
     })
 
     expect(container.innerHTML).toBe('')
   })
 
   it('should render the card with stats when there are at least 2 days of data', async () => {
-    vi.spyOn(apiNew, 'getVenueOffersStats').mockResolvedValue({
+    vi.spyOn(api, 'getVenueOffersStats').mockResolvedValue({
       jsonData: {
         dailyViews: [
           { day: '2020-10-10', views: 10 },

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1/new'
+import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,

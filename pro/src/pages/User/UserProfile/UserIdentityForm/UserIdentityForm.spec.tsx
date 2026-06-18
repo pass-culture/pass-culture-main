@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   type ApiRequestOptions,
@@ -38,7 +38,7 @@ describe('components:UserIdentityForm', () => {
         lastName: 'lastName',
       },
     }
-    vi.spyOn(apiNew, 'patchUserIdentity').mockResolvedValue({
+    vi.spyOn(api, 'patchUserIdentity').mockResolvedValue({
       firstName: 'Jean',
       lastName: 'Dupont',
     })
@@ -56,11 +56,11 @@ describe('components:UserIdentityForm', () => {
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
 
-    expect(apiNew.patchUserIdentity).toHaveBeenCalledTimes(1)
+    expect(api.patchUserIdentity).toHaveBeenCalledTimes(1)
   })
 
   it('should render api error when submitting', async () => {
-    vi.spyOn(apiNew, 'patchUserIdentity').mockRejectedValueOnce(
+    vi.spyOn(api, 'patchUserIdentity').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {

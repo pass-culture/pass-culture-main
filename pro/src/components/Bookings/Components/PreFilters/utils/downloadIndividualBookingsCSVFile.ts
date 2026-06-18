@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { getBookingsCsvData } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { getBookingsCsvData } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'
@@ -31,7 +31,7 @@ export const downloadIndividualBookingsCSVFile = async (
         : null,
   }
 
-  const bookingsCsvText = (await apiNew.getBookingsCsv({ query })) as string
+  const bookingsCsvText = (await api.getBookingsCsv({ query })) as string
   const bookingsCsvBlob = new Blob([bookingsCsvText], {
     type: 'text/csv;charset=utf-8;',
   })

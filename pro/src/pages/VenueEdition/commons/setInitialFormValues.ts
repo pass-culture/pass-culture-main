@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 

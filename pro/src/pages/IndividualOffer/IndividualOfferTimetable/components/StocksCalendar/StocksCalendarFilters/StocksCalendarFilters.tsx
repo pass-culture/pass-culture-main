@@ -1,7 +1,7 @@
 import {
   type PriceCategoryResponseModel,
   StocksOrderedBy,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { Button } from '@/design-system/Button/Button'

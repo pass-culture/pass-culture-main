@@ -1,4 +1,4 @@
-import { ActivityOpenToPublic } from '@/apiClient/v1/new'
+import { ActivityOpenToPublic } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 

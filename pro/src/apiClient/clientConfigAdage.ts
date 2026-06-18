@@ -1,6 +1,6 @@
 import { API_URL, URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 
-import type { CreateClientConfig } from './adage/new/client.gen'
+import type { CreateClientConfig } from './adage/client.gen'
 
 const params = new URLSearchParams(window.location.search)
 const token = params.get('token')

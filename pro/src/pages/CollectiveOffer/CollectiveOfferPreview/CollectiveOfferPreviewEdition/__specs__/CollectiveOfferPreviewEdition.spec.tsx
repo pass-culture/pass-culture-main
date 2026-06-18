@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
@@ -22,7 +22,7 @@ vi.mock('react-router', async () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenue: vi.fn(),
   },
 }))
@@ -51,7 +51,7 @@ const defaultProps = {
 
 describe('CollectiveOfferPreviewCreation', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getVenue').mockResolvedValue(defaultGetVenue)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
   })
 
   it('should render collective offer preview edition', async () => {

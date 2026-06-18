@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
@@ -18,7 +18,7 @@ export const EmailChangeValidation = () => {
       const { token } = parse(location.search)
 
       try {
-        await apiNew.patchValidateEmail({ body: { token: token } })
+        await api.patchValidateEmail({ body: { token: token } })
         setIsSuccess(true)
         await logout(false)
       } catch {

@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 
-import type { GetOfferStockResponseModel } from '@/apiClient/v1/new'
+import type { GetOfferStockResponseModel } from '@/apiClient/v1'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   getLocalDepartementDateTimeFromUtc,

@@ -6,8 +6,8 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueAddressResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueAddressResponseModel } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import type { DeepPartial } from '@/commons/custom_types/utils'
@@ -60,7 +60,7 @@ const venueAddress: GetVenueAddressResponseModel[] = [
 ]
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getBookingsCsv: vi.fn(),
     getBookingsPro: vi.fn(),
     getProfile: vi.fn(),
@@ -122,13 +122,13 @@ describe('components | BookingsRecap | Pro user', () => {
       pages: 0,
       total: 0,
     }
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
-    vi.spyOn(apiNew, 'getProfile').mockResolvedValue(user)
-    vi.spyOn(apiNew, 'getUserHasBookings').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
+    vi.spyOn(api, 'getProfile').mockResolvedValue(user)
+    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
       hasBookings: true,
     })
-    vi.spyOn(apiNew, 'getBookingsCsv').mockResolvedValue({})
-    vi.spyOn(apiNew, 'getVenueAddresses').mockResolvedValue(venueAddress)
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
+    vi.spyOn(api, 'getVenueAddresses').mockResolvedValue(venueAddress)
   })
 
   it('should show a pre-filter section', async () => {
@@ -151,7 +151,7 @@ describe('components | BookingsRecap | Pro user', () => {
     renderBookingsRecap()
     await waitForCompleteLoading()
 
-    expect(apiNew.getBookingsPro).not.toHaveBeenCalled()
+    expect(api.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Rechercher »'
     )
@@ -161,7 +161,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Rechercher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -190,7 +190,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -210,7 +210,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -239,7 +239,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should not allow user to reset prefilters when none were applied', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -259,7 +259,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset prefilters when some where applied', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -300,7 +300,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should ask user to select a pre-filter when user reset them', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -348,7 +348,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookings2],
     }
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
@@ -369,7 +369,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(screen.getByText(bookings1.stock.offerName)).toBeInTheDocument()
 
-    expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(2)
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
     expect(spyGetBookingsPro).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -393,7 +393,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -428,7 +428,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set booking period to null when user select event date', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -461,7 +461,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingRecap = bookingRecapFactory()
 
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -489,7 +489,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -536,7 +536,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [otherVenueBooking],
     }
-    vi.spyOn(apiNew, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
 
@@ -568,7 +568,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should show notification with information message when there are more than 10 pages', async () => {
     const bookingsRecap = { pages: 11, bookingsRecap: [], total: 11 }
-    vi.spyOn(apiNew, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -595,12 +595,12 @@ describe('components | BookingsRecap | Pro user', () => {
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
     expect(informationalMessage).toBeInTheDocument()
-    expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(10)
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(10)
   })
 
   it('should not show notification with information message when there are 10 pages or less', async () => {
     const bookingsRecap = { pages: 10, bookingsRecap: [], total: 10 }
-    vi.spyOn(apiNew, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -622,7 +622,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByRole('button', { name: 'Rechercher les réservations' })
     )
 
-    await waitFor(() => expect(apiNew.getBookingsPro).toHaveBeenCalledTimes(10))
+    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(10))
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
@@ -684,7 +684,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should display no booking screen when user does not have any booking yet', async () => {
-    vi.spyOn(apiNew, 'getUserHasBookings').mockResolvedValue({
+    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
       hasBookings: false,
     })
 
@@ -717,7 +717,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should render downloads moved banner and filters after search', async () => {
     const bookingRecap = bookingRecapFactory()
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -742,7 +742,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should fetch bookings using venueId when clicking "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
-      .spyOn(apiNew, 'getBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
         pages: 1,
@@ -767,7 +767,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should reset filters to venue-scoped defaults', async () => {
-    vi.spyOn(apiNew, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,

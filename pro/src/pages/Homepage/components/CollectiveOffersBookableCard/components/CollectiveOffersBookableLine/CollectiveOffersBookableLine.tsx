@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
 import { formatDateTimeParts } from '@/commons/utils/date'

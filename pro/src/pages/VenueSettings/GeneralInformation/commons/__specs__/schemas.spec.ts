@@ -1,4 +1,4 @@
-import type { ActivityOpenToPublic } from '@/apiClient/v1/new'
+import type { ActivityOpenToPublic } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { yup } from '@/commons/utils/yup'
 

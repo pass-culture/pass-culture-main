@@ -4,7 +4,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type GetCollectiveOfferResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { FORMAT_DD_MMMM_YYYY } from '@/commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'

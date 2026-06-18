@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -17,7 +17,7 @@ const renderContactButton = (
   return renderWithProviders(<ContactButton {...props} />, options)
 }
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logContactModalButtonClick: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),
   },
@@ -42,7 +42,7 @@ describe('ContactButton', () => {
     const closeButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(closeButton)
 
-    expect(apiAdageNew.logRequestFormPopinDismiss).toHaveBeenCalledTimes(1)
+    expect(apiAdage.logRequestFormPopinDismiss).toHaveBeenCalledTimes(1)
 
     expect(
       screen.queryByText('Contacter le partenaire culturel')

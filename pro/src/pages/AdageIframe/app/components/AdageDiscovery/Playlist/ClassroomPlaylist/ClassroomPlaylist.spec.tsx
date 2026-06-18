@@ -1,8 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
@@ -12,7 +12,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { ClassroomPlaylist } from './ClassroomPlaylist'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     getClassroomPlaylist: vi.fn(),
   },
@@ -44,8 +44,8 @@ describe('AdageDiscover classRoomPlaylist', () => {
   const snackBarError = vi.fn()
 
   beforeEach(async () => {
-    vi.spyOn(apiAdageNew, 'logConsultPlaylistElement')
-    vi.spyOn(apiAdageNew, 'getClassroomPlaylist').mockResolvedValue({
+    vi.spyOn(apiAdage, 'logConsultPlaylistElement')
+    vi.spyOn(apiAdage, 'getClassroomPlaylist').mockResolvedValue({
       collectiveOffers: [defaultCollectiveOffer],
     })
 

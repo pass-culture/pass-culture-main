@@ -6,7 +6,7 @@ import {
   AdageFrontRoles,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-} from '@/apiClient/adage/new'
+} from '@/apiClient/adage'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import {

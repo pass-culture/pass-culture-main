@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
@@ -27,9 +27,7 @@ vi.mock('@/app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 
 function TestBrokenCallComponent() {
-  useSWR([GET_OFFER_QUERY_KEY], () =>
-    apiNew.getOffer({ path: { offer_id: 17 } })
-  )
+  useSWR([GET_OFFER_QUERY_KEY], () => api.getOffer({ path: { offer_id: 17 } }))
 
   return 'broken page'
 }
@@ -68,7 +66,7 @@ const user = sharedCurrentUserFactory({ hasUserOfferer: true })
 describe('App', () => {
   beforeEach(() => {
     vi.spyOn(window, 'scrollTo')
-    vi.spyOn(apiNew, 'listFeatures').mockResolvedValue([])
+    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
@@ -100,7 +98,7 @@ describe('App', () => {
   })
 
   it('should redirect to page 404 when api has not found', async () => {
-    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
       status: 404,
       name: 'ApiError',
       message: 'oh no',
@@ -118,7 +116,7 @@ describe('App', () => {
   })
 
   it('should not redirect to page 404 when api has not found on adage-iframe', async () => {
-    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
       status: 404,
       name: 'ApiError',
       message: 'oh no',
@@ -141,7 +139,7 @@ describe('App', () => {
       error: snackBarError,
     }))
 
-    vi.spyOn(apiNew, 'getOffer').mockRejectedValueOnce({
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
       status: 500,
       name: 'ApiError',
       message: 'Internal server error',

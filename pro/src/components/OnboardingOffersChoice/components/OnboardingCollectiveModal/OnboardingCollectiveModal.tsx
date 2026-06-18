@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { getUserDefaultPath } from '@/app/AppRouter/utils/getUserDefaultPath'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -42,7 +42,7 @@ export const OnboardingCollectiveModal = ({
       setErrorMessage(null)
       setIsLoading(true)
 
-      await apiNew.synchronizeOffererOnboarding({
+      await api.synchronizeOffererOnboarding({
         path: {
           offerer_id: selectedPartnerVenue.managingOfferer.id,
         },

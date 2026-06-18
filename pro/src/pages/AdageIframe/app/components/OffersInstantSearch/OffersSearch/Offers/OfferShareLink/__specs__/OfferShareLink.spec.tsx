@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdageNew } from '@/apiClient/api'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -12,7 +12,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { OfferShareLink, type OfferShareLinkProps } from '../OfferShareLink'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logTrackingCtaShare: vi.fn(),
   },
 }))
@@ -50,7 +50,7 @@ describe('OfferShareLink', () => {
   })
 
   it('should log a tracking event when clicking the share button', async () => {
-    const logSpy = vi.spyOn(apiAdageNew, 'logTrackingCtaShare')
+    const logSpy = vi.spyOn(apiAdage, 'logTrackingCtaShare')
     renderOfferShareLink(defaultProps)
 
     const shareLink = screen.getByRole('link', {

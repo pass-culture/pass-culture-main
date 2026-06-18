@@ -2,7 +2,7 @@ import cn from 'classnames'
 import type React from 'react'
 import { type ChangeEvent, useId, useRef, useState } from 'react'
 
-import type { BookingRecapResponseModel } from '@/apiClient/v1/new'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'

@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
@@ -71,7 +71,7 @@ export const IndividualOfferLayout = ({
       return
     }
     try {
-      await apiNew.deleteDraftOffers({ body: { ids: [offer.id] } })
+      await api.deleteDraftOffers({ body: { ids: [offer.id] } })
     } catch {
       snackBar.error(
         'Une erreur s’est produite lors de la suppression de l’offre'

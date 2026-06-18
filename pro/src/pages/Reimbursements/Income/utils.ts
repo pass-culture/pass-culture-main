@@ -1,4 +1,4 @@
-import type { CollectiveRevenue, TotalRevenue } from '@/apiClient/v1/new'
+import type { CollectiveRevenue, TotalRevenue } from '@/apiClient/v1'
 
 export const isCollectiveAndIndividualRevenue = (
   revenue: Partial<TotalRevenue> | undefined

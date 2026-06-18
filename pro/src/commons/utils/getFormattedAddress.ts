@@ -1,4 +1,4 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 
 export const getFormattedAddress = (
   address: GetVenueResponseModel['location']

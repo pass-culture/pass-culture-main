@@ -5,8 +5,8 @@ import { Configure } from 'react-instantsearch'
 import {
   type AuthenticatedResponse,
   CollectiveLocationType,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -36,8 +36,8 @@ type InstantSearchHookResultMock = {
   }[]
 }
 
-vi.mock('@/apiClient/new/api', () => ({
-  apiAdageNew: {
+vi.mock('@/apiClient/api', () => ({
+  apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
     logOfferListViewSwitch: vi.fn(),
@@ -87,11 +87,11 @@ vi.mock('react-instantsearch', async () => {
 
 describe('OffersSuggestions', () => {
   beforeEach(() => {
-    vi.spyOn(apiAdageNew, 'getCollectiveOfferTemplate').mockResolvedValue(
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValue(
       defaultCollectiveTemplateOffer
     )
 
-    vi.spyOn(apiAdageNew, 'getCollectiveOffer').mockResolvedValue(
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValue(
       defaultCollectiveOffer
     )
   })

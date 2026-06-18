@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
-import { CollectiveLocationType } from '@/apiClient/v1/new'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

@@ -3,9 +3,9 @@ import type React from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type { ApiError } from '@/apiClient/compat'
-import type { GetBookingResponse } from '@/apiClient/v1/new'
+import type { GetBookingResponse } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -63,7 +63,7 @@ export const Desk = (): JSX.Element => {
 
     const fetchBooking = async () => {
       try {
-        const response = await apiNew.getBookingByToken({
+        const response = await api.getBookingByToken({
           path: { token: token },
         })
 
@@ -97,7 +97,7 @@ export const Desk = (): JSX.Element => {
 
   const handleSubmitValidate = async (formValues: FormValues) => {
     try {
-      await apiNew.patchBookingUseByToken({ path: { token: formValues.token } })
+      await api.patchBookingUseByToken({ path: { token: formValues.token } })
       snackBar.success('Contremarque validée')
 
       setBooking(undefined)
@@ -109,7 +109,7 @@ export const Desk = (): JSX.Element => {
 
   const handleSubmitInvalidate = async (token: string) => {
     try {
-      await apiNew.patchBookingKeepByToken({
+      await api.patchBookingKeepByToken({
         path: { token: token },
       })
       snackBar.success('Contremarque invalidée')

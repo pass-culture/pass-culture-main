@@ -1,4 +1,4 @@
-import type { ListOffersVenueResponseModel } from '@/apiClient/v1/new'
+import type { ListOffersVenueResponseModel } from '@/apiClient/v1'
 import {
   type CollectiveOffer,
   isCollectiveOfferBookable,

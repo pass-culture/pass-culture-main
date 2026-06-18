@@ -1,4 +1,4 @@
-import { EacFormat } from '@/apiClient/adage/new'
+import { EacFormat } from '@/apiClient/adage'
 
 import type { SearchFormValues } from '../OffersInstantSearch'
 import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'

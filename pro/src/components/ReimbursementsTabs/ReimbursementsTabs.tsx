@@ -1,4 +1,4 @@
-import type { GetOffererResponseModel } from '@/apiClient/v1/new'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

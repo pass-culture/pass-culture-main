@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
@@ -18,7 +18,7 @@ import { Offerers } from '../Offerers'
 
 const mockLogEvent = vi.fn()
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getVenuesOfOffererFromSiret: vi.fn(),
   },
 }))
@@ -48,7 +48,7 @@ describe('Offerers trackers', () => {
       setInitialAddress: noop,
     }
 
-    vi.spyOn(apiNew, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererName: 'Offerer Name',
       offererSiren: '123456789',
       venues: [

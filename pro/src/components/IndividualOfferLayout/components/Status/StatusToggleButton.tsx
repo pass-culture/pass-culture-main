@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -51,7 +51,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
     }
 
     try {
-      await apiNew.patchOffersActiveStatus({
+      await api.patchOffersActiveStatus({
         body: { ids: [offer.id], isActive: !offer.isActive },
       })
       await mutate([GET_OFFER_QUERY_KEY, offer.id])

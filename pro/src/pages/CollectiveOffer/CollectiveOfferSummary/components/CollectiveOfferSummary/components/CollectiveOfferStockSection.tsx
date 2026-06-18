@@ -1,4 +1,4 @@
-import type { GetCollectiveOfferCollectiveStockResponseModel } from '@/apiClient/v1/new'
+import type { GetCollectiveOfferCollectiveStockResponseModel } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { TOTAL_PRICE_LABEL } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
 import { Divider } from '@/ui-kit/Divider/Divider'

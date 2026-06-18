@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1/new'
+import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
 import { getInitialPartnerVenueId } from '@/commons/store/user/utils/getInitialPartnerVenueId'
 import { makeVenueListItemLiteResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'

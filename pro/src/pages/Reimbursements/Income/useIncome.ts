@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
-import type { StatisticsModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { StatisticsModel } from '@/apiClient/v1'
 import { GET_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 export const useIncome = (selectedVenues: string[]) => {
@@ -19,7 +19,7 @@ export const useIncome = (selectedVenues: string[]) => {
     selectedVenuesAsNumbers.length > 0
       ? [GET_STATISTICS_QUERY_KEY, selectedVenuesAsNumbers]
       : null,
-    ([, venueIds]) => apiNew.getStatistics({ query: { venueIds } }),
+    ([, venueIds]) => api.getStatistics({ query: { venueIds } }),
     { revalidateOnMount: true }
   )
 

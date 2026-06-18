@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import {
   GET_HAS_INVOICE_QUERY_KEY,
   GET_INVOICES_QUERY_KEY,
@@ -54,7 +54,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const hasInvoiceQuery = useSWR(
     offererId ? [GET_HAS_INVOICE_QUERY_KEY, offererId] : null,
-    ([, offererId]) => apiNew.hasInvoice({ query: { offererId: offererId } }),
+    ([, offererId]) => api.hasInvoice({ query: { offererId: offererId } }),
     { fallbackData: { hasInvoice: false } }
   )
 
@@ -66,7 +66,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
       : null,
     async () => {
       const { periodStart, periodEnd, reimbursementPoint } = searchFilters
-      const invoices = await apiNew.getInvoicesV2({
+      const invoices = await api.getInvoicesV2({
         query: {
           periodBeginningDate: periodStart,
           periodEndingDate: periodEnd,
@@ -89,7 +89,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
       ? [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId]
       : null,
     ([, selectedOffererId]) =>
-      apiNew.getOffererBankAccountsAndAttachedVenues({
+      api.getOffererBankAccountsAndAttachedVenues({
         path: {
           offerer_id: selectedOffererId,
         },

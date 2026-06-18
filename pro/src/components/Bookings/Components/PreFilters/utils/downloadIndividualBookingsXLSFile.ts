@@ -1,5 +1,5 @@
-import { apiNew } from '@/apiClient/api'
-import type { getBookingsExcelData } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { getBookingsExcelData } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'
@@ -31,7 +31,7 @@ export const downloadIndividualBookingsXLSFile = async (
         : null,
   }
 
-  const bookingsXLSText = (await apiNew.getBookingsExcel({ query })) as Blob
+  const bookingsXLSText = (await api.getBookingsExcel({ query })) as Blob
 
   const date = new Date().toISOString()
   downloadFile(bookingsXLSText, `reservations_pass_culture-${date}.xlsx`)

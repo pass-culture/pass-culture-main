@@ -5,7 +5,7 @@ import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'

@@ -1,8 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -10,7 +10,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { VenuePlaylist } from './VenuePlaylist'
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdageNew: {
+  apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     getLocalOfferersPlaylist: vi.fn(),
   },
@@ -41,8 +41,8 @@ describe('VenuePlaylist', () => {
   const snackBarError = vi.fn()
 
   beforeEach(async () => {
-    vi.spyOn(apiAdageNew, 'logConsultPlaylistElement')
-    vi.spyOn(apiAdageNew, 'getLocalOfferersPlaylist').mockResolvedValue({
+    vi.spyOn(apiAdage, 'logConsultPlaylistElement')
+    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValue({
       venues: [mockLocalOfferersPlaylistOffer],
     })
 
@@ -101,7 +101,7 @@ describe('VenuePlaylist', () => {
     distance,
     title,
   }) => {
-    vi.spyOn(apiAdageNew, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
+    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
       venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
     })
     renderVenuePlaylist()

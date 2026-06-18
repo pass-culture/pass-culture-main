@@ -1,10 +1,10 @@
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { saveVenueSettings } from '../saveVenueSettings'
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     editVenue: vi.fn(),
   },
 }))
@@ -69,7 +69,7 @@ describe('saveVenueSettings', () => {
   it('should patch venue settings', async () => {
     await saveVenueSettings(formValues, formContext, { venue })
 
-    expect(apiNew.editVenue).toHaveBeenCalledWith({
+    expect(api.editVenue).toHaveBeenCalledWith({
       path: { venue_id: venue.id },
       body: {
         activity: null,

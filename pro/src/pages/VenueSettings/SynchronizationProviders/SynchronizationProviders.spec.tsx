@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -28,7 +28,7 @@ vi.mock(
 )
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     listVenueProviders: vi.fn(),
   },
 }))
@@ -52,7 +52,7 @@ const renderSynchronizationProviders = (
 
 describe('SynchronizationProviders', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'listVenueProviders').mockResolvedValue({
+    vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
       venueProviders: [],
     })
   })
@@ -61,7 +61,7 @@ describe('SynchronizationProviders', () => {
     renderSynchronizationProviders({ id: 1 })
 
     await waitFor(() => {
-      expect(apiNew.listVenueProviders).toHaveBeenCalledWith({
+      expect(api.listVenueProviders).toHaveBeenCalledWith({
         path: { venue_id: 1 },
       })
     })
@@ -78,7 +78,7 @@ describe('SynchronizationProviders', () => {
     })
 
     it('should render SynchronizationConnexions with loaded providers', async () => {
-      vi.spyOn(apiNew, 'listVenueProviders').mockResolvedValue({
+      vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
         venueProviders: [defaultVenueProvider],
       })
 

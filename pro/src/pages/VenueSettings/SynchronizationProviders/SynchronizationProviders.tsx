@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -12,7 +12,7 @@ const SynchronizationsProviders = () => {
   const venueProvidersQuery = useSWR(
     [GET_VENUE_PROVIDERS_QUERY_KEY, venue.id],
     ([, venueIdParam]) =>
-      apiNew.listVenueProviders({ path: { venue_id: Number(venueIdParam) } })
+      api.listVenueProviders({ path: { venue_id: Number(venueIdParam) } })
   )
   const venueProviders = venueProvidersQuery.data?.venueProviders ?? []
   return (

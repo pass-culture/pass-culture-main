@@ -2,7 +2,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { Banner } from '@/design-system/Banner/Banner'
 
 import styles from './PreviewHeader.module.scss'

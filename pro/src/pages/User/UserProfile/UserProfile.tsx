@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { GET_USER_EMAIL_PENDING_VALIDATION } from '@/commons/config/swrQueryKeys'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
@@ -48,7 +48,7 @@ export const UserProfile = ({
 
   const { data: pendingEmailValidation } = useSWR(
     [GET_USER_EMAIL_PENDING_VALIDATION],
-    () => apiNew.getUserEmailPendingValidation()
+    () => api.getUserEmailPendingValidation()
   )
 
   return (

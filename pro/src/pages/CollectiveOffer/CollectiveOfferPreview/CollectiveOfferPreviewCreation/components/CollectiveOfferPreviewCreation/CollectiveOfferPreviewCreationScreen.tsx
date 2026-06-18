@@ -3,12 +3,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
@@ -57,7 +57,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const publishOffer = async () => {
     try {
       if (isCollectiveOfferTemplate(offer)) {
-        const newOffer = await apiNew.patchCollectiveOfferTemplatePublication({
+        const newOffer = await api.patchCollectiveOfferTemplatePublication({
           path: { offer_id: offer.id },
         })
 
@@ -89,7 +89,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
         return
       }
 
-      const newOffer = await apiNew.patchCollectiveOfferPublication({
+      const newOffer = await api.patchCollectiveOfferPublication({
         path: { offer_id: offer.id },
       })
 

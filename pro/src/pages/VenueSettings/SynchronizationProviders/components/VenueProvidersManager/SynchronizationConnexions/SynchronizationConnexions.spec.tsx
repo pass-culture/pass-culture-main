@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
-import type { VenueProviderResponse } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { VenueProviderResponse } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -19,7 +19,7 @@ vi.mock('../VenueProviderList/VenueProviderCard', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProvidersByVenue: vi.fn(),
   },
 }))
@@ -41,7 +41,7 @@ const renderSynchronizationConnexions = async (
 
 describe('SynchronizationConnexions', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getProvidersByVenue').mockResolvedValue([
+    vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
       {
         name: 'Ciné Office',
         id: 12,

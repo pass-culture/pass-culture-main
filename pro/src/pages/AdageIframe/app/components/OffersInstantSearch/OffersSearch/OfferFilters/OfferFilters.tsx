@@ -6,8 +6,8 @@ import {
   AdageFrontRoles,
   CollectiveLocationType,
   EacFormat,
-} from '@/apiClient/adage/new'
-import { apiAdageNew } from '@/apiClient/api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from '@/commons/config/swrQueryKeys'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
@@ -115,7 +115,7 @@ export const OfferFilters = ({
 
   const { data } = useSWR(
     [GET_COLLECTIVE_ACADEMIES],
-    () => apiAdageNew.getAcademies(),
+    () => apiAdage.getAcademies(),
     { fallbackData: [] }
   )
 

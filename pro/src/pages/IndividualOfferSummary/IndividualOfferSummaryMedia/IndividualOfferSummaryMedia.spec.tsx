@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -27,7 +27,7 @@ const renderIndividualOfferSummaryScreen = () => {
 
 const waitForRecommendationCardFetch = async () => {
   await waitFor(() => {
-    expect(apiNew.getOfferProAdvice).toHaveBeenCalled()
+    expect(api.getOfferProAdvice).toHaveBeenCalled()
   })
 }
 
@@ -38,7 +38,7 @@ const LABELS = {
 
 describe('IndividualOfferSummaryMedia', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOfferProAdvice').mockResolvedValue({
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,
     })
   })

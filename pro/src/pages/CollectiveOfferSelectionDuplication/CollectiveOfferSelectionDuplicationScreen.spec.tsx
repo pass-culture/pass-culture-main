@@ -5,9 +5,9 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiNew } from '@/apiClient/api'
-import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1/new'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1/new'
+import { api } from '@/apiClient/api'
+import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -27,7 +27,7 @@ function renderCollectiveOfferSelectionDuplication() {
 }
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getCollectiveOfferTemplates: vi.fn(),
   },
 }))
@@ -52,7 +52,7 @@ describe('CollectiveOfferConfirmation', () => {
       success: vi.fn(),
       error: snackBarError,
     }))
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue(offers)
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offers)
   })
 
   it('should render selection duplication page', async () => {
@@ -69,7 +69,7 @@ describe('CollectiveOfferConfirmation', () => {
       screen.getByText('Les dernières offres vitrines créées')
     ).toBeInTheDocument()
 
-    expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
+    expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
 
     expect(await screen.findByText('Offre vitrine 2')).toBeInTheDocument()
   })
@@ -87,7 +87,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
-    expect(apiNew.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
+    expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith({
       query: {
         name: 'Le nom de l’offre 3',
         offererId: 1,
@@ -117,7 +117,7 @@ describe('CollectiveOfferConfirmation', () => {
       ).toBeInTheDocument()
     )
 
-    expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
+    expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
 
     const inputOffer = await waitFor(() =>
       screen.getByRole('button', { name: offers[0].name })
@@ -128,7 +128,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display message when no offer', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockResolvedValue([])
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
 
     renderCollectiveOfferSelectionDuplication()
 
@@ -138,7 +138,7 @@ describe('CollectiveOfferConfirmation', () => {
       ).toBeInTheDocument()
     )
 
-    expect(apiNew.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
+    expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
 
     const searchIcon = screen.getByRole('img', {
       name: 'Illustration de recherche',
@@ -154,7 +154,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display an error message when there is an api error', async () => {
-    vi.spyOn(apiNew, 'getCollectiveOfferTemplates').mockRejectedValueOnce(
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockRejectedValueOnce(
       'Nous avons rencontré un problème lors de la récupération des données.'
     )
 

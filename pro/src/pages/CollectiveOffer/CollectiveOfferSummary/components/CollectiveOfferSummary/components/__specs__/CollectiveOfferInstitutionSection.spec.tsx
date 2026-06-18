@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import type {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   defaultEducationalInstitution,
   defaultEducationalRedactor,

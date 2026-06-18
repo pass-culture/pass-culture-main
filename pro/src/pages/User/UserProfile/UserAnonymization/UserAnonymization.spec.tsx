@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe } from 'vitest'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import * as logoutModule from '@/commons/store/user/dispatchers/logout'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -18,7 +18,7 @@ vi.mock('./hooks/useUserAnonymizationEligibility', () => ({
 }))
 
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getProAnonymizationEligibility: vi.fn(),
     anonymize: vi.fn(),
   },
@@ -46,7 +46,7 @@ describe('UserAnonymization', () => {
     useUserAnonymizationEligibility
   )
   beforeEach(() => {
-    vi.mocked(apiNew.anonymize).mockResolvedValue()
+    vi.mocked(api.anonymize).mockResolvedValue()
     useUserAnonymizationEligibilityMock.mockReturnValue({
       isLoading: false,
       isEligible: true,
@@ -180,7 +180,7 @@ describe('UserAnonymization', () => {
 
   describe('anonymization form', () => {
     it('should call anonymize and dispatch logout when form is submitted', async () => {
-      vi.mocked(apiNew.anonymize).mockResolvedValueOnce()
+      vi.mocked(api.anonymize).mockResolvedValueOnce()
       const logoutSpy = vi.spyOn(logoutModule, 'logout').mockReturnValue({
         type: 'user/logout/pending',
         payload: undefined,
@@ -204,13 +204,13 @@ describe('UserAnonymization', () => {
       await userEvent.click(submitButton!)
 
       await waitFor(() => {
-        expect(apiNew.anonymize).toHaveBeenCalledOnce()
+        expect(api.anonymize).toHaveBeenCalledOnce()
         expect(logoutSpy).toHaveBeenCalledOnce()
       })
     })
 
     it('should display an error notification when anonymization fails', async () => {
-      vi.mocked(apiNew.anonymize).mockRejectedValueOnce(
+      vi.mocked(api.anonymize).mockRejectedValueOnce(
         new Error('Anonymization failed')
       )
 
@@ -324,7 +324,7 @@ describe('UserAnonymization', () => {
       await userEvent.click(submitButton!)
 
       await waitFor(() => {
-        expect(apiNew.anonymize).toHaveBeenCalledTimes(0)
+        expect(api.anonymize).toHaveBeenCalledTimes(0)
       })
     })
   })

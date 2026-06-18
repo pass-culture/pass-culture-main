@@ -5,7 +5,7 @@ import {
   type GetEducationalOffererResponseModel,
   type GetVenueResponseModel,
   type StudentLevels,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   formatShortDateForInput,
   formatTimeForInput,

@@ -1,7 +1,7 @@
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { API_URL, URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 
-import type { CreateClientConfig } from './v1/new/client.gen'
+import type { CreateClientConfig } from './v1/client.gen'
 
 const customFetch: typeof fetch = async (input, init) => {
   const response = await fetch(input, init)

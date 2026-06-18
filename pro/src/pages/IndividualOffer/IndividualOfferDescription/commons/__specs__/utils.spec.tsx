@@ -4,7 +4,7 @@ import {
   DisplayableActivity,
   OfferStatus,
   SubcategoryIdEnum,
-} from '@/apiClient/v1/new'
+} from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,

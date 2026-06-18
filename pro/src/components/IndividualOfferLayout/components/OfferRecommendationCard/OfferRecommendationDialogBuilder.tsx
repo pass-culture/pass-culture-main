@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import type { ProAdviceModel } from '@/apiClient/v1/new'
+import type { ProAdviceModel } from '@/apiClient/v1'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { OfferRecommendationForm } from './OfferRecommendationForm'

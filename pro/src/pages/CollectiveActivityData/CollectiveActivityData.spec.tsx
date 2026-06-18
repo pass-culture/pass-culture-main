@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { RouteObject } from 'react-router'
 
-import { apiNew } from '@/apiClient/api'
+import { api } from '@/apiClient/api'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -18,7 +18,7 @@ vi.mock('@/app/App/analytics/firebase', () => ({
   useAnalytics: () => ({ logEvent: mockLogEvent }),
 }))
 vi.mock('@/apiClient/api', () => ({
-  apiNew: {
+  api: {
     getOffererAddresses: vi.fn(),
   },
 }))
@@ -83,7 +83,7 @@ const LABEL = {
 
 describe('CollectiveActivityData', () => {
   beforeEach(() => {
-    vi.spyOn(apiNew, 'getOffererAddresses').mockResolvedValue([])
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue([])
     mockDownloadBookableOffersFile.mockResolvedValue(undefined)
   })
 

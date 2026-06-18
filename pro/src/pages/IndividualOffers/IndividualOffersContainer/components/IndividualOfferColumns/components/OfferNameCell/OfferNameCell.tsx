@@ -1,9 +1,6 @@
 import { Link } from 'react-router'
 
-import {
-  type ListOffersOfferResponseModel,
-  OfferStatus,
-} from '@/apiClient/v1/new'
+import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'

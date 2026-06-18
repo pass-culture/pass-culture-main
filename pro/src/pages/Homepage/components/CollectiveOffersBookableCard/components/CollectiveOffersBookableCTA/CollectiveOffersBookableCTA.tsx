@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 
-import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1/new'
+import type { CollectiveOfferHomeResponseModel } from '@/apiClient/v1'
 import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
