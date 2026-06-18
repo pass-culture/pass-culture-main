@@ -43,7 +43,7 @@ dependencies = [
   "gql[requests] ==4.0.0",
   "gunicorn==26.0.0",
   "html5lib ==1.1",
-  "ipython==9.14.0",
+  "ipython==9.14.1",
   "jinja2 ==3.1.6",
   "libsass ==0.23.0",
   "markupsafe ==3.0.3",
