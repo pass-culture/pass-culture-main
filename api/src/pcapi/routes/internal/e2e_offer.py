@@ -21,6 +21,7 @@ def generate_offer() -> tuple[dict, int]:
         offer_name=form.name.data,
         price=form.price.data,
         subcategory_id=form.subcategory_id.data,
+        is_duo=form.is_duo.data,
     )
 
     if offer is None:
@@ -31,6 +32,7 @@ def generate_offer() -> tuple[dict, int]:
         "name": offer.name,
         "subcategoryId": offer.subcategoryId,
         "venueId": offer.venueId,
+        "isDuo": offer.isDuo,
     }, 200
 
 
