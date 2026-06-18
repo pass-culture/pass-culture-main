@@ -1,11 +1,9 @@
 import logging
 import typing
 
-import pydantic as pydantic_v2
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
@@ -23,18 +21,9 @@ from pcapi.utils.repository import atomic
 logger = logging.getLogger(__name__)
 
 
-class TaskPayload(pydantic_v2.BaseModel):
-    provider_id: int
-    request_payload: events_serializers.PutCinemaSessions
-
-
-@celery_async_task(
-    name="tasks.providers.default.batch_update_cinema_offers",
-    model=TaskPayload,
-)
-def batch_update_cinema_offers_task(payload: TaskPayload) -> None:
-    extract_result = _extract(payload)
-    transform_result = _transform(payload.request_payload, extract_result)
+def batch_update_cinema_offers_etl(provider_id: int, request_payload: events_serializers.PutCinemaSessions) -> None:
+    extract_result = _extract(provider_id, request_payload)
+    transform_result = _transform(request_payload, extract_result)
     with atomic():
         _load(
             transform_result,
@@ -58,17 +47,17 @@ class _ExtractResult(typing.TypedDict):
     offers_by_id_at_provider: dict[str, offers_models.Offer]
 
 
-def _extract(task_payload: TaskPayload) -> _ExtractResult:
+def _extract(provider_id: int, request_payload: events_serializers.PutCinemaSessions) -> _ExtractResult:
     """Extract existing data from DB"""
-    allocine_ids, visas = task_payload.request_payload.get_film_ids_split_by_id_origin()
-    offers_addresses = task_payload.request_payload.get_offers_addresses()
+    allocine_ids, visas = request_payload.get_film_ids_split_by_id_origin()
+    offers_addresses = request_payload.get_offers_addresses()
     offers_computed_ids = set()
 
-    for offer in task_payload.request_payload.offers:
-        offers_computed_ids.add(_compute_offer_id_at_provider(task_payload.request_payload.venue_id, offer))
+    for offer in request_payload.offers:
+        offers_computed_ids.add(_compute_offer_id_at_provider(request_payload.venue_id, offer))
 
-    provider = db.session.query(providers_models.Provider).filter_by(id=task_payload.provider_id).one()
-    venue = db.session.query(offerers_models.Venue).filter_by(id=task_payload.request_payload.venue_id).one()
+    provider = db.session.query(providers_models.Provider).filter_by(id=provider_id).one()
+    venue = db.session.query(offerers_models.Venue).filter_by(id=request_payload.venue_id).one()
 
     return {
         "venue": venue,

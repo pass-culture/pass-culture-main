@@ -176,6 +176,14 @@ def check_date_in_future_and_remove_timezone(
     return no_tz_value
 
 
+def _check_datetime_in_future_and_format_to_utc_datetime(value: datetime.datetime) -> datetime.datetime:
+    if value.tzinfo is None:
+        raise PydanticError("The datetime must be timezone-aware.")
+    if value < datetime.datetime.now(datetime.timezone.utc):
+        raise PydanticError("The datetime must be in the future.")
+    return value.astimezone(datetime.timezone.utc)
+
+
 def validate_datetime(field_name: str, always: bool = False) -> classmethod:
     # TODO: (tcoudray-pass, 11/05/26) Should not accept `None` value
     def _check_if_not_none(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
@@ -191,6 +199,10 @@ def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
 
 
 future_tz_aware_datetime = Annotated[datetime.datetime, pydantic_v2.AfterValidator(_validate_datetime)]
+future_tz_aware_datetime_to_utc_datetime = Annotated[
+    datetime.datetime,
+    pydantic_v2.AfterValidator(_check_datetime_in_future_and_format_to_utc_datetime),
+]
 
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:

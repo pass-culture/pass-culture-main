@@ -20,6 +20,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.core.providers import tasks as providers_tasks
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import blueprints
@@ -835,10 +836,7 @@ def _get_existing_addresses_ids(addresses_ids: set[int]) -> set[int]:
 )
 def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions) -> None:
     """
-    (PREVIEW) Batch Update Cinema Sessions
-
-    **⚠️ WARNING: This endpoint is not yet functional (offers & stocks will not be created), this is an endpoint preview to test
-    its interface.**
+    (BETA) Batch Update Cinema Sessions
 
     This endpoint allows for the batch update (update/insert/delete) of cinema sessions for a venue.
 
@@ -850,9 +848,7 @@ def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions)
     - As it is a batch update, **for each film we expect you to send _all_ the sessions scheduled in the future**. Any missing session in subsequent calls
     will be considered as cancelled and soft deleted on our side.
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(body.venue_id)
-    venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
-
+    authorization.get_venue_provider_or_raise_404(body.venue_id)
     addresses_ids = body.get_addresses_ids()
     if addresses_ids:
         existing_addresses_ids = _get_existing_addresses_ids(addresses_ids)
@@ -861,5 +857,8 @@ def put_batch_update_cinema_sessions(body: events_serializers.PutCinemaSessions)
             raise api_errors.ResourceNotFoundError(
                 {"global": [f"Addresse(s) not found. Missing ids: {list(missing_addresses_ids)}"]}
             )
-
-    logger.info("Update cinema sessions", extra={"venue_id": venue.id, "payload": body.model_dump()})
+    payload = providers_tasks.BatchUpdateOffersTaskPayload(
+        provider_id=current_api_key.provider.id,
+        request_payload=body,
+    )
+    providers_tasks.batch_update_cinema_offers_task.delay(payload.model_dump())

@@ -14,6 +14,7 @@ You will have two dates at your disposal :
   :::
 
 ## June 2026
+- A new endpoint has been added to synchronize cinema sessions: [**Batch Update Cinema Sessions**](/rest-api#tag/Event-Offers/operation/PutBatchUpdateCinemaSessions)
 - The `additionalDetails`, `price`, `servicePrice`, `additionalFees` and `numberOfTeachers` fields have been added to the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic).
 - The `totalPrice` and `educationalPriceDetail` fields are now deprecated in the collective endpoints.
   - Please use the `price` field instead of `totalPrice`.
