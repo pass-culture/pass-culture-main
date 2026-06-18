@@ -1,0 +1,75 @@
+name: 99 WIP [CD] Check Staging Versions Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1-5'  # At 12:00 on every day-of-week from Monday through Friday
+      timezone: "Europe/Paris"
+  # REMOVE BEFORE MERGE
+  push:
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and Compare Versions
+        env:
+          # Required for the GitHub CLI (gh) to fetch GraphQL data
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Fetching versions..."
+          # 1. Most recent tag (filtered on v*.0.*)
+          LATEST_TAG=$(gh api graphql -f query='
+            {
+              repository(owner: "pass-culture", name: "pass-culture-main") {
+                refs(refPrefix: "refs/tags/", last: 1) {
+                  nodes {
+                    name
+                  }
+                }
+              } 
+            }' | jq -r '.data.repository.refs.nodes[].name')
+
+          # 2. Latest successful staging deployment 
+          STAGING_DEPLOY=$(gh api graphql -f query='
+            {
+              repository(owner: "pass-culture", name: "pass-culture-main") {
+                deployments(environments: ["staging"], first: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
+                  edges {
+                    node {
+                      state
+                      ref { name }
+                    }
+                  }
+                }
+              }
+            }' | jq -r '.data.repository.deployments.edges[].node | select(.state == "ACTIVE") | .ref.name' | head -n 1)
+
+          # 3. deployed pcapi version
+          PCAPI_BUILD=$(curl -s https://backend.staging.passculture.team/health/api)
+
+          # 4. deployed pro version
+          PRO_BUILD=$(curl -s https://pro.staging.passculture.team | grep -E -o '<meta name="version" content="([[:digit:]]{1,}|\.){5}"/>' | grep -E -o "([[:digit:]]{1,}|\.){5}")
+
+          # Print the results for debugging
+          echo "---"
+          echo "LATEST_TAG     : $LATEST_TAG"
+          echo "STAGING_DEPLOY : $STAGING_DEPLOY"
+          echo "PCAPI_BUILD    : $PCAPI_BUILD"
+          echo "PRO_BUILD      : $PRO_BUILD"
+          echo "---"
+
+          # Verify that none of them are empty
+          if [ -z "$LATEST_TAG" ] || [ -z "$STAGING_DEPLOY" ] || [ -z "v$PCAPI_BUILD" ] || [ -z "v$PRO_BUILD" ]; then
+            echo "❌ Error: One or more fetched values are empty. Please check the logs."
+            exit 1
+          fi
+
+          # Compare all 4 values
+          if [ "$LATEST_TAG" = "$STAGING_DEPLOY" ] && [ "$STAGING_DEPLOY" = "$PCAPI_BUILD" ] && [ "v$PCAPI_BUILD" = "v$PRO_BUILD" ]; then
+            echo "✅ Success: All 4 versions are identical : ($LATEST_TAG)!"
+            exit 0
+          else
+            echo "❌ Mismatch: The versions do not match."
+            exit 1
+          fi
