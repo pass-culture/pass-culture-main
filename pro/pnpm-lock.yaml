@@ -185,8 +185,8 @@ importers:
         specifier: 4.1.7
         version: 4.1.7(vitest@4.1.7)
       axe-core:
-        specifier: 4.11.4
-        version: 4.11.4
+        specifier: 4.12.1
+        version: 4.12.1
       check-unused-css:
         specifier: 0.5.0
         version: 0.5.0(typescript@6.0.3)
@@ -2179,6 +2179,10 @@ packages:
 
   axe-core@4.11.4:
     resolution: {integrity: sha512-KunSNx+TVpkAw/6ULfhnx+HWRecjqZGTOyquAoWHYLRSdK1tB5Ihce1ZW+UY3fj33bYAFWPu7W/GRSmmrCGuxA==}
+    engines: {node: '>=4'}
+
+  axe-core@4.12.1:
+    resolution: {integrity: sha512-s7iGf5GaVMxEG0ENN9x+xTr7GFZCb1ZP/1uATUpCEK2X78nDB3RwbtFCo9pGAf9ru+VwoQ464DkaLEeRM08wJA==}
     engines: {node: '>=4'}
 
   balanced-match@1.0.2:
@@ -5498,7 +5502,7 @@ snapshots:
   '@storybook/addon-a11y@10.4.1(storybook@10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
     dependencies:
       '@storybook/global': 5.0.0
-      axe-core: 4.11.4
+      axe-core: 4.12.1
       storybook: 10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
   '@storybook/addon-docs@10.4.0(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(esbuild@0.28.1)(storybook@10.4.2(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.0.16(@types/node@25.9.1)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0))':
@@ -5932,6 +5936,8 @@ snapshots:
   attr-accept@2.2.5: {}
 
   axe-core@4.11.4: {}
+
+  axe-core@4.12.1: {}
 
   balanced-match@1.0.2: {}
 
@@ -7734,7 +7740,7 @@ snapshots:
   vitest-axe@0.1.0(vitest@4.1.7):
     dependencies:
       aria-query: 5.3.2
-      axe-core: 4.11.4
+      axe-core: 4.12.1
       chalk: 5.6.2
       dom-accessibility-api: 0.5.16
       lodash-es: 4.18.1
