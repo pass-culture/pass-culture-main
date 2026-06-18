@@ -35,6 +35,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             isVenueLocation: false,
             longitude: 2.348979,
+            departmentCode: '89',
           },
           isDigital: false,
         }
@@ -86,6 +87,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             longitude: 2.348979,
             isVenueLocation: true,
+            departmentCode: '75',
           },
           isDigital: false,
         }
@@ -112,7 +114,7 @@ describe('getInitialValuesFromOffer', () => {
     describe('when offer has NO address', () => {
       const offerWithoutAddress = {
         ...offerBase,
-        location: undefined,
+        location: null,
       }
 
       it('should include selected venue address when available', () => {
@@ -182,7 +184,7 @@ describe('getInitialValuesFromOffer', () => {
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
 
       const result = getInitialValuesFromOffer(
-        { ...offerBase, location: undefined, url: 'not-a-url' },
+        { ...offerBase, location: null, url: 'not-a-url' },
         params
       )
 
@@ -205,6 +207,7 @@ describe('getInitialValuesFromOffer', () => {
         latitude: 48.85332,
         longitude: 2.348979,
         isVenueLocation: false,
+        departmentCode: '89',
       },
       url: 'https://passculture.app',
       isDigital: true,

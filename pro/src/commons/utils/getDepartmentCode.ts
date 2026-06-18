@@ -1,13 +1,11 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetVenueResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'
 
 export const getDepartmentCode = (
-  offer:
-    | GetIndividualOfferWithAddressResponseModel
-    | ListOffersOfferResponseModel,
+  offer: GetIndividualOfferResponseModelV2 | ListOffersOfferResponseModel,
   venue: GetVenueResponseModel
 ): string => {
   return (offer.location?.departmentCode || venue.location.departmentCode) ?? ''

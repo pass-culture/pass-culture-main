@@ -3,7 +3,7 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import {
   ExposureEventType,
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
 } from '@/apiClient/v1'
 import { GET_OFFER_EXPOSURE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
@@ -46,7 +46,7 @@ const getEventLabel = (eventType?: ExposureEventType): string => {
 const SIX_MONTHS = 180 * 24 * 60 * 60 * 1000
 
 export type OfferExposureCardsProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export const OfferExposureCards = ({
   offer,

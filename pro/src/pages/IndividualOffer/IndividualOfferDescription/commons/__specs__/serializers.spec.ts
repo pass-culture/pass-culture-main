@@ -69,19 +69,17 @@ describe('serializeExtraData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
-          artistId: null,
+          artistId: '2',
           artistName: 'Aya Nakamura',
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
-          artistId: null,
+          artistId: '3',
           artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
         },
         {
-          artistId: '2',
+          artistId: '4',
           artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
@@ -233,13 +231,12 @@ describe('serializeDetailsPostData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
-          artistId: null,
+          artistId: '2',
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,
         },
         {
-          artistId: '2',
+          artistId: '3',
           artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
@@ -261,12 +258,12 @@ describe('serializeDetailsPostData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          artistId: null,
+          artistId: '2',
           artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
         },
         {
-          artistId: '2',
+          artistId: '3',
           artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
@@ -345,13 +342,12 @@ describe('serializeDetailsPatchData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          // @ts-expect-error - Waiting for pydanticV2 migration
-          artistId: null,
+          artistId: '2',
           artistName: ' Marcel et son orchestre ',
           artistType: ArtistType.PERFORMER,
         },
         {
-          artistId: '2',
+          artistId: '3',
           artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
@@ -373,12 +369,12 @@ describe('serializeDetailsPatchData', () => {
           artistType: ArtistType.AUTHOR,
         },
         {
-          artistId: null,
+          artistId: '2',
           artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
         },
         {
-          artistId: '2',
+          artistId: '3',
           artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },

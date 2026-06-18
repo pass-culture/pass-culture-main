@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -19,7 +19,7 @@ import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
 import styles from './PriceCategoriesSection.module.scss'
 
 interface Props {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   canBeDuo?: boolean
   shouldShowDivider?: boolean
 }

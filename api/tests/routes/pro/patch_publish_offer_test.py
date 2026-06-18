@@ -59,7 +59,8 @@ class Returns200Test:
     num_queries += 1  # 8 offerer_confidence
     num_queries += 1  # 9 offerer_confidence
     num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 11 update offer
+    num_queries += 1  # 11 select headline_offer
+    num_queries += 1  # 12 update offer
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")

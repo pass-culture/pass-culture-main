@@ -1,13 +1,13 @@
 import cn from 'classnames'
 
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { StatusToggleButton } from '@/components/IndividualOfferLayout/components/Status/StatusToggleButton'
 import { StatusLabel } from '@/components/StatusLabel/StatusLabel'
 
 import styles from './Status.module.scss'
 
 interface StatusProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   canEditPublicationDates: boolean
 }
 

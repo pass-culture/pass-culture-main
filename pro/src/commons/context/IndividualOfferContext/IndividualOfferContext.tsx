@@ -6,7 +6,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -22,7 +22,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
   // TODO (igabriele, 2025-09-09): We should be able to ensure a defined `offer` by setting aside the only case where offer is null (1st creation step).
-  offer: GetIndividualOfferWithAddressResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
   offerId: number | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]

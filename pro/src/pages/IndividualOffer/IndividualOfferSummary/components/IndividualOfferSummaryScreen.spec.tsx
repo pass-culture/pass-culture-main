@@ -13,7 +13,7 @@ import {
 } from '@/apiClient/compat'
 import {
   DisplayableActivity,
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
   SimplifiedBankAccountStatus,
   type StockStatsResponseModel,
@@ -383,7 +383,7 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(buttonPublish).not.toBeDisabled()
 
       const mockResponse =
-        new CancelablePromise<GetIndividualOfferResponseModel>((resolve) =>
+        new CancelablePromise<GetIndividualOfferResponseModelV2>((resolve) =>
           setTimeout(() => {
             resolve(getIndividualOfferFactory())
           }, 200)
@@ -693,7 +693,7 @@ describe('IndividualOfferSummaryScreen', () => {
         },
       }
 
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // TODO (tpommellet) to remove once GetIndividualOfferResponseModelV2 is migrated to Pydantic V2
       // @ts-expect-error
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
@@ -719,8 +719,6 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should render component with new sections and empty address data', async () => {
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
         location: null,
       })
       const contextValues = {

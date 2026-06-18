@@ -3,7 +3,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -23,7 +23,7 @@ export function useSaveOfferLocation({
   offer,
   setError,
 }: {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
   setError: UseFormSetError<LocationFormValues>
 }): {
   save: SaveOfferLocationHandler

@@ -40,7 +40,7 @@ describe('getIndividualOfferImage', () => {
     expectedImage,
   }) => {
     const offerApi = getIndividualOfferFactory({
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+      // TODO (tpommellet) to remove once GetIndividualOfferResponseModelV2 is migrated to Pydantic V2
       // @ts-expect-error
       activeMediation,
     })

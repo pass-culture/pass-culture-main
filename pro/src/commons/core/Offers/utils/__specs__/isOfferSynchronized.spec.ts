@@ -13,8 +13,6 @@ describe('isOfferSynchronized', () => {
 
   it('should return false when lastProvider is null', () => {
     const offer = getIndividualOfferFactory({
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-      // @ts-expect-error
       lastProvider: null,
     })
 

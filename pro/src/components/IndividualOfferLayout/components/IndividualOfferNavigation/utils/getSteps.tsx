@@ -1,5 +1,5 @@
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -13,7 +13,7 @@ export interface StepPattern {
   id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: string | React.ReactNode
   canGoBeyondStep?: (
-    offer: GetIndividualOfferWithAddressResponseModel,
+    offer: GetIndividualOfferResponseModelV2,
     subCategory?: SubcategoryResponseModel
   ) => boolean
 }

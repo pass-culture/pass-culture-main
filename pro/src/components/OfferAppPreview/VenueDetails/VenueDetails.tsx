@@ -1,10 +1,13 @@
-import type { LocationResponseModel } from '@/apiClient/v1'
+import type {
+  LocationResponseModel,
+  LocationResponseModelV2,
+} from '@/apiClient/v1'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 
 import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
-  address?: LocationResponseModel | null
+  address?: LocationResponseModel | LocationResponseModelV2 | null
   withdrawalDetails?: string
 }
 

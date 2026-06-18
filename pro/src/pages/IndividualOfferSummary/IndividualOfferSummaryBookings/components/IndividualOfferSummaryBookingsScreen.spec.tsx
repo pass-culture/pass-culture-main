@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import {
@@ -18,7 +18,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferSummaryBookingsScreen } from './IndividualOfferSummaryBookingsScreen'
 
-const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
+const render = (offer: GetIndividualOfferResponseModelV2) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
   renderWithProviders(
