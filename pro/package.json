@@ -76,7 +76,7 @@
     "react-hook-form": "7.78.0",
     "react-instantsearch": "7.35.0",
     "react-redux": "9.3.0",
-    "react-router": "7.16.0",
+    "react-router": "7.17.0",
     "swr": "2.4.1",
     "use-debounce": "10.1.1",
     "uuid": "14.0.0",
