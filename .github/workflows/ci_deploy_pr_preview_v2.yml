@@ -39,9 +39,6 @@ jobs:
       preview_id: ${{ steps.compute-labels.outputs.preview_id }}
       backend_id: ${{ steps.compute-labels.outputs.backend_id }}
       commit_sha: ${{ steps.checkout.outputs.commit }}
-      backend_url: ${{ steps.set_resource_label.outputs.backend_url }}
-      backoffice_url: ${{ steps.set_resource_label.outputs.backoffice_url }}
-
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         id: checkout
@@ -65,9 +62,9 @@ jobs:
     
           if [ "${FRONT_ONLY}" == "true" ]; then
             # Empty = frontend connects to shared testing backend
-            echo "backend_url=https://backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "backend_id=" >> "$GITHUB_OUTPUT"
           else
-            echo "backend_url=https://pr-${PREVIEW_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "backend_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
           fi
 
   deploy-pro-on-firebase-preview-env:
@@ -77,7 +74,7 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      pcapi_backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.backend_id }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
