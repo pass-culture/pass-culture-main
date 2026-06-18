@@ -29,6 +29,7 @@ jobs:
   build-images:
     name: Build Docker images
     strategy:
+      fail-fast: false
       matrix:
         image: [pcapi, pcapi-console]
     uses: ./.github/workflows/docker_build_image.yml
@@ -42,6 +43,7 @@ jobs:
     uses: ./.github/workflows/docker_push_image_passdirector.yml
     needs: build-images
     strategy:
+      fail-fast: true
       matrix:
         image: [pcapi, pcapi-console]
     with:

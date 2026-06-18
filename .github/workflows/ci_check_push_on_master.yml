@@ -25,6 +25,7 @@ jobs:
     needs: test-changes
     if: always() && needs.test-changes.outputs.failed-tests-matrix != '[]'
     strategy:
+      fail-fast: false
       matrix:
         failed-test: ${{ fromJson(needs.test-changes.outputs.failed-tests-matrix) }}
     uses: ./.github/workflows/slack_post_message_workflow.yml

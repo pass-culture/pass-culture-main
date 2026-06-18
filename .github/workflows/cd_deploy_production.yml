@@ -65,6 +65,7 @@ jobs:
     needs: version
     uses: ./.github/workflows/cd_sub_deploy_app.yml
     strategy:
+      fail-fast: false
       matrix:
         include:
           - environment: integration
