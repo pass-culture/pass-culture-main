@@ -1,16 +1,40 @@
-# mypy: disable-error-code="no-untyped-def"
-import logging
+# Decide what worker class we are going to use and apply the relevant settings
+# Since using the gevent worker class is only a test for now, only settings related to that
+# are applied here. If we decide to go through with this, we should choose if we setup
+# gunicorn configuration here or in entrypoint.sh but not both.
+# We should do that as early as possible because gevent needs to patch the standard library before importing stuff that calls
+# blocking IO
 import os
-import pathlib
 
-import gunicorn.config
-import prometheus_client
-from prometheus_client import multiprocess
-from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
 
-from pcapi.flask_app import app
-from pcapi.models import db
-from pcapi.utils import kubernetes as kubernetes_utils
+worker_class = os.environ.get("GUNICORN_WORKER_CLASS", "gthread")
+
+if worker_class == "gevent":
+    import gevent.monkey
+
+    gevent.monkey.patch_all()
+    if "GUNICORN_WORKER_CONNECTIONS" in os.environ:
+        workers = os.environ["GUNICORN_WORKER_CONNECTIONS"]
+elif worker_class == "gthread":
+    if "GUNICORN_WORKERS" in os.environ:
+        workers = os.environ["GUNICORN_WORKERS"]
+    if "GUNICORN_THREADS" in os.environ:
+        threads = os.environ["GUNICORN_THREADS"]
+else:
+    raise ValueError("specified gunicorn worker type is not supported")
+
+# mypy: disable-error-code="no-untyped-def"
+import logging  # noqa: E402
+import pathlib  # noqa: E402
+
+import gunicorn.config  # noqa: E402
+import prometheus_client  # noqa: E402
+from prometheus_client import multiprocess  # noqa: E402
+from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics  # noqa: E402
+
+from pcapi.flask_app import app  # noqa: E402
+from pcapi.models import db  # noqa: E402
+from pcapi.utils import kubernetes as kubernetes_utils  # noqa: E402
 
 
 FLASK_PROMETHEUS_EXPORTER_PORT = int(os.environ.get("FLASK_PROMETHEUS_EXPORTER_PORT", "5002"))
