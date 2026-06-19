@@ -50,8 +50,11 @@ services:
             # Exclude mounted volumes
             - tests/
             - documentation/static/openapi.json
+            - src/pcapi/alembic/versions
     env_file:
       - env_file
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1 # prevent .pyc sync loop
     networks:
       - db_nw
       - web_nw
@@ -87,6 +90,8 @@ services:
             - tests/
     env_file:
       - env_file
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1 # prevent .pyc sync loop
     networks:
       - db_nw
       - web_nw
@@ -107,15 +112,6 @@ services:
     working_dir: /usr/src/app
     container_name: pc-celery-worker
     command: ["./start-celery-worker.sh"]
-    develop:
-      watch:
-        - action: sync
-          path: ./api
-          target: /usr/src/app
-          # Exclude the project virtual environment — it could be for a
-          # different platform in the container
-          ignore:
-            - .venv/
     env_file:
       - env_file
     networks:
