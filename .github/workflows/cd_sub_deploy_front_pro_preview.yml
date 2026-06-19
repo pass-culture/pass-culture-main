@@ -4,13 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       cache_bucket_name:
+        description: "The name of the GCP bucket to use for caching"
         type: string
         required: true
       firebase_cli_version:
+        description: "Version of firebase-tools to use for deployment"
         type: string
         required: false
         default: 15.18.0
       time_to_live:
+        description: "Time to live for the preview deployment (e.g., '2d' for 2 days)"
         type: string
         required: false
         default: "2d"
@@ -106,13 +109,10 @@ jobs:
       - name: Override backend URL in .env.testing
         if: inputs.backend_url != ''
         env:
-          DEFAULT_BACKEND_URL: https://backend.testing.passculture.team
           BACKEND_URL: ${{ inputs.backend_url }}
         run: |
-          echo "Rewriting backend URL"
-          echo "  from: ${DEFAULT_BACKEND_URL}"
-          echo "  to:   ${BACKEND_URL}"
-          sed -i "s|${DEFAULT_BACKEND_URL}|${BACKEND_URL}|g" src/.env.testing
+          echo "Rewriting VITE_API_URL to: ${BACKEND_URL}"
+          sed -i "s|^VITE_API_URL=.*|VITE_API_URL=${BACKEND_URL}|" src/.env.testing
 
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
@@ -132,9 +132,9 @@ jobs:
 
       - run: pnpm build:"$ENV"
         env:
-          # By default NodeJS processes are limited to 512MB of memory
+          # By default, Node.js processes are limited to 512MB of memory
           # This is not enough for the build process when compiling sourcemaps
-          # Increases the limit so that the build doesnt fail
+          # Increases the limit so that the build does not fail
           NODE_OPTIONS: --max_old_space_size=4096
           VITE_APP_VERSION: ${{ github.sha }}
 
@@ -146,7 +146,7 @@ jobs:
           TARGET: pc-pro-testing
         id: deploy
         run: |
-          URL=$(passdirector firebase deploy-preview --project-id "${PROJECT_Id}" --target "${TARGET}" --channel "${REF_NAME}")
+          URL=$(passdirector firebase deploy-preview --project-id "${PROJECT_ID}" --target "${TARGET}" --channel "${REF_NAME}")
           echo "preview_url=$URL" | tee -a "$GITHUB_OUTPUT"
 
       - name: Publish Summary
