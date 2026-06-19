@@ -115,13 +115,9 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
     except exceptions.CollectiveOfferNotFound:
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
-    if not offer.collectiveStock:
-        # if the offer does not have any stock pretend it doesn't exists
+    if not offer.collectiveStock or offer.providerId != current_api_key.providerId:
+        # if the offer does not have any stock or the provider does not match, pretend it doesn't exists
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
-
-    if offer.providerId != current_api_key.providerId:
-        msg = "Vous n'avez pas le droit d'accéder à une ressource que vous n'avez pas créée via cette API"
-        raise api_errors.ApiErrors(errors={"global": [msg]}, status_code=403)
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 

@@ -32,7 +32,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIVenueEndpointHelper):
         with assert_num_queries(self.num_queries_error):
             response = self.make_request(plain_api_key, {"offer_id": offer_id})
 
-        assert response.status_code == 403
+        assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         # TODO (jcicurel-pass, 2026-06-19): implement this test
