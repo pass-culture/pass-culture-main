@@ -14,11 +14,26 @@
     @include fonts.body-accent;
 
     font-size: rem.torem(16px);
-    border-bottom: rem.torem(2px) solid transparent;
     padding-bottom: var(--size-spacing-s);
+    position: relative; 
+    text-align: center; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    &:hover {
-      border-bottom: rem.torem(2px) solid var(--color-border-default);
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: rem.torem(2px);
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+    }
+
+    &:hover::after {
+      background-color: var(--color-border-default);
     }
 
     &:focus-visible {
@@ -26,9 +41,12 @@
     }
 
     &.is-selected {
-      border-bottom: rem.torem(2px) solid var(--color-border-brand-primary);
       color: var(--color-text-brand-primary);
       text-decoration: none;
+
+      &::after {
+        background-color: var(--color-border-brand-primary);
+      }
     }
   }
 }
@@ -41,7 +59,9 @@
 
   .menu-item {
     align-self: stretch;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
