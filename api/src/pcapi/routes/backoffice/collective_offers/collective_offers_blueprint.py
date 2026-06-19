@@ -33,6 +33,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters as template_filters
@@ -1256,6 +1257,11 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
 
     collective_offer.collectiveStock.price = price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
+
+    # also write to servicePrice to keep columns in sync
+    # the logic with FF ON will be added afterwards
+    if not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active():
+        collective_offer.collectiveStock.servicePrice = price
 
     flash("L'offre collective a été mise à jour", "success")
     return request_utils.safe_redirect_back(request, redirect_url)

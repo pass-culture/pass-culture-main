@@ -1623,6 +1623,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         date_used = date_utils.get_naive_utc_now() - datetime.timedelta(hours=72)
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
+            collectiveStock__servicePrice=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=date_used,
             venue=venue,
@@ -1641,7 +1642,33 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_booking.collectiveStock.price == 1
+        assert collective_booking.collectiveStock.servicePrice == 1
         assert collective_booking.collectiveStock.numberOfTickets == 5
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'offre collective a été mise à jour"
+        )
+
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
+    def test_service_price_not_modified(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        collective_stock = educational_factories.CollectiveStockFactory(
+            price=Decimal(100.00),
+            servicePrice=Decimal(100.00),
+            numberOfTickets=25,
+            collectiveOffer__venue=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 25, "price": 1},
+            collective_offer_id=collective_stock.collectiveOffer.id,
+        )
+
+        assert response.status_code == 303
+        assert collective_stock.price == 1
+        assert collective_stock.servicePrice == 100
+        assert collective_stock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'offre collective a été mise à jour"
