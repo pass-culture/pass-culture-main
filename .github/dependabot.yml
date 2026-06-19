@@ -82,4 +82,4 @@ updates:
       - 'app-engine/image-resizing'
     schedule:
       # Disable dependency graph for now
-      interval: 'never'
+      interval: 'yearly'
