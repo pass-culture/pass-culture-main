@@ -44,7 +44,7 @@ jobs:
       pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       # testing_label controls wether we connect to testing backend or a preview backend
       testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
-      pcapi_backend_url_for_pro: ${{ steps.set_resource_label.outputs.pcapi_backend_url_for_pro }}
+      backend_url_for_pro: ${{ steps.set_resource_label.outputs.backend_url_for_pro }}
       backend_url: ${{ steps.set_resource_label.outputs.backend_url }}
       backoffice_url: ${{ steps.set_resource_label.outputs.backoffice_url }}
     steps:
@@ -60,15 +60,17 @@ jobs:
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          echo "resource_label=$BRANCH_SHA1" >> "$GITHUB_OUTPUT"
+          echo "resource_label=$BRANCH_SHA1" | tee -a "$GITHUB_OUTPUT"
           
-          echo "backoffice_url=https://backoffice-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
+          backend_url=https://backend-${resource_label}.testing.passculture.team
+          echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
+          echo "backoffice_url=https://backoffice-${resource_label}.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
         
           if [ "$FRONT_ONLY" == "true" ]; then
             # Empty = frontend connects to shared testing backend
-            echo "pcapi_backend_url_for_pro=https://backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "backend_url_for_pro=" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "pcapi_backend_url_for_pro=https://backend-${resource_label}.testing.passculture.team" >> "$GITHUB_OUTPUT"
+            echo "backend_url_for_pro=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           fi
 
       - name: "Define pcapi image tags."
@@ -117,7 +119,7 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      pcapi_backend_url: ${{ needs.deploy-preview-env-init.outputs.pcapi_backend_url_for_pro }}
+      backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url_for_pro }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -171,7 +173,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      # Get github api token that will be used to commit and push api_version to pass-culture-deployment repository
+      # Get GitHub api token that will be used to commit and push api_version to pass-culture-deployment repository
       - name: "Get secrets (github)"
         id: "secrets"
         uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
