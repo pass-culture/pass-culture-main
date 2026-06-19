@@ -37,7 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       preview_id: ${{ steps.compute-labels.outputs.preview_id }}
-      backend_id: ${{ steps.compute-labels.outputs.backend_id }}
+      backend_url_for_pro: ${{ steps.compute-labels.outputs.backend_url_for_pro }}
+      backend_url: ${{ steps.compute-labels.outputs.backend_url }}
+      backoffice_url: ${{ steps.compute-labels.outputs.backoffice_url }}
       commit_sha: ${{ steps.checkout.outputs.commit }}
 
     steps:
@@ -57,14 +59,18 @@ jobs:
           # TODO: use PR number instead of branch SHA1 — more readable, no collision risk.
           # Requires changing trigger to pull_request.
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          echo "preview_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
+          echo "preview_id=${PREVIEW_ID}" | tee -a "$GITHUB_OUTPUT"
 
-          # TODO: recheck me
+          backend_url=https://pr-${PREVIEW_ID}.backend.testing.passculture.team
+          backoffice_url=https://pr-${PREVIEW_ID}.backoffice.testing.passculture.team
+
+          echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
+          echo "backoffice_url=${backoffice_url}" | tee -a "$GITHUB_OUTPUT"
+        
           if [ "${FRONT_ONLY}" == "true" ]; then
-            # Empty = frontend connects to shared testing backend
-            echo "backend_id=" >> "$GITHUB_OUTPUT"
+            echo "backend_url_for_pro=https://backend.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
           else
-            echo "backend_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
+            echo "backend_url_for_pro=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           fi
 
   deploy-pro-on-firebase-preview-env:
@@ -74,8 +80,8 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      # TODO: Recheck me
-      backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_id }}
+      backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url_for_pro }}
+      source_branch: ${{ inputs.source_branch }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
@@ -115,9 +121,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    outputs:
-      backend_url: ${{ steps.deploy-api.outputs.backend_url }}
-      backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
     needs:
       - deploy-preview-env-init
       - push-pcapi
@@ -173,15 +176,12 @@ jobs:
             --parameter sandboxName="${SANDBOX_NAME}" \
             --parameter sandboxArgs="${SANDBOX_ARGS}"
 
-          echo "backend_url=https://pr-${PREVIEW_ID}.backend.testing.passculture.team" >> "$GITHUB_OUTPUT"
-          echo "backoffice_url=https://pr-${PREVIEW_ID}.backoffice.testing.passculture.team" >> "$GITHUB_OUTPUT"
-
       - name: Publish Summary
         shell: bash
         env:
           PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
-          BACKEND_URL: ${{ steps.deploy-api.outputs.backend_url }}
-          BACKOFFICE_URL: ${{ steps.deploy-api.outputs.backoffice_url }}
+          BACKEND_URL: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+          BACKOFFICE_URL: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
         run: |
           DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
           {
