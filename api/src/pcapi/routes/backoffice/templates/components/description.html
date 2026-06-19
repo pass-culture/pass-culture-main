@@ -14,3 +14,12 @@
     </dd>
   </dl>
 {% endmacro %}
+{% macro description(title) %}
+  <dl class="mb-1">
+    <dt class="d-inline">{{ title }}</dt>
+    :
+    <dd class="d-inline">
+      {{ caller() }}
+    </dd>
+  </dl>
+{% endmacro %}

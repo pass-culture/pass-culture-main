@@ -1,15 +1,19 @@
-{% import "components/clipboard.html" as clipboard %}
+{% set use_new_tab_ui = true %}
 {% from "components/badges.html" import build_offerer_badges with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
-{% import "components/links.html" as links with context %}
-{% from "components/presentation/details/tabs.html" import build_details_tab %}
-{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
-{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
-{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tab with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content with context %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper with context %}
 {% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% from "components/dynamic/spinner.html" import build_loading_spinner with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/details.html" import action_bar_button %}
+{% from "components/details.html" import action_bar_additional_button %}
+{% from "components/description.html" import description %}
+{% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
 {% set edit_offerer_aria_described_by_id = random_hash() %}
@@ -20,183 +24,166 @@
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
     <div class="col">
       <div class="card">
-        <div class="card-body p-4">
-          <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as_offerer, offerer.name, "link-primary") }}</h2>
-            <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
-              {% if has_permission("MANAGE_PRO_ENTITY") %}
-                {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
-                edit_offerer_form, "Modifier les informations", "Modifier les informations de l'entité juridique", "Enregistrer") }}
-              {% endif %}
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                {% if offerer.isActive %}
-                  {{ build_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Suspendre l'entité juridique", "Suspendre l'entité juridique", "Confirmer la suspension") }}
-                {% else %}
-                  {{ build_modal_form("unsuspend-offerer", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Réactiver l'entité juridique", "Réactiver l'entité juridique", "Confirmer la réactivation") }}
+        <div class="card-body p-4 d-flex vstack gap-4">
+          <div class="d-flex flex-fill hstack">
+            <h2 class="card-title m-0 p-0">
+              {{ offerer.name }}
+              {{ build_offerer_badges(offerer, has_fraudulent_booking, has_reimbursement_suspended) }}
+              {{ offerer.tags | sort(attribute="label") | format_tag_object_list }}
+            </h2>
+          </div>
+          <div class="btn-group align-self-start"
+               role="group">
+            {% if allowed_actions.actions.CONNECT_AS in allowed_actions.inline_actions %}
+              {{ action_bar_button("briefcase", "Accéder PC Pro", submit_form=connect_as.formName) }}
+            {% endif %}
+            {% if allowed_actions.actions.UPDATE in allowed_actions.inline_actions %}
+              {{ action_bar_button("pencil-square", "Modifier les infos", modal_id="#edit-offerer-modal") }}
+            {% endif %}
+            {% if allowed_actions.actions.ERP_SYNCHRONISATION in allowed_actions.inline_actions %}
+              {{ action_bar_button("arrow-repeat", "Sync Zendesk Sell", modal_id="#pc-sync-zsell-modal") }}
+            {% endif %}
+            {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
+              {{ action_bar_button("check-square", "Valider", modal_id="#validate-modal-"~offerer.id) }}
+            {% endif %}
+            {% if allowed_actions.actions.PAUSE in allowed_actions.inline_actions %}
+              {{ action_bar_button("hourglass-bottom", "Mettre en attente", modal_id="#pending-modal-"~ offerer.id) }}
+            {% endif %}
+            {% if allowed_actions.actions.REJECT in allowed_actions.inline_actions %}
+              {{ action_bar_button("x-square", "Rejeter", modal_id="#reject-modal-"~offerer.id) }}
+            {% endif %}
+            {% if allowed_actions.actions.CLOSE in allowed_actions.inline_actions %}
+              {{ action_bar_button("door-closed", "Fermer l'entité juridique", modal_id="#close-modal-"~offerer.id) }}
+            {% endif %}
+            {% if allowed_actions.actions.SUSPEND in allowed_actions.inline_actions %}
+              {{ action_bar_button("pause-circle", "Suspendre l'entité juridique", modal_id="#suspend-offerer-modal") }}
+            {% endif %}
+            {% if allowed_actions.actions.UNSUSPEND in allowed_actions.inline_actions %}
+              {{ action_bar_button("play-circle", "Reactiver l'entité juridique", modal_id="#unsuspend-offerer-modal") }}
+            {% endif %}
+            {% if allowed_actions.actions.DELETE in allowed_actions.inline_actions %}
+              {{ action_bar_button("trash", "Supprimer l'entité juridique", modal_id="#delete-offerer-modal") }}
+            {% endif %}
+            <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
+            {% if allowed_actions.additional_actions %}
+              <ul class="dropdown-menu">
+                {% if allowed_actions.actions.CONNECT_AS in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("briefcase", "Accéder PC Pro", submit_form=connect_as.formName) }}</li>
                 {% endif %}
-              {% endif %}
-              {% if has_permission("DELETE_PRO_ENTITY") %}
-                {% set form_description = "L'entité juridique <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
-                {{ build_modal_form("delete-offerer", url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) ,
-                delete_offerer_form, "Supprimer l'entité juridique", "Supprimer l'entité juridique " + offerer.name,
-                "Confirmer", form_description, "bi-trash3-fill") }}
+                {% if allowed_actions.actions.UPDATE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("pencil-square", "Modifier les infos", modal_id="#edit-offerer-modal") }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.ERP_SYNCHRONISATION in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("arrow-repeat", "Sync Zendesk Sell", modal_id="#pc-sync-zsell-modal") }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.VALIDATE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("check-square", "Valider", modal_id="#validate-modal-"~offerer.id) }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.PAUSE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("hourglass-bottom", "Mettre en attente", modal_id="#pending-modal-"~ offerer.id) }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.REJECT in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("x-square", "Rejeter", modal_id="#reject-modal-"~offerer.id) }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.CLOSE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("door-closed", "Fermer l'entité juridique", modal_id="#close-modal-"~offerer.id) }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.SUSPEND in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("pause-circle", "Suspendre l'entité juridique", modal_id="#suspend-offerer-modal") }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.UNSUSPEND in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("play-circle", "Réactiver l'entité juridique", modal_id="#unsuspend-offerer-modal") }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.DELETE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("trash", "Supprimer l'entité juridique", modal_id="#delete-offerer-modal") }}</li>
+                {% endif %}
+              </ul>
+              <button type="button"
+                      class="btn btn-outline-primary-subtle-bg d-flex gap-2"
+                      data-bs-toggle="dropdown">
+                Plus d'actions
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+            {% endif %}
+          </div>
+          <div class="d-flex hstack gap-56">
+            <div class="d-flex hstack gap-1">
+              {% if offerer.rid7 %}
+                <div class="text-secondary">RID7</div>
+                : {{ offerer.rid7 }}
+                <a href="https://data.gouv.nc/explore/dataset/entreprises-actives-au-ridet/table/?q={{ offerer.rid7 }}"
+                   target="_blank"
+                   rel="noreferrer noopener"
+                   title="Rechercher dans l'open data de la Nouvelle Calédonie"
+                   class="link-primary"><i class="bi bi-box-arrow-up-right btn btn-outline-primary-subtle-bg border-0 px-2 py-1"></i></a>
+                {{ clipboard.copy_to_clipboard(offerer.rid7, "Copier le RID7 du partenaire culturel") }}
+              {% else %}
+                <div class="text-secondary">SIREN</div>
+                : {{ offerer.siren }}
+                <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
+                   target="_blank"
+                   rel="noreferrer noopener"
+                   title="Visualiser dans l'Annuaire des Entreprises"
+                   class="link-primary"><i class="bi bi-box-arrow-up-right btn btn-outline-primary-subtle-bg border-0 px-2 py-1"></i></a>
+                {{ clipboard.copy_to_clipboard(offerer.siren, "Copier le SIREN du partenaire culturel") }}
               {% endif %}
             </div>
-          </div>
-          <div class="mb-0">{{ build_offerer_badges(offerer, has_fraudulent_booking, has_reimbursement_suspended) }}</div>
-          <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-1 mt-0">
-            {% if has_permission("VALIDATE_OFFERER") %}
-              {% if not offerer.isValidated %}
-                <a data-bs-toggle="modal"
-                   data-bs-target="#validate-modal-{{ offerer.id }}">
-                  <button class="btn btn-outline-primary">Valider</button>
-                </a>
-                {{ build_lazy_modal(url_for('backoffice_web.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" + offerer.id|string) }}
-              {% endif %}
-              {% if not offerer.isPending %}
-                <a data-bs-toggle="modal"
-                   data-bs-target="#pending-modal-{{ offerer.id }}">
-                  <button class="btn btn-outline-primary">Mettre en attente</button>
-                </a>
-                {{ build_lazy_modal(url_for('backoffice_web.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" + offerer.id|string) }}
-              {% endif %}
-              {% if not offerer.isRejected %}
-                <a data-bs-toggle="modal"
-                   data-bs-target="#reject-modal-{{ offerer.id }}">
-                  <button class="btn btn-outline-primary">Rejeter</button>
-                </a>
-                {{ build_lazy_modal(url_for('backoffice_web.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" + offerer.id|string) }}
-              {% endif %}
-            {% endif %}
-            {% if has_permission("CLOSE_OFFERER") and offerer.isValidated %}
-              <a data-bs-toggle="modal"
-                 data-bs-target="#close-modal-{{ offerer.id }}">
-                <button class="btn btn-outline-primary">Fermer l'entité juridique</button>
-              </a>
-              {{ build_lazy_modal(url_for('backoffice_web.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" + offerer.id|string) }}
-            {% endif %}
-          </div>
-          <div class="d-flex justify-content-between">
-            <div>
-              <p class="card-subtitle text-muted mb-3 h5">
-                Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de l'entité juridique") }}
-              </p>
-              <p class="card-subtitle text-muted mb-3 h5">
-                {{ offerer.identifier_name }} : {{ links.build_siren_to_external_link(offerer) }}
-                <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de l'entité juridique") }}</span>
-              </p>
+            <div class="d-flex hstack gap-1">
+              <div class="text-secondary">Offerer ID</div>
+              : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID du partenaire culturel") }}
             </div>
-            {% if zendesk_sell_synchronisation_form %}
-              <div>
-                <button class="btn  btn-outline-primary-subtle-bg mt-2"
-                        data-bs-toggle="modal"
-                        data-bs-target=".pc-sync-zsell-modal"
-                        type="button">
-                  <i class="bi bi-arrow-repeat"></i>
-                  Sync Zendesk Sell
-                </button>
-                <div class="modal modal-lg fade pc-sync-zsell-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ sync_zsell_aria_described_by_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
-                            name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
-                            method="post">
-                        {{ zendesk_sell_synchronisation_form.csrf_token }}
-                        <div class="modal-header"
-                             id="{{ sync_zsell_aria_described_by_id }}">
-                          <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
-                        </div>
-                        <div class="modal-body row">
-                          <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
-                               style="font-size: 3.1rem"></i>
-                            <div>
-                              N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
-                            </div>
-                          </div>
-                          {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary-subtle-bg"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Confirmer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {% endif %}
           </div>
-          <div class="row pt-3">
+          <div class="mt-2 row">
+            <!-- Column 1 -->
             <div class="col-4">
-              <h4 class="mb-2">Adresse{{ (offerer.cities or []) | length | pluralize }} :</h4>
-              <div class="fs-6">
+              <h4 class="mb-2">Coordonées</h4>
+              {% call description("Région" + regions | length | pluralize) %}
                 {% if regions %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Région{{ regions | length | pluralize }} :</span>
-                    {{ regions | sort | format_string_list(150) }}
-                  </p>
+                  {{ regions | sort | format_string_list(150) }}
+                {% else %}
+                  {{ none | placeholder_if_empty(is_feminine=true) }}
                 {% endif %}
-                {% if offerer.department_codes %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Département{{ offerer.department_codes | length | pluralize }} :</span>
-                    {{ offerer.department_codes | sort | format_string_list(140) }}
-                  </p>
-                {% endif %}
-                {% if offerer.cities %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Ville{{ offerer.cities | length | pluralize }} :</span>
-                    {{ offerer.cities | sort | format_string_list(150) }}
-                  </p>
-                {% endif %}
-                {% if creator_phone_number %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Numéro d'inscription :</span>
-                    {{ creator_phone_number | empty_string_if_null }}
-                  </p>
-                {% endif %}
-              </div>
+              {% endcall %}
+              {% if offerer.department_codes %}
+                {% call description("Département" + offerer.department_codes | length | pluralize) %}
+                  {{ offerer.department_codes | sort | format_string_list(140) }}
+                {% endcall %}
+              {% else %}
+                {% call description("Département") %}
+                  {{ none | placeholder_if_empty }}
+                {% endcall %}
+              {% endif %}
+              {% if offerer.cities %}
+                {% call description("Ville" + offerer.cities | length | pluralize) %}
+                  {{ offerer.cities | sort | format_string_list(150) }}
+                {% endcall %}
+              {% else %}
+                {% call description("Ville") %}
+                  {{ none | placeholder_if_empty(is_feminine=true) }}
+                {% endcall %}
+              {% endif %}
+              {% call description("Numéro d'inscription") %}
+                {{ creator_phone_number | placeholder_if_empty }}
+              {% endcall %}
             </div>
+            <!-- Column 2 -->
             <div class="col-4">
-              <h4 class="mb-2">Informations générales :</h4>
-              <div class="fs-6 d-grid gap-1">
-                <p class="mb-0">
-                  <span class="fw-bold">Peut créer une offre EAC :</span> {{ offerer.allowedOnAdage | format_bool_badge }}
-                </p>
-                {% if not offerer.is_caledonian %}
-                  <p class="mb-0">
-                    <span class="fw-bold">Partenaires culturels cartographiés sur ADAGE :</span> {{ adage_information }}
-                  </p>
-                {% endif %}
-                <p class="mb-0">
-                  <span class="fw-bold">Tags :</span> {{ offerer.tags | sort(attribute="label") | format_tag_object_list }}
-                </p>
-                {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <p class="mb-0">
-                    <span class="fw-bold">Validation des offres :</span>
-                    {{ offerer.confidenceLevel | format_confidence_level_badge(show_no_rule=true) }}
-                    {{ build_modal_form("edit-fraud", url_for("backoffice_web.offerer.update_for_fraud", offerer_id=offerer.id) , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil") }}
-                  </p>
-                {% endif %}
-              </div>
+              <h4 class="mb-2">Informations EAC</h4>
+              {% if not offerer.is_caledonian %}
+                {% call description("PC cartographiés sur ADAGE") %}
+                  {{ adage_information }}
+                {% endcall %}
+              {% endif %}
+              {% call description("Peut créer une offre EAC") %}
+                {{ offerer.allowedOnAdage | format_bool_badge }}
+              {% endcall %}
             </div>
+            <!-- Column 3 -->
             <div class="col-4">
-              <h4 class="mb-2">Informations bancaires :</h4>
-              <div clas="fs-6 d-grid gap-1">
-                <p class="mb-0">
-                  <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
-                  {{ bank_information_status.ok or 0 }} OK
-                  / {{ bank_information_status.ko or 0 }} KO
-                </p>
-              </div>
+              <h4 class="mb-2">Informations bancaires</h4>
+              {% call description("Présence CB dans les partenaires culturels") %}
+                {{ bank_information_status.ok or 0 }} OK / {{ bank_information_status.ko or 0 }} KO
+              {% endcall %}
             </div>
           </div>
         </div>
@@ -278,3 +265,82 @@
   </div>
 </div>
 {% endblock pro_main_content %}
+{% block hidden_content %}
+  {% if allowed_actions.actions.CONNECT_AS in allowed_actions %}
+    <form name="{{ connect_as.formName }}"
+          class="d-none"
+          target="_blank"
+          rel="noopener"
+          action="{{ url_for('backoffice_web.pro.connect_as') }}"
+          method="post">
+      {% for field in connect_as.form %}{{ field }}{% endfor %}
+    </form>
+  {% endif %}
+  {% if allowed_actions.actions.UPDATE in allowed_actions %}
+    {{ build_simple_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
+    edit_offerer_form, "Modifier les informations de l'entité juridique", "Enregistrer") }}
+  {% endif %}
+  {% if allowed_actions.actions.ERP_SYNCHRONISATION in allowed_actions %}
+    <div class="modal modal-lg fade"
+         id="pc-sync-zsell-modal"
+         tabindex="-1"
+         aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
+                name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
+                method="post">
+            {{ zendesk_sell_synchronisation_form.csrf_token }}
+            <div class="modal-header"
+                 id="{{ sync_zsell_aria_described_by_id }}">
+              <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
+            </div>
+            <div class="modal-body row">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                   style="font-size: 3.1rem"></i>
+                <div>
+                  N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
+                </div>
+              </div>
+              {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+            </div>
+            <div class="modal-footer">
+              <button type="button"
+                      class="btn btn-outline-primary-subtle-bg"
+                      data-bs-dismiss="modal">Annuler</button>
+              <button type="submit"
+                      class="btn btn-primary">Confirmer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  {% if allowed_actions.actions.PAUSE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" ~ offerer.id) }}
+  {% endif %}
+  {% if allowed_actions.actions.VALIDATE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.validation.get_validate_offerer_form', offerer_id=offerer.id) , "validate-modal-" ~ offerer.id) }}
+  {% endif %}
+  {% if allowed_actions.actions.REJECT in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" ~ offerer.id) }}
+  {% endif %}
+  {% if allowed_actions.actions.CLOSE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" ~ offerer.id) }}
+  {% endif %}
+  {% if allowed_actions.actions.SUSPEND in allowed_actions %}
+    {{ build_simple_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
+    suspension_form, "Suspendre l'entité juridique", "Confirmer la suspension") }}
+  {% endif %}
+  {% if allowed_actions.actions.UNSUSPEND in allowed_actions %}
+    {{ build_simple_modal_form("unsuspend-offerer", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,suspension_form, "Réactiver l'entité juridique", "Confirmer la réactivation") }}
+  {% endif %}
+  {% if allowed_actions.actions.DELETE in allowed_actions %}
+    {% set form_description = "L'entité juridique <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
+    {{ build_simple_modal_form("delete-offerer", url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) ,
+    delete_offerer_form, "Supprimer l'entité juridique " + offerer.name,
+    "Confirmer", form_description) }}
+  {% endif %}
+{% endblock hidden_content %}

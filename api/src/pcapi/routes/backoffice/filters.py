@@ -1316,12 +1316,15 @@ def format_confidence_level_badge(
     return ""
 
 
-def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str:
-    if venue.confidenceLevel:
-        return format_confidence_level_badge(venue.confidenceLevel)
+def format_confidence_level_badge_for_venue_or_offerer(obj: offerers_models.Venue | offerers_models.Offerer) -> str:
+    if isinstance(obj, offerers_models.Offerer):
+        return format_confidence_level_badge(obj.confidenceLevel, show_no_rule=True)
+
+    if obj.confidenceLevel:
+        return format_confidence_level_badge(obj.confidenceLevel)
 
     return format_confidence_level_badge(
-        venue.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité juridique)"
+        obj.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité juridique)"
     )
 
 
@@ -2320,7 +2323,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_offer_compliance_llm_validation"] = format_offer_compliance_llm_validation
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
-    app.jinja_env.filters["format_confidence_level_badge_for_venue"] = format_confidence_level_badge_for_venue
+    app.jinja_env.filters["format_confidence_level_badge_for_venue_or_offerer"] = (
+        format_confidence_level_badge_for_venue_or_offerer
+    )
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status

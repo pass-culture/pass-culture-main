@@ -121,9 +121,9 @@ class GetOffererTest(GetEndpointHelper):
         assert "Ville : Toulouse " in content
         assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les partenaires culturels : 0 OK / 1 KO " in content
-        assert "Tags : Collectivité Top acteur " in content
-        assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Collectivité" in badges
+        assert "Top acteur" in badges
         assert "Entité juridique" in badges
         assert "Validée" in badges
         assert "Suspendue" not in badges
@@ -195,7 +195,7 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
         # One venue with adageId out of two physical venues
-        assert "Partenaires culturels cartographiés sur ADAGE : 1/2" in html_parser.content_as_text(response.data)
+        assert "PC cartographiés sur ADAGE : 1/2" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
@@ -207,7 +207,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
-        assert "Partenaires culturels cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
+        assert "PC cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
@@ -240,24 +240,6 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
-
-    @pytest.mark.parametrize(
-        "factory, expected_text",
-        [
-            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto"),
-            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle"),
-        ],
-    )
-    def test_get_offerer_with_confidence_rule(self, authenticated_client, factory, expected_text):
-        rule = factory()
-        url = url_for(self.endpoint, offerer_id=rule.offerer.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert f"Validation des offres : {expected_text}" in response_text
 
     def test_get_caledonian_offerer(self, authenticated_client):
         nc_offerer = offerers_factories.CaledonianVenueFactory().managingOfferer
@@ -385,7 +367,7 @@ class GetOffererTest(GetEndpointHelper):
 
     class CloseButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.CLOSE_OFFERER
-        button_label = "Fermer l'entité juridique"
+        button_label = "Fermer l&#39;entité juridique"
 
         @property
         def path(self):
@@ -1007,8 +989,8 @@ class GetOffererStatsTest(GetEndpointHelper):
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert (
-            "Offres 137 individuelles 125 réservables | 12 non réservables 56 collectives 54 réservables | 2 non réservables 1 vitrine"
-            == cards_text[0]
+            "137 individuelles 125 réservables | 12 non réservables 56 collectives 54 réservables | 2 non réservables 1 vitrine"
+            in cards_text[0]
         )
         assert "Réservations 876 individuelles 678 collectives" == cards_text[1]
         assert expected_revenue_text in cards_text[2]
@@ -1027,7 +1009,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert (
-            "Offres N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable 0 vitrine"
+            "N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable 0 vitrine"
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
@@ -1044,11 +1026,29 @@ class GetOffererStatsTest(GetEndpointHelper):
 
         mock_run_query.assert_not_called()
         assert (
-            "Offres N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable N/A vitrine"
+            "N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable N/A vitrine"
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
         assert "Chiffre d'affaires N/A" in html_parser.extract_cards_text(response.data)[2]
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle"),
+        ],
+    )
+    def test_get_offerer_with_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        url = url_for(self.endpoint, offerer_id=rule.offerer.id)
+
+        with assert_num_queries(self.expected_num_queries - 1):  # this offerer has no venue
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"{expected_text}" in response_text
 
 
 class GetOffererRevenueDetailsTest(GetEndpointHelper):
