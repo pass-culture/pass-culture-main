@@ -1804,6 +1804,19 @@
                 "title": "CinemaStock",
                 "type": "object"
             },
+            "CollectiveAdditionalFeeType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ACCOMMODATION",
+                    "TRAVEL",
+                    "MEAL",
+                    "CONSUMABLE_ITEMS",
+                    "COPYRIGHT",
+                    "APPLICATION_FEE",
+                    "OTHER"
+                ],
+                "title": "CollectiveAdditionalFeeType"
+            },
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
@@ -4471,6 +4484,39 @@
                 "title": "GetBookingsQueryParams",
                 "type": "object"
             },
+            "GetCollectiveAdditionalFeeResponseModel": {
+                "properties": {
+                    "amount": {
+                        "description": "Amount of additional fee (in \u20ac)",
+                        "example": 20.0,
+                        "title": "Amount",
+                        "type": "number"
+                    },
+                    "label": {
+                        "description": "Custom label of additional fee, when type is OTHER",
+                        "example": "various expenses",
+                        "nullable": true,
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveAdditionalFeeType"
+                            }
+                        ],
+                        "description": "Type of additional fee (transport, meal, etc.)",
+                        "example": "MEAL"
+                    }
+                },
+                "required": [
+                    "type",
+                    "label",
+                    "amount"
+                ],
+                "title": "GetCollectiveAdditionalFeeResponseModel",
+                "type": "object"
+            },
             "GetDatesResponse": {
                 "properties": {
                     "dates": {
@@ -4688,6 +4734,21 @@
             "GetPublicCollectiveOfferResponseModel": {
                 "additionalProperties": false,
                 "properties": {
+                    "additionalDetails": {
+                        "description": "Collective offer additional details",
+                        "example": "Acc\u00e8s \u00e0 la visite au 5\u00e8 \u00e9tage du b\u00e2timent",
+                        "nullable": true,
+                        "title": "Additionaldetails",
+                        "type": "string"
+                    },
+                    "additionalFees": {
+                        "description": "List of collective offer additional fees (transport, meal, etc.)",
+                        "items": {
+                            "$ref": "#/components/schemas/GetCollectiveAdditionalFeeResponseModel"
+                        },
+                        "title": "Additionalfees",
+                        "type": "array"
+                    },
                     "audioDisabilityCompliant": {
                         "description": "Is accessible for people with hearing disability",
                         "example": true,
@@ -4779,7 +4840,7 @@
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
-                        "description": "The explanation of the offer price",
+                        "description": "[\u26a0\ufe0f DEPRECATED - the price detail will be given by `servicePrice` and `additionalFees`] The explanation of the offer price",
                         "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
@@ -4879,8 +4940,14 @@
                         "nullable": true,
                         "title": "NationalProgramModel"
                     },
+                    "numberOfTeachers": {
+                        "description": "Number of accompanying adults for your collective offer",
+                        "example": 5,
+                        "title": "Numberofteachers",
+                        "type": "integer"
+                    },
                     "numberOfTickets": {
-                        "description": "Number of tickets for your collective offer",
+                        "description": "Number of students for your collective offer",
                         "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
@@ -4890,6 +4957,18 @@
                         "example": "PUBLISHED",
                         "title": "Offerstatus",
                         "type": "string"
+                    },
+                    "price": {
+                        "description": "Collective offer total price: the sum of `servicePrice` and the `additionalFees` (in \u20ac)",
+                        "example": 100.0,
+                        "title": "Price",
+                        "type": "number"
+                    },
+                    "servicePrice": {
+                        "description": "Collective offer base price, without additional fees (in \u20ac)",
+                        "example": 80.0,
+                        "title": "Serviceprice",
+                        "type": "number"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -4905,7 +4984,7 @@
                         "type": "array"
                     },
                     "totalPrice": {
-                        "description": "Collective offer price (in \u20ac)",
+                        "description": "[\u26a0\ufe0f DEPRECATED - use `price` instead] Collective offer price (in \u20ac)",
                         "example": 100.0,
                         "title": "Totalprice",
                         "type": "number"
@@ -4928,6 +5007,7 @@
                     "id",
                     "offerStatus",
                     "name",
+                    "additionalDetails",
                     "contactEmail",
                     "contactPhone",
                     "domains",
@@ -4940,7 +5020,11 @@
                     "endDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
+                    "price",
+                    "servicePrice",
+                    "additionalFees",
                     "numberOfTickets",
+                    "numberOfTeachers",
                     "location",
                     "bookings",
                     "formats"
@@ -6332,7 +6416,7 @@
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
-                        "description": "The explanation of the offer price",
+                        "description": "[\u26a0\ufe0f DEPRECATED - the price detail will be given by `servicePrice` and `additionalFees`] The explanation of the offer price",
                         "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
@@ -6427,7 +6511,7 @@
                         "type": "integer"
                     },
                     "numberOfTickets": {
-                        "description": "Number of tickets for your collective offer",
+                        "description": "Number of students for your collective offer",
                         "example": 10,
                         "nullable": true,
                         "title": "Numberoftickets",
@@ -6456,7 +6540,7 @@
                         "type": "array"
                     },
                     "totalPrice": {
-                        "description": "Collective offer price (in \u20ac)",
+                        "description": "[\u26a0\ufe0f DEPRECATED - use `price` instead] Collective offer price (in \u20ac)",
                         "example": 100.0,
                         "nullable": true,
                         "title": "Totalprice",
@@ -6585,7 +6669,7 @@
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
-                        "description": "The explanation of the offer price",
+                        "description": "[\u26a0\ufe0f DEPRECATED - the price detail will be given by `servicePrice` and `additionalFees`] The explanation of the offer price",
                         "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
@@ -6667,7 +6751,7 @@
                         "type": "integer"
                     },
                     "numberOfTickets": {
-                        "description": "Number of tickets for your collective offer",
+                        "description": "Number of students for your collective offer",
                         "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
@@ -6693,7 +6777,7 @@
                         "type": "array"
                     },
                     "totalPrice": {
-                        "description": "Collective offer price (in \u20ac)",
+                        "description": "[\u26a0\ufe0f DEPRECATED - use `price` instead] Collective offer price (in \u20ac)",
                         "example": 100.0,
                         "title": "Totalprice",
                         "type": "number"

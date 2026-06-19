@@ -123,7 +123,7 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
         msg = "Vous n'avez pas le droit d'accéder à une ressource que vous n'avez pas créée via cette API"
         raise api_errors.ApiErrors(errors={"global": [msg]}, status_code=403)
 
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
@@ -248,7 +248,7 @@ def post_collective_offer_public(
     # re-fetch related data for the serializer
     offer = repository.get_collective_offer_by_id(offer.id)
 
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
@@ -494,7 +494,7 @@ def patch_collective_offer_public(
     # re-fetch related data for the serializer
     offer = repository.get_collective_offer_by_id(offer.id)
 
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/archive", methods=["POST"])
