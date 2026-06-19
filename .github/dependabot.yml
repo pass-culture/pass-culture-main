@@ -75,3 +75,11 @@ updates:
     cooldown:
       # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
       default-days: 14
+
+  # App Engine
+  - package-ecosystem: 'pip'
+    directories:
+      - 'app-engine/image-resizing'
+    schedule:
+      # Disable dependency graph for now
+      interval: 'never'
