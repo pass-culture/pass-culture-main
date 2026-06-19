@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import typing
 
 import flask
@@ -234,3 +235,14 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)
 
 HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
+
+# by default a Decimal field will have number | string in the generated schema
+# this allows us to keep only number
+DecimalField = typing.Annotated[decimal.Decimal, pydantic_v2.WithJsonSchema({"type": "number"})]
+
+
+def format_price(value: decimal.Decimal) -> decimal.Decimal:
+    return value.quantize(decimal.Decimal("1.00"))
+
+
+DecimalPrice = typing.Annotated[DecimalField, pydantic_v2.AfterValidator(format_price)]
