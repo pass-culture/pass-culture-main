@@ -8,6 +8,7 @@ import {
   type CollectiveStockResponseModel,
 } from '@/apiClient/v1'
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -49,6 +50,7 @@ export const CollectiveOfferStockForm = ({
   mode,
   goBackLink = '/offres/collectives',
 }: CollectiveOfferStockFormProps): JSX.Element => {
+  const snackBar = useSnackBar()
   const canEditDiscount = allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
   )
@@ -111,6 +113,10 @@ export const CollectiveOfferStockForm = ({
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         serializeApiErrors(error.body, form.setError)
+      } else {
+        snackBar.error(
+          "Une erreur est survenue lors de l'enregistrement de votre stock."
+        )
       }
     }
   }

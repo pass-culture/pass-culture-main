@@ -8,8 +8,6 @@ export const RECAPTCHA_ERROR = 'Error while loading recaptcha'
 export const RECAPTCHA_ERROR_MESSAGE = 'Une erreur technique est survenue'
 export const SENT_DATA_ERROR_MESSAGE =
   'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
-export const FORM_ERROR_MESSAGE =
-  'Une ou plusieurs erreurs sont présentes dans le formulaire'
 
 export const NBSP = '\u00a0'
 
