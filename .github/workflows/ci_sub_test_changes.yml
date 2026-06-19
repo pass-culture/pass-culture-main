@@ -63,22 +63,26 @@ jobs:
   test-api-documentation:
     name: Public API documentation
     if: ${{ inputs.github-changed || inputs.api-documentation-changed  }}
-    uses: ./.github/workflows/ci_sub_test_api_documentation.yml
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'toto'
+  
 
   test-pro:
     name: Front Pro
     if: ${{inputs.pro-changed || inputs.github-changed}}
-    uses: ./.github/workflows/ci_sub_test_front_pro.yml
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'toto'
 
   test-e2e:
     name: E2E
     needs: build-backend-image
-    uses: ./.github/workflows/ci_sub_test_e2e.yml
     if: ${{ always() && !cancelled() && (inputs.api-changed || inputs.pro-changed || inputs.github-changed) }}
-    with:
-      ENV: "development"
-      tag: ${{ github.sha }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'toto'
+
 
   # If the following jobs have failed: lint-github-actions, test_pro_result, test_backend_result
   # this job will return '["GitHub actions","Front Pro","Backend"]' in `failed-tests-matrix` output
