@@ -58,6 +58,8 @@ jobs:
           # Requires changing trigger to pull_request.
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" >> "$GITHUB_OUTPUT"
+
+          # TODO: recheck me
           if [ "${FRONT_ONLY}" == "true" ]; then
             # Empty = frontend connects to shared testing backend
             echo "backend_id=" >> "$GITHUB_OUTPUT"
@@ -72,7 +74,8 @@ jobs:
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
-      custom_pcapi_backend_id: ${{ needs.deploy-preview-env-init.outputs.backend_id }}
+      # TODO: Recheck me
+      backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_id }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
