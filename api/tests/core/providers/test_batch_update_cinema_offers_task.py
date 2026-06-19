@@ -535,13 +535,15 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer_visa.idAtProvider == f"visa:166715%{venue.id}"
         assert len(offer_visa.stocks) == 2
         assert len(offer_visa.priceCategories) == 2
-        stock_vf = offer_visa.stocks[0]
+
+        stock_vf = next(stock for stock in offer_visa.stocks if stock.features == ["VF"])
         assert stock_vf.quantity == 100
         assert stock_vf.idAtProviders == "film166715_session1"
         assert stock_vf.features == ["VF"]
         assert stock_vf.priceCategory.price == decimal.Decimal("5.00")
         assert stock_vf.priceCategory.label == "Tarif pass Culture"
-        stock_vo = offer_visa.stocks[1]
+
+        stock_vo = next(stock for stock in offer_visa.stocks if stock.features == ["VO"])
         assert stock_vo.quantity == 200
         assert stock_vo.idAtProviders == "film166715_session2"
         assert stock_vo.features == ["VO"]
@@ -550,9 +552,11 @@ class BatchUpdateCinemaOffersTaskTest:
 
         assert offer_allocine.product == allocine_product
         assert offer_allocine.idAtProvider == f"allocine_id:1000015954%{venue.id}"
+
         assert len(offer_allocine.priceCategories) == 1
         assert offer_allocine.priceCategories[0].label == "Tarif pass Culture"
         assert offer_allocine.priceCategories[0].price == decimal.Decimal("6.00")
+
         assert len(offer_allocine.stocks) == 1
         assert offer_allocine.stocks[0].priceCategory == offer_allocine.priceCategories[0]
         assert offer_allocine.stocks[0].quantity == 50
