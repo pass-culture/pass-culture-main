@@ -14,8 +14,8 @@ on:
         type: string
         required: false
         default: "2d"
-      pcapi_backend_url:
-        description: "Backend URL to inject into .env.testing (empty = no override)"
+      backend_url:
+        description: "Backend URL to inject into .env.testing (empty = no override. It will use the default backend URL https://backend.testing.passculture.team)"
         required: false
         default: ""
         type: string
@@ -32,12 +32,11 @@ on:
         type: string
         required: false
         default: "2d"
-      pcapi_backend_url:
+      backend_url:
         description: "Backend URL to inject into .env.testing (empty = no override)"
         required: false
         default: ""
         type: string
-
       source_branch:
         type: string
         required: false
@@ -105,10 +104,10 @@ jobs:
           service_account: ${{ vars.PRO_PREVIEW_SERVICE_ACCOUNT }}
 
       - name: Override backend URL in .env.testing
-        if: inputs.pcapi_backend_url != ''
+        if: inputs.backend_url != ''
         env:
           DEFAULT_BACKEND_URL: https://backend.testing.passculture.team
-          BACKEND_URL: ${{ inputs.pcapi_backend_url }}
+          BACKEND_URL: ${{ inputs.backend_url }}
         run: |
           echo "Rewriting backend URL"
           echo "  from: ${DEFAULT_BACKEND_URL}"
