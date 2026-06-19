@@ -45,9 +45,16 @@ const CardHeader = ({
   subtitleClassName,
   icon,
 }: CardHeaderProps) => (
-  <div className={cn(styles['card-header-container'], className)}>
+  <div
+    className={cn(
+      {
+        [styles['card-header-container']]: !!icon,
+      },
+      className
+    )}
+  >
     {icon && <SvgIcon src={icon} className={styles['card-header-icon']} />}
-    <div className={cn(styles['card-header'], className)}>
+    <div className={styles['card-header']}>
       <TitleTag className={cn(styles['card-title'], titleClassName)}>
         {title}
       </TitleTag>
