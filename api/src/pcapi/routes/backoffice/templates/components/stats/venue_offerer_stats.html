@@ -9,7 +9,7 @@
             <h5>Offres</h5>
             <div>
               {% if fraud_form %}
-                {{ object | format_confidence_level_badge_for_venue }}
+                {{ object | format_confidence_level_badge_for_venue_or_offerer }}
                 {{ build_modal_form("edit-fraud", fraud_dst , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil-square") }}
               {% endif %}
             </div>

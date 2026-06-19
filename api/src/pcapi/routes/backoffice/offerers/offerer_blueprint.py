@@ -1,4 +1,5 @@
 import datetime
+import enum
 import typing
 
 import sqlalchemy as sa
@@ -42,6 +43,7 @@ from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import logs as logs_utils
 from pcapi.routes.backoffice.utils import response as response_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.utils import date as date_utils
@@ -183,6 +185,47 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     return row
 
 
+class OffererDetailsActionType(enum.StrEnum):
+    CONNECT_AS = enum.auto()
+    UPDATE = enum.auto()
+    ERP_SYNCHRONISATION = enum.auto()
+    PAUSE = enum.auto()
+    VALIDATE = enum.auto()
+    REJECT = enum.auto()
+    CLOSE = enum.auto()
+    SUSPEND = enum.auto()
+    UNSUSPEND = enum.auto()
+    DELETE = enum.auto()
+
+
+def _get_offerer_details_actions(row: sa.engine.Row) -> DetailsActions:
+    offerer = row.Offerer
+    offerer_details_actions = DetailsActions(OffererDetailsActionType)
+    if access_control.has_current_user_permission(perm_models.Permissions.CONNECT_AS_PRO):
+        offerer_details_actions.add_action(OffererDetailsActionType.CONNECT_AS)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
+        offerer_details_actions.add_action(OffererDetailsActionType.UPDATE)
+        if row.has_non_virtual_venues:
+            offerer_details_actions.add_action(OffererDetailsActionType.ERP_SYNCHRONISATION)
+    if access_control.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER):
+        if not offerer.isValidated:
+            offerer_details_actions.add_action(OffererDetailsActionType.VALIDATE)
+        if not offerer.isPending:
+            offerer_details_actions.add_action(OffererDetailsActionType.PAUSE)
+        if not offerer.isRejected:
+            offerer_details_actions.add_action(OffererDetailsActionType.REJECT)
+    if access_control.has_current_user_permission(perm_models.Permissions.CLOSE_OFFERER) and offerer.isValidated:
+        offerer_details_actions.add_action(OffererDetailsActionType.CLOSE)
+    if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        if offerer.isActive:
+            offerer_details_actions.add_action(OffererDetailsActionType.SUSPEND)
+        else:
+            offerer_details_actions.add_action(OffererDetailsActionType.UNSUSPEND)
+    if access_control.has_current_user_permission(perm_models.Permissions.DELETE_PRO_ENTITY):
+        offerer_details_actions.add_action(OffererDetailsActionType.DELETE)
+    return offerer_details_actions
+
+
 def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.EditOffererForm | None = None) -> str:
     row = _load_offerer_data(offerer_id)
     offerer: offerers_models.Offerer = row.Offerer
@@ -191,17 +234,29 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         raise NotFound()
 
     bank_information_status = row.bank_information or {}
-    if not edit_offerer_form:
-        edit_offerer_form = offerer_forms.EditOffererForm(
+    actions = _get_offerer_details_actions(row)
+    kwargs = {}
+
+    if OffererDetailsActionType.CONNECT_AS in actions:
+        kwargs["connect_as"] = get_connect_as(
+            object_type="offerer",
+            object_id=offerer_id,
+            pc_pro_path=urls.build_pc_pro_offerer_link(offerer),
+        )
+
+    if OffererDetailsActionType.UPDATE in actions:
+        kwargs["edit_offerer_form"] = edit_offerer_form or offerer_forms.EditOffererForm(
             name=offerer.name,
             tags=offerer.tags,
         )
-
-    fraud_form = (
-        offerer_forms.FraudForm(confidence_level=offerer.confidenceLevel.value if offerer.confidenceLevel else None)
-        if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
-        else None
-    )
+    if OffererDetailsActionType.ERP_SYNCHRONISATION in actions:
+        kwargs["zendesk_sell_synchronisation_form"] = empty_forms.EmptyForm()
+    if OffererDetailsActionType.SUSPEND in actions:
+        kwargs["suspension_form"] = offerer_forms.SuspendOffererForm()
+    if OffererDetailsActionType.UNSUSPEND in actions:
+        kwargs["suspension_form"] = offerer_forms.SuspendOffererForm()
+    if OffererDetailsActionType.DELETE in actions:
+        kwargs["delete_offerer_form"] = empty_forms.EmptyForm()
 
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
@@ -225,12 +280,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         and access_control.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
-    connect_as_offerer = get_connect_as(
-        object_type="offerer",
-        object_id=offerer_id,
-        pc_pro_path=urls.build_pc_pro_offerer_link(offerer),
-    )
-
     return render_template(
         "offerer/get.html",
         search_form=search_form,
@@ -240,21 +289,12 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
         bank_information_status=bank_information_status,
-        edit_offerer_form=edit_offerer_form,
-        suspension_form=offerer_forms.SuspendOffererForm(),
-        delete_offerer_form=empty_forms.EmptyForm(),
-        fraud_form=fraud_form,
         show_subscription_tab=show_subscription_tab,
         has_fraudulent_booking=row.has_fraudulent_booking,
         has_reimbursement_suspended=row.has_reimbursement_suspended,
         active_tab=request.args.get("active_tab", "history"),
-        connect_as_offerer=connect_as_offerer,
-        zendesk_sell_synchronisation_form=(
-            empty_forms.EmptyForm()
-            if row.has_non_virtual_venues
-            and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-            else None
-        ),
+        allowed_actions=actions,
+        **kwargs,
     )
 
 
@@ -309,18 +349,30 @@ def get_stats(offerer_id: int) -> response_utils.BackofficeResponse:
     offerer = (
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
-        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .options(
+            sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id),
+            sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
+        )
         .one_or_none()
     )
     if not offerer:
         raise NotFound()
 
     stats = offerers_api.get_venues_stats(venue_ids=(venue.id for venue in offerer.managedVenues))
+    fraud_form = (
+        offerer_forms.FraudForm(confidence_level=offerer.confidenceLevel.value if offerer.confidenceLevel else None)
+        if access_control.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        else None
+    )
     return render_template(
         "components/stats/venue_offerer_stats.html",
         urls=_get_stat_urls(offerer),
         stats=stats,
         object=offerer,
+        fraud_dst=url_for("backoffice_web.offerer.update_for_fraud", offerer_id=offerer.id),
+        fraud_form=fraud_form,
     )
 
 
