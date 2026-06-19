@@ -15,7 +15,6 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
-from pcapi.utils.decimal import float_to_decimal
 from pcapi.utils.transaction_manager import on_commit
 
 
@@ -31,8 +30,8 @@ def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> m
     start = stock_data.startDatetime
     end = stock_data.endDatetime
     booking_limit_datetime = stock_data.bookingLimitDatetime
-    price = float_to_decimal(stock_data.price)
-    service_price = float_to_decimal(stock_data.servicePrice) if stock_data.servicePrice is not None else None
+    price = stock_data.price
+    service_price = stock_data.servicePrice
     number_of_tickets = stock_data.numberOfTickets
     number_of_teachers = stock_data.numberOfTeachers
     price_detail = stock_data.priceDetail
@@ -65,7 +64,7 @@ def create_collective_stock(stock_data: "CollectiveStockCreationBodyModel") -> m
 
     if stock_data.collectiveAdditionalFees:
         collective_stock.collectiveAdditionalFees = [
-            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=float_to_decimal(fee.amount))
+            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=fee.amount)
             for fee in stock_data.collectiveAdditionalFees
         ]
 
@@ -176,9 +175,7 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     # update the additional fees
     additional_fees: list[dict] | None = updatable_fields.pop("collectiveAdditionalFees", None)
     if additional_fees is not None:
-        new_amount_by_type_label = {
-            (fee["type"], fee["label"]): float_to_decimal(fee["amount"]) for fee in additional_fees
-        }
+        new_amount_by_type_label = {(fee["type"], fee["label"]): fee["amount"] for fee in additional_fees}
         current_fee_by_type_label = {(fee.type, fee.label): fee for fee in stock.collectiveAdditionalFees}
 
         for type_label, new_amount in new_amount_by_type_label.items():
@@ -247,14 +244,12 @@ def _extract_updatable_fields_from_stock_data(
     if "bookingLimitDatetime" not in stock_data.keys():
         booking_limit_datetime = stock.bookingLimitDatetime
 
-    price = stock_data.get("price")
-    service_price = stock_data.get("servicePrice")
     updatable_fields = {
         "startDatetime": start_datetime,
         "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,
-        "price": float_to_decimal(price) if price is not None else None,
-        "servicePrice": float_to_decimal(service_price) if service_price is not None else None,
+        "price": stock_data.get("price"),
+        "servicePrice": stock_data.get("servicePrice"),
         "collectiveAdditionalFees": stock_data.get("collectiveAdditionalFees"),
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "numberOfTeachers": stock_data.get("numberOfTeachers"),

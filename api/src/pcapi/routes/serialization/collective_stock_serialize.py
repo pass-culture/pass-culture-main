@@ -1,4 +1,5 @@
 import collections
+import decimal
 import typing
 from datetime import datetime
 from datetime import timezone
@@ -12,7 +13,7 @@ from pcapi.models import feature
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.utils.decimal import float_to_decimal
+from pcapi.serialization.utils import DecimalPrice
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -78,7 +79,7 @@ def validate_price_detail(price_detail: str | None) -> str | None:
 class CollectiveAdditionalFeeModel(HttpBodyModel):
     type: models.CollectiveAdditionalFeeType
     label: str | None
-    amount: float = pydantic_v2.Field(ge=0)
+    amount: DecimalPrice = pydantic_v2.Field(ge=0)
 
     @pydantic_v2.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
@@ -92,7 +93,7 @@ class CollectiveAdditionalFeeModel(HttpBodyModel):
 
 
 def _validate_total_price(
-    price: float, service_price: float, additional_fees: list[CollectiveAdditionalFeeModel]
+    price: decimal.Decimal, service_price: decimal.Decimal, additional_fees: list[CollectiveAdditionalFeeModel]
 ) -> None:
     # check additional fees type and label duplicates
     if additional_fees:
@@ -109,8 +110,8 @@ def _validate_total_price(
             raise_error_from_location(None, loc="collectiveAdditionalFees", msg="Un label est en doublon")
 
     # check total price
-    total_price = float_to_decimal(service_price) + sum(float_to_decimal(fee.amount) for fee in additional_fees)
-    if total_price != float_to_decimal(price):
+    total_price = service_price + sum(fee.amount for fee in additional_fees)
+    if total_price != price:
         raise_error_from_location(
             None,
             loc="price",
@@ -126,8 +127,8 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     startDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_start_datetime)]
     endDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_end_datetime)]
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
-    price: typing.Annotated[float, pydantic_v2.AfterValidator(validate_price)]
-    servicePrice: float | None = pydantic_v2.Field(default=None, ge=0)
+    price: typing.Annotated[DecimalPrice, pydantic_v2.AfterValidator(validate_price)]
+    servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
@@ -175,8 +176,8 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     bookingLimitDatetime: typing.Annotated[
         datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
     ] = None
-    price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(default=None)
-    servicePrice: float | None = pydantic_v2.Field(default=None, ge=0)
+    price: typing.Annotated[DecimalPrice | None, pydantic_v2.AfterValidator(validate_price)] = None
+    servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
