@@ -39,7 +39,7 @@ jobs:
       preview_id: ${{ steps.compute-labels.outputs.preview_id }}
       backend_url_for_pro: ${{ steps.compute-labels.outputs.backend_url_for_pro }}
       backend_url: ${{ steps.compute-labels.outputs.backend_url }}
-      backoffice: ${{ steps.compute-labels.outputs.backoffice }}
+      backoffice_url: ${{ steps.compute-labels.outputs.backoffice_url }}
       commit_sha: ${{ steps.checkout.outputs.commit }}
 
     steps:
@@ -120,9 +120,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    outputs:
-      backend_url: ${{ steps.deploy-api.outputs.backend_url }}
-      backoffice_url: ${{ steps.deploy-api.outputs.backoffice_url }}
     needs:
       - deploy-preview-env-init
       - push-pcapi
