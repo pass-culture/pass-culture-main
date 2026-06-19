@@ -8,7 +8,10 @@ import * as yup from 'yup'
 import { api } from '@/apiClient/api'
 import type { ProAdviceModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFER_PRO_ADVICE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_EXPOSURE_QUERY_KEY,
+  GET_OFFER_PRO_ADVICE_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Button } from '@/design-system/Button/Button'
@@ -96,6 +99,7 @@ export function OfferRecommendationForm({
       }
 
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])
+      await mutate([GET_OFFER_EXPOSURE_QUERY_KEY, offerId])
       logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
         offerId,
         action: 'validated',
@@ -113,6 +117,7 @@ export function OfferRecommendationForm({
         path: { offer_id: offerId },
       })
       await mutate([GET_OFFER_PRO_ADVICE_QUERY_KEY, offerId])
+      await mutate([GET_OFFER_EXPOSURE_QUERY_KEY, offerId])
       snackBar.success('Votre recommandation a bien été supprimée')
       logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
         offerId,
