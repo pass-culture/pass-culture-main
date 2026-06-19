@@ -72,7 +72,7 @@
     "react-dom": "19.2.7",
     "react-dropzone": "15.0.0",
     "react-hook-form": "7.78.0",
-    "react-instantsearch": "7.35.0",
+    "react-instantsearch": "7.35.1",
     "react-redux": "9.3.0",
     "react-router": "7.17.0",
     "swr": "2.4.1",
