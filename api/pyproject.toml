@@ -86,7 +86,7 @@ dependencies = [
   "wtforms ==3.2.2",
   "wtforms-sqlalchemy ==0.4.2",
   "xlsxwriter ==3.2.9",
-  "zeep ==4.3.2",
+  "zeep==4.3.3",
 ]
 
 [dependency-groups]
