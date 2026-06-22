@@ -1,3 +1,6 @@
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -28,7 +31,9 @@ export const ActionBarLeft = ({
   saveEditionChangesButtonRef,
   step,
 }: Readonly<ActionBarLeftProps>) => {
+  const { logEvent } = useAnalytics()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+  const { offerId } = useIndividualOfferContext()
 
   if (mode === OFFER_WIZARD_MODE.CREATION) {
     return (
@@ -76,7 +81,12 @@ export const ActionBarLeft = ({
       )}
       <Button
         type="submit"
-        onClick={onClickNext}
+        onClick={() => {
+          logEvent(Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION, {
+            offerId: offerId ?? undefined,
+          })
+          onClickNext?.()
+        }}
         disabled={isDisabled}
         ref={saveEditionChangesButtonRef}
         label="Enregistrer les modifications"
