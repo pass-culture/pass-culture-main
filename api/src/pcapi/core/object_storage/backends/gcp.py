@@ -210,26 +210,6 @@ class GCPBackend(BaseBackend):
             raise exc
 
 
-class GCPAlternateBackend(GCPBackend):
-    """A backend for GCP Storage that connects to an alternate bucket.
-
-    It is used during the transition between 2 buckets (accessible
-    with the same credentials), with the following steps:
-
-    0. Use single "soon-to-be-old" GCP backend.
-
-    1. Use both GCP and GCP_ALTERNATE backends. The former uses the
-       "soon-to-be-old" bucket name, the latter uses the new.
-
-    2. Switch bucket names (in GCP secrets) and stop using GCP_ALTERNATE.
-
-    3. (optional) Delete this class and the `GCP_ALTERNATE_BUCKET_NAME`
-       secret.
-    """
-
-    default_bucket_name = settings.GCP_ALTERNATE_BUCKET_NAME
-
-
 class GCPData(GCPBackend):
     default_bucket_name = settings.GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME
 

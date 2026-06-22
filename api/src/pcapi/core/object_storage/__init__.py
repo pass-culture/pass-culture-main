@@ -1,6 +1,5 @@
 from pcapi import settings
 from pcapi.core.object_storage.backends.base import BaseBackend
-from pcapi.core.object_storage.backends.gcp import GCPAlternateBackend
 from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.local import LocalBackend
 
@@ -8,7 +7,7 @@ from pcapi.core.object_storage.backends.local import LocalBackend
 GCP = "GCP"
 GCP_ALTERNATE = "GCP_ALTERNATE"
 LOCAL_FILE_STORAGE = "local"
-BACKENDS_MAPPING = {GCP: GCPBackend, GCP_ALTERNATE: GCPAlternateBackend, LOCAL_FILE_STORAGE: LocalBackend}
+BACKENDS_MAPPING = {GCP: GCPBackend, LOCAL_FILE_STORAGE: LocalBackend}
 
 
 def check_backend_setting() -> None:
