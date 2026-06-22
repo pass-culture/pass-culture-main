@@ -587,7 +587,7 @@ class EMSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert (
             created_offers[0].description
@@ -643,7 +643,7 @@ class EMSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert (
             created_offers[0].description
@@ -732,7 +732,7 @@ class EMSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
@@ -785,7 +785,7 @@ class EMSStocksTest:
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddress != venue_provider.venue.offererAddress
         assert created_offers[0].offererAddress.address == venue_provider.venue.offererAddress.address
-        assert created_offers[0].offererAddress.label == None
+        assert created_offers[0].offererAddress.label is None
         assert created_offers[0].offererAddress.type != "VENUE_LOCATION"
         assert (
             created_offers[0].description
