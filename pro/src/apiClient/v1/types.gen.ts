@@ -1803,6 +1803,10 @@ export type ExposureEventResponseModel = {
      */
     startDate: string;
     type: ExposureEventType;
+    /**
+     * Viewsonperiod
+     */
+    viewsOnPeriod: number | null;
 };
 
 /**
@@ -2909,6 +2913,10 @@ export type GetOfferExposureResponseModel = {
      * Events
      */
     events: Array<ExposureEventResponseModel>;
+    /**
+     * Views
+     */
+    views: number | null;
 };
 
 /**

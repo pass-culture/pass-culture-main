@@ -134,6 +134,27 @@ OFFER_CONSULTATION_COUNT = [
 ]
 
 
+class MockOfferCumulativeViewQueryResult:
+    day: datetime.date
+    views: int
+
+    def __init__(self, day: datetime.date, views: int = 0):
+        self.day = day
+        self.views = views
+
+
+OFFER_CONSULTATION_CUMULATIVE_COUNT = [
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2025, 12, 1), views=5),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 1, 1), views=10),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 2, 1), views=30),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 3, 1), views=45),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 4, 1), views=80),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 5, 1), views=85),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 6, 1), views=105),
+    MockOfferCumulativeViewQueryResult(day=datetime.date(2026, 7, 1), views=200),
+]
+
+
 class MockTopOffersByViewsQueryResult:
     id: str
     views: int
