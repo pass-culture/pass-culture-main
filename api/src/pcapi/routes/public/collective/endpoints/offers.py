@@ -537,7 +537,12 @@ def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferB
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
-    resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_200": (offers_serialization.GetCollectiveFormatListModel, http_responses.HTTP_200_MESSAGE)}
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
+    ),
 )
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """
