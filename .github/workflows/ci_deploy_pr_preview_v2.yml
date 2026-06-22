@@ -61,8 +61,8 @@ jobs:
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" | tee -a "$GITHUB_OUTPUT"
 
-          backend_url=https://pr-${PREVIEW_ID}.backend.testing.passculture.team
-          backoffice_url=https://pr-${PREVIEW_ID}.backoffice.testing.passculture.team
+          backend_url=https://preview-${PREVIEW_ID}.backend.testing.passculture.team
+          backoffice_url=https://preview-${PREVIEW_ID}.backoffice.testing.passculture.team
 
           echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           echo "backoffice_url=${backoffice_url}" | tee -a "$GITHUB_OUTPUT"
