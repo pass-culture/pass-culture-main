@@ -4043,18 +4043,24 @@ class GetUserPendingAndValidatedOffererTest:
 class CloseVenueTest:
     def test_open_venue_becomes_closed(self):
         venue = offerers_factories.VenueFactory(state=None)
+        author = users_factories.BaseUserFactory()
+
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue)
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+
+        assert not venue.bankAccountLinks
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_closed_venue_stays_closed(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
@@ -4161,7 +4167,5 @@ class IsVenueAnothersVenuePricingPointTest:
         assert not offerers_api.is_venue_anothers_venue_pricing_point(pricing_point)
 
     def test_venue_anothers_active_venue_pricing_point(self):
-        pricing_point = offerers_factories.VenueFactory()
-        offerers_factories.VenuePricingPointLinkFactory(pricingPoint=pricing_point)
-
-        assert offerers_api.is_venue_anothers_venue_pricing_point(pricing_point)
+        venue = offerers_factories.VenuePricingPointLinkFactory().pricingPoint
+        assert offerers_api.is_venue_anothers_venue_pricing_point(venue)

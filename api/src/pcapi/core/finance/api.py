@@ -67,6 +67,7 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.offerers import api as offerers_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
@@ -3732,6 +3733,53 @@ def has_venue_incoming_cashflows(venue: offerers_models.Venue) -> bool:
     return db.session.query(
         db.session.query(models.Cashflow)
         .join(models.Cashflow.batch)
-        .filter(models.Cashflow.bankAccount.in_(bank_account_ids), models.CashflowBatch.label == latest_label)
+        .filter(models.Cashflow.bankAccountId.in_(bank_account_ids), models.CashflowBatch.label == latest_label)
         .exists()
     ).scalar()
+
+
+class UnlinkBankAccountError(Exception):
+    pass
+
+
+class VenueIsAnothersPricingPointError(UnlinkBankAccountError):
+    pass
+
+
+class VenueHasIncomingCashflowsError(UnlinkBankAccountError):
+    pass
+
+
+def unlink_bank_accounts(venue: offerers_models.Venue, author: users_models.User) -> None:
+    """Unlink venue's bank account links, if any
+
+    The deleted bank account links are saved using the history api
+    """
+    if not venue.bankAccountLinks:
+        return
+
+    if offerers_api.is_venue_anothers_venue_pricing_point(venue):
+        raise VenueIsAnothersPricingPointError()
+
+    if has_venue_incoming_cashflows(venue):
+        raise VenueHasIncomingCashflowsError()
+
+    venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+
+    # snapshot update was not designed for relations
+    # however, as long as all the relevant information are saved,
+    # the format does not matter that much.
+    venue_snapshot.trace_update_raw(
+        {
+            f"venue.bankAccountLink.{bank_account_link.id}": {
+                "old": f"bankAccountId.{bank_account_link.bankAccountId}",
+                "new": None,
+            }
+            for bank_account_link in venue.bankAccountLinks
+        }
+    )
+    venue_snapshot.add_action()
+
+    db.session.query(offerers_models.VenueBankAccountLink).filter_by(venueId=venue.id).delete(
+        synchronize_session="evaluate"
+    )

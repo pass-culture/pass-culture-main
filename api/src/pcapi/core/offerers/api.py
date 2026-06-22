@@ -23,6 +23,7 @@ import sqlalchemy.orm as sa_orm
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
@@ -3446,11 +3447,13 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def close_venue(venue: models.Venue) -> None:
+def close_venue(venue: models.Venue, author: users_models.User) -> None:
     if venue.is_closed:
         return
 
     venue.state = models.VenueState.CLOSING
+
+    finance_api.unlink_bank_accounts(venue, author)
 
     payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
     on_commit(
