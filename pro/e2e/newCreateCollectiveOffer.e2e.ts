@@ -1,11 +1,12 @@
 import type { Page } from '@playwright/test'
 import { addDays, format } from 'date-fns'
-import type { Response } from 'playwright-core'
-
 import {
-  BOOKABLE_OFFERS_COLUMNS,
-  TEMPLATE_OFFERS_COLUMNS,
-} from './common/constants'
+  type APIRequestContext,
+  request as playwrightRequest,
+  type Response,
+} from 'playwright-core'
+
+import { COLLECTIVE_OFFERS_COLUMNS } from './common/constants'
 import { expect, test } from './fixtures/createCollectiveOffer'
 import type { AccessibilityResult } from './fixtures/desk'
 import {
@@ -17,14 +18,16 @@ import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
 import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
   isGetCollectiveOffersBookableResponse,
-  isGetCollectiveOffersTemplateResponse,
   isGetDomainsResponse,
   isGetInstitutionalRedactorsResponse,
+  isPatchOffersResponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
+import { BASE_API_URL } from './helpers/sandbox'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
 const venueName = 'Mon Lieu A'
@@ -35,21 +38,29 @@ const defaultBookingLimitDate = addDays(new Date(), 1)
 const commonOfferData = {
   title: newOfferName,
   description: 'Bookable draft offer',
-  email: 'example@passculture.app', // gitleaks:ignore
+  email: 'example@test.com',
   date: defaultDate,
   bookingLimitDate: defaultBookingLimitDate,
   time: '18:30',
-  participants: '10',
-  price: '10',
+  students: '10',
+  teachers: '2',
+  price: '100', // TODO(PC-41977) Update price
   priceDescription: 'description',
   institution: 'COLLEGE 123',
 }
 
-// TODO(mdesquilbet-pass, 2026-06-24): when cleaning the WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS ff :
-//     - rename this file `createCollectiveTemplateOffer.ts`
-//     - remove all non-template related tests
 test.describe('Create collective offers', () => {
+  let requestContext: APIRequestContext
   test.beforeEach(async ({ authenticatedPage: page }) => {
+    requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      {
+        name: 'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
+        isActive: true,
+      },
+    ])
     await navigateToHubAndPickVenue(page, venueName)
     await page.goto('/offre/creation')
     await mockAddressSearch(page)
@@ -60,20 +71,21 @@ test.describe('Create collective offers', () => {
     checkAccessibility,
   }) => {
     await checkAccessibility()
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(page.getByText(`Adresse : ${venueFullAddress}`)).toBeVisible()
     await publishAndSearchOffer(page, checkAccessibility)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         `N°7${newOfferName}`,
         format(commonOfferData.date, 'dd/MM/yyyy'),
-        '10€',
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         'COLLEGE 123 75000',
         `1 boulevard Poissonnière 75002 Paris`,
         'publiée',
@@ -85,12 +97,13 @@ test.describe('Create collective offers', () => {
     authenticatedPage: page,
     checkAccessibility,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
 
     await page.getByLabel('Autre adresse').click()
     await autoCompleteAddress(page)
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(
       page.getByText('Adresse : 3 RUE DE VALOIS, 75008, Paris')
@@ -98,12 +111,12 @@ test.describe('Create collective offers', () => {
     await publishAndSearchOffer(page, checkAccessibility)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         `N°8${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        '10€',
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         'COLLEGE 123 75000',
         '3 RUE DE VALOIS 75008 Paris',
         'publiée',
@@ -116,11 +129,12 @@ test.describe('Create collective offers', () => {
     authenticatedPage: page,
     checkAccessibility,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await page.getByLabel('Autre adresse').click()
     await fillCustomAddress(page, expect)
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(
       page.getByText('Intitulé : Libellé de mon adresse custom')
@@ -131,12 +145,12 @@ test.describe('Create collective offers', () => {
     await publishAndSearchOffer(page, checkAccessibility)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         `N°9${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        '10€',
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         'COLLEGE 123 75000',
         'Libellé de mon adresse custom - Place de la gare 12312 Y',
         'publiée',
@@ -150,10 +164,11 @@ test.describe('Create collective offers', () => {
     authenticatedPage: page,
     checkAccessibility,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await page.getByLabel('En établissement scolaire').click()
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(page.getByText('Dans l’établissement scolaire')).toBeVisible()
     await expect(
@@ -162,12 +177,12 @@ test.describe('Create collective offers', () => {
     await publishAndSearchOffer(page, checkAccessibility)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         `N°10${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        '10€',
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         'COLLEGE 123 75000',
         "Dans l'établissement",
         'publiée',
@@ -182,11 +197,12 @@ test.describe('Create collective offers', () => {
     authenticatedPage: page,
     checkAccessibility,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await page.getByLabel('À déterminer avec l’enseignant').click()
     await page.getByLabel('Commentaire').fill('Test commentaire')
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(page.getByText('À déterminer avec l’enseignant')).toBeVisible()
     await expect(page.getByText('Commentaire : Test commentaire')).toBeVisible()
@@ -196,12 +212,12 @@ test.describe('Create collective offers', () => {
     await publishAndSearchOffer(page, checkAccessibility)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         `N°11${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        '10€',
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         'COLLEGE 123 75000',
         'À déterminer',
         'publiée',
@@ -213,39 +229,14 @@ test.describe('Create collective offers', () => {
     ])
   })
 
-  test('Create collective offer template and use it in duplication page', async ({
-    authenticatedPage: page,
-    checkAccessibility,
-  }) => {
-    await page.getByLabel('Une offre vitrine').first().click()
-    await fillBasicOFferForm(page)
-    await fillOfferDetails(page, checkAccessibility, true)
-    await expect(page.getByText(`Adresse : ${venueFullAddress}`)).toBeVisible()
-    await publishAndSearchOffer(
-      page,
-      checkAccessibility,
-      isGetCollectiveOffersTemplateResponse
-    )
-
-    await expectCollectiveOffersAreFound(page, [
-      TEMPLATE_OFFERS_COLUMNS,
-      [
-        '',
-        `Offre vitrine${commonOfferData.title}`,
-        'Toute l’année scolaire',
-        `1 boulevard Poissonnière 75002 Paris`,
-        'publiée',
-      ],
-    ])
-  })
-
   test('Create collective bookable offers with a precise address (the venue address, selected by default) and update location', async ({
     authenticatedPage: page,
     checkAccessibility,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await publishAndSearchOffer(page, checkAccessibility)
 
@@ -269,11 +260,12 @@ test.describe('Create collective offers', () => {
     checkAccessibility,
     offerDraft,
   }) => {
-    await fillBasicOFferForm(page)
+    await fillBasicOfferForm(page)
     await page.getByLabel('Autre adresse').click()
     await autoCompleteAddress(page)
     await fillOfferDetails(page, checkAccessibility)
     await fillDatesAndPrice(page, checkAccessibility)
+    await fillInformations(page, checkAccessibility)
     await fillInstitution(page, checkAccessibility)
     await expect(
       page.getByRole('heading', { name: 'Détails de l’offre' })
@@ -304,12 +296,12 @@ test.describe('Create collective offers', () => {
     ])
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.participants} participants`,
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         commonOfferData.institution,
         '3 RUE DE VALOIS 75008 Paris',
         'brouillon',
@@ -326,19 +318,19 @@ test.describe('Create collective offers', () => {
     ])
 
     await page.getByRole('link', { name: `${newOfferName}` }).click()
-    await page.getByRole('link', { name: '5 Aperçu' }).click()
+    await page.getByRole('link', { name: '6 Aperçu' }).click()
     await page.getByText('Publier l’offre').click()
     await page.getByText('Voir mes offres').click()
     await page.getByText('Réinitialiser les filtres').click()
     await searchOffer(page)
 
     await expectCollectiveOffersAreFound(page, [
-      BOOKABLE_OFFERS_COLUMNS,
+      COLLECTIVE_OFFERS_COLUMNS,
       [
         '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.participants} participants`,
+        `${commonOfferData.price}€${commonOfferData.students} participants`,
         commonOfferData.institution,
         '3 RUE DE VALOIS 75008 Paris',
         'publiée',
@@ -353,7 +345,7 @@ test.describe('Create collective offers', () => {
   })
 })
 
-async function fillBasicOFferForm(page: Page) {
+async function fillBasicOfferForm(page: Page) {
   await Promise.all([
     page.waitForResponse(isGetDomainsResponse),
     page.getByText('Étape suivante').click(),
@@ -369,10 +361,7 @@ async function fillBasicOFferForm(page: Page) {
 
 async function fillOfferDetails(
   page: Page,
-  checkAccessibility: (
-    disabledRules?: string[]
-  ) => Promise<AccessibilityResult>,
-  withFormCheck = false
+  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
 ) {
   await page.getByLabel(/Titre de l’offre/).fill(commonOfferData.title)
   await page
@@ -380,14 +369,6 @@ async function fillOfferDetails(
     .fill(commonOfferData.description)
   await page.getByText('Collège').click()
   await page.getByText('6e').click()
-  await page.getByLabel(/Email/).first().fill(commonOfferData.email)
-  await page
-    .getByLabel(/Email auquel envoyer les notifications/)
-    .fill(commonOfferData.email)
-
-  if (withFormCheck) {
-    await page.getByLabel('Via un formulaire').click()
-  }
   await checkAccessibility()
 
   await page.getByText('Enregistrer et continuer').click()
@@ -398,21 +379,16 @@ async function fillDatesAndPrice(
   checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
 ) {
   await expect(
-    page.getByRole('heading', {
-      name: 'Indiquez le prix et la date de votre offre',
-    })
+    page.getByRole('heading', { name: 'Date de votre offre' })
   ).toBeVisible()
   await page
     .getByLabel(/Date de début */)
     .fill(format(commonOfferData.date, 'yyyy-MM-dd'))
   await page.getByLabel(/Horaire */).fill(commonOfferData.time)
+  await page.getByLabel(/Nombre d'élèves */).fill(commonOfferData.students)
   await page
-    .getByLabel(/Nombre de participants */)
-    .fill(commonOfferData.participants)
-  await page.getByLabel(/Prix total TTC/).fill(commonOfferData.price)
-  await page
-    .getByLabel(/Informations sur le prix */)
-    .fill(commonOfferData.priceDescription)
+    .getByLabel(/Nombre d'accompagnateurs */)
+    .fill(commonOfferData.teachers)
   await page
     .getByLabel(/Date limite de réservation */)
     .fill(format(commonOfferData.bookingLimitDate, 'yyyy-MM-dd'))
@@ -420,6 +396,27 @@ async function fillDatesAndPrice(
 
   await Promise.all([
     page.waitForResponse(isPostCollectiveStocksResponse),
+    page.getByText('Enregistrer et continuer').click(),
+  ])
+}
+
+async function fillInformations(
+  page: Page,
+  checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
+) {
+  await expect(
+    page.getByRole('heading', {
+      name: 'À quel email le pass Culture peut-il vous envoyer des notifications ?',
+    })
+  ).toBeVisible()
+  await page.getByLabel(/Email/).nth(1).fill(commonOfferData.email)
+  await page
+    .getByLabel(/Email auquel envoyer les notifications/)
+    .fill(commonOfferData.email)
+  await checkAccessibility()
+
+  await Promise.all([
+    page.waitForResponse(isPatchOffersResponse),
     page.getByText('Enregistrer et continuer').click(),
   ])
 }
