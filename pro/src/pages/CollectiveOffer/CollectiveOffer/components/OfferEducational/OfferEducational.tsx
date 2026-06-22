@@ -11,10 +11,12 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -65,6 +67,7 @@ export const OfferEducational = ({
   mode,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const navigate = useNavigate()
   const location = useLocation()
@@ -156,6 +159,14 @@ export const OfferEducational = ({
             imageCredit: imageOffer?.credit,
           },
           { revalidate: false }
+        )
+      }
+      if (mode === Mode.EDITION) {
+        logEvent(
+          isTemplate
+            ? Events.CLICKED_COLLECTIVE_TEMPLATE_OFFER_MODIFICATION
+            : Events.CLICKED_COLLECTIVE_OFFER_MODIFICATION,
+          { offerId: offer?.id }
         )
       }
       navigateAfterSubmit(offerId)
