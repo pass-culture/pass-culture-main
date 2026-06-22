@@ -1873,7 +1873,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch ministry
     # - fetch last pricing
     # - fetch last incident
-    expected_num_queries = 6
+    # - fetch additional fees
+    expected_num_queries = 7
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -1882,9 +1883,12 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         domain = educational_factories.EducationalDomainFactory()
         national_program = educational_factories.NationalProgramFactory()
         collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__price=Decimal("150.00"),
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
+            collectiveStock__collectiveAdditionalFees=[educational_factories.CollectiveAdditionalFeeFactory()],
             collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
+            collectiveStock__collectiveOffer__additionalDetails="C'est une bonne situation ça, offre collective ?",
             collectiveStock__collectiveOffer__durationMinutes=300,
             collectiveStock__collectiveOffer__description="My super offer description",
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
@@ -1921,12 +1925,15 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collective_booking.collectiveStock.bookingLimitDatetime
         )
         assert descriptions["Lieu"] == "À déterminer"
-        assert descriptions["Participants"] == f"{collective_booking.collectiveStock.numberOfTickets} personnes"
+        assert descriptions["Nombre d'élèves"] == f"{collective_booking.collectiveStock.numberOfTickets} personnes"
+        assert descriptions["Accompagnants"] == "5 personnes"
         assert descriptions["Durée"] == "5 heures"
         assert descriptions["Description"] == "My super offer description"
         # finance
-        assert descriptions["Montant"] == "100,00 €"
-        assert descriptions["Informations sur le prix"] == "Prix: 100€ pour 25 tickets"
+        assert descriptions["Tarif de la prestation"] == "100,00 €"
+        assert descriptions["Frais annexes"] == "Déplacement de l’intervenant : 50,00 €"
+        assert descriptions["Prix total"] == "150,00 € (6,00 € par participant)"
+        assert descriptions["Informations pratiques"] == "C'est une bonne situation ça, offre collective ?"
         assert descriptions["Statut de la réservation"] == "Confirmée"
         # public
         assert descriptions["Niveau scolaire"] == "Lycée - Seconde"
