@@ -38,6 +38,56 @@ describe('createOfferPayload', () => {
     ).toEqual(expect.not.arrayContaining(['dates']))
   })
 
+  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False: should return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
+    const collectiveOfferPayload = createCollectiveOfferPayload({
+      ...getDefaultEducationalValues(),
+      bookingEmails: [{ email: 'booking@test.com' }],
+      contactEmail: 'contact@venue.com',
+      phone: '+33123456789',
+    })
+    expect(collectiveOfferPayload).toEqual(
+      expect.objectContaining({
+        bookingEmails: ['booking@test.com'],
+        contactEmail: 'contact@venue.com',
+        contactPhone: '+33123456789',
+      })
+    )
+  })
+
+  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True: should not return contactEmail, contactPhone or bookingEmails on payload for a non-template offer', () => {
+    expect(
+      Object.keys(
+        createCollectiveOfferPayload(
+          {
+            ...getDefaultEducationalValues(),
+            beginningDate: '2021-09-01',
+            endingDate: '2021-09-10',
+          },
+          undefined,
+          true
+        )
+      )
+    ).toEqual(
+      expect.not.arrayContaining([
+        'contactEmail',
+        'contactPhone',
+        'bookingEmails',
+      ])
+    )
+  })
+
+  it('should return bookingEmails on payload for a template offer', () => {
+    const collectiveOfferTemplatePayload = createCollectiveOfferTemplatePayload(
+      {
+        ...getDefaultEducationalValues(),
+        bookingEmails: [{ email: 'booking@test.com' }],
+      }
+    )
+    expect(collectiveOfferTemplatePayload).toEqual(
+      expect.objectContaining({ bookingEmails: ['booking@test.com'] })
+    )
+  })
+
   it('should not remove dates from an offer to create a template offer', () => {
     expect(
       createCollectiveOfferTemplatePayload({

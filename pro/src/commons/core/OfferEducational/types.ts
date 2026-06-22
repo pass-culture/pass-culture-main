@@ -52,7 +52,7 @@ export interface OfferEducationalFormValues
   contactFormType?: 'form' | 'url'
   contactUrl?: string | null
   contactOptions?: { phone: boolean; email: boolean; form: boolean }
-  bookingEmails?: { email: string }[]
+  bookingEmails?: { email: string }[] | null
   domains?: string[]
   'search-domains'?: string
   'search-interventionArea'?: string

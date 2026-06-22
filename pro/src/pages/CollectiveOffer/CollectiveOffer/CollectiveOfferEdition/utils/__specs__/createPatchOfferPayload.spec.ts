@@ -130,6 +130,16 @@ describe('createPatchOfferPayload', () => {
     })
   })
 
+  it('when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True: should not return contactEmail, contactPhone on payload for a non-template offer', () => {
+    const payload = createPatchOfferPayload({ ...offer }, initialValues, true)
+    const { contactEmail, contactPhone, bookingEmails, ...restPayload } =
+      patchOfferPayload
+    expect(payload).toMatchObject({
+      ...restPayload,
+      venueId,
+    })
+  })
+
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },

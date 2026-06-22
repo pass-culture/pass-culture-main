@@ -3,8 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { ApiError } from '@/apiClient/compat'
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
-import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  CollectiveOfferAllowedAction,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1'
+import {
+  defaultGetVenue,
+  getCollectiveOfferFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -13,7 +19,8 @@ import {
 } from './CollectiveOfferInformationForm'
 
 function renderCollectiveOfferInformationForm(
-  props: Partial<CollectiveOfferInformationFormProps>
+  props: Partial<CollectiveOfferInformationFormProps>,
+  customVenue?: Partial<GetVenueResponseModel>
 ) {
   const allProps = {
     offer: getCollectiveOfferFactory(),
@@ -22,7 +29,13 @@ function renderCollectiveOfferInformationForm(
     goBackLink: '/test/go/back/link',
     ...props,
   }
-  return renderWithProviders(<CollectiveOfferInformationForm {...allProps} />)
+  return renderWithProviders(<CollectiveOfferInformationForm {...allProps} />, {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: { ...defaultGetVenue, ...customVenue },
+      },
+    },
+  })
 }
 
 describe('<CollectiveOfferInformationForm />', () => {
@@ -32,21 +45,33 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('should display all form fields for "information pratiques" step', () => {
-    renderCollectiveOfferInformationForm({})
+  it('should display all form fields for "information pratiques" step with', () => {
+    const offer = getCollectiveOfferFactory({
+      additionalDetails: 'Additional details for this test',
+      contactEmail: 'contact@test-email.com',
+      bookingEmails: ['booking@test-email.com'],
+      contactPhone: '+33612345678',
+    })
+    renderCollectiveOfferInformationForm({ offer })
+
     expect(
       screen.getByText(/Les champs suivis d’un \* sont obligatoires/)
     ).toBeVisible()
     expect(screen.getByLabelText(/téléphone/)).toBeVisible()
-    expect(screen.getByLabelText('Email*')).toBeVisible()
-    expect(
-      screen.getByLabelText('Email auquel envoyer les notifications*')
-    ).toBeVisible()
-    expect(
-      screen.getByRole('textbox', {
-        name: 'Informations pratiques sur votre offre',
-      })
-    ).toBeVisible()
+    expect(screen.getByLabelText(/téléphone/)).toHaveValue('612345678')
+    const email = screen.getByLabelText('Email*')
+    expect(email).toBeVisible()
+    expect(email).toHaveValue('contact@test-email.com')
+    const bookingEmail = screen.getByLabelText(
+      'Email auquel envoyer les notifications*'
+    )
+    expect(bookingEmail).toBeVisible()
+    expect(bookingEmail).toHaveValue('booking@test-email.com')
+    const additionalDetails = screen.getByRole('textbox', {
+      name: 'Informations pratiques sur votre offre',
+    })
+    expect(additionalDetails).toBeVisible()
+    expect(additionalDetails).toHaveValue('Additional details for this test')
   })
 
   it('should add notification mail input when button is clicked', async () => {
@@ -92,7 +117,25 @@ describe('<CollectiveOfferInformationForm />', () => {
     ).toHaveLength(1)
   })
 
-  it('should disable submition when CAN_EDIT_DETAILS is not among the allowed actions', () => {
+  it('should use the selectedVenue for to initialize fields when they are empty in offer', () => {
+    const offer = getCollectiveOfferFactory({
+      contactEmail: null,
+      bookingEmails: [],
+      contactPhone: null,
+    })
+    renderCollectiveOfferInformationForm(
+      { offer },
+      { collectiveEmail: 'contact@venue.com', collectivePhone: '+33123456789' }
+    )
+
+    expect(screen.getByLabelText(/téléphone/)).toHaveValue('123456789')
+    expect(screen.getByLabelText('Email*')).toHaveValue('contact@venue.com')
+    expect(
+      screen.getByLabelText('Email auquel envoyer les notifications*')
+    ).toHaveValue('contact@venue.com')
+  })
+
+  it('should disable submission when CAN_EDIT_DETAILS is not among the allowed actions', () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     })

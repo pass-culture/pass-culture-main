@@ -7,6 +7,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
+  type GetVenueResponseModel,
 } from '@/apiClient/v1'
 import {
   Mode,
@@ -35,11 +36,15 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-function renderOfferEducational({
-  mode,
-  offer,
-  isTemplate,
-}: Pick<OfferEducationalProps, 'mode' | 'isTemplate' | 'offer'>) {
+function renderOfferEducational(
+  {
+    mode,
+    offer,
+    isTemplate,
+  }: Pick<OfferEducationalProps, 'mode' | 'isTemplate' | 'offer'>,
+  customVenue?: Partial<GetVenueResponseModel>,
+  features?: string[]
+) {
   const domainsOptions = [
     {
       id: '1',
@@ -57,10 +62,9 @@ function renderOfferEducational({
     />,
     {
       storeOverrides: {
-        user: {
-          selectedPartnerVenue: defaultGetVenue,
-        },
+        user: { selectedPartnerVenue: { ...defaultGetVenue, ...customVenue } },
       },
+      features,
     }
   )
 }
@@ -112,52 +116,99 @@ async function fillForm(
 
 describe('OfferEducational > submission', () => {
   describe('CollectiveOffer', () => {
+    const baseFormValues = {
+      domains: ['domain1'],
+      formats: [EacFormat.CONCERT],
+      title: 'Test Title',
+      description: 'Test Description',
+      participants: buildStudentLevelsMapWithDefaultValue(false),
+    }
+
+    const baseBodyPayload = {
+      audioDisabilityCompliant: false,
+      description: 'Test Description',
+      domains: [1],
+      durationMinutes: undefined,
+      formats: ['Concert'],
+      interventionArea: [],
+      location: {
+        location: {
+          isVenueLocation: true,
+        },
+        locationType: 'ADDRESS',
+      },
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: false,
+      name: 'Test Title',
+      nationalProgramId: null,
+      students: [
+        'Collège - 6e',
+        'Collège - 5e',
+        'Collège - 4e',
+        'Collège - 3e',
+      ],
+      templateId: undefined,
+      venueId: 1,
+      visualDisabilityCompliant: true,
+    }
+
     it('should call createCollectiveOffer with all fields on offer creation', async () => {
       const user = userEvent.setup()
       renderOfferEducational({ mode: Mode.CREATION, isTemplate: false })
 
       await fillForm(user, {
-        domains: ['domain1'],
-        formats: [EacFormat.CONCERT],
-        title: 'Test Title',
-        description: 'Test Description',
+        ...baseFormValues,
         contactEmail: 'test@venue.com',
         bookingEmails: [{ email: 'booking@venue.com' }],
-        participants: buildStudentLevelsMapWithDefaultValue(false),
       })
       await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
       expect(api.createCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
         body: {
-          audioDisabilityCompliant: false,
+          ...baseBodyPayload,
           bookingEmails: ['booking@venue.com'],
           contactEmail: 'test@venue.com',
           contactPhone: '',
-          description: 'Test Description',
-          domains: [1],
-          durationMinutes: undefined,
-          formats: ['Concert'],
-          interventionArea: [],
-          location: {
-            location: {
-              isVenueLocation: true,
-            },
-            locationType: 'ADDRESS',
-          },
-          mentalDisabilityCompliant: true,
-          motorDisabilityCompliant: false,
-          name: 'Test Title',
-          nationalProgramId: null,
-          students: [
-            'Collège - 6e',
-            'Collège - 5e',
-            'Collège - 4e',
-            'Collège - 3e',
-          ],
-          templateId: undefined,
-          venueId: 1,
-          visualDisabilityCompliant: true,
         },
+      })
+    })
+
+    it('should take email and phone defaults from the venue', async () => {
+      const user = userEvent.setup()
+      renderOfferEducational(
+        { mode: Mode.CREATION, isTemplate: false },
+        {
+          collectiveEmail: 'contact@venue.com',
+          collectivePhone: '+33100000000',
+        }
+      )
+
+      await fillForm(user, baseFormValues)
+      await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+      expect(api.createCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+        body: {
+          ...baseBodyPayload,
+          bookingEmails: ['contact@venue.com'],
+          contactEmail: 'contact@venue.com',
+          contactPhone: '+33100000000',
+        },
+      })
+    })
+
+    it('should not send contactEmail, bookingEmails and contactPhone when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is enabled', async () => {
+      const user = userEvent.setup()
+      renderOfferEducational(
+        { mode: Mode.CREATION, isTemplate: false },
+        { collectiveEmail: 'test@venue.com', collectivePhone: '+33100000000' },
+        ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
+      )
+
+      await fillForm(user, baseFormValues)
+      await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+      expect(api.createCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+        body: baseBodyPayload,
       })
     })
 
