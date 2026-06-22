@@ -86,6 +86,26 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [currentUser, isFirebaseInitialized])
 }
 
+const eventsQueue: {
+  event: string
+  params?: {
+    [key: string]:
+      | string
+      | string[]
+      | number
+      | boolean
+      | undefined
+      // biome-ignore lint/suspicious/noExplicitAny: Generic params type.
+      | Record<string, any>
+  }
+  utmParameters: {
+    traffic_campaign?: string
+    traffic_medium?: string
+    traffic_source?: string
+  }
+  pathname: string
+}[] = []
+
 // TODO (igabriele, 2026-05-12): This should be a pure function "grabbing" store values + using native `location` when called, there is absolutely no need to use a hook here which will re-render on every state change.
 export const useAnalytics = () => {
   const selectedPartnerVenue = useAppSelector(
@@ -112,7 +132,26 @@ export const useAnalytics = () => {
       }
     ) => {
       if (!firebaseApp || !firebaseRemoteConfig) {
+        eventsQueue.push({
+          event,
+          params,
+          utmParameters,
+          pathname: globalThis.location.href,
+        })
         return
+      } else {
+        while (eventsQueue.length) {
+          const stored = eventsQueue.pop()
+          if (stored) {
+            analyticsLogEvent(getAnalytics(firebaseApp), stored.event, {
+              ...stored.params,
+              page_location: stored.pathname,
+              offererId: selectedAdminOfferer?.id.toString() ?? null,
+              venueId: selectedPartnerVenue?.id.toString() ?? null,
+              ...stored.utmParameters,
+            })
+          }
+        }
       }
 
       analyticsLogEvent(getAnalytics(firebaseApp), event, {
