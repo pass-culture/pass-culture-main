@@ -17,6 +17,8 @@ export const BOOKABLE_OFFERS_COLUMNS = [
   'Statut',
 ]
 
+export const COLLECTIVE_OFFERS_COLUMNS = BOOKABLE_OFFERS_COLUMNS
+
 export const TEMPLATE_OFFERS_COLUMNS = [
   '',
   'Nom de l’offre',
