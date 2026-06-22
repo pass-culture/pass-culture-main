@@ -149,10 +149,10 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES = "Active l'utilisation du cron pour les màj des attributs pro"
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
+    WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
     WIP_PRE_SIGNUP_SIMULATION = (
         "Activer le parcours de simulation de documents avant inscription des partenaires culturels sur le portail pro"
     )
-    WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_CULTURAL_OUTREACH = "Active la déclaration des actions de médiation culturelle"
     WIP_ENABLE_NEW_OFFER_STATUS_FILTER = (
@@ -227,8 +227,8 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER,
-    FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     FeatureToggle.WIP_OFFER_EXPOSURE,
+    FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order
 )
 

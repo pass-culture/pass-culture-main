@@ -18,6 +18,7 @@ from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights import models as highlights_models
@@ -67,6 +68,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "artists",
         "pro_advice",
         "cultural_outreach",
+        "highlight_criteria",
     ]
 ]
 
@@ -1326,6 +1328,10 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "pro_advice" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.proAdvice))
+        if "highlight_criteria" in load_options:
+            query = query.options(
+                sa_orm.selectinload(models.Offer.criteria).joinedload(criteria_models.Criterion.highlight)
+            )
         if "cultural_outreach" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.culturalOutreach))
         return query.one()

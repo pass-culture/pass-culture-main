@@ -14,6 +14,7 @@ from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import local_date_to_naive_utc_datetime
 from pcapi.utils.date import local_datetime_to_default_timezone
 
 
@@ -167,6 +168,14 @@ class FormatDatetimeFromLocalTimezoneToUtcTest:
 
         # Then
         assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+
+
+class LocalDateToNaiveUtcDatetimeTest:
+    def test_should_read_paris_winter_date_as_naive_utc(self):
+        result = local_date_to_naive_utc_datetime(datetime.date(2026, 1, 4), datetime.time.min, METROPOLE_TIMEZONE)
+
+        # Paris is UTC+1 in winter
+        assert result == datetime.datetime(2026, 1, 3, 23, 0, tzinfo=None)
 
 
 class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
