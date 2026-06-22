@@ -13,13 +13,6 @@ import {
 } from './CollectiveOfferInformationForm'
 
 vi.mock(
-  '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/OfferEducationalForm/FormContact/FormContactNew',
-  () => ({
-    FormContactNew: vi.fn(() => <div data-testid="contact-form" />),
-  })
-)
-
-vi.mock(
   '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/OfferEducationalForm/FormNotifications/FormNotifications',
   () => ({
     FormNotifications: vi.fn(() => <div data-testid="notifications-form" />),
@@ -51,7 +44,8 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(
       screen.getByText(/Les champs suivis d’un \* sont obligatoires/)
     ).toBeVisible()
-    expect(screen.getByTestId('contact-form')).toBeVisible()
+    expect(screen.getByLabelText(/téléphone/)).toBeVisible()
+    expect(screen.getByLabelText(/Email/)).toBeVisible()
     expect(screen.getByTestId('notifications-form')).toBeVisible()
     expect(
       screen.getByRole('textbox', {
