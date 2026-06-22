@@ -4120,6 +4120,27 @@
                 "title": "FESTIVAL_SPECTACLE_read",
                 "type": "object"
             },
+            "GetAdditionalFeeType": {
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "GetAdditionalFeeType",
+                "type": "object"
+            },
+            "GetAdditionalFeeTypes": {
+                "items": {
+                    "$ref": "#/components/schemas/GetAdditionalFeeType"
+                },
+                "title": "GetAdditionalFeeTypes",
+                "type": "array"
+            },
             "GetAvailableEANsListQuery": {
                 "properties": {
                     "eans": {
@@ -4514,6 +4535,31 @@
                     "amount"
                 ],
                 "title": "GetCollectiveAdditionalFeeResponseModel",
+                "type": "object"
+            },
+            "GetCollectiveFormatListModel": {
+                "items": {
+                    "$ref": "#/components/schemas/GetCollectiveFormatModel"
+                },
+                "title": "GetCollectiveFormatListModel",
+                "type": "array"
+            },
+            "GetCollectiveFormatModel": {
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "GetCollectiveFormatModel",
                 "type": "object"
             },
             "GetDatesResponse": {
@@ -12920,6 +12966,50 @@
                 ]
             }
         },
+        "/v2/collective/additional-fee-types": {
+            "get": {
+                "description": "Return the list of available types for a collective offer additional fee.\n\nSee the `additionalFees` field in the collective routes.",
+                "operationId": "GetAdditionalFeeTypes",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAdditionalFeeTypes"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get Collective Additional Fee Types",
+                "tags": [
+                    "Collective Offer Attributes"
+                ]
+            }
+        },
         "/v2/collective/bookings/{booking_id}": {
             "patch": {
                 "description": "Cancel a collective event booking.",
@@ -13477,6 +13567,16 @@
                 "operationId": "GetOffersFormats",
                 "parameters": [],
                 "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetCollectiveFormatListModel"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
