@@ -10,15 +10,6 @@ interface FormContactProps {
   disableForm: boolean
 }
 
-/**
- * TODO (mdesquilbet-pass, 12/06/2026)
- *
- * Remove this component and rename FormContactNew
- * when cleaning `WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS` FF
- *
- * @deprecated will be removed after WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS clean
- *               (use FormContactNew instead)
- */
 export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
   const { register, getFieldState } = useFormContext()
 

@@ -15,10 +15,12 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { FormContactNew } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/OfferEducationalForm/FormContact/FormContactNew'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { FormNotifications } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/OfferEducationalForm/FormNotifications/FormNotifications'
+import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import styles from './CollectiveOfferInformationForm.module.scss'
 import {
   type CollectiveOfferInformationFormValues,
   validationSchema,
@@ -85,7 +87,27 @@ export const CollectiveOfferInformationForm = ({
         <FormLayout fullWidthActions>
           <FormLayout.MandatoryInfo />
           <FormNotifications disableForm={!canEditDetails} />
-          <FormContactNew disableForm={!canEditDetails} />
+          <FormLayout.Section title="Comment les enseignants peuvent-ils vous contacter ?">
+            <FormLayout.Row className={styles['phone-number-row']}>
+              <PhoneNumberInput
+                {...form.register('contactPhone')}
+                disabled={!canEditDetails}
+                error={form.formState.errors.contactPhone?.message}
+                label="Téléphone"
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                {...form.register('contactEmail')}
+                description="Format : email@exemple.com"
+                disabled={!canEditDetails}
+                error={form.formState.errors.contactEmail?.message}
+                label="Email"
+                required
+                type="email"
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
           <FormLayout.Section title="Informations pratiques">
             <FormLayout.Row>
               <TextArea
