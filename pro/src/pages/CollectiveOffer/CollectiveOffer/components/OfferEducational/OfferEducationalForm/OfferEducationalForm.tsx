@@ -66,8 +66,8 @@ export const OfferEducationalForm = ({
   offer,
   isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const [isEligible, setIsEligible] = useState<boolean>()
+  const { logEvent } = useAnalytics()
 
   const { formState, watch } = useFormContext<OfferEducationalFormValues>()
 
@@ -167,7 +167,12 @@ export const OfferEducationalForm = ({
         >
           <Button
             type="submit"
-            disabled={!isEligible || !canEditDetails || isSubmitting}
+            disabled={
+              !isEligible ||
+              !canEditDetails ||
+              isSubmitting ||
+              !formState.isDirty
+            }
             label="Enregistrer et continuer"
           />
         </ActionsBarSticky.Right>

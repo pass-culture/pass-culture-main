@@ -88,6 +88,11 @@ describe('screens | OfferEducational : creation offer type step', () => {
         await screen.findByLabelText('Domaines artistiques')
       )
 
+      const descriptionField = await screen.findByRole('textbox', {
+        name: /Décrivez ici votre projet/,
+      })
+      await userEvent.type(descriptionField, 'X')
+
       await userEvent.click(
         screen.getByRole('button', { name: 'Enregistrer et continuer' })
       )
