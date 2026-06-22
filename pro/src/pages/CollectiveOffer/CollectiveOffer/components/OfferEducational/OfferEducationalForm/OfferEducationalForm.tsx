@@ -16,6 +16,7 @@ import {
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -67,9 +68,12 @@ export const OfferEducationalForm = ({
   offer,
   isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
-  const [isEligible, setIsEligible] = useState<boolean>()
   const { logEvent } = useAnalytics()
-
+  const [isEligible, setIsEligible] = useState<boolean>()
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
+  const shouldShowContactFields = isTemplate || !isNewCollectivePriceEnabled
   const { formState, watch, setValue } =
     useFormContext<OfferEducationalFormValues>()
 
@@ -157,9 +161,13 @@ export const OfferEducationalForm = ({
                 {isTemplate ? (
                   <FormContactTemplate disableForm={!canEditDetails} />
                 ) : (
-                  <FormContact disableForm={!canEditDetails} />
+                  shouldShowContactFields && (
+                    <FormContact disableForm={!canEditDetails} />
+                  )
                 )}
-                <FormNotifications disableForm={!canEditDetails} />
+                {shouldShowContactFields && (
+                  <FormNotifications disableForm={!canEditDetails} />
+                )}
               </>
             ) : null}
           </>

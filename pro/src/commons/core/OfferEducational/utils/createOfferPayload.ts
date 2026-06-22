@@ -102,7 +102,6 @@ const getCommonOfferPayload = (
   return {
     venueId: Number(offer.venueId),
     name: offer.title,
-    bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
     description: offer.description,
     durationMinutes: offer.duration ? parseDuration(offer.duration) : undefined,
     ...disabilityCompliances(offer.accessibility),
@@ -121,37 +120,40 @@ const getCommonOfferPayload = (
 
 export const createCollectiveOfferTemplatePayload = (
   offer: OfferEducationalFormValues
-): PostCollectiveOfferTemplateBodyModel => {
-  return {
-    ...getCommonOfferPayload(offer),
-    dates:
-      offer.datesType === 'specific_dates' &&
-      offer.beginningDate &&
-      offer.endingDate
-        ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
-        : undefined,
-    priceDetail: offer.priceDetail,
-    contactEmail: offer.contactOptions?.email ? offer.contactEmail : undefined,
-    contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
-    contactForm:
-      offer.contactOptions?.form && offer.contactFormType === 'form'
-        ? OfferContactFormEnum.FORM
-        : undefined,
-    contactUrl:
-      offer.contactOptions?.form && offer.contactFormType === 'url'
-        ? offer.contactUrl
-        : undefined,
-  }
-}
+): PostCollectiveOfferTemplateBodyModel => ({
+  ...getCommonOfferPayload(offer),
+  bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
+  dates:
+    offer.datesType === 'specific_dates' &&
+    offer.beginningDate &&
+    offer.endingDate
+      ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
+      : undefined,
+  priceDetail: offer.priceDetail,
+  contactEmail: offer.contactOptions?.email ? offer.contactEmail : undefined,
+  contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
+  contactForm:
+    offer.contactOptions?.form && offer.contactFormType === 'form'
+      ? OfferContactFormEnum.FORM
+      : undefined,
+  contactUrl:
+    offer.contactOptions?.form && offer.contactFormType === 'url'
+      ? offer.contactUrl
+      : undefined,
+})
 
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
-  offerTemplateId?: number
-): PostCollectiveOfferBodyModel => {
-  return {
-    ...getCommonOfferPayload(offer),
-    templateId: offerTemplateId,
-    contactEmail: offer.contactEmail,
-    contactPhone: offer.phone,
-  }
-}
+  offerTemplateId?: number,
+  isNewCollectivePriceEnabled: boolean = false
+): PostCollectiveOfferBodyModel => ({
+  ...getCommonOfferPayload(offer),
+  templateId: offerTemplateId,
+  ...(isNewCollectivePriceEnabled
+    ? {}
+    : {
+        contactEmail: offer.contactEmail,
+        contactPhone: offer.phone,
+        bookingEmails: offer.bookingEmails?.map((email) => email.email) ?? [''],
+      }),
+})

@@ -24,7 +24,9 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducationalFormValues> {
+export function getOfferEducationalValidationSchema(
+  isNewCollectivePriceEnabled: boolean = false
+): ObjectSchema<OfferEducationalFormValues> {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -107,7 +109,8 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],
         isTemplate: boolean
-      ) => !isTemplate || contactOptions?.email,
+      ) =>
+        (!isTemplate && !isNewCollectivePriceEnabled) || contactOptions?.email,
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
@@ -153,14 +156,17 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
             test: isOneTrue,
           }),
       }),
-    bookingEmails: yup.array().of(
-      yup.object().shape({
-        email: yup
-          .string()
-          .required('Veuillez renseigner une adresse email')
-          .test(emailSchema),
-      })
-    ),
+    bookingEmails: yup
+      .array()
+      .of(
+        yup.object().shape({
+          email: yup
+            .string()
+            .required('Veuillez renseigner une adresse email')
+            .test(emailSchema),
+        })
+      )
+      .nullable(),
     domains: yup.array().test({
       message: 'Veuillez renseigner un domaine',
       test: (domains) => Boolean(domains?.length && domains.length > 0),

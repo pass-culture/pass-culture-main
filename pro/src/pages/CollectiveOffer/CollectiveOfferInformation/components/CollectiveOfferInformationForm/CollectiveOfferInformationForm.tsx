@@ -9,6 +9,8 @@ import {
 } from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { objectEntries, objectFromEntries } from '@/commons/utils/object'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -45,14 +47,15 @@ export const CollectiveOfferInformationForm = ({
   const canEditDetails = offer.allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const defaultValues: CollectiveOfferInformationFormValues = {
     bookingEmails:
       offer.bookingEmails.length > 0
         ? offer.bookingEmails?.map((email) => ({ email }))
-        : [{ email: '' }],
-    contactEmail: offer.contactEmail,
-    contactPhone: offer.contactPhone,
+        : [{ email: selectedPartnerVenue.collectiveEmail ?? '' }],
+    contactEmail: offer.contactEmail ?? selectedPartnerVenue.collectiveEmail,
+    contactPhone: offer.contactPhone ?? selectedPartnerVenue.collectivePhone,
     additionalDetails: offer.additionalDetails ?? '',
   }
 

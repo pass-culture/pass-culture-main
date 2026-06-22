@@ -21,7 +21,7 @@ export const CollectiveOfferCreation = ({
   const location = useLocation()
   const { requete: requestId } = queryParamsFromOfferer(location)
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-  const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
+  const { isReady, offerer, domains } = useOfferEducationalFormData(
     selectedPartnerVenue.managingOfferer.id,
     offer
   )
@@ -38,8 +38,8 @@ export const CollectiveOfferCreation = ({
         <Spinner />
       ) : (
         <OfferEducational
-          userOfferer={offerEducationalFormData.offerer}
-          domainsOptions={offerEducationalFormData.domains}
+          userOfferer={offerer}
+          domainsOptions={domains}
           offer={offer}
           mode={Mode.CREATION}
           isTemplate={isTemplate}

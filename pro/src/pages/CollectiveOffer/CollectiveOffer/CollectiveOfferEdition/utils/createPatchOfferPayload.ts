@@ -153,7 +153,8 @@ const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyM
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isNewCollectivePriceEnabled: boolean = false
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
@@ -165,6 +166,10 @@ export const createPatchOfferPayload = (
     'isTemplate',
     'addressAutocomplete',
   ]
+
+  if (isNewCollectivePriceEnabled) {
+    keysToOmmit.push('contactEmail', 'phone', 'bookingEmails')
+  }
 
   offerKeys.forEach((key) => {
     if (

@@ -74,6 +74,9 @@ export const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { mutate } = useSWRConfig()
@@ -97,6 +100,12 @@ export const OfferEducational = ({
           selectedPartnerVenue
         )
       : baseInitialValues
+
+  if (!isTemplate && isNewCollectivePriceEnabled) {
+    initialValues.bookingEmails = null
+    initialValues.phone = undefined
+    initialValues.contactEmail = undefined
+  }
 
   const onSubmit = async () => {
     let response:
@@ -125,13 +134,21 @@ export const OfferEducational = ({
         }
       } else {
         if (offer === undefined) {
-          const payload = createCollectiveOfferPayload(offerValues)
-
+          const payload = createCollectiveOfferPayload(
+            offerValues,
+            undefined,
+            isNewCollectivePriceEnabled
+          )
           response = await api.createCollectiveOffer({
             body: payload,
           })
         } else {
-          const payload = createPatchOfferPayload(offerValues, initialValues)
+          const payload = createPatchOfferPayload(
+            offerValues,
+            initialValues,
+            isNewCollectivePriceEnabled
+          )
+
           response = await api.editCollectiveOffer({
             path: { offer_id: offer.id },
             body: payload,
@@ -198,7 +215,9 @@ export const OfferEducational = ({
 
   const form = useForm<OfferEducationalFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(getOfferEducationalValidationSchema()),
+    resolver: yupResolver(
+      getOfferEducationalValidationSchema(isNewCollectivePriceEnabled)
+    ),
     shouldFocusError: false,
     mode: 'onTouched',
   })
