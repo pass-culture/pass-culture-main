@@ -1,14 +1,21 @@
 import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
+import type { RemoteConfig } from '@firebase/remote-config'
 import * as firebaseRemoteConfig from '@firebase/remote-config'
-import { waitFor } from '@testing-library/react'
+import { renderHook, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { useLogNavigation } from 'app/App/hook/useLogNavigation'
+import { configureTestStore } from 'commons/store/testUtils'
+import type { ReactNode } from 'react'
+import { Provider } from 'react-redux'
+import { Link, MemoryRouter, Route, Routes } from 'react-router'
 import { expect, vi } from 'vitest'
 
 import { firebaseConfig } from '@/commons/config/firebase'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { destroyFirebase, useFirebase } from '../firebase'
+import { destroyFirebase, useAnalytics, useFirebase } from '../firebase'
 
 vi.mock('@firebase/analytics', () => ({
   getAnalytics: vi.fn(),
@@ -31,12 +38,19 @@ vi.mock('@firebase/remote-config', () => ({
 
 const FakeApp = ({
   isCookieEnabled,
+  children,
 }: {
   isCookieEnabled: boolean
+  children?: ReactNode
 }): JSX.Element => {
   useFirebase(isCookieEnabled)
 
-  return <h1>Fake App {isCookieEnabled ? 'yes' : 'no'}</h1>
+  return (
+    <>
+      <h1>Fake App {isCookieEnabled ? 'yes' : 'no'}</h1>
+      {children}
+    </>
+  )
 }
 
 const user = sharedCurrentUserFactory()
@@ -224,5 +238,70 @@ describe('useFirebase', () => {
     await Promise.resolve()
 
     expect(firebase.deleteApp).not.toHaveBeenCalled()
+  })
+
+  const NavigationLogger = (): null => {
+    useLogNavigation()
+    return null
+  }
+
+  it('should keep first logEvent and send it when loaded', async () => {
+    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValueOnce(true)
+    vi.spyOn(firebase, 'initializeApp').mockReturnValueOnce({
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
+    })
+    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValueOnce(
+      'getAnalyticsReturn' as unknown as firebaseAnalytics.Analytics
+    )
+
+    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockResolvedValueOnce(
+      true
+    )
+    vi.spyOn(firebaseRemoteConfig, 'getRemoteConfig').mockResolvedValueOnce(
+      {} as RemoteConfig
+    )
+    vi.spyOn(firebaseRemoteConfig, 'getAll').mockResolvedValueOnce({
+      A: {
+        asString: () => 'true',
+        asBoolean: vi.fn(),
+        asNumber: vi.fn(),
+        getSource: vi.fn(),
+      },
+    })
+
+    const store = configureTestStore()
+    const wrapper = () => (
+      <Provider store={store}>
+        <FakeApp isCookieEnabled={true}>
+          <MemoryRouter initialEntries={['/route']}>
+            <NavigationLogger />
+            <Routes>
+              <Route
+                path="/route"
+                element={
+                  <span>
+                    initial <Link to="/">link</Link>
+                  </span>
+                }
+              />
+              <Route path="*" element={<span>other</span>} />
+            </Routes>
+          </MemoryRouter>
+        </FakeApp>
+      </Provider>
+    )
+
+    const { rerender } = renderHook(() => useAnalytics(), { wrapper })
+    expect(firebaseAnalytics.logEvent).not.toHaveBeenCalled()
+
+    await userEvent.click(screen.getByText('link'))
+
+    rerender()
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.logEvent).toHaveBeenCalledTimes(2)
+    })
   })
 })
