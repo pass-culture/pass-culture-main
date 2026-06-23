@@ -1803,6 +1803,39 @@
                 "title": "CinemaStock",
                 "type": "object"
             },
+            "CollectiveAdditionalFeeModel": {
+                "properties": {
+                    "amount": {
+                        "description": "Amount of additional fee (in \u20ac)",
+                        "example": 20.0,
+                        "minimum": 0,
+                        "title": "Amount",
+                        "type": "number"
+                    },
+                    "label": {
+                        "description": "Custom label of additional fee, when type is OTHER",
+                        "example": "various expenses",
+                        "nullable": true,
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveAdditionalFeeType"
+                            }
+                        ],
+                        "description": "Type of additional fee (transport, meal, etc.)",
+                        "example": "MEAL"
+                    }
+                },
+                "required": [
+                    "type",
+                    "amount"
+                ],
+                "title": "CollectiveAdditionalFeeModel",
+                "type": "object"
+            },
             "CollectiveAdditionalFeeType": {
                 "description": "An enumeration.",
                 "enum": [
@@ -4533,7 +4566,6 @@
                 },
                 "required": [
                     "type",
-                    "label",
                     "amount"
                 ],
                 "title": "GetCollectiveAdditionalFeeResponseModel",
@@ -5054,7 +5086,6 @@
                     "id",
                     "offerStatus",
                     "name",
-                    "additionalDetails",
                     "contactEmail",
                     "contactPhone",
                     "domains",
@@ -6638,6 +6669,24 @@
             "PostCollectiveOfferBodyModel": {
                 "additionalProperties": false,
                 "properties": {
+                    "additionalDetails": {
+                        "description": "Collective offer additional details",
+                        "example": "Acc\u00e8s \u00e0 la visite au 5\u00e8 \u00e9tage du b\u00e2timent",
+                        "maxLength": 1000,
+                        "nullable": true,
+                        "title": "Additionaldetails",
+                        "type": "string"
+                    },
+                    "additionalFees": {
+                        "description": "List of collective offer additional fees (transport, meal, etc.)",
+                        "items": {
+                            "$ref": "#/components/schemas/CollectiveAdditionalFeeModel"
+                        },
+                        "maxItems": 10,
+                        "nullable": true,
+                        "title": "Additionalfees",
+                        "type": "array"
+                    },
                     "audioDisabilityCompliant": {
                         "default": false,
                         "description": "Is accessible for people with hearing disability",
@@ -6797,11 +6846,30 @@
                         "title": "Nationalprogramid",
                         "type": "integer"
                     },
+                    "numberOfTeachers": {
+                        "description": "Number of accompanying adults for your collective offer",
+                        "example": 5,
+                        "maximum": 50,
+                        "minimum": 0,
+                        "nullable": true,
+                        "title": "Numberofteachers",
+                        "type": "integer"
+                    },
                     "numberOfTickets": {
                         "description": "Number of students for your collective offer",
                         "example": 10,
+                        "maximum": 3000,
+                        "minimum": 0,
                         "title": "Numberoftickets",
                         "type": "integer"
+                    },
+                    "servicePrice": {
+                        "description": "Collective offer base price, without additional fees (in \u20ac)",
+                        "example": 80.0,
+                        "minimum": 0,
+                        "nullable": true,
+                        "title": "Serviceprice",
+                        "type": "number"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -6826,6 +6894,7 @@
                     "totalPrice": {
                         "description": "[\u26a0\ufe0f DEPRECATED - use `price` instead] Collective offer price (in \u20ac)",
                         "example": 100.0,
+                        "nullable": true,
                         "title": "Totalprice",
                         "type": "number"
                     },
@@ -6856,7 +6925,6 @@
                     "location",
                     "startDatetime",
                     "bookingLimitDatetime",
-                    "totalPrice",
                     "numberOfTickets"
                 ],
                 "title": "PostCollectiveOfferBodyModel",
