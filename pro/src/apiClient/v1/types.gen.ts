@@ -5223,7 +5223,7 @@ export type PostCollectiveOfferBodyModel = {
     /**
      * Bookingemails
      */
-    bookingEmails: Array<string>;
+    bookingEmails?: Array<string> | null;
     /**
      * Contactemail
      */
