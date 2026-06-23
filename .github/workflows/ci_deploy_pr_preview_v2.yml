@@ -229,12 +229,9 @@ jobs:
         shell: bash
         env:
           SERVICE_URL: ${{ matrix.url }}
-          RETRIES: 40
-          RETRY_INTERVAL: 30
-          TIMEOUT: 60
         run: |
           passdirector pcapi get-version \
             --url "${SERVICE_URL}" \
-            --retries ${RETRIES} \
-            --retry-interval ${RETRY_INTERVAL} \
-            --timeout ${TIMEOUT}
+            --retries 40 \
+            --retry-interval 30 \
+            --timeout 60
