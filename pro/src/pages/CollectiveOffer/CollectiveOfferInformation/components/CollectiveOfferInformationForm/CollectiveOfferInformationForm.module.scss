@@ -4,3 +4,9 @@
   max-width: rem.torem(328px);
   margin-bottom: var(--size-spacing-l);
 }
+
+.booking-emails-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+}
