@@ -406,13 +406,49 @@ def create_collective_offer_public(
 
     location = _get_location_from_public_model(location_body=body.location, venue=venue)
 
+    # to allow the partners to migrate, we accept two versions of the body
+    # in the future only version 2 will be supported
+    # version 1 has total_price, price_detail (nullable)
+    # version 2 has additional_details (nullable), service_price, additional_fees, number_of_teachers
+    if body.service_price is None:
+        # version 1
+        # - write price_detail in additionalDetails and priceDetail
+        # - write total_price in servicePrice and price
+        # - no additionalFees / numberOfTeachers
+        additional_details = body.price_detail
+        service_price = body.total_price
+        additional_fees = None
+        price = body.total_price
+        number_of_teachers = 0
+    else:
+        # version 2
+        # - additionalDetails, servicePrice and numberOfTeachers are read from the body
+        # - compute additionalFees and total price
+
+        # checked by pydantic model
+        assert body.additional_fees is not None
+        assert body.number_of_teachers is not None
+
+        additional_details = body.additional_details
+        service_price = body.service_price
+        additional_fees = body.additional_fees
+        price = service_price + sum(fee.amount for fee in additional_fees)
+        number_of_teachers = body.number_of_teachers
+
+    # add a log to track which provider has migrated
+    logger.info(
+        "Received public API collective offer POST",
+        extra={
+            "provider_id": requested_id,
+            "body_version": "WITHOUT_SERVICE_PRICE" if body.service_price is None else "WITH_SERVICE_PRICE",
+        },
+    )
+
     collective_offer = models.CollectiveOffer(
         venue=venue,
         name=body.name,
         description=body.description,
-        # when we receive priceDetail, also write to offer additionalDetails
-        # long term, the priceDetail field will be removed
-        additionalDetails=body.price_detail,
+        additionalDetails=additional_details,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
         domains=educational_domains,
@@ -440,12 +476,17 @@ def create_collective_offer_public(
         startDatetime=body.start_datetime,
         endDatetime=end_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
-        price=body.total_price,
-        # for now we set servicePrice=price, until we receive servicePrice
-        servicePrice=body.total_price,
+        price=price,
+        servicePrice=service_price,
         numberOfTickets=body.number_of_tickets,
+        numberOfTeachers=number_of_teachers,
         priceDetail=body.price_detail,
     )
+
+    if additional_fees:
+        collective_stock.collectiveAdditionalFees = [
+            models.CollectiveAdditionalFee(type=fee.type, label=fee.label, amount=fee.amount) for fee in additional_fees
+        ]
 
     offers_api.update_offer_fraud_information(offer=collective_offer, user=None)
 

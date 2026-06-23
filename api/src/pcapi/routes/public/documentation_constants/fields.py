@@ -2,6 +2,8 @@ import copy
 
 from pydantic.v1 import Field
 
+from pcapi import settings
+from pcapi.core.educational import constants
 from pcapi.core.offers.models import Offer
 from pcapi.routes.public.documentation_constants import descriptions
 
@@ -277,9 +279,12 @@ class _FIELDS:
         description="Collective offer description", example="Atelier de peinture à la gouache pour élèves de 5ème"
     )
     COLLECTIVE_OFFER_ADDITIONAL_DETAILS = Field(
-        ...,  # needed with pydantic v1 so that the field is required (while being nullable)
+        description="Collective offer additional details", example="Accès à la visite au 5è étage du bâtiment"
+    )
+    COLLECTIVE_OFFER_ADDITIONAL_DETAILS_WITH_VALIDATION = Field(
         description="Collective offer additional details",
         example="Accès à la visite au 5è étage du bâtiment",
+        max_length=constants.MAX_COLLECTIVE_ADDITIONAL_DETAILS_LENGTH,
     )
     COLLECTIVE_OFFER_FORMATS = Field(description="Educational Formats", example=["Atelier de pratique"])
     COLLECTIVE_OFFER_BOOKING_EMAILS = Field(
@@ -330,21 +335,41 @@ class _FIELDS:
     COLLECTIVE_OFFER_SERVICE_PRICE = Field(
         example=80.00, description="Collective offer base price, without additional fees (in €)"
     )
+    COLLECTIVE_OFFER_SERVICE_PRICE_WITH_VALIDATION = Field(
+        example=80.00, description="Collective offer base price, without additional fees (in €)", ge=0
+    )
     COLLECTIVE_OFFER_ADDITIONAL_FEES = Field(
         description="List of collective offer additional fees (transport, meal, etc.)"
+    )
+    COLLECTIVE_OFFER_ADDITIONAL_FEES_WITH_VALIDATION = Field(
+        description="List of collective offer additional fees (transport, meal, etc.)",
+        max_items=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES,
     )
     COLLECTIVE_OFFER_ADDITIONAL_FEE_TYPE = Field(
         description="Type of additional fee (transport, meal, etc.)", example="MEAL"
     )
     COLLECTIVE_OFFER_ADDITIONAL_FEE_LABEL = Field(
-        ...,  # needed with pydantic v1 so that the field is required (while being nullable)
-        description="Custom label of additional fee, when type is OTHER",
-        example="various expenses",
+        description="Custom label of additional fee, when type is OTHER", example="various expenses"
     )
     COLLECTIVE_OFFER_ADDITIONAL_FEE_AMOUNT = Field(description="Amount of additional fee (in €)", example=20.00)
+    COLLECTIVE_OFFER_ADDITIONAL_FEE_AMOUNT_WITH_VALIDATION = Field(
+        description="Amount of additional fee (in €)", example=20.00, ge=0
+    )
     COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of students for your collective offer")
+    COLLECTIVE_OFFER_NB_OF_TICKETS_WITH_VALIDATION = Field(
+        example=10,
+        description="Number of students for your collective offer",
+        ge=0,
+        le=settings.EAC_NUMBER_OF_TICKETS_LIMIT,
+    )
     COLLECTIVE_OFFER_NB_OF_TEACHERS = Field(
         example=5, description="Number of accompanying adults for your collective offer"
+    )
+    COLLECTIVE_OFFER_NB_OF_TEACHERS_WITH_VALIDATION = Field(
+        example=5,
+        description="Number of accompanying adults for your collective offer",
+        ge=0,
+        le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS,
     )
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="[⚠️ DEPRECATED - the price detail will be given by `servicePrice` and `additionalFees`] The explanation of the offer price",

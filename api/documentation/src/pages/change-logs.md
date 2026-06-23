@@ -18,8 +18,12 @@ You will have two dates at your disposal :
 - A new endpoint has been added to get the different collective additional fee types: [**Get Collective Additional Fee Types endpoint**](/rest-api#tag/Collective-Offer-Attributes/operation/GetAdditionalFeeTypes).
 - The `additionalDetails`, `price`, `servicePrice`, `additionalFees` and `numberOfTeachers` fields have been added to the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic).
 - The `totalPrice` and `educationalPriceDetail` fields are now deprecated in the collective endpoints.
-  - Please use the `price` field instead of `totalPrice`.
+  - Please use the `price` field (in our responses) instead of `totalPrice`.
   - `servicePrice`, `additionalFees` and `numberOfTeachers` will soon be added to all collective endpoints and will be available for use instead of `educationalPriceDetail`.
+- The `additionalDetails`, `servicePrice`, `additionalFees` and `numberOfTeachers` fields have been added to the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic).
+  - You can continue to provide `totalPrice` and (optionnaly) `priceDetail`. In this case, the value of `totalPrice` will also be written to `servicePrice` and the value of `priceDetail` will also be written to `additionalDetails`.
+  - You can now provide the new version of the body, by removing `totalPrice` and `priceDetail` and adding `servicePrice`, `additionalFees`, `numberOfTeachers` and (optionnaly) `additionalDetails`. In this case each field will be written as-is and the total price will be computed on our side (and displayed with the `price` field in the response).
+  - You must provide the fields corresponding to one verison or the other, but not a mix of the two.
 
 ## May 2026
 - The `externalTicketOfficeUrl` field has been added to the following endpoints:

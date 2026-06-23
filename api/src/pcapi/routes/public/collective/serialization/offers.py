@@ -1,3 +1,4 @@
+import collections
 import decimal
 import typing
 from datetime import datetime
@@ -6,6 +7,7 @@ from datetime import timezone
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
+from pcapi import settings
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.models import CollectiveAdditionalFeeType
@@ -437,11 +439,36 @@ class GetCollectiveFormatListModel(BaseModel):
     __root__: list[GetCollectiveFormatModel]
 
 
+class CollectiveAdditionalFeeModel(BaseModel):
+    type: CollectiveAdditionalFeeType = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_TYPE
+    label: str | None = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_LABEL
+    amount: decimal.Decimal = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_AMOUNT_WITH_VALIDATION
+
+    @validator("amount")
+    def validate_amount(cls, value: decimal.Decimal) -> decimal.Decimal:
+        # round to 2 digits to avoid rounding errors during the sum computation
+        return value.quantize(decimal.Decimal("1.00"))
+
+    @root_validator(skip_on_failure=True)
+    def validate_model(cls, values: dict) -> dict:
+        fee_type: CollectiveAdditionalFeeType = values["type"]
+        label: str | None = values.get("label")
+
+        if fee_type == CollectiveAdditionalFeeType.OTHER and label is None:
+            raise ValueError("Le champ label est requis quand le type est OTHER")
+
+        if fee_type != CollectiveAdditionalFeeType.OTHER and label is not None:
+            raise ValueError("Le champ label n'est pas autorisé quand le type n'est pas OTHER")
+
+        return values
+
+
 class PostCollectiveOfferBodyModel(BaseModel):
     # offer part
     venue_id: int = fields.VENUE_ID
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str = fields.COLLECTIVE_OFFER_DESCRIPTION
+    additional_details: str | None = fields.COLLECTIVE_OFFER_ADDITIONAL_DETAILS_WITH_VALIDATION
     formats: list[EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
     booking_emails: list[str] = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contact_email: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
@@ -461,8 +488,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
     start_datetime: datetime = fields.COLLECTIVE_OFFER_START_DATETIME
     end_datetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
-    total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
-    number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
+    total_price: decimal.Decimal | None = fields.COLLECTIVE_OFFER_TOTAL_PRICE
+    service_price: decimal.Decimal | None = fields.COLLECTIVE_OFFER_SERVICE_PRICE_WITH_VALIDATION
+    additional_fees: list[CollectiveAdditionalFeeModel] | None = fields.COLLECTIVE_OFFER_ADDITIONAL_FEES_WITH_VALIDATION
+    number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_WITH_VALIDATION
+    number_of_teachers: int | None = fields.COLLECTIVE_OFFER_NB_OF_TEACHERS_WITH_VALIDATION
     price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     # link to educational institution
     educational_institution_id: int | None = fields.EDUCATIONAL_INSTITUTION_ID
@@ -547,6 +577,63 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def location_validator(cls, location: typing.Any) -> dict:
         _validate_location(location)
         return location
+
+    @root_validator(pre=True)
+    def validate_price_fields(cls, values: dict) -> dict:
+        # check that
+        # - we do not have a mix of old and new fields
+        # - we have at least one field of either version
+        # - we have all the required fields for the current version
+
+        old_required_fields = {"totalPrice"}
+        old_fields = old_required_fields | {"educationalPriceDetail"}
+        new_required_fields = {"servicePrice", "additionalFees", "numberOfTeachers"}
+        new_fields = new_required_fields | {"additionalDetails"}
+
+        has_old_field = any(field in values for field in old_fields)
+        has_all_old_required_fields = all(values.get(field) is not None for field in old_required_fields)
+
+        has_new_field = any(field in values for field in new_fields)
+        has_all_new_required_fields = all(values.get(field) is not None for field in new_required_fields)
+
+        if has_old_field and has_new_field or (not has_old_field and not has_new_field):
+            raise ValueError(
+                "Vous devez renseigner soit ('totalPrice', 'educationalPriceDetail'), soit ('additionalDetails', 'servicePrice', 'additionalFees', 'numberOfTeachers')"
+            )
+
+        if has_old_field and not has_all_old_required_fields:
+            raise ValueError("Vous devez renseigner le champ 'totalPrice'")
+
+        if has_new_field and not has_all_new_required_fields:
+            raise ValueError("Vous devez renseigner les champs 'servicePrice', 'additionalFees', 'numberOfTeachers'")
+
+        return values
+
+    @root_validator(pre=False)
+    def validate_total_price(cls, values: dict) -> dict:
+        service_price: decimal.Decimal | None = values.get("service_price")
+        additional_fees: list[CollectiveAdditionalFeeModel] | None = values.get("additional_fees")
+
+        if service_price is not None and additional_fees is not None:
+            total_price = service_price + sum(fee.amount for fee in additional_fees)
+
+            if total_price > settings.EAC_OFFER_PRICE_LIMIT:
+                raise ValueError(f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}")
+
+        if additional_fees:
+            type_counter = collections.Counter(
+                fee.type for fee in additional_fees if fee.type != CollectiveAdditionalFeeType.OTHER
+            )
+            if any(type_count > 1 for type_count in type_counter.values()):
+                raise ValueError("Un type de frais annexe est en doublon")
+
+            label_counter = collections.Counter(
+                fee.label for fee in additional_fees if fee.type == CollectiveAdditionalFeeType.OTHER
+            )
+            if any(label_count > 1 for label_count in label_counter.values()):
+                raise ValueError("Un label de frais annexe est en doublon")
+
+        return values
 
     class Config:
         alias_generator = to_camel
