@@ -130,6 +130,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.ref }}
+          fetch-tags: false
+          persist-credentials: false
 
       - name: Install Argo Workflows CLI
         uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
@@ -213,6 +215,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.ref }}
+          fetch-tags: false
+          persist-credentials: false
 
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
