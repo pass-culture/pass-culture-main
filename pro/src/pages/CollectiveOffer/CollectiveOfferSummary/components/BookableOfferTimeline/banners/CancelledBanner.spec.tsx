@@ -62,6 +62,8 @@ describe('CancelledBanner', () => {
       cancelledByPassCultureMessage,
     [CollectiveBookingCancellationReasons.OFFERER_CLOSED]:
       cancelledByPassCultureMessage,
+    [CollectiveBookingCancellationReasons.VENUE_CLOSED]:
+      cancelledByPassCultureMessage,
   } satisfies Record<CollectiveBookingCancellationReasons, string>
 
   beforeEach(() => {

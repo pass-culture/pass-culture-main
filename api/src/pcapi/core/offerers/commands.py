@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.offerers import update_offerer_stats as offerers_stats
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
@@ -224,11 +225,13 @@ def clean_offerer_invitations(apply: bool = False) -> None:
 
 @blueprint.cli.command("finalize_closing_venue")
 @click.option("--venue-id", type=int, required=True, help="venue id")
+@click.option("--author-id", type=int, required=True, help="author (user) id")
 @click.option("--apply", is_flag=True)
-def finalize_closing_venue_command(venue_id: int, apply: bool = False) -> None:
+def finalize_closing_venue_command(venue_id: int, author_id: int, apply: bool = False) -> None:
     venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).one()
+    author = db.session.query(users_models.User).filter(users_models.User.id == author_id).one()
     with atomic():
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
         offerers_tasks.finalize_closing_venue_task(payload.model_dump())
 
         if not apply:
