@@ -68,9 +68,9 @@ def base_offer_payload(
 
 
 def assert_offer_values(offer: models.CollectiveOffer, data, user, offerer):
-    # if there is no booking emails and the offer is build from a
-    # template, the booking emails are set using the contact email
-    if not data["bookingEmails"] and data["templateId"]:
+    if "bookingEmails" not in data and not data["templateId"]:
+        assert offer.bookingEmails == []
+    elif not data["bookingEmails"] and data["templateId"]:
         if data["contactEmail"]:
             assert offer.bookingEmails == [data["contactEmail"]]
         else:
@@ -114,8 +114,28 @@ class Returns200Test:
 
         assert_offer_values(offer, data, user, offerer)
 
-        # 2 requests (for 2 bookingEmail) for Brevo
+        # 3 requests (for 2 bookingEmail and the first one for user auth) for Brevo
         assert len(brevo_testing.brevo_requests) == 3
+
+    def test_bookingEmails_not_required(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+        data = {k: v for k, v in base_offer_payload(venue=venue).items() if k != "bookingEmails"}
+        auth_client = client.with_session_auth("user@example.com")
+
+        brevo_testing.reset_brevo_requests()
+        response = auth_client.post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+
+        offer_id = response.json["id"]
+        offer = db.session.get(models.CollectiveOffer, offer_id)
+
+        assert_offer_values(offer, data, user, offerer)
+
+        assert len(brevo_testing.brevo_requests) == 0
 
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
     def test_additional_details(self, client):

@@ -532,7 +532,7 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
 class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
     name: str = pydantic_v2.Field(min_length=1, max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
-    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1, max_length=6)
+    booking_emails: list[pydantic_v2.EmailStr] | None = pydantic_v2.Field(min_length=1, max_length=6, default=None)
     description: str = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
     domains: list[int] = pydantic_v2.Field(min_length=1)
     duration_minutes: int | None = None
@@ -574,8 +574,10 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     contact_url: pydantic_v2.AnyHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
-    # TODO (jcicurel-pass, 2026-06-05): this field will be added to the collective offer templates later on
+
+    # TODO (jcicurel-pass, 2026-06-05): decorrelate the two models to avoid an overlap like this one
     additional_details: SkipJsonSchema[str | None] = pydantic_v2.Field(default=None, exclude=True)
+    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1, max_length=6)
 
 
 class CollectiveOfferResponseIdModel(HttpBodyModel):

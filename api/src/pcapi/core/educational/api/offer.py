@@ -247,7 +247,7 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
-        bookingEmails=offer_data.booking_emails,
+        bookingEmails=offer_data.booking_emails or [],
         formats=offer_data.formats,
         author=user,
         locationType=offer_data.location.location_type if offer_data.location else None,
@@ -255,9 +255,8 @@ def create_collective_offer(
         offererAddressId=offerer_address.id if offerer_address else None,
     )
 
-    # we update pro email data in Brevo
-    for email in collective_offer.bookingEmails:
-        update_external_pro(email)
+    if collective_offer.bookingEmails is not None:
+        _update_external_pro(collective_offer.bookingEmails)
 
     db.session.add(collective_offer)
     db.session.flush()
@@ -1128,6 +1127,14 @@ def update_collective_offer(offer_id: int, body: "collective_offers_serialize.Pa
     if new_venue:
         move_collective_offer_venue(offer_to_update, new_venue)
 
+    if (
+        # ensure we are filling the field for the first time
+        len(offer_to_update.bookingEmails) == 0
+        and "bookingEmails" in new_values
+        and new_values["bookingEmails"] is not None
+    ):
+        _update_external_pro(new_values["bookingEmails"])
+
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, location_body=body.location)
 
     on_commit(
@@ -1137,6 +1144,12 @@ def update_collective_offer(offer_id: int, body: "collective_offers_serialize.Pa
             updated_fields,
         )
     )
+
+
+def _update_external_pro(booking_emails: list[str]) -> None:
+    # we update pro email data in Brevo
+    for email in booking_emails:
+        update_external_pro(email)
 
 
 def update_collective_offer_template(
