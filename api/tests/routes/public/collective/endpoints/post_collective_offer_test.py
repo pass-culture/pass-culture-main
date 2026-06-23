@@ -31,6 +31,18 @@ UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / models.CollectiveOffer.FOLDER
 
 time_travel_str = "2021-10-01 15:00:00"
 
+INVALID_PRICE_FIELDS_ERROR = {
+    "__root__": [
+        "Vous devez renseigner soit ('totalPrice', 'educationalPriceDetail'), soit ('additionalDetails', 'servicePrice', 'additionalFees', 'numberOfTeachers')"
+    ]
+}
+
+MISSING_OLD_FIELD_ERROR = {"__root__": ["Vous devez renseigner le champ 'totalPrice'"]}
+
+MISSING_NEW_FIELD_ERROR = {
+    "__root__": ["Vous devez renseigner les champs 'servicePrice', 'additionalFees', 'numberOfTeachers'"]
+}
+
 
 @pytest.fixture(name="venue_provider")
 def venue_provider_fixture():
@@ -608,6 +620,150 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["Année scolaire manquante pour la date de fin."]}
 
+    @time_machine.travel(time_travel_str)
+    def test_price_fields(self, public_client, minimal_payload):
+        del minimal_payload["totalPrice"]
+        fees = [
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10.003},
+            {"type": models.CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15.003},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.504},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
+        ]
+        minimal_payload = {
+            **minimal_payload,
+            "additionalDetails": "Some nice details",
+            "servicePrice": 40,
+            "additionalFees": fees,
+            "numberOfTeachers": 10,
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        stock = offer.collectiveStock
+
+        assert offer.additionalDetails == "Some nice details"
+        assert stock.priceDetail is None
+        assert stock.numberOfTeachers == 10
+        assert stock.price == 110.50
+        assert stock.servicePrice == 40
+
+        expected = [
+            {**fee, "amount": decimal.Decimal(str(fee["amount"])).quantize(decimal.Decimal("1.00"))} for fee in fees
+        ]
+        actual = [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(stock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ]
+        assert actual == expected
+
+        # each amount is rounded to 2 decimals before the sum is computed
+        total_fees = sum(fee.amount for fee in stock.collectiveAdditionalFees)
+        assert total_fees == 70.50
+        assert total_fees + stock.servicePrice == stock.price
+
+    @time_machine.travel(time_travel_str)
+    def test_price_fields_no_fees(self, public_client, minimal_payload):
+        del minimal_payload["totalPrice"]
+        minimal_payload = {
+            **minimal_payload,
+            "servicePrice": 10.99,
+            "additionalFees": [],
+            "numberOfTeachers": 10,
+        }
+
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 200
+
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        stock = offer.collectiveStock
+
+        assert offer.additionalDetails is None
+        assert stock.priceDetail is None
+        assert stock.numberOfTeachers == 10
+        assert stock.price == decimal.Decimal("10.99")
+        assert stock.servicePrice == decimal.Decimal("10.99")
+        assert stock.collectiveAdditionalFees == []
+
+    @time_machine.travel(time_travel_str)
+    @pytest.mark.parametrize(
+        "payload,error",
+        (
+            # no price field
+            ({}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new price fields
+            ({"totalPrice": 10, "servicePrice": 10}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new (non-required) price fields
+            ({"educationalPriceDetail": 10, "additionalDetails": "bloup"}, INVALID_PRICE_FIELDS_ERROR),
+            # old and new (null) price fields
+            ({"totalPrice": 10, "servicePrice": None}, INVALID_PRICE_FIELDS_ERROR),
+            # missing servicePrice
+            ({"additionalFees": [], "numberOfTeachers": 10}, MISSING_NEW_FIELD_ERROR),
+            # missing additionalFees
+            ({"servicePrice": 10, "numberOfTeachers": 10}, MISSING_NEW_FIELD_ERROR),
+            # missing numberOfTeachers
+            ({"servicePrice": 10, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # missing totalPrice
+            ({"educationalPriceDetail": "bloup"}, MISSING_OLD_FIELD_ERROR),
+            # totalPrice None
+            ({"totalPrice": None}, MISSING_OLD_FIELD_ERROR),
+            # servicePrice None
+            ({"servicePrice": None, "numberOfTeachers": 10, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # additionalFees None
+            ({"servicePrice": 10, "numberOfTeachers": 10, "additionalFees": None}, MISSING_NEW_FIELD_ERROR),
+            # numberOfTeachers None
+            ({"servicePrice": 10, "numberOfTeachers": None, "additionalFees": []}, MISSING_NEW_FIELD_ERROR),
+            # total price too high
+            (
+                {"servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1, "numberOfTeachers": 1, "additionalFees": []},
+                {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]},
+            ),
+            (
+                {
+                    "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 1000,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [{"type": models.CollectiveAdditionalFeeType.MEAL.value, "amount": 1001}],
+                },
+                {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]},
+            ),
+            # additionalFees type duplicate
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un type de frais annexe est en doublon"]},
+            ),
+            # additionalFees label duplicate
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un label de frais annexe est en doublon"]},
+            ),
+        ),
+    )
+    def test_price_fields_error(self, public_client, minimal_payload, payload, error):
+        del minimal_payload["totalPrice"]
+
+        minimal_payload = {**minimal_payload, **payload}
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+
+        assert response.status_code == 400
+        assert response.json == error
+
 
 @pytest.mark.usefixtures("db_session")
 class CollectiveOffersPublicPostOfferMinimalTest:
@@ -629,17 +785,13 @@ class CollectiveOffersPublicPostOfferMinimalTest:
         for key in minimal_payload:
             payload = {k: v for k, v in minimal_payload.items() if k != key}
 
-            with patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock:
-                mock.return_value = ["anything", "it does not matter"]
-                response = public_client.post("/v2/collective/offers/", json=payload)
+            response = public_client.post("/v2/collective/offers/", json=payload)
 
             assert response.status_code == 400
             assert key in response.json or "__root__" in response.json
 
     def assert_expected_offer_is_created(self, public_client, payload):
-        with patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock:
-            mock.return_value = ["anything", "it does not matter"]
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
