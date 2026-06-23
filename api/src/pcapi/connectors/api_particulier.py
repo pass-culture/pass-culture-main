@@ -136,6 +136,7 @@ def get_quotient_familial(
         QUOTIENT_FAMILIAL_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "quotient familial")
@@ -194,6 +195,7 @@ def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> Dis
         AAH_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "aah")
@@ -260,6 +262,7 @@ def get_disabled_child_education_allowance(
         AEEH_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "aeeh")

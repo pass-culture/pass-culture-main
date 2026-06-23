@@ -222,7 +222,8 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
 
     if settings.ENABLE_PARTICULIER_API_MOCK:
         aah_result = _call_api_particulier(
-            aah_fraud_check, lambda: staging_api.get_and_mock_disabled_adult_allowance(source_data.person, user)
+            aah_fraud_check,
+            lambda: staging_api.get_and_mock_disabled_adult_allowance(source_data.person, user),
         )
     else:
         aah_result = _call_api_particulier(
@@ -404,8 +405,6 @@ def _grant_bonus(fraud_check: subscription_models.BeneficiaryFraudCheck) -> fina
 
     if given_recredit:
         _delete_bonus_fraud_checks(user)
-    elif deposit_api.can_receive_bonus_credit(user):
-        raise ValueError(f"{fraud_check=} should have led to a credit bonus")
 
     return given_recredit
 

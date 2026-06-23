@@ -550,6 +550,10 @@ def can_receive_bonus_credit(user: users_models.User) -> bool:
 
 
 def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
+    """
+    This function is called during GDPR-sensitive code paths like the disability bonus credit.
+    That is why this function *must never* log anything to our cloud provider.
+    """
     deposit = user.deposit
     if not deposit:
         return None
