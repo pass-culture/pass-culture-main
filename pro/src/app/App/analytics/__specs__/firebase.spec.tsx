@@ -154,4 +154,75 @@ describe('useFirebase', () => {
       expect(firebase.deleteApp).toHaveBeenCalled()
     })
   })
+  it('should not throw and should keep firebase initialized if Remote Config fails with a storage-open error', async () => {
+    vi.spyOn(firebase, 'initializeApp').mockReturnValueOnce({
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
+    })
+
+    const storageError = new Error(
+      'remoteconfig/storage-open: Error thrown when opening storage.'
+    )
+    storageError.name = 'FirebaseError'
+
+    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockRejectedValueOnce(
+      storageError
+    )
+
+    renderFakeApp({ isCookieEnabled: true })
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(firebaseRemoteConfig.fetchAndActivate).toHaveBeenCalledTimes(1)
+    })
+
+    await Promise.resolve()
+
+    expect(firebase.deleteApp).not.toHaveBeenCalled()
+  })
+
+  it('should not initialize firebase if it is not supported', async () => {
+    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValueOnce(false)
+
+    renderFakeApp({ isCookieEnabled: true })
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.isSupported).toHaveBeenCalledTimes(1)
+    })
+
+    expect(firebase.initializeApp).not.toHaveBeenCalled()
+  })
+
+  it('should silently swallow InvalidStateError from Remote Config', async () => {
+    vi.spyOn(firebase, 'initializeApp').mockReturnValueOnce({
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
+    })
+
+    const invalidStateError = new Error('InvalidStateError message')
+    invalidStateError.name = 'InvalidStateError'
+
+    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockRejectedValueOnce(
+      invalidStateError
+    )
+
+    renderFakeApp({ isCookieEnabled: true })
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(firebaseRemoteConfig.fetchAndActivate).toHaveBeenCalledTimes(1)
+    })
+
+    await Promise.resolve()
+
+    expect(firebase.deleteApp).not.toHaveBeenCalled()
+  })
 })
