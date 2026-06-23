@@ -1475,14 +1475,15 @@ def auto_delete_attachments_on_closed_offerers() -> None:
                 delete_offerer_attachment(user_offerer, author_user=None, comment=comment)
 
 
-def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[bookings_models.Booking]:
+def get_individual_bookings_to_cancel(
+    offerer_id: int | None = None, venue_id: int | None = None
+) -> list[bookings_models.Booking]:
     now = date_utils.get_naive_utc_now()
     event_subcategory_ids = subcategories.EVENT_SUBCATEGORIES.keys()
 
-    ongoing_bookings = (
+    query = (
         db.session.query(bookings_models.Booking)
         .filter(
-            bookings_models.Booking.offererId == offerer_id,
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .options(
@@ -1491,8 +1492,15 @@ def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> lis
             .joinedload(offers_models.Stock.offer)
             .load_only(offers_models.Offer.subcategoryId)
         )
-        .all()
     )
+
+    if offerer_id:
+        query = query.filter(bookings_models.Booking.offererId == offerer_id)
+
+    if venue_id:
+        query = query.filter(bookings_models.Booking.venueId == venue_id)
+
+    ongoing_bookings = query.all()
 
     # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
     bookings = []
@@ -1506,7 +1514,7 @@ def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> lis
 
 
 def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
-    bookings = get_individual_bookings_to_cancel_on_offerer_closure(offerer_id)
+    bookings = get_individual_bookings_to_cancel(offerer_id=offerer_id)
 
     for booking in bookings:
         with atomic():
@@ -1522,13 +1530,29 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
     db.session.flush()
 
 
-def get_collective_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[educational_models.CollectiveBooking]:
+def cancel_individual_bookings_on_venue_closure(venue_id: int, author_id: int | None) -> None:
+    bookings = get_individual_bookings_to_cancel(venue_id=venue_id)
+
+    for booking in bookings:
+        with atomic():
+            try:
+                bookings_api.cancel_booking_on_closed_venue(booking, author_id=author_id)
+            except Exception as exc:
+                mark_transaction_as_invalid()
+                logger.exception(
+                    "Failed to cancel booking when closing venue",
+                    extra={"exc": exc, "booking_id": booking.id, "venue_id": venue_id},
+                )
+
+
+def get_collective_bookings_to_cancel(
+    offerer_id: int | None = None, venue_id: int | None = None
+) -> list[educational_models.CollectiveBooking]:
     now = date_utils.get_naive_utc_now()
 
-    ongoing_collective_bookings = (
+    query = (
         db.session.query(educational_models.CollectiveBooking)
         .filter(
-            educational_models.CollectiveBooking.offererId == offerer_id,
             educational_models.CollectiveBooking.status.in_(
                 (
                     educational_models.CollectiveBookingStatus.CONFIRMED,
@@ -1541,8 +1565,15 @@ def get_collective_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> lis
                 educational_models.CollectiveStock.endDatetime
             )
         )
-        .all()
     )
+
+    if offerer_id:
+        query = query.filter(educational_models.CollectiveBooking.offererId == offerer_id)
+
+    if venue_id:
+        query = query.filter(educational_models.CollectiveBooking.venueId == venue_id)
+
+    ongoing_collective_bookings = query.all()
 
     # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
     return [
@@ -1556,7 +1587,7 @@ def get_collective_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> lis
 
 
 def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
-    collective_bookings = get_collective_bookings_to_cancel_on_offerer_closure(offerer_id)
+    collective_bookings = get_collective_bookings_to_cancel(offerer_id=offerer_id)
 
     for collective_booking in collective_bookings:
         try:
@@ -1572,6 +1603,23 @@ def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: i
             )
 
     db.session.flush()
+
+
+def cancel_collective_bookings_on_venue_closure(venue_id: int, author_id: int | None) -> None:
+    collective_bookings = get_collective_bookings_to_cancel(venue_id=venue_id)
+
+    for collective_booking in collective_bookings:
+        try:
+            educational_booking_api.cancel_collective_booking(
+                collective_booking,
+                educational_models.CollectiveBookingCancellationReasons.VENUE_CLOSED,
+                author_id=author_id,
+            )
+        except Exception as exc:
+            logger.exception(
+                "Failed to cancel collective booking when closing venue",
+                extra={"exc": exc, "collective_booking_id": collective_booking.id, "venue_id": venue_id},
+            )
 
 
 def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date | None) -> None:
@@ -3455,7 +3503,7 @@ def close_venue(venue: models.Venue, author: users_models.User) -> None:
 
     finance_api.unlink_venue_bank_accounts(venue)
 
-    payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+    payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
     on_commit(
         functools.partial(
             tasks.finalize_closing_venue_task.delay,

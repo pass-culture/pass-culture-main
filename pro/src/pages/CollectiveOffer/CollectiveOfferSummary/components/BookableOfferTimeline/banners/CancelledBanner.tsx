@@ -58,6 +58,7 @@ export const CancelledBanner = ({
       case CollectiveBookingCancellationReasons.BACKOFFICE_OFFERER_BUSINESS_CLOSED:
       case CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS:
       case CollectiveBookingCancellationReasons.OFFERER_CLOSED:
+      case CollectiveBookingCancellationReasons.VENUE_CLOSED:
         return 'Le pass Culture a annulé votre offre. Vous avez été notifié par mail de la raison de votre annulation. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau.'
     }
   }, [reason])
