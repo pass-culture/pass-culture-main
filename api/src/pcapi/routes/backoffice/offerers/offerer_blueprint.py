@@ -1502,8 +1502,8 @@ def get_close_offerer_form(offerer_id: int) -> response_utils.BackofficeResponse
     form = offerer_forms.OffererClosureForm()
     info = None
 
-    count_individual_bookings = len(offerers_api.get_individual_bookings_to_cancel_on_offerer_closure(offerer.id))
-    count_collective_bookings = len(offerers_api.get_collective_bookings_to_cancel_on_offerer_closure(offerer.id))
+    count_individual_bookings = len(offerers_api.get_individual_bookings_to_cancel(offerer_id=offerer.id))
+    count_collective_bookings = len(offerers_api.get_collective_bookings_to_cancel(offerer_id=offerer.id))
 
     if count_individual_bookings or count_collective_bookings:
         info = Markup("<p>La fermeture de l'entité juridique entraînera l'annulation automatique de :<p><ul>")

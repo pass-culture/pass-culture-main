@@ -92,6 +92,7 @@ def match_acceslibre_task(payload: MatchAcceslibrePayload) -> None:
 
 class FinalizeClosingVenuePayload(BaseModelV2):
     venue_id: int
+    author_id: int
 
 
 @celery_async_task(name="tasks.offerers.default.finalize_closing_venue_task", model=FinalizeClosingVenuePayload)
@@ -99,6 +100,11 @@ def finalize_closing_venue_task(payload: FinalizeClosingVenuePayload) -> None:
     with atomic():
         venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == payload.venue_id).one()
         offerers_api.deactivate_venue_offers(venue)
+
+        offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, payload.author_id)
+        offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, payload.author_id)
+
+        logger.info("closing venue: bookings cancelled", extra={"venue_id": venue.id})
 
         offerers_api.delete_venue_pivots(venue.id)
         db.session.flush()

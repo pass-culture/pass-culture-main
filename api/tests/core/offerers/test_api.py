@@ -4,6 +4,7 @@ import decimal
 import logging
 import os
 import pathlib
+from unittest.mock import call as mock_call
 from unittest.mock import patch
 
 import pytest
@@ -4055,7 +4056,7 @@ class CloseVenueTest:
         assert not venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
 
-    def test_closed_venue_stays_closed(self):
+    def test_closed_venue_stays_closed_and_nothing_is_done(self):
         venue = offerers_factories.VenueFactory(
             state=offerers_models.VenueState.CLOSED, bookingEmail=None, contact=None
         )
@@ -4246,3 +4247,93 @@ class VenueHasOngoingBookingsTest:
         bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
 
         assert offerers_api.venue_has_ongoing_bookings(venue)
+
+
+class CancelIndividualBookingsOnVenueClosureTest:
+    @patch("pcapi.core.mails.transactional.send_booking_cancellation_by_pro_to_beneficiary_email")
+    @pytest.mark.parametrize(
+        "offer_factory",
+        [
+            pytest.param(offers_factories.ThingOfferFactory, id="thing_offer"),
+            pytest.param(offers_factories.EventOfferFactory, id="event_offer"),
+        ],
+    )
+    def test_venue_has_bookings_to_cancel(self, mock_send_email, offer_factory):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        offer = offer_factory(venue=venue)
+        bookings = bookings_factories.BookingFactory.create_batch(3, stock__offer=offer)
+
+        with atomic():
+            offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+
+        mock_send_email.assert_has_calls([mock_call(booking) for booking in bookings], any_order=True)
+
+    @patch("pcapi.core.mails.transactional.send_booking_cancellation_by_pro_to_beneficiary_email")
+    def test_uncancellable_bookings_are_filtered_and_others_are_being_cancelled(self, mock_send_email):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+
+        mock_send_email.assert_called_once_with(booking)
+
+    @patch("pcapi.core.mails.transactional.send_booking_cancellation_by_pro_to_beneficiary_email")
+    def test_failed_cancellation_is_logged(self, mock_send_email, caplog):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        bookings = bookings_factories.BookingFactory.create_batch(3, stock__offer__venue=venue)
+
+        with caplog.at_level("INFO"):
+            with patch("pcapi.core.bookings.api._cancel_booking") as mock_cancel_booking:
+                mock_cancel_booking.side_effect = [True, False, True, True]
+
+                with atomic():
+                    offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        target_log_msg = "Cancelled booking on closed venue"
+
+        log_records = [record for record in caplog.records if record.message == target_log_msg]
+        assert len(log_records) == len(bookings)
+
+        assert len([record for record in log_records if record.extra["cancelled"]]) == (len(bookings) - 1)
+        assert len([record for record in log_records if not record.extra["cancelled"]]) == 1
+
+
+class CancelCollectiveBookingsOnVenueClosureTest:
+    def test_venue_has_bookings_to_cancel(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        educational_factories.CollectiveBookingFactory.create_batch(3, collectiveStock__collectiveOffer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)
+
+    def test_uncancellable_bookings_are_filtered_and_others_are_being_cancelled(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        educational_factories.CancelledCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)

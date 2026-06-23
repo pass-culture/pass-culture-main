@@ -53,6 +53,7 @@ class BookingCancellationReasons(enum.Enum):
     BACKOFFICE_OFFERER_BUSINESS_CLOSED = "BACKOFFICE_OFFERER_BUSINESS_CLOSED"
     OFFERER_CONNECT_AS = "OFFERER_CONNECT_AS"
     OFFERER_CLOSED = "OFFERER_CLOSED"
+    VENUE_CLOSED = "VENUE_CLOSED"
 
     @classmethod
     def is_from_backoffice(cls, reason: "BookingCancellationReasons") -> bool:

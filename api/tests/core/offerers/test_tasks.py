@@ -5,12 +5,13 @@ import pytest
 import time_machine
 
 from pcapi.connectors.entreprise.models import SirenInfo
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import tasks as offerers_tasks
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
@@ -179,11 +180,24 @@ class CheckOffererSirenTaskTest:
 
 
 class FinalizeClosingVenueTaskTest:
+    def test_bookings_have_been_deleted(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)
+
     def test_new_history_entries_are_added(self):
         venue = offerers_factories.VenueFactory()
-        self.create_synced_offers(venue)
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
         offerers_tasks.finalize_closing_venue_task(payload.model_dump())
 
         db.session.refresh(venue)
@@ -195,9 +209,10 @@ class FinalizeClosingVenueTaskTest:
 
     def test_pivots_have_been_deleted(self):
         venue = offerers_factories.VenueFactory()
-        self.create_synced_offers(venue)
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
 
-        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
         offerers_tasks.finalize_closing_venue_task(payload.model_dump())
 
         db.session.refresh(venue)
@@ -206,9 +221,16 @@ class FinalizeClosingVenueTaskTest:
 
         assert venue.state == offerers_models.VenueState.CLOSED
 
-    def create_synced_offers(self, venue):
+    def create_synced_offers_with_bookings(self, venue):
         boost_pivot = providers_factories.BoostCinemaProviderPivotFactory(venue=venue)
         now = datetime.datetime.now(datetime.UTC)
 
-        offers_factories.OfferFactory(venue=venue, publicationDatetime=now)
-        offers_factories.OfferFactory(venue=venue, lastProviderId=boost_pivot.providerId, publicationDatetime=now)
+        bookings_factories.BookingFactory.create_batch(
+            2, stock__offer__venue=venue, stock__offer__publicationDatetime=now
+        )
+        bookings_factories.BookingFactory.create_batch(
+            3,
+            stock__offer__venue=venue,
+            stock__offer__publicationDatetime=now,
+            stock__offer__lastProviderId=boost_pivot.providerId,
+        )

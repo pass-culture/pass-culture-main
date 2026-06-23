@@ -951,6 +951,31 @@ def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | N
     transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
 
 
+def cancel_booking_on_closed_venue(booking: models.Booking, author_id: int | None = None) -> None:
+    """
+    What it does :
+        - (Check) Check booking can be cancelled
+        - Call _cancel_booking
+        - (DB) Cancel booking uniterally if external cancellatio has failed
+        - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
+        of that it was a cancellation caused by venue closing
+    """
+    validation.check_booking_can_be_cancelled(booking)
+    try:
+        cancelled = _cancel_booking(booking, models.BookingCancellationReasons.VENUE_CLOSED, author_id=author_id)
+    except external_bookings_exceptions.ExternalBookingException as exc:
+        logger.info(
+            "API error while cancelling external booking, try to cancel unilaterally",
+            extra={"exc": exc, "booking": booking.id},
+        )
+        cancelled = _cancel_booking(
+            booking, models.BookingCancellationReasons.VENUE_CLOSED, one_side_cancellation=True, author_id=author_id
+        )
+
+    logger.info("Cancelled booking on closed venue", extra={"booking": booking.id, "cancelled": cancelled})
+    transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+
+
 def mark_as_used(booking: models.Booking, validation_author_type: models.BookingValidationAuthorType) -> None:
     validation.check_is_usable(booking)
 
