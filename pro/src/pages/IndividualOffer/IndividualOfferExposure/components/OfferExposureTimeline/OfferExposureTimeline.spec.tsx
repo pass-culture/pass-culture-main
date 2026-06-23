@@ -1,10 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import {
-  ExposureEventType,
-  type GetOfferExposureResponseModel,
-} from '@/apiClient/v1'
+import { ExposureEventType } from '@/apiClient/v1'
+import { getOfferExposureFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferExposureTimeline } from './OfferExposureTimeline'
@@ -15,35 +13,29 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const exposureFactory = (
-  overrides: Partial<GetOfferExposureResponseModel> = {}
-): GetOfferExposureResponseModel => ({
-  views: 40,
-  events: [
-    {
-      type: ExposureEventType.HEADLINE,
-      name: null,
-      startDate: '2026-02-14T00:00:00Z',
-      endDate: '2026-03-04T00:00:00Z',
-      viewsOnPeriod: 30,
-    },
-    {
-      type: ExposureEventType.HIGHLIGHT,
-      name: 'Journées Européennes du Patrimoine',
-      startDate: '2026-02-02T00:00:00Z',
-      endDate: '2026-02-26T00:00:00Z',
-      viewsOnPeriod: 10,
-    },
-    {
-      type: ExposureEventType.PRO_ADVICE,
-      name: null,
-      startDate: '2025-12-23T00:00:00Z',
-      endDate: null,
-      viewsOnPeriod: null,
-    },
-  ],
-  ...overrides,
-})
+const defaultExposureEvents = [
+  {
+    type: ExposureEventType.HEADLINE,
+    name: null,
+    startDate: '2026-02-14T00:00:00Z',
+    endDate: '2026-03-04T00:00:00Z',
+    viewsOnPeriod: 30,
+  },
+  {
+    type: ExposureEventType.HIGHLIGHT,
+    name: 'Journées Européennes du Patrimoine',
+    startDate: '2026-02-02T00:00:00Z',
+    endDate: '2026-02-26T00:00:00Z',
+    viewsOnPeriod: 10,
+  },
+  {
+    type: ExposureEventType.PRO_ADVICE,
+    name: null,
+    startDate: '2025-12-23T00:00:00Z',
+    endDate: null,
+    viewsOnPeriod: null,
+  },
+]
 
 function renderOfferExposureTimeline(
   creationDate = '2025-12-03T00:00:00Z',
@@ -70,7 +62,9 @@ describe('OfferExposureTimeline', () => {
   })
 
   it('should render each enhancement event', async () => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(exposureFactory())
+    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+      getOfferExposureFactory({ events: defaultExposureEvents })
+    )
 
     renderOfferExposureTimeline()
 
@@ -91,7 +85,9 @@ describe('OfferExposureTimeline', () => {
   })
 
   it('should display dates in the offer department timezone', async () => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(exposureFactory())
+    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+      getOfferExposureFactory({ events: defaultExposureEvents })
+    )
 
     renderOfferExposureTimeline('2025-12-03T00:00:00Z', '972')
 
@@ -111,7 +107,7 @@ describe('OfferExposureTimeline', () => {
 
   it('should not display the views line when there are no views', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      exposureFactory({
+      getOfferExposureFactory({
         events: [
           {
             type: ExposureEventType.HEADLINE,
@@ -139,7 +135,7 @@ describe('OfferExposureTimeline', () => {
 
   it('should handle ongoing events with end dates', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      exposureFactory({
+      getOfferExposureFactory({
         events: [
           {
             type: ExposureEventType.HEADLINE,
@@ -165,7 +161,7 @@ describe('OfferExposureTimeline', () => {
 
   it('should not render anything when there is no event', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      exposureFactory({ events: [] })
+      getOfferExposureFactory({ events: [] })
     )
 
     const { container } = renderOfferExposureTimeline()
@@ -182,7 +178,7 @@ describe('OfferExposureTimeline', () => {
 
   it('should add a creation step when there are fewer than 3 events', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      exposureFactory({
+      getOfferExposureFactory({
         events: [
           {
             type: ExposureEventType.HEADLINE,
@@ -207,7 +203,9 @@ describe('OfferExposureTimeline', () => {
   })
 
   it('should not add a creation step when there are 3 events', async () => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(exposureFactory())
+    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+      getOfferExposureFactory({ events: defaultExposureEvents })
+    )
 
     renderOfferExposureTimeline('2025-12-03T00:00:00Z')
 

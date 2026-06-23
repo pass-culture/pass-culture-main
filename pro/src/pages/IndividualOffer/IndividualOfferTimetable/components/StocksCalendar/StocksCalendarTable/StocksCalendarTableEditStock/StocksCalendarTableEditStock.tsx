@@ -135,7 +135,7 @@ export function StocksCalendarTableEditStock({
               label="Date"
               className={styles['date']}
               required
-              aria-describedBy={descriptionId}
+              aria-describedby={descriptionId}
               error={form.formState.errors.bookingLimitDate?.message}
             />
           </div>

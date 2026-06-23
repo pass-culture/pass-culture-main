@@ -10,6 +10,7 @@ import {
   DisplayableActivity,
   type GetBookingResponse,
   type GetIndividualOfferWithAddressResponseModel,
+  type GetOfferExposureResponseModel,
   type GetOffererNameResponseModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
@@ -73,6 +74,16 @@ export const listOffersStockFactory = (
     id: currentStockId,
     remainingQuantity: 100,
     ...customListOffersStockFactory,
+  }
+}
+
+export const getOfferExposureFactory = (
+  customGetOfferExposure: Partial<GetOfferExposureResponseModel> = {}
+): GetOfferExposureResponseModel => {
+  return {
+    views: 0,
+    events: [],
+    ...customGetOfferExposure,
   }
 }
 

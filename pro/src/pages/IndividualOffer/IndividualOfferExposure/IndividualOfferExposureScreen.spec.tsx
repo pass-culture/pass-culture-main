@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
+import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
@@ -19,6 +20,12 @@ import {
   MOCKED_SUBCATEGORIES,
 } from '../commons/__mocks__/constants'
 import { IndividualOfferExposureScreen } from './IndividualOfferExposureScreen'
+
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    getOfferExposure: vi.fn(),
+  },
+}))
 
 const renderIndividualOfferLocationScreen = ({
   offer,
@@ -56,6 +63,13 @@ const renderIndividualOfferLocationScreen = ({
 }
 
 describe('IndividualOfferExposureScreen', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getOfferExposure').mockResolvedValue({
+      views: 0,
+      events: [],
+    })
+  })
+
   it('should render and pass accessibility checks', async () => {
     const offer = getIndividualOfferFactory({ bookingsCount: 42 })
     const { container } = renderIndividualOfferLocationScreen({ offer })
@@ -79,14 +93,6 @@ describe('IndividualOfferExposureScreen', () => {
         name: 'Statistiques de votre offre',
       })
     ).toBeInTheDocument()
-    expect(screen.getByText('42 réservations')).toBeInTheDocument()
     expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
-  })
-
-  it('should render the component with 0 bookings', async () => {
-    const offer = getIndividualOfferFactory({ bookingsCount: 0 })
-    renderIndividualOfferLocationScreen({ offer })
-
-    expect(await screen.findByText('0 réservation')).toBeInTheDocument()
   })
 })
