@@ -1115,6 +1115,8 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
                 educational_models.EducationalDeposit.educationalYearId
                 == _get_educational_year_subquery(educational_models.CollectiveStock),
             )
+            .order_by(educational_models.EducationalDeposit.id)
+            .limit(1)
             .scalar()
         )
         kwargs.update({"ministry": ministry})

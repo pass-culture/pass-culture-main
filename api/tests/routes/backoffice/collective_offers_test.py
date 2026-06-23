@@ -12,6 +12,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -2097,6 +2098,29 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Top Acteur"
+
+    def test_institution_with_multiple_deposits(self, authenticated_client):
+        year = educational_factories.EducationalYearFactory(adageId=str(2**24 + 12))
+        institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution,
+            educationalYear=year,
+            period=educational_utils.get_educational_year_first_period(year),
+        )
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution,
+            educationalYear=year,
+            period=educational_utils.get_educational_year_second_period(year),
+        )
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__institution=institution,
+            collectiveStock__startDatetime=year.beginningDate + datetime.timedelta(days=30),
+        )
+
+        url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class RejectCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
