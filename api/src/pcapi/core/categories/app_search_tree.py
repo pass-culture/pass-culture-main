@@ -323,7 +323,7 @@ SEARCH_GROUP_ARTS_LOISIRS_CREATIFS = SearchGroup(
         NATIVE_CATEGORY_PRATIQUE_ARTISTIQUE_EN_LIGNE,
     ],
     search_value="ARTS_LOISIRS_CREATIFS",
-    label="Arts & loisirs créatifs",
+    label="Arts et loisirs créatifs",
     included_subcategories=[
         "ABO_PRATIQUE_ART",
         "ATELIER_PRATIQUE_ART",
@@ -347,7 +347,7 @@ SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
         NATIVE_CATEGORY_FESTIVALS,
     ],
     search_value="CONCERTS_FESTIVALS",
-    label="Concerts & festivals",
+    label="Concerts et festivals",
     included_subcategories=["ABO_CONCERT", "CONCERT", "EVENEMENT_MUSIQUE", "FESTIVAL_MUSIQUE"],
 )
 SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
@@ -400,7 +400,7 @@ SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
         NATIVE_CATEGORY_RENCONTRES_EVENEMENTS,
     ],
     search_value="JEUX_JEUX_VIDEOS",
-    label="Jeux & jeux vidéos",
+    label="Jeux et jeux vidéos",
     included_subcategories=[
         "ABO_JEU_VIDEO",
         "ABO_LUDOTHEQUE",
@@ -434,7 +434,7 @@ SEARCH_GROUP_LIVRES = SearchGroup(
 SEARCH_GROUP_MEDIA_PRESSE = SearchGroup(
     children=[NATIVE_CATEGORY_AUTRES_MEDIAS, NATIVE_CATEGORY_PODCAST, NATIVE_CATEGORY_PRESSE_EN_LIGNE],
     search_value="MEDIA_PRESSE",
-    label="Médias & presse",
+    label="Médias et presse",
     included_subcategories=["ABO_PRESSE_EN_LIGNE", "APP_CULTURELLE", "PODCAST"],
 )
 SEARCH_GROUP_MUSEES_VISITES_CULTURELLES = SearchGroup(
@@ -445,7 +445,7 @@ SEARCH_GROUP_MUSEES_VISITES_CULTURELLES = SearchGroup(
         NATIVE_CATEGORY_VISITES_CULTURELLES_EN_LIGNE,
     ],
     search_value="MUSEES_VISITES_CULTURELLES",
-    label="Musées & visites culturelles",
+    label="Musées et visites",
     included_subcategories=[
         "CARTE_MUSEE",
         "EVENEMENT_PATRIMOINE",
@@ -499,7 +499,7 @@ SEARCH_GROUP_RENCONTRES_CONFERENCES = SearchGroup(
         NATIVE_CATEGORY_SALONS_ET_METIERS,
     ],
     search_value="RENCONTRES_CONFERENCES",
-    label="Conférences & rencontres",
+    label="Conférences et rencontres",
     included_subcategories=["CONFERENCE", "DECOUVERTE_METIERS", "RENCONTRE_EN_LIGNE", "RENCONTRE", "SALON"],
 )
 SEARCH_GROUP_SPECTACLES = SearchGroup(

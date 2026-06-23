@@ -47,19 +47,19 @@ class SubcategoriesTest:
         search_groups = response.json["searchGroups"]
 
         assert search_groups == [
-            {"name": "ARTS_LOISIRS_CREATIFS", "value": "Arts & loisirs créatifs"},
+            {"name": "ARTS_LOISIRS_CREATIFS", "value": "Arts et loisirs créatifs"},
             {"name": "CARTES_JEUNES", "value": "Cartes jeunes"},
-            {"name": "CONCERTS_FESTIVALS", "value": "Concerts & festivals"},
+            {"name": "CONCERTS_FESTIVALS", "value": "Concerts et festivals"},
             {"name": "EVENEMENTS_EN_LIGNE", "value": "Évènements en ligne"},
             {"name": "CINEMA", "value": "Cinéma"},
             {"name": "FILMS_DOCUMENTAIRES_SERIES", "value": "Films, séries et documentaires"},
-            {"name": "JEUX_JEUX_VIDEOS", "value": "Jeux & jeux vidéos"},
+            {"name": "JEUX_JEUX_VIDEOS", "value": "Jeux et jeux vidéos"},
             {"name": "LIVRES", "value": "Livres"},
-            {"name": "MEDIA_PRESSE", "value": "Médias & presse"},
-            {"name": "MUSEES_VISITES_CULTURELLES", "value": "Musées & visites culturelles"},
+            {"name": "MEDIA_PRESSE", "value": "Médias et presse"},
+            {"name": "MUSEES_VISITES_CULTURELLES", "value": "Musées et visites"},
             {"name": "MUSIQUE", "value": "Musique"},
             {"name": "NONE", "value": "None"},
-            {"name": "RENCONTRES_CONFERENCES", "value": "Conférences & rencontres"},
+            {"name": "RENCONTRES_CONFERENCES", "value": "Conférences et rencontres"},
             {"name": "SPECTACLES", "value": "Spectacles"},
         ]
 
