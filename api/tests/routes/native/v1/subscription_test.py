@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -923,7 +924,7 @@ class HonorStatementTest:
 
 class QuotientFamilialBonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    def test_create_qf_bonus_fraud_check(self, mocked_task, client):
+    def test_create_qf_bonus_fraud_check(self, mocked_task, client, caplog):
         user = users_factories.BeneficiaryFactory()
 
         expected_num_queries = 1  # user
@@ -933,17 +934,18 @@ class QuotientFamilialBonusTest:
         expected_num_queries += 1  # beneficiary_fraud_check (insert)
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.post(
-                "/native/v1/subscription/bonus/quotient_familial",
-                json={
-                    "lastName": "Lefebvre",
-                    "firstNames": ["Alexis"],
-                    "birthDate": "1982-12-27",
-                    "gender": "Mme",
-                    "birthCountryCogCode": "99100",
-                    "birthCityCogCode": "08480",
-                },
-            )
+            with caplog.at_level(logging.INFO):
+                response = client.post(
+                    "/native/v1/subscription/bonus/quotient_familial",
+                    json={
+                        "lastName": "Lefebvre",
+                        "firstNames": ["Alexis"],
+                        "birthDate": "1982-12-27",
+                        "gender": "Mme",
+                        "birthCountryCogCode": "99100",
+                        "birthCityCogCode": "08480",
+                    },
+                )
 
         assert response.status_code == 204, response.json
 
@@ -967,6 +969,10 @@ class QuotientFamilialBonusTest:
 
         mocked_task.assert_called_once()
         mocked_task.assert_called_with({"fraud_check_id": bonus_fraud_check.id})
+
+        route_call_record = caplog.records[0]
+        assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
+        assert route_call_record.sourceIp == route_call_record.extra["sourceIp"] == "[REDACTED]"
 
     @pytest.mark.parametrize(
         "fraud_check_status",
@@ -1163,7 +1169,7 @@ class QuotientFamilialBonusTest:
 class DisabilityBonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
-    def test_create_disability_bonus_fraud_checks(self, mocked_aeeh_task, mocked_aah_task, client):
+    def test_create_disability_bonus_fraud_checks(self, mocked_aeeh_task, mocked_aah_task, client, caplog):
         user = users_factories.BeneficiaryFactory()
 
         expected_num_queries = 1  # user
@@ -1173,13 +1179,14 @@ class DisabilityBonusTest:
         expected_num_queries += 1  # beneficiary_fraud_check (insert)
         client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.post(
-                "/native/v1/subscription/bonus/disability",
-                json={
-                    "birthCountryCogCode": "99100",
-                    "birthCityCogCode": "67482",  # Strasbourg
-                },
-            )
+            with caplog.at_level(logging.INFO):
+                response = client.post(
+                    "/native/v1/subscription/bonus/disability",
+                    json={
+                        "birthCountryCogCode": "99100",
+                        "birthCityCogCode": "67482",  # Strasbourg
+                    },
+                )
 
         assert response.status_code == 204, response.json
 

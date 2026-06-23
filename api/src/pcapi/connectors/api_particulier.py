@@ -101,7 +101,7 @@ class QuotientFamilialResponse(BaseModel):
 
 
 def get_quotient_familial(
-    custodian: bonus_schemas.BonusCreditPerson, at_date: datetime.date | None = None
+    custodian: bonus_schemas.BonusCreditPerson, at_date__scrubbed: datetime.date | None = None
 ) -> QuotientFamilialResponse:
     """
     Get the Quotient Familial from a tax household, using a custodian personal information.
@@ -129,13 +129,14 @@ def get_quotient_familial(
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
         "nomCommuneNaissance": custodian.birth_city,
-        "annee": at_date.year if at_date else None,
-        "mois": at_date.month if at_date else None,
+        "annee": at_date__scrubbed.year if at_date__scrubbed else None,
+        "mois": at_date__scrubbed.month if at_date__scrubbed else None,
     }
     response = requests.get(
         QUOTIENT_FAMILIAL_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "quotient familial")
@@ -194,6 +195,7 @@ def get_disabled_adult_allowance(person: bonus_schemas.BonusCreditPerson) -> Dis
         AAH_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "aah")
@@ -260,6 +262,7 @@ def get_disabled_child_education_allowance(
         AEEH_ENDPOINT,
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
+        log_info=False,
     )
 
     _raise_for_status(response, "aeeh")

@@ -45,8 +45,8 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     Gets the lowest Quotient Familial from the fraud check custodian, over the fraud check beneficiary seventeenth year,
     and updates the fraud check. Then gives the bonus recredit to the beneficiary if eligible.
     """
-    user = quotient_familial_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
+    user__scrubbed = quotient_familial_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user__scrubbed):
         logger.error("trying to apply for bonus when not able to receive said bonus")
         return
 
@@ -56,63 +56,67 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
     qf_result = _call_api_particulier(
         quotient_familial_fraud_check,
-        lambda: _get_user_quotient_familial_response(source_data.custodian, user),
+        lambda: _get_user_quotient_familial_response(source_data.custodian, user__scrubbed),
     )
     if qf_result.response:
-        qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(user, qf_result.response.data)
+        qf_result.status, qf_result.reason_codes = _get_quotient_familial_bonus_status(
+            user__scrubbed, qf_result.response.data
+        )
 
     with atomic():
         if qf_result.status == subscription_models.FraudCheckStatus.KO:
             _update_quotient_familial_fraud_check_content(quotient_familial_fraud_check, qf_result)
             _decline_bonus(quotient_familial_fraud_check, qf_result)
 
-            transactional_mails.send_bonus_declined_email(user)
+            transactional_mails.send_bonus_declined_email(user__scrubbed)
 
         elif qf_result.status == subscription_models.FraudCheckStatus.OK:
             given_recredit = _grant_bonus(quotient_familial_fraud_check)
 
             if given_recredit:
-                trigger_events.track_has_received_bonus(user.id)
-                transactional_mails.send_bonus_granted_email(user)
+                trigger_events.track_has_received_bonus(user__scrubbed.id)
+                transactional_mails.send_bonus_granted_email(user__scrubbed)
 
         else:
             raise NotImplementedError(f"no handler was implemented for {qf_result.status}")
 
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(user__scrubbed)
 
 
 def _get_user_quotient_familial_response(
-    custodian: bonus_schemas.BonusCreditPerson, user: users_models.User
+    custodian: bonus_schemas.BonusCreditPerson, user__scrubbed: users_models.User
 ) -> api_particulier.QuotientFamilialResponse:
     """
     Calls the Quotient Familial API twelve times, returning the lowest one.
     """
-    birth_date = user.validatedBirthDate
+    birth_date = user__scrubbed.validatedBirthDate
     if not birth_date:
         raise ValueError("Beneficiaries applying for the bonus are expected to have a non-null birth date")
 
-    seventeenth_birthday = birth_date + relativedelta(years=17)
+    seventeenth_birthday__scrubbed = birth_date + relativedelta(years=17)
 
     MONTHS_IN_A_YEAR = 12
     api_particulier_cutoff_date = datetime.date.today() - relativedelta(years=2)
     cutoff_month = api_particulier_cutoff_date.replace(month=1, day=1)
     all_quotient_familial_responses: list[api_particulier.QuotientFamilialResponse] = []
     for month_offset in range(MONTHS_IN_A_YEAR):
-        at_date = seventeenth_birthday + relativedelta(months=month_offset)
-        if at_date < cutoff_month:
+        at_date__scrubbed = seventeenth_birthday__scrubbed + relativedelta(months=month_offset)
+        if at_date__scrubbed < cutoff_month:
             continue
 
         if settings.ENABLE_PARTICULIER_API_MOCK:
-            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
+            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(
+                custodian, at_date__scrubbed, user__scrubbed
+            )
         else:
-            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
+            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date__scrubbed)
 
         all_quotient_familial_responses.append(quotient_familial_at_date)
 
     quotients_familial_with_user = [
         qf
         for qf in all_quotient_familial_responses
-        if _is_user_part_of_tax_household(user, qf.data.enfants, qf.data.allocataires)
+        if _is_user_part_of_tax_household(user__scrubbed, qf.data.enfants, qf.data.allocataires)
     ]
     if quotients_familial_with_user:
         relevant_qf_responses = quotients_familial_with_user
@@ -211,8 +215,8 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
 
     Refer to the ADR about degraded implementation of health information if needed.
     """
-    user = aah_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
+    user__scrubbed = aah_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user__scrubbed):
         logger.warning("trying to apply for bonus when not able to receive said bonus")
         return
 
@@ -222,7 +226,8 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
 
     if settings.ENABLE_PARTICULIER_API_MOCK:
         aah_result = _call_api_particulier(
-            aah_fraud_check, lambda: staging_api.get_and_mock_disabled_adult_allowance(source_data.person, user)
+            aah_fraud_check,
+            lambda: staging_api.get_and_mock_disabled_adult_allowance(source_data.person, user__scrubbed),
         )
     else:
         aah_result = _call_api_particulier(
@@ -240,13 +245,13 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
             given_recredit = _grant_bonus(aah_fraud_check)
 
             if given_recredit:
-                trigger_events.track_has_received_bonus(user.id)
-                transactional_mails.send_bonus_granted_email(user)
+                trigger_events.track_has_received_bonus(user__scrubbed.id)
+                transactional_mails.send_bonus_granted_email(user__scrubbed)
 
         else:
             raise NotImplementedError(f"no handler was implemented for {aah_result.status}")
 
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(user__scrubbed)
 
 
 def _get_adult_disability_bonus_status(
@@ -268,8 +273,8 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
 
     Refer to the ADR about degraded implementation of health information if needed.
     """
-    user = aeeh_fraud_check.user
-    if not deposit_api.can_receive_bonus_credit(user):
+    user__scrubbed = aeeh_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user__scrubbed):
         logger.warning("trying to apply for bonus when not able to receive said bonus")
         return
 
@@ -280,7 +285,7 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
     if settings.ENABLE_PARTICULIER_API_MOCK:
         aeeh_result = _call_api_particulier(
             aeeh_fraud_check,
-            lambda: staging_api.get_and_mock_disabled_child_education_allowance(source_data.person, user),
+            lambda: staging_api.get_and_mock_disabled_child_education_allowance(source_data.person, user__scrubbed),
         )
     else:
         aeeh_result = _call_api_particulier(
@@ -300,13 +305,13 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
             given_recredit = _grant_bonus(aeeh_fraud_check)
 
             if given_recredit:
-                trigger_events.track_has_received_bonus(user.id)
-                transactional_mails.send_bonus_granted_email(user)
+                trigger_events.track_has_received_bonus(user__scrubbed.id)
+                transactional_mails.send_bonus_granted_email(user__scrubbed)
 
         else:
             raise NotImplementedError(f"no handler was implemented for {aeeh_result.status}")
 
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(user__scrubbed)
 
 
 def _get_disabled_child_education_bonus_status(
@@ -389,25 +394,23 @@ def _decline_bonus(
 
 
 def _grant_bonus(fraud_check: subscription_models.BeneficiaryFraudCheck) -> finance_models.Recredit | None:
-    user = fraud_check.user
-    given_recredit = deposit_api.recredit_bonus_credit(user)
+    user__scrubbed = fraud_check.user
+    given_recredit = deposit_api.recredit_bonus_credit(user__scrubbed)
 
     if given_recredit:
-        _delete_bonus_fraud_checks(user)
-    elif deposit_api.can_receive_bonus_credit(user):
-        raise ValueError(f"{fraud_check=} should have led to a credit bonus")
+        _delete_bonus_fraud_checks(user__scrubbed)
 
     return given_recredit
 
 
-def _delete_bonus_fraud_checks(user: users_models.User) -> None:
+def _delete_bonus_fraud_checks(user__scrubbed: users_models.User) -> None:
     """
     We delete every bonus fraud checks to avoid retro engineering which bonus credit was granted through which process
     (AAH/AEEH or QF).
     """
     bonus_fraud_checks = [
         fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
+        for fraud_check in user__scrubbed.beneficiaryFraudChecks
         if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
     ]
     for fraud_check in bonus_fraud_checks:

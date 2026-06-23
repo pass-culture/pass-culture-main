@@ -1,6 +1,7 @@
 import copy
 import datetime
 import decimal
+import logging
 from unittest.mock import call
 from unittest.mock import patch
 
@@ -30,7 +31,7 @@ import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 @pytest.mark.usefixtures("db_session")
 class QuotientFamilialApplicationTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_quotient_familial_bonus(self, update_external_user_mock):
+    def test_apply_for_quotient_familial_bonus(self, update_external_user_mock, caplog):
         eighteen_years_ago = datetime.date.today() - relativedelta(years=18)
         with_18_child_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
         with_18_child_quotient_familial["data"]["enfants"][0]["date_naissance"] = eighteen_years_ago.isoformat()
@@ -55,7 +56,8 @@ class QuotientFamilialApplicationTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=with_18_child_quotient_familial)
 
-            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         bonus_fraud_checks = [
             fraud_check
@@ -81,6 +83,9 @@ class QuotientFamilialApplicationTest:
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_GRANTED.value.__dict__
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     @patch("pcapi.core.external.attributes.api.update_external_user")
     def test_apply_for_quotient_familial_bonus_as_householder(self, update_external_user_mock):
@@ -200,7 +205,7 @@ class QuotientFamilialApplicationTest:
             any_order=True,
         )
 
-    def test_application_not_found(self):
+    def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -219,7 +224,8 @@ class QuotientFamilialApplicationTest:
                 json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE,
             )
 
-            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
@@ -245,7 +251,10 @@ class QuotientFamilialApplicationTest:
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
 
-    def test_person_not_found(self):
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
+
+    def test_person_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -264,7 +273,8 @@ class QuotientFamilialApplicationTest:
                 json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE,
             )
 
-            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
@@ -289,6 +299,9 @@ class QuotientFamilialApplicationTest:
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
@@ -513,27 +526,45 @@ class QuotientFamilialApplicationTest:
         assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
-        for i in range(6):
+        for i in range(1, 6):  # frame at index 0 is the test frame
             stacktrace_vars = stacktrace_frames[i]["vars"]
             assert stacktrace_vars.get("source_data") in [None, "[REDACTED]"]
+            assert "user" not in stacktrace_vars
+            assert stacktrace_vars.get("user__scrubbed") in [None, "[REDACTED]"]
 
-        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
-        # assert stacktrace_frames[4]["vars"] birth_date, seventeenth_birth_date, at_date are "[REDACTED]"
+        two_years_ago = datetime.date.today() - relativedelta(years=2)
+        assert stacktrace_frames[4]["vars"] == {
+            "MONTHS_IN_A_YEAR": "12",
+            "all_quotient_familial_responses": "[REDACTED]",
+            "api_particulier_cutoff_date": repr(two_years_ago),
+            "at_date__scrubbed": "[REDACTED]",
+            "birth_date": "[REDACTED]",
+            "custodian": "[REDACTED]",
+            "cutoff_month": repr(two_years_ago.replace(month=1, day=1)),
+            "month_offset": "0",
+            "seventeenth_birthday__scrubbed": "[REDACTED]",
+            "user__scrubbed": "[REDACTED]",
+        }, stacktrace_frames[4]["vars"]
 
-        assert stacktrace_frames[5]["vars"]["query_params"] == {
-            "anneeDateNaissance": "[REDACTED]",
-            "codeCogInseeCommuneNaissance": "[REDACTED]",
-            "codeCogInseePaysNaissance": "[REDACTED]",
-            "jourDateNaissance": "[REDACTED]",
-            "moisDateNaissance": "[REDACTED]",
-            "nomNaissance": "[REDACTED]",
-            "nomUsage": "[REDACTED]",
-            "prenoms[]": "[REDACTED]",
-            "recipient": "[REDACTED]",
-            "sexeEtatCivil": "[REDACTED]",
-        }
-        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
-        # assert stacktrace_frames[5]["vars"] city_insee_code, country_insee_code, at_date are "[REDACTED]"
+        assert stacktrace_frames[5]["vars"] == {
+            "at_date__scrubbed": "[REDACTED]",
+            "country_insee_code": "[REDACTED]",
+            "city_insee_code": "[REDACTED]",
+            "custodian": "[REDACTED]",
+            "query_params": {
+                "anneeDateNaissance": "[REDACTED]",
+                "codeCogInseeCommuneNaissance": "[REDACTED]",
+                "codeCogInseePaysNaissance": "[REDACTED]",
+                "jourDateNaissance": "[REDACTED]",
+                "moisDateNaissance": "[REDACTED]",
+                "nomNaissance": "[REDACTED]",
+                "nomUsage": "[REDACTED]",
+                "prenoms[]": "[REDACTED]",
+                "recipient": "[REDACTED]",
+                "sexeEtatCivil": "[REDACTED]",
+            },
+            "response": "<Response [500]>",
+        }, stacktrace_frames[5]["vars"]
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
@@ -585,7 +616,7 @@ def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_mod
 @pytest.mark.usefixtures("db_session")
 class DisabledAdultAllowanceTest:
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_disabled_adult_allowance_bonus(self, update_external_user_mock):
+    def test_apply_for_disabled_adult_allowance_bonus(self, update_external_user_mock, caplog):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -596,7 +627,8 @@ class DisabledAdultAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
 
-            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
         bonus_fraud_checks = [
             fraud_check
@@ -620,6 +652,9 @@ class DisabledAdultAllowanceTest:
         update_external_user_mock.assert_called_once_with(user)
 
         assert len(mails_testing.outbox) == 1
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     def test_not_eligible_for_disabled_adult_allowance_bonus(self):
         user = users_factories.BeneficiaryFactory()
@@ -681,7 +716,7 @@ class DisabledAdultAllowanceTest:
 
         assert len(mails_testing.outbox) == 0
 
-    def test_application_not_found(self):
+    def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -692,7 +727,8 @@ class DisabledAdultAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AAH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
 
-            bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
@@ -710,6 +746,9 @@ class DisabledAdultAllowanceTest:
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
         assert len(mails_testing.outbox) == 0
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
@@ -780,22 +819,26 @@ class DisabledAdultAllowanceTest:
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
         assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[1]["vars"]["user__scrubbed"] == "[REDACTED]"
         assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"]["person"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"]["query_params"] == {
-            "anneeDateNaissance": "[REDACTED]",
-            "codeCogInseeCommuneNaissance": "[REDACTED]",
-            "codeCogInseePaysNaissance": "[REDACTED]",
-            "jourDateNaissance": "[REDACTED]",
-            "moisDateNaissance": "[REDACTED]",
-            "nomNaissance": "[REDACTED]",
-            "nomUsage": "[REDACTED]",
-            "prenoms[]": "[REDACTED]",
-            "recipient": "[REDACTED]",
-            "sexeEtatCivil": "[REDACTED]",
-        }
-        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
-        # assert stacktrace_frames[4]["vars"] city_insee_code, country_insee_code are "[REDACTED]"
+        assert stacktrace_frames[4]["vars"] == {
+            "country_insee_code": "[REDACTED]",
+            "city_insee_code": "[REDACTED]",
+            "person": "[REDACTED]",
+            "query_params": {
+                "anneeDateNaissance": "[REDACTED]",
+                "codeCogInseeCommuneNaissance": "[REDACTED]",
+                "codeCogInseePaysNaissance": "[REDACTED]",
+                "jourDateNaissance": "[REDACTED]",
+                "moisDateNaissance": "[REDACTED]",
+                "nomNaissance": "[REDACTED]",
+                "nomUsage": "[REDACTED]",
+                "prenoms[]": "[REDACTED]",
+                "recipient": "[REDACTED]",
+                "sexeEtatCivil": "[REDACTED]",
+            },
+            "response": "<Response [500]>",
+        }, stacktrace_frames[4]["vars"]
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
@@ -840,7 +883,7 @@ class DisabledChildEducationAllowanceTest:
         [bonus_fixtures.AEEH_ELIGIBLE_RESPONSE, bonus_fixtures.AEEH_OPENING_RIGHTS_RESPONSE],
     )
     @patch("pcapi.core.external.attributes.api.update_external_user")
-    def test_apply_for_disabled_child_education_allowance_bonus(self, update_external_user_mock, aeeh_response):
+    def test_apply_for_disabled_child_education_allowance_bonus(self, update_external_user_mock, aeeh_response, caplog):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -852,7 +895,8 @@ class DisabledChildEducationAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AEEH_ENDPOINT, json=aeeh_response)
 
-            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         bonus_fraud_checks = [
             fraud_check
@@ -876,6 +920,9 @@ class DisabledChildEducationAllowanceTest:
         update_external_user_mock.assert_called_once_with(user)
 
         assert len(mails_testing.outbox) == 1
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     def test_not_eligible_for_disabled_child_education_allowance_bonus(self):
         user = users_factories.BeneficiaryFactory()
@@ -908,7 +955,7 @@ class DisabledChildEducationAllowanceTest:
 
         assert len(mails_testing.outbox) == 0
 
-    def test_person_not_found(self):
+    def test_person_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -920,7 +967,8 @@ class DisabledChildEducationAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AEEH_ENDPOINT, status_code=422, json=bonus_fixtures.PERSON_NOT_FOUND_FIXTURE)
 
-            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PERSON_NOT_FOUND]
@@ -939,7 +987,10 @@ class DisabledChildEducationAllowanceTest:
 
         assert len(mails_testing.outbox) == 0
 
-    def test_application_not_found(self):
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
+
+    def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -951,7 +1002,8 @@ class DisabledChildEducationAllowanceTest:
         with requests_mock.Mocker() as mock:
             mock.get(api_particulier.AEEH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
 
-            bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
+            with caplog.at_level(logging.INFO):
+                bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND]
@@ -969,6 +1021,9 @@ class DisabledChildEducationAllowanceTest:
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
         assert len(mails_testing.outbox) == 0
+
+        for log_record in caplog.records:
+            assert not log_record.extra.get("url")
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
@@ -1039,22 +1094,26 @@ class DisabledChildEducationAllowanceTest:
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
         assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+        assert stacktrace_frames[1]["vars"]["user__scrubbed"] == "[REDACTED]"
         assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"]["person"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"]["query_params"] == {
-            "anneeDateNaissance": "[REDACTED]",
-            "codeCogInseeCommuneNaissance": "[REDACTED]",
-            "codeCogInseePaysNaissance": "[REDACTED]",
-            "jourDateNaissance": "[REDACTED]",
-            "moisDateNaissance": "[REDACTED]",
-            "nomNaissance": "[REDACTED]",
-            "nomUsage": "[REDACTED]",
-            "prenoms[]": "[REDACTED]",
-            "recipient": "[REDACTED]",
-            "sexeEtatCivil": "[REDACTED]",
-        }
-        # TODO (dnguyen-pass) [PC-40974] redact the remaining arguments
-        # assert stacktrace_frames[4]["vars"] city_insee_code, country_insee_code are "[REDACTED]"
+        assert stacktrace_frames[4]["vars"] == {
+            "country_insee_code": "[REDACTED]",
+            "city_insee_code": "[REDACTED]",
+            "person": "[REDACTED]",
+            "query_params": {
+                "anneeDateNaissance": "[REDACTED]",
+                "codeCogInseeCommuneNaissance": "[REDACTED]",
+                "codeCogInseePaysNaissance": "[REDACTED]",
+                "jourDateNaissance": "[REDACTED]",
+                "moisDateNaissance": "[REDACTED]",
+                "nomNaissance": "[REDACTED]",
+                "nomUsage": "[REDACTED]",
+                "prenoms[]": "[REDACTED]",
+                "recipient": "[REDACTED]",
+                "sexeEtatCivil": "[REDACTED]",
+            },
+            "response": "<Response [500]>",
+        }, stacktrace_frames[4]["vars"]
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)

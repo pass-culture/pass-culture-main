@@ -32,21 +32,25 @@ NO_SAMPLE_RATE = 0.0
 SCRUBBED_INFO_PLACEHOLDER = "[REDACTED]"
 
 SCRUBBED_KEYS = (
-    "anneeDateNaissance",
     "all_quotient_familial_responses",
+    "anneeDateNaissance",
+    "birth_date",
+    "city_insee_code",
     "codeCogInseeCommuneNaissance",
     "codeCogInseePaysNaissance",
+    "country_insee_code",
     "custodian",
     "jourDateNaissance",
     "moisDateNaissance",
     "nomNaissance",
     "nomUsage",
     "prenoms[]",
-    "recipient",
-    "sexeEtatCivil",
     "quotient_familial_response",
     "recipient",
+    "sexeEtatCivil",
 )
+
+SCRUBBED_KEY_SUFFIXES = ("__scrubbed",)
 
 SCRUBBED_VALUE_PREFIXES = (
     "QuotientFamilialBonusCreditContent(",
@@ -78,6 +82,8 @@ def recursive_scrub_vars_dict(vars_dict: dict) -> dict:
     for key in list(vars_dict):
         value = vars_dict[key]
         if key in SCRUBBED_KEYS:
+            vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
+        elif any(key.endswith(suffix) for suffix in SCRUBBED_KEY_SUFFIXES):
             vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
         elif isinstance(value, str) and any(value.startswith(prefix) for prefix in SCRUBBED_VALUE_PREFIXES):
             vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER

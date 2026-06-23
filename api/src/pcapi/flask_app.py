@@ -34,6 +34,7 @@ from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.sentry import SCRUBBED_INFO_PLACEHOLDER
 from pcapi.utils.sentry import init_sentry_sdk
 
 
@@ -142,6 +143,7 @@ def setup_sentry_before_request() -> None:
 
 @app.after_request
 def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
+    is_sensitive_url_rule = request.url_rule and "/subscription/bonus" in str(request.url_rule)
     extra = {
         "statusCode": response.status_code,
         "method": request.method,
@@ -149,8 +151,8 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "path": request.path,
         "queryParams": request.query_string,
         "size": response.headers.get("Content-Length", type=int),
-        "deviceId": request.headers.get("device-id"),
-        "sourceIp": request.remote_addr,
+        "deviceId": SCRUBBED_INFO_PLACEHOLDER if is_sensitive_url_rule else request.headers.get("device-id"),
+        "sourceIp": SCRUBBED_INFO_PLACEHOLDER if is_sensitive_url_rule else request.remote_addr,
         "requestId": request.headers.get("request-id"),
         "appVersion": request.headers.get("app-version"),
         "commitHash": request.headers.get("commit-hash"),
