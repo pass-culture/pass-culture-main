@@ -2385,15 +2385,14 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     )
 
 
-def get_reimbursements_by_venue(
-    invoice: models.Invoice,
-) -> typing.ValuesView:
+def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.ValuesView:
     common_columns: tuple = (offerers_models.Venue.id.label("venue_id"), offerers_models.Venue.publicName)
 
     pricing_query = (
         db.session.query(models.Invoice)
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
+        .join(models.Pricing.lines)
         .filter(models.Invoice.id == invoice.id)
     )
 
@@ -2401,21 +2400,32 @@ def get_reimbursements_by_venue(
         pricing_query.execution_options(include_deleted=True)
         .with_entities(
             *common_columns,
-            models.Pricing.amount.label("pricing_amount"),
-            bookings_models.Booking.amount.label("booking_unit_amount"),
-            bookings_models.Booking.quantity.label("booking_quantity"),
+            models.PricingLine.category.label("pricing_category"),
+            sa_func.sum(models.PricingLine.amount).label("pricing_amount"),
         )
         .join(models.Pricing.booking)
         .join(bookings_models.Booking.venue)
+        .group_by(offerers_models.Venue.id, offerers_models.Venue.publicName, models.PricingLine.category)
         .order_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
     )
+    collective_query = (
+        pricing_query.execution_options(include_deleted=True)
+        .with_entities(
+            *common_columns,
+            models.PricingLine.category.label("pricing_category"),
+            sa_func.sum(models.PricingLine.amount).label("pricing_amount"),
+        )
+        .join(models.Pricing.collectiveBooking)
+        .join(educational_models.CollectiveBooking.venue)
+        .group_by(offerers_models.Venue.id, offerers_models.Venue.publicName, models.PricingLine.category)
+        .order_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
+    )
+
     incident_query = (
         pricing_query.with_entities(
             *common_columns,
-            sa_func.sum(models.Pricing.amount).label("pricing_amount"),
-            models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
-            bookings_models.Booking.quantity.label("booking_quantity"),
-            bookings_models.Booking.amount.label("booking_unit_amount"),
+            models.PricingLine.category.label("pricing_category"),
+            sa_func.sum(models.PricingLine.amount).label("pricing_amount"),
         )
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
@@ -2424,123 +2434,147 @@ def get_reimbursements_by_venue(
         .group_by(
             offerers_models.Venue.id,
             offerers_models.Venue.publicName,
-            models.BookingFinanceIncident.id,
-            bookings_models.Booking.id,
+            models.PricingLine.category,
         )
         .order_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
     )
-    collective_query = (
-        pricing_query.with_entities(
-            *common_columns,
-            sa_func.sum(models.Pricing.amount).label("reimbursed_amount"),
-            sa_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
-        )
-        .join(models.Pricing.collectiveBooking)
-        .join(educational_models.CollectiveBooking.venue)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .group_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
-        .order_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
-    )
+
     collective_incident_query = (
         pricing_query.with_entities(
             *common_columns,
-            sa_func.sum(models.Pricing.amount).label("pricing_amount"),
-            models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
-            educational_models.CollectiveStock.price.label("booking_amount"),
+            models.PricingLine.category.label("pricing_category"),
+            sa_func.sum(models.PricingLine.amount).label("pricing_amount"),
         )
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
         .join(educational_models.CollectiveBooking.venue)
-        .join(educational_models.CollectiveBooking.collectiveStock)
         .group_by(
             offerers_models.Venue.id,
             offerers_models.Venue.publicName,
-            models.BookingFinanceIncident.id,
-            educational_models.CollectiveStock.id,
+            models.PricingLine.category,
         )
         .order_by(offerers_models.Venue.id, offerers_models.Venue.publicName)
     )
 
     reimbursements_by_venue = {}
-    venue_info_base = {
-        "venue_name": "",
-        "reimbursed_amount": 0,
-        "validated_booking_amount": 0,
-        "individual_amount": 0,
-        "finance_incident_amount": 0,
-        "finance_incident_contribution": 0,
-        "individual_incident_amount": 0,
-    }
-    for (venue_id, venue_public_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.publicName)):
-        validated_booking_amount = decimal.Decimal(0)
-        reimbursed_amount = 0
-        individual_amount = 0
-        for booking in bookings:
-            reimbursed_amount += booking.pricing_amount
-            validated_booking_amount += decimal.Decimal(booking.booking_unit_amount) * booking.booking_quantity
-            individual_amount += booking.pricing_amount
+    for (venue_id, venue_public_name), lines in itertools.groupby(query, lambda x: (x.venue_id, x.publicName)):
+        offerer_revenue_amount = 0
+        offerer_contribution_amount = 0
+        for line in lines:
+            offerer_revenue_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_REVENUE else 0
+            )
+            offerer_contribution_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_CONTRIBUTION else 0
+            )
         reimbursements_by_venue[venue_id] = {
             "venue_name": venue_public_name,
-            "reimbursed_amount": reimbursed_amount,
-            "validated_booking_amount": -utils.to_cents(validated_booking_amount),
-            "individual_amount": individual_amount,
+            "revenue_amount": -offerer_revenue_amount,
+            "contribution_amount": -offerer_contribution_amount,
+            "reimbursed_amount": -(offerer_revenue_amount + offerer_contribution_amount),
+            "individual_amount": -(offerer_revenue_amount + offerer_contribution_amount),
+            "collective_amount": 0,
             "finance_incident_amount": 0,
             "finance_incident_contribution": 0,
-            "individual_incident_amount": 0,
         }
 
-    for venue_pricing_info in collective_query:
-        venue_id = venue_pricing_info.venue_id
-        venue_public_name = venue_pricing_info.publicName
-        reimbursed_amount = venue_pricing_info.reimbursed_amount
-        booking_amount = -utils.to_cents(venue_pricing_info.booking_amount)
+    for (venue_id, venue_public_name), lines in itertools.groupby(
+        collective_query, lambda x: (x.venue_id, x.publicName)
+    ):
+        offerer_revenue_amount = 0
+        offerer_contribution_amount = 0
+        for line in lines:
+            offerer_revenue_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_REVENUE else 0
+            )
+            offerer_contribution_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_CONTRIBUTION else 0
+            )
+
         if venue_id in reimbursements_by_venue:
-            reimbursements_by_venue[venue_id]["reimbursed_amount"] += reimbursed_amount
-            reimbursements_by_venue[venue_id]["validated_booking_amount"] += booking_amount
+            reimbursements_by_venue[venue_id]["revenue_amount"] += -offerer_revenue_amount
+            reimbursements_by_venue[venue_id]["contribution_amount"] += -offerer_contribution_amount
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += -(
+                offerer_revenue_amount + offerer_contribution_amount
+            )
+            reimbursements_by_venue[venue_id]["collective_amount"] += -(
+                offerer_revenue_amount + offerer_contribution_amount
+            )
         else:
             reimbursements_by_venue[venue_id] = {
                 "venue_name": venue_public_name,
-                "reimbursed_amount": reimbursed_amount,
-                "validated_booking_amount": booking_amount,
+                "revenue_amount": -offerer_revenue_amount,
+                "contribution_amount": -offerer_contribution_amount,
+                "reimbursed_amount": -(offerer_revenue_amount + offerer_contribution_amount),
                 "individual_amount": 0,
+                "collective_amount": -(offerer_revenue_amount + offerer_contribution_amount),
                 "finance_incident_amount": 0,
                 "finance_incident_contribution": 0,
-                "individual_incident_amount": 0,
             }
 
-    for (venue_id, venue_public_name), bookings in itertools.groupby(
-        incident_query, lambda x: (x.venue_id, x.publicName)
-    ):
-        total_pricing_amount = 0
+    for (venue_id, venue_public_name), lines in itertools.groupby(incident_query, lambda x: (x.venue_id, x.publicName)):
         incident_amount = 0
-        for booking in bookings:
+        incident_contribution_amount = 0
+        for line in lines:
             incident_amount += (
-                booking.booking_unit_amount * booking.booking_quantity * 100
-            ) - booking.incident_new_total_amount
-            total_pricing_amount += booking.pricing_amount
+                line.pricing_amount
+                if line.pricing_category
+                in [models.PricingLineCategory.OFFERER_REVENUE, models.PricingLineCategory.COMMERCIAL_GESTURE]
+                else 0
+            )
+            incident_contribution_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_CONTRIBUTION else 0
+            )
 
-        if venue_id not in reimbursements_by_venue:
-            reimbursements_by_venue[venue_id] = venue_info_base
-            reimbursements_by_venue[venue_id]["venue_name"] = venue_public_name
-        reimbursements_by_venue[venue_id]["finance_incident_amount"] += total_pricing_amount
-        reimbursements_by_venue[venue_id]["finance_incident_contribution"] += incident_amount - total_pricing_amount
-        reimbursements_by_venue[venue_id]["individual_incident_amount"] += total_pricing_amount
-
-    for (venue_id, venue_public_name), bookings in itertools.groupby(
+        if venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id]["finance_incident_amount"] += -incident_amount
+            reimbursements_by_venue[venue_id]["finance_incident_contribution"] += -incident_contribution_amount
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += -(incident_amount + incident_contribution_amount)
+            reimbursements_by_venue[venue_id]["individual_amount"] += -(incident_amount + incident_contribution_amount)
+        else:
+            reimbursements_by_venue[venue_id] = {
+                "venue_name": venue_public_name,
+                "revenue_amount": 0,
+                "contribution_amount": 0,
+                "reimbursed_amount": -(incident_amount + incident_contribution_amount),
+                "individual_amount": -(incident_amount + incident_contribution_amount),
+                "collective_amount": 0,
+                "finance_incident_amount": -incident_amount,
+                "finance_incident_contribution": -incident_contribution_amount,
+            }
+    for (venue_id, venue_public_name), lines in itertools.groupby(
         collective_incident_query, lambda x: (x.venue_id, x.publicName)
     ):
-        total_pricing_amount = 0
         incident_amount = 0
-        for booking in bookings:
-            incident_amount += (booking.booking_amount * 100) - booking.incident_new_total_amount
-            total_pricing_amount += booking.pricing_amount
+        incident_contribution_amount = 0
+        for line in lines:
+            incident_amount += (
+                line.pricing_amount
+                if line.pricing_category
+                in [models.PricingLineCategory.OFFERER_REVENUE, models.PricingLineCategory.COMMERCIAL_GESTURE]
+                else 0
+            )
+            incident_contribution_amount += (
+                line.pricing_amount if line.pricing_category == models.PricingLineCategory.OFFERER_CONTRIBUTION else 0
+            )
 
-        if venue_id not in reimbursements_by_venue:
-            reimbursements_by_venue[venue_id] = venue_info_base
-            reimbursements_by_venue[venue_id]["venue_name"] = venue_public_name
-        reimbursements_by_venue[venue_id]["finance_incident_amount"] += total_pricing_amount
-        reimbursements_by_venue[venue_id]["finance_incident_contribution"] += incident_amount - total_pricing_amount
+        if venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id]["finance_incident_amount"] += -incident_amount
+            reimbursements_by_venue[venue_id]["finance_incident_contribution"] += -incident_contribution_amount
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += -(incident_amount + incident_contribution_amount)
+            reimbursements_by_venue[venue_id]["collective_amount"] += -(incident_amount + incident_contribution_amount)
+        else:
+            reimbursements_by_venue[venue_id] = {
+                "venue_name": venue_public_name,
+                "revenue_amount": 0,
+                "contribution_amount": 0,
+                "reimbursed_amount": -(incident_amount + incident_contribution_amount),
+                "individual_amount": 0,
+                "collective_amount": -(incident_amount + incident_contribution_amount),
+                "finance_incident_amount": -incident_amount,
+                "finance_incident_contribution": -incident_contribution_amount,
+            }
 
     return reimbursements_by_venue.values()
 

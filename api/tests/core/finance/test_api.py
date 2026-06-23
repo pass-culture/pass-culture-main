@@ -2755,7 +2755,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert len(reimbursement_by_venue_rows) == 1
     reimbursement_by_venue_row = reimbursement_by_venue_rows[0]
 
-    assert reimbursement_by_venue_row["Contribution offreur incidents (TTC)"] == "20,20 €"
+    assert reimbursement_by_venue_row["Contribution offreur incidents (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
     assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "23,40 €"
     assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
