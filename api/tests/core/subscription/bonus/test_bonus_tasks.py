@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from dateutil.relativedelta import relativedelta
 
+from pcapi.connectors import api_particulier
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import tasks
@@ -76,22 +77,19 @@ def test_recovery_ignores_recent_quotient_familial_application(mocked_apply_for_
 
 
 @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
-def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
-    custodian = subscription_factories.BonusCreditPersonFactory.create()
-    fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
+def test_apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
+    person = subscription_factories.BonusCreditPersonFactory.create()
+    fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
-        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-            custodian=custodian
-        ).model_dump(),
+        resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(person=person).model_dump(),
     )
     fraud_check_id = fraud_check.id
-    mocked_disabled_adult_allowance.return_value = bonus_fixtures.AAH_NOT_RECIPIENT_RESPONSE
+    mocked_disabled_adult_allowance.return_value = api_particulier.DisabledAdultAllowanceResponse.model_validate(
+        bonus_fixtures.AAH_NOT_RECIPIENT_RESPONSE
+    )
 
     payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
-    tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
-
-    assert mocked_disabled_adult_allowance.assert_called_once()
-    mocked_disabled_adult_allowance.assert_called_with(custodian)
+    tasks.apply_for_adult_disability_bonus_task.delay(payload.model_dump())
 
     fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
     assert fraud_check.status == subscription_models.FraudCheckStatus.KO
@@ -99,22 +97,23 @@ def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
 
 
 @patch("pcapi.connectors.api_particulier.get_disabled_child_education_allowance")
-def apply_for_disabled_child_education_allowance(mocked_disabled_child_education_allowance):
-    custodian = subscription_factories.BonusCreditPersonFactory.create()
-    fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
+def test_apply_for_disabled_child_education_allowance(mocked_disabled_child_education_allowance):
+    person = subscription_factories.BonusCreditPersonFactory.create()
+    fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
         resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
-            custodian=custodian
+            person=person
         ).model_dump(),
     )
     fraud_check_id = fraud_check.id
-    mocked_disabled_child_education_allowance.return_value = bonus_fixtures.AEEH_NOT_RECIPIENT_RESPONSE
+    mocked_disabled_child_education_allowance.return_value = (
+        api_particulier.DisabledChildEducationAllowanceResponse.model_validate(
+            bonus_fixtures.AEEH_NOT_RECIPIENT_RESPONSE
+        )
+    )
 
     payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
-    tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
-
-    assert mocked_disabled_child_education_allowance.assert_called_once()
-    mocked_disabled_child_education_allowance.assert_called_with(custodian)
+    tasks.apply_for_disabled_child_education_bonus_task.delay(payload.model_dump())
 
     fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
     assert fraud_check.status == subscription_models.FraudCheckStatus.KO

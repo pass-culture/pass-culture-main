@@ -49,11 +49,14 @@ def test_wrapper_logs_warning_on_failure(requests_mock, caplog):
         "sexeEtatCivil",
         "codeCogInseePaysNaissance",
         "codeCogInseeCommuneNaissance",
+        "nomCommuneNaissance",
         "annee",
         "mois",
         # Allociné and CDS
         "api_token",
         "token",
+        # YouTube
+        "key",
     ],
 )
 def test_wrapper_redacts_url(requests_mock, caplog, parameter):
@@ -154,3 +157,22 @@ def test_wrapper_is_used_when_using_session_send(requests_mock, caplog):
 
     log = caplog.records[0]
     assert log.message == "External service called"
+
+
+def test_urllib3_retry_log_redacts_sensitive_url(caplog):
+    # urllib3 logs the raw path+querystring itself when it retries, via the
+    # `urllib3.connectionpool` logger (see urllib3.connectionpool.HTTPConnectionPool.urlopen)
+    logger = logging.getLogger("urllib3.connectionpool")
+    # urllib3 logs the percent-encoded path, so prenoms[] appears as prenoms%5B%5D.
+    url = "/v3/dss/allocation_enfant_handicape/identite?recipient=secret1&nomNaissance=secret2&prenoms%5B%5D=secret3"
+
+    with caplog.at_level(logging.WARNING, logger="urllib3.connectionpool"):
+        logger.warning("Retrying (%r) after connection broken by '%r': %s", "Retry(total=2)", "ReadTimeoutError", url)
+
+    message = caplog.records[-1].getMessage()
+    assert "secret1" not in message
+    assert "secret2" not in message
+    assert "secret3" not in message
+    assert "recipient=[REDACTED]" in message
+    assert "nomNaissance=[REDACTED]" in message
+    assert "prenoms%5B%5D=[REDACTED]" in message
