@@ -10,10 +10,10 @@ import time_machine
 
 from pcapi import settings
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import testing as educational_testing
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
+from pcapi.core.educational import testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -27,7 +27,7 @@ from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
-UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
+UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / models.CollectiveOffer.FOLDER
 
 time_travel_str = "2021-10-01 15:00:00"
 
@@ -49,17 +49,17 @@ def venue_fixture(venue_provider):
 
 @pytest.fixture(name="national_program")
 def national_program_fixture():
-    return educational_factories.NationalProgramFactory()
+    return factories.NationalProgramFactory()
 
 
 @pytest.fixture(name="domain")
 def domain_fixture(national_program):
-    return educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
+    return factories.EducationalDomainFactory(nationalPrograms=[national_program])
 
 
 @pytest.fixture(name="institution")
 def institution_fixture():
-    return educational_factories.EducationalInstitutionFactory()
+    return factories.EducationalInstitutionFactory()
 
 
 @pytest.fixture(name="payload")
@@ -84,7 +84,7 @@ def payload_fixture(minimal_payload, venue_provider, domain, institution, nation
 @pytest.fixture(name="minimal_payload")
 @time_machine.travel(time_travel_str)
 def minimal_payload_fixture(domain, institution, venue):
-    educational_factories.EducationalCurrentYearFactory()
+    factories.EducationalCurrentYearFactory()
 
     booking_beginning = datetime.now(timezone.utc) + timedelta(days=10)
     booking_limit = booking_beginning - timedelta(days=2)
@@ -98,7 +98,7 @@ def minimal_payload_fixture(domain, institution, venue):
         "contactEmail": "offerer-contact@example.com",
         "contactPhone": "+33100992798",
         "domains": [domain.id],
-        "students": [educational_models.StudentLevels.COLLEGE4.name],
+        "students": [models.StudentLevels.COLLEGE4.name],
         "location": {"type": "SCHOOL"},
         "startDatetime": booking_beginning.isoformat(timespec="seconds"),
         "bookingLimitDatetime": booking_limit.isoformat(timespec="seconds"),
@@ -120,7 +120,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
     def teardown_method(self, *args):
         """clear images after each tests"""
-        storage_folder = UPLOAD_FOLDER / educational_models.CollectiveOffer.__name__.lower()
+        storage_folder = UPLOAD_FOLDER / models.CollectiveOffer.__name__.lower()
         if storage_folder.exists():
             for child in storage_folder.iterdir():
                 if not child.is_file():
@@ -151,20 +151,18 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         num_queries += 1  # fetch collective additional fees (selectinload)
 
         with assert_num_queries(num_queries):
-            with patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock:
-                mock.return_value = ["anything", "it does not matter"]
-                response = public_client.post("/v2/collective/offers/", json=payload)
+            response = public_client.post("/v2/collective/offers/", json=payload)
 
             assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
-        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.students == [models.StudentLevels.COLLEGE4]
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
         assert offer.domains == [domain]
         assert offer.institutionId == institution.id
         assert offer.interventionArea == []
-        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert offer.isPublicApi
@@ -197,17 +195,15 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     ):
         payload["location"] = {"type": "SCHOOL"}
 
-        with patch("pcapi.core.educational.adage.client.get_adage_offerer") as mock:
-            mock.return_value = ["anything", "it does not matter"]
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
-        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+        assert offer.locationType == models.CollectiveLocationType.SCHOOL
 
-        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
+        assert offer.students == [models.StudentLevels.COLLEGE4]
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
         assert offer.domains == [domain]
@@ -239,11 +235,10 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_post_offers_without_end_datetime(self, public_client, payload):
         del payload["endDatetime"]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"]).replace(
             tzinfo=None
         )
@@ -256,13 +251,12 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["educationalInstitution"] = institution.institutionId
         del payload["educationalInstitutionId"]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
-        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        assert offer.students == [models.StudentLevels.COLLEGE4]
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
         assert offer.domains == [domain]
@@ -280,15 +274,14 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             "location": {"type": "TO_BE_DEFINED", "comment": "In Paris"},
         }
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddressId is None
-        assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "In Paris"
 
     @time_machine.travel(time_travel_str)
@@ -298,18 +291,17 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             "location": {"type": "ADDRESS", "isVenueAddress": True},
         }
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
         assert offer.offererAddress != venue.offererAddress
         assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert offer.offererAddress.label == None
         assert offer.offererAddress.address == venue.offererAddress.address
-        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
     @time_machine.travel(time_travel_str)
@@ -326,12 +318,11 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             },
         }
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         offerer_address = (
             db.session.query(offerers_models.OffererAddress)
             .filter_by(addressId=address.id, offererId=venue.managingOffererId)
@@ -339,7 +330,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         )
 
         assert offer.offererAddressId == offerer_address.id
-        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
         assert offerer_address.label == "My second address"
@@ -358,8 +349,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             },
         }
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
         assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
@@ -392,8 +382,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_post_offers_location_errors(self, public_client, minimal_payload, location, error):
         payload = {**minimal_payload, "location": location}
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"location": [error]}
@@ -402,8 +391,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_post_offers_without_location(self, public_client, minimal_payload):
         del minimal_payload["location"]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
         assert response.json == {"location": ["field required"]}
@@ -413,8 +401,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["educationalInstitution"] = institution.institutionId
         payload["educationalInstitutionId"] = institution.id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert "__root__" in response.json
@@ -428,8 +415,8 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     @time_machine.travel(time_travel_str)
     def test_user_cannot_create_collective_offer(self, public_client, payload):
         with patch(
-            educational_testing.PATCH_CAN_CREATE_OFFER_PATH,
-            side_effect=educational_exceptions.CulturalPartnerNotFoundException,
+            testing.PATCH_CAN_CREATE_OFFER_PATH,
+            side_effect=exceptions.CulturalPartnerNotFoundException,
         ):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
@@ -439,8 +426,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_bad_educational_institution(self, public_client, payload):
         payload["educationalInstitutionId"] = -1
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
 
@@ -448,8 +434,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_unlinked_venue(self, public_client, payload):
         payload["venueId"] = offerers_factories.VenueFactory().id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
         assert response.json == {"venueId": ["Ce lieu n'à pas été trouvé."]}
@@ -466,8 +451,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_invalid_image_size(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_SIZE
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert "imageFile" in response.json
@@ -476,8 +460,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_invalid_image_type(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_TYPE
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert "imageFile" in response.json
@@ -489,19 +472,17 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["startDatetime"] = start_datetime.isoformat(timespec="seconds")
         payload["endDatetime"] = end_datetime.isoformat(timespec="seconds")
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
     @time_machine.travel(time_travel_str)
     def test_post_offers_institution_not_active(self, public_client, payload):
-        institution = educational_factories.EducationalInstitutionFactory(isActive=False)
+        institution = factories.EducationalInstitutionFactory(isActive=False)
         payload["educationalInstitutionId"] = institution.id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 403
 
@@ -510,19 +491,17 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         payload["nationalProgramId"] = None
         payload["domains"] = [-1]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
         assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
 
     @time_machine.travel(time_travel_str)
     def test_post_offers_invalid_domain_with_program(self, public_client, payload):
-        payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
+        payload["nationalProgramId"] = factories.NationalProgramFactory().id
         payload["domains"] = [-1]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
         assert response.json == {"domains": ["Domaine scolaire non trouvé."]}
@@ -531,28 +510,25 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_post_offers_unknown_national_program(self, public_client, payload):
         payload["nationalProgramId"] = -1
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
         assert response.json == {"nationalProgramId": ["Dispositif national non trouvé."]}
 
     @time_machine.travel(time_travel_str)
     def test_national_program_not_linked_to_domains(self, public_client, payload):
-        payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
+        payload["nationalProgramId"] = factories.NationalProgramFactory().id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"nationalProgramId": ["Dispositif national non valide."]}
 
     @time_machine.travel(time_travel_str)
     def test_national_program_inactive(self, public_client, payload):
-        payload["nationalProgramId"] = educational_factories.NationalProgramFactory(isActive=False).id
+        payload["nationalProgramId"] = factories.NationalProgramFactory(isActive=False).id
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"nationalProgramId": ["Dispositif national inactif."]}
@@ -561,8 +537,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_missing_formats(self, public_client, payload):
         del payload["formats"]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"formats": ["field required"]}
@@ -571,8 +546,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_description_invalid(self, public_client, payload):
         payload["description"] = "too_long" * 200
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
@@ -581,8 +555,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_missing_start_datetime(self, public_client, payload):
         del payload["startDatetime"]
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {"startDatetime": ["field required"]}
@@ -593,8 +566,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             datetime.fromisoformat(payload["startDatetime"]) + timedelta(days=1)
         ).isoformat(timespec="seconds")
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
         assert response.json == {
@@ -607,12 +579,11 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
     def test_different_educational_years(self, public_client, minimal_payload):
         start = datetime.fromisoformat(minimal_payload["startDatetime"])
         end = start.replace(year=start.year + 1)
-        educational_factories.create_educational_year(end)
+        factories.create_educational_year(end)
 
         minimal_payload["endDatetime"] = end.isoformat()
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}
@@ -622,8 +593,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         start = datetime.fromisoformat(minimal_payload["startDatetime"])
         minimal_payload["startDatetime"] = start.replace(year=start.year + 1).isoformat()
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
         assert response.json == {"startDatetime": ["Année scolaire manquante pour la date de début."]}
@@ -633,8 +603,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         start = datetime.fromisoformat(minimal_payload["startDatetime"])
         minimal_payload["endDatetime"] = start.replace(year=start.year + 1).isoformat()
 
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=minimal_payload)
+        response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["Année scolaire manquante pour la date de fin."]}
@@ -674,5 +643,5 @@ class CollectiveOffersPublicPostOfferMinimalTest:
 
         assert response.status_code == 200
 
-        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
+        offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
         assert offer.name == payload["name"]
