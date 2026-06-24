@@ -20,6 +20,11 @@ updates:
       semver-major-days: 14
     ignore:
       - dependency-name: "openapi-typescript-codegen"
+    groups:
+      sentry/*:
+        patterns:
+          - "@sentry/browser"
+          - "@sentry/react"
 
   # Public API doc
   - package-ecosystem: 'npm'
