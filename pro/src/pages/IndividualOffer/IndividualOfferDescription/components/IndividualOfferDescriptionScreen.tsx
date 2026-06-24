@@ -20,6 +20,10 @@ import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import {
+  isOfferProductBasedButNotSynchronized,
+  isOfferSynchronized,
+} from '@/commons/core/Offers/utils/typology'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -45,13 +49,14 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
 import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 
+import { ProductBanner } from '../../components/ProductBanner/ProductBanner'
+import { SynchronizedBanner } from '../../components/SynchronizedBanner/SynchronizedBanner'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
 } from '../commons/serializers'
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
-import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
 export const IndividualOfferDescriptionScreen = () => {
   const isCulturalOutreachEnabled = useActiveFeature(
@@ -114,9 +119,6 @@ export const IndividualOfferDescriptionScreen = () => {
 
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
-
-  const isEanSearchCalloutDisplayed =
-    isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
 
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
@@ -273,6 +275,10 @@ export const IndividualOfferDescriptionScreen = () => {
 
   return (
     <>
+      {isOfferProductBasedButNotSynchronized(initialOffer) && <ProductBanner />}
+      {isOfferSynchronized(initialOffer) && (
+        <SynchronizedBanner providerName={initialOffer?.lastProvider?.name} />
+      )}
       <FormLayout.MandatoryInfo />
 
       {isEanSearchInputDisplayed && (
@@ -285,8 +291,6 @@ export const IndividualOfferDescriptionScreen = () => {
           subcategoryId={selectedSubcategoryId}
         />
       )}
-      {isEanSearchCalloutDisplayed && <EanSearchCallout isDraftOffer={false} />}
-
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler}>
           <FormLayout fullWidthActions>

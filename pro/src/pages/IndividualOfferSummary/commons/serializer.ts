@@ -7,7 +7,7 @@ import {
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import type { OfferExtraData } from '@/commons/core/Offers/types'
-import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 
 function stringifyArtist(
   artistOfferLinks: GetIndividualOfferWithAddressResponseModel['artistOfferLinks'],
@@ -29,7 +29,7 @@ export function serializeArtist(
   defaultValue: string,
   artistType: ArtistType
 ) {
-  const isProductBased = isOfferProductBased(offer)
+  const isProductBased = isOfferProductBasedButNotSynchronized(offer)
 
   if (isProductBased) {
     return artistExtraData ?? defaultValue

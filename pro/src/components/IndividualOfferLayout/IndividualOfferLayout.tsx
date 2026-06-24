@@ -12,7 +12,6 @@ import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -160,14 +159,6 @@ export const IndividualOfferLayout = ({
             </div>
           </div>
         )}
-
-      {offer?.lastProvider?.name && (
-        <div className={styles['banner-container']}>
-          <SynchronizedProviderInformation
-            providerName={offer.lastProvider.name}
-          />
-        </div>
-      )}
 
       <IndividualOfferNavigation />
 
