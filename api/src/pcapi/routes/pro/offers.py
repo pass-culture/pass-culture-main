@@ -11,6 +11,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.pro_advice.api as pro_advice_api
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -146,7 +147,10 @@ def get_offer_exposure(
         raise api_errors.resource_not_found_error()
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    return offer_exposure_serialize.GetOfferExposureResponseModel.build(offer)
+    views_per_day = clickhouse_queries.OfferCumulativeViewQuery().execute({"offer_id": str(offer_id)})
+    cumulative_views = clickhouse_queries.OfferCumulativeViewCounts(views_per_day)
+
+    return offer_exposure_serialize.GetOfferExposureResponseModel.build(offer, cumulative_views)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])

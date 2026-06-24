@@ -6,6 +6,8 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors.clickhouse.queries.offer_cumulative_view import OfferCumulativeViewCounts
+from pcapi.connectors.clickhouse.queries.offer_cumulative_view import OfferCumulativeViewModel
 from pcapi.core import testing
 from pcapi.core.offers.constants import ExposureEventType
 from pcapi.routes.serialization import offer_exposure_serialize
@@ -14,22 +16,28 @@ from pcapi.routes.serialization import offer_exposure_serialize
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @patch("pcapi.routes.serialization.offer_exposure_serialize.GetOfferExposureResponseModel.build")
-    def test_get_offer_exposure(self, mock_build_offer_exposure, client):
-        mock_build_offer_exposure.return_value = offer_exposure_serialize.GetOfferExposureResponseModel(
+    @patch("pcapi.connectors.clickhouse.queries.offer_cumulative_view.OfferCumulativeViewQuery.execute")
+    def test_get_offer_exposure(self, mock_views_query, mock_build, client):
+        views_per_day = [OfferCumulativeViewModel(day=datetime.date(2026, 1, 1), views=10)]
+        mock_views_query.return_value = views_per_day
+        mock_build.return_value = offer_exposure_serialize.GetOfferExposureResponseModel(
+            views=60,
             events=[
                 offer_exposure_serialize.ExposureEventResponseModel(
                     type=ExposureEventType.HIGHLIGHT,
                     name="Mock Name",
                     start_date=datetime.datetime(2026, 2, 1),
                     end_date=datetime.datetime(2026, 2, 20),
+                    views_on_period=35,
                 ),
                 offer_exposure_serialize.ExposureEventResponseModel(
                     type=ExposureEventType.HEADLINE,
                     name=None,
                     start_date=datetime.datetime(2026, 1, 1),
-                    end_date=None,
+                    end_date=datetime.datetime(2026, 1, 10),
+                    views_on_period=50,
                 ),
-            ]
+            ],
         )
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -47,23 +55,28 @@ class Returns200Test:
             response = auth_client.get(f"/offers/{offer_id}/exposure")
             assert response.status_code == 200
 
-        mock_build_offer_exposure.assert_called_once()
-        assert mock_build_offer_exposure.call_args.args[0].id == offer_id
+        mock_views_query.assert_called_once_with({"offer_id": str(offer_id)})
+        mock_build.assert_called_once()
+        assert mock_build.call_args.args[0].id == offer_id
+        assert isinstance(mock_build.call_args.args[1], OfferCumulativeViewCounts)
         assert response.json == {
+            "views": 60,
             "events": [
                 {
                     "type": "HIGHLIGHT",
                     "name": "Mock Name",
                     "startDate": "2026-02-01T00:00:00Z",
                     "endDate": "2026-02-20T00:00:00Z",
+                    "viewsOnPeriod": 35,
                 },
                 {
                     "type": "HEADLINE",
                     "name": None,
                     "startDate": "2026-01-01T00:00:00Z",
-                    "endDate": None,
+                    "endDate": "2026-01-10T00:00:00Z",
+                    "viewsOnPeriod": 50,
                 },
-            ]
+            ],
         }
 
 

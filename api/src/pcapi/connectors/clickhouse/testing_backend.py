@@ -31,6 +31,9 @@ class TestingBackend(BaseBackend):
         if query == queries.OfferConsultationCountQuery().raw_query:
             return query_mock.OFFER_CONSULTATION_COUNT
 
+        if query == queries.OfferCumulativeViewQuery().raw_query:
+            return query_mock.OFFER_CONSULTATION_CUMULATIVE_COUNT
+
         if query == queries.TopOffersByViewsQuery().raw_query:
             return query_mock.TOP_OFFERS_BY_VIEWS
 
