@@ -262,6 +262,11 @@ describe('IndividualOfferMediaScreen', () => {
 
         const input = screen.getByLabelText(LABELS.imageInput)
         expect(input).toBeDisabled()
+        expect(
+          screen.getByText(
+            'Des informations proviennent d’un EAN et ne peuvent pas être modifiées depuis l’espace partenaire'
+          )
+        ).toBeInTheDocument()
       })
     })
 

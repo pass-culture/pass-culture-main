@@ -14,7 +14,7 @@ import {
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -28,6 +28,7 @@ import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBa
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import { Divider } from '@/ui-kit/Divider/Divider'
 
+import { ProductBanner } from '../../components/ProductBanner/ProductBanner'
 import { buildInitialValues } from '../commons/buildInitialValues'
 import { useVideoUploaderContext } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import styles from './IndividualOfferMediaScreen.module.scss'
@@ -60,7 +61,7 @@ export const IndividualOfferMediaScreen = ({
   const { handleVideoOnSubmit, videoUrl, videoData } = useVideoUploaderContext()
   const snackBar = useSnackBar()
 
-  const isProductBased = isOfferProductBased(offer)
+  const isProductBased = isOfferProductBasedButNotSynchronized(offer)
 
   const form = useForm()
 
@@ -201,6 +202,7 @@ export const IndividualOfferMediaScreen = ({
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler}>
           <FormLayout>
+            {isOfferProductBasedButNotSynchronized(offer) && <ProductBanner />}
             <FormLayout.Section title="Illustrez votre offre">
               <FormLayout.Row inline className={styles['media-row']}>
                 <FormLayout.SubSection

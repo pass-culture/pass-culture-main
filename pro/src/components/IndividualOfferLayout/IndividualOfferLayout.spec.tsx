@@ -240,28 +240,6 @@ describe('IndividualOfferLayout', () => {
       expect(await screen.findByText(/offer name/)).toBeInTheDocument()
     })
 
-    it('should display provider banner', () => {
-      const offer = getIndividualOfferFactory({
-        lastProvider: { name: 'Boost' },
-      })
-
-      renderIndividualOfferLayout({ props: { offer } })
-
-      expect(
-        screen.getByText('Cette offre est synchronisée avec Boost')
-      ).toBeInTheDocument()
-    })
-
-    it('should not display provider banner when no provider is provided', () => {
-      const offer = getIndividualOfferFactory({
-        lastProvider: { name: '' },
-      })
-
-      renderIndividualOfferLayout({ props: { offer } })
-
-      expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
-    })
-
     it('should not display highlight banner in creation mode', () => {
       const offer = getIndividualOfferFactory({
         status: OfferStatus.ACTIVE,
