@@ -21,6 +21,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
+from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockEditionBodyModel
 from pcapi.utils import date as date_utils
 
 
@@ -477,66 +478,20 @@ class Return400Test:
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
+    @pytest.mark.parametrize("field", CollectiveStockEditionBodyModel.NON_NULLABLE_FIELDS)
+    def test_fields_not_null(self, client, field):
         stock = factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.collectiveOffer.venue.managingOfferer,
         )
 
-        stock_edition_payload = {"numberOfTickets": None}
-
+        stock_edition_payload = {field: None}
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être nul."]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_price_has_been_set_to_none(self, client):
-        stock = factories.CollectiveStockFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        stock_edition_payload = {"price": None}
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"price": ["Le prix ne peut pas être nul."]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_startDatetime_has_been_set_to_none(self, client):
-        stock = factories.CollectiveStockFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        stock_edition_payload = {"startDatetime": None}
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"startDatetime": ["La date de début de l'évènement ne peut pas être nulle."]}
-
-    @time_machine.travel("2020-11-17 15:00:00")
-    def should_not_allow_stock_edition_when_endDatetime_has_been_set_to_none(self, client):
-        stock = factories.CollectiveStockFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
-        )
-
-        stock_edition_payload = {"endDatetime": None}
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        assert response.status_code == 400
-        assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut pas être nulle."]}
+        assert response.json == {field: ["Ce champ ne peut pas être null"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
@@ -777,9 +732,11 @@ class Return400Test:
     @pytest.mark.parametrize(
         "price_value,error",
         (
-            (None, "Le prix ne peut pas être nul."),
-            (-1, "Le prix ne peut pas être négatif."),
-            (settings.EAC_OFFER_PRICE_LIMIT + 1, "Le prix est trop élevé."),
+            (-1, "Saisissez un nombre supérieur ou égal à 0"),
+            (
+                settings.EAC_OFFER_PRICE_LIMIT + 1,
+                f"Saisissez un nombre inférieur ou égal à {settings.EAC_OFFER_PRICE_LIMIT}",
+            ),
         ),
     )
     def should_not_accept_payload_with_price_error(self, client, price_value, error):
@@ -799,9 +756,11 @@ class Return400Test:
     @pytest.mark.parametrize(
         "number_of_tickets_value,error",
         (
-            (None, "Le nombre de places ne peut pas être nul."),
-            (-1, "Le nombre de places ne peut pas être négatif."),
-            (settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1, "Le nombre de places est trop élevé."),
+            (-1, "Saisissez un nombre supérieur ou égal à 0"),
+            (
+                settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
+                f"Saisissez un nombre inférieur ou égal à {settings.EAC_NUMBER_OF_TICKETS_LIMIT}",
+            ),
         ),
     )
     def should_not_accept_payload_with_number_of_tickets_error(self, client, number_of_tickets_value, error):
@@ -835,7 +794,6 @@ class Return400Test:
     @pytest.mark.parametrize(
         "number_of_teachers,error",
         (
-            (None, "Ce champ est requis"),
             (-1, "Saisissez un nombre supérieur ou égal à 0"),
             (60, "Saisissez un nombre inférieur ou égal à 50"),
         ),
@@ -909,17 +867,17 @@ class Return400Test:
             # price = None
             (
                 {"price": None, "servicePrice": 10, "collectiveAdditionalFees": []},
-                {"price": ["Le prix ne peut pas être nul."]},
+                {"price": ["Ce champ ne peut pas être null"]},
             ),
             # servicePrice = None
             (
                 {"price": 10, "servicePrice": None, "collectiveAdditionalFees": []},
-                {"servicePrice": ["Ce champ est requis"]},
+                {"servicePrice": ["Ce champ ne peut pas être null"]},
             ),
             # collectiveAdditionalFees = None
             (
                 {"price": 10, "servicePrice": 10, "collectiveAdditionalFees": None},
-                {"collectiveAdditionalFees": ["Ce champ est requis"]},
+                {"collectiveAdditionalFees": ["Ce champ ne peut pas être null"]},
             ),
             # collectiveAdditionalFees invalid
             (
@@ -1011,7 +969,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
                 },
-                {"price": ["Le prix est trop élevé."]},
+                {"price": [f"Saisissez un nombre inférieur ou égal à {settings.EAC_OFFER_PRICE_LIMIT}"]},
             ),
         ),
     )

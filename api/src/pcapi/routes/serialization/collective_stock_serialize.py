@@ -16,55 +16,28 @@ from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import DecimalPrice
 
 
-def validate_number_of_tickets(number_of_tickets: int | None) -> int:
-    if number_of_tickets is None:
-        raise PydanticError("Le nombre de places ne peut pas être nul.")
-    if number_of_tickets < 0:
-        raise PydanticError("Le nombre de places ne peut pas être négatif.")
-    if number_of_tickets > settings.EAC_NUMBER_OF_TICKETS_LIMIT:
-        raise PydanticError("Le nombre de places est trop élevé.")
-    return number_of_tickets
-
-
-def validate_price(price: float | None) -> float:
-    if price is None:
-        raise PydanticError("Le prix ne peut pas être nul.")
-    if price < 0:
-        raise PydanticError("Le prix ne peut pas être négatif.")
-    if price > settings.EAC_OFFER_PRICE_LIMIT:
-        raise PydanticError("Le prix est trop élevé.")
-    return price
-
-
-def validate_booking_limit_datetime(
-    booking_limit_datetime: datetime | None, info: pydantic_v2.ValidationInfo
-) -> datetime | None:
+def validate_booking_limit_datetime(booking_limit_datetime: datetime, info: pydantic_v2.ValidationInfo) -> datetime:
     start_datetime = info.data.get("startDatetime")
-    if booking_limit_datetime and start_datetime and booking_limit_datetime > start_datetime:
+    if start_datetime and booking_limit_datetime > start_datetime:
         raise PydanticError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+
     return booking_limit_datetime
 
 
-def validate_start_datetime(start_datetime: datetime | None) -> datetime:
-    if start_datetime is None:
-        raise PydanticError("La date de début de l'évènement ne peut pas être nulle.")
-
-    # we need a datetime with timezone information
-    if start_datetime and start_datetime < datetime.now(timezone.utc):
+def validate_start_datetime(start_datetime: datetime) -> datetime:
+    if start_datetime < datetime.now(timezone.utc):
         raise PydanticError("L'évènement ne peut commencer dans le passé.")
     return start_datetime
 
 
-def validate_end_datetime(end_datetime: datetime | None, info: pydantic_v2.ValidationInfo) -> datetime:
-    if end_datetime is None:
-        raise PydanticError("La date de fin de l'évènement ne peut pas être nulle.")
-
-    # we need a datetime with timezone information
-    start_datetime = info.data.get("startDatetime")
-    if end_datetime and end_datetime < datetime.now(timezone.utc):
+def validate_end_datetime(end_datetime: datetime, info: pydantic_v2.ValidationInfo) -> datetime:
+    if end_datetime < datetime.now(timezone.utc):
         raise PydanticError("L'évènement ne peut se terminer dans le passé.")
+
+    start_datetime = info.data.get("startDatetime")
     if start_datetime and end_datetime < start_datetime:
         raise PydanticError("La date de fin de l'évènement ne peut précéder la date de début.")
+
     return end_datetime
 
 
@@ -127,12 +100,12 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
     startDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_start_datetime)]
     endDatetime: typing.Annotated[datetime, pydantic_v2.AfterValidator(validate_end_datetime)]
     bookingLimitDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)]
-    price: typing.Annotated[DecimalPrice, pydantic_v2.AfterValidator(validate_price)]
+    price: DecimalPrice = pydantic_v2.Field(ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
     servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: typing.Annotated[int, pydantic_v2.AfterValidator(validate_number_of_tickets)]
+    numberOfTickets: int = pydantic_v2.Field(ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
     numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
     priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
 
@@ -176,14 +149,33 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
     bookingLimitDatetime: typing.Annotated[
         datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
     ] = None
-    price: typing.Annotated[DecimalPrice | None, pydantic_v2.AfterValidator(validate_price)] = None
+    price: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0, le=settings.EAC_OFFER_PRICE_LIMIT)
     servicePrice: DecimalPrice | None = pydantic_v2.Field(default=None, ge=0)
     collectiveAdditionalFees: list[CollectiveAdditionalFeeModel] | None = pydantic_v2.Field(
         default=None, max_length=constants.MAX_COLLECTIVE_NUMBER_OF_ADDITIONAL_FEES
     )
-    numberOfTickets: typing.Annotated[int | None, pydantic_v2.AfterValidator(validate_number_of_tickets)] = None
+    numberOfTickets: int | None = pydantic_v2.Field(default=None, ge=0, le=settings.EAC_NUMBER_OF_TICKETS_LIMIT)
     numberOfTeachers: int | None = pydantic_v2.Field(default=None, ge=0, le=constants.MAX_COLLECTIVE_NUMBER_OF_TEACHERS)
     priceDetail: typing.Annotated[str | None, pydantic_v2.AfterValidator(validate_price_detail)] = None
+
+    NON_NULLABLE_FIELDS: typing.ClassVar = (
+        "startDatetime",
+        "endDatetime",
+        "bookingLimitDatetime",
+        "price",
+        "servicePrice",
+        "collectiveAdditionalFees",
+        "numberOfTickets",
+        "numberOfTeachers",
+    )
+
+    @pydantic_v2.field_validator(*NON_NULLABLE_FIELDS, mode="before")
+    @classmethod
+    def validate_not_none(cls, value: typing.Any) -> typing.Any:
+        if value is None:
+            raise PydanticError("Ce champ ne peut pas être null")
+
+        return value
 
     @pydantic_v2.model_validator(mode="after")
     def validate_model(self) -> typing.Self:
@@ -193,18 +185,11 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
         if new_price_ff_is_active and "priceDetail" in self.model_fields_set:
             raise_error_from_location(None, loc="priceDetail", msg="Ce champ ne peut pas être édité")
 
-        for field_name, field_value in (
-            ("numberOfTeachers", self.numberOfTeachers),
-            ("servicePrice", self.servicePrice),
-            ("collectiveAdditionalFees", self.collectiveAdditionalFees),
-        ):
-            # must not be None when FF is ON
-            if new_price_ff_is_active and field_name in self.model_fields_set and field_value is None:
-                raise_error_from_location(None, loc=field_name, msg="Ce champ est requis")
-
-            # must not be present when FF is OFF
-            if not new_price_ff_is_active and field_name in self.model_fields_set:
-                raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être édité")
+        if not new_price_ff_is_active:
+            # these fields must not be present when FF is OFF
+            for field_name in ("numberOfTeachers", "servicePrice", "collectiveAdditionalFees"):
+                if field_name in self.model_fields_set:
+                    raise_error_from_location(None, loc=field_name, msg="Ce champ ne peut pas être édité")
 
         if new_price_ff_is_active:
             # price, servicePrice and collectiveAdditionalFees must all be present or all absent
