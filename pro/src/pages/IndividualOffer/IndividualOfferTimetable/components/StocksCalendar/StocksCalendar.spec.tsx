@@ -475,6 +475,9 @@ describe('StocksCalendar', () => {
     expect(
       screen.queryByRole('button', { name: LABEL.noDateAction })
     ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Cette offre est synchronisée avec 123')
+    ).toBeInTheDocument()
   })
 
   it('should show success message after deleting multiple stocks', async () => {

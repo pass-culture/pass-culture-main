@@ -2,8 +2,11 @@ import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { type EventStockUpdateBodyModel, StocksOrderedBy } from '@/apiClient/v1'
+import {
+  type EventStockUpdateBodyModel,
+  type GetIndividualOfferWithAddressResponseModel,
+  StocksOrderedBy,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFER_QUERY_KEY,
@@ -21,6 +24,7 @@ import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
+import { SynchronizedBanner } from '@/pages/IndividualOffer/components/SynchronizedBanner/SynchronizedBanner'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -190,6 +194,9 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
 
   return (
     <>
+      {isOfferSynchronized(offer) && (
+        <SynchronizedBanner providerName={offer?.lastProvider?.name} />
+      )}
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         //  When the mode is read only, the title is already inside the SummarySection layout
         <div className={styles['header']}>

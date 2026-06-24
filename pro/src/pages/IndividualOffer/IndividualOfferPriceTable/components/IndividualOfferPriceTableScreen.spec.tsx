@@ -239,4 +239,20 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
     ).toBeDisabled()
   })
+
+  it('should display synchronized banner when offer is synchronized', async () => {
+    renderPriceTableScreen({
+      props: {
+        offer: getIndividualOfferFactory({
+          subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
+          lastProvider: { name: 'Provider' },
+        }),
+        offerStocks: [],
+      },
+    })
+
+    expect(
+      await screen.findByText('Cette offre est synchronisée avec Provider')
+    ).toBeInTheDocument()
+  })
 })

@@ -87,8 +87,6 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const successMessage = /Ces informations ont été récupérées depuis l’EAN./
-const infoMessage =
-  /Ces informations proviennent de l’EAN et ne peuvent pas être modifiées./
 const errorMessage = /Une erreur est survenue lors de la recherche/
 const formatErrorMessage = /doit être composé de 13 chiffres/
 const subCatErrorMessage = /doivent être liées à un produit/
@@ -283,18 +281,6 @@ describe('DetailsEanSearch', () => {
             name: clearButtonLabel,
           })
         ).not.toBeInTheDocument()
-      })
-    })
-
-    it('should display an info message', async () => {
-      renderDetailsEanSearch({
-        isDraftOffer: false,
-        wasEanSearchPerformedSuccessfully: true,
-        initialEan,
-      })
-
-      await waitFor(() => {
-        expect(screen.queryByText(infoMessage)).toBeInTheDocument()
       })
     })
   })

@@ -138,5 +138,8 @@ describe('IndividualOfferPracticalInfosForm', () => {
     expect(
       screen.getByLabelText(/URL de votre site ou billetterie/)
     ).toBeEnabled()
+    expect(
+      screen.getByText('Cette offre est synchronisée avec provider')
+    ).toBeInTheDocument()
   })
 })

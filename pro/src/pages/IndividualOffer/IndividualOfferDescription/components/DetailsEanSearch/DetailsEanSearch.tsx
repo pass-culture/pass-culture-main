@@ -166,7 +166,7 @@ export const DetailsEanSearch = ({
           </div>
         </div>
         <div role="status" className={styles['details-ean-search-callout']}>
-          {isProductBased && <EanSearchCallout isDraftOffer={isDraftOffer} />}
+          {isProductBased && <EanSearchCallout />}
         </div>
       </FormLayout>
     </form>

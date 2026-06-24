@@ -15,7 +15,7 @@ import {
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import type { OfferExtraData } from '@/commons/core/Offers/types'
-import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -93,7 +93,7 @@ export const IndividualOfferContextProvider = ({
 
   //  Get the offer on the venue with the same EAN if it exists
   const publishedOfferWithSameEANQuery = useSWR(
-    isOfferProductBased(offer) && offerEan
+    isOfferProductBasedButNotSynchronized(offer) && offerEan
       ? [
           GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
           selectedPartnerVenue.id,
