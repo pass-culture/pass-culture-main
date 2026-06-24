@@ -28,6 +28,9 @@ on:
 
 permissions: write-all
 
+env:
+  PASSDIRECTOR_VERSION: v0.7.0
+
 jobs:
   deploy-preview-env-init:
     name: Init
@@ -56,8 +59,6 @@ jobs:
           FRONT_ONLY: ${{ inputs.front-only }}
           SOURCE_BRANCH: ${{ inputs.source_branch }}
         run: |
-          # TODO: use PR number instead of branch SHA1 — more readable, no collision risk.
-          # Requires changing trigger to pull_request.
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" | tee -a "$GITHUB_OUTPUT"
 
@@ -130,6 +131,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.ref }}
+          fetch-tags: false
+          persist-credentials: false
 
       - name: Install Argo Workflows CLI
         uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
@@ -137,9 +140,9 @@ jobs:
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
         with:
-          version: v0.4.1
-          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID}}
-          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY}}
+          version: ${{ env.PASSDIRECTOR_VERSION }}
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
       - name: Authentification to Google
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -193,3 +196,46 @@ jobs:
             echo "| [Back] url                           |  ${BACKEND_URL} |"
             echo "| [BO] url                             |  ${BACKOFFICE_URL} |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  ensure-preview-env-ready:
+    name: Ensure preview environment is ready (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    environment:
+      name: pcapi-preview
+      deployment: false
+    needs:
+      - deploy-preview-env-init
+      - deploy-api
+    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+          - service: backoffice
+            url: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.ref }}
+          fetch-tags: false
+          persist-credentials: false
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: ${{ env.PASSDIRECTOR_VERSION }}
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+      - name: Ensure ${{ matrix.service }} is ready
+        shell: bash
+        env:
+          SERVICE_URL: ${{ matrix.url }}
+        run: |
+          passdirector pcapi get-version \
+            --url "${SERVICE_URL}" \
+            --retries 40 \
+            --retry-interval 30 \
+            --timeout 60
