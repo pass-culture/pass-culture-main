@@ -1,4 +1,3 @@
-import datetime
 import logging
 import typing
 from functools import partial
@@ -116,13 +115,17 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
-    updatable_fields = _extract_updatable_fields_from_stock_data(
-        stock,
-        stock_data,
-        start_datetime=start_datetime,
-        end_datetime=end_datetime,
-        booking_limit_datetime=booking_limit,
-    )
+    updatable_fields: dict = {
+        "startDatetime": start_datetime,
+        "endDatetime": end_datetime,
+        "bookingLimitDatetime": booking_limit or stock.bookingLimitDatetime,
+        "price": stock_data.get("price"),
+        "servicePrice": stock_data.get("servicePrice"),
+        "collectiveAdditionalFees": stock_data.get("collectiveAdditionalFees"),
+        "numberOfTickets": stock_data.get("numberOfTickets"),
+        "numberOfTeachers": stock_data.get("numberOfTeachers"),
+        "priceDetail": stock_data.get("priceDetail"),
+    }
 
     check_start = start_datetime or stock.startDatetime
     check_booking_limit_datetime = booking_limit or stock.bookingLimitDatetime
@@ -227,33 +230,3 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
             list(stock_data.keys()),
         )
     )
-
-
-def _extract_updatable_fields_from_stock_data(
-    stock: models.CollectiveStock,
-    stock_data: dict,
-    *,
-    start_datetime: datetime.datetime | None,
-    end_datetime: datetime.datetime | None,
-    booking_limit_datetime: datetime.datetime | None,
-) -> dict:
-    # if booking_limit_datetime is provided but null, set it to default value which is event datetime
-    if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
-        booking_limit_datetime = start_datetime if start_datetime else stock.startDatetime
-
-    if "bookingLimitDatetime" not in stock_data.keys():
-        booking_limit_datetime = stock.bookingLimitDatetime
-
-    updatable_fields = {
-        "startDatetime": start_datetime,
-        "endDatetime": end_datetime,
-        "bookingLimitDatetime": booking_limit_datetime,
-        "price": stock_data.get("price"),
-        "servicePrice": stock_data.get("servicePrice"),
-        "collectiveAdditionalFees": stock_data.get("collectiveAdditionalFees"),
-        "numberOfTickets": stock_data.get("numberOfTickets"),
-        "numberOfTeachers": stock_data.get("numberOfTeachers"),
-        "priceDetail": stock_data.get("priceDetail"),
-    }
-
-    return updatable_fields
