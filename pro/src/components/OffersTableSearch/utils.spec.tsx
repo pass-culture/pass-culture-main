@@ -131,11 +131,12 @@ describe('getStoredFilterConfig', () => {
 
   describe('when session storage is not available', () => {
     it('should return an empty object as stored filter config', () => {
-      vi.spyOn(window.sessionStorage.__proto__, 'getItem').mockImplementation(
-        () => {
-          throw new DOMException()
-        }
-      )
+      vi.spyOn(
+        Object.getPrototypeOf(window.sessionStorage),
+        'getItem'
+      ).mockImplementation(() => {
+        throw new DOMException()
+      })
 
       const { filtersVisibility, storedFilters } =
         getStoredFilterConfig('individual')
