@@ -3520,16 +3520,6 @@ export type GetVenueListLiteResponseModel = {
 };
 
 /**
- * GetVenueListResponseModel
- */
-export type GetVenueListResponseModel = {
-    /**
-     * Venues
-     */
-    venues: Array<VenueListItemResponseModel>;
-};
-
-/**
  * GetVenueManagingOffererResponseModel
  */
 export type GetVenueManagingOffererResponseModel = {
@@ -6597,106 +6587,6 @@ export type VenueListItemLiteResponseModel = {
      * Publicname
      */
     publicName: string;
-};
-
-/**
- * VenueListItemResponseModel
- */
-export type VenueListItemResponseModel = {
-    activity: DisplayableActivity | null;
-    /**
-     * Audiodisabilitycompliant
-     */
-    audioDisabilityCompliant: boolean | null;
-    bankAccountStatus: SimplifiedBankAccountStatus | null;
-    /**
-     * Bookingemail
-     */
-    bookingEmail: string | null;
-    externalAccessibilityData: ExternalAccessibilityDataModelV2 | null;
-    /**
-     * Hascreatedoffer
-     */
-    hasCreatedOffer: boolean;
-    /**
-     * Hasnonfreeoffers
-     */
-    hasNonFreeOffers: boolean;
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Isactive
-     */
-    isActive: boolean;
-    /**
-     * Iscaledonian
-     */
-    isCaledonian: boolean;
-    /**
-     * Ispermanent
-     */
-    isPermanent: boolean;
-    /**
-     * Isvalidated
-     */
-    isValidated: boolean;
-    location: LocationResponseModelV2 | null;
-    /**
-     * Managingoffererid
-     */
-    managingOffererId: number;
-    /**
-     * Mentaldisabilitycompliant
-     */
-    mentalDisabilityCompliant: boolean | null;
-    /**
-     * Motordisabilitycompliant
-     */
-    motorDisabilityCompliant: boolean | null;
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Offerername
-     */
-    offererName: string;
-    /**
-     * Publicname
-     */
-    publicName: string;
-    /**
-     * Siret
-     */
-    siret: string | null;
-    /**
-     * Visualdisabilitycompliant
-     */
-    visualDisabilityCompliant: boolean | null;
-    /**
-     * Withdrawaldetails
-     */
-    withdrawalDetails: string | null;
-};
-
-/**
- * VenueListQueryModel
- */
-export type VenueListQueryModel = {
-    /**
-     * Activeofferersonly
-     */
-    activeOfferersOnly?: boolean | null;
-    /**
-     * Offererid
-     */
-    offererId?: number | null;
-    /**
-     * Validated
-     */
-    validated?: boolean | null;
 };
 
 /**
@@ -10955,48 +10845,6 @@ export type getVenueByVenueIdOffersStatisticsResponses = {
 };
 
 export type getVenueByVenueIdOffersStatisticsResponse = getVenueByVenueIdOffersStatisticsResponses[keyof getVenueByVenueIdOffersStatisticsResponses];
-
-export type getVenuesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Validated
-         */
-        validated?: boolean | null;
-        /**
-         * Activeofferersonly
-         */
-        activeOfferersOnly?: boolean | null;
-        /**
-         * Offererid
-         */
-        offererId?: number | null;
-    };
-    url: '/venues';
-};
-
-export type getVenuesErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getVenuesError = getVenuesErrors[keyof getVenuesErrors];
-
-export type getVenuesResponses = {
-    /**
-     * OK
-     */
-    200: GetVenueListResponseModel;
-};
-
-export type getVenuesResponse = getVenuesResponses[keyof getVenuesResponses];
 
 export type getVenuesEducationalStatusesData = {
     body?: never;
