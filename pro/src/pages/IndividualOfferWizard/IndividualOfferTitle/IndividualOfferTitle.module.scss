@@ -2,6 +2,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .offer-name-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--size-spacing-xs);
+
   @media (min-width: size.$tablet) {
     max-width: rem.torem(588px);
   }

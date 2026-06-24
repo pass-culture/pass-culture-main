@@ -208,6 +208,38 @@ describe('IndividualOfferLayout', () => {
       expect(await screen.findByText(/offer name/)).toBeInTheDocument()
     })
 
+    it('should not display offer name title in edition when WIP_OFFER_EXPOSURE is enabled', async () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
+
+      const offer = getIndividualOfferFactory({
+        isActive: false,
+        status: OfferStatus.ACTIVE,
+        name: 'offer name',
+      })
+
+      renderIndividualOfferLayout({
+        props: { offer },
+        options: { features: ['WIP_OFFER_EXPOSURE'] },
+      })
+      await waitFor(() => {
+        expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('should display offer name title in creation', async () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
+
+      const offer = getIndividualOfferFactory({
+        isActive: false,
+        status: OfferStatus.ACTIVE,
+        name: 'offer name',
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(await screen.findByText(/offer name/)).toBeInTheDocument()
+    })
+
     it('should display provider banner', () => {
       const offer = getIndividualOfferFactory({
         lastProvider: { name: 'Boost' },
