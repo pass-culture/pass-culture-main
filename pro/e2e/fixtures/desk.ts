@@ -99,6 +99,12 @@ export const test = base.extend<{
         axeBuilder.disableRules(disabledRules)
       }
 
+      // Wait for CSS animations to finish before running axe-core,
+      // otherwise mid-animation transforms can cause false color-contrast failures.
+      await authenticatedPage.evaluate(() =>
+        Promise.all(document.getAnimations().map((a) => a.finished))
+      )
+
       const results = await axeBuilder.analyze()
 
       return {
