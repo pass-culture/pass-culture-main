@@ -33,7 +33,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters as template_filters
@@ -1228,7 +1227,8 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return request_utils.safe_redirect_back(request, redirect_url)
-    price = form.price.data
+
+    service_price = form.servicePrice.data
     number_of_tickets = form.numberOfTickets.data
 
     collective_booking = (
@@ -1246,7 +1246,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
             educational_models.CollectiveBookingStatus.CONFIRMED,
             educational_models.CollectiveBookingStatus.USED,
         ]
-        if is_confirmed_or_used and price > collective_offer.collectiveStock.price:
+        if is_confirmed_or_used and service_price > collective_offer.collectiveStock.servicePrice:
             flash("Impossible d'augmenter le prix d'une offre confirmée", "warning")
             return request_utils.safe_redirect_back(request, redirect_url)
 
@@ -1267,13 +1267,12 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
             mark_transaction_as_invalid()
             return request_utils.safe_redirect_back(request, redirect_url)
 
-    collective_offer.collectiveStock.price = price
+    collective_offer.collectiveStock.servicePrice = service_price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
 
-    # also write to servicePrice to keep columns in sync
-    # the logic with FF ON will be added afterwards
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS.is_active():
-        collective_offer.collectiveStock.servicePrice = price
+    # get the current sum of additional fees and compute the total price
+    additional_fees_total = sum(fee.amount for fee in collective_offer.collectiveStock.collectiveAdditionalFees)
+    collective_offer.collectiveStock.price = service_price + additional_fees_total
 
     flash("L'offre collective a été mise à jour", "success")
     return request_utils.safe_redirect_back(request, redirect_url)
@@ -1283,15 +1282,33 @@ def edit_collective_offer_price(collective_offer_id: int) -> response_utils.Back
 @access_control.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.BackofficeResponse:
     collective_offer = (
-        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
+        db.session.query(educational_models.CollectiveOffer)
+        .options(sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .filter_by(id=collective_offer_id)
+        .one_or_none()
     )
     if not collective_offer:
         raise NotFound()
 
+    service_price = collective_offer.collectiveStock.servicePrice
     form = forms.EditCollectiveOfferPrice(
-        price=collective_offer.collectiveStock.price,
+        servicePrice=service_price,
         numberOfTickets=collective_offer.collectiveStock.numberOfTickets,
     )
+
+    additional_fees_total = sum(fee.amount for fee in collective_offer.collectiveStock.collectiveAdditionalFees)
+    information = Markup(
+        "<ul>"
+        "<li>Prix de la prestation actuel : <b>{service_price}</b></li>"
+        "<li>Total des frais annexes actuel : <b>{additional_fees_total}</b></li>"
+        "<li>Prix total actuel : <b>{total_price}</b></li>"
+        "</ul>"
+    ).format(
+        service_price=template_filters.format_amount(service_price),
+        additional_fees_total=template_filters.format_amount(additional_fees_total),
+        total_price=template_filters.format_amount(service_price + additional_fees_total),
+    )
+
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,
@@ -1302,4 +1319,5 @@ def get_collective_offer_price_form(collective_offer_id: int) -> response_utils.
         title=f"Ajuster le prix de l'offre collective {collective_offer_id}",
         button_text="Ajuster le prix",
         ajax_submit=False,
+        information=information,
     )
