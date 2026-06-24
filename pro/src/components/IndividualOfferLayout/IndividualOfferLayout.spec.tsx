@@ -158,7 +158,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props })
 
       expect(
-        await screen.findByRole('button', { name: 'Modifier' })
+        await screen.findByRole('button', { name: 'Gérer la publication' })
       ).toBeInTheDocument()
       expect(screen.getByText('publiée')).toBeInTheDocument()
     })
@@ -559,7 +559,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ options, props })
 
       expect(
-        await screen.findByRole('button', { name: 'Modifier' })
+        await screen.findByRole('button', { name: 'Gérer la publication' })
       ).toBeInTheDocument()
     })
   })
