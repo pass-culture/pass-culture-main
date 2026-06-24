@@ -50,6 +50,7 @@
   "files": {
     "includes": [
       "**",
+      "!**/*.svg",
       "!build",
       "!built",
       "!coverage",
