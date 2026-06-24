@@ -97,7 +97,7 @@ export function OfferPublicationEdition({
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             icon={fullEditIcon}
-            label="Modifier"
+            label="Gérer la publication"
           />
         }
         open={isDialogOpen}

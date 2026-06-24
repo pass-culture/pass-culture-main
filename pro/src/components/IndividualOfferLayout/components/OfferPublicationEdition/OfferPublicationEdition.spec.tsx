@@ -34,7 +34,9 @@ describe('OfferPublicationEdition', () => {
   it('should open and close the drawer', async () => {
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Gérer la publication' })
+    )
 
     expect(screen.getByText('Publication et réservation')).toBeInTheDocument()
 
@@ -50,7 +52,9 @@ describe('OfferPublicationEdition', () => {
 
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Gérer la publication' })
+    )
 
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
@@ -62,7 +66,9 @@ describe('OfferPublicationEdition', () => {
 
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Gérer la publication' })
+    )
 
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
