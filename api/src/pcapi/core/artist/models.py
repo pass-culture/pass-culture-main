@@ -152,9 +152,21 @@ class Artist(Model):
         ),
     )
 
+    # Artists expose several image sources, by descending priority for the native app (see thumbUrl):
+    #  - mediationImageUrl: full public bucket URL, used directly as <img src> (same format as offers)
+    #  - image:             DEPRECATED Wikimedia URL, kept as fallback during data migration
+    #  - computed_image:    URL of a linked product image, last-resort fallback (set by a cron)
+    # mediationUrl is NOT a URL: it is the bucket object path (bucket name + path) consumed by the
+    # pro frontend's image resizing service as its `filename` query param. Hence two distinct properties.
     @property
     def thumbUrl(self) -> str | None:
-        return self.image or self.computed_image
+        return self.mediationImageUrl or self.image or self.computed_image
+
+    @property
+    def mediationImageUrl(self) -> str | None:
+        if self.mediation_uuid:
+            return f"{settings.OBJECT_STORAGE_URL}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
+        return None
 
     @property
     def mediationUrl(self) -> str | None:
