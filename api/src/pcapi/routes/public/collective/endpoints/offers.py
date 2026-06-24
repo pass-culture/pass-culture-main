@@ -115,15 +115,11 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
     except exceptions.CollectiveOfferNotFound:
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
-    if not offer.collectiveStock:
-        # if the offer does not have any stock pretend it doesn't exists
+    if not offer.collectiveStock or offer.providerId != current_api_key.providerId:
+        # if the offer does not have any stock or the provider does not match, pretend it doesn't exists
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
-    if offer.providerId != current_api_key.providerId:
-        msg = "Vous n'avez pas le droit d'accéder à une ressource que vous n'avez pas créée via cette API"
-        raise api_errors.ApiErrors(errors={"global": [msg]}, status_code=403)
-
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
@@ -248,7 +244,7 @@ def post_collective_offer_public(
     # re-fetch related data for the serializer
     offer = repository.get_collective_offer_by_id(offer.id)
 
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
@@ -494,7 +490,7 @@ def patch_collective_offer_public(
     # re-fetch related data for the serializer
     offer = repository.get_collective_offer_by_id(offer.id)
 
-    return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+    return offers_serialization.GetPublicCollectiveOfferResponseModel.build(offer)
 
 
 @blueprints.public_api.route("/v2/collective/offers/archive", methods=["POST"])
@@ -541,7 +537,12 @@ def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferB
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
-    resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_200": (offers_serialization.GetCollectiveFormatListModel, http_responses.HTTP_200_MESSAGE)}
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
+    ),
 )
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """

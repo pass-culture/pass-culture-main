@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import {
   logEvent as analyticsLogEvent,
   getAnalytics,
@@ -51,8 +53,15 @@ export const useFirebase = (consentedToFirebase: boolean) => {
         firebaseRemoteConfig = getRemoteConfig(firebaseApp)
         await fetchAndActivate(firebaseRemoteConfig)
       } catch (err) {
-        // Throws in any error case that is NOT an "InvalidStateError" (Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing (https://pass-culture.sentry.io/issues/37336598))
-        if (!isError(err) || err.name !== 'InvalidStateError') {
+        const errorName = isError(err) ? err.name : ''
+        const errorMessage = isError(err) ? err.message : String(err)
+
+        const isFirebaseStorageError =
+          errorName === 'FirebaseError' &&
+          errorMessage.includes('remoteconfig/storage-open')
+
+        // Throw any error that is not 'InvalidStateError' or a Firebase storage error
+        if (errorName !== 'InvalidStateError' && !isFirebaseStorageError) {
           throw err
         }
       }

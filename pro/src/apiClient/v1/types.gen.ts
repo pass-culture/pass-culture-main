@@ -1787,6 +1787,38 @@ export type EventStocksBulkUpdateBodyModel = {
 };
 
 /**
+ * ExposureEventResponseModel
+ */
+export type ExposureEventResponseModel = {
+    /**
+     * Enddate
+     */
+    endDate: string | null;
+    /**
+     * Name
+     */
+    name: string | null;
+    /**
+     * Startdate
+     */
+    startDate: string;
+    type: ExposureEventType;
+    /**
+     * Viewsonperiod
+     */
+    viewsOnPeriod: number | null;
+};
+
+/**
+ * ExposureEventType
+ */
+export enum ExposureEventType {
+    HIGHLIGHT = 'HIGHLIGHT',
+    HEADLINE = 'HEADLINE',
+    PRO_ADVICE = 'PRO_ADVICE'
+}
+
+/**
  * ExternalAccessibilityDataModelV2
  */
 export type ExternalAccessibilityDataModelV2 = {
@@ -2872,6 +2904,20 @@ export type GetIndividualOfferWithAddressResponseModel = {
  * GetMusicTypesResponse
  */
 export type GetMusicTypesResponse = Array<MusicTypeResponse>;
+
+/**
+ * GetOfferExposureResponseModel
+ */
+export type GetOfferExposureResponseModel = {
+    /**
+     * Events
+     */
+    events: Array<ExposureEventResponseModel>;
+    /**
+     * Views
+     */
+    views: number | null;
+};
 
 /**
  * GetOfferLastProviderResponseModel
@@ -9550,6 +9596,37 @@ export type patchOffersByOfferIdResponses = {
 };
 
 export type patchOffersByOfferIdResponse = patchOffersByOfferIdResponses[keyof patchOffersByOfferIdResponses];
+
+export type getOffersByOfferIdExposureData = {
+    body?: never;
+    path: {
+        offer_id: number;
+    };
+    query?: never;
+    url: '/offers/{offer_id}/exposure';
+};
+
+export type getOffersByOfferIdExposureErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type getOffersByOfferIdExposureError = getOffersByOfferIdExposureErrors[keyof getOffersByOfferIdExposureErrors];
+
+export type getOffersByOfferIdExposureResponses = {
+    /**
+     * OK
+     */
+    200: GetOfferExposureResponseModel;
+};
+
+export type getOffersByOfferIdExposureResponse = getOffersByOfferIdExposureResponses[keyof getOffersByOfferIdExposureResponses];
 
 export type postOffersByOfferIdHighlightRequestsData = {
     body: CreateOfferHighlightRequestBodyModel;

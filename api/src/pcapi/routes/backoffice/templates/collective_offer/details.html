@@ -115,8 +115,11 @@
                 {{ collective_offer.locationType | format_collective_location_type }}
               {% endif %}
             {% endcall %}
-            {% call description_detail_horizontal("Participants") %}
+            {% call description_detail_horizontal("Nombre d'élèves") %}
               {{ collective_stock.numberOfTickets }} personnes
+            {% endcall %}
+            {% call description_detail_horizontal("Accompagnants") %}
+              {{ collective_stock.numberOfTeachers }} personnes
             {% endcall %}
           {% endif %}
           {% if collective_offer.durationMinutes %}
@@ -138,11 +141,28 @@
     <!-- FINANCE -->
     {% call nav_section("finance", "Informations financières") %}
       {% if collective_stock %}
-        {% call description_detail_horizontal("Montant") %}
-          {{ collective_stock.price | format_amount }}
+        {% call description_detail_horizontal("Tarif de la prestation") %}
+          {{ collective_stock.servicePrice | format_amount }}
         {% endcall %}
-        {% call description_detail_horizontal("Informations sur le prix") %}
-          {{ collective_stock.priceDetail | nl2br }}
+        {% call description_detail_horizontal("Frais annexes") %}
+          {% for additional_fee in additional_fees %}
+            <div>
+              {% if additional_fee.label %}
+                {{ additional_fee.label }} :
+              {% else %}
+                {{ additional_fee.type | format_additional_fee_type }} :
+              {% endif %}
+              {{ additional_fee.amount | format_amount }}
+            </div>
+          {% else %}
+            {{ ""  | placeholder_if_empty }}
+          {% endfor %}
+        {% endcall %}
+        {% call description_detail_horizontal("Prix total") %}
+          {{ collective_stock.price | format_amount }} ({{ (collective_stock.price/collective_stock.numberOfTickets) | format_amount }} par participant)
+        {% endcall %}
+        {% call description_detail_horizontal("Informations pratiques") %}
+          {{ collective_offer.additionalDetails | nl2br }}
         {% endcall %}
         {% if collective_booking %}
           {% if last_pricing and last_pricing.cashflow %}
@@ -166,7 +186,9 @@
     <!-- PUBLICS -->
     {% call nav_section("publics", "Public concerné") %}
       {% call description_detail_horizontal("Niveau scolaire") %}
-        {% for students in collective_offer.students %}<div>{{ students.value }}</div>{% endfor %}
+        {% for students in collective_offer.students %}
+          <div>{{ students.value }}</div>
+        {% endfor %}
       {% endcall %}
       {% call description_detail_horizontal("Accessibilité") %}
         <div class="hstack gap-5">
@@ -224,7 +246,9 @@
     {% set domains_label = collective_offer.domains | length | pluralize("Domaine artistique", "Domaines artistiques") %}
     {% call description_detail_vertical(domains_label) %}
       {% if collective_offer.domains %}
-        {% for domain in collective_offer.domains %}<div>{{ domain.name }}</div>{% endfor %}
+        {% for domain in collective_offer.domains %}
+          <div>{{ domain.name }}</div>
+        {% endfor %}
       {% else %}
         {{ "" | placeholder_if_empty }}
       {% endif %}
@@ -258,7 +282,9 @@
         {{ links.build_collective_offer_template_details_link(collective_offer.template, text_attr="name") }}
       {% endcall %}
     {% endif %}
-    {% if collective_offer.rejectionReason or collective_offer.lastValidationDate or collective_offer.lastValidationAuthor %}<hr />{% endif %}
+    {% if collective_offer.rejectionReason or collective_offer.lastValidationDate or collective_offer.lastValidationAuthor %}
+      <hr />
+    {% endif %}
     {% if collective_offer.institutionId %}
       {% call description_detail_vertical("Établissement") %}
         {{ collective_offer.institution.full_name }}

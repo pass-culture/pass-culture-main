@@ -35,6 +35,21 @@ class E2EOfferTest:
         assert response.json["subcategoryId"] == "SEANCE_CINE"
         assert response.json["venueId"] == offer.venueId
 
+    @pytest.mark.parametrize("is_duo", [True, False])
+    def test_create_offer_duo(self, auth_client, is_duo):
+        response = auth_client.post(
+            "/e2e/offer", {"name": "Test Offer", "subcategory_id": "SEANCE_CINE", "price": 8.2, "is_duo": is_duo}
+        )
+        assert response.status_code == 200
+
+        offers = db.session.query(offers_models.Offer).all()
+
+        assert len(offers) == 1
+        offer = offers[0]
+        assert offer.isDuo == is_duo
+
+        assert response.json["isDuo"] == is_duo
+
     def test_create_offer_missing_subcategory(self, auth_client):
         response = auth_client.post("/e2e/offer", {"name": "Test Offer", "price": 8.2})
 

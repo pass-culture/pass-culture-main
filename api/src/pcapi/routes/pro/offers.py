@@ -11,6 +11,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.constants as offers_constants
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.pro_advice.api as pro_advice_api
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -31,6 +32,7 @@ from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro.stocks import get_stocks_with_count
+from pcapi.routes.serialization import offer_exposure_serialize
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -120,6 +122,35 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/<int:offer_id>/exposure", methods=["GET"])
+@login_required
+@atomic()
+@spectree_serialize(
+    response_model=offer_exposure_serialize.GetOfferExposureResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_offer_exposure(
+    offer_id: int,
+) -> offer_exposure_serialize.GetOfferExposureResponseModel:
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "venue",
+        "offerer_address",
+        "headline_offer",
+        "pro_advice",
+        "highlight_criteria",
+    ]
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=load_options)
+    except exceptions.OfferNotFound:
+        raise api_errors.resource_not_found_error()
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    views_per_day = clickhouse_queries.OfferCumulativeViewQuery().execute({"offer_id": str(offer_id)})
+    cumulative_views = clickhouse_queries.OfferCumulativeViewCounts(views_per_day)
+
+    return offer_exposure_serialize.GetOfferExposureResponseModel.build(offer, cumulative_views)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])

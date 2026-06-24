@@ -12,6 +12,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import testing as educational_testing
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
@@ -1873,7 +1874,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch ministry
     # - fetch last pricing
     # - fetch last incident
-    expected_num_queries = 6
+    # - fetch additional fees
+    expected_num_queries = 7
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -1882,9 +1884,12 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         domain = educational_factories.EducationalDomainFactory()
         national_program = educational_factories.NationalProgramFactory()
         collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__price=Decimal("150.00"),
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
+            collectiveStock__collectiveAdditionalFees=[educational_factories.CollectiveAdditionalFeeFactory()],
             collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
+            collectiveStock__collectiveOffer__additionalDetails="C'est une bonne situation ça, offre collective ?",
             collectiveStock__collectiveOffer__durationMinutes=300,
             collectiveStock__collectiveOffer__description="My super offer description",
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
@@ -1921,12 +1926,15 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collective_booking.collectiveStock.bookingLimitDatetime
         )
         assert descriptions["Lieu"] == "À déterminer"
-        assert descriptions["Participants"] == f"{collective_booking.collectiveStock.numberOfTickets} personnes"
+        assert descriptions["Nombre d'élèves"] == f"{collective_booking.collectiveStock.numberOfTickets} personnes"
+        assert descriptions["Accompagnants"] == "5 personnes"
         assert descriptions["Durée"] == "5 heures"
         assert descriptions["Description"] == "My super offer description"
         # finance
-        assert descriptions["Montant"] == "100,00 €"
-        assert descriptions["Informations sur le prix"] == "Prix: 100€ pour 25 tickets"
+        assert descriptions["Tarif de la prestation"] == "100,00 €"
+        assert descriptions["Frais annexes"] == "Déplacement de l’intervenant : 50,00 €"
+        assert descriptions["Prix total"] == "150,00 € (6,00 € par participant)"
+        assert descriptions["Informations pratiques"] == "C'est une bonne situation ça, offre collective ?"
         assert descriptions["Statut de la réservation"] == "Confirmée"
         # public
         assert descriptions["Niveau scolaire"] == "Lycée - Seconde"
@@ -2097,6 +2105,29 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Top Acteur"
+
+    def test_institution_with_multiple_deposits(self, authenticated_client):
+        year = educational_factories.EducationalYearFactory(adageId=str(2**24 + 12))
+        institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution,
+            educationalYear=year,
+            period=educational_utils.get_educational_year_first_period(year),
+        )
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution,
+            educationalYear=year,
+            period=educational_utils.get_educational_year_second_period(year),
+        )
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__institution=institution,
+            collectiveStock__startDatetime=year.beginningDate + datetime.timedelta(days=30),
+        )
+
+        url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class RejectCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):

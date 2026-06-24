@@ -67,9 +67,9 @@ class Return200Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         fees = [
-            {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10},
-            {"type": CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15},
-            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.50},
+            {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10.003},
+            {"type": CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15.003},
+            {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.504},
             {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
         ]
         stock_payload = {
@@ -88,10 +88,22 @@ class Return200Test:
         assert created_stock.numberOfTeachers == 10
         assert created_stock.price == 110.50
         assert created_stock.servicePrice == 40
-        assert [
+
+        expected = [
+            {**fee, "amount": decimal.Decimal(str(fee["amount"])).quantize(decimal.Decimal("1.00"))} for fee in fees
+        ]
+        actual = [
             {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
             for fee in sorted(created_stock.collectiveAdditionalFees, key=lambda f: f.amount)
-        ] == fees
+        ]
+        assert actual == expected
+
+        # the sum of the given amounts is different from the value in DB
+        # this is because each amount is rounded to 2 decimals before the sum is computed
+        assert sum(fee["amount"] for fee in fees) == 70.51
+        total_fees = sum(fee.amount for fee in created_stock.collectiveAdditionalFees)
+        assert total_fees == 70.50
+        assert total_fees + created_stock.servicePrice == created_stock.price
 
     @time_machine.travel("2020-11-17 15:00:00")
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
@@ -525,7 +537,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 15},
                     ],
                 },
-                {"collectiveAdditionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+                {"collectiveAdditionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0"]},
             ),
             # servicePrice too low
             (
@@ -536,7 +548,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}
                     ],
                 },
-                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0"]},
             ),
             # price total does not match
             (

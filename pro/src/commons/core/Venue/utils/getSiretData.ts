@@ -37,7 +37,6 @@ const getSiretDataRequest = async (
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
-      message = e.body
       /* istanbul ignore next: DEBT, TO FIX */
       if (e.body.global) {
         message = e.body.global[0]
@@ -61,7 +60,6 @@ const checkSiretRequest = async (humanSiret: string) => {
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
-      message = e.body
       /* istanbul ignore next: DEBT, TO FIX */
       if (e.body.global) {
         message = e.body.global[0]

@@ -31,6 +31,7 @@ from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.finance import deposit_api
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
@@ -164,6 +165,7 @@ class AccountTest:
             },
             "birthDate": "2000-01-11",
             "qfBonificationStatus": subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value,
+            "disabilityBonificationStatus": subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value,
             "depositType": "GRANT_18",
             "depositActivationDate": "2018-06-01T00:00:00Z",
             "firstDepositActivationDate": "2015-02-03T00:00:00Z",
@@ -415,16 +417,32 @@ class AccountTest:
     def test_num_queries_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # achievements
+        expected_num_queries += 1  # all user bookings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # bookings linked to the last deposit, with finance incident
+        expected_num_queries += 1  # profile refresh campaign
+        expected_num_queries += 1  # recredits
+        expected_num_queries += 1  # fraud checks
         client.with_token(user)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
 
-    def should_display_cultural_survey_if_beneficiary(self, client):
+    def test_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # achievements
+        expected_num_queries += 1  # all user bookings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # bookings linked to the last deposit, with finance incident
+        expected_num_queries += 1  # profile refresh campaign
+        expected_num_queries += 1  # recredits
+        expected_num_queries += 1  # fraud checks
         client.with_token(user)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
         assert response.json["needsToFillCulturalSurvey"] is True
@@ -582,6 +600,7 @@ class AccountTest:
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == "eligible"
+        assert response.json["disabilityBonificationStatus"] == "eligible"
 
     @pytest.mark.parametrize(
         "fraud_check_status",
@@ -592,10 +611,13 @@ class AccountTest:
     )
     def test_get_user_profile_bonification_status_is_eligible_after_error(self, client, fraud_check_status):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(status=fraud_check_status, user=user)
+        subscription_factories.QFBonusCreditFraudCheckFactory(status=fraud_check_status, user=user)
+        subscription_factories.AAHBonusCreditFraudCheckFactory(status=fraud_check_status, user=user)
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(status=fraud_check_status, user=user)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == "eligible"
+        assert response.json["disabilityBonificationStatus"] == "eligible"
 
     @pytest.mark.parametrize(
         "reason_code,expected_qf_bonification_status",
@@ -618,9 +640,9 @@ class AccountTest:
             ),
         ],
     )
-    def test_get_user_profile_bonification_status_ko(self, client, reason_code, expected_qf_bonification_status):
+    def test_get_user_profile_bonification_qf_status_ko(self, client, reason_code, expected_qf_bonification_status):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[reason_code],
             user=user,
@@ -629,16 +651,51 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == expected_qf_bonification_status.value
 
+    @pytest.mark.parametrize(
+        "reason_code,expected_disability_bonification_status",
+        [
+            (
+                subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
+                subscription_models.DisabilityBonificationStatus.PERSON_NOT_FOUND,
+            ),
+            (
+                subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
+                subscription_models.DisabilityBonificationStatus.APPLICATION_NOT_FOUND,
+            ),
+        ],
+    )
+    def test_get_user_profile_bonification_disability_status_ko(
+        self, client, reason_code, expected_disability_bonification_status
+    ):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[reason_code],
+            user=user,
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[reason_code],
+            user=user,
+        )
+        response = client.with_token(user).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["disabilityBonificationStatus"] == expected_disability_bonification_status.value
+
     def test_get_user_profile_bonification_status_granted(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.OK)
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
+        assert (
+            response.json["disabilityBonificationStatus"]
+            == subscription_models.DisabilityBonificationStatus.GRANTED.value
+        )
 
     def test_get_user_profile_bonification_status_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory.create_batch(
+        subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
             size=users_constants.MAX_QF_BONUS_RETRIES,
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
@@ -653,16 +710,24 @@ class AccountTest:
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+        assert (
+            response.json["disabilityBonificationStatus"]
+            == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value
+        )
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_non_beneficiary(self, client):
         user = users_factories.HonorStatementValidatedUserFactory(age=18)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+        assert (
+            response.json["disabilityBonificationStatus"]
+            == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value
+        )
 
     def test_get_user_profile_bonification_status_unknown_ko(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=None,
             user=user,
@@ -671,22 +736,39 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.KO.value
 
-    def test_get_user_profile_bonification_status_takes_latest_fraud_check(self, client):
+    def test_get_user_qf_profile_bonification_status_takes_latest_fraud_check(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=None,
             dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
             user=user,
         )
-        subscription_factories.BonusFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK,
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
             reasonCodes=None,
             user=user,
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.STARTED.value
+
+    def test_get_user_disability_profile_bonification_status_takes_latest_fraud_check(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+            dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
+            user=user,
+        )
+        subscription_factories.QFBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reasonCodes=None,
+            user=user,
+        )
+        response = client.with_token(user).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.STARTED.value
 
     def test_get_user_profile_recredit_type(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -698,31 +780,27 @@ class AccountTest:
 
     def test_get_user_profile_remaining_bonus_attempts_after_success(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=None,
             dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
             user=user,
         )
-        subscription_factories.BonusFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK,
-            reasonCodes=None,
-            user=user,
-        )
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["remainingBonusAttempts"] == 0
 
     def test_get_user_profile_remaining_bonus_attempts(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BonusFraudCheckFactory.create_batch(
+        subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
             size=5,
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=None,
             dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
             user=user,
         )
-        subscription_factories.BonusFraudCheckFactory(
+        subscription_factories.QFBonusCreditFraudCheckFactory(
             # This one should not be taken into account in remaining attempts
             status=subscription_models.FraudCheckStatus.KO,
             user=user,

@@ -1098,10 +1098,20 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
         offer=collective_offer,
     )
 
+    additional_fees: list[educational_models.CollectiveAdditionalFee] = []
+    if collective_offer.collectiveStock:
+        additional_fees = (
+            db.session.query(educational_models.CollectiveAdditionalFee)
+            .filter(educational_models.CollectiveAdditionalFee.collectiveStockId == collective_offer.collectiveStock.id)
+            .order_by(educational_models.CollectiveAdditionalFee.type, educational_models.CollectiveAdditionalFee.label)
+            .all()
+        )
+
     kwargs = {
         "history_tunnel": history_tunnel,
         "collective_offer": collective_offer,
         "allowed_actions": allowed_actions,
+        "additional_fees": additional_fees,
         "connect_as": connect_as,
     }
 
@@ -1115,6 +1125,8 @@ def get_collective_offer_details(collective_offer_id: int) -> response_utils.Bac
                 educational_models.EducationalDeposit.educationalYearId
                 == _get_educational_year_subquery(educational_models.CollectiveStock),
             )
+            .order_by(educational_models.EducationalDeposit.id)
+            .limit(1)
             .scalar()
         )
         kwargs.update({"ministry": ministry})

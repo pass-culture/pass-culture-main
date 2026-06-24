@@ -1,3 +1,4 @@
+import enum
 import typing
 
 from pcapi.core.finance.utils import CurrencyEnum
@@ -23,3 +24,12 @@ CURRENCY_NAME_MAPPING: typing.Final = {
 }
 
 DEFAULT_PRICE_LABEL = "Tarif unique"
+
+
+MAX_EXPOSURE_EVENTS: typing.Final = 3
+
+
+class ExposureEventType(str, enum.Enum):
+    HIGHLIGHT = "HIGHLIGHT"
+    HEADLINE = "HEADLINE"
+    PRO_ADVICE = "PRO_ADVICE"

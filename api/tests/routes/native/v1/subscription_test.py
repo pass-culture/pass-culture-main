@@ -10,6 +10,8 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.external.batch import testing as push_testing
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -919,9 +921,9 @@ class HonorStatementTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
 
-class BonusTest:
+class QuotientFamilialBonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    def test_create_bonus_fraud_check(self, mocked_task, client):
+    def test_create_qf_bonus_fraud_check(self, mocked_task, client):
         user = users_factories.BeneficiaryFactory()
 
         expected_num_queries = 1  # user
@@ -968,15 +970,30 @@ class BonusTest:
 
     @pytest.mark.parametrize(
         "fraud_check_status",
-        [
-            subscription_models.FraudCheckStatus.OK,
-            subscription_models.FraudCheckStatus.PENDING,
-            subscription_models.FraudCheckStatus.STARTED,
-        ],
+        [subscription_models.FraudCheckStatus.PENDING, subscription_models.FraudCheckStatus.STARTED],
     )
-    def test_create_bonus_fraud_check_not_eligible(self, client, fraud_check_status):
+    def test_create_bonus_fraud_check_with_existing(self, client, fraud_check_status):
         user = users_factories.BeneficiaryFactory()
-        subscription_factories.BonusFraudCheckFactory(user=user, status=fraud_check_status)
+        subscription_factories.QFBonusCreditFraudCheckFactory(user=user, status=fraud_check_status)
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    def test_bonus_already_granted(self, client):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
 
         response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
@@ -995,7 +1012,7 @@ class BonusTest:
 
     def test_create_bonus_fraud_check_not_eligible_after_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory()
-        subscription_factories.BonusFraudCheckFactory.create_batch(
+        subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
             size=users_constants.MAX_QF_BONUS_RETRIES, user=user, status=subscription_models.FraudCheckStatus.KO
         )
 
@@ -1017,7 +1034,7 @@ class BonusTest:
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
     def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_task, client):
         user = users_factories.BeneficiaryFactory()
-        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+        subscription_factories.QFBonusCreditFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
 
         response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
@@ -1057,6 +1074,8 @@ class BonusTest:
         )
 
         assert response.status_code == 400
+        assert list(response.json.keys()) == ["firstNames"], response.json
+        assert "latin" in response.json["firstNames"][0], response.json["firstNames"]
 
     def test_bonus_qf_empty_first_names(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -1073,7 +1092,8 @@ class BonusTest:
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
+        assert list(response.json.keys()) == ["firstNames"], response.json
 
     def test_bonus_qf_empty_field(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -1090,24 +1110,18 @@ class BonusTest:
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
+        assert list(response.json.keys()) == ["lastName"], response.json
 
     def test_bonus_qf_missing_field(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.with_token(user).post(
-            "/native/v1/subscription/bonus/quotient_familial",
-            json={
-                "lastName": "Lefebvre",
-                "firstNames": ["Alexis", "ჯონ"],
-                "birthDate": "1982-12-27",
-                "gender": "Mme",
-                "birthCountryCogCode": "99100",
-                "birthCityCogCode": "08480",
-            },
-        )
+        response = client.with_token(user).post("/native/v1/subscription/bonus/quotient_familial", json={})
 
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
+        assert all(error == ["Ce champ est obligatoire"] for error in response.json.values()), list(
+            response.json.values()
+        )
 
     def test_bonus_qf_invalid_country_cog_code(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -1116,15 +1130,16 @@ class BonusTest:
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
-                "firstNames": ["Alexis", "ჯონ"],
+                "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "wrong",
                 "birthCityCogCode": "08480",
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 400, response.json
+        assert list(response.json.keys()) == ["birthCountryCogCode"], response.json
 
     def test_bonus_qf_invalid_city_cog_code(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -1133,12 +1148,181 @@ class BonusTest:
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
-                "firstNames": ["Alexis", "ჯონ"],
+                "firstNames": ["Alexis"],
                 "birthDate": "1982-12-27",
                 "gender": "Mme",
-                "birthCountryCogCode": "91100",
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "08E80",
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert list(response.json.keys()) == ["birthCityCogCode"], response.json
+
+
+class DisabilityBonusTest:
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    def test_create_disability_bonus_fraud_checks(self, mocked_aeeh_task, mocked_aah_task, client):
+        user = users_factories.BeneficiaryFactory()
+
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # recredit
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # beneficiary_fraud_check (insert)
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.post(
+                "/native/v1/subscription/bonus/disability",
+                json={
+                    "birthCountryCogCode": "99100",
+                    "birthCityCogCode": "67482",  # Strasbourg
+                },
+            )
+
+        assert response.status_code == 204, response.json
+
+        DISABILITY_FRAUD_CHECK_TYPES = [
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        ]
+        disability_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in DISABILITY_FRAUD_CHECK_TYPES
+        ]
+        aah_fraud_check, aeeh_fraud_check = sorted(
+            disability_fraud_checks, key=lambda fraud_check: DISABILITY_FRAUD_CHECK_TYPES.index(fraud_check.type)
+        )
+        assert aah_fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        assert aeeh_fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        assert aah_fraud_check.status == aeeh_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert (
+            aah_fraud_check.resultContent
+            == aeeh_fraud_check.resultContent
+            == {
+                "person": {
+                    "last_name": user.lastName,
+                    "first_names": [user.firstName],
+                    "birth_date": user.birth_date.isoformat(),
+                    "gender": "M.",
+                    "birth_country_cog_code": "99100",
+                    "birth_city_cog_code": "67482",
+                },
+            }
+        )
+
+        mocked_aah_task.assert_called_once()
+        mocked_aah_task.assert_called_with({"fraud_check_id": aah_fraud_check.id})
+
+        mocked_aeeh_task.assert_called_once()
+        mocked_aeeh_task.assert_called_with({"fraud_check_id": aeeh_fraud_check.id})
+
+    @pytest.mark.parametrize(
+        "fraud_check_status",
+        [
+            subscription_models.FraudCheckStatus.PENDING,
+            subscription_models.FraudCheckStatus.STARTED,
+        ],
+    )
+    def test_create_bonus_fraud_check_with_existing(self, client, fraud_check_status):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(user=user, status=fraud_check_status)
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(user=user, status=fraud_check_status)
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    def test_bonus_already_granted(self, client):
+        user = users_factories.BeneficiaryFactory()
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_aeeh_task, mocked_aah_task, client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.KO
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.KO
+        )
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+
+        assert response.status_code == 204
+
+        for fraud_check_type in [
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        ]:
+            bonus_fraud_checks = [e for e in user.beneficiaryFraudChecks if e.type == fraud_check_type]
+            assert len(bonus_fraud_checks) == 2
+            assert {e.status for e in bonus_fraud_checks} == {
+                subscription_models.FraudCheckStatus.STARTED,
+                subscription_models.FraudCheckStatus.KO,
+            }
+
+    def test_disability_bonus_missing_field(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post("/native/v1/subscription/bonus/disability", json={})
+
+        assert response.status_code == 400, response.json
+        assert all(error == ["Ce champ est obligatoire"] for error in response.json.values()), list(
+            response.json.values()
+        )
+
+    def test_disability_bonus_invalid_country_cog_code(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "wrong",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert list(response.json.keys()) == ["birthCountryCogCode"], response.json
+
+    def test_bonus_qf_invalid_city_cog_code(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
                 "birthCityCogCode": "08E80",
             },
         )
 
         assert response.status_code == 400
+        assert list(response.json.keys()) == ["birthCityCogCode"], response.json

@@ -1,9 +1,13 @@
 import datetime
+import decimal
 
 import pytest
 import time_machine
 
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -174,7 +178,6 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
     @pytest.mark.parametrize(
         "stocks, expected_response_json",
         [
-            ([], {"offers.0.stocks": ["List should have at least 1 item after validation, not 0"]}),
             (
                 [{}],
                 {
@@ -453,3 +456,90 @@ class PutCinemaSessionsTest(PublicAPIVenueEndpointHelper):
         }
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204, response.json
+
+    @time_machine.travel("2026-06-23", tick=False)
+    def test_should_return_204_and_run_task(self):
+        allocine_product = offers_factories.EventProductFactory(
+            name="Juste une illusion", extraData={"allocineId": 1000015954}
+        )
+        visa_product = offers_factories.EventProductFactory(name="Hamnet", extraData={"visa": "166715"})
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        payload = {
+            "venueId": venue_provider.venue.id,
+            "offers": [
+                {
+                    "filmId": "visa:166715",
+                    "priceCategories": [
+                        {"price": 500, "label": "Tarif pass Culture", "idAtProvider": "PC"},
+                        {"price": 1000, "label": "Tarif PC 2", "idAtProvider": "PC_2"},
+                    ],
+                    "stocks": [
+                        {
+                            "beginningDatetime": "2026-07-07T20:30:00+02:00",
+                            "priceCategoryIdAtProvider": "PC",
+                            "quantity": 100,
+                            "idAtProvider": "film166715_session1",
+                            "features": ["VF"],
+                        },
+                        {
+                            "beginningDatetime": "2026-07-07T20:30:00+02:00",
+                            "priceCategoryIdAtProvider": "PC_2",
+                            "quantity": 200,
+                            "idAtProvider": "film166715_session2",
+                            "features": ["VO"],
+                        },
+                    ],
+                },
+                {
+                    "filmId": "allocine_id:1000015954",
+                    "priceCategories": [{"price": 600, "label": "Tarif pass Culture", "idAtProvider": "PC"}],
+                    "stocks": [
+                        {
+                            "beginningDatetime": "2026-07-07T20:30:00+02:00",
+                            "priceCategoryIdAtProvider": "PC",
+                            "quantity": 50,
+                            "idAtProvider": "film1000015954_session1",
+                            "features": ["VF"],
+                        }
+                    ],
+                },
+            ],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 204, response.json
+
+        offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
+        assert len(offers) == 2
+
+        offer_visa = offers[0]
+        offer_allocine = offers[1]
+
+        assert offer_visa.product == visa_product
+        assert offer_visa.idAtProvider == f"visa:166715%{venue.id}"
+        assert len(offer_visa.stocks) == 2
+        assert len(offer_visa.priceCategories) == 2
+        stock_vf = next(stock for stock in offer_visa.stocks if "VF" in stock.features)
+        assert stock_vf.quantity == 100
+        assert stock_vf.idAtProviders == "film166715_session1"
+        assert stock_vf.features == ["VF"]
+        assert stock_vf.priceCategory.price == decimal.Decimal("5.00")
+        assert stock_vf.priceCategory.label == "Tarif pass Culture"
+        assert stock_vf.bookingLimitDatetime == datetime.datetime(2026, 7, 7, 18, 30)
+        stock_vo = next(stock for stock in offer_visa.stocks if "VO" in stock.features)
+        assert stock_vo.quantity == 200
+        assert stock_vo.idAtProviders == "film166715_session2"
+        assert stock_vo.features == ["VO"]
+        assert stock_vo.priceCategory.price == decimal.Decimal("10.00")
+        assert stock_vo.priceCategory.label == "Tarif PC 2"
+        assert stock_vo.bookingLimitDatetime == datetime.datetime(2026, 7, 7, 18, 30)
+
+        assert offer_allocine.product == allocine_product
+        assert offer_allocine.idAtProvider == f"allocine_id:1000015954%{venue.id}"
+        assert len(offer_allocine.priceCategories) == 1
+        assert offer_allocine.priceCategories[0].label == "Tarif pass Culture"
+        assert offer_allocine.priceCategories[0].price == decimal.Decimal("6.00")
+        assert len(offer_allocine.stocks) == 1
+        assert offer_allocine.stocks[0].priceCategory == offer_allocine.priceCategories[0]
+        assert offer_allocine.stocks[0].quantity == 50
+        assert offer_allocine.stocks[0].features == ["VF"]

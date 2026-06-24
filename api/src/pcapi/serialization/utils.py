@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import typing
 
 import flask
@@ -176,6 +177,14 @@ def check_date_in_future_and_remove_timezone(
     return no_tz_value
 
 
+def _check_datetime_in_future_and_format_to_utc_datetime(value: datetime.datetime) -> datetime.datetime:
+    if value.tzinfo is None:
+        raise PydanticError("The datetime must be timezone-aware.")
+    if value < datetime.datetime.now(datetime.timezone.utc):
+        raise PydanticError("The datetime must be in the future.")
+    return value.astimezone(datetime.timezone.utc)
+
+
 def validate_datetime(field_name: str, always: bool = False) -> classmethod:
     # TODO: (tcoudray-pass, 11/05/26) Should not accept `None` value
     def _check_if_not_none(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
@@ -191,6 +200,10 @@ def _validate_datetime(value: datetime.datetime) -> datetime.datetime:
 
 
 future_tz_aware_datetime = Annotated[datetime.datetime, pydantic_v2.AfterValidator(_validate_datetime)]
+future_tz_aware_datetime_to_utc_datetime = Annotated[
+    datetime.datetime,
+    pydantic_v2.AfterValidator(_check_datetime_in_future_and_format_to_utc_datetime),
+]
 
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
@@ -222,3 +235,14 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)
 
 HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
+
+# by default a Decimal field will have number | string in the generated schema
+# this allows us to keep only number
+DecimalField = typing.Annotated[decimal.Decimal, pydantic_v2.WithJsonSchema({"type": "number"})]
+
+
+def format_price(value: decimal.Decimal) -> decimal.Decimal:
+    return value.quantize(decimal.Decimal("1.00"))
+
+
+DecimalPrice = typing.Annotated[DecimalField, pydantic_v2.AfterValidator(format_price)]

@@ -62,9 +62,9 @@ jobs:
           BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "resource_label=$BRANCH_SHA1" | tee -a "$GITHUB_OUTPUT"
           
-          backend_url=https://backend-${resource_label}.testing.passculture.team
+          backend_url=https://backend-${BRANCH_SHA1}.testing.passculture.team
           echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
-          echo "backoffice_url=https://backoffice-${resource_label}.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
+          echo "backoffice_url=https://backoffice-${BRANCH_SHA1}.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
         
           if [ "$FRONT_ONLY" == "true" ]; then
             # Empty = frontend connects to shared testing backend

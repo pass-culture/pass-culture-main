@@ -68,10 +68,10 @@ export const IndividualOffers = () => {
   )
   const venueAddresses = formatAndOrderAddresses(venueAddressQuery.data ?? [])
 
-  const apiFilters = computeIndividualApiFilters(
+  const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
-    selectedPartnerVenue.id
-  )
+    selectedVenueId: selectedPartnerVenue.id,
+  })
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () =>
     api.listOffers({ query: apiFilters })

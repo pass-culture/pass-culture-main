@@ -14,7 +14,6 @@ import pcapi.core.mails.tasks  # noqa: F401
 import pcapi.core.offerers.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
 import pcapi.core.operations.tasks  # noqa: F401
-import pcapi.core.providers.batch_update_cinema_offers_task  # noqa: F401
 import pcapi.core.providers.tasks  # noqa: F401
 import pcapi.core.subscription.bonus.tasks  # noqa: F401
 import pcapi.core.subscription.ubble.tasks  # noqa: F401

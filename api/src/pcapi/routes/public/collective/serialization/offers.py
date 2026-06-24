@@ -8,6 +8,7 @@ from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational.models import CollectiveAdditionalFeeType
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
@@ -317,11 +318,21 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
                 )
 
 
+class GetCollectiveAdditionalFeeResponseModel(BaseModel):
+    type: CollectiveAdditionalFeeType = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_TYPE
+    label: str | None = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_LABEL
+    amount: decimal.Decimal = fields.COLLECTIVE_OFFER_ADDITIONAL_FEE_AMOUNT
+
+    class Config:
+        orm_mode = True
+
+
 class GetPublicCollectiveOfferResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
     offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
+    additionalDetails: str | None = fields.COLLECTIVE_OFFER_ADDITIONAL_DETAILS
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
     contactEmail: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
     contactPhone: str = fields.COLLECTIVE_OFFER_CONTACT_PHONE
@@ -339,15 +350,20 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
     bookingLimitDatetime: str = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
-    price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
+    # totalPrice is deprecated and will be removed in the future
+    totalPrice: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
+    price: decimal.Decimal = fields.COLLECTIVE_OFFER_PRICE
+    servicePrice: decimal.Decimal = fields.COLLECTIVE_OFFER_SERVICE_PRICE
+    additionalFees: list[GetCollectiveAdditionalFeeResponseModel] = fields.COLLECTIVE_OFFER_ADDITIONAL_FEES
     numberOfTickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
+    numberOfTeachers: int = fields.COLLECTIVE_OFFER_NB_OF_TEACHERS
     priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     location: CollectiveOfferLocation = fields.COLLECTIVE_OFFER_LOCATION
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
-    bookings: typing.Sequence[CollectiveBookingResponseModel]
+    bookings: list[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
     formats: list[EacFormat] = fields.COLLECTIVE_OFFER_FORMATS
 
@@ -357,16 +373,33 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
         allow_population_by_field_name = True
 
     @classmethod
-    def from_orm(
-        cls: type["GetPublicCollectiveOfferResponseModel"], offer: CollectiveOffer
-    ) -> "GetPublicCollectiveOfferResponseModel":
+    def build(cls, offer: CollectiveOffer) -> typing.Self:
         location = get_collective_offer_location_from_offer(offer)
+
+        # TODO (jcicurel-pass, 2026-06-19): remove fallback when servicePrice is not nullable
+        service_price = (
+            offer.collectiveStock.servicePrice
+            if offer.collectiveStock.servicePrice is not None
+            else offer.collectiveStock.price
+        )
+
+        additional_fees = [
+            GetCollectiveAdditionalFeeResponseModel.from_orm(fee)
+            for fee in offer.collectiveStock.collectiveAdditionalFees
+        ]
+
+        bookings = [
+            CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
+        ]
+
+        national_program = NationalProgramModel.from_orm(offer.nationalProgram) if offer.nationalProgram else None
 
         return cls(
             id=offer.id,
             offerStatus=offer.displayedStatus.value,
             name=offer.name,
             description=offer.description,
+            additionalDetails=offer.additionalDetails,
             bookingEmails=offer.bookingEmails,
             contactEmail=offer.contactEmail,  # type: ignore[arg-type]
             contactPhone=offer.contactPhone,  # type: ignore[arg-type]
@@ -384,16 +417,20 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
+            totalPrice=offer.collectiveStock.price,
             price=offer.collectiveStock.price,
+            servicePrice=service_price,
+            additionalFees=additional_fees,
             numberOfTickets=offer.collectiveStock.numberOfTickets,
+            numberOfTeachers=offer.collectiveStock.numberOfTeachers,
             priceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institution else None,
             educationalInstitutionId=offer.institution.id if offer.institution else None,
             location=location,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
-            bookings=offer.collectiveStock.collectiveBookings,  # type: ignore [arg-type]
-            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
+            bookings=bookings,
+            nationalProgram=national_program,
             formats=offer.formats,
         )
 

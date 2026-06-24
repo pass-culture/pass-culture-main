@@ -16,7 +16,6 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
-import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
@@ -27,6 +26,7 @@ import {
   type CollectiveOfferFromParamsProps,
   withOnlyCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
 function isComplete(
@@ -38,10 +38,11 @@ function isComplete(
     'endDatetime',
     'numberOfTickets',
     'startDatetime',
-    'price',
   ]
-  if (!isNewCollectivePriceEnabled) {
-    allKeys.push('priceDetail')
+  if (isNewCollectivePriceEnabled) {
+    allKeys.push('numberOfTeachers')
+  } else {
+    allKeys.push('price', 'priceDetail')
   }
   return allKeys.every((key) => key in stock && stock[key] !== undefined)
 }
@@ -54,11 +55,10 @@ export const CollectiveOfferStockCreation = ({
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
+  const { mutate } = useSWRConfig()
   const isNewCollectivePriceEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
   )
-
-  const { mutate } = useSWRConfig()
 
   const { data: offerFromTemplate } = useSWR(
     offer.templateId
@@ -131,7 +131,16 @@ export const CollectiveOfferStockCreation = ({
         })
       } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
         response = await api.createCollectiveStock({
-          body: { ...newCollectiveStock, offerId: offer.id },
+          body: {
+            ...newCollectiveStock,
+            offerId: offer.id,
+            // TODO(PC-41977) implement servicePrice and collectiveAdditionalFees in the form and send them to the backend
+            servicePrice: isNewCollectivePriceEnabled ? 100 : undefined,
+            price: isNewCollectivePriceEnabled ? 100 : newCollectiveStock.price,
+            collectiveAdditionalFees: isNewCollectivePriceEnabled
+              ? []
+              : undefined,
+          },
         })
       } else {
         throw new Error('Missing required values')
@@ -156,7 +165,7 @@ export const CollectiveOfferStockCreation = ({
         e.status === 400 &&
         e.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
       ) {
-        snackBar.error(
+        return snackBar.error(
           'Une erreur s’est produite. Les informations dates et prix existent déjà pour cette offre.'
         )
       }
@@ -165,12 +174,12 @@ export const CollectiveOfferStockCreation = ({
         e.status === 400 &&
         e.errors.code === 'COLLECTIVE_OFFER_NOT_FOUND'
       ) {
-        snackBar.error(
+        return snackBar.error(
           'Une erreur s’est produite. L’offre n’a pas été trouvée.'
         )
       }
-      if (isErrorAPIError(e) && e.status === 400) {
-        snackBar.error(FORM_ERROR_MESSAGE)
+      if (isErrorAPIError(e) && e.status < 500) {
+        throw e
       } else {
         snackBar.error(
           'Une erreur est survenue lors de la création de votre stock.'
@@ -187,14 +196,25 @@ export const CollectiveOfferStockCreation = ({
       requestId={requestId}
       offer={offer}
     >
-      <OfferEducationalStock
-        initialStock={initialStock}
-        departementCode={departementCode}
-        mode={Mode.CREATION}
-        allowedActions={offer.allowedActions}
-        onSubmit={handleSubmitStock}
-        goBackLink={stepUrls.previous}
-      />
+      {isNewCollectivePriceEnabled ? (
+        <CollectiveOfferStockForm
+          initialStock={initialStock}
+          departementCode={departementCode}
+          mode={Mode.CREATION}
+          allowedActions={offer.allowedActions}
+          onSubmit={handleSubmitStock}
+          goBackLink={stepUrls.previous}
+        />
+      ) : (
+        <OfferEducationalStock
+          initialStock={initialStock}
+          departementCode={departementCode}
+          mode={Mode.CREATION}
+          allowedActions={offer.allowedActions}
+          onSubmit={handleSubmitStock}
+          goBackLink={stepUrls.previous}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }

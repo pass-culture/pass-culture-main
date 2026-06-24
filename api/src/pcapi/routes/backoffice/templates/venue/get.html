@@ -14,17 +14,9 @@
 {% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% from "components/details.html" import action_bar_button %}
 {% from "components/details.html" import action_bar_additional_button %}
+{% from "components/description.html" import description %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
-{% macro description(title) %}
-  <dl class="mb-1">
-    <dt class="d-inline">{{ title }}</dt>
-    :
-    <dd class="d-inline">
-      {{ caller() }}
-    </dd>
-  </dl>
-{% endmacro %}
 {% set page_title = venue.name %}
 {% set sync_zsell_aria_described_by_id = random_hash() %}
 {% block pro_main_content %}

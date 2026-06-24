@@ -1316,12 +1316,15 @@ def format_confidence_level_badge(
     return ""
 
 
-def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str:
-    if venue.confidenceLevel:
-        return format_confidence_level_badge(venue.confidenceLevel)
+def format_confidence_level_badge_for_venue_or_offerer(obj: offerers_models.Venue | offerers_models.Offerer) -> str:
+    if isinstance(obj, offerers_models.Offerer):
+        return format_confidence_level_badge(obj.confidenceLevel, show_no_rule=True)
+
+    if obj.confidenceLevel:
+        return format_confidence_level_badge(obj.confidenceLevel)
 
     return format_confidence_level_badge(
-        venue.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité juridique)"
+        obj.managingOfferer.confidenceLevel, show_no_rule=True, info="(entité juridique)"
     )
 
 
@@ -2224,6 +2227,25 @@ def format_postal_code_to_departement_code(postal_code: str | int) -> str:
     return postal_code_utils.PostalCode(str(postal_code)).get_departement_code()
 
 
+def format_additional_fee_type(fee_type: educational_models.CollectiveAdditionalFeeType) -> str:
+    match fee_type:
+        case educational_models.CollectiveAdditionalFeeType.ACCOMMODATION:
+            return "Hébergement de l’intervenant"
+        case educational_models.CollectiveAdditionalFeeType.TRAVEL:
+            return "Déplacement de l’intervenant"
+        case educational_models.CollectiveAdditionalFeeType.MEAL:
+            return "Repas de l’intervenant"
+        case educational_models.CollectiveAdditionalFeeType.CONSUMABLE_ITEMS:
+            return "Matériel consommable"
+        case educational_models.CollectiveAdditionalFeeType.COPYRIGHT:
+            return "Droits d’auteur / de diffusion"
+        case educational_models.CollectiveAdditionalFeeType.APPLICATION_FEE:
+            return "Frais de dossier / de gestion"
+        case _:
+            return "Autre"
+    return fee_type.value
+
+
 # Keep consistency with pro/src/commons/mappings/DisplayableActivity.ts
 ACTIVITY_MAPPING = {
     offerers_models.Activity.ART_GALLERY: "Galerie d’art",
@@ -2320,7 +2342,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_offer_compliance_llm_validation"] = format_offer_compliance_llm_validation
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
-    app.jinja_env.filters["format_confidence_level_badge_for_venue"] = format_confidence_level_badge_for_venue
+    app.jinja_env.filters["format_confidence_level_badge_for_venue_or_offerer"] = (
+        format_confidence_level_badge_for_venue_or_offerer
+    )
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
@@ -2401,3 +2425,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
     app.jinja_env.filters["format_time"] = format_time
     app.jinja_env.filters["format_cultural_outreach_status"] = format_cultural_outreach_status
+    app.jinja_env.filters["format_additional_fee_type"] = format_additional_fee_type

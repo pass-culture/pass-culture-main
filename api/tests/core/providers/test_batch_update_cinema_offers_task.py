@@ -11,9 +11,9 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import batch_update_cinema_offers_task
 from pcapi.core.providers import factories as provider_factories
 from pcapi.core.providers import models as provider_models
+from pcapi.core.providers import tasks
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 
@@ -47,7 +47,7 @@ class BatchUpdateCinemaOffersTaskTest:
         film_id: str | None = None,
         data: dict | None = None,
         address: dict | None = None,
-    ) -> batch_update_cinema_offers_task.TaskPayload:
+    ) -> tasks.BatchUpdateOffersTaskPayload:
         two_weeks_from_now = date_utils.get_naive_utc_now().replace(
             hour=18, minute=30, second=0, microsecond=0
         ) + datetime.timedelta(weeks=2)
@@ -74,13 +74,13 @@ class BatchUpdateCinemaOffersTaskTest:
         if data:
             request_payload.update(**data)
 
-        return batch_update_cinema_offers_task.TaskPayload(provider_id=provider_id, request_payload=request_payload)
+        return tasks.BatchUpdateOffersTaskPayload(provider_id=provider_id, request_payload=request_payload)
 
     @time_machine.travel("2026-05-01", tick=False)
     def test_create_offers_and_stocks_with_allocine(self):
         venue, provider, allocine_product, _, _ = self.setup_base_resource()
         task_payload = self.generate_task_payload(provider_id=provider.id, venue_id=venue.id)
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -113,7 +113,7 @@ class BatchUpdateCinemaOffersTaskTest:
     def test_create_offer_with_visa(self):
         venue, provider, _, visa_product, _ = self.setup_base_resource()
         task_payload = self.generate_task_payload(provider_id=provider.id, venue_id=venue.id, film_id="visa:166715")
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -137,7 +137,7 @@ class BatchUpdateCinemaOffersTaskTest:
             venue_id=venue.id,
             address={"id": address.id, "label": "Somewhere out there"},
         )
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -173,8 +173,8 @@ class BatchUpdateCinemaOffersTaskTest:
             venue_id=venue.id,
             address={"id": address.id, "label": "Somewhere out there"},
         )
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)  # twice
+        tasks.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)  # twice
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -245,7 +245,7 @@ class BatchUpdateCinemaOffersTaskTest:
         stock_to_update.dnBookedQuantity = 1
         db.session.commit()
 
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -313,7 +313,7 @@ class BatchUpdateCinemaOffersTaskTest:
 
         db.session.commit()
 
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).all()
         assert len(offers) == 1
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -354,7 +354,7 @@ class BatchUpdateCinemaOffersTaskTest:
             hour=18, minute=30, second=0, microsecond=0
         ) + datetime.timedelta(weeks=2)
 
-        task_payload = batch_update_cinema_offers_task.TaskPayload(
+        task_payload = tasks.BatchUpdateOffersTaskPayload(
             provider_id=provider.id,
             request_payload={
                 "venueId": venue.id,
@@ -390,7 +390,7 @@ class BatchUpdateCinemaOffersTaskTest:
             },
         )
 
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
         assert len(offers) == 2
         price_categories = db.session.query(offers_models.PriceCategory).all()
@@ -423,7 +423,7 @@ class BatchUpdateCinemaOffersTaskTest:
             hour=18, minute=30, second=0, microsecond=0
         ) + datetime.timedelta(weeks=2)
 
-        task_payload = batch_update_cinema_offers_task.TaskPayload(
+        task_payload = tasks.BatchUpdateOffersTaskPayload(
             provider_id=provider.id,
             request_payload={
                 "venueId": venue.id,
@@ -460,7 +460,7 @@ class BatchUpdateCinemaOffersTaskTest:
             },
         )
 
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
         assert len(offers) == 2
         offerer_addresses = (
@@ -479,7 +479,7 @@ class BatchUpdateCinemaOffersTaskTest:
             hour=18, minute=30, second=0, microsecond=0
         ) + datetime.timedelta(weeks=2)
 
-        task_payload = batch_update_cinema_offers_task.TaskPayload(
+        task_payload = tasks.BatchUpdateOffersTaskPayload(
             provider_id=provider.id,
             request_payload={
                 "venueId": venue.id,
@@ -524,7 +524,7 @@ class BatchUpdateCinemaOffersTaskTest:
             },
         )
 
-        batch_update_cinema_offers_task.batch_update_cinema_offers_task(task_payload)
+        tasks.batch_update_cinema_offers_task(task_payload)
         offers = db.session.query(offers_models.Offer).order_by(offers_models.Offer.id).all()
         assert len(offers) == 2
 
@@ -535,13 +535,15 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer_visa.idAtProvider == f"visa:166715%{venue.id}"
         assert len(offer_visa.stocks) == 2
         assert len(offer_visa.priceCategories) == 2
-        stock_vf = offer_visa.stocks[0]
+
+        stock_vf = next(stock for stock in offer_visa.stocks if stock.features == ["VF"])
         assert stock_vf.quantity == 100
         assert stock_vf.idAtProviders == "film166715_session1"
         assert stock_vf.features == ["VF"]
         assert stock_vf.priceCategory.price == decimal.Decimal("5.00")
         assert stock_vf.priceCategory.label == "Tarif pass Culture"
-        stock_vo = offer_visa.stocks[1]
+
+        stock_vo = next(stock for stock in offer_visa.stocks if stock.features == ["VO"])
         assert stock_vo.quantity == 200
         assert stock_vo.idAtProviders == "film166715_session2"
         assert stock_vo.features == ["VO"]
@@ -550,9 +552,11 @@ class BatchUpdateCinemaOffersTaskTest:
 
         assert offer_allocine.product == allocine_product
         assert offer_allocine.idAtProvider == f"allocine_id:1000015954%{venue.id}"
+
         assert len(offer_allocine.priceCategories) == 1
         assert offer_allocine.priceCategories[0].label == "Tarif pass Culture"
         assert offer_allocine.priceCategories[0].price == decimal.Decimal("6.00")
+
         assert len(offer_allocine.stocks) == 1
         assert offer_allocine.stocks[0].priceCategory == offer_allocine.priceCategories[0]
         assert offer_allocine.stocks[0].quantity == 50

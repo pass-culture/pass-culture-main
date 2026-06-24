@@ -35,7 +35,9 @@ def _create_offerer() -> offerers_models.Offerer:
     return offerer
 
 
-def _create_cinema_offer(venue: offerers_models.Venue, offer_name: str, price: decimal.Decimal) -> offers_models.Offer:
+def _create_cinema_offer(
+    venue: offerers_models.Venue, offer_name: str, price: decimal.Decimal, is_duo: bool
+) -> offers_models.Offer:
     fake = faker.Faker(["fr-FR"])
     offer_description = fake.paragraph(nb_sentences=30)
     product = offers_factories.ProductFactory.create(
@@ -46,6 +48,7 @@ def _create_cinema_offer(venue: offerers_models.Venue, offer_name: str, price: d
     )
     db.session.add(product)
     offer = offers_factories.OfferFactory.build(
+        isDuo=is_duo,
         name=offer_name,
         description=offer_description,
         venue=venue,
@@ -159,14 +162,16 @@ def _create_venue(offerer: offerers_models.Offerer, activity: offerers_models.Ac
     return venue
 
 
-def create_offer(offer_name: str, price: decimal.Decimal, subcategory_id: str) -> offers_models.Offer | None:
+def create_offer(
+    offer_name: str, price: decimal.Decimal, subcategory_id: str, is_duo: bool
+) -> offers_models.Offer | None:
     # For the moment this function can only generate offers having SEANCE_CINE subcategory
     offerer = _create_offerer()
     offer = None
     venue = None
     if subcategory_id == subcategories.SEANCE_CINE.id:
         venue = _create_venue(offerer, offerers_models.Activity.CINEMA)
-        offer = _create_cinema_offer(venue, offer_name, price)
+        offer = _create_cinema_offer(venue, offer_name, price, is_duo)
 
     if offer is not None and venue is not None:
         search.async_index_venue_ids([venue.id], search_models.IndexationReason.VENUE_CREATION)

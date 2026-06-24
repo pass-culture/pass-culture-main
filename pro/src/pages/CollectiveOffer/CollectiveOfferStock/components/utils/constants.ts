@@ -1,0 +1,2 @@
+export const MAX_NUMBER_OF_TICKETS = 3000
+export const MAX_NUMBER_OF_TEACHERS = 50

@@ -1,7 +1,14 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import {
+  IndividualOfferContext,
+  type IndividualOfferContextValues,
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ActionBar, type ActionBarProps } from './ActionBar'
@@ -10,15 +17,25 @@ const renderActionBar = ({
   props,
   url = '/creation/testUrl',
   features = [],
+  contextValues = {},
 }: {
   props: ActionBarProps
   url?: string
   features?: string[]
+  contextValues?: Partial<IndividualOfferContextValues>
 }) => {
-  return renderWithProviders(<ActionBar {...props} />, {
-    features: features,
-    initialRouterEntries: [url],
-  })
+  const contextValue: IndividualOfferContextValues =
+    individualOfferContextValuesFactory(contextValues)
+
+  return renderWithProviders(
+    <IndividualOfferContext.Provider value={contextValue}>
+      <ActionBar {...props} />
+    </IndividualOfferContext.Provider>,
+    {
+      features: features,
+      initialRouterEntries: [url],
+    }
+  )
 }
 
 describe('IndividualOffer::ActionBar', () => {
@@ -90,10 +107,20 @@ describe('IndividualOffer::ActionBar', () => {
   })
 
   describe('on edition', () => {
-    it('should render the component for details page', async () => {
+    it('should render the component for details page and track modifications', async () => {
+      const expectedOfferId = 42
+      const mockLogEvent = vi.fn()
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementationOnce(() => ({
+        logEvent: mockLogEvent,
+      }))
+
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
 
-      renderActionBar({ props, url: '/edition/url' })
+      renderActionBar({
+        props,
+        url: '/edition/url',
+        contextValues: { offerId: expectedOfferId },
+      })
 
       await userEvent.click(screen.getByText('Annuler et quitter'))
       expect(onClickPreviousMock).toHaveBeenCalled()
@@ -101,6 +128,10 @@ describe('IndividualOffer::ActionBar', () => {
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
       expect(onClickNextMock).toHaveBeenCalled()
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        Events.CLICKED_INDIVIDUAL_OFFER_MODIFICATION,
+        { offerId: expectedOfferId }
+      )
     })
 
     it('should should not render "Annuler et quitter" when WIP_OFFER_EXPOSURE is active', () => {

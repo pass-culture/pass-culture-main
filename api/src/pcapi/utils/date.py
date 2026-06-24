@@ -171,6 +171,10 @@ def default_timezone_to_local_datetime(dt: datetime, local_tz: str) -> datetime:
     return dt.replace(tzinfo=from_zone).astimezone(to_zone)
 
 
+def local_date_to_naive_utc_datetime(date_: date, time_: time, local_tz: str) -> datetime:
+    return local_datetime_to_default_timezone(datetime.combine(date_, time_), local_tz).replace(tzinfo=None)
+
+
 def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | None:
     # When min/max date filters are used in requests, backoffice user expect Metroplitan French time (CET),
     # since date and time in the backoffice are formatted to show CET times.

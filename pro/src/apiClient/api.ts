@@ -9,12 +9,14 @@ function createApiErrorInterceptor() {
     response: Response | undefined,
     request: Request
   ) =>
-    new ApiError(
-      request.url,
-      response?.status ?? 0,
-      response?.statusText ?? '',
-      error
-    )
+    response?.status
+      ? new ApiError(
+          request.url,
+          response.status,
+          response.statusText ?? '',
+          error
+        )
+      : error
 }
 
 v1Client.interceptors.error.use(createApiErrorInterceptor())

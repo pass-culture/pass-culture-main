@@ -35,18 +35,6 @@ vi.mock(
 )
 
 vi.mock('@/apiClient/api', () => ({
-  apiAdage: {
-    getVenueById: vi.fn(),
-    authenticate: vi.fn(),
-    getVenueBySiret: vi.fn(),
-    logSearchButtonClick: vi.fn(),
-    logCatalogView: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    logHasSeenAllPlaylist: vi.fn(),
-    logConsultPlaylistElement: vi.fn(),
-    logHasSeenWholePlaylist: vi.fn(),
-    newTemplateOffersPlaylist: vi.fn(),
-  },
   api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },

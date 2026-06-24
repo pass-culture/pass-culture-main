@@ -4,6 +4,7 @@ from pcapi import settings
 
 
 def install_routes(app: Flask) -> None:
+    from .endpoints import additional_fee_types
     from .endpoints import bookings
     from .endpoints import domains
     from .endpoints import educational_institutions

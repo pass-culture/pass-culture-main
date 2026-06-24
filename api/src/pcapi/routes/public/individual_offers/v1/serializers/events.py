@@ -406,7 +406,7 @@ class CinemaStock(serialization.HttpBodyModel):
             description='Show/session features. You must indicate the show/session language: either `"VF"` or `"VO"`.'
         ),
     ]
-    beginning_datetime: serialization_utils.future_tz_aware_datetime = fields_v2.BEGINNING_DATETIME
+    beginning_datetime: serialization_utils.future_tz_aware_datetime_to_utc_datetime = fields_v2.BEGINNING_DATETIME
 
 
 class CinemaPriceCategory(serialization.HttpBodyModel):
@@ -465,7 +465,7 @@ class CinemaOffer(serialization.HttpBodyModel):
     ]
     stocks: Annotated[
         list[CinemaStock],
-        pydantic_v2.Field(min_length=1, max_length=850, description="List of sessions/shows for given offer"),
+        pydantic_v2.Field(max_length=850, description="List of sessions/shows for given offer"),
         pydantic_v2.AfterValidator(_validate_ids_at_provider_are_unique),
     ]
     price_categories: Annotated[

@@ -52,10 +52,10 @@ export const HeadlineOfferImageDialogs = ({
     venueId: selectedPartnerVenue.id,
   }
 
-  const apiFilters = computeIndividualApiFilters(
+  const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
-    selectedPartnerVenue.managingOfferer.id
-  )
+    selectedVenueId: selectedPartnerVenue.id,
+  })
 
   const onImageUpload = async ({
     imageFile,

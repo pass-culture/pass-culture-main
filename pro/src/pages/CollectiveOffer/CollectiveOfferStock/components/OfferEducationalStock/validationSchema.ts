@@ -5,7 +5,7 @@ import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { isDateValid } from '@/commons/utils/date'
 
-import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
+import { getMaxEndDateInSchoolYear } from '../utils/getMaxEndDateInSchoolYear'
 
 const todayAtMidnight = () => {
   const today = new Date()

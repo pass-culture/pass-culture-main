@@ -73,9 +73,13 @@ describe('screens | OfferEducational : creation', () => {
   it('should redirect to stock on submit', async () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props)
-    const buttonNextStep = await screen.findByText('Enregistrer et continuer')
 
-    await userEvent.click(buttonNextStep)
+    const descriptionField = await screen.findByRole('textbox', {
+      name: /Décrivez ici votre projet/,
+    })
+    await userEvent.type(descriptionField, 'Test description')
+
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(mockNavigate).toHaveBeenCalledWith('/offre/2/collectif/stocks')
   })
@@ -84,9 +88,12 @@ describe('screens | OfferEducational : creation', () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props, '/offre/collectif/3/creation?requete=1')
 
-    const buttonNextStep = screen.getByText('Enregistrer et continuer')
+    const descriptionField = await screen.findByRole('textbox', {
+      name: /Décrivez ici votre projet/,
+    })
+    await userEvent.type(descriptionField, 'Test description')
 
-    await userEvent.click(buttonNextStep)
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(mockNavigate).toHaveBeenCalledWith(
       '/offre/3/collectif/stocks?requete=1'

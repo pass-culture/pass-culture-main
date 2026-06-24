@@ -17,8 +17,9 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { CollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
-import { OfferEducationalStock } from '../../components/OfferEducationalStock/OfferEducationalStock'
-import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
+import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
+import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
+import { CollectiveOfferStockCreation } from './CollectiveOfferStockCreation'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -30,22 +31,27 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.mock('../../components/OfferEducationalStock/OfferEducationalStock', () => ({
+vi.mock('../components/OfferEducationalStock/OfferEducationalStock', () => ({
   OfferEducationalStock: vi.fn(() => <div data-testid="stock-form" />),
 }))
+
+vi.mock(
+  '../components/CollectiveOfferStockForm/CollectiveOfferStockForm',
+  () => ({
+    CollectiveOfferStockForm: vi.fn(() => <div data-testid="stock-form" />),
+  })
+)
 
 const setSubmitResponse = (
   newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
 ) => {
-  vi.mocked(OfferEducationalStock).mockImplementationOnce(
-    vi.fn(({ onSubmit }) => {
-      return (
-        <button onClick={() => onSubmit(newCollectiveStock)}>
-          Enregistrer
-        </button>
-      )
-    })
-  )
+  const formMock = vi.fn(({ onSubmit }) => {
+    return (
+      <button onClick={() => onSubmit(newCollectiveStock)}>Enregistrer</button>
+    )
+  })
+  vi.mocked(OfferEducationalStock).mockImplementationOnce(formMock)
+  vi.mocked(CollectiveOfferStockForm).mockImplementationOnce(formMock)
 }
 
 const renderCollectiveStockCreation = (
@@ -177,6 +183,33 @@ describe('CollectiveOfferStockCreation', () => {
       body: {
         ...collectiveStock,
         offerId: offer.id,
+        collectiveAdditionalFees: undefined,
+        servicePrice: undefined,
+      },
+    })
+  })
+
+  it('on submit : should call creation endpoint with additionalFees/servicePrice if no stock exists yet on offer when FF is on', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({ collectiveStock: null })
+    const collectiveStock: Partial<CollectiveStockResponseModel> =
+      getCollectiveOfferCollectiveStockFactory()
+    delete collectiveStock.id
+    setSubmitResponse(collectiveStock)
+    renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
+      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
+    ])
+
+    expect(api.createCollectiveStock).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(api.editCollectiveStock).not.toHaveBeenCalled()
+    expect(api.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
+      body: {
+        ...collectiveStock,
+        offerId: offer.id,
+        servicePrice: 100,
       },
     })
   })

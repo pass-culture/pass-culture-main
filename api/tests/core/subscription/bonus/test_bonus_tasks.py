@@ -18,8 +18,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @patch("pcapi.connectors.api_particulier.get_quotient_familial")
 def test_apply_for_quotient_familial_bonus_task(mocked_get_quotient_familial):
-    custodian = subscription_factories.ApiParticulierPersonFactory.create()
-    fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+    custodian = subscription_factories.BonusCreditPersonFactory.create()
+    fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
         resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
             custodian=custodian
@@ -45,10 +45,10 @@ def test_apply_for_quotient_familial_bonus_task(mocked_get_quotient_familial):
 @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
 def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task):
     twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-    started_fraud_check_1 = subscription_factories.BonusFraudCheckFactory.create(
+    started_fraud_check_1 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
     )
-    started_fraud_check_2 = subscription_factories.BonusFraudCheckFactory.create(
+    started_fraud_check_2 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago - relativedelta(seconds=1)
     )
 
@@ -66,7 +66,7 @@ def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task)
 @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
 def test_recovery_ignores_recent_quotient_familial_application(mocked_apply_for_qf_task):
     twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-    subscription_factories.BonusFraudCheckFactory.create(
+    subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago + relativedelta(minutes=1)
     )
 
@@ -77,8 +77,8 @@ def test_recovery_ignores_recent_quotient_familial_application(mocked_apply_for_
 
 @patch("pcapi.connectors.api_particulier.get_disabled_adult_allowance")
 def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
-    custodian = subscription_factories.ApiParticulierPersonFactory.create()
-    fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+    custodian = subscription_factories.BonusCreditPersonFactory.create()
+    fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
         resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
             custodian=custodian
@@ -100,8 +100,8 @@ def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
 
 @patch("pcapi.connectors.api_particulier.get_disabled_child_education_allowance")
 def apply_for_disabled_child_education_allowance(mocked_disabled_child_education_allowance):
-    custodian = subscription_factories.ApiParticulierPersonFactory.create()
-    fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+    custodian = subscription_factories.BonusCreditPersonFactory.create()
+    fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
         resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
             custodian=custodian

@@ -107,7 +107,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
             ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.pricings)
+            sa_orm.selectinload(educational_models.CollectiveBooking.pricings)
             .load_only(
                 finance_models.Pricing.amount, finance_models.Pricing.status, finance_models.Pricing.creationDate
             )

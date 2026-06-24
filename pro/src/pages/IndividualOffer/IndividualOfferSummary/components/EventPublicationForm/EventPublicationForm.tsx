@@ -4,7 +4,6 @@ import { useFormContext } from 'react-hook-form'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { Divider } from '@/ui-kit/Divider/Divider'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -65,9 +64,6 @@ export const EventPublicationForm = () => {
   const sectionTitle = (
     <div className={styles['title-container']}>
       <span className={styles['title']}>Publication et réservation</span>
-      <div className={styles['tag']}>
-        <Tag label="Nouveau" variant={TagVariant.NEW} />
-      </div>
     </div>
   )
 

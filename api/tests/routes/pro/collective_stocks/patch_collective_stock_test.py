@@ -965,7 +965,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": -5}
                     ],
                 },
-                {"collectiveAdditionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+                {"collectiveAdditionalFees.0.amount": ["Saisissez un nombre supérieur ou égal à 0"]},
             ),
             # collectiveAdditionalFees type OTHER label null
             (
@@ -987,7 +987,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}
                     ],
                 },
-                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0.0"]},
+                {"servicePrice": ["Saisissez un nombre supérieur ou égal à 0"]},
             ),
             # price total does not match
             (
