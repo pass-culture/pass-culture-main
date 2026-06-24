@@ -1,11 +1,8 @@
-import type {
-  GetVenueResponseModel,
-  VenueListItemResponseModel,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 export function getAccessibilityInfoFromVenue(
-  venue: GetVenueResponseModel | VenueListItemResponseModel | undefined
+  venue: GetVenueResponseModel | undefined
 ): {
   accessibility: AccessibilityFormValues
   isExternal: boolean

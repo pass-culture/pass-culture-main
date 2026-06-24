@@ -17,11 +17,11 @@ import * as useAccessibleScrollModule from '@/commons/hooks/useAccessibleScroll'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
-  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
+  makeVenueListItemLiteResponseModel,
   venueAddressFactory,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -53,13 +53,13 @@ const categoriesAndSubcategories = {
 }
 
 const proVenues = [
-  makeVenueListItem({
+  makeVenueListItemLiteResponseModel({
     id: 1,
     name: 'Venue Name',
     offererName: 'Mon offerer',
     publicName: 'Venue Public Name',
   }),
-  makeVenueListItem({
+  makeVenueListItemLiteResponseModel({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',

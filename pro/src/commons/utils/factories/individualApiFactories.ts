@@ -27,7 +27,6 @@ import {
   type PriceCategoryResponseModel,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-  type VenueListItemResponseModel,
   type VenueProviderResponse,
 } from '@/apiClient/v1'
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -35,7 +34,6 @@ import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
-import type { PartialExcept } from '../types'
 import { listOffersVenueV2Factory } from './commonOffersApiFactories'
 
 let offerId = 1
@@ -233,45 +231,6 @@ export const bookingRecapFactory = (
     bookingToken: `TOKEN${bookingId++}`,
     stock: bookingRecapStockFactory(),
     ...customBookingRecap,
-  }
-}
-
-export const makeVenueListItem = <
-  T extends PartialExcept<VenueListItemResponseModel, 'id'>,
->(
-  override: T
-): Omit<VenueListItemResponseModel, keyof T> & T => {
-  const offererId = override.managingOffererId ?? 1
-  const offererName = override.offererName ?? `Entité ${offererId}`
-
-  const fake: VenueListItemResponseModel = {
-    id: override.id,
-    activity: null,
-    audioDisabilityCompliant: false,
-    bankAccountStatus: null,
-    bookingEmail: `booking.${override.id}@email.com`,
-    externalAccessibilityData: null,
-    hasCreatedOffer: false,
-    hasNonFreeOffers: false,
-    isActive: false,
-    isCaledonian: false,
-    isPermanent: false,
-    isValidated: false,
-    location: null,
-    managingOffererId: offererId,
-    mentalDisabilityCompliant: false,
-    motorDisabilityCompliant: false,
-    name: `Nom de la structure ${override.id}`,
-    offererName,
-    publicName: `Nom public de la structure ${override.id}`,
-    siret: null,
-    visualDisabilityCompliant: false,
-    withdrawalDetails: null,
-  }
-
-  return {
-    ...fake,
-    ...override,
   }
 }
 
