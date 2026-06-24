@@ -29,7 +29,6 @@ from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
-from pcapi.routes.serialization import venue_deprecated_serialization
 from pcapi.routes.serialization import venue_finance_serialize
 from pcapi.routes.serialization import venue_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -85,47 +84,6 @@ def get_venue(venue_id: int) -> venue_serialize.GetVenueResponseModel:
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     return _build_venue_response(venue)
-
-
-@private_api.route("/venues", methods=["GET"])
-@login_required
-@atomic()
-@spectree_serialize(
-    response_model=venue_deprecated_serialization.GetVenueListResponseModel,
-    api=blueprint.pro_private_schema,
-    deprecated=True,
-)
-def get_venues(query: venue_serialize.VenueListQueryModel) -> venue_deprecated_serialization.GetVenueListResponseModel:
-    """[deprecated] please use /lite/venues instead
-
-    This route loads way too much data.
-    """
-    venue_list = offerers_repository.get_filtered_venues(
-        pro_user_id=current_user.id,
-        active_offerers_only=query.active_offerers_only,
-        offerer_id=query.offerer_id,
-        validated_offerer=query.validated,
-        with_bank_account=True,
-    )
-    ids_of_venues_with_offers = (
-        offerers_repository.get_ids_of_venues_with_offers(list({venue.managingOffererId for venue in venue_list}))
-        if venue_list
-        else []
-    )
-
-    # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
-    # it has been fixed
-    # venue_ids = [v.id for v in venue_list]
-    # venue_ids_with_non_free_offers = offerers_repository.venues_have_non_free_offers(venue_ids)
-    venue_ids_with_non_free_offers: set[int] = set()
-    return venue_deprecated_serialization.GetVenueListResponseModel(
-        venues=[
-            venue_deprecated_serialization.VenueListItemResponseModel.build(
-                venue, ids_of_venues_with_offers, venue_ids_with_non_free_offers
-            )
-            for venue in venue_list
-        ]
-    )
 
 
 @private_api.route("/lite/venues", methods=["GET"])
