@@ -68,6 +68,14 @@ vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
 // https://github.com/thomasbrodusch/vitest-fail-on-console#readme
 failOnConsole()
 
+// @radix-ui/react-dismissable-layer >= 1.1.12 sets document.body.style.pointerEvents = "none"
+// when a layer opens with disableOutsidePointerEvents. If a test unmounts the component while
+// the dropdown is still open, the cleanup effect may not restore the body style, causing
+// @testing-library/user-event v14 to throw
+beforeEach(() => {
+  document.body.style.pointerEvents = ''
+})
+
 // jsdom logs `Not implemented: navigation to another Document` whenever a test triggers a real navigation.
 // These are inherent jsdom limitations (https://github.com/jsdom/jsdom/issues/2112), not actionable test issues,
 // so we strip them at the virtualConsole level rather than hiding `console.error` downstream.
