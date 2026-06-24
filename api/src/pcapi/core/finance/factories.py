@@ -123,7 +123,7 @@ class FinanceEventFactory(BaseFactory):
     pricingPoint = factory.LazyAttribute(lambda o: o.venue.current_pricing_point)
 
 
-class _BasePricingFactory(BaseFactory):
+class _BasePricingFactory(BaseFactory[models.Pricing]):
     class Meta:
         model = models.Pricing
 

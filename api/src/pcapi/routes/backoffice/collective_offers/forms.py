@@ -9,6 +9,7 @@ import wtforms
 from flask import flash
 from flask_wtf import FlaskForm
 
+from pcapi import settings
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -363,26 +364,34 @@ class EditCollectiveOfferPrice(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
-    price = fields.PCDecimalField(
-        "Prix",
+    servicePrice = fields.PCDecimalField(
+        "Prix de la prestation",
         use_locale=True,
         validators=[
             wtforms.validators.InputRequired("Information obligatoire"),
             wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+            wtforms.validators.NumberRange(
+                max=settings.EAC_OFFER_PRICE_LIMIT,
+                message=f"Doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}",
+            ),
         ],
     )
 
     numberOfTickets = fields.PCIntegerField(
-        "Places",
+        "Nombre d'élèves",
         validators=[
             wtforms.validators.InputRequired("Information obligatoire"),
             wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+            wtforms.validators.NumberRange(
+                max=settings.EAC_NUMBER_OF_TICKETS_LIMIT,
+                message=f"Doit être inférieur à {settings.EAC_NUMBER_OF_TICKETS_LIMIT}",
+            ),
         ],
     )
 
-    def validate_price(self, price: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        price.data = price.data.quantize(decimal.Decimal("1.00"))
-        return price
+    def validate_service_price(self, service_price: fields.PCOptSearchField) -> fields.PCOptSearchField:
+        service_price.data = service_price.data.quantize(decimal.Decimal("1.00"))
+        return service_price
 
 
 class RejectCollectiveOfferForm(FlaskForm):

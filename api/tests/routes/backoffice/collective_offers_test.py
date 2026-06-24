@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
+from pcapi import settings
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
@@ -1637,38 +1638,42 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
+            form={"numberOfTickets": 5, "servicePrice": 1},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
         assert response.status_code == 303
         assert collective_booking.collectiveStock.price == 1
         assert collective_booking.collectiveStock.servicePrice == 1
+        assert collective_booking.collectiveStock.collectiveAdditionalFees == []
         assert collective_booking.collectiveStock.numberOfTickets == 5
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'offre collective a été mise à jour"
         )
 
-    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=True)
-    def test_service_price_not_modified(self, legit_user, authenticated_client):
+    def test_with_additional_fees(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         collective_stock = educational_factories.CollectiveStockFactory(
             price=Decimal(100.00),
-            servicePrice=Decimal(100.00),
+            servicePrice=Decimal(80.00),
+            collectiveAdditionalFees=[educational_factories.CollectiveAdditionalFeeFactory(amount=Decimal(20.00))],
             numberOfTickets=25,
             collectiveOffer__venue=venue,
         )
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 25, "price": 1},
+            form={"numberOfTickets": 25, "servicePrice": 1},
             collective_offer_id=collective_stock.collectiveOffer.id,
         )
 
         assert response.status_code == 303
-        assert collective_stock.price == 1
-        assert collective_stock.servicePrice == 100
+        # servicePrice and price updated, additional fees do not change
+        assert collective_stock.price == 21
+        assert collective_stock.servicePrice == 1
+        [fee] = collective_stock.collectiveAdditionalFees
+        assert fee.amount == 20
         assert collective_stock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1679,6 +1684,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__servicePrice=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
@@ -1687,12 +1693,14 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
+            form={"numberOfTickets": 5, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
         assert response.status_code == 303
         assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.servicePrice == 100
+        assert pricing.collectiveBooking.collectiveStock.collectiveAdditionalFees == []
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1703,6 +1711,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__servicePrice=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
@@ -1711,12 +1720,14 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
+            form={"numberOfTickets": 5, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
         assert response.status_code == 303
         assert pricing.collectiveBooking.collectiveStock.price == 100
+        assert pricing.collectiveBooking.collectiveStock.servicePrice == 100
+        assert pricing.collectiveBooking.collectiveStock.collectiveAdditionalFees == []
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1731,23 +1742,24 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         ],
     )
     def test_unprocessed_pricing(self, legit_user, authenticated_client, pricing_status):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             status=pricing_status,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__servicePrice=Decimal(100.00),
             collectiveBooking__collectiveStock__numberOfTickets=25,
             collectiveBooking__collectiveStock__startDatetime=datetime.datetime(1970, 1, 1),
         )
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
+            form={"numberOfTickets": 5, "servicePrice": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         assert response.status_code == 303
         assert pricing.collectiveBooking.collectiveStock.price == 1
+        assert pricing.collectiveBooking.collectiveStock.servicePrice == 1
+        assert pricing.collectiveBooking.collectiveStock.collectiveAdditionalFees == []
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 5
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1758,6 +1770,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
+            collectiveStock__servicePrice=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=event_date,
         )
@@ -1765,7 +1778,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         try:
             response = self.post_to_endpoint(
                 authenticated_client,
-                form={"numberOfTickets": 5, "price": 1},
+                form={"numberOfTickets": 5, "servicePrice": 1},
                 collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
             )
         finally:
@@ -1773,6 +1786,8 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_booking.collectiveStock.price == 100
+        assert collective_booking.collectiveStock.servicePrice == 100
+        assert collective_booking.collectiveStock.collectiveAdditionalFees == []
         assert collective_booking.collectiveStock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1792,6 +1807,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         now = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
+            collectiveStock__servicePrice=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=now,
             status=booking_status,
@@ -1800,7 +1816,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 5, "price": 200},
+            form={"numberOfTickets": 5, "servicePrice": 200},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1810,6 +1826,8 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         ]:
             assert response.status_code == 303
             assert collective_booking.collectiveStock.price == 100
+            assert collective_booking.collectiveStock.servicePrice == 100
+            assert collective_booking.collectiveStock.collectiveAdditionalFees == []
             assert collective_booking.collectiveStock.numberOfTickets == 25
             assert (
                 html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1818,6 +1836,8 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         else:
             assert response.status_code == 303
             assert collective_booking.collectiveStock.price == 200
+            assert collective_booking.collectiveStock.servicePrice == 200
+            assert collective_booking.collectiveStock.collectiveAdditionalFees == []
             assert collective_booking.collectiveStock.numberOfTickets == 5
 
     @pytest.mark.parametrize(
@@ -1833,6 +1853,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         now = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
+            collectiveStock__servicePrice=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
             collectiveStock__startDatetime=now,
             status=booking_status,
@@ -1841,7 +1862,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"numberOfTickets": 50, "price": 1},
+            form={"numberOfTickets": 50, "servicePrice": 1},
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
@@ -1851,6 +1872,8 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         ]:
             assert response.status_code == 303
             assert collective_booking.collectiveStock.price == 100
+            assert collective_booking.collectiveStock.servicePrice == 100
+            assert collective_booking.collectiveStock.collectiveAdditionalFees == []
             assert collective_booking.collectiveStock.numberOfTickets == 25
             assert (
                 html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -1859,7 +1882,64 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         else:
             assert response.status_code == 303
             assert collective_booking.collectiveStock.price == 1
+            assert collective_booking.collectiveStock.servicePrice == 1
+            assert collective_booking.collectiveStock.collectiveAdditionalFees == []
             assert collective_booking.collectiveStock.numberOfTickets == 50
+
+    @pytest.mark.parametrize(
+        "payload,error",
+        [
+            (
+                {"numberOfTickets": 10},
+                "Les données envoyées comportent des erreurs. Prix de la prestation : Information obligatoire ;",
+            ),
+            (
+                {"servicePrice": 10},
+                "Les données envoyées comportent des erreurs. Nombre d'élèves : Information obligatoire ;",
+            ),
+            (
+                {"numberOfTickets": -1, "servicePrice": 10},
+                "Les données envoyées comportent des erreurs. Nombre d'élèves : Doit contenir un nombre positif ;",
+            ),
+            (
+                {"numberOfTickets": 10, "servicePrice": -1},
+                "Les données envoyées comportent des erreurs. Prix de la prestation : Doit contenir un nombre positif ;",
+            ),
+            (
+                {"numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1, "servicePrice": 10},
+                f"Les données envoyées comportent des erreurs. Nombre d'élèves : Doit être inférieur à {settings.EAC_NUMBER_OF_TICKETS_LIMIT} ;",
+            ),
+            (
+                {"numberOfTickets": 10, "servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1},
+                f"Les données envoyées comportent des erreurs. Prix de la prestation : Doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT} ;",
+            ),
+        ],
+    )
+    def test_invalid_value(self, legit_user, authenticated_client, payload, error):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        date_used = date_utils.get_naive_utc_now() - datetime.timedelta(hours=72)
+        collective_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(100.00),
+            collectiveStock__servicePrice=Decimal(100.00),
+            collectiveStock__numberOfTickets=25,
+            collectiveStock__startDatetime=date_used,
+            venue=venue,
+            dateUsed=date_used,
+        )
+        finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=collective_booking)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=payload,
+            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
+        )
+
+        assert response.status_code == 303
+        assert collective_booking.collectiveStock.price == 100
+        assert collective_booking.collectiveStock.servicePrice == 100
+        assert collective_booking.collectiveStock.collectiveAdditionalFees == []
+        assert collective_booking.collectiveStock.numberOfTickets == 25
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == error
 
 
 class GetCollectiveOfferDetailTest(GetEndpointHelper):
