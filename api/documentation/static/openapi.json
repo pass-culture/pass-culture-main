@@ -1811,7 +1811,9 @@
                     "MEAL",
                     "CONSUMABLE_ITEMS",
                     "COPYRIGHT",
+                    "BROADCASTING",
                     "APPLICATION_FEE",
+                    "MANAGEMENT_FEE",
                     "OTHER"
                 ],
                 "title": "CollectiveAdditionalFeeType"

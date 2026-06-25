@@ -35,6 +35,18 @@ COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS: typing.Final = {
     models.CollectiveOfferDisplayedStatus.DRAFT: "Brouillon",
 }
 
+COLLECTIVE_ADDITIONAL_FEE_TYPE_LABELS: typing.Final = {
+    models.CollectiveAdditionalFeeType.ACCOMMODATION: "Hébergement de l'intervenant•e",
+    models.CollectiveAdditionalFeeType.TRAVEL: "Déplacement de l'intervenant•e",
+    models.CollectiveAdditionalFeeType.MEAL: "Repas de l'intervenant•e",
+    models.CollectiveAdditionalFeeType.CONSUMABLE_ITEMS: "Matériel consommable",
+    models.CollectiveAdditionalFeeType.COPYRIGHT: "Droits d'auteur",
+    models.CollectiveAdditionalFeeType.BROADCASTING: "Droits de diffusion",
+    models.CollectiveAdditionalFeeType.APPLICATION_FEE: "Frais de dossier",
+    models.CollectiveAdditionalFeeType.MANAGEMENT_FEE: "Frais de gestion",
+    models.CollectiveAdditionalFeeType.OTHER: "Autre",
+}
+
 
 def compute_educational_booking_cancellation_limit_date(
     event_start: datetime, booking_creation_date: datetime
@@ -162,6 +174,10 @@ def format_collective_offer_displayed_status(
     displayed_status: models.CollectiveOfferDisplayedStatus,
 ) -> str:
     return COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS.get(displayed_status) or displayed_status.value
+
+
+def format_collective_additional_fee_type(fee_type: models.CollectiveAdditionalFeeType) -> str:
+    return COLLECTIVE_ADDITIONAL_FEE_TYPE_LABELS.get(fee_type) or fee_type.value
 
 
 def get_educational_year_full_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
