@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -35,26 +36,22 @@ function renderVenueFormActionBar(
 }
 
 describe('VenueFormActionBar', () => {
-  it('should display right message on edition', () => {
+  it('should display the save button', () => {
     renderVenueFormActionBar({})
     expect(screen.getByText('Enregistrer')).toBeInTheDocument()
   })
 
-  it('should display venue cancel link towards settings page', () => {
-    renderVenueFormActionBar({ isSettingsPage: true })
-
-    expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
-      'href',
-      `/parametres`
-    )
+  it('should display the cancel button', () => {
+    renderVenueFormActionBar({})
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
   })
 
-  it('should display venue cancel link towards partner page', () => {
-    renderVenueFormActionBar({ isSettingsPage: false })
+  it('should call onCancel when cancel button is clicked', async () => {
+    const onCancel = vi.fn()
+    renderVenueFormActionBar({ onCancel })
 
-    expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
-      'href',
-      `/partenaire/page-partenaire`
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(onCancel).toHaveBeenCalledOnce()
   })
 })

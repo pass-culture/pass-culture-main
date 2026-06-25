@@ -291,5 +291,17 @@ describe('GeneralInformation', () => {
         expect(api.editVenue).toHaveBeenCalledTimes(1)
       })
     })
+    it('should reset the form when clicking Annuler', async () => {
+      renderGeneralInformation({ id: 1, isOpenToPublic: false })
+
+      await userEvent.click(await screen.findByRole('radio', { name: /Oui/ }))
+
+      await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+      const toggle = screen.getByRole('group', {
+        name: "Disposez-vous d'un lieu ouvert au public ?",
+      })
+      expect(toggle).toHaveTextContent('Non')
+    })
   })
 })

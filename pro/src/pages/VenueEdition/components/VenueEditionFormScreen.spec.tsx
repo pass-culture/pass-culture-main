@@ -258,7 +258,7 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
-    it('should display the route leaving guard when leaving without saving', async () => {
+    it('should not display the route leaving guard when clicking Annuler with unsaved changes', async () => {
       renderForm(baseVenue)
 
       await userEvent.type(screen.getByLabelText('Description'), 'test')
@@ -266,12 +266,12 @@ describe('VenueEditionFormScreen', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Les informations non enregistrées seront perdues')
-        ).toBeInTheDocument()
+          screen.queryByText('Les informations non enregistrées seront perdues')
+        ).not.toBeInTheDocument()
       })
     })
 
-    it('should display the route leaving guard when accessibility was changed', async () => {
+    it('should not display the route leaving guard when clicking Annuler after accessibility change', async () => {
       renderForm(baseVenue)
 
       await userEvent.click(screen.getByRole('checkbox', { name: 'Moteur' }))
@@ -279,8 +279,8 @@ describe('VenueEditionFormScreen', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Les informations non enregistrées seront perdues')
-        ).toBeInTheDocument()
+          screen.queryByText('Les informations non enregistrées seront perdues')
+        ).not.toBeInTheDocument()
       })
     })
 

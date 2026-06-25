@@ -10,6 +10,7 @@ import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/R
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
+import { scrollToTop } from '../GeneralInformation/commons/utils/scrollToTop'
 import { useSave } from './commons/hooks/useSave'
 import {
   type VenueSettingsNotificationsFormValues,
@@ -32,8 +33,15 @@ const Notifications = () => {
     venue: selectedPartnerVenue,
   })
 
-  const onSubmit = (formValues: VenueSettingsNotificationsFormValues) =>
+  const onSubmit = (formValues: VenueSettingsNotificationsFormValues) => {
     save(formValues)
+    scrollToTop()
+  }
+
+  const onCancel = () => {
+    form.reset()
+    scrollToTop()
+  }
 
   const {
     register,
@@ -63,7 +71,7 @@ const Notifications = () => {
             </FormLayout.Row>
           </FormLayout.Section>
         </FormLayout>
-        <VenueFormActionBar isSubmitting={isSubmitting} isSettingsPage />
+        <VenueFormActionBar isSubmitting={isSubmitting} onCancel={onCancel} />
         <RouteLeavingGuardVenueEdition
           shouldBlock={isDirty && !isSubmitting && !isSubmitted}
         />
