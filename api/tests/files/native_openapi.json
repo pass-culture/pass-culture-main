@@ -6470,6 +6470,18 @@
             "PlaylistResponse": {
                 "additionalProperties": false,
                 "properties": {
+                    "fromCache": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Fromcache"
+                    },
                     "params": {
                         "$ref": "#/components/schemas/RecommendationApiParams"
                     },
@@ -6860,6 +6872,18 @@
                         ],
                         "default": null,
                         "title": "Recoorigin"
+                    },
+                    "uniqueCallId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Uniquecallid"
                     }
                 },
                 "title": "RecommendationApiParams",
@@ -7596,6 +7620,18 @@
             "SimilarOffersResponse": {
                 "additionalProperties": false,
                 "properties": {
+                    "fromCache": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Fromcache"
+                    },
                     "params": {
                         "$ref": "#/components/schemas/RecommendationApiParams"
                     },

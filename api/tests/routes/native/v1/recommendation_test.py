@@ -26,6 +26,7 @@ class SimilarOffersTest:
             "modelOrigin": "default",
             "modelVersion": None,
             "recoOrigin": "unknown",
+            "uniqueCallId": None,
         }
         assert response.json["results"]
 
@@ -148,6 +149,32 @@ class SimilarOffersTest:
             assert response.status_code == 502
         assert response.json == {"code": "RECOMMENDATION_API_ERROR"}
 
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_from_cache_field_is_forwarded(self, requests_mock, client):
+        requests_mock.get(
+            "https://example.com/recommendation/similar_offers/2",
+            json={
+                "results": ["10", "20", "30"],
+                "params": {
+                    "reco_origin": "algo",
+                    "model_origin": "default",
+                    "call_id": "1ead08f9-cfb1-4bb2-98ae-86170c36f0a7",
+                    "unique_call_id": "450ab635-e477-407f-bc97-63b892e21810",
+                },
+                "from_cache": True,
+            },
+        )
+
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/similar_offers/2")
+            assert response.status_code == 200
+
+        assert response.json["fromCache"] is True
+        assert response.json["params"]["uniqueCallId"] == "450ab635-e477-407f-bc97-63b892e21810"
+
 
 class PlaylistTest:
     def test_post_recommendation_playlist(self, requests_mock, client):
@@ -166,6 +193,7 @@ class PlaylistTest:
             "modelOrigin": "default",
             "modelVersion": None,
             "recoOrigin": "unknown",
+            "uniqueCallId": None,
         }
         assert response.json["playlistRecommendedOffers"]
 
@@ -241,3 +269,32 @@ class PlaylistTest:
             assert response.status_code == 502
 
         assert response.json == {"code": "RECOMMENDATION_API_ERROR"}
+
+    @pytest.mark.settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_from_cache_field_is_forwarded(self, requests_mock, client, db_session):
+        user = users_factories.UserFactory(id=3)
+        requests_mock.post(
+            "https://example.com/recommendation/playlist_recommendation/3",
+            json={
+                "playlist_recommended_offers": ["10", "20", "30"],
+                "params": {
+                    "reco_origin": "algo",
+                    "model_origin": "default",
+                    "call_id": "1ead08f9-cfb1-4bb2-98ae-86170c36f0a7",
+                    "unique_call_id": "450ab635-e477-407f-bc97-63b892e21810",
+                },
+                "from_cache": True,
+            },
+        )
+
+        client = client.with_token(user)
+        # User authentication
+        with testing.assert_num_queries(1):
+            response = client.post("/native/v1/recommendation/playlist", json={})
+            assert response.status_code == 200
+
+        assert response.json["fromCache"] is True
+        assert response.json["params"]["uniqueCallId"] == "450ab635-e477-407f-bc97-63b892e21810"
