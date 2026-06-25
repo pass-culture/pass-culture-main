@@ -105,7 +105,7 @@ export const OfferHeadlineCard = ({
           size={ButtonSize.SMALL}
           onClick={() => {
             if (isHeadlineOffer) {
-              removeHeadlineOffer()
+              removeHeadlineOffer({ offerId })
               logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
                 offerId,
                 action: 'deleted',

@@ -4,7 +4,10 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type { HeadLineOfferResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_VENUE_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_EXPOSURE_QUERY_KEY,
+  GET_VENUE_HEADLINE_OFFER_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { EngagementEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -19,10 +22,14 @@ type UpsertHeadlineOfferParams = {
   }
 }
 
+type RemoveHeadlineOfferParams = {
+  offerId: number
+}
+
 type HeadlineOfferContextValues = {
   headlineOffer: HeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
-  removeHeadlineOffer: () => Promise<void>
+  removeHeadlineOffer: (params: RemoveHeadlineOfferParams) => Promise<void>
 }
 
 const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
@@ -80,6 +87,8 @@ export function HeadlineOfferContextProvider({
           { populateCache: true, revalidate: false, throwOnError: true }
         )
 
+        await mutate([GET_OFFER_EXPOSURE_QUERY_KEY, offerId])
+
         snackBar.success('Votre offre a été mise à la une !')
         logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           action: context.actionType,
@@ -94,32 +103,37 @@ export function HeadlineOfferContextProvider({
     [selectedPartnerVenue.id, snackBar, logEvent, mutate]
   )
 
-  const removeHeadlineOffer = useCallback(async () => {
-    if (selectedPartnerVenue) {
-      try {
-        await mutate(
-          [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
-          api.deleteHeadlineOffer({
-            body: { venueId: selectedPartnerVenue.id },
-          }),
-          {
-            populateCache: () => null,
-            revalidate: false,
-            throwOnError: true,
-          }
-        )
+  const removeHeadlineOffer = useCallback(
+    async ({ offerId }: RemoveHeadlineOfferParams) => {
+      if (selectedPartnerVenue) {
+        try {
+          await mutate(
+            [GET_VENUE_HEADLINE_OFFER_QUERY_KEY, selectedPartnerVenue.id],
+            api.deleteHeadlineOffer({
+              body: { venueId: selectedPartnerVenue.id },
+            }),
+            {
+              populateCache: () => null,
+              revalidate: false,
+              throwOnError: true,
+            }
+          )
 
-        snackBar.success('Votre offre n’est plus à la une')
-        logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
-          action: 'deleted',
-        })
-      } catch {
-        snackBar.error(
-          'Une erreur s’est produite lors du retrait de votre offre à la une'
-        )
+          await mutate([GET_OFFER_EXPOSURE_QUERY_KEY, offerId])
+
+          snackBar.success('Votre offre n’est plus à la une')
+          logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
+            action: 'deleted',
+          })
+        } catch {
+          snackBar.error(
+            'Une erreur s’est produite lors du retrait de votre offre à la une'
+          )
+        }
       }
-    }
-  }, [selectedPartnerVenue, snackBar, logEvent, mutate])
+    },
+    [selectedPartnerVenue, snackBar, logEvent, mutate]
+  )
 
   return (
     <HeadlineOfferContext.Provider

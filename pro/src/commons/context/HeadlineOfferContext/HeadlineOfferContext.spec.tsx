@@ -93,7 +93,13 @@ const TestComponent = () => {
         >
           {LABELS.controls.upsertHeadlineOffer}
         </button>
-        <button onClick={removeHeadlineOffer}>
+        <button
+          onClick={() =>
+            removeHeadlineOffer({
+              offerId: MOCK_DATA.newHeadlineOffer.id,
+            })
+          }
+        >
           {LABELS.controls.removeHeadlineOffer}
         </button>
       </div>

@@ -9,6 +9,7 @@ const FORMAT_OPTIONS = { locale: fr }
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
 export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
 export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
+export const FORMAT_DD_MM = 'dd/MM'
 export const FORMAT_DD_MMMM_YYYY = 'dd MMMM yyyy'
 export const FORMAT_HH_mm = 'HH:mm'
 

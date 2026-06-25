@@ -19,7 +19,7 @@ export function HeadlineOfferCell({
 
   async function onClick() {
     if (offer.id === headlineOffer?.id) {
-      await removeHeadlineOffer()
+      await removeHeadlineOffer({ offerId: offer.id })
     } else {
       if (offer.thumbUrl) {
         if (headlineOffer?.id) {
