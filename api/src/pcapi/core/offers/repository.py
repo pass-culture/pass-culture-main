@@ -476,6 +476,377 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
     )
 
 
+def get_offer_main_data(offer_id: int) -> sa_orm.Query[models.Offer]:
+    """Critical header data: identity, stocks, artists, video and booking flags.
+
+    Excludes venue/address (-> /offerer), images & SEO metadata (-> /header) and
+    engagement counts (-> sub-routes). Only a minimal ``venue -> managingOfferer``
+    join is kept, required by ``Offer.isReleased``. ``Offer._durationMinutes`` is
+    eagerly loaded to avoid a lazy load on product-less offers.
+    """
+    return (
+        db.session.query(models.Offer)
+        .options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer.ean,
+                models.Offer._extraData,
+                models.Offer._durationMinutes,
+                models.Offer.subcategoryId,
+                models.Offer.url,
+                models.Offer.validation,  # required by Offer.isPublished (-> isReleased)
+                models.Offer.publicationDatetime,
+                models.Offer.bookingAllowedDatetime,
+                models.Offer.lastProviderId,
+                models.Offer.isDuo,
+                models.Offer.externalTicketOfficeUrl,
+                models.Offer.productId,
+                models.Offer.venueId,
+            )
+        )
+        .options(
+            sa_orm.selectinload(models.Offer.stocks)
+            .load_only(
+                models.Stock.idAtProviders,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.features,
+                models.Stock.price,
+                models.Stock.offerId,
+                models.Stock.isSoftDeleted,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+            )
+            .joinedload(models.Stock.priceCategory)
+            .joinedload(models.PriceCategory.priceCategoryLabel)
+        )
+        # minimal venue -> offerer, only for Offer.isReleased
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .load_only(offerers_models.Venue.id)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.validationStatus,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product).load_only(
+                models.Product.id,
+                models.Product.extraData,
+                models.Product.last_30_days_booking,
+                models.Product.durationMinutes,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product)
+            .selectinload(models.Product.artistLinks)
+            .joinedload(artist_models.ArtistProductLink.artist)
+        )
+        .options(sa_orm.joinedload(models.Offer.artistOfferLinks).joinedload(artist_models.ArtistOfferLink.artist))
+        .options(sa_orm.joinedload(models.Offer.headlineOffers))
+        .options(sa_orm.joinedload(models.Offer.metaData))
+        .outerjoin(models.Offer.lastProvider)
+        .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
+        .filter(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+    )
+
+
+def get_offer_header(offer_id: int) -> sa_orm.Query[models.Offer]:
+    return (
+        db.session.query(models.Offer)
+        .options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer._extraData,
+                models.Offer._description,
+                models.Offer.ean,
+                models.Offer.url,
+                models.Offer.subcategoryId,
+                models.Offer.validation,
+                models.Offer.publicationDatetime,
+                models.Offer.productId,
+                models.Offer.venueId,
+                models.Offer.offererAddressId,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.mediations).load_only(
+                models.Mediation.isActive,
+                models.Mediation.dateCreated,
+                models.Mediation.thumbCount,
+                models.Mediation.credit,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product)
+            .load_only(
+                models.Product.id,
+                models.Product.likesCount,
+                models.Product.thumbCount,
+                models.Product.description,
+                models.Product.extraData,  # accessed by get_metadata_from_offer via offer.extraData
+            )
+            .joinedload(models.Product.productMediations)
+            .load_only(
+                models.ProductMediation.imageType,
+                models.ProductMediation.uuid,
+            )
+        )
+        # stocks needed by get_metadata_from_offer: min_price, hasStocks, metadataFirstBeginningDatetime
+        .options(
+            sa_orm.selectinload(models.Offer.stocks).load_only(
+                models.Stock.offerId,
+                models.Stock.price,
+                models.Stock.isSoftDeleted,
+                models.Stock.beginningDatetime,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+                models.Stock.bookingLimitDatetime,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .load_only(offerers_models.Venue.id, offerers_models.Venue.name)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
+        )
+        # needed by Offer.isReleased, called via stock.isBookable in is_forbidden_to_underage
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.validationStatus,
+            )
+        )
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
+        .filter(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+    )
+
+
+def get_offer_offerer(offer_id: int) -> sa_orm.Query[models.Offer]:
+    return (
+        db.session.query(models.Offer)
+        .options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer._description,
+                models.Offer.withdrawalDetails,
+                models.Offer.audioDisabilityCompliant,
+                models.Offer.mentalDisabilityCompliant,
+                models.Offer.motorDisabilityCompliant,
+                models.Offer.visualDisabilityCompliant,
+                models.Offer.validation,
+                models.Offer.publicationDatetime,
+                models.Offer.productId,
+                models.Offer.venueId,
+                models.Offer.offererAddressId,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.isPermanent,
+                offerers_models.Venue.isOpenToPublic,
+                offerers_models.Venue._bannerUrl,
+                offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.isSoftDeleted,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.name)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.googlePlacesInfo)
+            .load_only(offerers_models.GooglePlacesInfo.bannerUrl)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
+        )
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
+        .options(
+            sa_orm.joinedload(models.Offer.product).load_only(
+                models.Product.id,
+                models.Product.description,
+            )
+        )
+        .filter(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+    )
+
+
+def get_offer_chronicles_data(
+    offer_id: int,
+    page: int,
+    limit: int,
+) -> tuple[list[chronicles_models.Chronicle], int] | None:
+    """Returns None when the offer does not exist or is not published."""
+    row = db.session.execute(
+        sa.select(models.Offer.productId, models.Product.chroniclesCount)
+        .outerjoin(models.Offer.product)
+        .where(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+    ).one_or_none()
+
+    if row is None:
+        return None
+
+    product_id, chronicles_count = row
+    offset = (page - 1) * limit
+
+    if product_id:
+        chronicles_query = (
+            db.session.query(chronicles_models.Chronicle)
+            .join(chronicles_models.Chronicle.products)
+            .filter(
+                models.Product.id == product_id,
+                chronicles_models.Chronicle.isPublished,
+            )
+            .order_by(chronicles_models.Chronicle.id.desc())
+        )
+        total = chronicles_count if chronicles_count is not None else chronicles_query.count()
+    else:
+        chronicles_query = (
+            db.session.query(chronicles_models.Chronicle)
+            .join(chronicles_models.Chronicle.offers)
+            .filter(
+                models.Offer.id == offer_id,
+                chronicles_models.Chronicle.isPublished,
+            )
+            .order_by(chronicles_models.Chronicle.id.desc())
+        )
+        total = chronicles_query.count()
+
+    return chronicles_query.offset(offset).limit(limit).all(), total
+
+
+def get_offer_pro_advices_data(
+    offer_id: int,
+    latitude: float | None,
+    longitude: float | None,
+    page: int,
+    limit: int,
+    max_content_length: int | None = None,
+) -> tuple[list[tuple[models.ProAdvice, int | None]], int] | None:
+    """Returns None when the offer does not exist or is not published."""
+    row = db.session.execute(
+        sa.select(models.Offer.productId, models.Product.proAdvicesCount)
+        .outerjoin(models.Offer.product)
+        .where(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+    ).one_or_none()
+
+    if row is None:
+        return None
+
+    product_id, pro_advices_count = row
+    offset = (page - 1) * limit
+
+    results = get_pro_advices(
+        offer_id=offer_id,
+        product_id=product_id,
+        latitude=latitude,
+        longitude=longitude,
+        offset=offset,
+        limit=limit,
+    )
+
+    if product_id:
+        if pro_advices_count is not None:
+            total = pro_advices_count
+        elif len(results) >= limit:
+            total = get_product_pro_advices_count(product_id)
+        else:
+            total = offset + len(results)
+    else:
+        total = offset + len(results)
+
+    return results, total
+
+
+def get_offer_stocks_data(
+    offer_id: int,
+    page: int,
+    limit: int,
+) -> tuple[list[models.Stock], int] | None:
+    """Returns None when the offer does not exist or is not published."""
+    row = db.session.execute(
+        sa.select(
+            models.Offer.id,
+            sa.func.count(models.Stock.id).filter(~models.Stock.isSoftDeleted).label("total"),
+        )
+        .outerjoin(models.Offer.stocks)
+        .where(
+            models.Offer.id == offer_id,
+            models.Offer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            models.Offer.isPublished,
+        )
+        .group_by(models.Offer.id)
+    ).one_or_none()
+
+    if row is None:
+        return None
+
+    _, total = row
+    offset = (page - 1) * limit
+
+    stocks = (
+        db.session.query(models.Stock)
+        .filter(
+            models.Stock.offerId == offer_id,
+            ~models.Stock.isSoftDeleted,
+        )
+        .options(sa_orm.joinedload(models.Stock.priceCategory).joinedload(models.PriceCategory.priceCategoryLabel))
+        .options(
+            sa_orm.joinedload(models.Stock.offer)
+            .load_only(
+                models.Offer.url,
+                models.Offer.subcategoryId,
+                models.Offer.validation,
+                models.Offer.publicationDatetime,
+            )
+            .joinedload(models.Offer.venue)
+            .load_only(offerers_models.Venue.id)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.validationStatus,
+            )
+        )
+        .order_by(models.Stock.beginningDatetime.asc().nullsfirst(), models.Stock.id.asc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return stocks, total
+
+
 def get_nearby_bookable_screenings_from_product(
     product: models.Product,
     latitude: float,
