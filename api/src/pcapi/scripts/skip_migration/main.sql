@@ -1,0 +1,1 @@
+UPDATE alembic_version SET version_num='7771fd024d45' WHERE version_num='c2749cc29973';
