@@ -55,7 +55,11 @@ export const CollectiveOfferInformationForm = ({
         ? offer.bookingEmails?.map((email) => ({ email }))
         : [{ email: selectedPartnerVenue.collectiveEmail ?? '' }],
     contactEmail: offer.contactEmail ?? selectedPartnerVenue.collectiveEmail,
-    contactPhone: offer.contactPhone ?? selectedPartnerVenue.collectivePhone,
+    contactPhone:
+      offer.contactPhone ??
+      // We use contactEmail (which is required) to know if we already saved
+      // the phone as empty or if it's the first time we see this form
+      (offer.contactEmail ? '' : selectedPartnerVenue.collectivePhone),
     additionalDetails: offer.additionalDetails ?? '',
   }
 
@@ -69,11 +73,34 @@ export const CollectiveOfferInformationForm = ({
   })
 
   const onSubmit = async (formValues: CollectiveOfferInformationFormValues) => {
+    const dirtyFields = form.formState.dirtyFields
     const partialOffer = objectFromEntries(
-      objectEntries(form.formState.dirtyFields)
+      objectEntries(dirtyFields)
         .filter(([_, isDirty]) => isDirty)
         .map(([key, _]) => [key, formValues[key]])
     )
+
+    // We ensure that fields initialized with venue are saved if not dirty
+    if (
+      !dirtyFields.bookingEmails &&
+      (offer.bookingEmails.length === 0 ||
+        // dirtyFields mecanism  doesn't seem to work when we only remove an email from the list
+        formValues.bookingEmails?.length !== offer.bookingEmails.length)
+    ) {
+      partialOffer.bookingEmails = formValues.bookingEmails
+    }
+    if (
+      !dirtyFields.contactEmail &&
+      offer.contactEmail !== formValues.contactEmail
+    ) {
+      partialOffer.contactEmail = formValues.contactEmail
+    }
+    if (
+      !dirtyFields.contactPhone &&
+      offer.contactPhone !== formValues.contactPhone
+    ) {
+      partialOffer.contactPhone = formValues.contactPhone
+    }
 
     if ('bookingEmails' in partialOffer) {
       partialOffer.bookingEmails = partialOffer.bookingEmails.map(
@@ -100,7 +127,7 @@ export const CollectiveOfferInformationForm = ({
           {fields.map((field, index) => (
             <FormLayout.Row key={field.id}>
               <TextInput
-                {...form.register(`bookingEmails.${index}.email`)}
+                {...form.register(`bookingEmails.${index}.email` as const)}
                 description="Format : email@exemple.com"
                 disabled={!canEditDetails}
                 error={
