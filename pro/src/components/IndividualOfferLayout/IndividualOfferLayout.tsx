@@ -66,6 +66,10 @@ export const IndividualOfferLayout = ({
   const snackBar = useSnackBar()
   const navigate = useNavigate()
 
+  const shouldDisplayOfferName = isOfferExposureEnabled
+    ? mode === OFFER_WIZARD_MODE.CREATION
+    : mode !== OFFER_WIZARD_MODE.READ_ONLY
+
   const onDeleteOfferWithAlreadyExistingEan = async () => {
     if (!offer) {
       return
@@ -100,7 +104,7 @@ export const IndividualOfferLayout = ({
             </span>
           ))}
       </div>
-      {offer && mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+      {offer && shouldDisplayOfferName && (
         <p className={styles['offer-title']}>{offer.name}</p>
       )}
       {offer && <OfferStatusBanner status={offer.status} />}
