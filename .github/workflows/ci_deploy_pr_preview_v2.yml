@@ -20,8 +20,8 @@ on:
         required: false
         default: ""
         type: string
-      front-only:
-        description: "Deploy only frontend (skip API deploy)"
+      with_forced_backend_deployment:
+        description: "Force Backend deployment even without api/ change"
         required: false
         default: false
         type: boolean
@@ -44,11 +44,14 @@ jobs:
       backend_url: ${{ steps.compute-labels.outputs.backend_url }}
       backoffice_url: ${{ steps.compute-labels.outputs.backoffice_url }}
       commit_sha: ${{ steps.checkout.outputs.commit }}
+      with_backend_deployment: ${{ steps.compute-labels.outputs.with_backend_deployment }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         id: checkout
         with:
+          fetch-depth: 0
           fetch-tags: false
           ref: ${{ inputs.source_branch }}
           persist-credentials: false
@@ -56,8 +59,8 @@ jobs:
       - name: Compute preview environment identifiers
         id: compute-labels
         env:
-          FRONT_ONLY: ${{ inputs.front-only }}
           SOURCE_BRANCH: ${{ inputs.source_branch }}
+          WITH_FORCED_BACKEND_DEPLOYMENT: ${{ inputs.with_forced_backend_deployment }}
         run: |
           PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
           echo "preview_id=${PREVIEW_ID}" | tee -a "$GITHUB_OUTPUT"
@@ -67,10 +70,13 @@ jobs:
 
           echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           echo "backoffice_url=${backoffice_url}" | tee -a "$GITHUB_OUTPUT"
-        
-          if [ "${FRONT_ONLY}" == "true" ]; then
+
+          git fetch --no-tags origin master
+          if [ "${WITH_FORCED_BACKEND_DEPLOYMENT}" != "true" ] && git diff --quiet FETCH_HEAD...HEAD -- api/; then
+            echo "with_backend_deployment=false" | tee -a "$GITHUB_OUTPUT"
             echo "backend_url_for_pro=https://backend.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
           else
+            echo "with_backend_deployment=true" | tee -a "$GITHUB_OUTPUT"
             echo "backend_url_for_pro=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           fi
 
@@ -91,7 +97,7 @@ jobs:
     name: Build pcapi docker image
     needs:
       - deploy-preview-env-init
-    if: inputs.front-only == false
+    if: needs.deploy-preview-env-init.outputs.with_backend_deployment == 'true'
     uses: ./.github/workflows/docker_build_image.yml
     with:
       image: pcapi
@@ -102,7 +108,7 @@ jobs:
     needs:
       - deploy-preview-env-init
       - build-pcapi
-    if: inputs.front-only == false
+    if: needs.deploy-preview-env-init.outputs.with_backend_deployment == 'true'
     uses: ./.github/workflows/docker_push_image_passdirector.yml
     with:
       image: pcapi
@@ -126,7 +132,7 @@ jobs:
       - deploy-preview-env-init
       - push-pcapi
       - deploy-pro-on-firebase-preview-env
-    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    if: always() && !failure() && !cancelled() && needs.deploy-preview-env-init.outputs.with_backend_deployment == 'true'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -206,7 +212,7 @@ jobs:
     needs:
       - deploy-preview-env-init
       - deploy-api
-    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    if: always() && !failure() && !cancelled() && needs.deploy-preview-env-init.outputs.with_backend_deployment == 'true'
     strategy:
       fail-fast: false
       matrix:
