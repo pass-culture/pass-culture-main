@@ -72,7 +72,7 @@ dependencies = [
   "requests==2.34.2",
   "schwifty ==2026.3.0",
   "semver ==3.0.4",
-  "sentry-sdk[flask,celery]==2.62.0",
+  "sentry-sdk[flask,celery]==2.63.0",
   "shapely ==2.1.2",
   "slack-sdk==3.42.0",
   "spectree ==1.5.8",
