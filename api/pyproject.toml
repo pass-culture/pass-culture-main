@@ -77,7 +77,7 @@ dependencies = [
   "slack-sdk==3.42.0",
   "spectree ==1.5.8",
   "sqlalchemy-easy-softdelete @ git+https://github.com/pass-culture/sqlalchemy-easy-softdelete.git",
-  "sqlalchemy[mypy]==2.0.50",
+  "sqlalchemy[mypy]==2.0.51",
   "time-machine ==3.2.0",
   "transitions ==0.9.3",
   "urllib3 ==2.7.0",
