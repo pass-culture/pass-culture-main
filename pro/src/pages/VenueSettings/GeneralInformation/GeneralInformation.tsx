@@ -31,6 +31,7 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from './commons/types'
+import { scrollToTop } from './commons/utils/scrollToTop'
 import { toFormValues } from './commons/utils/toFormValues'
 import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
 
@@ -59,8 +60,15 @@ const GeneralInformation = () => {
 
   const { saveAndContinue } = useSaveVenueSettings({ form, venue })
 
-  const onSubmit = (formValues: VenueSettingsFormValues) =>
+  const onSubmit = (formValues: VenueSettingsFormValues) => {
     saveAndContinue(formValues, formContext)
+    scrollToTop()
+  }
+
+  const onCancel = () => {
+    form.reset()
+    scrollToTop()
+  }
 
   const {
     register,
@@ -201,7 +209,7 @@ const GeneralInformation = () => {
               />
             )}
           </FormLayout>
-          <VenueFormActionBar isSubmitting={isSubmitting} isSettingsPage />
+          <VenueFormActionBar isSubmitting={isSubmitting} onCancel={onCancel} />
           <RouteLeavingGuardVenueEdition
             shouldBlock={isDirty && !isSubmitting && !isSubmitted}
           />

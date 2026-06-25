@@ -9,6 +9,8 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import { scrollToTop } from '../GeneralInformation/commons/utils/scrollToTop'
+import { useSave } from './commons/hooks/useSave'
 import { Component as Notifications } from './Notifications'
 
 vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
@@ -17,6 +19,13 @@ vi.mock('@/commons/hooks/useSyncVenueCache', () => ({
 
 vi.mock('@/apiClient/api', () => ({
   api: { editVenue: vi.fn(), getVenue: vi.fn() },
+}))
+
+vi.mock('./commons/hooks/useSave', () => ({
+  useSave: vi.fn(() => ({ save: vi.fn() })),
+}))
+vi.mock('../GeneralInformation/commons/utils/scrollToTop', () => ({
+  scrollToTop: vi.fn(),
 }))
 
 const renderNotifications = (
@@ -55,6 +64,24 @@ describe('Notifications', () => {
     ).toBeInTheDocument()
   })
 
+  it('should call useSave and scrollToTop on save', async () => {
+    const saveMock = vi.fn()
+    const scrollToTopMock = vi.fn()
+
+    vi.mocked(useSave).mockReturnValue({ save: saveMock })
+    vi.mocked(scrollToTop).mockImplementation(scrollToTopMock)
+
+    renderNotifications()
+
+    const emailField = await screen.findByLabelText('Adresse email')
+    await userEvent.clear(emailField)
+    await userEvent.type(emailField, 'new@test.com')
+    await userEvent.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(saveMock).toHaveBeenCalledTimes(1)
+    expect(scrollToTopMock).toHaveBeenCalledTimes(1)
+  })
+
   it('should update the email field when the user types', async () => {
     renderNotifications({ bookingEmail: '' })
 
@@ -62,5 +89,17 @@ describe('Notifications', () => {
     await userEvent.type(emailField, 'new@test.com')
 
     expect(emailField).toHaveValue('new@test.com')
+  })
+
+  it('should reset the form when clicking Annuler', async () => {
+    renderNotifications({ bookingEmail: 'initial@test.com' })
+
+    const emailField = await screen.findByLabelText('Adresse email')
+    await userEvent.clear(emailField)
+    await userEvent.type(emailField, 'changed@test.com')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(emailField).toHaveValue('initial@test.com')
   })
 })

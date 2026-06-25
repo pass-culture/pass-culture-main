@@ -25,6 +25,7 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { WithdrawalDetails } from '@/pages/VenueEdition/components/WithdrawalDetails/WithdrawalDetails'
+import { scrollToTop } from '@/pages/VenueSettings/GeneralInformation/commons/utils/scrollToTop'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -58,6 +59,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   })
 
   const hasDirtyFields = Object.keys(methods.formState.dirtyFields).length > 0
+
+  const onCancel = () => {
+    methods.reset()
+    scrollToTop()
+  }
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
@@ -290,7 +296,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
           </FormLayout.Section>
         </FormLayout>
 
-        <VenueFormActionBar isSubmitting={methods.formState.isSubmitting} />
+        <VenueFormActionBar
+          isSubmitting={methods.formState.isSubmitting}
+          onCancel={onCancel}
+        />
         <RouteLeavingGuardVenueEdition
           shouldBlock={hasDirtyFields && !methods.formState.isSubmitting}
         />
