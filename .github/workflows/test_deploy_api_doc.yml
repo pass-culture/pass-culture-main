@@ -1,0 +1,21 @@
+name: "9 [test] deploy api-doc"
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+
+jobs:
+  deploy-api-doc-on-firebase:
+    name: "Deploy api doc on firebase"
+    uses: ./.github/workflows/cd_sub_deploy_api_doc.yml
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      environment: testing
+
