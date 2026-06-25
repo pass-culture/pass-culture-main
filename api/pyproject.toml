@@ -10,7 +10,7 @@ requires-python = ">=3.13,<3.14"
 
 dependencies = [
   "alembic ==1.18.4",
-  "algoliasearch==4.41.1",
+  "algoliasearch==4.44.0",
   "authlib==1.7.2",
   "babel ==2.18.0",
   "bcrypt ==5.0.0",
