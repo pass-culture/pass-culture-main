@@ -24,6 +24,7 @@ class SimilarOffersRequestQuery(HttpBodyModel):
 class RecommendationApiParams(HttpBodyModel):
     ab_test: str | None = None
     call_id: str | None = None
+    unique_call_id: str | None = None
     filtered: bool | None = None
     geo_located: bool | None = None
     model_endpoint: str | None = None
@@ -36,6 +37,7 @@ class RecommendationApiParams(HttpBodyModel):
 class SimilarOffersResponse(HttpBodyModel):
     results: list[str] = Field(default_factory=list)
     params: RecommendationApiParams
+    from_cache: bool | None = None
 
 
 class PlaylistRequestQuery(HttpBodyModel):
@@ -60,3 +62,4 @@ class PlaylistRequestBody(HttpBodyModel):
 class PlaylistResponse(HttpBodyModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
+    from_cache: bool | None = None

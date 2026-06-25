@@ -26,6 +26,7 @@ class SimilarOffersTest:
             "modelOrigin": "default",
             "modelVersion": None,
             "recoOrigin": "unknown",
+            "uniqueCallId": None,
         }
         assert response.json["results"]
 
@@ -166,6 +167,7 @@ class PlaylistTest:
             "modelOrigin": "default",
             "modelVersion": None,
             "recoOrigin": "unknown",
+            "uniqueCallId": None,
         }
         assert response.json["playlistRecommendedOffers"]
 
