@@ -46,8 +46,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> sche
         numberOfTeachers=stock.numberOfTeachers,
         participants=collective_offer.students,
         price=stock.price,
-        # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
-        servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+        servicePrice=stock.servicePrice,
         additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
         priceDetail=stock.priceDetail,
         quantity=1,

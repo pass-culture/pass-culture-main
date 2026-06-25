@@ -1253,11 +1253,11 @@ class CollectiveStock(PcObject, models.Model):
         index=True,
         nullable=False,
     )
-    # TODO (jcicurel-pass, 2026-05-22): set servicePrice nullable=False when the column is filled and the APIs are updated + add the constraint
-    servicePrice: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
+    # TODO (jcicurel-pass, 2026-05-22): add the constraint
+    servicePrice: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2),
         # sa.CheckConstraint("servicePrice >= 0", name="check_service_price_is_not_negative"),
-        nullable=True,
+        nullable=False,
     )
 
     bookingLimitDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
