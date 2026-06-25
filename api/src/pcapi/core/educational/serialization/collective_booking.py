@@ -29,8 +29,7 @@ def get_collective_bookings_per_year_response(
                 numberOfTeachers=stock.numberOfTeachers,
                 totalAmount=stock.price,
                 price=stock.price,
-                # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
-                servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+                servicePrice=stock.servicePrice,
                 additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
                 startDatetime=stock.startDatetime,
                 endDatetime=stock.endDatetime,
@@ -92,8 +91,7 @@ def serialize_collective_booking(
         participants=[student.value for student in offer.students],
         priceDetail=stock.priceDetail,
         price=stock.price,
-        # TODO (jcicurel-pass, 2026-06-01): remove fallback when servicePrice is not nullable
-        servicePrice=stock.servicePrice if stock.servicePrice is not None else stock.price,
+        servicePrice=stock.servicePrice,
         additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
         quantity=1,
         redactor=schemas.Redactor(

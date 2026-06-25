@@ -376,13 +376,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     def build(cls, offer: CollectiveOffer) -> typing.Self:
         location = get_collective_offer_location_from_offer(offer)
 
-        # TODO (jcicurel-pass, 2026-06-19): remove fallback when servicePrice is not nullable
-        service_price = (
-            offer.collectiveStock.servicePrice
-            if offer.collectiveStock.servicePrice is not None
-            else offer.collectiveStock.price
-        )
-
         additional_fees = [
             GetCollectiveAdditionalFeeResponseModel.from_orm(fee)
             for fee in offer.collectiveStock.collectiveAdditionalFees
@@ -419,7 +412,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             bookingLimitDatetime=offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
             totalPrice=offer.collectiveStock.price,
             price=offer.collectiveStock.price,
-            servicePrice=service_price,
+            servicePrice=offer.collectiveStock.servicePrice,
             additionalFees=additional_fees,
             numberOfTickets=offer.collectiveStock.numberOfTickets,
             numberOfTeachers=offer.collectiveStock.numberOfTeachers,
