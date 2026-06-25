@@ -236,6 +236,6 @@ jobs:
         run: |
           passdirector pcapi get-version \
             --url "${SERVICE_URL}" \
-            --retries 40 \
+            --retries 60 \
             --retry-interval 30 \
             --timeout 60
