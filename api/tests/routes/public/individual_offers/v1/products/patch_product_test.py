@@ -637,3 +637,28 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200, response.json
 
         assert offer.externalTicketOfficeUrl == "https://bloup.com"
+
+    def test_update_location_at_venue_location_as_physical(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = offer.venue
+
+        response = self.make_request(
+            plain_api_key,
+            json_body={
+                "offerId": offer.id,
+                "location": {
+                    "type": "address",
+                    "venue_id": venue.id,
+                    "address_id": venue.offererAddress.addressId,
+                    "address_label": venue.publicName,
+                },
+            },
+        )
+        assert response.status_code == 200, response.json
+
+        assert offer.venueId == venue.id
+        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert offer.offererAddress.id != venue.offererAddress.id
+        assert offer.offererAddress.addressId == venue.offererAddress.addressId
+        assert offer.offererAddress.label is None
