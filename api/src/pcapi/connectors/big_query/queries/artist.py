@@ -48,7 +48,7 @@ class ArtistDeltaQuery(BaseQuery):
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
         ORDER BY
-        CASE action
+        CASE CAST(action AS STRING)
             WHEN 'remove' THEN 1
             WHEN 'add'    THEN 2
             WHEN 'update' THEN 3
@@ -78,7 +78,7 @@ class ArtistProductLinkDeltaQuery(BaseQuery):
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.product_artist_link_delta`
         ORDER BY
-            CASE action
+            CASE CAST(action AS STRING)
             WHEN 'remove' THEN 1
             WHEN 'add'    THEN 2
         END,
