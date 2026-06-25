@@ -511,6 +511,26 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
         assert created_offer.offererAddress == offerer_address
 
+    def test_event_with_full_address_at_venue_location(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        payload = self._get_base_payload(venue_provider.venueId)
+        venue = venue_provider.venue
+        payload["location"] = {
+            "type": "address",
+            "venueId": venue.id,
+            "addressId": venue.offererAddress.addressId,
+            "addressLabel": venue.publicName,
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
+
+        assert response.status_code == 200
+        assert response.json["location"] == {"type": "physical", "venueId": venue.id}
+        updated_offer = db.session.query(offers_models.Offer).one()
+        assert updated_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert updated_offer.offererAddressId != updated_offer.venue.offererAddress.id
+        assert updated_offer.offererAddress.addressId == updated_offer.venue.offererAddress.addressId
+        assert updated_offer.offererAddress.label is None
+
     def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
