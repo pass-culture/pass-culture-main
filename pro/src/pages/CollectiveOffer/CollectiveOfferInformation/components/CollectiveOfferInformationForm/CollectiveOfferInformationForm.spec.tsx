@@ -99,11 +99,12 @@ describe('<CollectiveOfferInformationForm />', () => {
 
   it('should remove notification mail input when trash icon is clicked', async () => {
     const user = userEvent.setup()
+    const saveAndContinue = vi.fn()
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
       bookingEmails: ['test1@example.com', 'test2@example.com'],
     })
-    renderCollectiveOfferInformationForm({ offer })
+    renderCollectiveOfferInformationForm({ offer, saveAndContinue })
 
     expect(
       screen.getAllByLabelText('Email auquel envoyer les notifications*')
@@ -115,16 +116,25 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(
       screen.getAllByLabelText('Email auquel envoyer les notifications*')
     ).toHaveLength(1)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({
+      bookingEmails: ['test1@example.com'],
+    })
   })
 
-  it('should use the selectedVenue for to initialize fields when they are empty in offer', () => {
+  it('should use the selectedVenue to initialize fields when they are empty in offer', async () => {
+    const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
       contactEmail: null,
       bookingEmails: [],
       contactPhone: null,
     })
+    const saveAndContinue = vi.fn()
     renderCollectiveOfferInformationForm(
-      { offer },
+      { offer, saveAndContinue },
       { collectiveEmail: 'contact@venue.com', collectivePhone: '+33123456789' }
     )
 
@@ -133,6 +143,39 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(
       screen.getByLabelText('Email auquel envoyer les notifications*')
     ).toHaveValue('contact@venue.com')
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({
+      contactEmail: 'contact@venue.com',
+      bookingEmails: ['contact@venue.com'],
+      contactPhone: '+33123456789',
+    })
+  })
+
+  it('should not use the selectedVenue to initialize phone when it has previously been saved as empty', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+      contactEmail: 'email@test.com',
+      bookingEmails: ['email@test.com'],
+      contactPhone: '',
+    })
+    const saveAndContinue = vi.fn()
+    renderCollectiveOfferInformationForm(
+      { offer, saveAndContinue },
+      { collectiveEmail: 'contact@venue.com', collectivePhone: '+33123456789' }
+    )
+
+    expect(screen.getByLabelText(/téléphone/)).toHaveValue('')
+    expect(screen.getByLabelText('Email*')).toHaveValue('email@test.com')
+    expect(
+      screen.getByLabelText('Email auquel envoyer les notifications*')
+    ).toHaveValue('email@test.com')
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({})
   })
 
   it('should disable submission when CAN_EDIT_DETAILS is not among the allowed actions', () => {
