@@ -168,12 +168,19 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
     if body.location.type == "address":
         address = public_utils.get_address_or_raise_404(body.location.address_id)
-        offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=address.id,
-            label=body.location.address_label,
-        )
+        # "merge" the location with the one from the venue if both match
+        if address.id == venue.offererAddress.addressId and body.location.address_label == venue.publicName:
+            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+                offerers_schemas.LocationOnlyOnVenueModel(),
+                venue,
+            )
+        else:
+            offerer_address = offerers_api.get_or_create_offer_location(
+                offerer_id=venue.managingOffererId,
+                venue_id=venue.id,
+                address_id=address.id,
+                label=body.location.address_label,
+            )
     else:
         offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
             offerers_schemas.LocationOnlyOnVenueModel(),
