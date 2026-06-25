@@ -31,7 +31,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.backoffice.filters import format_collective_offer_displayed_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -745,7 +744,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert int(rows[0]["ID"]) == offer.id
-            assert rows[0]["Statut"] == format_collective_offer_displayed_status(status)
+            assert rows[0]["Statut"] == educational_utils.format_collective_offer_displayed_status(status)
 
     def test_list_collective_offers_status_not_in(self, authenticated_client):
         offer_by_status = {}
@@ -2012,7 +2011,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert descriptions["Description"] == "My super offer description"
         # finance
         assert descriptions["Tarif de la prestation"] == "100,00 €"
-        assert descriptions["Frais annexes"] == "Déplacement de l’intervenant : 50,00 €"
+        assert descriptions["Frais annexes"] == "Déplacement de l'intervenant•e : 50,00 €"
         assert descriptions["Prix total"] == "150,00 € (6,00 € par participant)"
         assert descriptions["Informations pratiques"] == "C'est une bonne situation ça, offre collective ?"
         assert descriptions["Statut de la réservation"] == "Confirmée"

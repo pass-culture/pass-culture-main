@@ -150,7 +150,7 @@
               {% if additional_fee.label %}
                 {{ additional_fee.label }} :
               {% else %}
-                {{ additional_fee.type | format_additional_fee_type }} :
+                {{ additional_fee.type | format_collective_additional_fee_type }} :
               {% endif %}
               {{ additional_fee.amount | format_amount }}
             </div>

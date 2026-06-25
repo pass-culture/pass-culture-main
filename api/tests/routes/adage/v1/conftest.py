@@ -1,5 +1,6 @@
 from pcapi.core.educational import models
 from pcapi.core.educational.serialization.collective_booking import _get_educational_offer_accessibility
+from pcapi.core.educational.utils import format_collective_additional_fee_type
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
@@ -36,7 +37,8 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "price": float(stock.price),
         "servicePrice": float(stock.servicePrice),
         "additionalFees": [
-            {"label": fee.label or fee.type.value, "amount": fee.amount} for fee in stock.collectiveAdditionalFees
+            {"label": fee.label or format_collective_additional_fee_type(fee.type), "amount": fee.amount}
+            for fee in stock.collectiveAdditionalFees
         ],
         "quantity": 1,
         "redactor": {

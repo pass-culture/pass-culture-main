@@ -28,7 +28,7 @@ from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.cultural_outreach import models as cultural_outreach_models
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.utils import format_collective_offer_displayed_status
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
@@ -2227,25 +2227,6 @@ def format_postal_code_to_departement_code(postal_code: str | int) -> str:
     return postal_code_utils.PostalCode(str(postal_code)).get_departement_code()
 
 
-def format_additional_fee_type(fee_type: educational_models.CollectiveAdditionalFeeType) -> str:
-    match fee_type:
-        case educational_models.CollectiveAdditionalFeeType.ACCOMMODATION:
-            return "Hébergement de l’intervenant"
-        case educational_models.CollectiveAdditionalFeeType.TRAVEL:
-            return "Déplacement de l’intervenant"
-        case educational_models.CollectiveAdditionalFeeType.MEAL:
-            return "Repas de l’intervenant"
-        case educational_models.CollectiveAdditionalFeeType.CONSUMABLE_ITEMS:
-            return "Matériel consommable"
-        case educational_models.CollectiveAdditionalFeeType.COPYRIGHT:
-            return "Droits d’auteur / de diffusion"
-        case educational_models.CollectiveAdditionalFeeType.APPLICATION_FEE:
-            return "Frais de dossier / de gestion"
-        case _:
-            return "Autre"
-    return fee_type.value
-
-
 # Keep consistency with pro/src/commons/mappings/DisplayableActivity.ts
 ACTIVITY_MAPPING = {
     offerers_models.Activity.ART_GALLERY: "Galerie d’art",
@@ -2329,7 +2310,12 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_withdrawal_type"] = format_withdrawal_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
-    app.jinja_env.filters["format_collective_offer_displayed_status"] = format_collective_offer_displayed_status
+    app.jinja_env.filters["format_collective_offer_displayed_status"] = (
+        educational_utils.format_collective_offer_displayed_status
+    )
+    app.jinja_env.filters["format_collective_additional_fee_type"] = (
+        educational_utils.format_collective_additional_fee_type
+    )
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
     app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
@@ -2425,4 +2411,3 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_postal_code_to_departement_code"] = format_postal_code_to_departement_code
     app.jinja_env.filters["format_time"] = format_time
     app.jinja_env.filters["format_cultural_outreach_status"] = format_cultural_outreach_status
-    app.jinja_env.filters["format_additional_fee_type"] = format_additional_fee_type

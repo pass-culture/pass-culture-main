@@ -8,6 +8,7 @@ from pydantic.v1.fields import Field
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
+from pcapi.core.educational.utils import format_collective_additional_fee_type
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -69,10 +70,9 @@ class AdditionalFeeResponse(AdageBaseResponseModel):
 
     @classmethod
     def build(cls, fee: models.CollectiveAdditionalFee) -> typing.Self:
-        return cls(
-            label=fee.label or fee.type.value,
-            amount=fee.amount,
-        )
+        label = fee.label if fee.label else format_collective_additional_fee_type(fee.type)
+
+        return cls(label=label, amount=fee.amount)
 
 
 class EducationalBookingResponse(AdageBaseResponseModel):
