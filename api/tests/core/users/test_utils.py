@@ -1,65 +1,6 @@
-import datetime
-
-import jwt
 import pytest
 
-from pcapi import settings
 from pcapi.core.users.utils import format_login_location
-from pcapi.utils import date as date_utils
-from pcapi.utils.jwt import ALGORITHM_HS_256
-from pcapi.utils.jwt import ALGORITHM_RS_256
-from pcapi.utils.jwt import JWT_ADAGE_PUBLIC_KEY_PATH
-from pcapi.utils.jwt import decode_jwt_token_rs256
-from pcapi.utils.jwt import encode_jwt_payload
-
-from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
-from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
-
-
-class EncodeJWTPayloadTest:
-    def test_encode_jwt_payload(self):
-        payload = dict(data="value")
-        expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
-
-        jwt_token = encode_jwt_payload(payload, expiration_date)
-
-        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
-
-        assert decoded == {"data": "value", "exp": int(expiration_date.timestamp())}
-
-    def test_encode_jwt_payload_without_expiration_date(self):
-        payload = dict(data="value")
-
-        jwt_token = encode_jwt_payload(payload)
-
-        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
-
-        assert decoded["data"] == "value"
-        assert "exp" not in decoded
-
-
-class DecodeJWTPayloadRS256Test:
-    def test_decode_jwt_payload_rs256_algorithm(self):
-        payload = dict(data="value")
-        with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
-            valid_encoded_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
-        with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
-            public_key = reader.read()
-            decoded = decode_jwt_token_rs256(valid_encoded_token, public_key)
-
-        assert decoded["data"] == "value"
-
-    def test_decode_jwt_payload_rs256_algorithm_corrupted(self):
-        payload = dict(data="value")
-        with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
-            corrupted_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
-
-        with pytest.raises(jwt.InvalidSignatureError) as error:
-            with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
-                public_key = reader.read()
-                decode_jwt_token_rs256(corrupted_token, public_key=public_key)
-
-        assert "Signature verification failed" in str(error.value)
 
 
 class FormatLoginLocationTest:

@@ -32,6 +32,7 @@ from pcapi.core.logging import install_logging
 from pcapi.models import db
 from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
+from pcapi.utils import jwt
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import init_sentry_sdk
@@ -208,9 +209,6 @@ if settings.PROFILE_REQUESTS:
 # header: the client IP and the Google Front End IP. Hence `x_for=2`.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
 
-if not settings.JWT_SECRET_KEY:
-    raise ValueError("JWT_SECRET_KEY not found in env")
-
 app.secret_key = settings.FLASK_SECRET
 app.json_provider_class = EnumJSONEncoder
 app.json = EnumJSONEncoder(app)
@@ -265,6 +263,7 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "not u
 with app.app_context():
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
     app.generate_error_response = generate_error_response
+    jwt.setup_backend(app)
 
 
 @app.shell_context_processor
