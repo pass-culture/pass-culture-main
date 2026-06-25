@@ -31,12 +31,7 @@ class CheckOffererSirenRequestV2(BaseModelV2):
     close_or_tag_when_inactive: bool
 
 
-@celery_async_task(
-    name="tasks.offerers.default.check_offerer",
-    model=CheckOffererSirenRequestV2,
-    max_per_time_window=settings.CHECK_OFFERER_RATE_LIMIT_THRESHOLD,
-    time_window_size=settings.CHECK_OFFERER_RATE_LIMIT_TIME_WINDOW_SECONDS,
-)
+@celery_async_task(name="tasks.offerers.default.check_offerer", model=CheckOffererSirenRequestV2, rate_limit="180/m")
 def check_offerer_siren_celery_task(payload: CheckOffererSirenRequestV2) -> None:
     check_offerer_siren(payload)
 
