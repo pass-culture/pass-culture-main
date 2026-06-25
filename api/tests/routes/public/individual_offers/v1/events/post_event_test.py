@@ -9,6 +9,8 @@ from datetime import timezone
 from unittest import mock
 
 import pytest
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 import time_machine
 
 from pcapi import settings
@@ -45,6 +47,27 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events"
     endpoint_method = "post"
 
+    base_num_queries = 1  # select the api_key
+    base_num_queries += 1  # select the provider
+    base_num_queries += 1  # select the venue
+    base_num_queries += 1  # select the venue (bis ?)
+    base_num_queries += 1  # select offerer_address
+    base_num_queries += 1  # insert offerer_address
+    base_num_queries += 1  # insert offer
+    base_num_queries += 1  # update offer
+    base_num_queries += 1  # select mediation
+    base_num_queries += 1  # select price category
+    base_num_queries += 1  # select offer's meta data
+    base_num_queries += 1  # select user
+    base_num_queries += 2  # select offerer/venue/bank account/... + selectinload on educational_domains
+    base_num_queries += 2  # select existing collective offers (x2) on venue
+    base_num_queries += 1  # select existing active offers on venue
+    base_num_queries += 1  # select existing non cancelled bookings
+
+    num_queries_location_type_venue = base_num_queries
+    num_queries_location_type_address_existing = base_num_queries
+    num_queries_location_type_address_creation = base_num_queries + 1
+
     @staticmethod
     def _get_base_payload(venue_id: int) -> dict:
         return {
@@ -75,24 +98,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
         db.session.flush()
 
-        num_queries = 1  # select the api_key
-        num_queries += 1  # select the provider
-        num_queries += 1  # select the venue
-        num_queries += 1  # select the venue (bis ?)
-        num_queries += 1  # select offerer_address
-        num_queries += 1  # insert offerer_address
-        num_queries += 1  # insert offer
-        num_queries += 1  # update offer
-        num_queries += 1  # select mediation
-        num_queries += 1  # select price category
-        num_queries += 1  # select offer's meta data
-        num_queries += 1  # select user
-        num_queries += 2  # select offerer/venue/bank account/... + selectinload on educational_domains
-        num_queries += 2  # select existing collective offers (x2) on venue
-        num_queries += 1  # select existing active offers on venue
-        num_queries += 1  # select existing non cancelled bookings
-
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_location_type_venue):
             response = self.make_request(plain_api_key, json_body=json_body)
 
         assert response.status_code == 200
@@ -910,3 +916,60 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty."
             ]
         }
+
+    def test_event_identifies_venue_location(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        venue = venue_provider.venue
+
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        json_body["location"] = {
+            "type": "address",
+            "venue_id": venue_provider.venueId,
+            "address_id": venue.offererAddress.addressId,
+            "address_label": venue.publicName,
+        }
+
+        db.session.flush()
+
+        with testing.assert_num_queries(self.num_queries_location_type_address_creation + 3):  # +3 for the checks
+            response = self.make_request(plain_api_key, json_body=json_body)
+
+            assert response.status_code == 200
+            assert db.session.query(offers_models.Offer).count() == 1
+            assert db.session.query(offerers_models.OffererAddress).count() == 2
+            created_offer = (
+                db.session.query(offers_models.Offer)
+                .options(
+                    sa_orm.joinedload(offers_models.Offer.offererAddress),
+                    sa_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
+                )
+                .order_by(sa.desc(offers_models.Offer.id))
+                .first()
+            )
+
+            assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+            assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
+            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+            assert created_offer.offererAddress.label is None
+
+        with testing.assert_num_queries(self.num_queries_location_type_address_existing + 3):  # +3 for the checks
+            response = self.make_request(plain_api_key, json_body=json_body)
+
+            assert response.status_code == 200
+            assert db.session.query(offers_models.Offer).count() == 2
+            assert db.session.query(offerers_models.OffererAddress).count() == 2
+            created_offer = (
+                db.session.query(offers_models.Offer)
+                .options(
+                    sa_orm.joinedload(offers_models.Offer.offererAddress),
+                    sa_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
+                )
+                .order_by(sa.desc(offers_models.Offer.id))
+                .first()
+            )
+
+            assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+            assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
+            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+            assert created_offer.offererAddress.label is None

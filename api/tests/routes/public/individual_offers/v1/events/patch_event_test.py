@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.connectors import youtube
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
@@ -609,3 +610,25 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == expected_response_json
+
+    def test_update_location_at_venue_location_as_physical(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        venue = offer.venue
+        json_data = {
+            "location": {
+                "type": "address",
+                "venue_id": venue.id,
+                "address_id": venue.offererAddress.addressId,
+                "address_label": venue.publicName,
+            }
+        }
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200
+
+        assert offer.venueId == venue.id
+        assert offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
+        assert offer.offererAddress.id != venue.offererAddress.id
+        assert offer.offererAddress.addressId == venue.offererAddress.addressId
+        assert offer.offererAddress.label is None
