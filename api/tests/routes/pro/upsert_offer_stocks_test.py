@@ -267,6 +267,32 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"priceCategories.0.price": ["Prix invalide"]}
 
+    def test_creating_stock_with_quantity_above_maximum(self, client):
+        offer = offers_factories.ThingOfferFactory()
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        payload = {
+            "stocks": [
+                {
+                    "id": None,
+                    "offerId": offer.id,
+                    "activationCodes": None,
+                    "activationCodesExpirationDatetime": None,
+                    "bookingLimitDatetime": None,
+                    "price": 10,
+                    "quantity": offers_models.Stock.MAX_STOCK_QUANTITY + 1,
+                }
+            ]
+        }
+
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "stocks.0.quantity": [f"Saisissez un nombre inférieur ou égal à {offers_models.Stock.MAX_STOCK_QUANTITY}"]
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:

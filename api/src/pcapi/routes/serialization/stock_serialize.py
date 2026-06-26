@@ -25,7 +25,7 @@ class ThingStockUpsertBodyModel(HttpBodyModel):
     booking_limit_datetime: serialization_utils.future_tz_aware_datetime | None = None
     offer_id: int
     price: Decimal
-    quantity: int | None = None
+    quantity: Quantity | None = None
 
 
 class ThingStocksBulkUpsertBodyModel(HttpBodyModel):
