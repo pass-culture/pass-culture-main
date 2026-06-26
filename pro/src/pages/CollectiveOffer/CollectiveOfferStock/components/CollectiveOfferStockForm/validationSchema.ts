@@ -1,7 +1,9 @@
 import { isAfter, isBefore, isSameDay, startOfToday } from 'date-fns'
 import * as yup from 'yup'
 
+import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { isDateValid } from '@/commons/utils/date'
+import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
 import {
   MAX_NUMBER_OF_TEACHERS,
@@ -113,6 +115,47 @@ export const generateValidationSchema = (canEditDates: boolean) =>
               }
             ),
       }),
+    servicePrice: yup
+      .number()
+      .nullable()
+      .transform((value) => (Number.isNaN(value) ? null : value))
+      .min(0, 'Nombre positif attendu')
+      .max(60000, 'Le prix total ne doit pas dépasser 60 000€')
+      .required('Le tarif de la prestation est obligatoire'),
+    hasAdditionalFees: yup.boolean().required('Veuillez choisir une option'),
+    additionalFees: yup
+      .array()
+      .of(
+        yup.object({
+          type: yup
+            .string()
+            .oneOf(
+              Object.values(CollectiveAdditionalFeeType),
+              'Type de frais annexe invalide'
+            )
+            .required('Le type de frais annexe est obligatoire'),
+          amount: yup
+            .number()
+            .nullable()
+            .transform((value) => (Number.isNaN(value) ? null : value))
+            .min(0.01, 'Le prix du frais annexe doit être supérieur à 0.01')
+            .required('Le prix du frais annexe est obligatoire'),
+          label: nonEmptyStringOrNull().when('type', {
+            is: CollectiveAdditionalFeeType.OTHER,
+            then: (schema) =>
+              schema.required('Veuillez préciser le type de frais'),
+            otherwise: (schema) =>
+              schema.max(0, 'Le label doit être vide pour ce type de frais'),
+          }),
+        })
+      )
+      .when('hasAdditionalFees', {
+        is: true,
+        then: (schema) =>
+          schema.min(1, 'Ajoutez au moins un type de frais annexes'),
+        otherwise: (schema) => schema.max(0),
+      })
+      .default([]),
   })
 
 export type CollectiveOfferStockFormValues = yup.InferType<

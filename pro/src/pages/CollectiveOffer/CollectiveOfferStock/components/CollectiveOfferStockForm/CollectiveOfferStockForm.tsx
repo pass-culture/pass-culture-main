@@ -23,7 +23,9 @@ import strokeCollaborator from '@/icons/stroke-collaborator.svg'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
+import { AdditionalFeesForm } from '../AdditionalFeesForm/AdditionalFeesForm'
 import { buildDatetimesForStock } from '../utils/buildDatetimesForStock'
+import { computePriceForStock } from '../utils/computePriceForStock'
 import { extractFormDates } from '../utils/extractFormDates'
 import styles from './CollectiveOfferStockForm.module.scss'
 import {
@@ -65,6 +67,8 @@ export const CollectiveOfferStockForm = ({
     bookingLimitDatetime,
     numberOfTickets,
     numberOfTeachers,
+    servicePrice,
+    collectiveAdditionalFees,
   } = initialStock
 
   const initialDatesValues = extractFormDates(
@@ -76,16 +80,31 @@ export const CollectiveOfferStockForm = ({
     defaultValues: {
       numberOfTickets,
       numberOfTeachers,
+      servicePrice: servicePrice ?? undefined,
+      hasAdditionalFees: Boolean(
+        collectiveAdditionalFees && collectiveAdditionalFees.length > 0
+      ),
+      additionalFees: collectiveAdditionalFees || [],
       ...initialDatesValues,
     },
     resolver: yupResolver(generateValidationSchema(canEditDates)),
     mode: 'onSubmit',
   })
 
+  const servicePriceValue = form.watch('servicePrice')
+  const additionalFeesValue = form.watch('additionalFees')
+  const price = computePriceForStock(servicePriceValue, additionalFeesValue)
+
   const postForm = async (formValues: CollectiveOfferStockFormValues) => {
     try {
-      const { numberOfTickets, numberOfTeachers, ...dateFormValues } =
-        formValues
+      const {
+        numberOfTickets,
+        numberOfTeachers,
+        servicePrice,
+        hasAdditionalFees,
+        additionalFees,
+        ...dateFormValues
+      } = formValues
 
       const updatedStock: Partial<CollectiveStockCreationBodyModel> = {}
       const dirtyKeys = new Set(Object.keys(form.formState.dirtyFields))
@@ -98,6 +117,18 @@ export const CollectiveOfferStockForm = ({
         updatedStock.numberOfTeachers = numberOfTeachers
       }
 
+      const hasDirtyPrice =
+        dirtyKeys.has('servicePrice') ||
+        dirtyKeys.has('hasAdditionalFees') ||
+        dirtyKeys.has('additionalFees')
+      if (shouldSaveAllFields || hasDirtyPrice) {
+        updatedStock.servicePrice = servicePrice
+        updatedStock.collectiveAdditionalFees = hasAdditionalFees
+          ? additionalFees
+          : []
+        updatedStock.price = price
+      }
+
       const hasDirtyDates = Object.keys(dateFormValues).some((k) =>
         dirtyKeys.has(k)
       )
@@ -108,7 +139,6 @@ export const CollectiveOfferStockForm = ({
         )
         Object.assign(updatedStock, stockDates)
       }
-
       await onSubmit(updatedStock)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
@@ -224,7 +254,7 @@ export const CollectiveOfferStockForm = ({
           <FormLayout.Section title="Nombre de participants">
             <FormLayout.Row inline>
               <TextInput
-                {...form.register('numberOfTickets')}
+                {...form.register('numberOfTickets', { valueAsNumber: true })}
                 disabled={!canEditDiscount}
                 error={form.formState.errors.numberOfTickets?.message}
                 icon={strokeCollaborator}
@@ -234,7 +264,7 @@ export const CollectiveOfferStockForm = ({
                 type="number"
               />
               <TextInput
-                {...form.register('numberOfTeachers')}
+                {...form.register('numberOfTeachers', { valueAsNumber: true })}
                 disabled={!canEditDiscount}
                 error={form.formState.errors.numberOfTeachers?.message}
                 icon={strokeCollaborator}
@@ -244,6 +274,35 @@ export const CollectiveOfferStockForm = ({
                 type="number"
               />
             </FormLayout.Row>
+          </FormLayout.Section>
+          <FormLayout.Section title="Prix de votre offre">
+            <FormLayout.SubSection
+              title="Tarif de la prestation"
+              description="Le tarif de la prestation doit être indiqué hors frais annexes et toutes charges comprises."
+            >
+              <FormLayout.Row inline>
+                <TextInput
+                  {...form.register('servicePrice', { valueAsNumber: true })}
+                  disabled={!canEditDiscount}
+                  error={form.formState.errors.servicePrice?.message}
+                  label="Tarif de la prestation (en €)"
+                  min={0}
+                  required
+                  requiredIndicator="symbol"
+                  step={0.01}
+                  type="number"
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
+            <FormLayout.SubSection title="Frais annexes">
+              <AdditionalFeesForm canEditDiscount={canEditDiscount} />
+            </FormLayout.SubSection>
+          </FormLayout.Section>
+          <FormLayout.Section
+            title={`Prix total de votre offre : ${price}€ TTC`}
+            description="Le prix total de votre offre est calculé en fonction du tarif de la prestation et des potentiels frais annexes indiqués."
+          >
+            <div></div>
           </FormLayout.Section>
           <ActionsBarSticky>
             <ActionsBarSticky.Left>
