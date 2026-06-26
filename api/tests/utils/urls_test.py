@@ -51,9 +51,20 @@ class FirebaseLinksTest:
 
 
 @pytest.mark.settings(PRO_URL="http://pcpro.com")
+@pytest.mark.features(WIP_OFFER_EXPOSURE=False)
 def test_build_pc_pro_offer_link():
     offer = offers_factories.OfferFactory.build(id=123)
 
     url = urls.build_pc_pro_offer_link(offer)
 
     assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/recapitulatif/description"
+
+
+@pytest.mark.settings(PRO_URL="http://pcpro.com")
+@pytest.mark.features(WIP_OFFER_EXPOSURE=True)
+def test_build_pc_pro_offer_link_with_exposure():
+    offer = offers_factories.OfferFactory.build(id=123)
+
+    url = urls.build_pc_pro_offer_link(offer)
+
+    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/visibilite"
