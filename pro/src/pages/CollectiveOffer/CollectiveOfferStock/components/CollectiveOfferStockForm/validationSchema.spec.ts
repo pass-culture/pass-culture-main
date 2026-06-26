@@ -1,5 +1,6 @@
 import { addDays, addYears, format, subMinutes } from 'date-fns'
 
+import { CollectiveAdditionalFeeType } from '@/apiClient/adage'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import {
@@ -15,6 +16,9 @@ describe('validationSchema', () => {
     eventTime: '14:00',
     numberOfTickets: 56,
     numberOfTeachers: 5,
+    servicePrice: 5,
+    hasAdditionalFees: false,
+    additionalFees: [],
   }
 
   it.each([
@@ -29,6 +33,8 @@ describe('validationSchema', () => {
         "Le nombre d'élèves est obligatoire",
         "Le nombre d'accompagnateurs est obligatoire",
         'La date limite de réservation est obligatoire',
+        'Le tarif de la prestation est obligatoire',
+        'Veuillez choisir une option',
       ],
     },
     {
@@ -143,6 +149,60 @@ describe('validationSchema', () => {
         numberOfTeachers: 51,
       },
       expectedErrors: ["Le nombre d'accompagnateurs ne doit pas dépasser 50"],
+    },
+    {
+      description:
+        'should require additional fees when hasAdditionalFees is true',
+      canEditDates: true,
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+      },
+      expectedErrors: ['Ajoutez au moins un type de frais annexes'],
+    },
+    {
+      description: 'should reject an additional fee with an invalid type',
+      canEditDates: true,
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+        additionalFees: [
+          {
+            type: 'INVALID_TYPE' as CollectiveAdditionalFeeType,
+            amount: 10,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: ['Type de frais annexe invalide'],
+    },
+    {
+      description: 'additional fees amounts should be positive',
+      canEditDates: true,
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+        additionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.MEAL,
+            amount: -1,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: ['Le prix du frais annexe doit être supérieur à 0.01'],
+    },
+    {
+      description: 'servicePrice should not exceed 60000€',
+      canEditDates: true,
+      formValues: { ...values, servicePrice: 60001 },
+      expectedErrors: ['Le prix total ne doit pas dépasser 60 000€'],
+    },
+    {
+      description: 'servicePrice should  should be positive',
+      canEditDates: true,
+      formValues: { ...values, servicePrice: -15 },
+      expectedErrors: ['Nombre positif attendu'],
     },
   ])(`$description`, async ({
     canEditDates,
