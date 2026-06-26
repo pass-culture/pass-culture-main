@@ -121,7 +121,8 @@ export const CollectiveOfferStockForm = ({
     }
   }
 
-  const values = form.watch()
+  const endDateValue = form.watch('endDate')
+  const startDateValue = form.watch('startDate')
 
   function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     form.setValue('startDate', event.target.value, {
@@ -129,7 +130,7 @@ export const CollectiveOfferStockForm = ({
       shouldDirty: true,
       shouldTouch: true,
     })
-    if (!isDateValid(values.endDate) || values.endDate < event.target.value) {
+    if (!isDateValid(endDateValue) || endDateValue < event.target.value) {
       form.setValue('endDate', event.target.value, {
         shouldValidate: true,
         shouldDirty: true,
@@ -137,8 +138,8 @@ export const CollectiveOfferStockForm = ({
     }
   }
 
-  const minEndDate = isDateValid(values.startDate)
-    ? new Date(values.startDate)
+  const minEndDate = isDateValid(startDateValue)
+    ? new Date(startDateValue)
     : new Date()
 
   return (
@@ -210,8 +211,8 @@ export const CollectiveOfferStockForm = ({
                 error={form.formState.errors.bookingLimitDate?.message}
                 label={'Date limite de réservation'}
                 maxDate={
-                  isDateValid(new Date(values.startDate))
-                    ? new Date(values.startDate)
+                  isDateValid(new Date(startDateValue))
+                    ? new Date(startDateValue)
                     : undefined
                 }
                 minDate={new Date()}
