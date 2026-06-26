@@ -113,7 +113,10 @@ export const FormOfferType = ({
               onSelectedOptionsChanged={(selectedOptions) => {
                 const newDomainIds = selectedOptions.map((option) => option.id)
 
-                setValue('domains', newDomainIds, { shouldValidate: true })
+                setValue('domains', newDomainIds, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
 
                 const newAssociatedPrograms =
                   getAssociatedPrograms(newDomainIds)
@@ -152,7 +155,7 @@ export const FormOfferType = ({
               setValue(
                 'formats',
                 [...selectedOptions.map((elm) => elm.id)] as EacFormat[],
-                { shouldValidate: true }
+                { shouldValidate: true, shouldDirty: true }
               )
             }
             required

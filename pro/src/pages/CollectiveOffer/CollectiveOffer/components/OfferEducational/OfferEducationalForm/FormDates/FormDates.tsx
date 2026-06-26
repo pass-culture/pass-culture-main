@@ -55,7 +55,9 @@ export const FormDates = ({
         checkedOption={watch('datesType')}
         variant="detailed"
         onChange={(e) => {
-          setValue('datesType', e.target.value as OfferDatesType)
+          setValue('datesType', e.target.value as OfferDatesType, {
+            shouldDirty: true,
+          })
         }}
         options={[
           {

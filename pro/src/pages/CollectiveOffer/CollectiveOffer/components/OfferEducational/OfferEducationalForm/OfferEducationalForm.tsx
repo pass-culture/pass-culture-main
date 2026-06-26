@@ -21,6 +21,7 @@ import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowe
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -69,7 +70,8 @@ export const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
   const { logEvent } = useAnalytics()
 
-  const { formState, watch } = useFormContext<OfferEducationalFormValues>()
+  const { formState, watch, setValue } =
+    useFormContext<OfferEducationalFormValues>()
 
   const canEditDetails =
     !offer ||
@@ -99,6 +101,18 @@ export const OfferEducationalForm = ({
     })
   }
 
+  const handleImageUpload = (image: OnImageUploadArgs) => {
+    onImageUpload(image)
+    setValue('imageUrl', image.imageCroppedDataUrl, { shouldDirty: true })
+    setValue('imageCredit', image.credit ?? undefined, { shouldDirty: true })
+  }
+
+  const handleImageDelete = () => {
+    onImageDelete()
+    setValue('imageUrl', undefined, { shouldDirty: true })
+    setValue('imageCredit', undefined, { shouldDirty: true })
+  }
+
   return (
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
@@ -122,8 +136,8 @@ export const OfferEducationalForm = ({
                   isTemplate={isTemplate}
                 />
                 <FormImageUploader
-                  onImageDelete={onImageDelete}
-                  onImageUpload={onImageUpload}
+                  onImageDelete={handleImageDelete}
+                  onImageUpload={handleImageUpload}
                   onImageDropOrSelected={logOnImageDropOrSelected}
                   imageOffer={imageOffer}
                   disableForm={!canEditDetails}
@@ -171,7 +185,7 @@ export const OfferEducationalForm = ({
               !isEligible ||
               !canEditDetails ||
               isSubmitting ||
-              !formState.isDirty
+              (!formState.isDirty && mode === Mode.EDITION)
             }
             label="Enregistrer et continuer"
           />

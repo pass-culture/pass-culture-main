@@ -58,7 +58,9 @@ export const FormLocation = ({
   const handleAddressLocationChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setValue('location.location.id', event.target.value)
+    setValue('location.location.id', event.target.value, {
+      shouldDirty: true,
+    })
 
     const isSpecificAddress = event.target.value === 'SPECIFIC_ADDRESS'
 
@@ -185,7 +187,8 @@ export const FormLocation = ({
   ) => {
     setValue(
       'location.locationType',
-      event.target.value as CollectiveLocationType
+      event.target.value as CollectiveLocationType,
+      { shouldDirty: true }
     )
     if (event.target.value === CollectiveLocationType.ADDRESS) {
       const { location } = selectedPartnerVenue || {}
