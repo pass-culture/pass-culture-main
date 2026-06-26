@@ -153,6 +153,7 @@ class QFMockType(enum.Enum):
     QUOTIENT_FAMILIAL_TOO_HIGH = "QUOTIENT_FAMILIAL_TOO_HIGH"
     APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
     PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+    DATA_PROVIDER_ERROR = "DATA_PROVIDER_ERROR"
 
 
 class QuotientFamilialConfigurationForm(utils.PCForm):
@@ -165,6 +166,7 @@ class QuotientFamilialConfigurationForm(utils.PCForm):
             (QFMockType.QUOTIENT_FAMILIAL_TOO_HIGH.value, "Quotient familial trop élevé"),
             (QFMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
             (QFMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
+            (QFMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
         ],
         default=QFMockType.OK.value,
     )
@@ -175,6 +177,7 @@ class DisabledAdultAllowanceMockType(enum.Enum):
     NON_BENEFICIARY = "NON_BENEFICIARY"
     APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
     PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+    DATA_PROVIDER_ERROR = "DATA_PROVIDER_ERROR"
 
 
 class DisabledAdultAllowanceConfigurationForm(utils.PCForm):
@@ -185,6 +188,7 @@ class DisabledAdultAllowanceConfigurationForm(utils.PCForm):
             (DisabledAdultAllowanceMockType.NON_BENEFICIARY.value, "Non bénéficiaire"),
             (DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
             (DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
+            (DisabledAdultAllowanceMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
         ],
         default=DisabledAdultAllowanceMockType.BENEFICIARY.value,
     )
@@ -196,6 +200,7 @@ class DisabledChildEducationAllowanceMockType(enum.Enum):
     NON_BENEFICIARY = "NON_BENEFICIARY"
     APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
     PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
+    DATA_PROVIDER_ERROR = "DATA_PROVIDER_ERROR"
 
 
 class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
@@ -212,6 +217,10 @@ class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
             (
                 DisabledChildEducationAllowanceMockType.PERSON_NOT_FOUND.value,
                 "422 problème de données d'identification",
+            ),
+            (
+                DisabledChildEducationAllowanceMockType.DATA_PROVIDER_ERROR.value,
+                "502 erreur du fournisseur de données",
             ),
         ],
         default=DisabledChildEducationAllowanceMockType.BENEFICIARY.value,

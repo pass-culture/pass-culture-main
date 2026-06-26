@@ -137,6 +137,11 @@ def create_qf_fraud_check_mock(user: users_models.User, form: forms.QuotientFami
             http_status_code=422,
         ).model_dump()
 
+    elif mock_type == forms.QFMockType.DATA_PROVIDER_ERROR.value:
+        result_content = subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=502,
+        ).model_dump()
+
     quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
         eligibilityType=user.eligibility,
@@ -175,6 +180,11 @@ def create_disabled_adult_allowance_fraud_check_mock(
     elif mock_type == forms.DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value:
         result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
             http_status_code=422,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledAdultAllowanceMockType.DATA_PROVIDER_ERROR.value:
+        result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
+            http_status_code=502,
         ).model_dump()
 
     disabled_adult_allowance_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
@@ -221,6 +231,11 @@ def create_disabled_child_education_allowance_fraud_check_mock(
     elif mock_type == forms.DisabledChildEducationAllowanceMockType.PERSON_NOT_FOUND.value:
         result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
             http_status_code=422,
+        ).model_dump()
+
+    elif mock_type == forms.DisabledChildEducationAllowanceMockType.DATA_PROVIDER_ERROR.value:
+        result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
+            http_status_code=502,
         ).model_dump()
 
     disabled_child_education_allowance_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
