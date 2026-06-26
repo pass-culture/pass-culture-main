@@ -31,12 +31,8 @@ export const MAIN_INDEX_ID = 'main_offers_index'
 
 export const algoliaSearchDefaultAttributesToRetrieve = [
   'objectID',
-  'offer.dates',
   'offer.name',
-  'offer.thumbUrl',
-  'venue.name',
   'venue.publicName',
-  'isTemplate',
   'offer.interventionArea',
 ]
 
