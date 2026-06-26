@@ -47,6 +47,45 @@ function isComplete(
   return allKeys.every((key) => key in stock && stock[key] !== undefined)
 }
 
+function handleStockError(
+  e: unknown,
+  onError: (message: string) => void
+): void {
+  console.error(e)
+  if (hasStatusCodeAndErrorsCode(e) && e.status === 400) {
+    const errorMessages: Partial<Record<string, string>> = {
+      EDUCATIONAL_STOCK_ALREADY_EXISTS:
+        'Une erreur s’est produite. Les informations dates et prix existent déjà pour cette offre.',
+      COLLECTIVE_OFFER_NOT_FOUND:
+        'Une erreur s’est produite. L’offre n’a pas été trouvée.',
+    }
+    const message = errorMessages[e.errors.code]
+    if (message) {
+      onError(message)
+      return
+    }
+  }
+  if (isErrorAPIError(e) && e.status < 500) {
+    throw e
+  }
+  onError('Une erreur est survenue lors de la création de votre stock.')
+}
+
+function buildCreateStockBody(
+  newCollectiveStock: CollectiveStockCreationBodyModel,
+  offerId: number,
+  isNewCollectivePriceEnabled: boolean
+): CollectiveStockCreationBodyModel {
+  // TODO(PC-41977) implement servicePrice and collectiveAdditionalFees in the form and send them to the backend
+  return {
+    ...newCollectiveStock,
+    offerId,
+    servicePrice: isNewCollectivePriceEnabled ? 100 : undefined,
+    price: isNewCollectivePriceEnabled ? 100 : newCollectiveStock.price,
+    collectiveAdditionalFees: isNewCollectivePriceEnabled ? [] : undefined,
+  }
+}
+
 export const CollectiveOfferStockCreation = ({
   offer,
 }: CollectiveOfferFromParamsProps): JSX.Element | null => {
@@ -131,16 +170,11 @@ export const CollectiveOfferStockCreation = ({
         })
       } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
         response = await api.createCollectiveStock({
-          body: {
-            ...newCollectiveStock,
-            offerId: offer.id,
-            // TODO(PC-41977) implement servicePrice and collectiveAdditionalFees in the form and send them to the backend
-            servicePrice: isNewCollectivePriceEnabled ? 100 : undefined,
-            price: isNewCollectivePriceEnabled ? 100 : newCollectiveStock.price,
-            collectiveAdditionalFees: isNewCollectivePriceEnabled
-              ? []
-              : undefined,
-          },
+          body: buildCreateStockBody(
+            newCollectiveStock,
+            offer.id,
+            isNewCollectivePriceEnabled
+          ),
         })
       } else {
         throw new Error('Missing required values')
@@ -159,32 +193,7 @@ export const CollectiveOfferStockCreation = ({
 
       navigate(stepUrls.next)
     } catch (e) {
-      console.error(e)
-      if (
-        hasStatusCodeAndErrorsCode(e) &&
-        e.status === 400 &&
-        e.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
-      ) {
-        return snackBar.error(
-          'Une erreur s’est produite. Les informations dates et prix existent déjà pour cette offre.'
-        )
-      }
-      if (
-        hasStatusCodeAndErrorsCode(e) &&
-        e.status === 400 &&
-        e.errors.code === 'COLLECTIVE_OFFER_NOT_FOUND'
-      ) {
-        return snackBar.error(
-          'Une erreur s’est produite. L’offre n’a pas été trouvée.'
-        )
-      }
-      if (isErrorAPIError(e) && e.status < 500) {
-        throw e
-      } else {
-        snackBar.error(
-          'Une erreur est survenue lors de la création de votre stock.'
-        )
-      }
+      handleStockError(e, snackBar.error)
     }
   }
 
