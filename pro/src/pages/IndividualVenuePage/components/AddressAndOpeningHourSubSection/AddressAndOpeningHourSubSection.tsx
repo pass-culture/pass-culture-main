@@ -6,7 +6,7 @@ import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import styles from './AddressAndOpeningHourSubSection.module.scss'
-import { OpeningHours } from './OpeningHours'
+import { OpeningHoursReadOnly } from './OpeningHoursReadOnly'
 
 interface OpeningHoursAndAddressSubSectionProps {
   address: LocationResponseModelV2
@@ -22,7 +22,7 @@ export function AddressAndOpeningHourSubSection({
         {`Adresse : ${getFormattedAddress(address)}`}
       </span>
 
-      <OpeningHours openingHours={openingHours} />
+      <OpeningHoursReadOnly openingHours={openingHours} />
     </SummarySubSection>
   )
 }

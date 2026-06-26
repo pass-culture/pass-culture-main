@@ -1,0 +1,107 @@
+import type {
+  ActivityNotOpenToPublic,
+  ActivityOpenToPublic,
+  EditVenueBodyModel,
+  WeekdayOpeningHoursTimespans,
+} from '@/apiClient/v1'
+import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
+
+import type { VenueEditionFormValues } from './types'
+
+export const serializeEditVenueBodyModel = (
+  formValues: Partial<VenueEditionFormValues>,
+  hideSiret: boolean,
+  alreadyHasOpeningHours: boolean = false
+): EditVenueBodyModel => {
+  const payload = buildEditVenuePayload(formValues, alreadyHasOpeningHours)
+
+  if (hideSiret && payload.siret) {
+    delete payload.siret
+  }
+
+  return payload
+}
+
+function buildEditVenuePayload(
+  formValues: Partial<VenueEditionFormValues>,
+  alreadyHasOpeningHours: boolean
+): EditVenueBodyModel {
+  const normalizedActivity = normalizeActivity(formValues.activity)
+
+  // TODO: this is a PATCH request. It should only contains changed values
+  return {
+    audioDisabilityCompliant: formValues.accessibility?.audio,
+    description: formValues.description,
+    mentalDisabilityCompliant: formValues.accessibility?.mental,
+    motorDisabilityCompliant: formValues.accessibility?.motor,
+    visualDisabilityCompliant: formValues.accessibility?.visual,
+    contact:
+      formValues.email || formValues.phoneNumber || formValues.webSite
+        ? {
+            email: formValues.email ? formValues.email : null,
+            phoneNumber: formValues.phoneNumber ? formValues.phoneNumber : null,
+            website: formValues.webSite ? formValues.webSite : null,
+            socialMedias: null,
+          }
+        : undefined,
+    isAccessibilityAppliedOnAllOffers:
+      formValues.isAccessibilityAppliedOnAllOffers,
+    openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
+    isOpenToPublic: formValues.isOpenToPublic
+      ? formValues.isOpenToPublic === 'true'
+      : undefined,
+    activity: normalizedActivity,
+    culturalDomains: formValues.culturalDomains,
+    volunteeringUrl:
+      formValues.volunteeringUrl === undefined
+        ? undefined
+        : formValues.volunteeringUrl || null,
+    withdrawalDetails: formValues.withdrawalDetails,
+  }
+}
+
+export function normalizeActivity(
+  activity: VenueEditionFormValues['activity']
+): ActivityOpenToPublic | ActivityNotOpenToPublic | null | undefined {
+  if ((activity as string | null) === 'GAMES_CENTRE') {
+    return null
+  }
+
+  return activity
+}
+
+function serializeOpeningHours(
+  formValues: Partial<VenueEditionFormValues>,
+  alreadyHasOpeningHours: boolean
+): EditVenueBodyModel['openingHours'] {
+  if (formValues.openingHours === undefined) {
+    return undefined
+  }
+
+  if (
+    !alreadyHasOpeningHours &&
+    !OPENING_HOURS_DAYS.some(
+      (d) =>
+        formValues.openingHours?.[d] && formValues.openingHours[d].length > 0
+    )
+  ) {
+    //  If the opening hours have never been set yet, and if none of the days have a timespan set on the form,
+    //  do not set the openingHours in the PATCH on the venue. Otherwise, the venue would appear "closed".
+    return null
+  }
+
+  return cleanOpeningHours(formValues.openingHours)
+}
+
+function cleanOpeningHours(openingHours?: WeekdayOpeningHoursTimespans | null) {
+  //  React hook form creates empty arrays for each day of the week, while the api must receive null
+  //  for week days without opening hours
+  const cleanedOpeningHours: WeekdayOpeningHoursTimespans = {}
+  OPENING_HOURS_DAYS.forEach((day) => {
+    cleanedOpeningHours[day] =
+      !openingHours?.[day] || openingHours[day].length === 0
+        ? null
+        : openingHours[day]
+  })
+  return cleanedOpeningHours
+}

@@ -19,23 +19,23 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ActivityDetails } from '@/components/VenueEdition/ActivityDetails/ActivityDetails'
+import { RouteLeavingGuardVenueEdition } from '@/components/VenueEdition/RouteLeavingGuardVenueEdition'
+import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { ActivityDetails } from '@/pages/VenueEdition/components/ActivityDetails/ActivityDetails'
-import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/RouteLeavingGuardVenueEdition'
-import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 
+import { scrollToTop } from '../../../commons/utils/scrollToTop'
 import { useSaveVenueSettings } from './commons/hooks/useSaveVenueSettings'
 import { venueSettingsValidationSchema } from './commons/schema'
 import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from './commons/types'
-import { scrollToTop } from './commons/utils/scrollToTop'
 import { toFormValues } from './commons/utils/toFormValues'
 import { AddressChangeDialog } from './components/AddressChangeDialog/AddressChangeDialog'
 import { ComplementaryInfosDrawer } from './components/ComplementaryInfosDrawer/ComplementaryInfosDrawer'
+import { ReimbursementFields } from './components/ReimbursementFields/ReimbursementFields'
 import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
 
 const GeneralInformation = () => {

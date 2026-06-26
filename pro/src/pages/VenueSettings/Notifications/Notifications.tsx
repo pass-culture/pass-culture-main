@@ -5,12 +5,12 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { RouteLeavingGuardVenueEdition } from '@/components/VenueEdition/RouteLeavingGuardVenueEdition'
+import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/RouteLeavingGuardVenueEdition'
-import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-import { scrollToTop } from '../GeneralInformation/commons/utils/scrollToTop'
+import { scrollToTop } from '../../../commons/utils/scrollToTop'
 import { useSave } from './commons/hooks/useSave'
 import {
   type VenueSettingsNotificationsFormValues,

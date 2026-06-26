@@ -9,7 +9,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { scrollToTop } from '../GeneralInformation/commons/utils/scrollToTop'
+import { scrollToTop } from '../../../commons/utils/scrollToTop'
 import { useSave } from './commons/hooks/useSave'
 import { Component as Notifications } from './Notifications'
 
@@ -24,7 +24,7 @@ vi.mock('@/apiClient/api', () => ({
 vi.mock('./commons/hooks/useSave', () => ({
   useSave: vi.fn(() => ({ save: vi.fn() })),
 }))
-vi.mock('../GeneralInformation/commons/utils/scrollToTop', () => ({
+vi.mock('../../../commons/utils/scrollToTop', () => ({
   scrollToTop: vi.fn(),
 }))
 
