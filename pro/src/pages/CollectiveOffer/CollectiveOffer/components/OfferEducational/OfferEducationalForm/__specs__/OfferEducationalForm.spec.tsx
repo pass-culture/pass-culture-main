@@ -61,6 +61,47 @@ vi.mock('react-avatar-editor', () => {
   }
 })
 
+vi.mock('../FormImageUploader/FormImageUploader', () => ({
+  FormImageUploader: ({
+    onImageUpload,
+    onImageDelete,
+    onImageDropOrSelected,
+  }: {
+    onImageUpload: (values: {
+      imageFile: File
+      imageCroppedDataUrl?: string
+      credit: string | null
+    }) => void
+    onImageDelete: () => void
+    onImageDropOrSelected?: () => void
+  }) => (
+    <div>
+      <input
+        aria-label="Importez une image"
+        type="file"
+        onChange={() => onImageDropOrSelected?.()}
+      />
+      <button
+        type="button"
+        onClick={() =>
+          onImageUpload({
+            imageFile: new File(['fake image'], 'fake-image.jpg', {
+              type: 'image/jpeg',
+            }),
+            imageCroppedDataUrl: 'data:image/jpeg;base64,fake-image',
+            credit: 'Fake credit',
+          })
+        }
+      >
+        Mock image upload
+      </button>
+      <button type="button" onClick={onImageDelete}>
+        Mock image delete
+      </button>
+    </div>
+  ),
+}))
+
 function renderOfferEducationalForm(
   props: OfferEducationalFormProps,
   initialValues?: Partial<OfferEducationalFormValues>
@@ -250,6 +291,76 @@ describe('OfferEducationalForm', () => {
         imageType: UploaderModeEnum.OFFER_COLLECTIVE,
         imageCreationStage: 'add image',
       })
+    })
+  })
+
+  it('should enable save button in edition mode when an image is uploaded', async () => {
+    const onImageUpload = vi.fn()
+
+    renderOfferEducationalForm({
+      ...defaultProps,
+      mode: Mode.EDITION,
+      isTemplate: true,
+      onImageUpload,
+      offer: {
+        ...getCollectiveOfferTemplateFactory(),
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
+      },
+    })
+
+    const saveButton = await screen.findByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
+    expect(saveButton).toBeDisabled()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Mock image upload' })
+    )
+
+    await waitFor(() => {
+      expect(onImageUpload).toHaveBeenCalledTimes(1)
+      expect(saveButton).toBeEnabled()
+    })
+  })
+
+  it('should enable save button in edition mode when an image is deleted', async () => {
+    const onImageDelete = vi.fn()
+
+    renderOfferEducationalForm(
+      {
+        ...defaultProps,
+        mode: Mode.EDITION,
+        isTemplate: true,
+        imageOffer: {
+          url: 'https://example.com/image.jpg',
+          credit: 'Initial credit',
+        },
+        onImageDelete,
+        offer: {
+          ...getCollectiveOfferTemplateFactory(),
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+          ],
+        },
+      },
+      {
+        imageUrl: 'https://example.com/image.jpg',
+        imageCredit: 'Initial credit',
+      }
+    )
+
+    const saveButton = await screen.findByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
+    expect(saveButton).toBeDisabled()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Mock image delete' })
+    )
+
+    await waitFor(() => {
+      expect(onImageDelete).toHaveBeenCalledTimes(1)
+      expect(saveButton).toBeEnabled()
     })
   })
 })

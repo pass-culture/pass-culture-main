@@ -59,7 +59,8 @@ export const FormParticipants = ({
         for (const level of levelValues) {
           setValue(
             `participants.${level}` as keyof OfferEducationalFormValues,
-            event.target.checked
+            event.target.checked,
+            { shouldDirty: true }
           )
         }
 
@@ -81,7 +82,8 @@ export const FormParticipants = ({
                 onChange: (e) => {
                   setValue(
                     `participants.${name}` as keyof OfferEducationalFormValues,
-                    e.target.checked
+                    e.target.checked,
+                    { shouldDirty: true }
                   )
 
                   if (!e.target.checked && levelCheckedValues.length === 1) {

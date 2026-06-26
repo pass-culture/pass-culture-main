@@ -23,7 +23,9 @@ export const FormContactTemplate = ({
       label: 'Par email',
       checked: Boolean(watch('contactOptions')?.email),
       onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue('contactOptions.email', e.target.checked)
+        setValue('contactOptions.email', e.target.checked, {
+          shouldDirty: true,
+        })
 
         await trigger('contactOptions')
       },
@@ -43,7 +45,9 @@ export const FormContactTemplate = ({
       label: 'Par téléphone',
       checked: Boolean(watch('contactOptions')?.phone),
       onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue('contactOptions.phone', e.target.checked)
+        setValue('contactOptions.phone', e.target.checked, {
+          shouldDirty: true,
+        })
         await trigger('contactOptions')
       },
       collapsed: (
@@ -59,7 +63,9 @@ export const FormContactTemplate = ({
     {
       checked: Boolean(watch('contactOptions')?.form),
       onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue('contactOptions.form', e.target.checked)
+        setValue('contactOptions.form', e.target.checked, {
+          shouldDirty: true,
+        })
         await trigger('contactOptions')
       },
       label: 'Via un formulaire',
