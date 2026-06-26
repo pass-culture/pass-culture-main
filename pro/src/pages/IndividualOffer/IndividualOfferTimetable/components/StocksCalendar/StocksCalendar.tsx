@@ -193,7 +193,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         //  When the mode is read only, the title is already inside the SummarySection layout
         <div className={styles['header']}>
-          <h2 className={styles['title']}>{'Horaires'}</h2>
+          <h2 className={styles['title']}>{'Horaires et stocks'}</h2>
           {hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"
@@ -208,7 +208,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
           )}
         </div>
       )}
-      {!isOfferDisabled(offer) && (
+      {mode !== OFFER_WIZARD_MODE.CREATION && !isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
         </div>
