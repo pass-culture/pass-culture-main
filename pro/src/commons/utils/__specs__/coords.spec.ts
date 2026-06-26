@@ -61,7 +61,6 @@ describe('parseDms', () => {
     const dmsCoordsWest = dmsStringsWest.map(parseDms)
     const dmsStringsEast = ['0°0′0″ N', '0°59′59″ E']
     const dmsCoordsEast = dmsStringsEast.map(parseDms)
-    // console.log(dmsCoordsWest, dmsCoordsEast);
 
     expect(dmsCoordsEast[0]).toEqual(dmsCoordsWest[0])
     expect(dmsCoordsWest[1]).toBeLessThan(0)
