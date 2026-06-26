@@ -125,7 +125,7 @@ A collective offer can have different statuses, depending on the event dates and
 - **ENDED**: the offer was confirmed and the end date has passed
 - **REIMBURSED**: the offer has been reimbursed
 - **CANCELLED**: 1. the offer has been cancelled by the school or with the API, or 2. the offer has not been confirmed before the offer start date
-- **ARCHIVED**: the offer has been archived (this is currently only possible on the pro interface). It will not be visible on Adage
+- **ARCHIVED**: the offer has been archived. It will not be visible on Adage
 
 The offer status will determine the actions that are allowed on the offer (which fields can be updated, whether the booking can be cancelled...). You can find below a table showing which actions are allowed for each status:
 
