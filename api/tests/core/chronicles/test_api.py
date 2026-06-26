@@ -7,6 +7,7 @@ import pytest
 
 from pcapi import settings as pcapi_settings
 from pcapi.connectors import typeform
+from pcapi.core import search
 from pcapi.core.chronicles import api
 from pcapi.core.chronicles import constants
 from pcapi.core.chronicles import factories as chronicles_factories
@@ -300,6 +301,76 @@ class SaveBookChroniclesTest:
         assert chronicle.externalId == form.response_id
         assert chronicle.userId is None
         assert chronicle.clubType == club_type
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_request_offers_indexation_on_commit(self, mock_async_index_offer_ids):
+        related_offer = offers_factories.OfferFactory(
+            id=123456
+        )  # offer id must have >=6 digits to be matched as a product identifier
+
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                    choice_id=random_string(),
+                    text=f"title - {related_offer.id}",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_chronicle(
+            form=form,
+            club_constants=constants.BookClub,
+            club_type=models.ChronicleClubType.BOOK_CLUB,
+            product_identifier_type=models.ChronicleProductIdentifierType.OFFER_ID,
+        )
+
+        mock_async_index_offer_ids.assert_called_with(
+            [related_offer.id], reason=search.IndexationReason.CHRONICLE_CREATION
+        )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_request_product_offers_indexation_on_commit(self, mock_async_index_offer_ids):
+        identifier = "1234567890123"
+        related_product = offers_factories.ProductFactory(ean=identifier)
+        related_offer = offers_factories.OfferFactory(product=related_product)
+
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.PRODUCT_IDENTIFIER_FIELD_ID.value,
+                    choice_id=random_string(),
+                    text=f"title - {identifier}",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_chronicle(
+            form=form,
+            club_constants=constants.BookClub,
+            club_type=models.ChronicleClubType.BOOK_CLUB,
+            product_identifier_type=models.ChronicleProductIdentifierType.EAN,
+        )
+
+        mock_async_index_offer_ids.assert_called_with(
+            [related_offer.id], reason=search.IndexationReason.CHRONICLE_CREATION
+        )
 
     def test_save_chronicle_with_previous_products(self):
         identifier = "1234567890123"

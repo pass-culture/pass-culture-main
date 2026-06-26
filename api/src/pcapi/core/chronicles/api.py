@@ -2,19 +2,20 @@ import logging
 import re
 from datetime import datetime
 from functools import partial
-from re import search
 from typing import Type
 
 import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import typeform
+from pcapi.core import search
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 from . import constants
 from . import models
@@ -82,7 +83,7 @@ def _extract_ean(answer: typeform.TypeformAnswer) -> str | None:
     ean = None
     if not answer.choice_id:
         return None
-    if answer.text and (match := search(pattern=r"(^|[^\d])([0-9]{13})([^\d]|$)", string=answer.text)):
+    if answer.text and (match := re.search(pattern=r"(^|[^\d])([0-9]{13})([^\d]|$)", string=answer.text)):
         ean = match.group(2)
         return ean
     # Try to find the ean in db by its choice id.
@@ -101,7 +102,7 @@ def _extract_offer_id(answer: typeform.TypeformAnswer) -> str | None:
     if not answer.choice_id:
         return None
     # an example of text that would match: `my super event - 12345678`
-    if answer.text and (match := search(pattern=r"(^|[^\da-zA-Z])([0-9]{6,})([^\da-zA-Z]|$)", string=answer.text)):
+    if answer.text and (match := re.search(pattern=r"(^|[^\da-zA-Z])([0-9]{6,})([^\da-zA-Z]|$)", string=answer.text)):
         offer_id = match.group(2)
         return offer_id
     # Try to find the offer_id in db by its choice id.
@@ -206,6 +207,8 @@ def save_chronicle(
 
     try:
         if content and product_identifier and form.email:
+            offers = get_offers(product_identifier_type, product_identifier)
+            products = get_products(product_identifier_type, product_identifier)
             chronicle = models.Chronicle(
                 age=age,
                 city=city,
@@ -217,8 +220,8 @@ def save_chronicle(
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
-                offers=get_offers(product_identifier_type, product_identifier),
-                products=get_products(product_identifier_type, product_identifier),
+                offers=offers,
+                products=products,
                 userId=user_id,
                 isActive=False,
                 productIdentifierType=product_identifier_type,
@@ -233,6 +236,14 @@ def save_chronicle(
                     "club_name": f"{club_type.value.lower()} club",
                     "response_id": form.response_id,
                 },
+            )
+            offer_to_index = offers if offers else [offer for product in products for offer in product.offers]
+            on_commit(
+                partial(
+                    search.async_index_offer_ids,
+                    [offer.id for offer in offer_to_index],
+                    reason=search.IndexationReason.CHRONICLE_CREATION,
+                )
             )
         else:
             logger.info(
