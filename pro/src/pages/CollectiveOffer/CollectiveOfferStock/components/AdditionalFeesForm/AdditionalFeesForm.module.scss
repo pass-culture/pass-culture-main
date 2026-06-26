@@ -1,0 +1,17 @@
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+.additional-fees-container {
+  margin-top: var(--size-spacing-xl);
+}
+
+.additional-fee-row {
+  margin-bottom: var(--size-spacing-l);
+  align-items: end;
+}
+
+.additional-fee-type-select {
+  @media (min-width: size.$tablet) {
+    min-width: rem.torem(340px);
+  }
+}
