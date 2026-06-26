@@ -1,23 +1,23 @@
 import { render, screen } from '@testing-library/react'
 
-import { OpeningHours } from '../OpeningHours'
+import { OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 
 describe('OpeningHours', () => {
   it('should display the closed-all-days message when there are no opening hours', () => {
-    render(<OpeningHours openingHours={null} />)
+    render(<OpeningHoursReadOnly openingHours={null} />)
 
     expect(screen.getByText(/fermé tous les jours/)).toBeInTheDocument()
   })
 
   it('should display the closed-all-days message when every day is empty', () => {
-    render(<OpeningHours openingHours={{ MONDAY: [], SUNDAY: null }} />)
+    render(<OpeningHoursReadOnly openingHours={{ MONDAY: [], SUNDAY: null }} />)
 
     expect(screen.getByText(/fermé tous les jours/)).toBeInTheDocument()
   })
 
   it('should only list the days that have opening hours, in order', () => {
     const { container } = render(
-      <OpeningHours
+      <OpeningHoursReadOnly
         openingHours={{
           MONDAY: [['09:00', '12:00']],
           WEDNESDAY: [

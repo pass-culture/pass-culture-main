@@ -1,6 +1,6 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
-import { VenuePageLayout } from '@/layouts/VenuePageLayout/VenuePageLayouts'
-import { CollectiveVenuePageLayout } from '@/pages/CollectiveVenuePage/CollectiveVenuePageLayout'
+import { CollectiveVenuePageLayout } from '@/layouts/CollectiveVenuePageLayout/CollectiveVenuePageLayout'
+import { VenuePageLayout } from '@/layouts/VenuePageLayout/VenuePageLayout'
 
 import type { CustomRouteGroup } from '../types'
 import { mustBeOnboardedWithSelectedPartnerVenue } from '../utils'
@@ -16,12 +16,20 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
       children: [
         {
           index: true,
-          lazy: () =>
-            import(
-              '@/pages/CollectiveVenuePage/CollectiveVenuePage/CollectiveVenuePage'
-            ),
+          lazy: () => import('@/pages/CollectiveVenuePage/CollectiveVenuePage'),
           handle: {
             title: 'Page dans ADAGE',
+          },
+        },
+        {
+          index: true,
+          path: 'edition',
+          lazy: () =>
+            import(
+              '@/pages/CollectiveVenuePageEdition/CollectiveVenuePageEdition'
+            ),
+          handle: {
+            title: 'Gérer ma page sur l’application',
           },
         },
       ],
@@ -32,6 +40,19 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
       handle: {
         title: 'Page sur l’application',
       },
+      children: [
+        {
+          index: true,
+          path: 'edition',
+          lazy: () =>
+            import(
+              '@/pages/IndividualVenuePageEdition/IndividualVenuePageEdition'
+            ),
+          handle: {
+            title: 'Gérer ma page sur l’application',
+          },
+        },
+      ],
     },
   ],
 }

@@ -1,7 +1,7 @@
 import type { ActivityOpenToPublic, EditVenueBodyModel } from '@/apiClient/v1'
+import { normalizeActivity } from '@/commons/core/VenueEdition/serializeEditVenueBodyModel'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
-import { normalizeActivity } from '@/pages/VenueEdition/commons/serializers'
 
 import type {
   VenueSettingsFormContext,
