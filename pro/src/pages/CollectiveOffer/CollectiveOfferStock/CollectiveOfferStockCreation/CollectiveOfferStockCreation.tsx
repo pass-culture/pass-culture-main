@@ -76,13 +76,15 @@ function buildCreateStockBody(
   offerId: number,
   isNewCollectivePriceEnabled: boolean
 ): CollectiveStockCreationBodyModel {
-  // TODO(PC-41977) implement servicePrice and collectiveAdditionalFees in the form and send them to the backend
   return {
     ...newCollectiveStock,
     offerId,
-    servicePrice: isNewCollectivePriceEnabled ? 100 : undefined,
-    price: isNewCollectivePriceEnabled ? 100 : newCollectiveStock.price,
-    collectiveAdditionalFees: isNewCollectivePriceEnabled ? [] : undefined,
+    servicePrice: isNewCollectivePriceEnabled
+      ? newCollectiveStock.servicePrice
+      : undefined,
+    collectiveAdditionalFees: isNewCollectivePriceEnabled
+      ? newCollectiveStock.collectiveAdditionalFees
+      : undefined,
   }
 }
 

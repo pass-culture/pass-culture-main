@@ -165,7 +165,9 @@ export const AdditionalFeesForm = ({
                   }
                 }}
                 error={
-                  form.formState.errors?.additionalFees?.[index]?.label?.message
+                  form.formState.errors.additionalFees?.[index]?.type
+                    ?.message ||
+                  form.formState.errors.additionalFees?.[index]?.label?.message
                 }
               />
               <TextInput
@@ -176,7 +178,7 @@ export const AdditionalFeesForm = ({
                 error={
                   form.formState.errors.additionalFees?.[index]?.amount?.message
                 }
-                min={0}
+                min={0.01}
                 label="Prix (en €)"
                 required
                 step={0.01}
