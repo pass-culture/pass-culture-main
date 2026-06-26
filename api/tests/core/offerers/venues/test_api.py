@@ -62,6 +62,18 @@ class FetchUserVenuesSplittedBaseOnUserOffererStatusTest:
         assert not splitted.others
         assert splitted.with_pending_validation == [pending_venue]
 
+    def test_suspended_offerers_venues_are_ignored(self):
+        user = users_factories.UserFactory()
+
+        suspended_offerer = factories.OffererFactory(isActive=False)
+        factories.UserOffererFactory(user=user, offerer=suspended_offerer)
+        factories.VenueFactory(managingOfferer=suspended_offerer)
+
+        splitted = api.fetch_user_venues_splitted_based_on_user_offerer_status(user.id)
+
+        assert not splitted.others
+        assert not splitted.with_pending_validation
+
     def test_soft_deleted_venues_are_ignored(self):
         user = users_factories.UserFactory()
         pending_user_offerer = factories.NewUserOffererFactory(user=user)

@@ -26,6 +26,7 @@ def fetch_user_venues_splitted_based_on_user_offerer_status(user_id: int) -> Spl
         .join(models.UserOfferer.offerer)
         .filter(
             models.UserOfferer.userId == user_id,
+            models.Offerer.isActive.is_(True),
             sa.or_(
                 models.UserOfferer.isWaitingForValidation,
                 models.UserOfferer.isValidated,
