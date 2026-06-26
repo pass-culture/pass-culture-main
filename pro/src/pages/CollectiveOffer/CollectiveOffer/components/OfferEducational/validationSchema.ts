@@ -104,6 +104,7 @@ export function getOfferEducationalValidationSchema(
       ) => isTemplate && contactOptions?.phone,
       then: (schema) =>
         schema.required('Veuillez renseigner un numéro de téléphone'),
+      otherwise: () => yup.string().nullable().notRequired(),
     }),
     contactEmail: yup.string().when(['contactOptions', 'isTemplate'], {
       is: (

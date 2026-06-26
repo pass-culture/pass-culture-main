@@ -89,6 +89,16 @@ describe('validationSchema OfferEducational', () => {
       },
       {
         description:
+          'valid form with phone option not checked but field not valid',
+        formValues: {
+          ...defaultValues,
+          contactOptions: { email: true, form: false, phone: false },
+          phone: 'invalide phone',
+        },
+        expectedErrors: [],
+      },
+      {
+        description:
           'valid form with form option checked and default form selected',
         formValues: {
           ...defaultValues,
