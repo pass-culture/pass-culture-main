@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
+import {
+  CollectiveAdditionalFeeType,
+  CollectiveOfferAllowedAction,
+} from '@/apiClient/v1'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -33,7 +36,7 @@ vi.mock(
   })
 )
 
-describe('<NewCollectiveOfferStock />', () => {
+describe('<CollectiveOfferStockForm />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
       <CollectiveOfferStockForm {...defaultProps} />
@@ -41,6 +44,7 @@ describe('<NewCollectiveOfferStock />', () => {
 
     expect(await axe(container)).toHaveNoViolations()
   })
+
   it('should render for offer with a stock in the past', () => {
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
@@ -92,6 +96,9 @@ describe('<NewCollectiveOfferStock />', () => {
     expect(
       screen.getByText("Le nombre d'accompagnateurs est obligatoire")
     ).toBeVisible()
+    expect(
+      screen.getByText('Le tarif de la prestation est obligatoire')
+    ).toBeVisible()
     expect(testProps.onSubmit).not.toHaveBeenCalled()
 
     const userDateInput = format(addDays(new Date(), 5), FORMAT_ISO_DATE_ONLY)
@@ -103,6 +110,7 @@ describe('<NewCollectiveOfferStock />', () => {
     )
     await user.type(screen.getByLabelText(/Nombre d'élèves/), '10')
     await user.type(screen.getByLabelText(/Nombre d'accompagnateurs/), '2')
+    await user.type(screen.getByLabelText(/Tarif de la prestation/), '100')
 
     expect(
       screen.queryByText('La date de début est obligatoire')
@@ -121,6 +129,9 @@ describe('<NewCollectiveOfferStock />', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByText("Le nombre d'élèves est obligatoire")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Le tarif de la prestation est obligatoire')
     ).not.toBeInTheDocument()
 
     await user.click(submitBtn)
@@ -228,6 +239,8 @@ describe('<NewCollectiveOfferStock />', () => {
         bookingLimitDatetime: new Date().toISOString(),
         numberOfTickets: 10,
         numberOfTeachers: 10,
+        servicePrice: 100,
+        collectiveAdditionalFees: [],
       },
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
@@ -280,13 +293,15 @@ describe('<NewCollectiveOfferStock />', () => {
         startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
         numberOfTickets: 10,
         numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [],
       },
       departementCode: '75',
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
 
-    const eventTime = '11:00',
-      expectedEventTime = '09:00' // due to departementCode: '75'
+    const eventTime = '11:00'
+    const expectedEventTime = '09:00' // due to departementCode: '75';
     const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
 
     await user.type(screen.getByLabelText(/Date de fin/), tomorrow)
@@ -301,6 +316,9 @@ describe('<NewCollectiveOfferStock />', () => {
       bookingLimitDatetime: `${today}T21:59:59Z`,
       numberOfTickets: 10,
       numberOfTeachers: 1,
+      servicePrice: 100,
+      price: 100,
+      collectiveAdditionalFees: [],
     })
   })
 
@@ -318,6 +336,8 @@ describe('<NewCollectiveOfferStock />', () => {
         bookingLimitDatetime: tomorrow,
         numberOfTickets: 10,
         numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [],
       },
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
@@ -329,6 +349,117 @@ describe('<NewCollectiveOfferStock />', () => {
 
     expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
       numberOfTeachers: 2,
+    })
+  })
+
+  it('should save additional fees removal', async () => {
+    const user = userEvent.setup()
+    const testProps: CollectiveOfferStockFormProps = {
+      ...defaultProps,
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT],
+      initialStock: {
+        id: 12,
+        startDatetime: addDays(new Date(), 1).toISOString(),
+        endDatetime: addDays(new Date(), 1).toISOString(),
+        bookingLimitDatetime: new Date().toISOString(),
+        numberOfTickets: 10,
+        numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.ACCOMMODATION,
+            label: null,
+            amount: 10,
+          },
+          { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 20 },
+        ],
+      },
+    }
+    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+    const trashButtons = screen.getAllByRole('button', {
+      name: 'Supprimer ce champ',
+    })
+    await user.click(trashButtons[0])
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          expect.objectContaining({ type: 'TRAVEL', amount: 20 }),
+        ],
+        price: 120,
+      })
+    )
+  })
+
+  it('should compute and display the price when servicePrice or additionalFees change', async () => {
+    const user = userEvent.setup()
+    const tomorrow = addDays(new Date(), 1).toISOString()
+    const testProps: CollectiveOfferStockFormProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      initialStock: {
+        id: 12,
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: tomorrow,
+        numberOfTickets: 10,
+        numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.ACCOMMODATION,
+            label: null,
+            amount: 10,
+          },
+          { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 20 },
+        ],
+      },
+    }
+    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+    const priceHeading = screen.getByRole('heading', {
+      name: /Prix total de votre offre/,
+    })
+    expect(priceHeading).toHaveTextContent(/130/)
+
+    const servicePriceInput = screen.getByLabelText(
+      /Tarif de la prestation \(en €\)/
+    )
+    await user.clear(servicePriceInput)
+    await user.type(servicePriceInput, '150')
+
+    expect(priceHeading).toHaveTextContent(/180/)
+
+    const feeAmountInputs = screen.getAllByLabelText(/Prix \(en €\)/)
+    expect(feeAmountInputs[0]).toHaveValue(10)
+    expect(feeAmountInputs[1]).toHaveValue(20)
+    await user.clear(feeAmountInputs[0])
+    await waitFor(() => user.type(feeAmountInputs[0], '15'))
+    expect(feeAmountInputs[0]).toHaveValue(15)
+
+    expect(priceHeading).toHaveTextContent(/185/)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+      servicePrice: 150,
+      collectiveAdditionalFees: [
+        {
+          type: CollectiveAdditionalFeeType.ACCOMMODATION,
+          label: null,
+          amount: 15,
+        },
+        { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 20 },
+      ],
+      price: 185,
     })
   })
 })
