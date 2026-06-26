@@ -23,7 +23,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
 
   return (
     <SummarySection
-      title="Horaires"
+      title="Horaires et stocks"
       editLink={editLink}
       aria-label="Modifier le calendrier"
     >

@@ -87,7 +87,7 @@ describe('StocksCalendar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display an info banner', async () => {
+  it('should display an info banner in edition mode', async () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
         priceCategories: [
@@ -95,17 +95,14 @@ describe('StocksCalendar', () => {
         ],
         hasStocks: false,
       }),
+      mode: OFFER_WIZARD_MODE.EDITION,
     })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    expect(
-      screen.getByText(
-        /Si vous souhaitez annuler l'ensemble des réservations associées à une date, vous pouvez cliquer sur "Supprimer la date" dans la colonne Actions./
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Délai d'annulation/)).toBeInTheDocument()
   })
 
   it('should not display an info banner if the offer is disabled', async () => {
@@ -117,15 +114,33 @@ describe('StocksCalendar', () => {
         status: OfferStatus.REJECTED,
         hasStocks: false,
       }),
+      mode: OFFER_WIZARD_MODE.EDITION,
     })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    expect(
-      screen.queryByText(/Les bénéficiaires ont 48h pour annuler/)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Délai d'annulation/)).not.toBeInTheDocument()
+  })
+
+  it('should not display an info banner if the offer is being created', async () => {
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [
+          { id: 1, hasStocks: false, label: 'Tarif 1', price: 1 },
+        ],
+        status: OfferStatus.ACTIVE,
+        hasStocks: false,
+      }),
+      mode: OFFER_WIZARD_MODE.CREATION,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(screen.queryByText(/Délai d'annulation/)).not.toBeInTheDocument()
   })
 
   it('should open the recurrence form when clicking on the button when there are no stocks yet', async () => {

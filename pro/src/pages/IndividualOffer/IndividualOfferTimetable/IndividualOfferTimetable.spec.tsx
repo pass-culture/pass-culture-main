@@ -75,7 +75,7 @@ describe('IndividualOfferTimetable', () => {
     })
 
     expect(
-      screen.getByRole('heading', { name: 'Horaires' })
+      screen.getByRole('heading', { name: 'Horaires et stocks' })
     ).toBeInTheDocument()
   })
 })
