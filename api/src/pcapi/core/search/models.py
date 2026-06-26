@@ -13,6 +13,7 @@ class IndexationReason(enum.Enum):
     BOOKING_COUNT_CHANGE = "booking-count-change"
     BOOKING_CREATION = "booking-creation"
     BOOKING_UNCANCELLATION = "booking-uncancellation"
+    CHRONICLE_CREATION = "chronicle-creation"
     CINEMA_STOCK_QUANTITY_UPDATE = "cinema-stock-quantity-update"
     CRITERIA_LINK = "criteria-link"
     GOOGLE_PLACES_BANNER_SYNCHRONIZATION = "google-places-banner-synchronization"
