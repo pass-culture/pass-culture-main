@@ -1679,6 +1679,7 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> De
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> response_utils.BackofficeResponse:
+    logs_utils.log_backoffice_referrer_tracking_data()
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(geography_models.Address)
 

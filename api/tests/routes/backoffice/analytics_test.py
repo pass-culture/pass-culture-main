@@ -19,7 +19,7 @@ class GetSaveTest(GetEndpointWithoutPermissionHelper):
         event_data = {
             "name": "my super tab",
             "type": "tabClicked",
-            "origin": url_for("backoffice_web.home", external=True),
+            "origin": "http://localhost:5002/pro/offer",
         }
         # When
         with caplog.at_level(logging.INFO):
@@ -28,14 +28,14 @@ class GetSaveTest(GetEndpointWithoutPermissionHelper):
 
         # Then
         assert caplog.records[0].message == "Analytics event"
-        assert caplog.records[0].extra["eventOrigin"] == "backoffice_web.home"
+        assert caplog.records[0].extra["eventOrigin"] == "backoffice_web.offer.list_offers"
         assert caplog.records[0].extra["eventName"] == event_data["name"]
         assert caplog.records[0].extra["eventType"] == event_data["type"]
 
     def test_invalid_data(self, authenticated_client, caplog):
         event_data = {
             "name": "my super tab",
-            "origin": url_for("backoffice_web.home", external=True),
+            "origin": "http://localhost:5002/pro/offer",
         }
         # When
         with caplog.at_level(logging.INFO):
