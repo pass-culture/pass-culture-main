@@ -1,6 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
+.individual-offer-exposure-screen {
+  gap: var(--size-spacing-xl);
+}
+
 .button-see-in-app {
   margin-bottom: var(--size-spacing-l);
 }

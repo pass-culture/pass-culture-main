@@ -11,6 +11,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { formatCount } from '@/commons/format/formatCount'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -68,10 +69,10 @@ export const OfferExposureCards = ({
         <Card className={styles['card']}>
           <Card.Header
             titleTag="p"
-            title={`${exposure?.views ?? 0} ${pluralizeFr(exposure?.views ?? 0, 'consultation', 'consultations')}`}
+            title={`${formatCount(exposure?.views ?? 0)} ${pluralizeFr(exposure?.views ?? 0, 'consultation', 'consultations')}`}
             subtitle={
               isMoreThanSixMonthsSinceCreation
-                ? 'sur les six derniers mois'
+                ? 'sur les 6 derniers mois'
                 : 'depuis la publication de l’offre'
             }
             icon={strokeShowIcon}
@@ -87,7 +88,7 @@ export const OfferExposureCards = ({
                 />
                 <p
                   className={styles['lifted-views-text']}
-                >{`+${exposure?.events[0].viewsOnPeriod} depuis ${getEventLabel(exposure?.events[0].type)}`}</p>
+                >{`+${formatCount(exposure?.events[0].viewsOnPeriod ?? 0)} depuis ${getEventLabel(exposure?.events[0].type)}`}</p>
               </div>
             )}
           </Card.Content>
@@ -96,7 +97,7 @@ export const OfferExposureCards = ({
         <Card className={styles['card']}>
           <Card.Header
             titleTag="p"
-            title={`${offer.bookingsCount ?? 0} ${pluralizeFr(offer.bookingsCount ?? 0, 'réservation', 'réservations')}`}
+            title={`${new Intl.NumberFormat('fr-FR').format(offer.bookingsCount ?? 0)} ${pluralizeFr(offer.bookingsCount ?? 0, 'réservation', 'réservations')}`}
             subtitle="depuis la publication de l’offre"
             icon={strokeEventIcon}
           />

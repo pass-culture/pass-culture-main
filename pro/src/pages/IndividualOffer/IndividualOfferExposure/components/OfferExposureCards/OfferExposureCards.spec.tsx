@@ -64,7 +64,7 @@ describe('OfferExposureCards', () => {
     renderOfferExposureCards({ dateCreated: daysFromNowToIso(-204) })
 
     expect(
-      await screen.findByText('sur les six derniers mois')
+      await screen.findByText('sur les 6 derniers mois')
     ).toBeInTheDocument()
   })
 
