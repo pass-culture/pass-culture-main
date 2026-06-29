@@ -94,7 +94,7 @@
     "@testing-library/user-event": "14.6.1",
     "@types/jsdom": "28.0.3",
     "@types/lodash.invert": "4.3.9",
-    "@types/node": "25.9.3",
+    "@types/node": "25.9.4",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
