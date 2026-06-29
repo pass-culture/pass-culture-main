@@ -34,7 +34,7 @@ export const IndividualOfferExposureScreen = ({
   } = getOfferEnhancementCardsVisibility(offer)
 
   return (
-    <SummaryLayout>
+    <SummaryLayout className={styles['individual-offer-exposure-screen']}>
       <SummaryContent>
         <OfferExposureCards offer={offer} />
         <h2 className={styles['title']}>Actions de mise en avant</h2>
