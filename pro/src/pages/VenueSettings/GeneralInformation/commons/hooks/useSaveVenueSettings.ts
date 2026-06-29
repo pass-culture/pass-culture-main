@@ -27,7 +27,7 @@ export const useSaveVenueSettings = ({
   const saveAndContinue = async (
     formValues: VenueSettingsFormValues,
     formContext: VenueSettingsFormContext
-  ) => {
+  ): Promise<boolean> => {
     try {
       const updatedVenue = await saveVenueSettings(formValues, formContext, {
         venue,
@@ -40,6 +40,7 @@ export const useSaveVenueSettings = ({
       })
 
       snackBar.success('Vos modifications ont été sauvegardées')
+      return true
     } catch (error) {
       const formErrors = isErrorAPIError(error) ? error.body : {}
       const errorsKeys = Object.keys(formErrors)
@@ -63,6 +64,8 @@ export const useSaveVenueSettings = ({
         saved: false,
         isEdition: true,
       })
+
+      return false
     }
   }
 

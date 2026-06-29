@@ -9,10 +9,11 @@ import styles from './ConfirmDialog.module.scss'
 
 type ConfirmDialogProps = DialogProps & {
   overrideConfirm?: React.ReactNode
+  overrideCancel?: React.ReactNode
   onConfirm?: () => void
   confirmText?: string
   confirmColor?: ButtonColor
-  cancelText: string
+  cancelText?: string
   cancelIcon?: string
   isLoading?: boolean
   leftButtonAction?: () => void
@@ -41,6 +42,7 @@ export const ConfirmDialog = ({
   open,
   refToFocusOnClose,
   overrideConfirm,
+  overrideCancel,
 }: ConfirmDialogProps): JSX.Element => {
   const cancelButton = (
     <Button
@@ -48,6 +50,7 @@ export const ConfirmDialog = ({
       variant={ButtonVariant.SECONDARY}
       color={
         // That's a Design-System rule for secondary buttons
+        cancelText &&
         ['annuler', 'annuler et quitter', 'fermer'].includes(
           cancelText.toLowerCase()
         )
@@ -87,14 +90,16 @@ export const ConfirmDialog = ({
       <div className={styles['confirm-dialog-actions']}>
         {trigger ? (
           <>
-            <RadixDialog.Close asChild>{cancelButton}</RadixDialog.Close>
+            <RadixDialog.Close asChild>
+              {overrideCancel ?? cancelButton}
+            </RadixDialog.Close>
             <RadixDialog.Close asChild>
               {overrideConfirm ?? confirmButton}
             </RadixDialog.Close>
           </>
         ) : (
           <>
-            {cancelButton}
+            {overrideCancel ?? cancelButton}
             {overrideConfirm ?? confirmButton}
           </>
         )}
