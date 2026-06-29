@@ -5,7 +5,8 @@ import jwt
 import pytest
 
 from pcapi.connectors.apple_oauth import AppleSignInException
-from pcapi.connectors.apple_oauth import build_encrypted_refresh_token
+from pcapi.connectors.apple_oauth import build_refresh_token_payload
+from pcapi.connectors.apple_oauth import decrypt_refresh_token_payload
 from pcapi.connectors.apple_oauth import get_apple_user
 from pcapi.connectors.apple_oauth import revoke_refresh_token
 from pcapi.utils import requests
@@ -54,11 +55,20 @@ def test_get_apple_user_raises_apple_exception_when_id_token_missing(mocker, req
 
 
 @pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_succeeds_on_first_attempt(mocker, requests_mock):
+def test_build_and_decrypt_refresh_token_payload_round_trip():
+    payload = build_refresh_token_payload("rt_apple", is_web=False)
+
+    refresh_token, client_id = decrypt_refresh_token_payload(payload)
+
+    assert refresh_token == "rt_apple"
+    assert client_id == "apple.mobile.client"
+
+
+def test_revoke_refresh_token_makes_a_single_call(mocker, requests_mock):
     mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
     matcher = requests_mock.post("https://appleid.apple.com/auth/revoke", status_code=200)
 
-    revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
+    revoke_refresh_token("rt_apple", "apple.mobile.client")
 
     assert matcher.call_count == 1
     body = matcher.last_request.text
@@ -67,54 +77,12 @@ def test_revoke_refresh_token_succeeds_on_first_attempt(mocker, requests_mock):
     assert "client_id=apple.mobile.client" in body
 
 
-@pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_tries_issuing_client_id_first(mocker, requests_mock):
-    mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
-    matcher = requests_mock.post("https://appleid.apple.com/auth/revoke", status_code=200)
-
-    revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=True))
-
-    assert matcher.call_count == 1
-    assert "client_id=apple.web.client" in matcher.last_request.text
-
-
-@pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_falls_back_to_other_client(mocker, requests_mock):
-    mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
-    matcher = requests_mock.post(
-        "https://appleid.apple.com/auth/revoke",
-        [{"status_code": 400, "reason": "Bad request"}, {"status_code": 200}],
-    )
-
-    revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
-
-    assert matcher.call_count == 2
-    assert "client_id=apple.web.client" in matcher.last_request.text
-
-
-@pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_does_not_fall_back_on_transport_error(mocker, requests_mock):
-    mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
-    matcher = requests_mock.post(
-        "https://appleid.apple.com/auth/revoke",
-        [{"exc": requests.exceptions.ConnectTimeout}, {"status_code": 200}],
-    )
-
-    # A transport failure means the endpoint is unreachable: retrying the same endpoint with the
-    # other client_id would only hold row locks longer, so the error propagates immediately.
-    with pytest.raises(requests.exceptions.ConnectTimeout):
-        revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
-
-    assert matcher.call_count == 1
-
-
-@pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
-def test_revoke_refresh_token_raises_when_all_attempts_fail(mocker, requests_mock):
+def test_revoke_refresh_token_raises_on_http_error(mocker, requests_mock):
     mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
     requests_mock.post("https://appleid.apple.com/auth/revoke", status_code=400, reason="Bad request")
 
     with pytest.raises(requests.exceptions.HTTPError):
-        revoke_refresh_token(build_encrypted_refresh_token("rt_apple", is_web=False))
+        revoke_refresh_token("rt_apple", "apple.mobile.client")
 
 
 def test_logs_and_raises_on_fetch_id_token_bad_request(mocker, requests_mock, caplog):

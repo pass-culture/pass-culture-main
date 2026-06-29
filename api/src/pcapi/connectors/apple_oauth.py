@@ -2,6 +2,7 @@ import json
 import logging
 import time
 import typing
+import uuid
 
 import jwt
 from jwt import PyJWKClient
@@ -56,48 +57,29 @@ def get_apple_user(authorization_code: str, is_web: bool) -> tuple[users_schemas
     return _parse_identity_token(token_payload), refresh_token
 
 
-def build_encrypted_refresh_token(refresh_token: str, is_web: bool) -> str:
-    # Apple ties tokens to the client_id (web vs mobile) that obtained them. Store it alongside
-    # the refresh token so the revocation can try the right client_id first.
+def build_refresh_token_payload(refresh_token: str, is_web: bool) -> str:
+    # Store the client_id: Apple ties the refresh token to it and it cannot be recomputed later.
     client_id = settings.APPLE_WEB_CLIENT_ID if is_web else settings.APPLE_MOBILE_CLIENT_ID
     return crypto.encrypt(json.dumps({"refresh_token": refresh_token, "client_id": client_id}))
 
 
-def revoke_refresh_token(encrypted_refresh_token: str) -> None:
+def decrypt_refresh_token_payload(refresh_token_payload: str) -> tuple[str, str]:
+    payload = json.loads(crypto.decrypt(refresh_token_payload))
+    return payload["refresh_token"], payload["client_id"]
+
+
+def revoke_refresh_token(refresh_token: str, client_id: str) -> None:
     # https://developer.apple.com/documentation/sign_in_with_apple/revoke_tokens
-    payload = json.loads(crypto.decrypt(encrypted_refresh_token))
-    refresh_token = payload["refresh_token"]
-    # Try the client_id that obtained the token first ; keep the other one as a fallback in case
-    # the stored value is stale or misconfigured.
-    candidate_client_ids = (payload.get("client_id"), settings.APPLE_MOBILE_CLIENT_ID, settings.APPLE_WEB_CLIENT_ID)
-    client_ids = list(dict.fromkeys(client_id for client_id in candidate_client_ids if client_id))
-    if not client_ids:
-        raise AppleSignInException("No Apple client_id configured for revocation")
-    last_error: Exception | None = None
-    for client_id in client_ids:
-        client_secret = _generate_client_secret(client_id)
-        data = {
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "token": refresh_token,
-            "token_type_hint": "refresh_token",
-        }
-        try:
-            # Short timeout: this may run inside the anonymization transaction, holding row locks.
-            response = requests.post(settings.APPLE_REVOKE_ENDPOINT, data=data, timeout=3)
-            response.raise_for_status()
-            return
-        except requests.exceptions.HTTPError as e:
-            # Functional rejection from Apple (e.g. invalid_client when the stored client_id is
-            # stale): the other client_id may succeed, so keep it as a fallback.
-            last_error = e
-        except requests.exceptions.RequestException as e:
-            # Transport failure (timeout, connection error): the endpoint itself is unreachable,
-            # so retrying the same endpoint with another client_id would only hold row locks
-            # longer for no benefit. Stop here.
-            raise e
-    if last_error is not None:
-        raise last_error
+    client_secret = _generate_client_secret(client_id)
+    data = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "token": refresh_token,
+        "token_type_hint": "refresh_token",
+    }
+    # Short timeout: this may run inside the anonymization transaction, holding row locks.
+    response = requests.post(settings.APPLE_REVOKE_ENDPOINT, data=data, timeout=3)
+    response.raise_for_status()
 
 
 def _generate_client_secret(client_id: str) -> str:
@@ -106,9 +88,10 @@ def _generate_client_secret(client_id: str) -> str:
     payload = {
         "iss": settings.APPLE_TEAM_ID,
         "iat": now,
-        "exp": now + 3600,
+        "exp": now + 180,  # short-lived: used immediately for a single request
         "aud": settings.APPLE_ISSUER_URL,
         "sub": client_id,
+        "jti": str(uuid.uuid4()),
     }
     headers = {"alg": "ES256", "kid": settings.APPLE_KEY_ID}
     return jwt.encode(payload, settings.APPLE_PRIVATE_KEY, headers=headers)

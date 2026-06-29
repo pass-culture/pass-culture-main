@@ -1075,9 +1075,9 @@ class AccountCreationWithSSOTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_persists_sso_refresh_token(self, mocked_check_recaptcha_token_is_valid, client):
-        encrypted_refresh_token = apple_oauth.build_encrypted_refresh_token("rt_signup", is_web=False)
+        refresh_token_payload = apple_oauth.build_refresh_token_payload("rt_signup", is_web=False)
         token_data = self.google_user.model_dump()
-        token_data["encrypted_refresh_token"] = encrypted_refresh_token
+        token_data["refresh_token_payload"] = refresh_token_payload
         token_data["sso_provider"] = "apple"
         account_creation_token = token_utils.UUIDToken.create(
             token_utils.TokenType.ACCOUNT_CREATION,
@@ -1098,14 +1098,14 @@ class AccountCreationWithSSOTest:
         assert response.status_code == 200, response.json
         sso = db.session.query(users_models.SingleSignOn).one()
         assert sso.ssoProvider == "apple"
-        assert sso.encryptedRefreshToken == encrypted_refresh_token
+        assert sso.refreshTokenPayload == refresh_token_payload
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_ignores_refresh_token_issued_for_another_provider(
         self, mocked_check_recaptcha_token_is_valid, client
     ):
         token_data = self.google_user.model_dump()
-        token_data["encrypted_refresh_token"] = apple_oauth.build_encrypted_refresh_token("rt_signup", is_web=False)
+        token_data["refresh_token_payload"] = apple_oauth.build_refresh_token_payload("rt_signup", is_web=False)
         token_data["sso_provider"] = "apple"
         account_creation_token = token_utils.UUIDToken.create(
             token_utils.TokenType.ACCOUNT_CREATION,
@@ -1127,7 +1127,7 @@ class AccountCreationWithSSOTest:
         sso = db.session.query(users_models.SingleSignOn).one()
         assert sso.ssoProvider == "google"
         # An Apple refresh token must not be stored on a google SSO row: it could never be revoked.
-        assert sso.encryptedRefreshToken is None
+        assert sso.refreshTokenPayload is None
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_already_present(self, mocked_check_recaptcha_token_is_valid, client):

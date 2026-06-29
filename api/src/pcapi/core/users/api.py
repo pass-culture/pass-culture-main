@@ -108,7 +108,7 @@ def create_account(
     firebase_pseudo_id: str | None = None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
-    sso_encrypted_refresh_token: str | None = None,
+    sso_refresh_token_payload: str | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -129,7 +129,7 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    setup_login(user, password, sso_provider, sso_user_id, sso_encrypted_refresh_token)
+    setup_login(user, password, sso_provider, sso_user_id, sso_refresh_token_payload)
 
     if user.externalIds is None:
         user.externalIds = {}
@@ -161,10 +161,9 @@ def setup_login(
     password: str | None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
-    sso_encrypted_refresh_token: str | None = None,
+    sso_refresh_token_payload: str | None = None,
 ) -> None:
-    # `sso_encrypted_refresh_token` MUST already be Fernet-encrypted by the caller — the value
-    # is persisted as-is on `single_sign_on.encryptedRefreshToken`.
+    # `sso_refresh_token_payload` must already be encrypted by the caller (stored as-is).
     if password:
         user.setPassword(password)
         return
@@ -173,8 +172,8 @@ def setup_login(
         raise exceptions.MissingLoginMethod()
 
     single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
-    if sso_encrypted_refresh_token:
-        single_sign_on.encryptedRefreshToken = sso_encrypted_refresh_token
+    if sso_refresh_token_payload:
+        single_sign_on.refreshTokenPayload = sso_refresh_token_payload
     db.session.add(single_sign_on)
 
 
@@ -894,15 +893,13 @@ def create_oauth_state_token() -> str:
 
 
 def create_account_creation_token(
-    sso_user: users_schemas.SSOUser, encrypted_refresh_token: str | None = None, sso_provider: str | None = None
+    sso_user: users_schemas.SSOUser, refresh_token_payload: str | None = None, sso_provider: str | None = None
 ) -> str:
-    # `encrypted_refresh_token` MUST already be encrypted by the caller — it is stored as-is in
-    # the token data, then on `single_sign_on.encryptedRefreshToken` at account creation.
+    # `refresh_token_payload` must already be encrypted by the caller.
     data = sso_user.model_dump()
-    if encrypted_refresh_token:
-        # Bind the refresh token to the provider that issued it: the account creation route must
-        # not persist it under another provider, where it could never be revoked.
-        data["encrypted_refresh_token"] = encrypted_refresh_token
+    if refresh_token_payload:
+        # Bind the token to its issuing provider: it must never be persisted under another one.
+        data["refresh_token_payload"] = refresh_token_payload
         data["sso_provider"] = sso_provider
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
@@ -920,14 +917,9 @@ _SSO_ACCESS_DENIED_ERROR = {
 
 def authorize_sso_user(sso_provider: str, authorization_code: str, is_web: bool) -> models.User:
     """Resolve the user behind an SSO authorization, persisting the SSO link and the (encrypted)
-    refresh token. Raises `ApiErrors` for every functional rejection.
-
-    Shared by the native v1 and v2 `sso_authorize` routes so the SSO security logic (refresh token
-    capture/encryption, identification by (provider, sub) vs required email, token persistence)
-    cannot diverge between the two API versions.
+    refresh token. Shared by the native v1 and v2 `sso_authorize` routes. Raises `ApiErrors`.
     """
-    # Imported locally: `google_oauth` pulls in `pcapi.flask_app`, which we must not load at the
-    # module level of a `core` module.
+    # Local import: `google_oauth` pulls in `pcapi.flask_app`, forbidden at a core module's top level.
     from pcapi.connectors import apple_oauth
     from pcapi.connectors import google_oauth
 
@@ -942,24 +934,21 @@ def authorize_sso_user(sso_provider: str, authorization_code: str, is_web: bool)
     else:
         raise ApiErrors({"error": "Unknown SSO provider"})
 
-    encrypted_refresh_token: str | None = None
+    refresh_token_payload: str | None = None
     if refresh_token and FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
-        # Encrypt at reception so the refresh token never sits in clear text, not even inside
-        # the short-lived account-creation token.
-        encrypted_refresh_token = apple_oauth.build_encrypted_refresh_token(refresh_token, is_web)
+        # Encrypt at reception so the refresh token never sits in clear text.
+        refresh_token_payload = apple_oauth.build_refresh_token_payload(refresh_token, is_web)
 
     sso_user_id = sso_user.sub
     single_sign_on = users_repository.get_single_sign_on(sso_provider, sso_user_id)
 
     user: models.User | None
     if single_sign_on:
-        # An existing SSO link identifies the user by (provider, sub) alone. Apple only returns the
-        # email on the first consent, so we must not require it again on subsequent logins (e.g. after
-        # a token revocation and re-consent). The id_token is already cryptographically verified.
+        # Existing (provider, sub) link: identify by it alone. Apple returns the email only on first
+        # consent, so we must not require it again on later logins.
         user = single_sign_on.user
     else:
-        # No existing SSO link: we rely on the email to match an existing account or to create one,
-        # so it must be present and verified by the provider.
+        # No link yet: the email must be present and provider-verified to match or create an account.
         if not sso_user.email_verified:
             logger.warning(
                 "SSO access denied: email not verified",
@@ -980,7 +969,7 @@ def authorize_sso_user(sso_provider: str, authorization_code: str, is_web: bool)
             extra={"sso_provider": sso_provider, "avoid_current_user": True},
             technical_message_id=f"users.login.sso.{sso_provider}",
         )
-        encoded_account_creation_token = create_account_creation_token(sso_user, encrypted_refresh_token, sso_provider)
+        encoded_account_creation_token = create_account_creation_token(sso_user, refresh_token_payload, sso_provider)
         # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
         raise ApiErrors(
             {
@@ -1015,11 +1004,10 @@ def authorize_sso_user(sso_provider: str, authorization_code: str, is_web: bool)
             current_provider_sso = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
             db.session.add(current_provider_sso)
 
-        # Persist the refresh token (encrypted) so we can revoke it provider-side on account deletion.
-        # Always overwrite with the newest refresh_token we receive ; only skip when the provider
-        # does not return one (Apple only returns a refresh token on the first consent).
-        if encrypted_refresh_token:
-            current_provider_sso.encryptedRefreshToken = encrypted_refresh_token
+        # Persist the (encrypted) refresh token to revoke it on deletion. Overwrite with the newest;
+        # Apple only sends one on first consent, so skip when absent.
+        if refresh_token_payload:
+            current_provider_sso.refreshTokenPayload = refresh_token_payload
 
     return user
 

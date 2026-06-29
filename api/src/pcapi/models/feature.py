@@ -233,7 +233,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION,
     FeatureToggle.WIP_OFFER_EXPOSURE,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
-    FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     # Please keep alphabetic order
 )
 

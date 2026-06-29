@@ -83,35 +83,30 @@ def anonymize_user_by_id(user_id: int) -> bool:
     return anonymize_user(user=user)
 
 
-def _revoke_sso_tokens(user: models.User) -> None:
-    # Best-effort revocation of Apple-side OAuth tokens before account anonymization.
-    # Apple App Store Review Guideline 5.1.1(v) requires this for Sign in with Apple.
-    # Failures are logged but do not block deletion.
-    if not FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
-        return
-
-    for sso in user.single_sign_ons:
-        if sso.ssoProvider != "apple" or not sso.encryptedRefreshToken:
-            continue
-        try:
-            apple_oauth.revoke_refresh_token(sso.encryptedRefreshToken)
-            # Clear the stored token so the late-stage anonymization cron does not retry a
-            # revocation that has already succeeded.
-            sso.encryptedRefreshToken = None
-        except Exception as exc:
-            logger.error(
-                "SSO token revocation failed",
-                extra={"user_id": user.id, "provider": sso.ssoProvider, "exc": str(exc)},
-            )
+def _revoke_apple_sso_token(refresh_token_payload: str) -> None:
+    # Apple guideline 5.1.1(v): revoke the provider-side token. Raises on failure.
+    refresh_token, client_id = apple_oauth.decrypt_refresh_token_payload(refresh_token_payload)
+    apple_oauth.revoke_refresh_token(refresh_token, client_id)
 
 
-def _revoke_sso_tokens_by_user_id(user_id: int) -> None:
-    # Runs as an on_commit callback: open a fresh transaction so the token cleanup done by
-    # `_revoke_sso_tokens` is persisted.
+def _revoke_apple_sso_tokens_by_user_id(user_id: int) -> None:
+    # Runs as an on_commit callback: open a fresh transaction so the token cleanup is persisted.
     with transaction_manager.atomic():
         user = db.session.query(models.User).filter(models.User.id == user_id).one_or_none()
-        if user is not None:
-            _revoke_sso_tokens(user)
+        if user is None:
+            return
+        for sso in user.single_sign_ons:
+            if sso.ssoProvider != "apple" or not sso.refreshTokenPayload:
+                continue
+            try:
+                _revoke_apple_sso_token(sso.refreshTokenPayload)
+                # Clear on success only: keep it on failure so the final anonymization can retry.
+                sso.refreshTokenPayload = None
+            except Exception as exc:
+                logger.error(
+                    "SSO token revocation failed",
+                    extra={"user_id": user.id, "provider": sso.ssoProvider, "exc": str(exc)},
+                )
 
 
 def anonymize_user(
@@ -123,12 +118,19 @@ def anonymize_user(
     if has_unprocessed_extract(user):
         return False
 
-    _revoke_sso_tokens(user)
-    # GDPR: never keep a provider token (even encrypted) on an anonymized account, including
-    # when provider-side revocation failed. `pre_anonymize_user` keeps the token on failure on
-    # purpose, so that this final anonymization can retry the revocation.
+    if FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        for sso in user.single_sign_ons:
+            if sso.ssoProvider == "apple" and sso.refreshTokenPayload:
+                try:
+                    _revoke_apple_sso_token(sso.refreshTokenPayload)
+                except Exception as exc:
+                    logger.error(
+                        "SSO token revocation failed",
+                        extra={"user_id": user.id, "provider": sso.ssoProvider, "exc": str(exc)},
+                    )
+    # GDPR: never keep a provider token on an anonymized account, even if revocation failed.
     for single_sign_on in user.single_sign_ons:
-        single_sign_on.encryptedRefreshToken = None
+        single_sign_on.refreshTokenPayload = None
 
     iris = None
     if user.address:
@@ -450,11 +452,10 @@ def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_act
     if has_user_pending_anonymization(user.id):
         raise exceptions.UserAlreadyHasPendingAnonymization()
 
-    # Apple App Store Review Guideline 5.1.1(v) requires that token revocation happens
-    # at the moment the user requests account deletion, not when the deferred anonymization runs.
-    # Deferred to right after the commit so the Apple HTTP call (seconds, worst case) does not
-    # block the user-facing request transaction while holding row locks.
-    transaction_manager.on_commit(functools.partial(_revoke_sso_tokens_by_user_id, user.id), robust=True)
+    # Apple guideline 5.1.1(v): revoke at the deletion request. Deferred post-commit so the Apple
+    # HTTP call does not block the request transaction while holding row locks.
+    if FeatureToggle.WIP_ENABLE_SSO_TOKEN_REVOCATION.is_active():
+        transaction_manager.on_commit(functools.partial(_revoke_apple_sso_tokens_by_user_id, user.id), robust=True)
 
     api.suspend_account(
         user=user,

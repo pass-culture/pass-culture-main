@@ -1379,7 +1379,8 @@ class SingleSignOn(PcObject, Model):
     ssoProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     ssoUserId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
-    encryptedRefreshToken: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    # Fernet-encrypted {refresh_token, client_id}, Apple SSO only: used to revoke tokens on deletion.
+    refreshTokenPayload: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     __table_args__ = (
         sa.UniqueConstraint(

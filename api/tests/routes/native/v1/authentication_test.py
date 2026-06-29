@@ -662,8 +662,8 @@ class SSORefreshTokenPersistenceTest:
         sso = (
             db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
         )
-        assert sso.encryptedRefreshToken is not None
-        decrypted_payload = json.loads(crypto.decrypt(sso.encryptedRefreshToken))
+        assert sso.refreshTokenPayload is not None
+        decrypted_payload = json.loads(crypto.decrypt(sso.refreshTokenPayload))
         assert decrypted_payload["refresh_token"] == "apple-refresh-token"
         # The mobile client_id is stored alongside the token (no "platform: web" header was sent)
         # so the revocation can try the right client_id first.
@@ -676,7 +676,7 @@ class SSORefreshTokenPersistenceTest:
             user=user,
             ssoProvider="apple",
             ssoUserId=self.valid_sso_user.sub,
-            encryptedRefreshToken=crypto.encrypt("previous-token"),
+            refreshTokenPayload=crypto.encrypt("previous-token"),
         )
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -692,7 +692,7 @@ class SSORefreshTokenPersistenceTest:
         sso = (
             db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
         )
-        assert crypto.decrypt(sso.encryptedRefreshToken) == "previous-token"
+        assert crypto.decrypt(sso.refreshTokenPayload) == "previous-token"
 
     @pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=False)
     @patch("pcapi.connectors.apple_oauth.get_apple_user")
@@ -712,7 +712,7 @@ class SSORefreshTokenPersistenceTest:
         sso = (
             db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
         )
-        assert sso.encryptedRefreshToken is None
+        assert sso.refreshTokenPayload is None
 
 
 class TrustedDeviceFeatureTest:

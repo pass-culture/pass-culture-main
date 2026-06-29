@@ -1,4 +1,4 @@
-"""Add encryptedRefreshToken column to single_sign_on table"""
+"""Add refreshTokenPayload column to single_sign_on table"""
 
 import sqlalchemy as sa
 from alembic import op
@@ -13,8 +13,8 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column("single_sign_on", sa.Column("encryptedRefreshToken", sa.Text(), nullable=True))
+    op.add_column("single_sign_on", sa.Column("refreshTokenPayload", sa.Text(), nullable=True))
 
 
 def downgrade() -> None:
-    op.drop_column("single_sign_on", "encryptedRefreshToken")
+    op.drop_column("single_sign_on", "refreshTokenPayload")
