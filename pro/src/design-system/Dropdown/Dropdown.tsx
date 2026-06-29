@@ -24,7 +24,6 @@ export const enum DropDownItemVariant {
  * @property {'top' | 'right' | 'bottom' | 'left'} [side] - Side on which dropdown content appears.
  * @property {React.ReactNode} [trigger] - Custom trigger node (if not provided, a default button is used).
  * @property {boolean} [open] - Controlled open state.
- * @property {boolean} [defaultOpen] - Initial open state (uncontrolled).
  * @property {(open: boolean) => void} [onOpenChange] - Called when the dropdown open state changes.
  */
 type BaseProps = DropdownMenu.DropdownMenuProps & {
@@ -40,8 +39,6 @@ type BaseProps = DropdownMenu.DropdownMenuProps & {
   trigger?: React.ReactNode
   /** Controlled open state. */
   open?: boolean
-  /** Initial open state (uncontrolled). */
-  defaultOpen?: boolean
   /** Callback fired on open state change. */
   onOpenChange?: (open: boolean) => void
 }
@@ -51,17 +48,24 @@ type BaseProps = DropdownMenu.DropdownMenuProps & {
  *
  * @typedef {object} Item
  * @property {string} text - Item display text.
- * @property {LinkProps} [link] - If present, the item becomes a link (remix-router/next/link-style).
+ * @property {ItemLink} [link] - If present, the item becomes a link. Use `opensInNewTab` instead of raw `target`/`rel`: external-link safety (rel + "Nouvelle fenêtre" icon) is then enforced by the component.
  * @property {string} [icon] - Optional icon (either all items have an icon, or none).
  * @property {DropDownItemVariant} [variant] - Variant, e.g. 'destructive'.
  * @property {boolean} [disabled] - Disables the item.
  * @property {TagProps} [tag] - Optional badge/tag to display alongside.
  */
+
+// Use `opensInNewTab` instead of `target`/`rel` to always enforce security and accessibility for external links.
+type ItemLink = Omit<LinkProps, 'target' | 'rel'> & {
+  /** Opens the link in a new tab, enforcing `rel` + alt text. */
+  opensInNewTab?: boolean
+}
+
 type Item = DropdownMenu.DropdownMenuItemProps & {
   /** Item display text. */
   text: string
   /** If present, the item becomes a link. */
-  link?: LinkProps
+  link?: ItemLink
   /** Optional icon (all items must include icons if any do). */
   icon?: string
   /** Variant, e.g. 'destructive' for dangerous actions. */
@@ -72,9 +76,7 @@ type Item = DropdownMenu.DropdownMenuItemProps & {
   tag?: TagProps
 }
 
-// DS rule: either ALL items have an `icon` or NONE do. Discriminating the
-// array on `icon` only (required vs `never`) enforces that, while keeping the
-// other optional props (destructive, tag, …) free per item.
+// Items either all have an icon or none at all.
 export type DropdownProps =
   | (BaseProps & { items: (Item & { icon: string })[][] })
   | (BaseProps & { items: (Item & { icon?: never })[][] })
@@ -86,7 +88,6 @@ export const Dropdown = ({
   side,
   trigger,
   open,
-  defaultOpen,
   onOpenChange,
   items,
 }: Readonly<DropdownProps>): JSX.Element => {
@@ -112,11 +113,7 @@ export const Dropdown = ({
   }
 
   return (
-    <DropdownMenu.Root
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
+    <DropdownMenu.Root open={open} onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild>{renderTrigger()}</DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
@@ -141,11 +138,16 @@ export const Dropdown = ({
                   tag,
                   ...itemsProps
                 }) => {
+                  const opensInNewTab = link?.opensInNewTab ?? false
+
                   const itemBody = (
                     <>
                       {icon && (
                         <div className={styles['dropdown-item-icon']}>
-                          <SvgIcon src={icon} aria-hidden="true" />
+                          <SvgIcon
+                            src={icon}
+                            alt={opensInNewTab ? 'Nouvelle fenêtre' : ''}
+                          />
                         </div>
                       )}
                       {text}
@@ -157,6 +159,28 @@ export const Dropdown = ({
                     </>
                   )
 
+                  // Enforce external-link safety with rel="noopener noreferrer"
+                  const linkElement = link
+                    ? (() => {
+                        const {
+                          opensInNewTab: _opensInNewTab,
+                          ...routerProps
+                        } = link
+
+                        return (
+                          <Link
+                            {...routerProps}
+                            target={opensInNewTab ? '_blank' : undefined}
+                            rel={
+                              opensInNewTab ? 'noopener noreferrer' : undefined
+                            }
+                          >
+                            {itemBody}
+                          </Link>
+                        )
+                      })()
+                    : null
+
                   return (
                     <DropdownMenu.Item
                       {...itemsProps}
@@ -167,9 +191,10 @@ export const Dropdown = ({
                         [styles[`dropdown-item-variant-${variant}`]]:
                           variant !== undefined,
                       })}
-                      asChild={!!link}
+                      /* If the item is a link, we want the <DropdownMenu.Item> to be rendered as its child : <Link> component */
+                      asChild={!!linkElement}
                     >
-                      {link ? <Link {...link}>{itemBody}</Link> : itemBody}
+                      {linkElement ?? itemBody}
                     </DropdownMenu.Item>
                   )
                 }

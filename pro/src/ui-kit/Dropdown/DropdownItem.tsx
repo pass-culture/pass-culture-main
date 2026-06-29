@@ -55,6 +55,8 @@ type DropdownItemProps = DropdownMenu.DropdownMenuItemProps & {
  *
  * @accessibility
  * - If present, the `title` attribute provides additional context for the dropdown item.
+ *
+ * @deprecated Use `<Dropdown />` from /design-system/ folder instead
  */
 export function DropdownItem({
   title,

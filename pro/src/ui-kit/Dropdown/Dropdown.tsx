@@ -39,6 +39,7 @@ export type DropdownProps = {
   triggerTooltip?: boolean
 }
 
+/** @deprecated Use `<Dropdown />` from /design-system/ folder instead */
 export function Dropdown({
   title,
   trigger,

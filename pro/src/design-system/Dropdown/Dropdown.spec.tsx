@@ -144,6 +144,46 @@ describe('<Dropdown />', () => {
       expect(link).toHaveAttribute('href', '/somewhere')
     })
 
+    it('should not set `target`/`rel` for an internal link', async () => {
+      renderDropdown({
+        items: [[{ text: 'Go', link: { to: '/somewhere' } }]],
+      })
+
+      await openDropdown()
+
+      const link = screen.getByRole('menuitem', { name: 'Go' })
+      expect(link).not.toHaveAttribute('target')
+      expect(link).not.toHaveAttribute('rel')
+    })
+
+    it('should enforce `target`, `rel` and "Nouvelle fenêtre" on icon when `opensInNewTab` is set', async () => {
+      renderDropdown({
+        items: [
+          [
+            {
+              text: 'External',
+              icon: fullLinkIcon,
+              link: { to: '/out', opensInNewTab: true },
+            },
+          ],
+        ],
+      })
+
+      await openDropdown()
+
+      // The accessible name combines the text and the injected icon's alt, so
+      // the user is warned the link opens a new tab (WCAG 3.2.5).
+      const link = screen.getByRole('menuitem', {
+        name: 'Nouvelle fenêtre External',
+      })
+      expect(link).toHaveAttribute('target', '_blank')
+      // Security/privacy guard cannot be forgotten by the caller.
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(
+        screen.getByRole('img', { name: 'Nouvelle fenêtre' })
+      ).toBeInTheDocument()
+    })
+
     it('should use a custom trigger instead of the default button', () => {
       renderDropdown({
         label: 'Accessible name',
@@ -194,14 +234,6 @@ describe('<Dropdown />', () => {
       await openDropdown()
 
       expect(onOpenChange).toHaveBeenCalledWith(true)
-    })
-
-    it('should respect the `defaultOpen` prop (uncontrolled)', () => {
-      renderDropdown({ defaultOpen: true })
-
-      expect(
-        screen.getByRole('menuitem', { name: 'Item 1' })
-      ).toBeInTheDocument()
     })
 
     it('should respect the controlled `open` prop', () => {
