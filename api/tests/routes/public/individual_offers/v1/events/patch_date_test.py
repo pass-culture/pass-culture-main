@@ -490,19 +490,19 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert response.json == expected_response_json
 
     def test_reproduce_bug_update_stock_dates(self):
-
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
 
+        next_year = datetime.date.today().year + 1
         stock = offers_factories.EventStockFactory(
             offer=event,
             quantity=10,
-            beginningDatetime=datetime.datetime(2026, 6, 27, 14, 0, 0),
+            beginningDatetime=datetime.datetime(next_year, 6, 27, 14, 0, 0),
         )
 
         payload = {
-            "beginningDatetime": "2026-06-27T12:00:00.000Z",
-            "bookingLimitDatetime": "2026-06-27T12:00:00.000Z",
+            "beginningDatetime": f"{next_year}-06-27T12:00:00.000Z",
+            "bookingLimitDatetime": f"{next_year}-06-27T12:00:00.000Z",
             "quantity": 50,
         }
 
@@ -511,3 +511,5 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
+        assert stock.beginningDatetime.isoformat() == f"{next_year}-06-27T12:00:00"
+        assert stock.bookingLimitDatetime.isoformat() == f"{next_year}-06-27T12:00:00"

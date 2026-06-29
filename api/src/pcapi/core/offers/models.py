@@ -354,7 +354,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         cascade="all, delete-orphan",
     )
     beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    bookingLimitDatetime = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    bookingLimitDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
