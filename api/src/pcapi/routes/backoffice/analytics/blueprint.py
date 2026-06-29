@@ -1,12 +1,12 @@
 import logging
 
-from flask import current_app as app
 from flask import request
 
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils.logs import log_backoffice_tracking_data
+from pcapi.routes.backoffice.utils.request import rule_for_url
 
 from .forms import AnalyticsRegisterForm
 
@@ -28,9 +28,7 @@ def save() -> response_utils.BackofficeResponse:
         logger.error("Faulty analytics received", extra={"errors": {field.name: field.errors for field in form}})
         return ""
 
-    with app.test_request_context(form.origin.data) as request_ctx:
-        rule = request_ctx.request.url_rule
-
+    rule = rule_for_url(form.origin.data)
     if not rule:
         logger.error("Faulty analytics received", extra={"errors": f"No route found for url {form.origin.data}"})
         return ""
