@@ -2118,7 +2118,7 @@ requires-dist = [
     { name = "pypdf", specifier = "==6.13.3" },
     { name = "pyproj", specifier = "==3.7.2" },
     { name = "pysaml2", specifier = "==7.5.0" },
-    { name = "pyshp", specifier = "==3.0.12" },
+    { name = "pyshp", specifier = "==3.0.13" },
     { name = "python-dateutil", specifier = "==2.9.0.post0" },
     { name = "python-dotenv", specifier = "==1.2.2" },
     { name = "pytz", specifier = "==2026.2" },
@@ -2760,11 +2760,11 @@ wheels = [
 
 [[package]]
 name = "pyshp"
-version = "3.0.12"
+version = "3.0.13"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ad/09/0ee60f56e34c6df34e30d302c29ca67b115a7a76ce1acf21f67924aec9a3/pyshp-3.0.12.tar.gz", hash = "sha256:517f6d80be444f3e85ed3f08b004108845f535dee3efffc2fbca1ba93d22151d", size = 2209829, upload-time = "2026-06-05T18:56:03.08Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1f/ba/f32405287c59afd0813d2b9a6137ce5df72369e5d82ec0ae4e219414e705/pyshp-3.0.13.tar.gz", hash = "sha256:d13c377a8e07b8a6501e8a9a9ac82ee48676b5b61910a3859a26973a482769d2", size = 2210349, upload-time = "2026-06-19T15:00:36.334Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/09/e27388e25d5ba562b19b3893140469355150cfa9d49a4184e5033d7464c9/pyshp-3.0.12-py3-none-any.whl", hash = "sha256:f5f55548700e775e09479781a03a0b82aa46bef0270aa2980f86212565ce9092", size = 65235, upload-time = "2026-06-05T18:56:01.876Z" },
+    { url = "https://files.pythonhosted.org/packages/70/63/7108bdf33e8886c21f4036cc6e315ee94407d3afa3be8fdfaad1fde60cca/pyshp-3.0.13-py3-none-any.whl", hash = "sha256:2fe73e200c3359c27084517f8d819e7ea635fe8ae8633270a42c67af39ca1915", size = 65272, upload-time = "2026-06-19T15:00:34.656Z" },
 ]
 
 [[package]]
