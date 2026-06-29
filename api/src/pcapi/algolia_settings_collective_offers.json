@@ -16,6 +16,8 @@
     "filterOnly(offer.locationType)",
     "filterOnly(offer.interventionArea)",
     "filterOnly(offer.students)",
+    "filterOnly(offer.departmentCodes)",
+    "filterOnly(offer.academies)",
     "filterOnly(venue.departmentCode)",
     "filterOnly(venue.id)",
     "filterOnly(venue.academy)",
