@@ -654,44 +654,48 @@ def test_serialize_future_offer():
 
 
 def test_serialize_collective_offer_template_location_school():
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+    collective_offer_template = educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory(
+        interventionArea=["33", "40", "75", "93"],
         venue__offererAddress__address__latitude=45,
         venue__offererAddress__address__longitude=3,
-        locationType=educational_models.CollectiveLocationType.SCHOOL,
-        offererAddress=None,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
     assert serialized["offer"]["locationType"] == "SCHOOL"
+    assert serialized["offer"]["departmentCodes"] == ["33", "40", "75", "93"]
+    assert sorted(serialized["offer"]["academies"]) == ["Bordeaux", "Créteil", "Paris"]
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
 def test_serialize_collective_offer_template_location_address():
-    offerer_address = offerers_factories.OfferLocationFactory(address__latitude=45, address__longitude=3)
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=offerer_address
+    collective_offer_template = educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(
+        offererAddress__address__latitude=45,
+        offererAddress__address__longitude=3,
+        offererAddress__address__departmentCode="33",
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
     assert serialized["offer"]["locationType"] == "ADDRESS"
+    assert serialized["offer"]["departmentCodes"] == ["33"]
+    assert serialized["offer"]["academies"] == ["Bordeaux"]
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
 def test_serialize_collective_offer_template_location_to_be_defined():
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+    collective_offer_template = educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory(
+        interventionArea=["33", "75", "93"],
         venue__offererAddress__address__latitude=45,
         venue__offererAddress__address__longitude=3,
-        locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
-        locationComment="Here",
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
     assert serialized["offer"]["locationType"] == "TO_BE_DEFINED"
+    assert serialized["offer"]["departmentCodes"] == ["33", "75", "93"]
+    assert sorted(serialized["offer"]["academies"]) == ["Bordeaux", "Créteil", "Paris"]
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
-def test_serialize_collective_offer_template_legacy():
-    # Same as test_serialize_collective_offer_template
+def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
     venue = offerers_factories.VenueFactory()
@@ -729,6 +733,8 @@ def test_serialize_collective_offer_template_legacy():
             "interventionArea": [],
             "locationType": educational_models.CollectiveLocationType.ADDRESS.value,
             "description": collective_offer_template.description,
+            "departmentCodes": [collective_offer_template.offererAddress.address.departmentCode],
+            "academies": ["Paris"],
         },
         "offerer": {
             "name": "Les Librairies Associées",
