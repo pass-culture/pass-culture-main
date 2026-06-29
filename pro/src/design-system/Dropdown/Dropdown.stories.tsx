@@ -76,8 +76,8 @@ export const Default: StoryObj<typeof Dropdown> = {
           text: 'Aller sur Google',
           icon: fullLinkIcon,
           link: {
-            target: '_blank',
             to: '//google.fr',
+            opensInNewTab: true,
           },
         },
         { text: 'Dupliquer', icon: fullDuplicateIcon },
@@ -202,13 +202,13 @@ export const NavigationLinks: StoryObj<typeof Dropdown> = {
           text: 'Accueil Storybook',
           link: {
             to: 'https://pass-culture.github.io/pass-culture-main/',
-            target: '_blank',
+            opensInNewTab: true,
           },
           icon: fullLogoutIcon,
         },
         {
           text: 'Google',
-          link: { to: 'https://google.fr', target: '_blank' },
+          link: { to: 'https://google.fr', opensInNewTab: true },
           icon: fullLinkIcon,
         },
       ],

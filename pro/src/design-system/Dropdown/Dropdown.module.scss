@@ -49,8 +49,8 @@
   background-color: var(--color-background-default);
 
   &-icon {
-    width: rem.torem(16px);
-    height: rem.torem(16px);
+    width: var(--size-icon-s);
+    height: var(--size-icon-s);
     aspect-ratio: 1 / 1;
     margin-right: var(--size-spacing-m);
   }
