@@ -17,8 +17,10 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -45,6 +47,7 @@ export const IndividualOfferPriceTableScreen = ({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 
@@ -74,7 +77,8 @@ export const IndividualOfferPriceTableScreen = ({
     defaultValues: toFormValues(
       offer,
       offer.isEvent ? (offer.priceCategories ?? []) : (offerStocks ?? []),
-      schemaValidationContext
+      schemaValidationContext,
+      selectedPartnerVenue
     ),
     mode: 'onBlur',
     resolver: yupResolver(PriceTableValidationSchema),

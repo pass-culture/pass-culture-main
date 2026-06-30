@@ -4,6 +4,7 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferDateCell, type OfferEventDateCellProps } from './OfferDateCell'
@@ -11,6 +12,9 @@ import { OfferDateCell, type OfferEventDateCellProps } from './OfferDateCell'
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>
   renderWithProviders(<OfferDateCell {...props} />, {
     initialRouterEntries: ['/offres'],
+    storeOverrides: {
+      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+    },
   })
 
 describe('OfferEventDateCell', () => {

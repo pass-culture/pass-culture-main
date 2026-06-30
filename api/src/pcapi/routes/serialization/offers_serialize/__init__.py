@@ -13,7 +13,6 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
@@ -27,7 +26,6 @@ from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
-from pcapi.routes.serialization import venue_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
@@ -213,8 +211,6 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return [_serialize_stock(stock) for stock in self._obj.stocks if not stock.isSoftDeleted]
         if key == "productIsbn":
             return self._obj.ean
-        if key == "venue":
-            return _serialize_venue(self._obj.venue)
         if key == "location":
             return offer_location_getter_dict_helper(self._obj)
         if key == "bookingsCount":
@@ -228,7 +224,6 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
         return super().get(key, default)
 
 
-# TODO(pydantic_v2): delete ListOffersVenueResponseModel once this is migrated
 class ListOffersOfferResponseModel(BaseModel):
     id: int
     isEvent: bool
@@ -237,7 +232,6 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: str | None
     productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
-    venue: venue_serialize.ListOffersVenueResponseModel
     status: OfferStatus
     location: LocationResponseModel | None
     publicationDatetime: datetime.datetime | None
@@ -268,14 +262,6 @@ def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel
         id=stock.id,
         remainingQuantity=stock.remainingQuantity,
         beginningDatetime=stock.beginningDatetime,
-    )
-
-
-def _serialize_venue(venue: offerers_models.Venue) -> venue_serialize.ListOffersVenueResponseModel:
-    return venue_serialize.ListOffersVenueResponseModel(
-        id=venue.id,
-        name=venue.name,
-        departementCode=venue.offererAddress.address.departmentCode,
     )
 
 

@@ -5,6 +5,7 @@ import {
   getIndividualOfferFactory,
   priceCategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import type { PriceTableFormContext } from '../types'
 import { toFormValues } from '../utils/toFormValues'
@@ -28,6 +29,7 @@ const baseContext = buildContext()
 
 const baseOffer = getIndividualOfferFactory({ id: 1 })
 const basePriceCateogry = priceCategoryFactory()
+const venue = makeGetVenueResponseModel({ id: 1 })
 
 describe('toFormValues', () => {
   it(`should cast and keep price in EUR when not isCaledonian`, () => {
@@ -40,7 +42,7 @@ describe('toFormValues', () => {
     }
     const priceCategory = { ...basePriceCateogry, price: 20 }
     const priceCategories = [priceCategory]
-    const formValues = toFormValues(offer, priceCategories, context)
+    const formValues = toFormValues(offer, priceCategories, context, venue)
     expect(formValues.priceCategories[0].price).toBe(20)
   })
 
@@ -54,7 +56,7 @@ describe('toFormValues', () => {
     }
     const priceCategory = { ...basePriceCateogry, price: 20 }
     const priceCategories = [priceCategory]
-    const formValues = toFormValues(offer, priceCategories, context)
+    const formValues = toFormValues(offer, priceCategories, context, venue)
     expect(formValues.priceCategories[0].price).toBe(2385)
   })
 })

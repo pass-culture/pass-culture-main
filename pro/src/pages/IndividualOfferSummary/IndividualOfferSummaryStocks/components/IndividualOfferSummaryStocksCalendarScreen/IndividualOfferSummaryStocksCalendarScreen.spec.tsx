@@ -6,6 +6,7 @@ import {
   getIndividualOfferFactory,
   getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferSummaryStocksCalendarScreen } from './IndividualOfferSummaryStocksCalendarScreen'
@@ -19,7 +20,12 @@ describe('IndividualOfferSummaryStocksCalendarScreen', () => {
     renderWithProviders(
       <IndividualOfferSummaryStocksCalendarScreen
         offer={getIndividualOfferFactory({ status: OfferStatus.ACTIVE })}
-      />
+      />,
+      {
+        storeOverrides: {
+          user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+        },
+      }
     )
 
     expect(

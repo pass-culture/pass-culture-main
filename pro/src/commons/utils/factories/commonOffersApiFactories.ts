@@ -1,5 +1,4 @@
 import type {
-  ListOffersVenueResponseModelV2,
   LocationResponseModel,
   LocationResponseModelV2,
 } from '@/apiClient/v1'
@@ -43,12 +42,3 @@ export const getLocationResponseModelV2 = (
     ...addressResponse,
   }
 }
-
-export const listOffersVenueV2Factory = (
-  customListOffersVenue: Partial<ListOffersVenueResponseModelV2> = {}
-): ListOffersVenueResponseModelV2 => ({
-  id: 1,
-  name: 'Nom de la structure',
-  departementCode: '33',
-  ...customListOffersVenue,
-})

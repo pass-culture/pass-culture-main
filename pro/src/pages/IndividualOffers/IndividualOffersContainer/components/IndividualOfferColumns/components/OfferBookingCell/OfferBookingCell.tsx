@@ -1,6 +1,8 @@
 import { isAfter } from 'date-fns'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
@@ -13,7 +15,8 @@ export type OfferBookingCellProps = {
 }
 
 export const OfferBookingCell = ({ offer }: OfferBookingCellProps) => {
-  const departmentCode = getDepartmentCode(offer)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
   const bookableDate =
     [OfferStatus.SCHEDULED, OfferStatus.PUBLISHED].includes(offer.status) &&

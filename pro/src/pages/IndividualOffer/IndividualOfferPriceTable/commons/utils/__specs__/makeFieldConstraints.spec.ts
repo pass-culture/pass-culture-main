@@ -2,6 +2,7 @@ import { subDays } from 'date-fns'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import type { PriceTableEntryFormValues } from '../../schemas'
 import { makeFieldConstraints } from '../makeFieldConstraints'
@@ -24,7 +25,7 @@ interface TestCase {
 
 describe('makeFieldConstraints', () => {
   const offer = getIndividualOfferFactory()
-
+  const venue = makeGetVenueResponseModel({ id: 1 })
   const baseEntry: Omit<
     PriceTableEntryFormValues,
     | 'bookingLimitDatetime'
@@ -94,6 +95,7 @@ describe('makeFieldConstraints', () => {
       const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
         offer,
         mode,
+        venue,
       })
       const result = computeEntryConstraints({
         ...baseEntry,
@@ -190,6 +192,7 @@ describe('makeFieldConstraints', () => {
       const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
         offer,
         mode,
+        venue,
       })
 
       const result = computeEntryConstraints({

@@ -5,6 +5,7 @@ import { addDays, subDays } from 'date-fns'
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -21,12 +22,19 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+const venue = makeGetVenueResponseModel({ id: 1 })
+
 function renderOfferPublicationEdition(props: OfferPublicationEditionProps) {
   return renderWithProviders(
     <>
       <OfferPublicationEdition {...props} />
       <SnackBarContainer />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: { selectedPartnerVenue: venue },
+      },
+    }
   )
 }
 
@@ -96,7 +104,7 @@ describe('OfferPublicationEdition', () => {
     const tomorrow = addDays(new Date(), 1).toISOString()
     const [tomorrowDate, tomorrowTime] = tomorrow.split('.')[0].split('T')
 
-    expect(getPatchOfferPayloadFromFormValues(offer, values)).toEqual(
+    expect(getPatchOfferPayloadFromFormValues(offer, venue, values)).toEqual(
       expect.objectContaining({
         publicationDatetime: 'now',
         bookingAllowedDatetime: null,
@@ -104,7 +112,7 @@ describe('OfferPublicationEdition', () => {
     )
 
     expect(
-      getPatchOfferPayloadFromFormValues(offer, {
+      getPatchOfferPayloadFromFormValues(offer, venue, {
         ...values,
         publicationMode: 'later',
         publicationDate: tomorrowDate,
@@ -118,7 +126,7 @@ describe('OfferPublicationEdition', () => {
     )
 
     expect(
-      getPatchOfferPayloadFromFormValues(offer, {
+      getPatchOfferPayloadFromFormValues(offer, venue, {
         ...values,
         bookingAllowedMode: 'later',
         bookingAllowedDate: tomorrowDate,
