@@ -729,6 +729,28 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
                 },
                 {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]},
             ),
+            # additionalFees invalid label
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label n'est pas autorisé quand le type n'est pas OTHER"]},
+            ),
+            # additionalFees missing label
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label est requis quand le type est OTHER"]},
+            ),
             # additionalFees type duplicate
             (
                 {
@@ -752,6 +774,28 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
                     ],
                 },
                 {"__root__": ["Un label de frais annexe est en doublon"]},
+            ),
+            # additionalFees negative amount
+            (
+                {
+                    "servicePrice": 10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": -10}
+                    ],
+                },
+                {"additionalFees.0.amount": ["ensure this value is greater than or equal to 0"]},
+            ),
+            # servicePrice too low
+            (
+                {
+                    "servicePrice": -10,
+                    "numberOfTeachers": 1,
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 19}
+                    ],
+                },
+                {"servicePrice": ["ensure this value is greater than or equal to 0"]},
             ),
         ),
     )

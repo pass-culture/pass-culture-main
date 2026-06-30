@@ -492,7 +492,7 @@ class Return400Test:
                 {"price": 10, "servicePrice": 10, "collectiveAdditionalFees": None},
                 {"collectiveAdditionalFees": ["Ce champ est requis"]},
             ),
-            # collectiveAdditionalFees invalid
+            # collectiveAdditionalFees invalid label
             (
                 {
                     "price": 20,
@@ -502,6 +502,17 @@ class Return400Test:
                     ],
                 },
                 {"collectiveAdditionalFees.0.label": ["Le label ne peut pas être rempli pour ce type"]},
+            ),
+            # collectiveAdditionalFees missing label
+            (
+                {
+                    "price": 20,
+                    "servicePrice": 10,
+                    "collectiveAdditionalFees": [
+                        {"type": CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 10}
+                    ],
+                },
+                {"collectiveAdditionalFees.0.label": ["Le label doit être rempli pour ce type"]},
             ),
             # collectiveAdditionalFees type duplicate
             (
