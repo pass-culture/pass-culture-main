@@ -25,6 +25,7 @@ import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuard
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
+import { SynchronizedBanner } from '../../components/SynchronizedBanner/SynchronizedBanner'
 import { useSaveOfferPriceTable } from '../commons/hooks/useSaveOfferPriceTable'
 import { PriceTableValidationSchema } from '../commons/schemas'
 import type { PriceTableFormContext } from '../commons/types'
@@ -114,6 +115,9 @@ export const IndividualOfferPriceTableScreen = ({
         <form onSubmit={form.handleSubmit(saveAndContinue)}>
           <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout>
+            {isOfferSynchronized(offer) && (
+              <SynchronizedBanner providerName={offer?.lastProvider?.name} />
+            )}
             <FormLayout.MandatoryInfo />
 
             <FormLayout.Section title="Tarifs">

@@ -152,6 +152,21 @@ describe('<IndividualOfferLocationScreen />', () => {
         expect(await axe(container)).toHaveNoViolations()
       })
 
+      it('should display synchronized banner when offer is synchronized', async () => {
+        renderIndividualOfferLocationScreen({
+          props: {
+            offer: getIndividualOfferFactory({
+              ...offlineOffer,
+              lastProvider: { name: 'Allocine' },
+            }),
+          },
+        })
+
+        expect(
+          await screen.findByText('Cette offre est synchronisée avec Allocine')
+        ).toBeInTheDocument()
+      })
+
       it('should submit the venue address payload when a venue address is selected', async () => {
         vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
 

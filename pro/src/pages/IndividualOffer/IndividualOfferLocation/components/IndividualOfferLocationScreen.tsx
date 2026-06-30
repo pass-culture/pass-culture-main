@@ -11,6 +11,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -21,6 +22,7 @@ import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuard
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
+import { SynchronizedBanner } from '../../components/SynchronizedBanner/SynchronizedBanner'
 import { useSaveOfferLocation } from '../commons/hooks/useSaveOfferLocation'
 import type { LocationFormValues } from '../commons/types'
 import { getInitialValuesFromOffer } from '../commons/utils/getInitialValuesFromOffer'
@@ -138,6 +140,9 @@ export const IndividualOfferLocationScreen = ({
         >
           <ScrollToFirstHookFormErrorAfterSubmit />
 
+          {isOfferSynchronized(offer) && (
+            <SynchronizedBanner providerName={offer?.lastProvider?.name} />
+          )}
           <FormLayout fullWidthActions>
             <FormLayout.MandatoryInfo />
 

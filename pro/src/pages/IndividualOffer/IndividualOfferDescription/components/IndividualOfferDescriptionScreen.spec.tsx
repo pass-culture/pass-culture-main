@@ -264,6 +264,43 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
 
+  it('should display product banner when offer is product-based and not synchronized', async () => {
+    renderDetailsScreen({
+      contextValue: individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+          productId: 1,
+          lastProvider: undefined,
+        }),
+      }),
+    })
+
+    expect(
+      await screen.findByText(
+        'Des informations proviennent d’un EAN et ne peuvent pas être modifiées depuis l’espace partenaire'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should display synchronized banner when offer is synchronized', async () => {
+    renderDetailsScreen({
+      contextValue: individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+          lastProvider: { name: 'Allocine' },
+        }),
+      }),
+    })
+
+    expect(
+      await screen.findByText('Cette offre est synchronisée avec Allocine')
+    ).toBeInTheDocument()
+  })
+
   describe('since media page exists', () => {
     it('should not display any image input', async () => {
       renderDetailsScreen({
