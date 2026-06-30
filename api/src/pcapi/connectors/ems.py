@@ -167,13 +167,17 @@ class EMSBookingConnector:
 
         if content.get("statut") != 1:
             error_code = content["code_erreur"]
+            logger.warning(
+                "[EMS] Error calling API",
+                extra={"error_code": error_code, "request_detail": content["message_erreur"]},
+            )
             if error_code == 104 or error_code == 106:
                 # 104 = "Il n'y a plus de séance disponible pour ce film"
                 # 106 = "La séance n'est plus disponible à la vente"
-                raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+                raise external_bookings_exceptions.ShowSoldOutException(remainingQuantity=0)
             if error_code == 105:  # 105 = "La séance n'a pas été trouvée"
-                raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
-            raise EMSAPIException(f"Error on EMS API with {error_code} - {content['message_erreur']}")
+                raise external_bookings_exceptions.ShowRemovedException()
+            raise EMSAPIException(f"Error on EMS API: {error_code} - {content['message_erreur']}")
 
     def _build_headers(self) -> dict[str, str]:
         """

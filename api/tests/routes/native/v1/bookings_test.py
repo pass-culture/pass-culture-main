@@ -24,7 +24,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external.batch import testing as push_testing
-from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
+from pcapi.core.external_bookings.exceptions import TimeoutException
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography.factories import AddressFactory
@@ -138,7 +138,7 @@ class PostBookingTest:
     def test_provider_timeout(self, mocked_book_offer, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = offers_factories.EventStockFactory()
-        mocked_book_offer.side_effect = ExternalBookingTimeoutException()
+        mocked_book_offer.side_effect = TimeoutException()
 
         client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
@@ -438,7 +438,9 @@ class PostBookingTest:
         assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
-    def test_book_sold_out_cinema_stock_does_not_book_anything(self, client, requests_mock):
+    def test_bookings_with_unexpected_error_on_provider_side_does_not_update_stock_quantity(
+        self, client, requests_mock
+    ):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         id_at_provider = "test_id_at_provider"
@@ -467,12 +469,14 @@ class PostBookingTest:
         )
 
         with patch("pcapi.core.providers.clients.cgr_client.CGRAPIClient.book_ticket") as mock_book_ticket:
-            mock_book_ticket.side_effect = RuntimeError("test")
+            mock_book_ticket.side_effect = Exception("test")
 
             response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
-        assert response.status_code == 400
-        assert response.json == {"code": "CINEMA_PROVIDER_BOOKING_FAILED"}
+        assert response.status_code == 500
+        assert response.json == {
+            "global": ["Il semble que nous ayons des problèmes techniques :( On répare ça au plus vite."]
+        }
         assert stock.quantity == 1
 
     @time_machine.travel("2022-10-12 17:09:25")

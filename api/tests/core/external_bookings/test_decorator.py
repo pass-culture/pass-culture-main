@@ -6,7 +6,7 @@ import pytest
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external_bookings.decorators import ExternalBookingDecoratorException
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
-from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
+from pcapi.core.external_bookings.exceptions import TimeoutException
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.users import models as users_models
 from pcapi.utils.requests import requests
@@ -134,7 +134,7 @@ class CatchCinemaProviderRequestTimeoutTest:
         client = FakeExternalBookingClientAPI(cinema_id=789, connector=connector)
 
         with caplog.at_level(logging.WARNING):
-            with pytest.raises(ExternalBookingTimeoutException):
+            with pytest.raises(TimeoutException):
                 client.book_ticket(*args_list, **kwargs_dict)
 
         assert caplog.records[0].extra == expected_extra
