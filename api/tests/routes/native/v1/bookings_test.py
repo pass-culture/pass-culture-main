@@ -546,10 +546,7 @@ class PostBookingTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {
-            "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
-            "message": "External booking failed.",
-        }
+        assert response.json == {"code": "PROVIDER_BOOKING_FAILED"}
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     @pytest.mark.parametrize(
@@ -814,11 +811,7 @@ class PostBookingTest:
         response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 2})
 
         assert response.status_code == 400
-        assert response.json == {
-            "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
-            "message": "External booking failed with status code 201 but only one ticket "
-            "was returned for duo reservation",
-        }
+        assert response.json == {"code": "PROVIDER_BOOKING_FAILED"}
         assert stock.quantity == 15
         assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
         assert len(db.session.query(bookings_models.Booking).all()) == 0
@@ -853,10 +846,7 @@ class PostBookingTest:
         response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        assert response.json == {
-            "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
-            "message": "External booking failed.",
-        }
+        assert response.json == {"code": "PROVIDER_BOOKING_FAILED"}
         assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
         assert len(db.session.query(bookings_models.Booking).all()) == 0
 
@@ -1540,7 +1530,10 @@ class CancelBookingTest:
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
-        assert response.json["external_booking"] == "L'annulation de réservation a échoué."
+        assert response.json == {
+            "code": "FAILED_TO_CANCEL_EXTERNAL_BOOKING",
+            "message": "L'annulation de réservation a échoué.",
+        }
 
     @patch("pcapi.core.external_bookings.api.cancel_tickets")
     def test_inactive_provider(self, mocked_cancel_tickets, client):
@@ -1570,7 +1563,10 @@ class CancelBookingTest:
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
-        assert response.json["external_booking"] == "L'annulation de réservation a échoué."
+        assert response.json == {
+            "code": "FAILED_TO_CANCEL_EXTERNAL_BOOKING",
+            "message": "L'annulation de réservation a échoué.",
+        }
 
 
 class ToggleBookingVisibilityTest:

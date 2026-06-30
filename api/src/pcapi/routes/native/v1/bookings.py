@@ -1,12 +1,12 @@
 import logging
 
+import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
-from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
@@ -26,6 +26,36 @@ from .. import blueprint
 
 logger = logging.getLogger(__name__)
 
+_BOOKING_EXCEPTION_TO_CODE_MAPPING: dict[type[Exception], tuple[str, str]] = {
+    # credit exceptions
+    bookings_exceptions.UserHasInsufficientFunds: ("INSUFFICIENT_CREDIT", "insufficient credit"),
+    bookings_exceptions.DigitalExpenseLimitHasBeenReached: ("INSUFFICIENT_CREDIT", "insufficient credit"),
+    bookings_exceptions.PhysicalExpenseLimitHasBeenReached: ("INSUFFICIENT_CREDIT", "insufficient credit"),
+    # offer exceptions
+    bookings_exceptions.OfferIsAlreadyBooked: ("ALREADY_BOOKED", "offer already booked"),
+    bookings_exceptions.OfferCategoryNotBookableByUser: (
+        "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER",
+        "category is not bookable by user",
+    ),
+    # stock exception
+    bookings_exceptions.StockIsNotBookable: ("STOCK_NOT_BOOKABLE", "stock is not bookable"),
+    # provider exceptions
+    UnexpectedCinemaProvider: (
+        "CINEMA_PROVIDER_ERROR",
+        "cinema provider for the venue does not match the offer provider",
+    ),
+    InactiveProvider: ("CINEMA_PROVIDER_INACTIVE", "cinema provider is inactive"),
+    external_bookings_exceptions.TimeoutException: ("PROVIDER_BOOKING_TIMEOUT", "request to provider timeout"),
+    external_bookings_exceptions.ShowSoldOutException: ("PROVIDER_STOCK_NOT_ENOUGH_SEATS", "event show is sold out"),
+    external_bookings_exceptions.ShowRemovedException: ("PROVIDER_SHOW_DOES_NOT_EXIST", "event show has been removed"),
+    external_bookings_exceptions.ExternalBookingException: (
+        "PROVIDER_BOOKING_FAILED",
+        "booking external ticket failed",
+    ),
+}
+
+_EXPECTED_BOOKING_EXCEPTIONS = tuple(_BOOKING_EXCEPTION_TO_CODE_MAPPING.keys())
+
 
 @blueprint.native_route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
@@ -33,7 +63,10 @@ logger = logging.getLogger(__name__)
 def book_offer(body: BookOfferRequest) -> BookOfferResponse:
     stock = db.session.get(Stock, body.stock_id)
     if not stock:
-        logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
+        logger.info(
+            "Could not book offer: stock does not exist",
+            extra={"stock_id": body.stock_id, "user_id": current_user.id},
+        )
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     try:
@@ -42,69 +75,36 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             stock_id=body.stock_id,
             quantity=body.quantity,
         )
-
-    except StockDoesNotExist:
-        logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
-
-    except (
-        bookings_exceptions.UserHasInsufficientFunds,
-        bookings_exceptions.DigitalExpenseLimitHasBeenReached,
-        bookings_exceptions.PhysicalExpenseLimitHasBeenReached,
-    ):
-        logger.info("Could not book offer: insufficient credit", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "INSUFFICIENT_CREDIT"})
-
-    except bookings_exceptions.OfferIsAlreadyBooked:
-        logger.info("Could not book offer: offer already booked", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "ALREADY_BOOKED"})
-
-    except bookings_exceptions.StockIsNotBookable:
-        logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stock_id})
-        raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
-
-    except bookings_exceptions.OfferCategoryNotBookableByUser:
         logger.info(
-            "Could not book offer: category is not bookable by user",
+            "Offer successfully booked",
             extra={
-                "stock_id": body.stock_id,
-                "subcategory_id": stock.offer.subcategoryId,
-                "user_roles": current_user.roles,
+                "stock_id": stock.id,
+                "offer_id": stock.offer.id,
+                "venue_id": stock.offer.venueId,
+                "provider_id": stock.offer.lastProviderId,
+                "user_id": current_user.id,
+                "booking_quantity": booking.quantity,
             },
+            technical_message_id="native.bookings.book",
         )
-        raise ApiErrors({"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"})
-    except UnexpectedCinemaProvider:
-        logger.info(
-            "Could not book offer: The CinemaProvider for the Venue does not match the Offer Provider",
-            extra={"offer_id": stock.offer.id, "venue_id": stock.offer.venue.id},
+        return BookOfferResponse(booking_id=booking.id)
+    except _EXPECTED_BOOKING_EXCEPTIONS as e:
+        code, log_message = _BOOKING_EXCEPTION_TO_CODE_MAPPING.get(e.__class__, ("BOOKING FAILED", "booking failed"))
+        logger.warning(
+            "Could not book offer: %s",
+            log_message,
+            extra={
+                "stock_id": stock.id,
+                "offer_id": stock.offer.id,
+                "venue_id": stock.offer.venueId,
+                "provider_id": stock.offer.lastProviderId,
+                "user_id": current_user.id,
+                "exception_class": e.__class__,
+                "exception_message": str(e),
+            },
+            technical_message_id="native.bookings.book",
         )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_ERROR"})
-    except InactiveProvider:
-        logger.info(
-            "Could not book offer: The CinemaProvider for this offer is inactive",
-            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-        )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
-    except external_bookings_exceptions.TimeoutException:
-        raise ApiErrors({"code": "PROVIDER_BOOKING_TIMEOUT"})
-    except external_bookings_exceptions.ExternalBookingException as error:
-        if stock.offer.lastProvider and stock.offer.lastProvider.hasTicketingService:
-            logger.info(
-                "Could not book offer: Error when booking external ticket. Message: %s",
-                str(error),
-                extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-            )
-            raise ApiErrors({"code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED", "message": str(error)})
-        logger.info(
-            "Could not book offer: Error when booking external ticket",
-            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-        )
-        raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
-    except external_bookings_exceptions.ShowSoldOutException:
-        raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
-    except external_bookings_exceptions.ShowRemovedException:
-        raise ApiErrors({"code": "PROVIDER_SHOW_DOES_NOT_EXIST"})
-    return BookOfferResponse(booking_id=booking.id)
+        raise ApiErrors({"code": code})
 
 
 @blueprint.native_route("/bookings", methods=["GET"])
@@ -123,12 +123,32 @@ def get_bookings() -> BookingsResponse:
     )
 
 
+_CANCELLATION_EXCEPTION_TO_CODE_MAPPING: dict[type[Exception], tuple[str, str]] = {
+    bookings_exceptions.BookingIsAlreadyUsed: ("ALREADY_USED", "La réservation a déjà été utilisée."),
+    bookings_exceptions.CannotCancelConfirmedBooking: (
+        "CONFIRMED_BOOKING",
+        "La date limite d'annulation est dépassée.",
+    ),
+    # provider exceptions
+    UnexpectedCinemaProvider: ("FAILED_TO_CANCEL_EXTERNAL_BOOKING", "L'annulation de réservation a échoué."),
+    InactiveProvider: ("FAILED_TO_CANCEL_EXTERNAL_BOOKING", "L'annulation de réservation a échoué."),
+    external_bookings_exceptions.ExternalBookingException: (
+        "FAILED_TO_CANCEL_EXTERNAL_BOOKING",
+        "L'annulation de réservation a échoué.",
+    ),
+}
+
+_EXPECTED_CANCELLATION_EXCEPTION = tuple(_CANCELLATION_EXCEPTION_TO_CODE_MAPPING)
+
+
 @blueprint.native_route("/bookings/<int:booking_id>/cancel", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
 def cancel_booking(booking_id: int) -> None:
     booking = first_or_404(
-        db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == current_user.id)
+        db.session.query(Booking)
+        .options(sa_orm.joinedload(Booking.stock).joinedload(Stock.offer))
+        .filter(Booking.id == booking_id, Booking.userId == current_user.id)
     )
     try:
         bookings_api.cancel_booking_by_beneficiary(current_user, booking)
@@ -136,18 +156,25 @@ def cancel_booking(booking_id: int) -> None:
         # Do not raise an error, to avoid showing an error in case double-click => double call
         # Booking is cancelled so a success status is ok
         return
-    except bookings_exceptions.BookingIsAlreadyUsed:
-        raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée."})
-    except bookings_exceptions.CannotCancelConfirmedBooking:
-        raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": "La date limite d'annulation est dépassée."})
-    except UnexpectedCinemaProvider:
-        raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
-    except InactiveProvider:
-        raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
-    except external_bookings_exceptions.ExternalBookingException:
-        raise ApiErrors(
-            {"code": "FAILED_TO_CANCEL_EXTERNAL_BOOKING", "message": "L'annulation de réservation a échoué."}
+    except _EXPECTED_CANCELLATION_EXCEPTION as e:
+        logger.warning(
+            "Booking cancellation failed",
+            extra={
+                "stock_id": booking.stock.id,
+                "offer_id": booking.stock.offer.id,
+                "venue_id": booking.stock.offer.venueId,
+                "provider_id": booking.stock.offer.lastProviderId,
+                "user_id": current_user.id,
+                "exception_class": e.__class__,
+                "exception_message": str(e),
+            },
+            technical_message_id="native.bookings.cancel",
         )
+        code, message = _CANCELLATION_EXCEPTION_TO_CODE_MAPPING.get(
+            e.__class__,
+            ("CANCELATION_FAILED", "L'annulation de réservation a échoué."),
+        )
+        raise ApiErrors({"code": code, "message": message})
 
 
 @blueprint.native_route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
