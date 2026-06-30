@@ -299,7 +299,7 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_BENEFICIARY_RESPONSE)
 
         bonus_api.apply_for_adult_disability_bonus(aah_fraud_check)
 
@@ -331,7 +331,7 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_INELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_NOT_BENEFICIARY_RESPONSE)
 
         bonus_api.apply_for_adult_disability_bonus(aah_fraud_check)
 
@@ -466,7 +466,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_BENEFICIARY_RESPONSE)
 
         bonus_api.apply_for_disabled_child_education_bonus(aeeh_fraud_check)
 
@@ -530,7 +530,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_INELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_NOT_BENEFICIARY_RESPONSE)
 
         bonus_api.apply_for_disabled_child_education_bonus(aeeh_fraud_check)
 

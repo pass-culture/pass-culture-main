@@ -148,9 +148,9 @@ class DisabledAdultAllowanceData(BaseModel):
     WARN: The following model is considered user health data.
     Under GDPR, this data is considered *extremely* sensitive and a positive result *must never* be saved anywhere that is not especially secured.
     When the French government finally releases their secure server (SecNumCloud), we will be able to write it there.
-    Until then, NO STORING ANYWHERE if the user is eligible to that allowance: in any database, in any logs or in any error stacktrace.
+    Until then, NO STORING ANYWHERE if the user is beneficiary to that allowance: in any database, in any logs or in any error stacktrace.
 
-    If the user is not eligible, then the data is less sensitive because the user is in good health. However, all health-related data
+    If the user is not beneficiary, then the data is less sensitive because the user is in good health. However, all health-related data
     *must be deleted* when the bonus credit is granted, to avoid retro-engineering the user health if the relational database ever leaks.
     """
 
@@ -212,9 +212,9 @@ class DisabledChildEducationAllowanceData(BaseModel):
     WARN: The following model is considered user health data.
     Under GDPR, this data is considered *extremely* sensitive and a positive result *must never* be saved anywhere that is not especially secured.
     When the French government finally releases their secure server (SecNumCloud), we will be able to write it there.
-    Until then, NO STORING ANYWHERE if the user is eligible to that allowance: in any database, in any logs or in any error stacktrace.
+    Until then, NO STORING ANYWHERE if the user is beneficiary to that allowance: in any database, in any logs or in any error stacktrace.
 
-    If the user is not eligible, then the data is less sensitive because the user is in good health. However, all health-related data
+    If the user is not beneficiary, then the data is less sensitive because the user is in good health. However, all health-related data
     *must be deleted* when the bonus credit is granted, to avoid retro-engineering the user health if the relational database ever leaks.
     """
 

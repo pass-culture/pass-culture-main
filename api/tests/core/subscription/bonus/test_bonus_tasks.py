@@ -85,7 +85,7 @@ def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
         ).model_dump(),
     )
     fraud_check_id = fraud_check.id
-    mocked_disabled_adult_allowance.return_value = bonus_fixtures.AAH_INELIGIBLE_RESPONSE
+    mocked_disabled_adult_allowance.return_value = bonus_fixtures.AAH_NOT_BENEFICIARY_RESPONSE
 
     payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
     tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
@@ -108,7 +108,7 @@ def apply_for_disabled_child_education_allowance(mocked_disabled_child_education
         ).model_dump(),
     )
     fraud_check_id = fraud_check.id
-    mocked_disabled_child_education_allowance.return_value = bonus_fixtures.AEEH_INELIGIBLE_RESPONSE
+    mocked_disabled_child_education_allowance.return_value = bonus_fixtures.AEEH_NOT_BENEFICIARY_RESPONSE
 
     payload = tasks.BonusTaskPayload(fraud_check_id=fraud_check_id)
     tasks.apply_for_quotient_familial_bonus_task.delay(payload.model_dump())
