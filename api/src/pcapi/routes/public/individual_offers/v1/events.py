@@ -11,9 +11,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography import models as geography_models
-from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -25,7 +23,6 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
@@ -95,26 +92,7 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
 
     try:
-        if body.location.type == "address":
-            address = public_utils.get_address_or_raise_404(body.location.address_id)
-            # "merge" the location with the one from the venue if both match
-            if address.id == venue.offererAddress.addressId and body.location.address_label == venue.publicName:
-                offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
-                    offerers_schemas.LocationOnlyOnVenueModel(),
-                    venue,
-                )
-            else:
-                offerer_address = offerers_api.get_or_create_offer_location(
-                    offerer_id=venue.managingOffererId,
-                    venue_id=venue.id,
-                    address_id=address.id,
-                    label=body.location.address_label,
-                )
-        else:
-            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
-                offerers_schemas.LocationOnlyOnVenueModel(),
-                venue,
-            )
+        _, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location, venue=venue)
 
         created_offer = offers_api.create_offer(
             offers_schemas.CreateOffer(
@@ -289,8 +267,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     if not offer:
         raise api_errors.ResourceNotFoundError({"event_id": ["The event offer could not be found"]})
 
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
-
+    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
     if venue:
         authorization.get_venue_provider_or_raise_404(venue.id)
 

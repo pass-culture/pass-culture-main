@@ -331,6 +331,7 @@ def _get_location_from_public_model(
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
     venue: offerers_models.Venue,
 ) -> CollectiveOfferLocation:
+    offerer_address: offerers_models.OffererAddress | None = None
     match location_body:
         case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
             location = CollectiveOfferLocation(
@@ -361,12 +362,18 @@ def _get_location_from_public_model(
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
             address = public_utils.get_address_or_raise_404(location_body.addressId)
-            offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
-                venue_id=venue.id,
-                address_id=address.id,
-                label=location_body.addressLabel,
-            )
+            if address.id == venue.offererAddress.addressId and location_body.addressLabel == venue.publicName:
+                offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+                    offerers_schemas.LocationOnlyOnVenueModel(),
+                    venue,
+                )
+            else:
+                offerer_address = offerers_api.get_or_create_offer_location(
+                    offerer_id=venue.managingOffererId,
+                    venue_id=venue.id,
+                    address_id=address.id,
+                    label=location_body.addressLabel,
+                )
 
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
