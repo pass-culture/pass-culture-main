@@ -85,7 +85,7 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
-    except external_bookings_exceptions.ExternalBookingTimeoutException:
+    except external_bookings_exceptions.TimeoutException:
         raise ApiErrors({"code": "PROVIDER_BOOKING_TIMEOUT"})
     except external_bookings_exceptions.ExternalBookingException as error:
         if stock.offer.lastProvider and stock.offer.lastProvider.hasTicketingService:
@@ -100,9 +100,9 @@ def book_offer(body: BookOfferRequest) -> BookOfferResponse:
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
-    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:
+    except external_bookings_exceptions.ShowSoldOutException:
         raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
-    except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
+    except external_bookings_exceptions.ShowRemovedException:
         raise ApiErrors({"code": "PROVIDER_SHOW_DOES_NOT_EXIST"})
     return BookOfferResponse(booking_id=booking.id)
 

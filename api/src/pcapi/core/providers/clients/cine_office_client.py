@@ -69,7 +69,10 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         reason = _extract_reason_from_response(response)
         if cinema_api_token:
             reason = reason.replace(cinema_api_token, "")  # filter out token
-        raise CineOfficeAPIException(f"Error on CineOffice API on {request_detail} : {reason}")
+
+        logger.warning("[CineOffice] Error calling API", extra={"reason": reason, "request_detail": request_detail})
+
+        raise CineOfficeAPIException(f"Error on CineOffice API: {reason}")
 
 
 # INFO: The old name of CineOffice was CineDigitalService or CDS
@@ -187,7 +190,7 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
         for show in shows:
             if show.id == show_id:
                 return show
-        raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
+        raise external_bookings_exceptions.ShowRemovedException()
 
     def get_venue_movies(self) -> list[cine_office_serializers.Media]:
         data = self._authenticated_get(f"{self.base_url}media")
@@ -392,7 +395,7 @@ class CineOfficeAPIClient(cinema_client.CinemaAPIClient):
             )
 
             if not seats_to_book:
-                raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+                raise external_bookings_exceptions.ShowSoldOutException(remainingQuantity=0)
 
         assert show_voucher_type.tariff
 
