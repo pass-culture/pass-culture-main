@@ -336,6 +336,7 @@ class StagingDisabledAdultAllowanceTest:
         bonus_api.apply_for_adult_disability_bonus(aah_fraud_check)
 
         assert aah_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aah_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -535,6 +536,7 @@ class StagingDisabledChildEducationAllowanceTest:
         bonus_api.apply_for_disabled_child_education_bonus(aeeh_fraud_check)
 
         assert aeeh_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aeeh_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits

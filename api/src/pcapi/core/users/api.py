@@ -1635,6 +1635,9 @@ def get_user_disability_bonification_status(user: models.User) -> subscription_m
         if subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND in reason_codes:
             return subscription_models.DisabilityBonificationStatus.APPLICATION_NOT_FOUND
 
+        if subscription_models.FraudReasonCode.NOT_RECIPIENT in reason_codes:
+            return subscription_models.DisabilityBonificationStatus.NOT_RECIPIENT
+
     return subscription_models.DisabilityBonificationStatus.KO
 
 

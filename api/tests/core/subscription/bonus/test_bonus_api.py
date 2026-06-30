@@ -635,7 +635,7 @@ class DisabledAdultAllowanceTest:
             bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
         assert bonus_fraud_check.source_data().http_status_code == 200
         assert bonus_fraud_check.source_data().error_code is None
 
@@ -892,7 +892,7 @@ class DisabledChildEducationAllowanceTest:
             bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
         assert bonus_fraud_check.source_data().http_status_code == 200
         assert bonus_fraud_check.source_data().error_code is None
 

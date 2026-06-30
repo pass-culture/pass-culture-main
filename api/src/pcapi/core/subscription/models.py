@@ -106,6 +106,7 @@ class FraudReasonCode(enum.Enum):
     PERSON_NOT_FOUND = "person_not_found"
     NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
     QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
+    NOT_RECIPIENT = "not_recipient"
 
     # Deprecated, kept for backward compatibility
     ALREADY_BENEFICIARY = "already_beneficiary"
@@ -152,6 +153,7 @@ class DisabilityBonificationStatus(enum.Enum):
     TOO_MANY_RETRIES = "too_many_retries"
     PERSON_NOT_FOUND = "person_not_found"
     APPLICATION_NOT_FOUND = "application_not_found"
+    NOT_RECIPIENT = "not_recipient"
     GRANTED = "granted"
     KO = "ko"
 

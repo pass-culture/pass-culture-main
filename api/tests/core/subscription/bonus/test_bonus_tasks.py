@@ -95,7 +95,7 @@ def apply_for_adult_disability_bonus_task(mocked_disabled_adult_allowance):
 
     fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
     assert fraud_check.status == subscription_models.FraudCheckStatus.KO
-    assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+    assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
 
 @patch("pcapi.connectors.api_particulier.get_disabled_child_education_allowance")
@@ -118,4 +118,4 @@ def apply_for_disabled_child_education_allowance(mocked_disabled_child_education
 
     fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).get(fraud_check_id)
     assert fraud_check.status == subscription_models.FraudCheckStatus.KO
-    assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+    assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
