@@ -526,45 +526,12 @@ class QuotientFamilialApplicationTest:
         assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
-        for i in range(1, 6):  # frame at index 0 is the test frame
-            stacktrace_vars = stacktrace_frames[i]["vars"]
-            assert stacktrace_vars.get("source_data") in [None, "[REDACTED]"]
-            assert "user" not in stacktrace_vars
-            assert stacktrace_vars.get("user__scrubbed") in [None, "[REDACTED]"]
 
-        two_years_ago = datetime.date.today() - relativedelta(years=2)
-        assert stacktrace_frames[4]["vars"] == {
-            "MONTHS_IN_A_YEAR": "12",
-            "all_quotient_familial_responses": "[REDACTED]",
-            "api_particulier_cutoff_date": repr(two_years_ago),
-            "at_date__scrubbed": "[REDACTED]",
-            "birth_date": "[REDACTED]",
-            "custodian": "[REDACTED]",
-            "cutoff_month": repr(two_years_ago.replace(month=1, day=1)),
-            "month_offset": "0",
-            "seventeenth_birthday__scrubbed": "[REDACTED]",
-            "user__scrubbed": "[REDACTED]",
-        }, stacktrace_frames[4]["vars"]
+        test_frame = stacktrace_frames[0]
+        assert any(value not in [None, "[REDACTED]"] for value in test_frame["vars"].values())
 
-        assert stacktrace_frames[5]["vars"] == {
-            "at_date__scrubbed": "[REDACTED]",
-            "country_insee_code": "[REDACTED]",
-            "city_insee_code": "[REDACTED]",
-            "custodian": "[REDACTED]",
-            "query_params": {
-                "anneeDateNaissance": "[REDACTED]",
-                "codeCogInseeCommuneNaissance": "[REDACTED]",
-                "codeCogInseePaysNaissance": "[REDACTED]",
-                "jourDateNaissance": "[REDACTED]",
-                "moisDateNaissance": "[REDACTED]",
-                "nomNaissance": "[REDACTED]",
-                "nomUsage": "[REDACTED]",
-                "prenoms[]": "[REDACTED]",
-                "recipient": "[REDACTED]",
-                "sexeEtatCivil": "[REDACTED]",
-            },
-            "response": "<Response [500]>",
-        }, stacktrace_frames[5]["vars"]
+        for frame in stacktrace_frames[1:]:
+            assert all(value == "[REDACTED]" for value in frame["vars"].values())
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
@@ -818,27 +785,12 @@ class DisabledAdultAllowanceTest:
         assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
-        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[1]["vars"]["user__scrubbed"] == "[REDACTED]"
-        assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"] == {
-            "country_insee_code": "[REDACTED]",
-            "city_insee_code": "[REDACTED]",
-            "person": "[REDACTED]",
-            "query_params": {
-                "anneeDateNaissance": "[REDACTED]",
-                "codeCogInseeCommuneNaissance": "[REDACTED]",
-                "codeCogInseePaysNaissance": "[REDACTED]",
-                "jourDateNaissance": "[REDACTED]",
-                "moisDateNaissance": "[REDACTED]",
-                "nomNaissance": "[REDACTED]",
-                "nomUsage": "[REDACTED]",
-                "prenoms[]": "[REDACTED]",
-                "recipient": "[REDACTED]",
-                "sexeEtatCivil": "[REDACTED]",
-            },
-            "response": "<Response [500]>",
-        }, stacktrace_frames[4]["vars"]
+
+        test_frame = stacktrace_frames[0]
+        assert any(value not in [None, "[REDACTED]"] for value in test_frame["vars"].values())
+
+        for frame in stacktrace_frames[1:]:
+            assert all(value == "[REDACTED]" for value in frame["vars"].values())
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
@@ -1093,27 +1045,12 @@ class DisabledChildEducationAllowanceTest:
         assert len(captured_events) == 1
         event = captured_events[-1]
         stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
-        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[1]["vars"]["user__scrubbed"] == "[REDACTED]"
-        assert stacktrace_frames[3]["vars"]["source_data"] == "[REDACTED]"
-        assert stacktrace_frames[4]["vars"] == {
-            "country_insee_code": "[REDACTED]",
-            "city_insee_code": "[REDACTED]",
-            "person": "[REDACTED]",
-            "query_params": {
-                "anneeDateNaissance": "[REDACTED]",
-                "codeCogInseeCommuneNaissance": "[REDACTED]",
-                "codeCogInseePaysNaissance": "[REDACTED]",
-                "jourDateNaissance": "[REDACTED]",
-                "moisDateNaissance": "[REDACTED]",
-                "nomNaissance": "[REDACTED]",
-                "nomUsage": "[REDACTED]",
-                "prenoms[]": "[REDACTED]",
-                "recipient": "[REDACTED]",
-                "sexeEtatCivil": "[REDACTED]",
-            },
-            "response": "<Response [500]>",
-        }, stacktrace_frames[4]["vars"]
+
+        test_frame = stacktrace_frames[0]
+        assert any(value not in [None, "[REDACTED]"] for value in test_frame["vars"].values())
+
+        for frame in stacktrace_frames[1:]:
+            assert all(value == "[REDACTED]" for value in frame["vars"].values())
 
     def test_touch_fraud_check_despite_error(self):
         twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)

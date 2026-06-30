@@ -549,16 +549,16 @@ def can_receive_bonus_credit(user: users_models.User) -> bool:
     return not has_received_bonus
 
 
-def recredit_bonus_credit(user__scrubbed: users_models.User) -> models.Recredit | None:
+def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
     """
     This function is called during GDPR-sensitive code paths like the disability bonus credit.
     That is why this function *must never* log anything to our cloud provider.
     """
-    deposit = user__scrubbed.deposit
+    deposit = user.deposit
     if not deposit:
         return None
 
-    if not can_receive_bonus_credit(user__scrubbed):
+    if not can_receive_bonus_credit(user):
         return None
 
     recredit = models.Recredit(
@@ -567,7 +567,7 @@ def recredit_bonus_credit(user__scrubbed: users_models.User) -> models.Recredit 
         recreditType=models.RecreditType.BONUS_CREDIT,
     )
     deposit.amount += recredit.amount
-    user__scrubbed.recreditAmountToShow = recredit.amount + (user__scrubbed.recreditAmountToShow or 0)
+    user.recreditAmountToShow = recredit.amount + (user.recreditAmountToShow or 0)
 
     db.session.add(recredit)
     db.session.flush()
