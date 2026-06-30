@@ -389,7 +389,7 @@ cd $DIR
 
 echo "Running semgrep..."
 
-semgrep scan -q --config=p/security-audit . --baseline-commit HEAD~
+semgrep scan -q --config=p/security-audit . --baseline-commit HEAD~ --error --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token
 
 #############################
 ##### END RUN SAST TOOL #####

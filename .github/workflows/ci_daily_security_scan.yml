@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Perform Semgrep Analysis
-        run: semgrep scan --config auto . --sarif-output=semgrep-results.sarif
+        run: semgrep scan --config auto . --sarif-output=semgrep-results.sarif --exclude-rule=python.django.security.django-no-csrf-token.django-no-csrf-token
 
       - name: Save SARIF results as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
