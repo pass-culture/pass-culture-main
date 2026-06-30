@@ -15,6 +15,14 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
+DATA_PROVIDER_ERROR = bonus_schemas.BonusCreditPerson(
+    last_name="delanoue",
+    first_names=["jean-marie"],
+    birth_date=datetime.date(2002, 12, 5),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
 PERSON_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     last_name="a_very_very_very_very_very_very_very_very_very_very_ver_very_very_very_very_very_long_name",
     common_name=None,
@@ -33,7 +41,7 @@ QF_APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-CUSTODIAN_WITH_CHILDREN = bonus_schemas.BonusCreditPerson(
+QF_CUSTODIAN_WITH_CHILDREN = bonus_schemas.BonusCreditPerson(
     last_name="lefebvre",
     common_name=None,
     first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -93,6 +101,14 @@ DISABLED_CHILD_EDUCATION_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="13055",
 )
+DISABLED_CHILD_DATA_PROVIDER_ERROR = bonus_schemas.BonusCreditPerson(
+    last_name="delanque",
+    first_names=["jean-marie"],
+    birth_date=datetime.date(2008, 6, 15),
+    gender=users_models.GenderEnum.M,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+    birth_city_cog_code="08480",
+)
 
 
 def get_and_mock_quotient_familial(
@@ -115,8 +131,10 @@ def get_and_mock_quotient_familial(
         mocked_custodian = QF_APPLICATION_NOT_FOUND
     elif mock_config.http_status_code == 422:
         mocked_custodian = PERSON_NOT_FOUND
+    elif mock_config.http_status_code == 502:
+        mocked_custodian = DATA_PROVIDER_ERROR
     else:
-        mocked_custodian = CUSTODIAN_WITH_CHILDREN
+        mocked_custodian = QF_CUSTODIAN_WITH_CHILDREN
     api_particulier_response = api_particulier.get_quotient_familial(mocked_custodian)
 
     _inject_quotient_familial_mock_config(api_particulier_response, mock_config)
@@ -205,6 +223,8 @@ def get_and_mock_disabled_adult_allowance(
         mocked_person = DISABILITY_APPLICATION_NOT_FOUND
     elif mock_config.http_status_code == 422:
         mocked_person = PERSON_NOT_FOUND
+    elif mock_config.http_status_code == 502:
+        mocked_person = DATA_PROVIDER_ERROR
     elif not mock_config.is_disability_beneficiary:
         mocked_person = ADULT_DISABILITY_NON_BENEFICIARY
     else:
@@ -253,6 +273,8 @@ def get_and_mock_disabled_child_education_allowance(
         mocked_person = DISABILITY_APPLICATION_NOT_FOUND
     elif mock_config.http_status_code == 422:
         mocked_person = PERSON_NOT_FOUND
+    elif mock_config.http_status_code == 502:
+        mocked_person = DISABLED_CHILD_DATA_PROVIDER_ERROR
     elif (
         mock_config.disability_beneficiary_status
         == bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY
