@@ -14,6 +14,7 @@ from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import utils as public_utils
+from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
 from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.routes.public.services.authentication import current_api_key
@@ -242,13 +243,17 @@ def load_venue_and_provider_query(query: sa_orm.Query) -> sa_orm.Query:
 
 
 def extract_venue_and_offerer_address_from_location(
-    body: serialization.OfferEditionBase,
+    location: v1_serialization.PhysicalLocation
+    | v1_serialization.DigitalLocation
+    | v1_serialization.AddressLocation
+    | None,
+    venue: offerers_models.Venue | None = None,
 ) -> tuple[offerers_models.Venue | None, offerers_models.OffererAddress | None]:
-    location = body.location
     if not location:
         return None, None
 
-    venue = get_venue_with_offerer_address(location.venue_id)
+    if venue is None:
+        venue = get_venue_with_offerer_address(location.venue_id)
 
     if location.type == "address":
         address = public_utils.get_address_or_raise_404(location.address_id)
