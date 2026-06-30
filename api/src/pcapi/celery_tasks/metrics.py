@@ -1,3 +1,5 @@
+import json
+from typing import Iterator
 from typing import List
 
 from prometheus_client import REGISTRY
@@ -7,8 +9,11 @@ from prometheus_client import Gauge
 from prometheus_client import Histogram
 from prometheus_client import multiprocess
 from prometheus_client import start_http_server
+from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.registry import Collector
 
 from pcapi import settings
+from pcapi.celery_tasks.config import CELERY_QUEUE_NAMES
 
 
 if settings.PROMETHEUS_MULTIPROC_DIR:
@@ -66,5 +71,40 @@ tasks_rate_limited_counter = Counter(
 metrics_list += [tasks_rate_limited_counter]
 
 
+class PendingTaskCollector(Collector):
+    def collect(self) -> Iterator[GaugeMetricFamily]:
+        gauge = GaugeMetricFamily(
+            "celery_pending_tasks", "Number of Celery tasks that are currently pending", labels=["task"]
+        )
+
+        if not settings.CELERY_MONITORED_QUEUES:
+            # local development only spawns one celery pod that handles all queues
+            monitored_queues = CELERY_QUEUE_NAMES
+        else:
+            monitored_queues = [queue for queue in CELERY_QUEUE_NAMES if queue in settings.CELERY_MONITORED_QUEUES]
+
+        for queue in monitored_queues:
+            for task_name, count in _count_pending_tasks(queue).items():
+                gauge.add_metric([task_name], count)
+
+        yield gauge
+
+
+def _count_pending_tasks(queue_name: str) -> dict[str, int]:
+    # avoid (flask_app -> celery_init_app -> celery -> metrics -> flask_app)  circular import
+    from pcapi.flask_app import app as flask_app
+
+    PENDING_TASKS_SCAN_LIMIT = 10_000
+    counts: dict[str, int] = {}
+    for raw_message in flask_app.redis_client.lrange(queue_name, 0, PENDING_TASKS_SCAN_LIMIT - 1):
+        try:
+            task_name = json.loads(raw_message)["headers"]["task"]
+        except (json.JSONDecodeError, KeyError, TypeError):
+            continue
+        counts[task_name] = counts.get(task_name, 0) + 1
+    return counts
+
+
 def start_metrics_server() -> None:
+    registry.register(PendingTaskCollector())
     start_http_server(settings.CELERY_WORKER_METRICS_PORT, registry=registry)

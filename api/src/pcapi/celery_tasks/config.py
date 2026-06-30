@@ -11,6 +11,13 @@ CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.external_calls.priority"  # 
 CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME = "celery.internal_calls.default"  # Default priority
 CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME = "celery.internal_calls.priority"  # High priority
 
+CELERY_QUEUE_NAMES = [
+    CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME,
+    CELERY_EXTERNAL_CALLS_PRIORITY_QUEUE_NAME,
+    CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME,
+    CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME,
+]
+
 CELERY_BASE_SETTINGS: typing.Final = dict(
     broker_url=settings.REDIS_URL,
     task_acks_late=True,
