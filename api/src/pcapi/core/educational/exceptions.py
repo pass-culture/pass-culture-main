@@ -96,6 +96,14 @@ class CollectiveOfferNotEditable(Exception):
     pass
 
 
+class CollectivePriceTooHigh(EducationalException):
+    pass
+
+
+class CollectivePriceNotEditable(EducationalException):
+    pass
+
+
 class CollectiveOfferForbiddenAction(Exception):
     def __init__(self, action: "CollectiveOfferAllowedAction") -> None:
         self.action = action

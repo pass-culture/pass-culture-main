@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import decimal
 import logging
 import typing
 from functools import partial
@@ -506,6 +507,21 @@ def create_collective_offer_public(
     return collective_offer
 
 
+def _get_total_price_after_update(
+    service_price: decimal.Decimal | None,
+    additional_fees: list[api_shared.AdditionalFeeDict] | None,
+    collective_stock: models.CollectiveStock,
+) -> decimal.Decimal:
+    after_update_service_price = service_price if service_price is not None else collective_stock.servicePrice
+
+    if additional_fees is not None:
+        after_update_additional_fees = sum(fee["amount"] for fee in additional_fees)
+    else:
+        after_update_additional_fees = sum(fee.amount for fee in collective_stock.collectiveAdditionalFees)
+
+    return after_update_service_price + after_update_additional_fees
+
+
 def edit_collective_offer_public(
     provider_id: int,
     new_values: dict,
@@ -518,9 +534,9 @@ def edit_collective_offer_public(
     offer_fields = {field for field in dir(models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(models.CollectiveStock) if not field.startswith("_")}
 
-    start_datetime = new_values.get("startDatetime")
-    end_datetime = new_values.get("endDatetime")
-    booking_limit_datetime = new_values.get("bookingLimitDatetime")
+    start_datetime: datetime.datetime | None = new_values.get("startDatetime")
+    end_datetime: datetime.datetime | None = new_values.get("endDatetime")
+    booking_limit_datetime: datetime.datetime | None = new_values.get("bookingLimitDatetime")
 
     # we need to compare the input dates with the current stock dates if we only receive some dates
     after_update_start_datetime = start_datetime or offer.collectiveStock.startDatetime
@@ -550,6 +566,24 @@ def edit_collective_offer_public(
         new_values["locationComment"] = location.location_comment
         new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
         new_values.pop("location", None)
+
+    # if the offer has additional fees, it means we already received a "new body" call for this offer
+    # we cannot process a total price when we have additional fees, we need the servicePrice / additional fees detail
+    if "price" in new_values and offer.collectiveStock.collectiveAdditionalFees:
+        raise exceptions.CollectivePriceNotEditable()
+
+    # check that the total price after update is lower than the limit + update price column with total price
+    service_price: decimal.Decimal | None = new_values.get("servicePrice")
+    additional_fees: list[api_shared.AdditionalFeeDict] | None = new_values.get("additionalFees")
+    edit_price_fields = service_price is not None or additional_fees is not None
+
+    if edit_price_fields:
+        after_update_total_price = _get_total_price_after_update(service_price, additional_fees, offer.collectiveStock)
+
+        if after_update_total_price > settings.EAC_OFFER_PRICE_LIMIT:
+            raise exceptions.CollectivePriceTooHigh()
+
+        new_values["price"] = after_update_total_price
 
     # check domains and national program
     domains_to_check = offer.domains
@@ -601,12 +635,17 @@ def edit_collective_offer_public(
             if key == "priceDetail":
                 offer.additionalDetails = value
 
-            # for now we set servicePrice=price, until we receive servicePrice
-            if key == "price":
+            # when we receive price with the "old" body (totalPrice), write also to servicePrice
+            # when we receive the "new" body (servicePrice / additionalFees), do nothing here
+            # as we have set new_values["price"] = new total price
+            if key == "price" and not edit_price_fields:
                 offer.collectiveStock.servicePrice = value
 
         elif key in offer_fields:
             setattr(offer, key, value)
+
+        elif key == "additionalFees":
+            api_shared.update_additional_fees(new_additional_fees=value, collective_stock=offer.collectiveStock)
 
         else:
             raise ValueError(f"unknown field {key}")
@@ -632,11 +671,11 @@ def edit_collective_offer_public(
 
 PATCH_INSTITUTION_FIELDS_PUBLIC = ("educationalInstitutionId", "educationalInstitution")
 PATCH_DATES_FIELDS_PUBLIC = ("startDatetime", "endDatetime", "bookingLimitDatetime")
-PATCH_DISCOUNT_FIELDS_PUBLIC = ("numberOfTickets", "priceDetail")
+PATCH_DISCOUNT_FIELDS_PUBLIC = ("numberOfTickets", "numberOfTeachers", "priceDetail")
 
 # fields of public schema PatchCollectiveOfferBodyModel that correspond to CAN_EDIT_DETAILS
 # i.e all the fields except the ones that correspond to other actions
-# "price" can correspond to CAN_EDIT_DETAILS or CAN_EDIT_DISCOUNT an is processed separately
+# "price", "servicePrice" and "additionalFees" can correspond to CAN_EDIT_DETAILS or CAN_EDIT_DISCOUNT an are processed separately
 PATCH_DETAILS_FIELDS_PUBLIC = tuple(
     public_api_collective_offers_serialize.PatchCollectiveOfferBodyModel.__fields__.keys()
     - {
@@ -644,6 +683,8 @@ PATCH_DETAILS_FIELDS_PUBLIC = tuple(
         *PATCH_DATES_FIELDS_PUBLIC,
         *PATCH_DISCOUNT_FIELDS_PUBLIC,
         "price",
+        "servicePrice",
+        "additionalFees",
     }
 )
 
@@ -695,6 +736,26 @@ def check_edit_collective_offer_public_allowed_action(offer: models.CollectiveOf
         price: float = new_values["price"]
 
         if price > offer.collectiveStock.price:
+            validation.check_collective_offer_action_is_allowed(
+                offer=offer,
+                action=models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+                for_public_api=True,
+            )
+        else:
+            validation.check_collective_offer_action_is_allowed(
+                offer=offer,
+                action=models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                for_public_api=True,
+            )
+
+    service_price: decimal.Decimal | None = new_values.get("servicePrice")
+    additional_fees: list[api_shared.AdditionalFeeDict] | None = new_values.get("additionalFees")
+
+    # determine whether total price after update is lowered or increased and check corresponding action
+    if service_price is not None or additional_fees is not None:
+        total_price = _get_total_price_after_update(service_price, additional_fees, offer.collectiveStock)
+
+        if total_price > offer.collectiveStock.price:
             validation.check_collective_offer_action_is_allowed(
                 offer=offer,
                 action=models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,

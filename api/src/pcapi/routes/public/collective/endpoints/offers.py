@@ -36,7 +36,10 @@ PATCH_NON_NULLABLE_FIELDS = (
     "startDatetime",
     "endDatetime",
     "price",
+    "servicePrice",
+    "additionalFees",
     "numberOfTickets",
+    "numberOfTeachers",
     "audioDisabilityCompliant",
     "mentalDisabilityCompliant",
     "motorDisabilityCompliant",
@@ -446,6 +449,10 @@ def patch_collective_offer_public(
     # edition errors
     except exceptions.CollectiveOfferNotEditable:
         raise api_errors.ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
+    except exceptions.CollectivePriceTooHigh:
+        raise api_errors.ApiErrors(errors={"global": ["Le prix total est trop élevé."]})
+    except exceptions.CollectivePriceNotEditable:
+        raise api_errors.ApiErrors(errors={"global": ["Le prix total ne peut pas être édité."]})
 
     # dates errors
     except exceptions.StartAndEndEducationalYearDifferent:

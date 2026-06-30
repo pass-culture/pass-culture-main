@@ -55,14 +55,6 @@ def validate_emails(emails: list[str]) -> list[str]:
     return emails
 
 
-def validate_number_of_tickets(number_of_tickets: int | None) -> int:
-    if number_of_tickets is None:
-        raise ValueError("Le nombre de places ne peut pas être nul.")
-    if number_of_tickets < 0:
-        raise ValueError("Le nombre de places ne peut pas être négatif.")
-    return number_of_tickets
-
-
 def validate_price(price: float | None) -> float:
     if price is None:
         raise ValueError("Le prix ne peut pas être nul.")
@@ -124,10 +116,6 @@ def validate_image_file(image_file: str | None) -> str | None:
     if len(image_file) > 2000000:
         raise ValueError("L'image ne doit pas faire plus de 1.5 Mio (2 000 000 caractères en base 64)")
     return image_file
-
-
-def number_of_tickets_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True)(validate_number_of_tickets)
 
 
 def price_validator(field_name: str) -> classmethod:
@@ -463,6 +451,29 @@ class CollectiveAdditionalFeeModel(BaseModel):
         return values
 
 
+def _validate_total_price_and_additional_fees(
+    service_price: decimal.Decimal | None, additional_fees: list[CollectiveAdditionalFeeModel] | None
+) -> None:
+    if service_price is not None and additional_fees is not None:
+        total_price = service_price + sum(fee.amount for fee in additional_fees)
+
+        if total_price > settings.EAC_OFFER_PRICE_LIMIT:
+            raise ValueError(f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}")
+
+    if additional_fees:
+        type_counter = collections.Counter(
+            fee.type for fee in additional_fees if fee.type != CollectiveAdditionalFeeType.OTHER
+        )
+        if any(type_count > 1 for type_count in type_counter.values()):
+            raise ValueError("Un type de frais annexe est en doublon")
+
+        label_counter = collections.Counter(
+            fee.label for fee in additional_fees if fee.type == CollectiveAdditionalFeeType.OTHER
+        )
+        if any(label_count > 1 for label_count in label_counter.values()):
+            raise ValueError("Un label de frais annexe est en doublon")
+
+
 class PostCollectiveOfferBodyModel(BaseModel):
     # offer part
     venue_id: int = fields.VENUE_ID
@@ -498,7 +509,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     educational_institution_id: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     educational_institution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
 
-    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
     _validate_start_datetime = start_datetime_validator("start_datetime")
     _validate_end_datetime = end_datetime_validator("end_datetime")
@@ -578,6 +588,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
         _validate_location(location)
         return location
 
+    @validator("service_price")
+    def validate_service_price(cls, value: decimal.Decimal) -> decimal.Decimal:
+        # round to 2 digits to avoid rounding errors during the sum computation
+        return value.quantize(decimal.Decimal("1.00"))
+
     @root_validator(pre=True)
     def validate_price_fields(cls, values: dict) -> dict:
         # check that
@@ -611,27 +626,9 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @root_validator(pre=False)
     def validate_total_price(cls, values: dict) -> dict:
-        service_price: decimal.Decimal | None = values.get("service_price")
-        additional_fees: list[CollectiveAdditionalFeeModel] | None = values.get("additional_fees")
-
-        if service_price is not None and additional_fees is not None:
-            total_price = service_price + sum(fee.amount for fee in additional_fees)
-
-            if total_price > settings.EAC_OFFER_PRICE_LIMIT:
-                raise ValueError(f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}")
-
-        if additional_fees:
-            type_counter = collections.Counter(
-                fee.type for fee in additional_fees if fee.type != CollectiveAdditionalFeeType.OTHER
-            )
-            if any(type_count > 1 for type_count in type_counter.values()):
-                raise ValueError("Un type de frais annexe est en doublon")
-
-            label_counter = collections.Counter(
-                fee.label for fee in additional_fees if fee.type == CollectiveAdditionalFeeType.OTHER
-            )
-            if any(label_count > 1 for label_count in label_counter.values()):
-                raise ValueError("Un label de frais annexe est en doublon")
+        _validate_total_price_and_additional_fees(
+            service_price=values.get("service_price"), additional_fees=values.get("additional_fees")
+        )
 
         return values
 
@@ -643,6 +640,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 class PatchCollectiveOfferBodyModel(BaseModel):
     name: str | None = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
+    additionalDetails: str | None = fields.COLLECTIVE_OFFER_ADDITIONAL_DETAILS_WITH_VALIDATION
     venueId: int | None = fields.VENUE_ID
     formats: list[EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
     bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
@@ -667,12 +665,14 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     bookingLimitDatetime: datetime | None = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     price: float | None = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
-    numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
+    servicePrice: decimal.Decimal | None = fields.COLLECTIVE_OFFER_SERVICE_PRICE_WITH_VALIDATION
+    additionalFees: list[CollectiveAdditionalFeeModel] | None = fields.COLLECTIVE_OFFER_ADDITIONAL_FEES_WITH_VALIDATION
+    numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_WITH_VALIDATION
+    numberOfTeachers: int | None = fields.COLLECTIVE_OFFER_NB_OF_TEACHERS_WITH_VALIDATION
     # educational_institution
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
 
-    _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
     _validate_price_detail = price_detail_validator("priceDetail")
     _validate_start_datetime = start_datetime_validator("startDatetime")
@@ -760,6 +760,39 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if location is not None:
             _validate_location(location)
         return location
+
+    @validator("servicePrice")
+    def validate_service_price(cls, value: decimal.Decimal | None) -> decimal.Decimal | None:
+        if value is None:
+            return value
+
+        # round to 2 digits to avoid rounding errors during the sum computation
+        return value.quantize(decimal.Decimal("1.00"))
+
+    @root_validator(pre=True)
+    def validate_price_fields(cls, values: dict) -> dict:
+        # check that we do not have a mix of old and new fields
+
+        old_fields = ("totalPrice", "educationalPriceDetail")
+        new_fields = ("additionalDetails", "servicePrice", "additionalFees", "numberOfTeachers")
+
+        has_old_field = any(field in values for field in old_fields)
+        has_new_field = any(field in values for field in new_fields)
+
+        if has_old_field and has_new_field:
+            raise ValueError(
+                "Vous pouvez renseigner soit ('totalPrice', 'educationalPriceDetail'), soit ('additionalDetails', 'servicePrice', 'additionalFees', 'numberOfTeachers')"
+            )
+
+        return values
+
+    @root_validator(pre=False)
+    def validate_total_price(cls, values: dict) -> dict:
+        _validate_total_price_and_additional_fees(
+            service_price=values.get("servicePrice"), additional_fees=values.get("additionalFees")
+        )
+
+        return values
 
     class Config:
         alias_generator = to_camel
