@@ -359,7 +359,7 @@ class BookEventTicketTest:
         requests_post.return_value.json.return_value = error_json
 
         # try to book
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             book_event_ticket(booking, stock, user)
 
         assert exc.value.remainingQuantity == expected_remaining_quantity

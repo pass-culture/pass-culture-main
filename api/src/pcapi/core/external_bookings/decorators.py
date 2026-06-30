@@ -76,6 +76,6 @@ def catch_cinema_provider_request_timeout(client_func: F) -> F:
                 extra["request"] = {"method": e.request.method, "url": e.request.url}
 
             logger.warning("Cinema Provider API Request Timeout", extra=extra)
-            raise exceptions.ExternalBookingTimeoutException()
+            raise exceptions.TimeoutException()
 
     return wrapped_func  # type: ignore[return-value]

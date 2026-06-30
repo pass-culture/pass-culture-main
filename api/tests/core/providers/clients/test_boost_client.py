@@ -194,10 +194,7 @@ class AuthenticatedGetTest:
         assert requests_mock.last_request.headers["Authorization"] == "Bearer token"
         assert isinstance(exc.value, boost_client.BoostAPIException)
         assert "token" not in str(exc.value)
-        assert (
-            "Error on Boost API on GET https://cinema.example.com/example : Expectation failed - Why must you fail me so often ?"
-            == str(exc.value)
-        )
+        assert "Error on Boost API: Expectation failed - Why must you fail me so often ?" == str(exc.value)
 
 
 class InvalidateJWTTokenTest:
@@ -431,7 +428,7 @@ class BookTicketTest:
         )
         boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
         assert exc.value.remainingQuantity == expected_remaining_quantity
@@ -450,7 +447,7 @@ class BookTicketTest:
         post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
         boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
         assert post_adapter.last_request == None
@@ -469,7 +466,7 @@ class BookTicketTest:
         post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
         boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+        with pytest.raises(external_bookings_exceptions.ShowRemovedException):
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
         assert post_adapter.last_request == None
@@ -489,9 +486,7 @@ class BookTicketTest:
         with pytest.raises(boost_client.BoostAPIException) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
-        assert exc.value.args == (
-            "Error on Boost API on GET https://cinema-0.example.com/api/showtimes/36684 : None - Error code 502",
-        )
+        assert exc.value.args == ("Error on Boost API: None - Error code 502",)
 
 
 class CancelBookingTest:
@@ -527,7 +522,4 @@ class CancelBookingTest:
         with pytest.raises(boost_client.BoostAPIException) as exception:
             boost.cancel_booking(barcodes=["55555"])
 
-        assert (
-            str(exception.value)
-            == "Error on Boost API on PUT https://cinema-0.example.com/api/sale/orderCancel : Not found - The sale with ID: 55555 not found"
-        )
+        assert str(exception.value) == "Error on Boost API: Not found - The sale with ID: 55555 not found"

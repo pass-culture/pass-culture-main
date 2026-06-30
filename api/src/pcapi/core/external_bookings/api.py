@@ -78,28 +78,9 @@ def book_cinema_ticket(
 
     show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock_id_at_providers, local_class)
     if not show_id:
-        raise exceptions.ExternalBookingConfigurationException("Could not retrieve show_id")
+        raise exceptions.ConfigurationException("Could not retrieve show_id")
 
-    try:
-        return client.book_ticket(show_id, booking, beneficiary)
-    except (
-        exceptions.ExternalBookingTimeoutException,
-        exceptions.ExternalBookingNotEnoughSeatsError,
-        exceptions.ExternalBookingShowDoesNotExistError,
-    ):
-        raise
-    except Exception as exc:
-        logger.warning(
-            "Could not book external ticket: %s",
-            exc,
-            extra={
-                "stock_id": booking.stockId,
-                "beneficiary_id": beneficiary.id,
-                "stock_id_at_providers": stock_id_at_providers,
-                "local_class": local_class,
-            },
-        )
-        raise exceptions.ExternalBookingException
+    return client.book_ticket(show_id, booking, beneficiary)
 
 
 def disable_external_bookings() -> None:
@@ -422,9 +403,9 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
                 f"External booking failed with status code {response.status_code} and message {response.text}"
             )
         if error_response.error == "sold_out":
-            raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+            raise exceptions.ShowSoldOutException(remainingQuantity=0)
         if error_response.error == "not_enough_seats" and isinstance(error_response.remainingQuantity, int):
-            raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
+            raise exceptions.ShowSoldOutException(remainingQuantity=error_response.remainingQuantity)
         if error_response.error == "already_cancelled":
             raise exceptions.ExternalBookingAlreadyCancelledError(remainingQuantity=error_response.remainingQuantity)
     if not response.ok:

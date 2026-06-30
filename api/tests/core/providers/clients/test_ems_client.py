@@ -187,7 +187,7 @@ class EMSBookTicketTest:
 
         client = EMSAPIClient(cinema_id=cinema_id)
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
         assert exc.value.remainingQuantity == 0
 
@@ -222,7 +222,7 @@ class EMSBookTicketTest:
 
         client = EMSAPIClient(cinema_id=cinema_id)
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+        with pytest.raises(external_bookings_exceptions.ShowRemovedException):
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
 

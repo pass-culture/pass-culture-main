@@ -8,7 +8,7 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
-from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
+from pcapi.core.external_bookings.exceptions import ShowSoldOutException
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
@@ -156,7 +156,7 @@ class EMSAPIClient(cinema_client.CinemaAPIClient):
         )
         try:
             self.connector.raise_for_status(response)
-        except ExternalBookingNotEnoughSeatsError:
+        except ShowSoldOutException:
             # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
             # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
             return json.dumps({})

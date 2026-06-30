@@ -7,8 +7,8 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.clients.cgr_client as cgr_client
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
-from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
+from pcapi.core.external_bookings.exceptions import ShowRemovedException
+from pcapi.core.external_bookings.exceptions import ShowSoldOutException
 from pcapi.core.providers.clients.cgr_client import CGRAPIException
 from pcapi.utils.crypto import encrypt
 
@@ -325,7 +325,7 @@ class BookTicketTest:
 
         cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
-        with pytest.raises(ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(ShowSoldOutException) as exc:
             cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert exc.value.remainingQuantity == expected_remaining_quantity
@@ -360,7 +360,7 @@ class BookTicketTest:
 
         cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
-        with pytest.raises(ExternalBookingShowDoesNotExistError):
+        with pytest.raises(ShowRemovedException):
             cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
 
@@ -405,7 +405,7 @@ class CancelBookingTest:
 
         assert (
             str(exception.value)
-            == "Error on CGR API on AnnulationPassCulture : L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible"
+            == "Error on CGR API: L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible"
         )
 
     def test_when_cgr_returns_element_already_cancelled_on_cgr_side(self, requests_mock):

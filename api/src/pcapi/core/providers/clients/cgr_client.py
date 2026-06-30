@@ -13,8 +13,8 @@ from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.exceptions import ExternalBookingException
-from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
-from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
+from pcapi.core.external_bookings.exceptions import ShowRemovedException
+from pcapi.core.external_bookings.exceptions import ShowSoldOutException
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
@@ -63,17 +63,17 @@ def _check_response_is_ok(response: dict, resource: str) -> None:
         error_message = response["IntituleErreur"]
         logger.warning(
             "[CGR] Error calling API",
-            extra={"error_code": response["CodeErreur"], "error_message": error_message},
+            extra={"error_code": response["CodeErreur"], "error_message": error_message, "resource": resource},
         )
 
         if regex.match(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message):
             remaining_seats = int(regex.findall(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message)[0])
-            raise ExternalBookingNotEnoughSeatsError(remaining_seats)
+            raise ShowSoldOutException(remaining_seats)
 
         if "Séance inconnue" in error_message or regex.match(_CGR_SHOW_DOES_NOT_EXISTS_PATTERN, error_message):
-            raise ExternalBookingShowDoesNotExistError()
+            raise ShowRemovedException()
 
-        raise CGRAPIException(f"Error on CGR API on {resource} : {error_message}")
+        raise CGRAPIException(f"Error on CGR API: {error_message}")
 
 
 def _get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) -> ServiceProxy:

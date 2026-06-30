@@ -359,12 +359,43 @@ def _book_offer(
 
         if is_cinema_external_ticket_applicable:
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
-            tickets = external_bookings_api.book_cinema_ticket(
-                venue_id=stock.offer.venueId,
-                stock_id_at_providers=stock.idAtProviders,
-                booking=booking,
-                beneficiary=beneficiary,
-            )
+            try:
+                tickets = external_bookings_api.book_cinema_ticket(
+                    venue_id=stock.offer.venueId,
+                    stock_id_at_providers=stock.idAtProviders,
+                    booking=booking,
+                    beneficiary=beneficiary,
+                )
+                logger.info(
+                    "Cinema tickets successfully booked",
+                    extra={
+                        "provider_id": stock.lastProviderId,
+                        "venue_id": stock.offer.venueId,
+                        "offer_id": stock.offerId,
+                        "stock_id": stock.id,
+                        "stock_id_at_providers": stock.idAtProviders,
+                        "booking_quantity": booking.quantity,
+                        "user_id": beneficiary.id,
+                    },
+                    technical_message_id="providers.external.booking",
+                )
+            except Exception as e:
+                logger.warning(
+                    "Unable to book cinema tickets",
+                    extra={
+                        "provider_id": stock.lastProviderId,
+                        "venue_id": stock.offer.venueId,
+                        "offer_id": stock.offerId,
+                        "stock_id": stock.id,
+                        "stock_id_at_providers": stock.idAtProviders,
+                        "booking_quantity": booking.quantity,
+                        "user_id": beneficiary.id,
+                        "exception_type": e.__class__.__name__,
+                        "exception_message": str(e),
+                    },
+                    technical_message_id="providers.external.booking",
+                )
+                raise
             booking.externalBookings = [
                 models.ExternalBooking(
                     barcode=ticket.barcode,
@@ -439,7 +470,7 @@ def book_offer(
 
     try:
         booking = _book_offer(beneficiary, stock_id, quantity)
-    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError as error:
+    except external_bookings_exceptions.ShowSoldOutException as error:
         offers_api.edit_stock(
             stock,
             quantity=(stock.dnBookedQuantity + error.remainingQuantity),
@@ -451,7 +482,7 @@ def book_offer(
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise
-    except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
+    except external_bookings_exceptions.ShowRemovedException:
         # Event show does not exist anymore on provider side so we delete the stock on our side
         # (can occur with cinema integrations)
         offers_api.delete_stock(stock)
