@@ -583,6 +583,7 @@ class CheckAllowedActionTest:
         expected = {
             "name",
             "description",
+            "additionalDetails",
             "venueId",
             "formats",
             "bookingEmails",

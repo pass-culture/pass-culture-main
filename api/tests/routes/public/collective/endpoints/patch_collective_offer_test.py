@@ -35,7 +35,6 @@ NON_REQUIRED_NON_NULLABLE_FIELDS_CUSTOM_ERROR = {
     "startDatetime": "La date de début de l'évènement ne peut pas être vide.",
     "endDatetime": "La date de fin de l'évènement ne peut pas être vide.",
     "totalPrice": "Le prix ne peut pas être nul.",
-    "numberOfTickets": "Le nombre de places ne peut pas être nul.",
     "formats": "formats must have at least one value",
     "name": "name cannot be empty",
     "domains": "domains must have at least one value",

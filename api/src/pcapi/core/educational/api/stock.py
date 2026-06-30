@@ -173,34 +173,9 @@ def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> No
     stock = repository.get_and_lock_collective_stock(stock_id=stock.id)
 
     # update the additional fees
-    additional_fees: list[dict] | None = updatable_fields.pop("collectiveAdditionalFees", None)
+    additional_fees: list[api_shared.AdditionalFeeDict] | None = updatable_fields.pop("collectiveAdditionalFees", None)
     if additional_fees is not None:
-        new_amount_by_type_label = {(fee["type"], fee["label"]): fee["amount"] for fee in additional_fees}
-        current_fee_by_type_label = {(fee.type, fee.label): fee for fee in stock.collectiveAdditionalFees}
-
-        for type_label, new_amount in new_amount_by_type_label.items():
-            # type / label found -> update the row
-            if type_label in current_fee_by_type_label:
-                current_fee_by_type_label[type_label].amount = new_amount
-            # type / label not found -> add a row
-            else:
-                fee_type, fee_label = type_label
-                db.session.add(
-                    models.CollectiveAdditionalFee(
-                        type=fee_type, label=fee_label, amount=new_amount, collectiveStock=stock
-                    )
-                )
-
-        # remove current type / label rows that are not present in the input
-        to_delete = [
-            fee.id for fee in stock.collectiveAdditionalFees if (fee.type, fee.label) not in new_amount_by_type_label
-        ]
-        if to_delete:
-            db.session.query(models.CollectiveAdditionalFee).filter(
-                models.CollectiveAdditionalFee.id.in_(to_delete)
-            ).delete()
-
-        db.session.flush()
+        api_shared.update_additional_fees(new_additional_fees=additional_fees, collective_stock=stock)
 
     for attribute, new_value in updatable_fields.items():
         if new_value is not None and getattr(stock, attribute) != new_value:
