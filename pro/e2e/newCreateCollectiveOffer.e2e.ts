@@ -44,7 +44,12 @@ const commonOfferData = {
   time: '18:30',
   students: '10',
   teachers: '2',
-  price: '100', // TODO(PC-41977) Update price
+  servicePrice: '80',
+  additionnalFees: [
+    { amount: '8', label: "Repas de l'intervenant" },
+    { amount: '12', label: 'Mon frais spécifique' },
+  ],
+  price: '100',
   priceDescription: 'description',
   institution: 'COLLEGE 123',
 }
@@ -392,6 +397,45 @@ async function fillDatesAndPrice(
   await page
     .getByLabel(/Date limite de réservation */)
     .fill(format(commonOfferData.bookingLimitDate, 'yyyy-MM-dd'))
+  await page
+    .getByLabel(/Tarif de la prestation \(en €\)/)
+    .fill(commonOfferData.servicePrice)
+
+  await page.getByRole('radio', { name: 'Oui' }).check()
+  await page
+    .getByRole('combobox', { name: /Type de frais annexes/ })
+    .fill(commonOfferData.additionnalFees[0].label.substring(0, 3))
+  await page
+    .getByRole('option', { name: commonOfferData.additionnalFees[0].label })
+    .click()
+
+  await page
+    .getByLabel(/Prix \(en €\)/)
+    .fill(commonOfferData.additionnalFees[0].amount)
+
+  await page
+    .getByRole('button', { name: 'Ajouter un type de frais annexes' })
+    .click()
+  await page
+    .getByLabel(/Type de frais annexes/)
+    .nth(1)
+    .fill(commonOfferData.additionnalFees[1].label)
+  await page
+    .getByRole('option', {
+      name: `Ajouter ${commonOfferData.additionnalFees[1].label}`,
+    })
+    .click()
+  await page
+    .getByLabel(/Prix \(en €\)/)
+    .nth(1)
+    .fill(commonOfferData.additionnalFees[1].amount)
+
+  await expect(
+    page.getByRole('heading', {
+      name: `Prix total de votre offre : ${commonOfferData.price}€ TTC`,
+    })
+  ).toBeVisible()
+
   await checkAccessibility()
 
   await Promise.all([
