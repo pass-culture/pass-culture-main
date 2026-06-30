@@ -4043,18 +4043,21 @@ class GetUserPendingAndValidatedOffererTest:
 class CloseVenueTest:
     def test_open_venue_becomes_closed(self):
         venue = offerers_factories.VenueFactory(state=None)
+        author = users_factories.UserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+
         assert venue.state == offerers_models.VenueState.CLOSED
 
-    def test_closed_venue_stays_closed(self):
+    def test_closed_venue_stays_closed_and_nothing_is_done(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        author = users_factories.UserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
@@ -4140,3 +4143,77 @@ class DeactivateVenueOffersTest:
             log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
             record = next(rec for rec in caplog.records if rec.message == log_msg)
             assert record.extra == expected_backup_data
+
+
+class CancelIndividualBookingsOnVenueClosureTest:
+    def test_venue_has_no_individual_bookings(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        with atomic():
+            offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert not venue.bookings
+
+    def test_venue_has_bookings_to_cancel(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        bookings_factories.BookingFactory.create_batch(3, stock__offer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+
+    def test_uncancellable_bookings_are_filtered_and_others_are_being_cancelled(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.bookings)
+
+
+class CancelCollectiveBookingsOnVenueClosureTest:
+    def test_venue_has_no_collective_bookings(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        with atomic():
+            offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert not venue.collectiveBookings
+
+    def test_venue_has_bookings_to_cancel(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        educational_factories.CollectiveBookingFactory.create_batch(3, collectiveStock__collectiveOffer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)
+
+    def test_uncancellable_bookings_are_filtered_and_others_are_being_cancelled(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        educational_factories.CancelledCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+
+        with atomic():
+            offerers_api.cancel_collective_bookings_on_venue_closure(venue.id, author.id)
+
+        db.session.refresh(venue)
+        assert all(booking.isCancelled for booking in venue.collectiveBookings)
