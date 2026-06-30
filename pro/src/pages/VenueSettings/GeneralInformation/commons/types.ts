@@ -12,6 +12,7 @@ export type VenueSettingsFormContext = {
   isCaledonian: boolean
   siren: string | null
   withSiret: boolean
+  siret?: string | null
   isOpenToPublic?: string
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
 }

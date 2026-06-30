@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -43,6 +44,21 @@ export const AddressFields = ({
   const [internalManual, setInternalManual] = useState(false)
   const isManual = manual ?? internalManual
 
+  const formContext = useFormContext()
+  const addressValue = formContext?.watch(addressRegister.name) as
+    | string
+    | undefined
+
+  const [resetKey, setResetKey] = useState(0)
+  const prevAddressRef = useRef<string | undefined>(addressValue)
+  useEffect(() => {
+    const prev = prevAddressRef.current
+    prevAddressRef.current = addressValue
+    if (prev && !addressValue) {
+      setResetKey((k) => k + 1)
+    }
+  }, [addressValue])
+
   const setManual = (next: boolean) => {
     onManualChange?.(next)
     if (manual === undefined) {
@@ -54,6 +70,7 @@ export const AddressFields = ({
     <>
       <FormLayout.Row mdSpaceAfter>
         <AddressSelect
+          key={resetKey}
           {...addressRegister}
           className={className}
           disabled={disabled || isManual}
