@@ -1,5 +1,6 @@
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { WarningObsoleteNavigator } from '@/components/WarningObsoleteNavigator/WarningObsoleteNavigator'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -38,6 +39,7 @@ export const ErrorLayout = ({
   return (
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
+        <WarningObsoleteNavigator />
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
         <h1 className={styles['title']}>{mainHeading}</h1>
         <p className={styles.description}>{paragraph}</p>

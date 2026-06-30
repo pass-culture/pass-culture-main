@@ -497,6 +497,14 @@ export const routes: CustomRouteTree = [
     },
   },
   {
+    lazy: () => import('@/pages/CompatibleBrowsers/CompatibleBrowsers'),
+    loader: noop,
+    path: '/navigateurs-compatibles',
+    handle: {
+      title: 'Navigateurs compatibles',
+    },
+  },
+  {
     loader: noop,
     path: '/ecoconception',
     handle: {

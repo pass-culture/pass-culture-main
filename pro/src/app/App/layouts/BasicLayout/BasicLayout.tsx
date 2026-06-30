@@ -10,6 +10,7 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
+import { WarningObsoleteNavigator } from '../../../../components/WarningObsoleteNavigator/WarningObsoleteNavigator'
 import styles from './BasicLayout.module.scss'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 
@@ -103,6 +104,7 @@ export const BasicLayout = ({
                   isFullPage ? styles['content-no-side-panel'] : styles.content
                 }
               >
+                <WarningObsoleteNavigator />
                 {mainHeading && (
                   <MainHeading
                     mainHeading={mainHeading}

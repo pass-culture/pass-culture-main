@@ -25,6 +25,7 @@
     "lint:dead-code:fix": "knip --fix --allow-remove-files",
     "serve": "vite preview",
     "start": "vite",
+    "supported-browsers": "node ./scripts/generateSupportedBrowsers.js",
     "test:e2e": "playwright test -c ./config/playwright.config.ts --headed --project=chromium",
     "test:e2e:ci": "playwright test -c ./config/playwright.config.ts --project=chromium",
     "test:e2e:debug": "playwright test -c ./config/playwright.config.ts --debug --project=chromium",
@@ -100,6 +101,7 @@
     "@vitejs/plugin-react": "6.0.2",
     "@vitest/coverage-istanbul": "4.1.7",
     "axe-core": "4.12.1",
+    "browserslist-useragent-regexp": "4.1.4",
     "check-unused-css": "0.5.0",
     "dotenv": "17.4.2",
     "jsdom": "29.1.1",
@@ -128,9 +130,17 @@
     "node": "24.8"
   },
   "browserslist": [
-    ">0.2%",
+    ">0.2% and not Chrome > 0 and not Safari > 0 and not Firefox > 0 and not Edge > 0 and not Opera > 0 and not iOS > 0 and not Samsung > 0 and not ChromeAndroid > 0 and not op_mini all > 0",
     "not dead",
-    "not op_mini all"
+    "not op_mini all",
+    "last 24 Chrome versions",
+    "last 24 ChromeAndroid versions",
+    "last 24 Firefox versions",
+    "last 24 Edge versions",
+    "last 24 Opera versions",
+    "last 4 Safari versions",
+    "last 4 iOS versions",
+    "last 24 Samsung versions"
   ],
   "babel": {
     "presets": [
