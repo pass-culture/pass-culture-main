@@ -55,7 +55,7 @@ jobs:
           node-version-file: "${{ env.API_DOC_FOLDER }}/package.json"
           cache-dependency-path: "${{ env.API_DOC_FOLDER }}/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5a1dc2af9db42434fec30b2579cc7030e2624582
       - name: Build documentation
         run: |
           set -e
