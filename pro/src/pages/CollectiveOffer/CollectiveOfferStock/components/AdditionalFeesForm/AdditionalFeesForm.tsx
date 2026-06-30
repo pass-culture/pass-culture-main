@@ -28,7 +28,7 @@ export const AdditionalFeesForm = ({
 
   const hasAdditionalFees = form.watch('hasAdditionalFees')
 
-  const additionalFeesFieldArray = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'additionalFees',
     rules: { maxLength: MAX_ADDITIONAL_FEES },
@@ -41,13 +41,10 @@ export const AdditionalFeesForm = ({
       shouldDirty: true,
     })
     if (event.target.value === 'non') {
-      additionalFeesFieldArray.remove()
+      remove()
       form.setValue('additionalFees', [])
-    } else if (
-      event.target.value === 'oui' &&
-      additionalFeesFieldArray.fields.length === 0
-    ) {
-      additionalFeesFieldArray.append({
+    } else if (event.target.value === 'oui' && fields.length === 0) {
+      append({
         type: CollectiveAdditionalFeeType.OTHER,
         label: '',
         amount: 0,
@@ -85,7 +82,7 @@ export const AdditionalFeesForm = ({
   }
 
   function addAdditionalFeesFieldEntry() {
-    additionalFeesFieldArray.append(
+    append(
       {
         type: CollectiveAdditionalFeeType.OTHER,
         label: '',
@@ -97,21 +94,19 @@ export const AdditionalFeesForm = ({
   }
 
   function removeAdditionalFeesFieldEntry(index: number) {
-    additionalFeesFieldArray.remove(index)
-    // we need to set additionalFees field dirty explicitly since fieldArray.remove does not dirty the field by itself
-    // see known issue https://github.com/react-hook-form/react-hook-form/issues/11402
-    form.setValue('additionalFees', form.getValues('additionalFees'), {
-      shouldDirty: true,
-    })
+    remove(index)
   }
+
+  // We need to force dirty field evaluation at render
+  // since fieldArray.remove does not dirty the field by itself properly
+  const _additionalFeesDirty = form.formState.dirtyFields.additionalFees
 
   const matchesExistingOption = ADDITIONAL_FEES_OPTIONS.some(
     (option) => option.label === searchLabel
   )
   const creatableOption = matchesExistingOption ? undefined : searchLabel
 
-  const shouldShowRemoveFeeButton =
-    canEditDiscount && additionalFeesFieldArray.fields.length > 1
+  const shouldShowRemoveFeeButton = canEditDiscount && fields.length > 1
 
   return (
     <FormLayout.Row>
@@ -137,7 +132,7 @@ export const AdditionalFeesForm = ({
 
       {hasAdditionalFees && (
         <div className={styles['additional-fees-container']}>
-          {additionalFeesFieldArray.fields.map((field, index) => (
+          {fields.map((field, index) => (
             <FormLayout.Row
               key={field.id}
               inline
@@ -190,15 +185,12 @@ export const AdditionalFeesForm = ({
                   icon={fullTrashIcon}
                   iconAlt={'Supprimer ce champ'}
                   onClick={() => removeAdditionalFeesFieldEntry(index)}
-                  disabled={
-                    !canEditDiscount ||
-                    additionalFeesFieldArray.fields.length === 1
-                  }
+                  disabled={!canEditDiscount || fields.length === 1}
                 />
               )}
             </FormLayout.Row>
           ))}
-          {additionalFeesFieldArray.fields.length <= MAX_ADDITIONAL_FEES && (
+          {fields.length <= MAX_ADDITIONAL_FEES && (
             <Button
               variant={ButtonVariant.TERTIARY}
               icon={fullMoreIcon}
