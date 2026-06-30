@@ -42,8 +42,9 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
-from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
+from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
+from pcapi.routes.public.individual_offers.v1.utils import extract_venue_and_offerer_address_from_location
 from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
@@ -331,6 +332,7 @@ def _get_location_from_public_model(
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
     venue: offerers_models.Venue,
 ) -> CollectiveOfferLocation:
+    offerer_address: offerers_models.OffererAddress | None = None
     match location_body:
         case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
             location = CollectiveOfferLocation(
@@ -360,13 +362,17 @@ def _get_location_from_public_model(
             )
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
-            address = public_utils.get_address_or_raise_404(location_body.addressId)
-            offerer_address = offerers_api.get_or_create_offer_location(
-                offerer_id=venue.managingOffererId,
+            # TODO: simplify this once CollectiveOfferLocationAddressModel is migrated to pydantic v2
+            # to snake case should make the mapping easier and makes it possible to push
+            # CollectiveOfferLocationAddressModel in extract_venue_and_offerer_address_from_location
+            location_body_indiv = v1_serialization.AddressLocation(
+                type="address",
                 venue_id=venue.id,
-                address_id=address.id,
-                label=location_body.addressLabel,
+                address_id=location_body.addressId,
+                address_label=typing.cast(v1_serialization.AddressLabel, location_body.addressLabel),
             )
+            offerer_address = extract_venue_and_offerer_address_from_location(location_body_indiv, venue=venue)[1]
+            assert offerer_address
 
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
