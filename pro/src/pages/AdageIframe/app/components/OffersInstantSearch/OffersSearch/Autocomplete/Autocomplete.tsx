@@ -154,11 +154,7 @@ export const Autocomplete = ({
     indexName: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
     getSearchParams() {
       return {
-        restrictSearchableAttributes: [
-          'venue.name',
-          'venue.publicName',
-          'offerer.name',
-        ],
+        restrictSearchableAttributes: ['venue.publicName', 'offerer.name'],
         distinct: true,
         hitsPerPage: ALGOLIA_NUMBER_VENUES_SUGGESTIONS,
         clickAnalytics: false,
