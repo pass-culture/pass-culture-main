@@ -60,8 +60,8 @@ DISABILITY_APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     birth_city_cog_code="08480",
 )
 ADULT_DISABILITY_BENEFICIARY = bonus_schemas.BonusCreditPerson(
-    last_name="dupont",
-    common_name="martin",
+    last_name="martin",
+    common_name="dupont",
     first_names=["pierre", "richard"],
     birth_date=datetime.date(1987, 12, 1),
     gender=users_models.GenderEnum.M,
@@ -69,8 +69,8 @@ ADULT_DISABILITY_BENEFICIARY = bonus_schemas.BonusCreditPerson(
     birth_city_cog_code="08480",
 )
 ADULT_DISABILITY_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
-    last_name="chirac",
-    common_name="martin",
+    last_name="martin",
+    common_name="chirac",
     first_names=["jacques"],
     birth_date=datetime.date(1987, 12, 1),
     gender=users_models.GenderEnum.M,
