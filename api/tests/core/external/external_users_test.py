@@ -31,6 +31,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as brevo_testing
@@ -183,7 +184,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
             digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
             physical=Credit(initial=200, remaining=Decimal("195.00")),
         ),
-        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
+        bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=["CINEMA", "FILM"],
         booking_venues_count=1,  # three bookings on the same venue
         city=user.city,
@@ -242,7 +243,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0")),
             physical=None,
         ),
-        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
+        bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_venues_count=0,
         city=user.city,
@@ -315,7 +316,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
             physical=None,
         ),
-        bonification_status=subscription_models.QFBonificationStatus.ELIGIBLE,
+        bonification_status=bonus_schemas.QFBonificationStatus.ELIGIBLE,
         booking_categories=["CINEMA", "FILM"],
         booking_venues_count=2,
         city=user.city,
@@ -446,7 +447,7 @@ def test_get_user_attributes_not_beneficiary():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
-        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
+        bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_venues_count=0,
         city="Nice",
@@ -664,7 +665,7 @@ def test_get_user_attributes_bonification_pending_status():
 
     attributes = get_user_attributes(user)
 
-    assert attributes.bonification_status == subscription_models.QFBonificationStatus.STARTED
+    assert attributes.bonification_status == bonus_schemas.QFBonificationStatus.STARTED
 
 
 def test_get_user_attributes_bonification_granted_status():
@@ -673,4 +674,4 @@ def test_get_user_attributes_bonification_granted_status():
 
     attributes = get_user_attributes(user)
 
-    assert attributes.bonification_status == subscription_models.QFBonificationStatus.GRANTED
+    assert attributes.bonification_status == bonus_schemas.QFBonificationStatus.GRANTED

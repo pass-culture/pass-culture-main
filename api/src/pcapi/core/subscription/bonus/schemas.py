@@ -74,19 +74,44 @@ class QuotientFamilialBonusCreditContent(BaseModelV2):
 
 class AdultDisabilityBonusCreditContent(BaseModelV2):
     person: BonusCreditPerson
-    is_disability_beneficiary: bool | None = None
+    is_disability_recipient: bool | None = None
     http_status_code: int | None = None
     error_code: str | None = None
 
 
-class DisabledChildEducationBeneficiaryStatus(enum.StrEnum):
-    BENEFICIARY = "beneficiary"
+class DisabledChildEducationRecipientStatus(enum.StrEnum):
+    RECIPIENT = "recipient"
     RIGHT_OPENING = "right_opening"
-    NON_BENEFICIARY = "non_beneficiary"
+    NON_RECIPIENT = "non_recipient"
 
 
 class DisabledChildEducationBonusCreditContent(BaseModelV2):
     person: BonusCreditPerson
-    disability_beneficiary_status: DisabledChildEducationBeneficiaryStatus | None = None
+    disability_recipient_status: DisabledChildEducationRecipientStatus | None = None
     http_status_code: int | None = None
     error_code: str | None = None
+
+
+class QFBonificationStatus(enum.Enum):
+    ELIGIBLE = "eligible"
+    NOT_ELIGIBLE = "not_eligible"
+    STARTED = "started"
+    CUSTODIAN_NOT_FOUND = "custodian_not_found"
+    APPLICATION_NOT_FOUND = "application_not_found"
+    NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
+    QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
+    TOO_MANY_RETRIES = "too_many_retries"
+    GRANTED = "granted"
+    KO = "ko"
+
+
+class DisabilityBonificationStatus(enum.Enum):
+    ELIGIBLE = "eligible"
+    NOT_ELIGIBLE = "not_eligible"
+    STARTED = "started"
+    TOO_MANY_RETRIES = "too_many_retries"
+    PERSON_NOT_FOUND = "person_not_found"
+    APPLICATION_NOT_FOUND = "application_not_found"
+    NOT_RECIPIENT = "not_recipient"
+    GRANTED = "granted"
+    KO = "ko"

@@ -123,38 +123,38 @@ class E2EAccountQFConfigTest:
 class E2EAccountAAHConfigTest:
     def test_configure_account_aah_unauthorized(self, client):
         user = users_factories.BeneficiaryFactory()
-        response = client.post(f"/e2e/account/{user.id}/aah", json={"mock_type": "BENEFICIARY"})
+        response = client.post(f"/e2e/account/{user.id}/aah", json={"mock_type": "RECIPIENT"})
         assert response.status_code == 401
 
     def test_configure_account_aah_forbidden(self, client, settings):
         settings.E2E_API_KEY = "titi"
         user = users_factories.BeneficiaryFactory()
         response = client.post(
-            f"/e2e/account/{user.id}/aah", json={"mock_type": "BENEFICIARY"}, headers={"x-api-key": "toto"}
+            f"/e2e/account/{user.id}/aah", json={"mock_type": "RECIPIENT"}, headers={"x-api-key": "toto"}
         )
         assert response.status_code == 401
 
     def test_configure_account_aah(self, auth_client):
         user = users_factories.BeneficiaryFactory()
-        response = auth_client.post(f"/e2e/account/{user.id}/aah", json={"mock_type": "BENEFICIARY"})
+        response = auth_client.post(f"/e2e/account/{user.id}/aah", json={"mock_type": "RECIPIENT"})
         assert response.status_code == 200, response.json
 
 
 class E2EAccountAEEHConfigTest:
     def test_configure_account_aeeh_unauthorized(self, client):
         user = users_factories.BeneficiaryFactory()
-        response = client.post(f"/e2e/account/{user.id}/aeeh", json={"mock_type": "BENEFICIARY"})
+        response = client.post(f"/e2e/account/{user.id}/aeeh", json={"mock_type": "RECIPIENT"})
         assert response.status_code == 401
 
     def test_configure_account_aeeh_forbidden(self, client, settings):
         settings.E2E_API_KEY = "titi"
         user = users_factories.BeneficiaryFactory()
         response = client.post(
-            f"/e2e/account/{user.id}/aeeh", json={"mock_type": "BENEFICIARY"}, headers={"x-api-key": "toto"}
+            f"/e2e/account/{user.id}/aeeh", json={"mock_type": "RECIPIENT"}, headers={"x-api-key": "toto"}
         )
         assert response.status_code == 401
 
     def test_configure_account_aeeh(self, auth_client):
         user = users_factories.BeneficiaryFactory()
-        response = auth_client.post(f"/e2e/account/{user.id}/aeeh", json={"mock_type": "BENEFICIARY"})
+        response = auth_client.post(f"/e2e/account/{user.id}/aeeh", json={"mock_type": "RECIPIENT"})
         assert response.status_code == 200, response.json

@@ -173,8 +173,8 @@ class QuotientFamilialConfigurationForm(utils.PCForm):
 
 
 class DisabledAdultAllowanceMockType(enum.Enum):
-    BENEFICIARY = "BENEFICIARY"
-    NON_BENEFICIARY = "NON_BENEFICIARY"
+    RECIPIENT = "RECIPIENT"
+    NON_RECIPIENT = "NON_RECIPIENT"
     APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
     PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
     DATA_PROVIDER_ERROR = "DATA_PROVIDER_ERROR"
@@ -184,20 +184,20 @@ class DisabledAdultAllowanceConfigurationForm(utils.PCForm):
     mock_type = fields.PCSelectField(
         "Type de mock",
         choices=[
-            (DisabledAdultAllowanceMockType.BENEFICIARY.value, "Ok bénéficiaire"),
-            (DisabledAdultAllowanceMockType.NON_BENEFICIARY.value, "Non bénéficiaire"),
+            (DisabledAdultAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
+            (DisabledAdultAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"),
             (DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value, "404 impossible de trouver le dossier"),
             (DisabledAdultAllowanceMockType.PERSON_NOT_FOUND.value, "422 problème de données d'identification"),
             (DisabledAdultAllowanceMockType.DATA_PROVIDER_ERROR.value, "502 erreur du fournisseur de données"),
         ],
-        default=DisabledAdultAllowanceMockType.BENEFICIARY.value,
+        default=DisabledAdultAllowanceMockType.RECIPIENT.value,
     )
 
 
 class DisabledChildEducationAllowanceMockType(enum.Enum):
-    BENEFICIARY = "BENEFICIARY"
+    RECIPIENT = "RECIPIENT"
     RIGHT_OPENING = "RIGHT_OPENING"
-    NON_BENEFICIARY = "NON_BENEFICIARY"
+    NON_RECIPIENT = "NON_RECIPIENT"
     APPLICATION_NOT_FOUND = "APPLICATION_NOT_FOUND"
     PERSON_NOT_FOUND = "PERSON_NOT_FOUND"
     DATA_PROVIDER_ERROR = "DATA_PROVIDER_ERROR"
@@ -207,9 +207,9 @@ class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
     mock_type = fields.PCSelectField(
         "Type de mock",
         choices=[
-            (DisabledChildEducationAllowanceMockType.BENEFICIARY.value, "Ok bénéficiaire"),
+            (DisabledChildEducationAllowanceMockType.RECIPIENT.value, "Ok bénéficiaire"),
             (DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value, "Ok ouvrant droit"),
-            (DisabledChildEducationAllowanceMockType.NON_BENEFICIARY.value, "Non bénéficiaire"),
+            (DisabledChildEducationAllowanceMockType.NON_RECIPIENT.value, "Non bénéficiaire"),
             (
                 DisabledChildEducationAllowanceMockType.APPLICATION_NOT_FOUND.value,
                 "404 impossible de trouver le dossier",
@@ -223,7 +223,7 @@ class DisabledChildEducationAllowanceConfigurationForm(utils.PCForm):
                 "502 erreur du fournisseur de données",
             ),
         ],
-        default=DisabledChildEducationAllowanceMockType.BENEFICIARY.value,
+        default=DisabledChildEducationAllowanceMockType.RECIPIENT.value,
     )
 
 

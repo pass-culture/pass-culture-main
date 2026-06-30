@@ -260,7 +260,7 @@ def _get_adult_disability_bonus_status(
     if aah_data.est_beneficiaire:
         return subscription_models.FraudCheckStatus.OK, []
 
-    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
 
 def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
@@ -323,11 +323,11 @@ def _get_disabled_child_education_bonus_status(
     aeeh_data: api_particulier.DisabledChildEducationAllowanceData,
 ) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode]]:
     if aeeh_data.status in [
-        api_particulier.DisabledChildEducationAllowanceStatus.BENEFICIARY,
+        api_particulier.DisabledChildEducationAllowanceStatus.RECIPIENT,
         api_particulier.DisabledChildEducationAllowanceStatus.RIGHT_OPENING,
     ]:
         return subscription_models.FraudCheckStatus.OK, []
-    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+    return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
 
 def _call_api_particulier[

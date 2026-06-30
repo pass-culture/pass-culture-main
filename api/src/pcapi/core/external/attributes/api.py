@@ -23,7 +23,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
-from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
@@ -119,7 +119,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         return attributes
 
     return models.UserAttributes(
-        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
+        bonification_status=bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_count=0,
         booking_subcategories=[],
@@ -570,7 +570,7 @@ def get_most_favorite_subcategories(favorites: list[users_models.Favorite]) -> l
     return [key for (key, value) in sorted_by_count if value == highest_count]
 
 
-def _get_user_bonification_attribute(user: users_models.User) -> subscription_models.QFBonificationStatus:
+def _get_user_bonification_attribute(user: users_models.User) -> bonus_schemas.QFBonificationStatus:
     """
     Allowed return values:
      - ELIGIBLE
@@ -584,10 +584,10 @@ def _get_user_bonification_attribute(user: users_models.User) -> subscription_mo
 
     bonification_status = users_api.get_user_qf_bonification_status(user)
     if bonification_status in (
-        subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND,
-        subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
-        subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
-        subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
+        bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND,
+        bonus_schemas.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
+        bonus_schemas.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
+        bonus_schemas.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
     ):
-        return subscription_models.QFBonificationStatus.KO
+        return bonus_schemas.QFBonificationStatus.KO
     return bonification_status

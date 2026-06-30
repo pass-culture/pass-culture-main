@@ -282,7 +282,7 @@ class StagingQuotientFamilialTest:
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=True)
 class StagingDisabledAdultAllowanceTest:
-    def test_mock_disabled_adult_allowance_beneficiary(self, requests_mock):
+    def test_mock_disabled_adult_allowance_recipient(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -290,7 +290,7 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
                 http_status_code=200,
-                is_disability_beneficiary=True,
+                is_disability_recipient=True,
             ).model_dump(),
         )
         aah_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -299,7 +299,7 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_RECIPIENT_RESPONSE)
 
         bonus_api.apply_for_adult_disability_bonus(aah_fraud_check)
 
@@ -314,7 +314,7 @@ class StagingDisabledAdultAllowanceTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
-    def test_mock_disabled_adult_allowance_non_beneficiary(self, requests_mock):
+    def test_mock_disabled_adult_allowance_non_recipient(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -322,7 +322,7 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
                 http_status_code=200,
-                is_disability_beneficiary=False,
+                is_disability_recipient=False,
             ).model_dump(),
         )
         aah_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -331,11 +331,12 @@ class StagingDisabledAdultAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_INELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_NOT_RECIPIENT_RESPONSE)
 
         bonus_api.apply_for_adult_disability_bonus(aah_fraud_check)
 
         assert aah_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aah_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -449,7 +450,7 @@ class StagingDisabledAdultAllowanceTest:
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.settings(ENABLE_PARTICULIER_API_MOCK=True)
 class StagingDisabledChildEducationAllowanceTest:
-    def test_mock_disabled_child_education_allowance_beneficiary(self, requests_mock):
+    def test_mock_disabled_child_education_allowance_recipient(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -457,7 +458,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
                 http_status_code=200,
-                disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.BENEFICIARY,
+                disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.RECIPIENT,
             ).model_dump(),
         )
         aeeh_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -466,7 +467,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_RECIPIENT_RESPONSE)
 
         bonus_api.apply_for_disabled_child_education_bonus(aeeh_fraud_check)
 
@@ -489,7 +490,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
                 http_status_code=200,
-                disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.RIGHT_OPENING,
+                disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.RIGHT_OPENING,
             ).model_dump(),
         )
         aeeh_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -513,7 +514,7 @@ class StagingDisabledChildEducationAllowanceTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
-    def test_mock_disabled_child_education_allowance_non_beneficiary(self, requests_mock):
+    def test_mock_disabled_child_education_allowance_non_recipient(self, requests_mock):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -521,7 +522,7 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
                 http_status_code=200,
-                disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY,
+                disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.NON_RECIPIENT,
             ).model_dump(),
         )
         aeeh_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -530,11 +531,12 @@ class StagingDisabledChildEducationAllowanceTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_INELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_NOT_RECIPIENT_RESPONSE)
 
         bonus_api.apply_for_disabled_child_education_bonus(aeeh_fraud_check)
 
         assert aeeh_fraud_check.status == subscription_models.FraudCheckStatus.KO
+        assert aeeh_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
