@@ -1,9 +1,12 @@
 import datetime
+import decimal
+import typing
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import utils
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
@@ -68,3 +71,42 @@ def _should_update_collective_booking_pending(
     limit = date_utils.to_naive_utc_datetime(booking_limit)
 
     return booking.is_expired and limit > now
+
+
+class AdditionalFeeDict(typing.TypedDict):
+    type: models.CollectiveAdditionalFeeType
+    label: typing.NotRequired[str | None]
+    amount: decimal.Decimal
+
+
+def update_additional_fees(
+    new_additional_fees: list[AdditionalFeeDict], collective_stock: models.CollectiveStock
+) -> None:
+    new_amount_by_type_label = {(fee["type"], fee.get("label")): fee["amount"] for fee in new_additional_fees}
+    current_fee_by_type_label = {(fee.type, fee.label): fee for fee in collective_stock.collectiveAdditionalFees}
+
+    for type_label, new_amount in new_amount_by_type_label.items():
+        # type / label found -> update the row
+        if type_label in current_fee_by_type_label:
+            current_fee_by_type_label[type_label].amount = new_amount
+        # type / label not found -> add a row
+        else:
+            fee_type, fee_label = type_label
+            db.session.add(
+                models.CollectiveAdditionalFee(
+                    type=fee_type, label=fee_label, amount=new_amount, collectiveStock=collective_stock
+                )
+            )
+
+    # remove current type / label rows that are not present in the input
+    to_delete = [
+        fee.id
+        for fee in collective_stock.collectiveAdditionalFees
+        if (fee.type, fee.label) not in new_amount_by_type_label
+    ]
+    if to_delete:
+        db.session.query(models.CollectiveAdditionalFee).filter(
+            models.CollectiveAdditionalFee.id.in_(to_delete)
+        ).delete()
+
+    db.session.flush()
