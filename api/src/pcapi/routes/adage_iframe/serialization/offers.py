@@ -5,7 +5,6 @@ from datetime import date
 from datetime import datetime
 
 from pydantic.v1 import Field
-from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
@@ -20,6 +19,7 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
+from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -309,16 +309,5 @@ class PostCollectiveRequestBodyModel(BaseModel):
         alias_generator = to_camel
 
 
-class GetTemplateIdsModel(BaseModel):
-    ids: typing.Sequence[int]
-
-    @root_validator(pre=True)
-    def format_ids(cls, values: dict) -> dict:
-        ids = values.get("ids")
-        if not ids:
-            return values
-
-        if not isinstance(ids, list):
-            values["ids"] = [ids]
-
-        return values
+class GetTemplateIdsModel(HttpBodyModel):
+    ids: typing.Annotated[list[int], utils.ArgsAsListBeforeValidator]

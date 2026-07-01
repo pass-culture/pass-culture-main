@@ -1376,11 +1376,11 @@ export type VenueResponse = {
     /**
      * Adageid
      */
-    adageId?: string;
+    adageId: string | null;
     /**
      * Departementcode
      */
-    departementCode?: string;
+    departementCode: string;
     /**
      * Id
      */

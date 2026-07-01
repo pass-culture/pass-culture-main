@@ -50,6 +50,7 @@ describe('FiltersTag', () => {
     publicName: 'Venue Public Name',
     relative: [],
     departementCode: '75',
+    adageId: '1',
   }
 
   it('should display venue name in tag', () => {
