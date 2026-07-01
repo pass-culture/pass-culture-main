@@ -1,4 +1,4 @@
-import { default as classNames, default as cn } from 'classnames'
+import cn from 'classnames'
 import { useId } from 'react'
 
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
@@ -71,7 +71,7 @@ export const RadioButtonGroup = ({
   return (
     <fieldset
       aria-describedby={describedBy}
-      className={classNames(styles['radio-button-group'], {
+      className={cn(styles['radio-button-group'], {
         [styles['label-as-text']]: isStringLabel,
       })}
     >
