@@ -38,11 +38,6 @@ class Returns200Test:
             {
                 "id": offer.id,
                 "allowedActions": ["CAN_EDIT_DISCOUNT", "CAN_DUPLICATE", "CAN_CANCEL"],
-                "venue": {
-                    "id": venue.id,
-                    "departementCode": venue.offererAddress.address.departmentCode,
-                    "name": venue.name,
-                },
                 "location": {
                     "location": None,
                     "locationComment": None,

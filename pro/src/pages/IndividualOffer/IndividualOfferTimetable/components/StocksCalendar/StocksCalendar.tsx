@@ -14,7 +14,9 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
@@ -53,6 +55,8 @@ export type stockQueryKeysType = [
 ]
 
 export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
@@ -64,7 +68,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const departmentCode = getDepartmentCode(offer)
+  const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
   const stockQueryKeys: stockQueryKeysType = [
     GET_STOCKS_QUERY_KEY,
@@ -169,7 +173,7 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     values: RecurrenceFormValues
   ) => {
     setIsDialogOpen(false)
-    const departmentCode = getDepartmentCode(offer)
+    const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
     logEvent(Events.CLICKED_VALIDATE_ADD_RECURRENCE_DATES, {
       recurrenceType: values.recurrenceType,

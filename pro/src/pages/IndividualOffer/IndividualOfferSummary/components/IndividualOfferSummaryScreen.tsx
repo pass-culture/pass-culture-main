@@ -61,7 +61,7 @@ export const IndividualOfferSummaryScreen = ({
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const onPublish = async (values: EventPublicationFormValues) => {
-    const departmentCode = getDepartmentCode(offer)
+    const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
     try {
       const publishIndividualOfferResponse = await api.patchPublishOffer({

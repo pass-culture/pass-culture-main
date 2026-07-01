@@ -4,6 +4,7 @@ import { mutate } from 'swr'
 import { api } from '@/apiClient/api'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import type { PriceTableFormValues } from '../../schemas'
 import { saveNonEventOfferPriceTable } from '../saveNonEventOfferPriceTable'
@@ -22,6 +23,7 @@ vi.mock('@/apiClient/api', () => ({
 
 describe('saveNonEventOfferPriceTable', () => {
   const offer = getIndividualOfferFactory()
+  const venue = makeGetVenueResponseModel({ id: 1 })
   const formValues = {
     priceCategories: [
       {
@@ -55,7 +57,7 @@ describe('saveNonEventOfferPriceTable', () => {
     await saveNonEventOfferPriceTable(
       formValues,
       form as unknown as UseFormReturn<PriceTableFormValues>,
-      { offer }
+      { offer, venue }
     )
 
     expect(api.patchOffer).toHaveBeenCalledWith({
@@ -79,7 +81,7 @@ describe('saveNonEventOfferPriceTable', () => {
     await saveNonEventOfferPriceTable(
       formValues,
       form as unknown as UseFormReturn<PriceTableFormValues>,
-      { offer }
+      { offer, venue }
     )
 
     expect(api.patchOffer).toHaveBeenCalledWith({
@@ -92,7 +94,7 @@ describe('saveNonEventOfferPriceTable', () => {
     await saveNonEventOfferPriceTable(
       formValues,
       form as unknown as UseFormReturn<PriceTableFormValues>,
-      { offer }
+      { offer, venue }
     )
 
     expect(mutate).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offer.id])

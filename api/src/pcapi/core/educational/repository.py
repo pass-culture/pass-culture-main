@@ -872,7 +872,7 @@ def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit
         query.order_by(models.CollectiveOffer.isArchived, models.CollectiveOffer.dateCreated.desc())
         .options(
             sa_orm.joinedload(models.CollectiveOffer.venue).options(
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.load_only(offerers_models.Venue.publicName),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
                 ),
@@ -965,7 +965,7 @@ def list_collective_offer_templates(
         query.order_by(models.CollectiveOfferTemplate.isArchived, models.CollectiveOfferTemplate.dateCreated.desc())
         .options(
             sa_orm.joinedload(models.CollectiveOfferTemplate.venue).options(
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa_orm.load_only(offerers_models.Venue.publicName),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
                 ),

@@ -16,7 +16,6 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.constants import JE_VEUX_AIDER_GOUV_BASE_URL
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
-from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
@@ -360,27 +359,6 @@ class GetOffersStatsResponseModel(HttpBodyModel):
     published_educational_offers: int
     pending_public_offers: int
     pending_educational_offers: int
-
-
-# TODO(pydantic_v2): remove this serializer once ListOffersOfferResponseModel is migrated
-class ListOffersVenueResponseModel(BaseModel):
-    id: int
-    name: str
-    departementCode: str | None
-
-
-class ListOffersVenueResponseModelV2(HttpBodyModel):
-    id: int
-    name: str
-    departementCode: str
-
-    @classmethod
-    def build(cls, venue: offerers_models.Venue) -> typing.Self:
-        return cls(
-            id=venue.id,
-            name=venue.name,
-            departementCode=venue.offererAddress.address.departmentCode,
-        )
 
 
 class GetVenueAddressesWithOffersOption(enum.Enum):

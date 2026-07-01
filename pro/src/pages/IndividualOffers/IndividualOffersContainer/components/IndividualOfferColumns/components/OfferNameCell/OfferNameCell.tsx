@@ -1,6 +1,8 @@
 import { Link } from 'react-router'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -19,12 +21,14 @@ export interface OfferNameCellProps {
 }
 
 export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const getDateInformations = () => {
     const startDatetime = offer.stocks[0]
       ? offer.stocks[0].beginningDatetime
       : undefined
 
-    const departmentCode = getDepartmentCode(offer)
+    const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (!startDatetime || !departmentCode) {

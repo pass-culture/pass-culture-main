@@ -10,6 +10,7 @@ import {
   getOfferStockFactory,
   getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -58,7 +59,12 @@ function renderStocksCalendar(
         {...props}
       />
       <SnackBarContainer />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+      },
+    }
   )
 }
 
@@ -522,7 +528,12 @@ describe('StocksCalendar', () => {
           mode={OFFER_WIZARD_MODE.CREATION}
         />
         <SnackBarContainer />
-      </>
+      </>,
+      {
+        storeOverrides: {
+          user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+        },
+      }
     )
 
     await waitFor(() => {
@@ -627,7 +638,12 @@ describe('StocksCalendar', () => {
           mode={OFFER_WIZARD_MODE.CREATION}
         />
         <SnackBarContainer />
-      </>
+      </>,
+      {
+        storeOverrides: {
+          user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+        },
+      }
     )
 
     await waitFor(() => {

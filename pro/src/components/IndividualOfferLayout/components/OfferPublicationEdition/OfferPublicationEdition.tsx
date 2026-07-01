@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -27,6 +30,7 @@ export type OfferPublicationEditionProps = {
 
 export function getPatchOfferPayloadFromFormValues(
   offer: GetIndividualOfferWithAddressResponseModel,
+  venue: GetVenueResponseModel,
   values: EventPublicationEditionFormValues
 ) {
   const formattedPublicationDate =
@@ -34,7 +38,7 @@ export function getPatchOfferPayloadFromFormValues(
       ? serializeDateTimeToUTCFromLocalDepartment(
           values.publicationDate,
           values.publicationTime,
-          getDepartmentCode(offer)
+          getDepartmentCode(offer, venue)
         )
       : undefined
 
@@ -43,7 +47,7 @@ export function getPatchOfferPayloadFromFormValues(
       ? serializeDateTimeToUTCFromLocalDepartment(
           values.bookingAllowedDate,
           values.bookingAllowedTime,
-          getDepartmentCode(offer)
+          getDepartmentCode(offer, venue)
         )
       : undefined
 

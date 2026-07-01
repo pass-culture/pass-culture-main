@@ -4,6 +4,7 @@ import { addDays, format, subDays } from 'date-fns'
 import { OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -15,7 +16,12 @@ function renderOfferStatusCell(
   props: OfferStatusCellProps,
   options?: RenderWithProvidersOptions
 ) {
-  renderWithProviders(<OfferStatusCell {...props} />, options)
+  renderWithProviders(<OfferStatusCell {...props} />, {
+    storeOverrides: {
+      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+    },
+    ...options,
+  })
 }
 
 const defaultProps: OfferStatusCellProps = {

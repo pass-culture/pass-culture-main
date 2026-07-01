@@ -123,7 +123,7 @@ describe('IndividualOffers', () => {
   const scrollToContentWrapperMock = vi.fn()
 
   let offersRecap: ListOffersOfferResponseModel[]
-  offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
+  offersRecap = [listOffersOfferFactory()]
 
   beforeEach(() => {
     vi.spyOn(useAccessibleScrollModule, 'useAccessibleScroll').mockReturnValue({
@@ -163,9 +163,7 @@ describe('IndividualOffers', () => {
 
     it('should filter according to page query param', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(
-        Array.from({ length: 14 }, () =>
-          listOffersOfferFactory({ venue: proVenues[0] })
-        )
+        Array.from({ length: 14 }, () => listOffersOfferFactory())
       )
       await renderIndividualOffers({ page: 2 })
 
