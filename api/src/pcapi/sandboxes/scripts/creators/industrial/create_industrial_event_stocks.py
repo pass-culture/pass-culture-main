@@ -1,8 +1,8 @@
 import logging
-import typing
 
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models import db
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrenceDict
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
@@ -14,7 +14,7 @@ EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
 
 
 @log_func_duration
-def create_industrial_event_stocks(event_occurrences_by_name: dict[str, dict[str, typing.Any]]) -> None:
+def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOccurrenceDict]) -> None:
     logger.info("create_industrial_event_stocks")
 
     event_stocks_by_name = {}

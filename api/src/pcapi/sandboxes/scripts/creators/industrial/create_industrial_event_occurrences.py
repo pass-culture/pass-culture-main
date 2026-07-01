@@ -28,10 +28,17 @@ EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
+class EventOccurrenceDict(typing.TypedDict):
+    offer: offers_models.Offer
+    beginning_datetime: datetime
+    price: decimal.Decimal
+    price_category: offers_models.PriceCategory
+
+
 @log_func_duration
 def create_industrial_event_occurrences(
     event_offers_by_name: dict[str, offers_models.Offer],
-) -> dict[str, dict[str, typing.Any]]:
+) -> dict[str, EventOccurrenceDict]:
     logger.info("create_industrial_event_occurrences")
 
     event_occurrences_by_name = {}
@@ -71,11 +78,12 @@ def create_industrial_event_occurrences(
                 price_categories[price] = price_category
 
             short_names_to_increase_price.append(short_name)
-            event_occurrences_by_name[name] = {
+            event_occurrence: EventOccurrenceDict = {
                 "beginning_datetime": beginning_datetime,
                 "offer": event_offer_with_occurrences,
                 "price": price,
                 "price_category": price_category,
             }
+            event_occurrences_by_name[name] = event_occurrence
 
     return event_occurrences_by_name
