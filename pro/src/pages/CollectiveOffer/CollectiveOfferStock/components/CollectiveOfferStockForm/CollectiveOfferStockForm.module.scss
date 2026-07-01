@@ -4,3 +4,11 @@
 .collective-offer-stock-form-layout .collective-offer-stock-banner {
   margin: var(--size-spacing-xl) 0;
 }
+
+.collective-offer-stock-price {
+  color: var(--color-text-brand-primary);
+
+  &.error {
+    color: var(--color-text-error);
+  }
+}

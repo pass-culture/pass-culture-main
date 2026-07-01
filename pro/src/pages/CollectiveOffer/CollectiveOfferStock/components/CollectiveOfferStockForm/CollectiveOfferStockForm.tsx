@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import cn from 'classnames'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
@@ -10,6 +11,7 @@ import {
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
+import { formatPrice } from '@/commons/utils/formatPrice'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -26,6 +28,7 @@ import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { AdditionalFeesForm } from '../AdditionalFeesForm/AdditionalFeesForm'
 import { buildDatetimesForStock } from '../utils/buildDatetimesForStock'
 import { computePriceForStock } from '../utils/computePriceForStock'
+import { MAX_PRICE } from '../utils/constants'
 import { extractFormDates } from '../utils/extractFormDates'
 import styles from './CollectiveOfferStockForm.module.scss'
 import {
@@ -94,6 +97,7 @@ export const CollectiveOfferStockForm = ({
   const servicePriceValue = form.watch('servicePrice')
   const additionalFeesValue = form.watch('additionalFees')
   const price = computePriceForStock(servicePriceValue, additionalFeesValue)
+  const isPriceTooHigh = price > MAX_PRICE
 
   const postForm = async (formValues: CollectiveOfferStockFormValues) => {
     try {
@@ -292,7 +296,18 @@ export const CollectiveOfferStockForm = ({
             </FormLayout.SubSection>
           </FormLayout.Section>
           <FormLayout.Section
-            title={`Prix total de votre offre : ${price}€ TTC`}
+            title={
+              <>
+                Prix total de votre offre :{' '}
+                <span
+                  className={cn(styles['collective-offer-stock-price'], {
+                    [styles['error']]: isPriceTooHigh,
+                  })}
+                >
+                  {formatPrice(price)} TTC
+                </span>
+              </>
+            }
             description="Le prix total de votre offre est calculé en fonction du tarif de la prestation et des potentiels frais annexes indiqués."
           >
             <div></div>

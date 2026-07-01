@@ -208,7 +208,9 @@ describe('validationSchema', () => {
       description: 'servicePrice should not exceed 60000€',
       canEditDates: true,
       formValues: { ...values, servicePrice: 60001 },
-      expectedErrors: ['Le prix total ne doit pas dépasser 60 000€'],
+      expectedErrors: [
+        'Le tarif de la prestation ne doit pas dépasser 60000 €',
+      ],
     },
     {
       description: 'servicePrice should  should be positive',
