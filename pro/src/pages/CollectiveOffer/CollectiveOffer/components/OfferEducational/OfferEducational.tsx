@@ -132,28 +132,26 @@ export const OfferEducational = ({
             body: payload,
           })
         }
+      } else if (offer === undefined) {
+        const payload = createCollectiveOfferPayload(
+          offerValues,
+          undefined,
+          isNewCollectivePriceEnabled
+        )
+        response = await api.createCollectiveOffer({
+          body: payload,
+        })
       } else {
-        if (offer === undefined) {
-          const payload = createCollectiveOfferPayload(
-            offerValues,
-            undefined,
-            isNewCollectivePriceEnabled
-          )
-          response = await api.createCollectiveOffer({
-            body: payload,
-          })
-        } else {
-          const payload = createPatchOfferPayload(
-            offerValues,
-            initialValues,
-            isNewCollectivePriceEnabled
-          )
+        const payload = createPatchOfferPayload(
+          offerValues,
+          initialValues,
+          isNewCollectivePriceEnabled
+        )
 
-          response = await api.editCollectiveOffer({
-            path: { offer_id: offer.id },
-            body: payload,
-          })
-        }
+        response = await api.editCollectiveOffer({
+          path: { offer_id: offer.id },
+          body: payload,
+        })
       }
 
       const offerId = offer?.id ?? response.id
