@@ -235,13 +235,15 @@ describe('useFormNavigationGuard', () => {
               })
             )
 
+            await waitFor(() => {
+              expect(onSubmitMock).toHaveBeenCalledOnce()
+            })
             expect(result.result.current.location.pathname).toBe('/form-page')
             expect(
               screen.queryByRole('dialog', {
                 name: EXPECTATIONS.DIALOG_TITLE,
               })
             ).not.toBeInTheDocument()
-            expect(onSubmitMock).toHaveBeenCalledOnce()
           })
 
           it('should let navigation proceed if onSubmit return true', async () => {
@@ -264,9 +266,11 @@ describe('useFormNavigationGuard', () => {
               })
             )
 
-            expect(result.result.current.location.pathname).toBe(
-              '/another-page'
-            )
+            await waitFor(() => {
+              expect(result.result.current.location.pathname).toBe(
+                '/another-page'
+              )
+            })
             expect(
               screen.queryByRole('dialog', {
                 name: EXPECTATIONS.DIALOG_TITLE,

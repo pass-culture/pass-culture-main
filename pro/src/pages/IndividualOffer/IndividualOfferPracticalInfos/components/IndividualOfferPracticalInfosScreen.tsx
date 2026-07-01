@@ -19,10 +19,11 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
 import { UpdateWarningDialog } from '../../IndividualOfferLocation/components/UpdateWarningDialog/UpdateWarningDialog'
@@ -91,30 +92,38 @@ export const IndividualOfferPracticalInfosScreen = ({
     }
   }
 
-  async function onSubmit(formValues: IndividualOfferPracticalInfosFormValues) {
-    const shouldOpenWarningDialog =
-      offer.hasPendingBookings &&
-      (
-        [
-          'withdrawalDetails',
-          'withdrawalDelay',
-          'withdrawalType',
-        ] as (keyof IndividualOfferPracticalInfosFormValues)[]
-      ).some((field) => {
-        return form.watch(field) !== form.formState.defaultValues?.[field]
-      })
+  const updateWarningDialogCallbackRef = useRef<
+    ((shouldSendMail: boolean | null) => void) | null
+  >(null)
 
-    if (shouldOpenWarningDialog) {
+  const onSubmit = async (
+    formValues: IndividualOfferPracticalInfosFormValues
+  ): Promise<boolean> => {
+    const hasModifiedWithdrawalInfos = (
+      [
+        'withdrawalDetails',
+        'withdrawalDelay',
+        'withdrawalType',
+      ] as (keyof IndividualOfferPracticalInfosFormValues)[]
+    ).some(
+      (field) => form.getValues(field) !== form.formState.defaultValues?.[field]
+    )
+
+    let shouldSendMail = false
+
+    if (offer.hasPendingBookings && hasModifiedWithdrawalInfos) {
       setIsUpdateWarningDialogOpen(true)
-    } else {
-      await onContinue(formValues, false)
-    }
-  }
+      const choice = await new Promise<boolean | null>((callback) => {
+        updateWarningDialogCallbackRef.current = callback
+      })
+      setIsUpdateWarningDialogOpen(false)
 
-  async function onContinue(
-    formValues: IndividualOfferPracticalInfosFormValues,
-    shouldSendMail: boolean
-  ) {
+      if (choice === null) {
+        return false
+      }
+      shouldSendMail = choice
+    }
+
     try {
       const requestBody = getPatchOfferBody(formValues, shouldSendMail)
 
@@ -125,54 +134,51 @@ export const IndividualOfferPracticalInfosScreen = ({
         api.patchOffer({ path: { offer_id: offer.id }, body: requestBody }),
         { revalidate: false }
       )
+
       form.reset(formValues)
+
       if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
         snackBar.success('Votre offre a bien été modifiée.')
       }
-      const nextStep =
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
 
-      if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) {
-        navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: nextStep,
-            mode:
-              mode === OFFER_WIZARD_MODE.EDITION
-                ? OFFER_WIZARD_MODE.READ_ONLY
-                : mode,
-            isOnboarding,
-          })
-        )
-      }
+      return true
     } catch {
       snackBar.error(SENT_DATA_ERROR_MESSAGE)
-      return
+
+      return false
     }
   }
+
+  const afterSubmitPath = () =>
+    getAfterSubmitPath({
+      offerId: offer.id,
+      mode,
+      isOnboarding,
+      isOfferExposureEnabled,
+      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
+      followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+    })
+  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
+    useFormNavigationGuard({
+      afterSubmitPath,
+      form,
+      onSubmit,
+    })
 
   return (
     <>
       {isUpdateWarningDialogOpen && (
         <UpdateWarningDialog
-          onCancel={() => setIsUpdateWarningDialogOpen(false)}
-          onConfirm={(shouldSendMail) => {
-            form.handleSubmit((formValues) =>
-              onContinue(formValues, shouldSendMail)
-            )()
-            setIsUpdateWarningDialogOpen(false)
-          }}
+          onCancel={() => updateWarningDialogCallbackRef.current?.(null)}
+          onConfirm={(shouldSendMail) =>
+            updateWarningDialogCallbackRef.current?.(shouldSendMail)
+          }
           refToFocusOnClose={saveEditionChangesButtonRef}
           message="Vous avez modifié les modalités de retrait."
         />
       )}
       <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit((values) => onSubmit(values))}
-          noValidate
-        >
+        <form onSubmit={navigationGuardedSubmitHandler} noValidate>
           <ScrollToFirstHookFormErrorAfterSubmit />
           <IndividualOfferPracticalInfosForm
             offer={offer}
@@ -189,11 +195,10 @@ export const IndividualOfferPracticalInfosScreen = ({
             }
             saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           />
-          <RouteLeavingGuardIndividualOffer
-            when={form.formState.isDirty && !form.formState.isSubmitting}
-          />
         </form>
       </FormProvider>
+
+      {navigationGuardDialog}
     </>
   )
 }

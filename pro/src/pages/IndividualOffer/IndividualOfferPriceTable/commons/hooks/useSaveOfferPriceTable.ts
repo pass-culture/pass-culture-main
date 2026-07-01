@@ -1,13 +1,8 @@
 import type { UseFormReturn } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import {
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from '@/commons/core/Offers/constants'
-import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -25,42 +20,19 @@ export const useSaveOfferPriceTable = ({
 }: {
   form: UseFormReturn<PriceTableFormValues>
   offer: GetIndividualOfferWithAddressResponseModel
-}) => {
+}): {
+  save: (formValues: PriceTableFormValues) => Promise<boolean>
+} => {
   const mode = useOfferWizardMode()
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
   const snackBar = useSnackBar()
   const { syncVenue } = useSyncVenueCache()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
-  const isOnboarding = pathname.includes('onboarding')
-
-  const saveAndContinue = async (
-    formValues: PriceTableFormValues
-  ): Promise<void> => {
-    let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
-
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-    } else if (offer.isEvent) {
-      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-    }
-
-    const nextStepUrl = getIndividualOfferUrl({
-      offerId: offer.id,
-      step: nextStep,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-      isOnboarding,
-      isOfferExposureEnabled,
-    })
-
+  const save = async (formValues: PriceTableFormValues): Promise<boolean> => {
     if (!form.formState.isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
-      navigate(nextStepUrl)
-
       snackBar.success(getSuccessMessage(mode))
 
-      return
+      return true
     }
 
     try {
@@ -79,22 +51,24 @@ export const useSaveOfferPriceTable = ({
       form.reset(formValues)
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        if (isOfferExposureEnabled) {
-          snackBar.success('Votre offre a bien été modifiée.')
-        } else {
-          snackBar.success(getSuccessMessage(mode))
-        }
+        snackBar.success(
+          isOfferExposureEnabled
+            ? 'Votre offre a bien été modifiée.'
+            : getSuccessMessage(mode)
+        )
       }
 
-      navigate(nextStepUrl)
+      return true
     } catch (error) {
       if (isErrorAPIError(error)) {
         serializeApiErrors(error.body, form.setError)
       }
 
-      return snackBar.error(FAILED_PATCH_OFFER_USER_MESSAGE)
+      snackBar.error(FAILED_PATCH_OFFER_USER_MESSAGE)
+
+      return false
     }
   }
 
-  return { saveAndContinue }
+  return { save }
 }

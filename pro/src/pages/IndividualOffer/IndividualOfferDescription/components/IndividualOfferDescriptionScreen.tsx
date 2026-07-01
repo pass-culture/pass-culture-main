@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -23,12 +24,13 @@ import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import type {
   DetailsFormValues,
@@ -52,6 +54,19 @@ import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
 export const IndividualOfferDescriptionScreen = () => {
+  const isCulturalOutreachEnabled = useActiveFeature(
+    'WIP_ENABLE_CULTURAL_OUTREACH'
+  )
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+
+  const {
+    categories,
+    subCategories,
+    offer: initialOffer,
+    hasPublishedOfferWithSameEan,
+  } = useIndividualOfferContext()
+  const offerIdRef = useRef(initialOffer?.id)
+
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
@@ -61,12 +76,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const snackBar = useSnackBar()
 
-  const {
-    categories,
-    subCategories,
-    offer: initialOffer,
-    hasPublishedOfferWithSameEan,
-  } = useIndividualOfferContext()
   const initialOfferImage = getIndividualOfferImage(initialOffer)
   const extraData = initialOffer?.extraData as OfferExtraData | undefined
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
@@ -98,11 +107,6 @@ export const IndividualOfferDescriptionScreen = () => {
   const isEanSearchAvailable =
     selectedPartnerVenue.activity === DisplayableActivity.RECORD_STORE
 
-  const isCulturalOutreachEnabled = useActiveFeature(
-    'WIP_ENABLE_CULTURAL_OUTREACH'
-  )
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-
   const canClaimCulturalOutreach =
     isCulturalOutreachEnabled &&
     selectedPartnerVenue.activity !== null &&
@@ -120,85 +124,82 @@ export const IndividualOfferDescriptionScreen = () => {
     selectedPartnerVenue
   )
 
-  const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
+  const onSubmit = async (formValues: DetailsFormValues): Promise<boolean> => {
     try {
-      const initialOfferId = initialOffer?.id
-
-      let offerId = initialOfferId
-
-      if (isNewOfferDraft) {
+      if (offerIdRef.current) {
         await mutate(
-          [GET_OFFER_QUERY_KEY, offerId],
-          api.createOffer({ body: serializeDetailsPostData(formValues) }),
-          {
-            revalidate: false,
-            populateCache: (newOffer) => {
-              offerId = newOffer.id
-              return newOffer
-            },
-          }
-        )
-      } else if (initialOfferId) {
-        await mutate(
-          [GET_OFFER_QUERY_KEY, offerId],
+          [GET_OFFER_QUERY_KEY, offerIdRef.current],
           api.patchOffer({
-            path: { offer_id: initialOfferId },
+            path: { offer_id: offerIdRef.current },
             body: serializeDetailsPatchData(formValues, readOnlyFields),
           }),
           { revalidate: false }
         )
-      }
+      } else {
+        await mutate(
+          [GET_OFFER_QUERY_KEY],
+          api.createOffer({ body: serializeDetailsPostData(formValues) }),
+          {
+            revalidate: false,
+            populateCache: (newOffer) => {
+              offerIdRef.current = newOffer.id
+              return newOffer
+            },
+          }
+        )
 
-      // replace url to fix back button
-      navigate(
-        getIndividualOfferUrl({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-          offerId,
-          mode,
-          isOnboarding,
-        }),
-        { replace: true }
-      )
-      const nextStep =
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
-
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        offerId,
-        offerType: 'individual',
-        subcategoryId: form.getValues('subcategoryId'),
-      })
-      // Keep form state in sync after a successful save to avoid false
-      // unsaved-changes guards while staying on the same screen.
-      form.reset(formValues)
-      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
-        snackBar.success('Votre offre a bien été modifiée.')
-      }
-      if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION) {
-        navigate(
+        // Replace current history entry so that it points to this new offer ID when clicking the browser back button
+        globalThis.history.replaceState(
+          globalThis.history.state,
+          '',
           getIndividualOfferUrl({
-            offerId,
-            step: nextStep,
-            mode:
-              mode === OFFER_WIZARD_MODE.EDITION
-                ? OFFER_WIZARD_MODE.READ_ONLY
-                : mode,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+            offerId: offerIdRef.current,
+            mode: OFFER_WIZARD_MODE.CREATION,
             isOnboarding,
           })
         )
       }
+
+      if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
+        snackBar.success('Votre offre a bien été modifiée.')
+      }
+
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        offerId: offerIdRef.current,
+        offerType: 'individual',
+        subcategoryId: form.getValues('subcategoryId'),
+      })
+
+      return true
     } catch (error) {
-      if (!isErrorAPIError(error)) {
-        return
+      if (isErrorAPIError(error)) {
+        for (const field in error.body) {
+          form.setError(field as keyof DetailsFormValues, {
+            message: error.body[field],
+          })
+        }
       }
-      for (const field in error.body) {
-        form.setError(field as keyof DetailsFormValues, {
-          message: error.body[field],
-        })
-      }
+
+      return false
     }
   }
+
+  const afterSubmitPath = () =>
+    getAfterSubmitPath({
+      offerId: offerIdRef.current,
+      mode,
+      isOnboarding,
+      isOfferExposureEnabled,
+      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+      followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
+    })
+  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
+    useFormNavigationGuard({
+      afterSubmitPath,
+      form,
+      onSubmit,
+    })
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -206,7 +207,7 @@ export const IndividualOfferDescriptionScreen = () => {
     } else {
       navigate(
         getIndividualOfferUrl({
-          offerId: initialOffer?.id,
+          offerId: offerIdRef.current,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
@@ -287,7 +288,7 @@ export const IndividualOfferDescriptionScreen = () => {
       {isEanSearchCalloutDisplayed && <EanSearchCallout isDraftOffer={false} />}
 
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={navigationGuardedSubmitHandler}>
           <FormLayout fullWidthActions>
             <ScrollToFirstHookFormErrorAfterSubmit />
             <DetailsForm
@@ -316,9 +317,7 @@ export const IndividualOfferDescriptionScreen = () => {
         </form>
       </FormProvider>
 
-      <RouteLeavingGuardIndividualOffer
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+      {navigationGuardDialog}
     </>
   )
 }
