@@ -614,24 +614,6 @@ export type FavoritesResponseModel = {
 };
 
 /**
- * FeatureResponseModel
- */
-export type FeatureResponseModel = {
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Isactive
-     */
-    isActive: boolean;
-    /**
-     * Name
-     */
-    name: string;
-};
-
-/**
  * GetCollectiveOfferLocationModel
  */
 export type GetCollectiveOfferLocationModel = {
@@ -722,11 +704,6 @@ export type ListCollectiveOffersResponseModel = {
      */
     collectiveOffers: Array<CollectiveOfferResponseModel>;
 };
-
-/**
- * ListFeatureResponseModel
- */
-export type ListFeatureResponseModel = Array<FeatureResponseModel>;
 
 /**
  * LocalOfferersPlaylist
@@ -1804,39 +1781,6 @@ export type postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponses = {
 };
 
 export type postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponse = postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponses[keyof postAdageIframeCollectiveTemplatesByOfferIdFavoritesResponses];
-
-export type getAdageIframeFeaturesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/adage-iframe/features';
-};
-
-export type getAdageIframeFeaturesErrors = {
-    /**
-     * Forbidden
-     */
-    403: unknown;
-    /**
-     * Not Found
-     */
-    404: unknown;
-    /**
-     * Unprocessable Content
-     */
-    422: ValidationError;
-};
-
-export type getAdageIframeFeaturesError = getAdageIframeFeaturesErrors[keyof getAdageIframeFeaturesErrors];
-
-export type getAdageIframeFeaturesResponses = {
-    /**
-     * OK
-     */
-    200: ListFeatureResponseModel;
-};
-
-export type getAdageIframeFeaturesResponse = getAdageIframeFeaturesResponses[keyof getAdageIframeFeaturesResponses];
 
 export type postAdageIframeLogsBookingModalButtonData = {
     body: StockIdBody;
