@@ -262,8 +262,6 @@ def create_collective_offer(
     # venue / offerer errors
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise resource_not_found_error()
-    except exceptions.VenueIdDoesNotExist:
-        raise resource_not_found_error()
 
     # adage errors
     except exceptions.CulturalPartnerNotFoundException:
@@ -320,12 +318,6 @@ def edit_collective_offer(
     except offers_exceptions.NoDestinationVenue:
         raise ApiErrors({"venueId": ["No venue with a pricing point found for the destination venue."]}, 400)
 
-    # venue / offerer errors
-    except exceptions.OffererOfVenueDontMatchOfferer:
-        raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
-    except exceptions.VenueIdDoesNotExist:
-        raise resource_not_found_error()
-
     # domains / national_program errors
     except exceptions.NationalProgramNotFound:
         raise ApiErrors({"global": ["National program not found"]}, 400)
@@ -369,12 +361,6 @@ def edit_collective_offer_template(
 
     try:
         api_offer.update_collective_offer_template(offer_id=offer_id, body=body)
-
-    # venue / offerer errors
-    except exceptions.VenueIdDoesNotExist:
-        raise resource_not_found_error()
-    except exceptions.OffererOfVenueDontMatchOfferer:
-        raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
 
     # domains / national_program errors
     except exceptions.NationalProgramNotFound:
@@ -567,8 +553,6 @@ def create_collective_offer_template(
 
     # venue / offerer errors
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise resource_not_found_error()
-    except exceptions.VenueIdDoesNotExist:
         raise resource_not_found_error()
 
     # adage errors
