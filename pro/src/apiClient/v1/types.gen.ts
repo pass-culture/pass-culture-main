@@ -516,9 +516,7 @@ export enum CollectiveAdditionalFeeType {
     MEAL = 'MEAL',
     CONSUMABLE_ITEMS = 'CONSUMABLE_ITEMS',
     COPYRIGHT = 'COPYRIGHT',
-    BROADCASTING = 'BROADCASTING',
     APPLICATION_FEE = 'APPLICATION_FEE',
-    MANAGEMENT_FEE = 'MANAGEMENT_FEE',
     OTHER = 'OTHER'
 }
 
@@ -5225,7 +5223,7 @@ export type PostCollectiveOfferBodyModel = {
     /**
      * Bookingemails
      */
-    bookingEmails?: Array<string> | null;
+    bookingEmails: Array<string>;
     /**
      * Contactemail
      */
