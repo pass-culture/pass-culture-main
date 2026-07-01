@@ -10,8 +10,6 @@ from flask import request
 from pcapi import settings
 from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.offerers import api as offerers_api
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -164,21 +162,9 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
 
     Create a product in authorized categories.
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
-    venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
-    if body.location.type == "address":
-        address = public_utils.get_address_or_raise_404(body.location.address_id)
-        offerer_address = offerers_api.get_or_create_offer_location(
-            offerer_id=venue.managingOffererId,
-            venue_id=venue.id,
-            address_id=address.id,
-            label=body.location.address_label,
-        )
-    else:
-        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
-            offerers_schemas.LocationOnlyOnVenueModel(),
-            venue,
-        )
+    authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
+    assert venue
 
     create_offer_schema = offers_schemas.CreateOffer(
         name=body.name,
@@ -561,8 +547,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     _check_offer_can_be_edited(offer)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
-
+    venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body.location)
     if venue:
         authorization.get_venue_provider_or_raise_404(venue.id)
 
