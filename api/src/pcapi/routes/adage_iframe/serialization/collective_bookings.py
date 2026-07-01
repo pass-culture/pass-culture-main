@@ -1,9 +1,9 @@
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class BookCollectiveOfferRequest(BaseModel):
+class BookCollectiveOfferRequest(HttpBodyModel):
     stockId: int
 
 
-class BookCollectiveOfferResponse(BaseModel):
+class BookCollectiveOfferResponse(HttpBodyModel):
     bookingId: int

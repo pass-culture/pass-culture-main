@@ -340,6 +340,7 @@ describe('offersSearch component', () => {
             publicName: 'Venue Public Name',
             relative: [],
             departementCode: '75',
+            adageId: '1',
           },
         },
       },

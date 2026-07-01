@@ -9,6 +9,7 @@ const venueFilter = {
   publicName: 'Venue Public Name',
   departementCode: '01',
   relative: [456],
+  adageId: '1',
 }
 
 describe('adageFiltersToFacetFilters', () => {
