@@ -662,6 +662,10 @@ class AccountTest:
                 subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
                 subscription_models.DisabilityBonificationStatus.APPLICATION_NOT_FOUND,
             ),
+            (
+                subscription_models.FraudReasonCode.NOT_RECIPIENT,
+                subscription_models.DisabilityBonificationStatus.NOT_RECIPIENT,
+            ),
         ],
     )
     def test_get_user_profile_bonification_disability_status_ko(

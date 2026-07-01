@@ -2980,6 +2980,7 @@
                     "too_many_retries",
                     "person_not_found",
                     "application_not_found",
+                    "not_recipient",
                     "granted",
                     "ko"
                 ],

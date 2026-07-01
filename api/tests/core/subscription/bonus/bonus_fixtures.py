@@ -114,22 +114,30 @@ DATA_PROVIDER_ERROR = {
 }
 
 
-AAH_ELIGIBLE_RESPONSE = {
+AAH_BENEFICIARY_RESPONSE = {
     "data": {"est_beneficiaire": True, "date_debut_droit": "2022-11-29"},
     "links": {},
     "meta": {},
 }
 
-AAH_INELIGIBLE_RESPONSE = {
+AAH_NOT_BENEFICIARY_RESPONSE = {
     "data": {"est_beneficiaire": False, "date_debut_droit": None},
     "links": {},
     "meta": {},
 }
 
 
-AEEH_ELIGIBLE_RESPONSE = {"data": {"status": "allocataire", "date_debut_droit": "2023-06-15"}, "links": {}, "meta": {}}
+AEEH_BENEFICIARY_RESPONSE = {
+    "data": {"status": "allocataire", "date_debut_droit": "2023-06-15"},
+    "links": {},
+    "meta": {},
+}
 
-AEEH_INELIGIBLE_RESPONSE = {"data": {"status": "non_beneficiaire", "date_debut_droit": None}, "links": {}, "meta": {}}
+AEEH_NOT_BENEFICIARY_RESPONSE = {
+    "data": {"status": "non_beneficiaire", "date_debut_droit": None},
+    "links": {},
+    "meta": {},
+}
 
 AEEH_OPENING_RIGHTS_RESPONSE = {
     "data": {"status": "ouvrant_droit", "date_debut_droit": "2022-11-29"},

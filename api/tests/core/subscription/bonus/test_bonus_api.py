@@ -594,7 +594,7 @@ class DisabledAdultAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_BENEFICIARY_RESPONSE)
 
             bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
@@ -621,7 +621,7 @@ class DisabledAdultAllowanceTest:
 
         assert len(mails_testing.outbox) == 1
 
-    def test_not_eligible_for_disabled_adult_allowance_bonus(self):
+    def test_not_beneficiary_for_disabled_adult_allowance_bonus(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
@@ -630,12 +630,12 @@ class DisabledAdultAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_INELIGIBLE_RESPONSE)
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_NOT_BENEFICIARY_RESPONSE)
 
             bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
         assert bonus_fraud_check.source_data().http_status_code == 200
         assert bonus_fraud_check.source_data().error_code is None
 
@@ -732,7 +732,7 @@ class DisabledAdultAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_ELIGIBLE_RESPONSE)
+            mock.get(api_particulier.AAH_ENDPOINT, json=bonus_fixtures.AAH_BENEFICIARY_RESPONSE)
 
             bonus_api.apply_for_adult_disability_bonus(aah_bonus_fraud_check)
 
@@ -837,7 +837,7 @@ class DisabledAdultAllowanceTest:
 class DisabledChildEducationAllowanceTest:
     @pytest.mark.parametrize(
         "aeeh_response",
-        [bonus_fixtures.AEEH_ELIGIBLE_RESPONSE, bonus_fixtures.AEEH_OPENING_RIGHTS_RESPONSE],
+        [bonus_fixtures.AEEH_BENEFICIARY_RESPONSE, bonus_fixtures.AEEH_OPENING_RIGHTS_RESPONSE],
     )
     @patch("pcapi.core.external.attributes.api.update_external_user")
     def test_apply_for_disabled_child_education_allowance_bonus(self, update_external_user_mock, aeeh_response):
@@ -877,7 +877,7 @@ class DisabledChildEducationAllowanceTest:
 
         assert len(mails_testing.outbox) == 1
 
-    def test_not_eligible_for_disabled_child_education_allowance_bonus(self):
+    def test_not_beneficiary_for_disabled_child_education_allowance_bonus(self):
         user = users_factories.BeneficiaryFactory()
 
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -887,12 +887,12 @@ class DisabledChildEducationAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_INELIGIBLE_RESPONSE)
+            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_NOT_BENEFICIARY_RESPONSE)
 
             bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_ELIGIBLE]
+        assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_RECIPIENT]
         assert bonus_fraud_check.source_data().http_status_code == 200
         assert bonus_fraud_check.source_data().error_code is None
 
@@ -991,7 +991,7 @@ class DisabledChildEducationAllowanceTest:
         )
 
         with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_ELIGIBLE_RESPONSE)
+            mock.get(api_particulier.AEEH_ENDPOINT, json=bonus_fixtures.AEEH_BENEFICIARY_RESPONSE)
 
             bonus_api.apply_for_disabled_child_education_bonus(aeeh_bonus_fraud_check)
 
