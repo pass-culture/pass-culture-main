@@ -113,3 +113,14 @@
     display: none;
   }
 }
+
+.additional-fees-list {
+  list-style-type: disc;
+  padding-left: 1rem;
+}
+
+.price-details {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
+}
