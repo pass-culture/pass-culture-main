@@ -1,5 +1,6 @@
 import decimal
 import logging
+import typing
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
@@ -8,7 +9,6 @@ import pcapi.utils.date as date_utils
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.models.event_occurence import EventOccurrence
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
@@ -31,7 +31,7 @@ EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 @log_func_duration
 def create_industrial_event_occurrences(
     event_offers_by_name: dict[str, offers_models.Offer],
-) -> dict[str, EventOccurrence]:
+) -> dict[str, dict[str, typing.Any]]:
     logger.info("create_industrial_event_occurrences")
 
     event_occurrences_by_name = {}
@@ -71,11 +71,11 @@ def create_industrial_event_occurrences(
                 price_categories[price] = price_category
 
             short_names_to_increase_price.append(short_name)
-            event_occurrences_by_name[name] = EventOccurrence(
-                beginning_datetime=beginning_datetime,
-                offer=event_offer_with_occurrences,
-                price=price,
-                price_category=price_category,
-            )
+            event_occurrences_by_name[name] = {
+                "beginning_datetime": beginning_datetime,
+                "offer": event_offer_with_occurrences,
+                "price": price,
+                "price_category": price_category,
+            }
 
     return event_occurrences_by_name
