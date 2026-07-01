@@ -179,12 +179,16 @@ describe('CollectiveOfferStockCreation', () => {
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
     expect(api.editCollectiveStock).not.toHaveBeenCalled()
+    const {
+      servicePrice,
+      numberOfTeachers,
+      collectiveAdditionalFees,
+      ...oldStock
+    } = collectiveStock
     expect(api.createCollectiveStock).toHaveBeenCalledExactlyOnceWith({
       body: {
-        ...collectiveStock,
+        ...oldStock,
         offerId: offer.id,
-        collectiveAdditionalFees: undefined,
-        servicePrice: undefined,
       },
     })
   })
@@ -195,6 +199,7 @@ describe('CollectiveOfferStockCreation', () => {
     const collectiveStock: Partial<CollectiveStockResponseModel> =
       getCollectiveOfferCollectiveStockFactory()
     delete collectiveStock.id
+    delete collectiveStock.priceDetail
     setSubmitResponse(collectiveStock)
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', { offer }, [
       'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
@@ -209,7 +214,6 @@ describe('CollectiveOfferStockCreation', () => {
       body: {
         ...collectiveStock,
         offerId: offer.id,
-        servicePrice: 100,
       },
     })
   })
