@@ -45,6 +45,7 @@ const GeneralInformation = () => {
     isCaledonian: venue.isCaledonian,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
+    siret: venue.siret,
     isOpenToPublic: venue.isOpenToPublic.toString(),
     activity: venue.activity as VenueSettingsFormValues['activity'],
   }
@@ -83,17 +84,20 @@ const GeneralInformation = () => {
       initialValues.isOpenToPublic === 'true' &&
       venue.hasActiveIndividualOffer &&
       hasAddressChanged
-    const shouldShowComplementaryInfosDialog =
+    const hasBecomeOpenToPublic =
       formValues.isOpenToPublic === 'true' &&
       initialValues.isOpenToPublic === 'false' &&
       venue.hasActiveIndividualOffer
+    const hasSiretChanged =
+      formValues.isOpenToPublic === 'true' &&
+      formValues.siret !== initialValues.siret
 
     if (isSaved) {
       setHasAddressChanged(hasAddressChanged)
-      if (shouldShowAddressChangeWarning) {
+      if (shouldShowAddressChangeWarning && !hasSiretChanged) {
         setIsAddressChangeDialogOpen(true)
       }
-      if (shouldShowComplementaryInfosDialog) {
+      if (hasBecomeOpenToPublic || hasSiretChanged) {
         setIsComplementaryInfosDrawerOpen(true)
       }
     }
