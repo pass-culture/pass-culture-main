@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
@@ -58,6 +59,14 @@ function renderAdditionalFeesForm({
 }
 
 describe('AdditionalFeesForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdditionalFeesForm({
+      initialValues: { hasAdditionalFees: false, additionalFees: [] },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not display additional fees fields when hasAdditionalFees is false', () => {
     renderAdditionalFeesForm({
       initialValues: { hasAdditionalFees: false, additionalFees: [] },
@@ -171,6 +180,11 @@ describe('AdditionalFeesForm', () => {
             amount: 10,
           },
           {
+            type: CollectiveAdditionalFeeType.MEAL,
+            label: null,
+            amount: 12,
+          },
+          {
             type: CollectiveAdditionalFeeType.TRAVEL,
             label: null,
             amount: 20,
@@ -179,14 +193,18 @@ describe('AdditionalFeesForm', () => {
       },
     })
 
-    expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(2)
+    expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(3)
+    expect(screen.getAllByLabelText(/Prix \(en €\)/)).toHaveLength(3)
 
     const trashButtons = screen.getAllByRole('button', {
       name: 'Supprimer ce champ',
     })
-    await user.click(trashButtons[0])
+    await user.click(trashButtons[1])
 
-    expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(1)
+    expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(2)
+    const feeAmountInputs = screen.getAllByLabelText(/Prix \(en €\)/)
+    expect(feeAmountInputs).toHaveLength(2)
+    await waitFor(() => expect(feeAmountInputs[1]).toHaveFocus())
   })
 
   it('should not display the trash button when only one row remains', () => {
