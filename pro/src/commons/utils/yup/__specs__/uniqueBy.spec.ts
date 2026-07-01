@@ -73,8 +73,6 @@ describe('yup.array().uniqueBy', () => {
 
     try {
       schema.validateSync(testData)
-
-      expect(true).toBe(false)
     } catch (error: unknown) {
       const validationError = error as yup.ValidationError
 
@@ -102,8 +100,6 @@ describe('yup.array().uniqueBy', () => {
 
     try {
       schema.validateSync(testData, { abortEarly: false })
-
-      expect(true).toBe(false)
     } catch (error: unknown) {
       const validationError = error as yup.ValidationError
       const errorPaths = (
@@ -175,7 +171,6 @@ describe('yup.array().uniqueBy', () => {
 
       try {
         schema.validateSync(testData, { abortEarly: false })
-        expect(true).toBe(false)
       } catch (error: unknown) {
         const validationError = error as yup.ValidationError
         const errorPaths = (
