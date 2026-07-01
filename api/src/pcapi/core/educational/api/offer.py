@@ -1163,18 +1163,6 @@ def update_collective_offer(offer_id: int, body: "collective_offers_serialize.Pa
         offer_to_update, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
     )
 
-    new_venue = None
-    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
-        offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
-        new_venue = offerers_repository.find_venue_by_id(new_values["venueId"])
-        if not new_venue:
-            raise exceptions.VenueIdDoesNotExist()
-        if new_venue.managingOffererId != offerer.id:
-            raise exceptions.OffererOfVenueDontMatchOfferer()
-
-    if new_venue:
-        move_collective_offer_venue(offer_to_update, new_venue)
-
     if (
         # ensure we are filling the field for the first time
         len(offer_to_update.bookingEmails) == 0
@@ -1212,18 +1200,6 @@ def update_collective_offer_template(
     validation.check_collective_offer_template_action_is_allowed(
         offer_to_update, models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
     )
-
-    if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
-        new_venue = offerers_repository.find_venue_by_id(new_values["venueId"])
-
-        if not new_venue:
-            raise exceptions.VenueIdDoesNotExist()
-
-        offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
-        if new_venue.managingOffererId != offerer.id:
-            raise exceptions.OffererOfVenueDontMatchOfferer()
-
-        offer_to_update.venue = new_venue
 
     if "dates" in new_values:
         dates = new_values.pop("dates", None)

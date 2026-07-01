@@ -111,7 +111,6 @@ describe('createPatchOfferPayload', () => {
     audioDisabilityCompliant: false,
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
-    venueId,
     students: [],
     contactPhone: '0123456788',
     contactEmail: 'test2@email.com',
