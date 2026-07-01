@@ -4,13 +4,14 @@ import type {
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import type { PriceTableFormContext } from '../../types'
 import { toFormValues } from '../toFormValues'
 
 describe('toFormValues', () => {
   const baseOffer = getIndividualOfferFactory({ id: 123 })
-
+  const venue = makeGetVenueResponseModel({ id: 1 })
   const makeContext = (offer = baseOffer): PriceTableFormContext => ({
     isCaledonian: false,
     mode: OFFER_WIZARD_MODE.CREATION,
@@ -39,7 +40,7 @@ describe('toFormValues', () => {
       },
     ]
 
-    const result = toFormValues(offer, stocks, context)
+    const result = toFormValues(offer, stocks, context, venue)
 
     expect(result.priceCategories).toHaveLength(1)
     expect(result.priceCategories[0].label).toBeNull()
@@ -58,7 +59,7 @@ describe('toFormValues', () => {
       },
     ]
 
-    const result = toFormValues(offer, priceCategories, context)
+    const result = toFormValues(offer, priceCategories, context, venue)
 
     expect(result.priceCategories).toHaveLength(1)
     expect(result.priceCategories[0].label).toBe('Plein tarif')
@@ -69,7 +70,7 @@ describe('toFormValues', () => {
     const offer = { ...baseOffer, isEvent: true }
     const context = makeContext(offer)
 
-    const result = toFormValues(offer, [], context)
+    const result = toFormValues(offer, [], context, venue)
 
     expect(result.priceCategories).toHaveLength(1)
     expect(result.priceCategories[0].label).toBe('Tarif unique')
@@ -80,7 +81,7 @@ describe('toFormValues', () => {
     const offer = { ...baseOffer, isEvent: false }
     const context = makeContext(offer)
 
-    const result = toFormValues(offer, [], context)
+    const result = toFormValues(offer, [], context, venue)
 
     expect(result.priceCategories).toHaveLength(1)
     expect(result.priceCategories[0].label).toBeNull()

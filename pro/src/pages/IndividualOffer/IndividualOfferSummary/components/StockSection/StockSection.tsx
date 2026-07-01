@@ -12,7 +12,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
@@ -32,11 +34,12 @@ export const StockSection = ({
   offer,
   canBeDuo,
 }: StockSectionProps): JSX.Element => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const snackBar = useSnackBar()
 
-  const departmentCode = getDepartmentCode(offer)
+  const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
   const error =
     'Une erreur est survenue lors de la récupération des informations de votre stock'
 

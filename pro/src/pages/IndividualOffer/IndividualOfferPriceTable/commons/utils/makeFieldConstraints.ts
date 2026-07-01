@@ -1,4 +1,7 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getToday, getYearMonthDay, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -30,13 +33,15 @@ const toDateIfValid = (value: string | null) => {
 export const makeFieldConstraints = ({
   offer,
   mode,
+  venue,
 }: {
   offer: GetIndividualOfferWithAddressResponseModel
   mode: OFFER_WIZARD_MODE
+  venue: GetVenueResponseModel
 }) => {
   const nowAsDate = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    getDepartmentCode(offer)
+    getDepartmentCode(offer, venue)
   )
 
   const computeEntryConstraints = (entry: PriceTableEntryFormValues) => {

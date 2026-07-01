@@ -1,5 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
+import { Provider } from 'react-redux'
 import * as reactRouter from 'react-router'
 
 import {
@@ -11,7 +13,9 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
+import { configureTestStore } from '@/commons/store/testUtils'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import type { PriceTableFormValues } from '../../schemas'
 import { saveEventOfferPriceTable } from '../../utils/saveEventOfferPriceTable'
@@ -67,6 +71,12 @@ const renderUseSaveOfferPriceTable = (params: {
     isDuo: true,
   }
 
+  const store = configureTestStore({
+    user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+  })
+  const wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
+    React.createElement(Provider, { store, children })
+
   return renderHook(
     ({ offer }) => {
       const form = useForm<PriceTableFormValues>({
@@ -75,7 +85,7 @@ const renderUseSaveOfferPriceTable = (params: {
       const save = useSaveOfferPriceTable({ form, offer })
       return { form, ...save }
     },
-    { initialProps: params }
+    { initialProps: params, wrapper }
   )
 }
 

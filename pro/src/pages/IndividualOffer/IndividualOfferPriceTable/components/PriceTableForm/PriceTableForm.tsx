@@ -10,6 +10,8 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/isOfferSynchronized'
 import { isOfferSynchronizedViaAllocine } from '@/commons/core/Offers/utils/isOfferSynchronizedViaAllocine'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
@@ -58,6 +60,7 @@ export const PriceTableForm = ({
 
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
   const {
     control,
@@ -93,6 +96,7 @@ export const PriceTableForm = ({
   const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
     offer,
     mode,
+    venue: selectedPartnerVenue,
   })
 
   const firstEntry = watch('priceCategories.0')
@@ -185,7 +189,7 @@ export const PriceTableForm = ({
 
       <ActivationCodeFormDialog
         activationCodeButtonRef={activationCodeButtonRef}
-        departmentCode={getDepartmentCode(offer)}
+        departmentCode={getDepartmentCode(offer, selectedPartnerVenue)}
         isDialogOpen={activationCodeEntryIndexToUpload !== null}
         minExpirationDate={activationCodesExpirationDatetimeMin}
         onCancel={() => setActivationCodeEntryIndexToUpload(null)}

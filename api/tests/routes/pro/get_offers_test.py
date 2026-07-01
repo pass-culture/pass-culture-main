@@ -286,11 +286,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": venue.offererAddress.address.departmentCode,
-                },
                 "status": "EXPIRED",
                 "location": {
                     "banId": offerer_address1.address.banId,
@@ -352,11 +347,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": venue.offererAddress.address.departmentCode,
-                },
                 "status": "DRAFT",
                 "location": None,
                 "publicationDatetime": None,
@@ -398,11 +388,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "SEANCE_CINE",
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": venue.offererAddress.address.departmentCode,
-                },
                 "status": "SOLD_OUT",
                 "location": {
                     "banId": venue.offererAddress.address.banId,
@@ -514,11 +499,6 @@ class Returns200Test:
                 "stocks": [],
                 "subcategoryId": "CONCERT",
                 "thumbUrl": None,
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": "75",
-                },
                 "location": {
                     "id": offerer_address1.address.id,
                     "banId": offerer_address1.address.banId,
@@ -548,11 +528,6 @@ class Returns200Test:
                 "stocks": [],
                 "subcategoryId": "CONCERT",
                 "thumbUrl": None,
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": "75",
-                },
                 "location": {
                     "id": offerer_address1.address.id,
                     "banId": offerer_address1.address.banId,
@@ -611,11 +586,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": "75",
-                },
                 "status": "SOLD_OUT",
                 "location": {
                     "id": offerer_address1.address.id,
@@ -674,11 +644,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
-                "venue": {
-                    "id": venue.id,
-                    "name": venue.name,
-                    "departementCode": "75",
-                },
                 "status": "SOLD_OUT",
                 "location": None,
                 "publicationDatetime": "2022-11-21T13:19:00Z",

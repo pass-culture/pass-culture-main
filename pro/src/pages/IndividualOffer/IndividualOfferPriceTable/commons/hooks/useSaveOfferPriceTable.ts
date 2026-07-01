@@ -9,9 +9,11 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { useSyncVenueCache } from '@/commons/hooks/useSyncVenueCache'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
 import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
@@ -26,6 +28,7 @@ export const useSaveOfferPriceTable = ({
   form: UseFormReturn<PriceTableFormValues>
   offer: GetIndividualOfferWithAddressResponseModel
 }) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -70,6 +73,7 @@ export const useSaveOfferPriceTable = ({
         } else {
           await saveNonEventOfferPriceTable(formValues, form, {
             offer,
+            venue: selectedPartnerVenue,
           })
         }
       }

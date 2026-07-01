@@ -2,7 +2,10 @@ import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
@@ -17,8 +20,10 @@ export const saveNonEventOfferPriceTable = async (
   form: UseFormReturn<PriceTableFormValues>,
   {
     offer,
+    venue,
   }: {
     offer: GetIndividualOfferWithAddressResponseModel
+    venue: GetVenueResponseModel
   }
 ) => {
   if (form.formState.dirtyFields.isDuo) {
@@ -34,7 +39,7 @@ export const saveNonEventOfferPriceTable = async (
     )
   }
 
-  const departementCode = getDepartmentCode(offer)
+  const departementCode = getDepartmentCode(offer, venue)
 
   await mutate(
     [GET_STOCKS_QUERY_KEY, offer.id],
