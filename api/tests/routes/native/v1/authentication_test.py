@@ -1,5 +1,6 @@
 import copy
 import hashlib
+import json
 import logging
 import uuid
 from datetime import datetime
@@ -411,7 +412,7 @@ class SSOSigninTest:
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
         mocked_google_oauth.return_value = self.valid_sso_user
         user.email = self.valid_sso_user.email
 
@@ -460,6 +461,48 @@ class SSOSigninTest:
 
         assert response.status_code == 400
 
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_apple_relogin_by_sub_without_email(self, mocked_apple_oauth, client):
+        # Apple only returns the email on the first consent. An existing user identified by a
+        # SingleSignOn link must still be able to log in by (provider, sub) alone on subsequent
+        # logins, e.g. after a token revocation and re-consent.
+        users_factories.SingleSignOnFactory(
+            ssoProvider="apple",
+            ssoUserId=self.valid_sso_user.sub,
+            user__isActive=True,
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        apple_user_without_email = users_schemas.SSOUser(sub=self.valid_sso_user.sub, email=None, email_verified=None)
+        mocked_apple_oauth.return_value = (apple_user_without_email, None)
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["accountState"] == AccountState.ACTIVE.value
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_apple_denied_without_sso_link_and_without_email(self, mocked_apple_oauth, client):
+        # Without an existing SSO link we cannot identify the user by sub alone: the email is
+        # required to match or create an account, so the login must be denied when it is missing.
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        apple_user_without_email = users_schemas.SSOUser(sub=self.valid_sso_user.sub, email=None, email_verified=None)
+        mocked_apple_oauth.return_value = (apple_user_without_email, None)
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "SSO_ERROR"
+
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_single_sign_on_validates_email_and_deletes_password(self, mocked_google_oauth, client, caplog):
         user = users_factories.UserFactory(email=self.valid_sso_user.email, isEmailValidated=False)
@@ -489,7 +532,7 @@ class SSOSigninTest:
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
         )
-        mocked_apple_oauth.return_value = self.valid_sso_user
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
         mocked_google_oauth.return_value = self.valid_sso_user
 
         response = client.post(
@@ -592,6 +635,84 @@ class SSOSigninTest:
 
         assert response.status_code == 200, response.json
         mocked_google_oauth.assert_called_with("4/google_code", is_web)
+
+
+@pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=True)
+class SSORefreshTokenPersistenceTest:
+    valid_sso_user = users_schemas.SSOUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passculture.app",
+        email_verified=True,
+    )
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_persists_encrypted_refresh_token(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, "apple-refresh-token")
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert sso.refreshTokenPayload is not None
+        decrypted_payload = json.loads(crypto.decrypt(sso.refreshTokenPayload))
+        assert decrypted_payload["refresh_token"] == "apple-refresh-token"
+        # The mobile client_id is stored alongside the token (no "platform: web" header was sent)
+        # so the revocation can try the right client_id first.
+        assert decrypted_payload["client_id"] == settings.APPLE_MOBILE_CLIENT_ID
+
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_does_not_overwrite_existing_refresh_token_when_provider_returns_none(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        users_factories.SingleSignOnFactory(
+            user=user,
+            ssoProvider="apple",
+            ssoUserId=self.valid_sso_user.sub,
+            refreshTokenPayload=crypto.encrypt("previous-token"),
+        )
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, None)
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert crypto.decrypt(sso.refreshTokenPayload) == "previous-token"
+
+    @pytest.mark.features(WIP_ENABLE_SSO_TOKEN_REVOCATION=False)
+    @patch("pcapi.connectors.apple_oauth.get_apple_user")
+    def test_does_not_persist_refresh_token_when_flag_disabled(self, mocked_apple_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_sso_user.email, isActive=True)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_apple_oauth.return_value = (self.valid_sso_user, "apple-refresh-token")
+
+        response = client.post(
+            "/native/v1/oauth/apple/authorize",
+            json={"authorizationCode": "4/apple_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200
+        sso = (
+            db.session.query(SingleSignOn).filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "apple").one()
+        )
+        assert sso.refreshTokenPayload is None
 
 
 class TrustedDeviceFeatureTest:

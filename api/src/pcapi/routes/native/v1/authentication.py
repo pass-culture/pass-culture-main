@@ -9,8 +9,6 @@ from sqlalchemy import exc as sa_exc
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors import apple_oauth
-from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import api as users_api
@@ -39,7 +37,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -223,12 +220,6 @@ def sso_oauth_state() -> authentication.OauthStateResponse:
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
 
 
-_SSO_ACCESS_DENIED_ERROR = {
-    "code": "SSO_ERROR",
-    "general": ["La connexion avec ce compte SSO est refusée. Contacte le support pour plus d'informations."],
-}
-
-
 @blueprint.native_route("/oauth/<string:sso_provider>/authorize", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
@@ -256,76 +247,7 @@ def sso_authorize(sso_provider: str, body: authentication.OAuthSigninRequest) ->
     oauth_state_token.expire()
 
     is_web = request.headers.get("platform") == "web"
-    if sso_provider == "apple":
-        try:
-            sso_user = apple_oauth.get_apple_user(body.authorization_code, is_web)
-        except apple_oauth.AppleSignInException:
-            raise ApiErrors({"code": "SSO_ERROR", "general": "L'authentification a échoué"}, status_code=401)
-    elif sso_provider == "google":
-        sso_user = google_oauth.get_google_user(body.authorization_code, is_web)
-
-    if not sso_user.email_verified:
-        logger.warning(
-            "SSO access denied: email not verified",
-            extra={"sso_provider": sso_provider},
-        )
-        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
-
-    if not sso_user.email:
-        raise api_errors.ApiErrors(
-            {"code": "EMAIL_MISSING", "general": ["L'email n'a pas pu être récupéré auprès du fournisseur SSO."]}
-        )
-
-    email = sso_user.email
-    sso_user_id = sso_user.sub
-    single_sign_on = users_repo.get_single_sign_on(sso_provider, sso_user_id)
-    if not single_sign_on:
-        user = users_repo.find_user_by_email(email)
-    else:
-        user = single_sign_on.user
-
-    if not user:
-        logger.info(
-            "Successful SSO authentication but no matching email found, sending account creation token",
-            extra={"sso_provider": sso_provider, "avoid_current_user": True},
-            technical_message_id=f"users.login.sso.{sso_provider}",
-        )
-        encoded_account_creation_token = users_api.create_account_creation_token(sso_user)
-        # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
-        raise ApiErrors(
-            {
-                "code": "SSO_EMAIL_NOT_FOUND",
-                "accountCreationToken": encoded_account_creation_token,
-                "email": email,
-                "general": [f"Aucun compte pass Culture lié à {email} n'a été trouvé"],
-            },
-            status_code=401,
-        )
-
-    if user.account_state.is_deleted or user.account_state == user_models.AccountState.ANONYMIZED:
-        logger.warning(
-            "SSO access denied: account state is not allowed",
-            extra={"sso_provider": sso_provider, "account_state": user.account_state},
-        )
-        raise ApiErrors(_SSO_ACCESS_DENIED_ERROR)
-
-    sso_user_id = sso_user.sub
-    with transaction():
-        if not user.isEmailValidated:
-            # An account registered with a password and with its email not validated is a symptom
-            # of an account pre-hijacking attack waiting for an email validation. To prevent this
-            # we disable the email + password login when a SSO is enabled.
-            user.password = None
-            user.isEmailValidated = True
-
-        current_provider_sso = None
-        user_ssos_for_provider = [sso for sso in user.single_sign_ons if sso.ssoProvider == sso_provider]
-        if user_ssos_for_provider:
-            current_provider_sso = user_ssos_for_provider[0]
-            current_provider_sso.ssoUserId = sso_user.sub
-        else:
-            current_provider_sso = users_repo.create_single_sign_on(user, sso_provider, sso_user_id)
-            db.session.add(current_provider_sso)
+    user = users_api.authorize_sso_user(sso_provider, body.authorization_code, is_web)
 
     users_api.save_device_info_and_notify_user(user, body.device_info)
 

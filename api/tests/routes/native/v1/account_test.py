@@ -22,6 +22,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.constants as users_constants
 from pcapi import settings
+from pcapi.connectors import apple_oauth
 from pcapi.core import token as token_utils
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.achievements.factories import AchievementFactory
@@ -1071,6 +1072,62 @@ class AccountCreationWithSSOTest:
         assert len(mails_testing.outbox) == 0  # no email verification
         assert len(push_testing.requests) == 2
         assert len(users_testing.brevo_requests) == 1
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_persists_sso_refresh_token(self, mocked_check_recaptcha_token_is_valid, client):
+        refresh_token_payload = apple_oauth.build_refresh_token_payload("rt_signup", is_web=False)
+        token_data = self.google_user.model_dump()
+        token_data["refresh_token_payload"] = refresh_token_payload
+        token_data["sso_provider"] = "apple"
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=token_data,
+        )
+
+        response = client.post(
+            "/native/v1/oauth/apple/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "token": "recaptcha token",
+                "marketingEmailSubscription": False,
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        sso = db.session.query(users_models.SingleSignOn).one()
+        assert sso.ssoProvider == "apple"
+        assert sso.refreshTokenPayload == refresh_token_payload
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_ignores_refresh_token_issued_for_another_provider(
+        self, mocked_check_recaptcha_token_is_valid, client
+    ):
+        token_data = self.google_user.model_dump()
+        token_data["refresh_token_payload"] = apple_oauth.build_refresh_token_payload("rt_signup", is_web=False)
+        token_data["sso_provider"] = "apple"
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=token_data,
+        )
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "token": "recaptcha token",
+                "marketingEmailSubscription": False,
+            },
+        )
+
+        assert response.status_code == 200, response.json
+        sso = db.session.query(users_models.SingleSignOn).one()
+        assert sso.ssoProvider == "google"
+        # An Apple refresh token must not be stored on a google SSO row: it could never be revoked.
+        assert sso.refreshTokenPayload is None
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_already_present(self, mocked_check_recaptcha_token_is_valid, client):
