@@ -2,11 +2,11 @@ class ExternalBookingException(Exception):
     pass
 
 
-class ExternalBookingConfigurationException(ExternalBookingException):
+class ConfigurationException(ExternalBookingException):
     pass
 
 
-class ExternalBookingTimeoutException(Exception):
+class TimeoutException(Exception):
     pass
 
 
@@ -16,13 +16,13 @@ class ExternalBookingAlreadyCancelledError(Exception):
         super().__init__()
 
 
-class ExternalBookingNotEnoughSeatsError(Exception):
+class ShowSoldOutException(Exception):
     def __init__(self, remainingQuantity: int) -> None:
         self.remainingQuantity = remainingQuantity
         super().__init__()
 
 
-class ExternalBookingShowDoesNotExistError(Exception):
+class ShowRemovedException(Exception):
     """
     Exception raised when show does no longer exist on provider side
     (this error can occur with cinema integrations)

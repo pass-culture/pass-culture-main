@@ -185,7 +185,7 @@ class CineOfficeGetShowTest:
             cinema_api_token="token_test",
         )
 
-        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+        with pytest.raises(external_bookings_exceptions.ShowRemovedException):
             cine_digital_service.get_show(4)
 
     @pytest.mark.parametrize(
@@ -1015,7 +1015,7 @@ class CineOfficeBookTicketTest:
         cine_digital_service = CineOfficeAPIClient(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ShowSoldOutException) as exc:
             cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
         assert exc.value.remainingQuantity == 0

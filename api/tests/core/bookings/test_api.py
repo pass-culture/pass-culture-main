@@ -632,7 +632,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
+            with pytest.raises(external_bookings_exceptions.TimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not db.session.query(Booking).all()
@@ -743,7 +743,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
+            with pytest.raises(external_bookings_exceptions.TimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not db.session.query(Booking).all()
@@ -824,7 +824,7 @@ class BookOfferTest:
             url = EMSBookingConnector()._build_url("VENTE", payload)
             booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
+            with pytest.raises(external_bookings_exceptions.TimeoutException):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             assert not db.session.query(Booking).all()
@@ -1064,7 +1064,7 @@ class BookOfferTest:
             )
             requests_mock.post(external_booking_url, json=json_body, status_code=409)
 
-            with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
+            with pytest.raises(external_bookings_exceptions.ShowSoldOutException):
                 api.book_offer(beneficiary, stock.id, quantity=2)
 
             assert not db.session.query(models.Booking).count()

@@ -114,12 +114,12 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
 
         if regex.match(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message):
             remaining_seats = int(regex.findall(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message)[0])
-            raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remaining_seats)
+            raise external_bookings_exceptions.ShowSoldOutException(remaining_seats)
 
         if "No showtime found" in message:
-            raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
+            raise external_bookings_exceptions.ShowRemovedException()
 
-        raise BoostAPIException(f"Error on Boost API on {request_detail} : {error_message} - {message}")
+        raise BoostAPIException(f"Error on Boost API: {error_message} - {message}")
 
 
 def _convert_from_bytes_or_str(content: str | bytes) -> str:
@@ -333,7 +333,7 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
             )
             # not a totally appropriate exception, we raise it to set the stock quantity to 0
             # as a beneficiary cannot book a show if there is no pass Culture pricing
-            raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+            raise external_bookings_exceptions.ShowSoldOutException(remainingQuantity=0)
 
         basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
         sale_body = boost_serializers.SaleRequest(
