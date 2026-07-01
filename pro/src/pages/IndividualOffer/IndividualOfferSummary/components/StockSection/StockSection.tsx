@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   GET_STOCKS_EVENT_STATS_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
@@ -24,7 +24,7 @@ import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 
 export interface StockSectionProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   canBeDuo?: boolean
 }
 

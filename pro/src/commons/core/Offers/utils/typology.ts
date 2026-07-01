@@ -1,8 +1,8 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
 
 export const isOfferSynchronized = (
-  offer?: GetIndividualOfferResponseModel | null
+  offer?: GetIndividualOfferResponseModelV2 | null
 ): boolean => {
   if (!offer) {
     return false
@@ -11,7 +11,7 @@ export const isOfferSynchronized = (
 }
 
 export const isOfferAllocineSynchronized = (
-  offer?: GetIndividualOfferResponseModel | null
+  offer?: GetIndividualOfferResponseModelV2 | null
 ): boolean => {
   if (!offer) {
     return false
@@ -20,7 +20,7 @@ export const isOfferAllocineSynchronized = (
 }
 
 export const isOfferProductBased = (
-  offer?: GetIndividualOfferResponseModel | null
+  offer?: GetIndividualOfferResponseModelV2 | null
 ): boolean => {
   if (!offer) {
     return false

@@ -2,7 +2,7 @@ import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { type EventStockUpdateBodyModel, StocksOrderedBy } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -40,7 +40,7 @@ import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 const STOCKS_PER_PAGE = 20
 
 export type StocksCalendarProps = {
-  readonly offer: GetIndividualOfferWithAddressResponseModel
+  readonly offer: GetIndividualOfferResponseModelV2
   readonly mode: OFFER_WIZARD_MODE
 }
 
@@ -321,7 +321,7 @@ function DialogBuilderButton({
   triggerVariant: ButtonVariant
   isDialogOpen: boolean
   setIsDialogOpen: Dispatch<SetStateAction<boolean>>
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   handleSubmitRecurrenceFormDrawer: (
     values: RecurrenceFormValues
   ) => Promise<void>

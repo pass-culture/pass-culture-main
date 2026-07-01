@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -29,7 +29,7 @@ import { LocationForm } from './LocationForm/LocationForm'
 import { UpdateWarningDialog } from './UpdateWarningDialog/UpdateWarningDialog'
 
 export interface IndividualOfferLocationScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export const IndividualOfferLocationScreen = ({
   offer,

@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -21,7 +21,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './IndividualOfferSummaryLocationScreen.module.scss'
 
 export interface IndividualOfferSummaryLocationScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export function IndividualOfferSummaryLocationScreen({
   offer,

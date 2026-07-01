@@ -1,5 +1,5 @@
 import {
-  type ArtistOfferLinkResponseModel,
+  type ArtistOfferLinkResponseModelV2,
   ArtistType,
   DisplayableActivity,
   OfferStatus,
@@ -186,16 +186,14 @@ describe('getInitialArtistOfferLinks', () => {
   const defaultLinks = DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
 
   it('should return defaults links', () => {
-    const artists: ArtistOfferLinkResponseModel[] = []
-
-    // @ts-expect-error - waiting Artist migration on pydantic V2
+    const artists: ArtistOfferLinkResponseModelV2[] = []
     const result = getInitialArtistOfferLinks(artists, defaultLinks)
 
     expect(result).toStrictEqual(defaultLinks)
   })
 
   it('should return offer links', () => {
-    const offerLinks: ArtistOfferLinkResponseModel[] = [
+    const offerLinks: ArtistOfferLinkResponseModelV2[] = [
       { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
       {
         artistId: '2',
@@ -208,18 +206,15 @@ describe('getInitialArtistOfferLinks', () => {
         artistType: ArtistType.STAGE_DIRECTOR,
       },
     ]
-    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toStrictEqual(offerLinks)
   })
 
   it('should add missing artist types from defaults to offer links', () => {
-    const offerLinks: ArtistOfferLinkResponseModel[] = [
+    const offerLinks: ArtistOfferLinkResponseModelV2[] = [
       { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
     ]
-
-    // @ts-expect-error - waiting Artist migration on pydantic V2
     const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
 
     expect(result).toHaveLength(3)
@@ -491,8 +486,6 @@ describe('getFormReadOnlyFields', () => {
 describe('getAccessibilityFormValuesFromOffer', () => {
   it('should coerce all flags to false and set none as true when flags are all false, null or undefined', () => {
     const offer = getIndividualOfferFactory({
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-      // @ts-expect-error
       audioDisabilityCompliant: null,
       mentalDisabilityCompliant: undefined,
       motorDisabilityCompliant: false,

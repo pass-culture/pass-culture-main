@@ -169,7 +169,7 @@ class UpsertArtistOfferLinksTest:
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
-            artist_serialize.ArtistOfferLinkBodyModel(
+            artist_serialize.ArtistOfferLinkBodyModelV2(
                 artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             )
         ]
@@ -200,7 +200,7 @@ class UpsertArtistOfferLinksTest:
         existing_link_id = existing_link.id
 
         incoming_links = [
-            artist_serialize.ArtistOfferLinkBodyModel(
+            artist_serialize.ArtistOfferLinkBodyModelV2(
                 artist_id=existing_link.artist_id,
                 artist_type=existing_link.artist_type,
                 artist_name=existing_link.artist_name,
@@ -218,10 +218,10 @@ class UpsertArtistOfferLinksTest:
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
-            artist_serialize.ArtistOfferLinkBodyModel(
+            artist_serialize.ArtistOfferLinkBodyModelV2(
                 artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             ),
-            artist_serialize.ArtistOfferLinkBodyModel(
+            artist_serialize.ArtistOfferLinkBodyModelV2(
                 artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             ),
         ]

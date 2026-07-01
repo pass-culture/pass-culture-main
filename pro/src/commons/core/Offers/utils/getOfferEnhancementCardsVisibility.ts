@@ -1,5 +1,5 @@
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 
@@ -10,7 +10,7 @@ type OfferEnhancementCardsVisibility = {
 }
 
 export const getOfferEnhancementCardsVisibility = (
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
 ): OfferEnhancementCardsVisibility => {
   if (!offer) {
     return {

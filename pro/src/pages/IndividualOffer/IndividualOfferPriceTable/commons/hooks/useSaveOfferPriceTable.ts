@@ -2,7 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -24,7 +24,7 @@ export const useSaveOfferPriceTable = ({
   offer,
 }: {
   form: UseFormReturn<PriceTableFormValues>
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }) => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
