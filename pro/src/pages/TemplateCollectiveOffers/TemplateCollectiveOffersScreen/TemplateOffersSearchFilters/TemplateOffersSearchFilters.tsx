@@ -173,6 +173,16 @@ export const TemplateOffersSearchFilters = ({
     }
   }
 
+  const offererAddressId =
+    selectedFilters.offererAddressId != null
+      ? String(selectedFilters.offererAddressId)
+      : 'all'
+
+  const locationType =
+    selectedFilters.locationType === CollectiveLocationType.SCHOOL
+      ? CollectiveLocationType.SCHOOL
+      : offererAddressId
+
   return (
     <OffersTableSearch
       type="template"
@@ -225,11 +235,7 @@ export const TemplateOffersSearchFilters = ({
             selectedFilters.locationType ===
             CollectiveLocationType.TO_BE_DEFINED
               ? CollectiveLocationType.TO_BE_DEFINED
-              : selectedFilters.locationType === CollectiveLocationType.SCHOOL
-                ? CollectiveLocationType.SCHOOL
-                : selectedFilters.offererAddressId != null
-                  ? String(selectedFilters.offererAddressId)
-                  : 'all'
+              : locationType
           }
           label="Localisation"
         />

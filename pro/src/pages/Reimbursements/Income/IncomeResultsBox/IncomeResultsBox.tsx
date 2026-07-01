@@ -74,11 +74,12 @@ export const IncomeResultsBox = ({
       ? 'Montant des réservations validées et remboursées.'
       : 'Montant des réservations en cours, validées et remboursées.'
   const shouldDisplayIncomeDetails = isCollectiveAndIndividualRevenue(income)
+  const incomeType = isCollectiveRevenue(income)
+    ? income.collective
+    : income.individual
   const total = isCollectiveAndIndividualRevenue(income)
     ? income.total
-    : isCollectiveRevenue(income)
-      ? income.collective
-      : income.individual
+    : incomeType
 
   return (
     <Panel>

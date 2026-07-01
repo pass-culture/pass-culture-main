@@ -4,7 +4,10 @@ import { useId } from 'react'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import {
   RadioButton,
+  type RadioButtonAsset,
   type RadioButtonProps,
+  type RadioButtonSizing,
+  type RadioButtonVariant,
 } from '@/design-system/RadioButton/RadioButton'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -22,11 +25,11 @@ export type RadioButtonGroupProps = {
   /** Error message for the radio button group */
   error?: string
   /** Variant of the radio buttons (applied to all), defaults to 'default' */
-  variant?: RadioButtonProps['variant']
+  variant?: RadioButtonVariant
   /** Sizing of the radio buttons (applied to all), defaults to 'fill' */
-  sizing?: RadioButtonProps['sizing']
+  sizing?: RadioButtonSizing
   /** Asset of the radio buttons (applied to all), displayed when variant is 'detailed' */
-  asset?: RadioButtonProps['asset']
+  asset?: RadioButtonAsset
   /** Display style of the radio button group, defaults to 'vertical' */
   display?: 'horizontal' | 'vertical'
   /** Selected option, required if the group is non-controlled */

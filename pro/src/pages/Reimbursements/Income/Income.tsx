@@ -1,19 +1,14 @@
-import classnames from 'classnames'
-import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Income.module.scss'
-import { IncomeError } from './IncomeError/IncomeError'
+import { IncomeData } from './IncomeData/IncomeData'
 import { IncomeNoData } from './IncomeNoData/IncomeNoData'
-import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 
 type Option = {
   id: string
@@ -25,9 +20,6 @@ type VenueFormValues = {
 }
 
 const Income = () => {
-  const firstYearFilterRef = useRef<HTMLButtonElement>(null)
-  const [activeYear, setActiveYear] = useState<number>()
-
   const venues = useAppSelector((state) => state.user.venues)
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
 
@@ -58,7 +50,6 @@ const Income = () => {
 
   const hasVenues = venueValues.length > 0
   const hasSingleVenue = venueValues.length === 1
-  const hasNoVenuesSelected = selected.length === 0
 
   const onChange = (options: Option[]) => {
     if (options.length === 0) {
@@ -71,28 +62,6 @@ const Income = () => {
 
     setTimeout(() => setValue('selectedVenues', options), 1000)
   }
-
-  const {
-    isIncomeLoading,
-    incomeApiError,
-    incomeDataReady,
-    incomeByYear,
-    hasIncomeData,
-    years,
-  } = useIncome(selected)
-
-  const finalActiveYear = activeYear || years[0]
-  const activeYearIncome = incomeByYear?.[finalActiveYear] || {}
-  const activeYearHasData =
-    activeYearIncome.revenue || activeYearIncome.expectedRevenue
-
-  useEffect(() => {
-    if (hasSingleVenue && incomeDataReady && firstYearFilterRef.current) {
-      // If there is only one venue, the venue selector will not be displayed
-      // and the first year filter will be auto-focused as soon as the data is loaded.
-      firstYearFilterRef.current.focus()
-    }
-  }, [hasSingleVenue, incomeDataReady])
 
   if (!hasVenues) {
     return <IncomeNoData type="venues" />
@@ -124,73 +93,11 @@ const Income = () => {
         </>
       )}
 
-      {isIncomeLoading ? (
-        <Spinner testId="income-spinner" />
-      ) : incomeApiError ? (
-        <div role="alert">
-          <IncomeError />
-        </div>
-      ) : hasNoVenuesSelected ? (
-        <IncomeNoData type="no-venues-selected" />
-      ) : !hasIncomeData ? (
-        <IncomeNoData type="income" />
-      ) : (
-        <>
-          <ul
-            className={classnames(
-              styles['income-filters'],
-              styles['income-filters-by-year']
-            )}
-            aria-label="Filtrage par année"
-          >
-            {years.map((year) => (
-              <li key={year}>
-                <button
-                  id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
-                  {...(year === finalActiveYear
-                    ? { ref: firstYearFilterRef }
-                    : {})}
-                  type="button"
-                  onClick={() => setActiveYear(year)}
-                  aria-label={`Afficher les revenus de l'année ${year}`}
-                  aria-current={year === finalActiveYear}
-                  className={classnames(
-                    styles['income-filters-by-year-button'],
-                    {
-                      [styles['income-filters-by-year-button-active']]:
-                        year === finalActiveYear,
-                    }
-                  )}
-                >
-                  {year}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {!activeYearHasData ? (
-            <IncomeNoData type="income-year" />
-          ) : (
-            <div>
-              {activeYearIncome.revenue && (
-                <div className={styles['income-box']}>
-                  <IncomeResultsBox
-                    type="revenue"
-                    income={activeYearIncome.revenue}
-                    isCaledonian={selectedAdminOfferer?.isCaledonian}
-                  />
-                </div>
-              )}
-              {activeYearIncome.expectedRevenue && (
-                <IncomeResultsBox
-                  type="expectedRevenue"
-                  income={activeYearIncome.expectedRevenue}
-                />
-              )}
-            </div>
-          )}
-        </>
-      )}
+      <IncomeData
+        selected={selected}
+        hasSingleVenue={hasSingleVenue}
+        selectedAdminOfferer={selectedAdminOfferer}
+      />
     </>
   )
 }
