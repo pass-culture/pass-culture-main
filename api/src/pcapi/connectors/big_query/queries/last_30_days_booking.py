@@ -1,10 +1,10 @@
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi import settings
 from pcapi.connectors.big_query.queries.base import BaseQuery
 
 
-class Last30DaysBookingsModel(pydantic_v1.BaseModel):
+class Last30DaysBookingsModel(pydantic.BaseModel):
     ean: str
     booking_count: int
 

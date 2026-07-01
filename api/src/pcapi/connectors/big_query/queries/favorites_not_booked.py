@@ -1,6 +1,6 @@
 import typing
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi import settings
 from pcapi.utils import chunks
@@ -9,7 +9,7 @@ from .base import BaseQuery
 from .base import RowIterator
 
 
-class FavoritesNotBookedModel(pydantic_v1.BaseModel):
+class FavoritesNotBookedModel(pydantic.BaseModel):
     offer_id: int
     offer_name: str
     user_ids: list[int]

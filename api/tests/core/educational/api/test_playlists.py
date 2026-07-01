@@ -21,7 +21,7 @@ class SynchronizePlaylistsTest:
     @pytest.mark.parametrize(
         "playlist_type,id_formatter",
         (
-            (educational_models.PlaylistType.CLASSROOM, lambda i: i),
+            (educational_models.PlaylistType.CLASSROOM, str),
             (educational_models.PlaylistType.NEW_OFFER, _get_offer_id),
         ),
     )

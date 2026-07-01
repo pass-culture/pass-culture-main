@@ -1,4 +1,4 @@
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 import pcapi.core.educational.models as educational_models
 from pcapi import settings
@@ -6,7 +6,7 @@ from pcapi import settings
 from .base import BaseQuery
 
 
-class ClassroomPlaylistModel(pydantic_v1.BaseModel):
+class ClassroomPlaylistModel(pydantic.BaseModel):
     institution_id: str
     collective_offer_id: str
     distance_in_km: float
@@ -29,7 +29,7 @@ class ClassroomPlaylistQuery(BaseQuery):
     model = ClassroomPlaylistModel
 
 
-class NewTemplateOffersPlaylistModel(pydantic_v1.BaseModel):
+class NewTemplateOffersPlaylistModel(pydantic.BaseModel):
     institution_id: str
     collective_offer_id: str
     distance_in_km: float
@@ -52,7 +52,7 @@ class NewTemplateOffersPlaylistQuery(BaseQuery):
     model = NewTemplateOffersPlaylistModel
 
 
-class LocalOfferersModel(pydantic_v1.BaseModel):
+class LocalOfferersModel(pydantic.BaseModel):
     institution_id: str
     venue_id: str
     distance_in_km: float
@@ -77,9 +77,9 @@ class LocalOfferersQuery(BaseQuery):
     model = LocalOfferersModel
 
 
-class InstitutionRuralLevelModel(pydantic_v1.BaseModel):
+class InstitutionRuralLevelModel(pydantic.BaseModel):
     institution_id: int
-    institution_rural_level: educational_models.InstitutionRuralLevel | None
+    institution_rural_level: educational_models.InstitutionRuralLevel | None = None
 
     class Config:
         use_enum_values = True

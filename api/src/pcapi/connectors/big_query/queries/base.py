@@ -1,20 +1,17 @@
 import typing
 from collections.abc import Mapping
 
-import pydantic as pydantic_v2
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 import pcapi.connectors.big_query as big_query_connector
 
 
-AnyBaseModel = pydantic_v1.BaseModel | pydantic_v2.BaseModel
-
-Row = typing.TypeVar("Row", bound=AnyBaseModel)
+Row = typing.TypeVar("Row", bound=pydantic.BaseModel)
 RowIterator = typing.Generator[Row, None, None]
 
 
 class MalformedRow(Exception):
-    def __init__(self, msg: str, index: int, model: type[AnyBaseModel], raw_query: str):
+    def __init__(self, msg: str, index: int, model: type[pydantic.BaseModel], raw_query: str):
         self.index = index
         self.model = model
         self.raw_query = raw_query
@@ -33,7 +30,7 @@ class BaseQuery:
         for index, row in enumerate(rows):
             try:
                 yield self.model(**typing.cast(Mapping, row))
-            except (pydantic_v1.ValidationError, pydantic_v2.ValidationError, TypeError) as err:
+            except (pydantic.ValidationError, TypeError) as err:
                 raise MalformedRow(msg=str(row), index=index, model=self.model, raw_query=self.raw_query) from err
 
     @property
@@ -41,5 +38,5 @@ class BaseQuery:
         raise NotImplementedError()
 
     @property
-    def model(self) -> type[AnyBaseModel]:
+    def model(self) -> type[pydantic.BaseModel]:
         raise NotImplementedError()

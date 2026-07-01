@@ -5,13 +5,13 @@ properly serialized and yielded.
 
 from unittest.mock import patch
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 import pytest
 
 from pcapi.connectors.big_query.queries import base
 
 
-class FooModel(pydantic_v1.BaseModel):
+class FooModel(pydantic.BaseModel):
     id: int
     name: str
 
