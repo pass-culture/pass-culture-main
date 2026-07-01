@@ -17,12 +17,13 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
 import { useSaveOfferPriceTable } from '../commons/hooks/useSaveOfferPriceTable'
@@ -80,10 +81,27 @@ export const IndividualOfferPriceTableScreen = ({
     resolver: yupResolver(PriceTableValidationSchema),
   })
 
-  const { saveAndContinue } = useSaveOfferPriceTable({
+  const { save } = useSaveOfferPriceTable({
     form,
     offer,
   })
+
+  const afterSubmitPath = getAfterSubmitPath({
+    offerId: offer.id,
+    mode,
+    isOnboarding,
+    isOfferExposureEnabled,
+    currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+    followingStep: offer.isEvent
+      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
+  })
+  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
+    useFormNavigationGuard({
+      afterSubmitPath,
+      form,
+      onSubmit: save,
+    })
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
@@ -111,7 +129,7 @@ export const IndividualOfferPriceTableScreen = ({
   return (
     <>
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(saveAndContinue)}>
+        <form onSubmit={navigationGuardedSubmitHandler}>
           <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout>
             <FormLayout.MandatoryInfo />
@@ -160,9 +178,8 @@ export const IndividualOfferPriceTableScreen = ({
           />
         </form>
       </FormProvider>
-      <RouteLeavingGuardIndividualOffer
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </>
   )
 }
