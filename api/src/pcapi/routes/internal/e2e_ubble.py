@@ -14,7 +14,7 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -29,7 +29,7 @@ class UbbleError(enum.Enum):
     ID_CHECK_NOT_AUTHENTIC = 2201
 
 
-class E2EUbbleIdCheck(BaseModel):
+class E2EUbbleIdCheck(HttpBodyModel):
     errors: list[UbbleError] | None = None
 
 

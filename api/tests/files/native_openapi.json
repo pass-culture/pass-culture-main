@@ -3048,13 +3048,22 @@
                 "type": "object"
             },
             "E2EUbbleIdCheck": {
+                "additionalProperties": false,
                 "properties": {
                     "errors": {
-                        "items": {
-                            "$ref": "#/components/schemas/UbbleError"
-                        },
-                        "nullable": true,
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/UbbleError"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Errors"
                     }
                 },
                 "title": "E2EUbbleIdCheck",
@@ -8338,7 +8347,6 @@
                 "type": "object"
             },
             "UbbleError": {
-                "description": "An enumeration.",
                 "enum": [
                     1201,
                     1301,
@@ -8348,7 +8356,8 @@
                     2103,
                     2201
                 ],
-                "title": "UbbleError"
+                "title": "UbbleError",
+                "type": "integer"
             },
             "UpdateEmailTokenExpiration": {
                 "additionalProperties": false,

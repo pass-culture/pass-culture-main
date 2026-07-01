@@ -1,10 +1,10 @@
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class FeatureToggle(BaseModel):
+class FeatureToggle(HttpBodyModel):
     name: str
     isActive: bool
 
 
-class FeaturesToggleRequest(BaseModel):
+class FeaturesToggleRequest(HttpBodyModel):
     features: list[FeatureToggle]
