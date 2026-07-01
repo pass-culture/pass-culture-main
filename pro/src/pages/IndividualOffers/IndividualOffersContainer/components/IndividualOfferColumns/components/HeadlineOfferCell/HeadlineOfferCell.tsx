@@ -20,19 +20,17 @@ export function HeadlineOfferCell({
   async function onClick() {
     if (offer.id === headlineOffer?.id) {
       await removeHeadlineOffer({ offerId: offer.id })
-    } else {
-      if (offer.thumbUrl) {
-        if (headlineOffer?.id) {
-          setIsConfirmReplacementDialogOpen(true)
-        } else {
-          await upsertHeadlineOffer({
-            offerId: offer.id,
-            context: { actionType: 'add' },
-          })
-        }
+    } else if (offer.thumbUrl) {
+      if (headlineOffer?.id) {
+        setIsConfirmReplacementDialogOpen(true)
       } else {
-        setIsOfferWithoutImageDialogOpen(true)
+        await upsertHeadlineOffer({
+          offerId: offer.id,
+          context: { actionType: 'add' },
+        })
       }
+    } else {
+      setIsOfferWithoutImageDialogOpen(true)
     }
   }
 

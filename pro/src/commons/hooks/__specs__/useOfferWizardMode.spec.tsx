@@ -17,12 +17,12 @@ const renderUseOfferWizardMode = (url: string) => {
 }
 
 describe('useOfferWizardMode', () => {
-  it('should return mode "creation"', () => {
+  it('should return mode "creation" for creation url', () => {
     const { result } = renderUseOfferWizardMode('/test/creation/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
 
-  it('should return mode "creation"', () => {
+  it('should return mode "creation" for confirmation url', () => {
     const { result } = renderUseOfferWizardMode('/test/confirmation')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })

@@ -64,8 +64,7 @@ export const ActivityForm = (): JSX.Element => {
 
   const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
     return educationalDomains.length === 0 ||
-      !formState.defaultValues ||
-      !formState.defaultValues?.culturalDomains
+      !formState?.defaultValues?.culturalDomains
       ? undefined
       : educationalDomains
           .filter((apiDomain) =>

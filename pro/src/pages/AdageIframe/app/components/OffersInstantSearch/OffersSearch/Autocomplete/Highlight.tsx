@@ -20,9 +20,9 @@ export function Highlight({
     parseAlgoliaHitHighlight({
       hit,
       attribute,
-    }).map(({ value, isHighlighted }, index) => {
+    }).map(({ value, isHighlighted }) => {
       if (isHighlighted) {
-        return createElement(tagName, { key: index }, value)
+        return createElement(tagName, { key: value }, value)
       }
 
       return value

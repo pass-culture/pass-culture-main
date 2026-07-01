@@ -161,10 +161,10 @@ export const Offerer = (): JSX.Element => {
         street: offererSiretData.location?.street ?? '',
         city: offererSiretData.location?.city ?? '',
         latitude: offererSiretData.location
-          ? parseFloat(String(offererSiretData.location.latitude))
+          ? Number.parseFloat(String(offererSiretData.location.latitude))
           : null,
         longitude: offererSiretData.location
-          ? parseFloat(String(offererSiretData.location.longitude))
+          ? Number.parseFloat(String(offererSiretData.location.longitude))
           : null,
         postalCode: offererSiretData.location?.postalCode ?? '',
         inseeCode: offererSiretData.location?.inseeCode ?? null,

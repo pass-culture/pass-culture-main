@@ -95,7 +95,7 @@ describe('toFormValues', () => {
     expect(formValues.banId).toBeNull()
   })
 
-  it('should return null banId if banId is missing in address', () => {
+  it('should return siret evenif banId is missing in address', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
