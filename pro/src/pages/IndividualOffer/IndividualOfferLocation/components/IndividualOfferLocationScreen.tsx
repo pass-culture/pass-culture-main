@@ -14,11 +14,12 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
 import { useSaveOfferLocation } from '../commons/hooks/useSaveOfferLocation'
@@ -35,6 +36,9 @@ export const IndividualOfferLocationScreen = ({
   offer,
 }: IndividualOfferLocationScreenProps) => {
   const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
+  const updateWarningDialogDeferredCallRef = useRef<
+    ((shouldSendMail: boolean | null) => void) | null
+  >(null)
 
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -68,32 +72,49 @@ export const IndividualOfferLocationScreen = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const { saveAndContinue } = useSaveOfferLocation({
+  const { save } = useSaveOfferLocation({
     offer,
     setError: form.setError,
   })
 
   const updateOffer = async (
-    formValues: LocationFormValues,
-    shouldSendMail = false
-  ): Promise<void> => {
-    if (
-      offer.hasPendingBookings &&
-      form.getFieldState('location').isDirty &&
-      !isUpdateWarningDialogOpen
-    ) {
-      setIsUpdateWarningDialogOpen(true)
+    formValues: LocationFormValues
+  ): Promise<boolean> => {
+    let shouldSendMail: boolean | null = null
 
-      return
+    if (offer.hasPendingBookings && form.getFieldState('location').isDirty) {
+      setIsUpdateWarningDialogOpen(true)
+      // [Deferred Pattern] Pause this submit until the user answers the dialog:
+      // we stash the promise's resolve in the ref, wait for it,
+      // and continue once the dialog's confirm/cancel handler runs it.
+      shouldSendMail = await new Promise<boolean | null>((resolve) => {
+        updateWarningDialogDeferredCallRef.current = resolve
+      })
+      setIsUpdateWarningDialogOpen(false)
+
+      // If the user cancelled the dialog, let's cancel the update
+      if (shouldSendMail === null) {
+        return false
+      }
     }
 
-    await saveAndContinue({
-      formValues,
-      shouldSendMail,
-      closeDialog: () => setIsUpdateWarningDialogOpen(false),
-    })
-    form.reset(formValues)
+    return await save({ formValues, shouldSendMail: shouldSendMail ?? false })
   }
+
+  const afterSubmitPath = getAfterSubmitPath({
+    offerId: offer.id,
+    mode,
+    isOnboarding,
+    isOfferExposureEnabled,
+    currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
+    followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+  })
+  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
+    useFormNavigationGuard({
+      afterSubmitPath,
+      form,
+      onSubmit: updateOffer,
+    })
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -122,20 +143,16 @@ export const IndividualOfferLocationScreen = ({
     <>
       {isUpdateWarningDialogOpen && (
         <UpdateWarningDialog
-          onCancel={() => setIsUpdateWarningDialogOpen(false)}
+          onCancel={() => updateWarningDialogDeferredCallRef.current?.(null)}
           onConfirm={(shouldSendMail) =>
-            form.handleSubmit((formValues) =>
-              updateOffer(formValues, shouldSendMail)
-            )()
+            updateWarningDialogDeferredCallRef.current?.(shouldSendMail)
           }
           refToFocusOnClose={saveEditionChangesButtonRef}
         />
       )}
 
       <FormProvider key={JSON.stringify(initialValues)} {...form}>
-        <form
-          onSubmit={form.handleSubmit((formValues) => updateOffer(formValues))}
-        >
+        <form onSubmit={navigationGuardedSubmitHandler}>
           <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout fullWidthActions>
@@ -160,9 +177,8 @@ export const IndividualOfferLocationScreen = ({
           />
         </form>
       </FormProvider>
-      <RouteLeavingGuardIndividualOffer
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </>
   )
 }
