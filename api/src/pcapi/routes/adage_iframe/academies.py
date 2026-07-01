@@ -1,3 +1,4 @@
+from pcapi.core.educational.academies import ACADEMIES
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import academies
@@ -11,4 +12,4 @@ from pcapi.utils.transaction_manager import atomic
 @adage_jwt_required
 @spectree_serialize(response_model=academies.AcademiesResponseModel, api=blueprint.api)
 def get_academies(authenticated_information: AuthenticatedInformation) -> academies.AcademiesResponseModel:
-    return academies.AcademiesResponseModel.build()
+    return academies.AcademiesResponseModel(list(ACADEMIES))
