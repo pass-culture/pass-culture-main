@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
@@ -58,6 +59,14 @@ function renderAdditionalFeesForm({
 }
 
 describe('AdditionalFeesForm', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAdditionalFeesForm({
+      initialValues: { hasAdditionalFees: false, additionalFees: [] },
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should not display additional fees fields when hasAdditionalFees is false', () => {
     renderAdditionalFeesForm({
       initialValues: { hasAdditionalFees: false, additionalFees: [] },

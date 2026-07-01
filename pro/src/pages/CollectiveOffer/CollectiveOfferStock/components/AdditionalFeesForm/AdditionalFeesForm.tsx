@@ -95,6 +95,8 @@ export const AdditionalFeesForm = ({
 
   function removeAdditionalFeesFieldEntry(index: number) {
     remove(index)
+    const indexToFocus = index > 0 ? index - 1 : 0
+    form.setFocus(`additionalFees.${indexToFocus}.amount`)
   }
 
   // We need to force dirty field evaluation at render
