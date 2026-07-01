@@ -1,12 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferPriceSection } from '../CollectiveOfferPriceSection'
 
 describe('CollectiveOfferPriceSection', () => {
   it('should display the price detail', async () => {
-    render(
+    renderWithProviders(
       <CollectiveOfferPriceSection
         offer={{
           ...getCollectiveOfferTemplateFactory(),
@@ -14,7 +15,7 @@ describe('CollectiveOfferPriceSection', () => {
         }}
       />
     )
-    expect(await screen.findByText('Prix')).toBeInTheDocument()
-    expect(screen.getByText('Le détail du prix')).toBeInTheDocument()
+    expect(await screen.findByText('Prix')).toBeVisible()
+    expect(screen.getByText('Le détail du prix')).toBeVisible()
   })
 })

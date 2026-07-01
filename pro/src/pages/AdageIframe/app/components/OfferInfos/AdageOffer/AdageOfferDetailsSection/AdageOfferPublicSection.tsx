@@ -2,6 +2,8 @@ import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
 import styles from '../AdageOffer.module.scss'
 
@@ -39,6 +41,12 @@ export function AdageOfferPublicSection({
 
   const a11yLevels = getAccessibilityLevels(offer)
 
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
+
+  const isOfferBookable = isCollectiveOfferBookable(offer)
+
   return (
     <>
       {studentLevels.length > 0 && (
@@ -62,6 +70,18 @@ export function AdageOfferPublicSection({
             </ul>
           ) : (
             studentLevels[0]
+          )}
+        </div>
+      )}
+
+      {isNewCollectivePriceEnabled && isOfferBookable && (
+        <div className={styles['offer-section-group-item']}>
+          <h3 className={styles['offer-section-group-item-subtitle']}>
+            Nombre de participants
+          </h3>
+          <p>{offer.stock.numberOfTickets} élèves</p>
+          {!!offer.stock.numberOfTeachers && (
+            <p>{offer.stock.numberOfTeachers} accompagnateurs</p>
           )}
         </div>
       )}

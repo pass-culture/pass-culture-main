@@ -4,6 +4,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeLocationIcon from '@/icons/stroke-location.svg'
@@ -38,6 +39,9 @@ export function AdageOfferHeader({
   playlistId,
 }: AdageOfferHeaderProps) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
 
@@ -114,7 +118,9 @@ export function AdageOfferHeader({
           {isOfferBookable && (
             <li className={styles['offer-header-details-info']}>
               <SvgIcon src={strokeEuroIcon} alt="" width="16" />
-              <span>{getBookableOfferStockPrice(offer)}</span>
+              <span>
+                {getBookableOfferStockPrice(offer, isNewCollectivePriceEnabled)}
+              </span>
             </li>
           )}
 

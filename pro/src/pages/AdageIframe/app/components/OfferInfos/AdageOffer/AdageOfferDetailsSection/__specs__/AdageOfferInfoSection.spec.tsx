@@ -1,7 +1,11 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
-import { CollectiveLocationType } from '@/apiClient/adage'
+import {
+  CollectiveAdditionalFeeType,
+  CollectiveLocationType,
+} from '@/apiClient/adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
@@ -16,6 +20,10 @@ import {
   type AdageOfferInfoSectionProps,
 } from '../AdageOfferInfoSection'
 
+vi.mock('@/commons/hooks/useActiveFeature', () => ({
+  useActiveFeature: vi.fn(),
+}))
+
 function renderAdageOfferInfoSection(
   props: AdageOfferInfoSectionProps = {
     offer: defaultCollectiveTemplateOffer,
@@ -26,6 +34,9 @@ function renderAdageOfferInfoSection(
 }
 
 describe('AdageOfferInfoSection', () => {
+  beforeEach(() => {
+    vi.mocked(useActiveFeature).mockReturnValue(false)
+  })
   it('should display the offer price details', () => {
     renderAdageOfferInfoSection({
       offer: {
@@ -36,8 +47,8 @@ describe('AdageOfferInfoSection', () => {
 
     expect(
       screen.getByRole('heading', { name: 'Information sur le prix' })
-    ).toBeInTheDocument()
-    expect(screen.getByText('The detail of the price')).toBeInTheDocument()
+    ).toBeVisible()
+    expect(screen.getByText('The detail of the price')).toBeVisible()
   })
 
   it('should display the offer price details for a bookable offer', () => {
@@ -52,10 +63,8 @@ describe('AdageOfferInfoSection', () => {
       },
     })
 
-    expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
-    expect(
-      screen.getByText('Price details for bookable offer')
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Prix' })).toBeVisible()
+    expect(screen.getByText('Price details for bookable offer')).toBeVisible()
   })
 
   it('should not display the price details section if the offer has no price details', () => {
@@ -82,9 +91,9 @@ describe('AdageOfferInfoSection', () => {
       screen.queryByRole('heading', { name: 'Information sur le prix' })
     ).not.toBeInTheDocument()
 
-    expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Prix' })).toBeVisible()
 
-    expect(screen.getByText('1 400 € pour 10 participants')).toBeInTheDocument()
+    expect(screen.getByText('1 400 € pour 10 participants')).toBeVisible()
   })
 
   it('should display the right address when location type is address', () => {
@@ -110,7 +119,7 @@ describe('AdageOfferInfoSection', () => {
 
     expect(
       screen.getByText('Label - 123 Rue de Meaux, 75000, Paris')
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should display the right wording when location type is to be defined', () => {
@@ -124,11 +133,9 @@ describe('AdageOfferInfoSection', () => {
       },
     })
 
-    expect(
-      screen.getByText('À déterminer avec l’enseignant')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Commentaire')).toBeInTheDocument()
-    expect(screen.getByText('Test comment section')).toBeInTheDocument()
+    expect(screen.getByText('À déterminer avec l’enseignant')).toBeVisible()
+    expect(screen.getByText('Commentaire')).toBeVisible()
+    expect(screen.getByText('Test comment section')).toBeVisible()
   })
 
   it.each([
@@ -145,9 +152,7 @@ describe('AdageOfferInfoSection', () => {
       },
     })
 
-    expect(
-      screen.getByText('À déterminer avec l’enseignant')
-    ).toBeInTheDocument()
+    expect(screen.getByText('À déterminer avec l’enseignant')).toBeVisible()
     expect(screen.queryByText('Commentaire')).toBeNull()
   })
 
@@ -165,7 +170,7 @@ describe('AdageOfferInfoSection', () => {
       screen.getByText(
         'Le partenaire culturel se déplace dans les établissements scolaires.'
       )
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should not display dash when address has no label', () => {
@@ -189,8 +194,98 @@ describe('AdageOfferInfoSection', () => {
       },
     })
 
-    expect(
-      screen.getByText('123 Rue de Meaux, 75000, Paris')
-    ).toBeInTheDocument()
+    expect(screen.getByText('123 Rue de Meaux, 75000, Paris')).toBeVisible()
+  })
+
+  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
+    beforeEach(() => {
+      vi.mocked(useActiveFeature).mockReturnValue(true)
+    })
+
+    it('should display total price TTC only when no additional fees', () => {
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            price: 10000,
+            servicePrice: 10000,
+            collectiveAdditionalFees: [],
+          },
+        },
+      })
+
+      expect(screen.getByText(/Prix total TTC/)).toBeVisible()
+      expect(
+        screen.queryByText(/Dont le tarif de la prestation/)
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/Dont les frais annexes/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display price breakdown when additional fees exist', () => {
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            price: 14500,
+            servicePrice: 10000,
+            collectiveAdditionalFees: [
+              {
+                type: CollectiveAdditionalFeeType.TRAVEL,
+                label: 'Transport',
+                amount: 3000,
+              },
+              {
+                type: CollectiveAdditionalFeeType.MEAL,
+                label: 'Meal',
+                amount: 1500,
+              },
+            ],
+          },
+        },
+      })
+
+      expect(screen.getByText(/Prix total TTC/)).toBeVisible()
+      expect(screen.getByText(/Dont le tarif de la prestation/)).toBeVisible()
+      expect(screen.getByText(/Dont les frais annexes/)).toBeVisible()
+      expect(screen.getByText(/Transport/)).toBeVisible()
+      expect(screen.getByText(/Meal/)).toBeVisible()
+    })
+
+    it('should display informations pratiques section when educationalPriceDetail exists', () => {
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            educationalPriceDetail: "Détail pratique de l'offre",
+          },
+        },
+      })
+
+      expect(
+        screen.getByRole('heading', { name: 'Informations pratiques' })
+      ).toBeVisible()
+      expect(screen.getByText("Détail pratique de l'offre")).toBeVisible()
+    })
+
+    it('should not display informations pratiques section when educationalPriceDetail is absent', () => {
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveOffer,
+          stock: {
+            ...defaultCollectiveOffer.stock,
+            educationalPriceDetail: undefined,
+          },
+        },
+      })
+
+      expect(
+        screen.queryByRole('heading', { name: 'Informations pratiques' })
+      ).not.toBeInTheDocument()
+    })
   })
 })
