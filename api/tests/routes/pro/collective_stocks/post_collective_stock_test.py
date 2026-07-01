@@ -180,7 +180,7 @@ class Return400Test:
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être négatif."]}
+        assert response.json == {"numberOfTickets": ["Saisissez un nombre supérieur ou égal à 0"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_price_to_be_negative_on_creation(self, client):
@@ -195,7 +195,7 @@ class Return400Test:
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"price": ["Le prix ne peut pas être négatif."]}
+        assert response.json == {"price": ["Saisissez un nombre supérieur ou égal à 0"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_price_to_be_too_high(self, client):
@@ -210,7 +210,7 @@ class Return400Test:
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"price": ["Le prix est trop élevé."]}
+        assert response.json == {"price": [f"Saisissez un nombre inférieur ou égal à {settings.EAC_OFFER_PRICE_LIMIT}"]}
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_too_many_tickets(self, client):
@@ -225,7 +225,9 @@ class Return400Test:
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
-        assert response.json == {"numberOfTickets": ["Le nombre de places est trop élevé."]}
+        assert response.json == {
+            "numberOfTickets": [f"Saisissez un nombre inférieur ou égal à {settings.EAC_NUMBER_OF_TICKETS_LIMIT}"]
+        }
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
@@ -583,7 +585,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
                 },
-                {"price": ["Le prix est trop élevé."]},
+                {"price": [f"Saisissez un nombre inférieur ou égal à {settings.EAC_OFFER_PRICE_LIMIT}"]},
             ),
         ),
     )
