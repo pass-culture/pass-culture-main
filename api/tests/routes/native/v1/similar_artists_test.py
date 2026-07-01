@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.artist.factories as artist_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi import settings
 from pcapi.core.testing import assert_num_queries
 
 
@@ -56,6 +57,24 @@ class GetSimilarArtistsTest:
                 {"id": second.id, "name": second.name, "image": second.thumbUrl},
             ]
         }
+
+    def test_similar_artist_image_uses_bucket_url_when_mediation_uuid_is_set(self, client, requests_mock):
+        similar = artist_factories.ArtistFactory(name="Similar", mediation_uuid="some-mediation-uuid")
+        _link_artist_to_bookable_offer(similar)
+        source_id = "00000000-0000-0000-0000-000000000001"
+
+        requests_mock.get(
+            DS_SIMILAR_ARTISTS_URL.format(artist_id=source_id),
+            content=_ds_response([similar.id]),
+        )
+
+        with assert_num_queries(1):
+            response = client.get(f"/native/v1/artists/{source_id}/similar")
+
+        assert response.status_code == 200
+        expected_url = f"{settings.OBJECT_STORAGE_URL}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{similar.mediation_uuid}"
+        assert response.json["artists"][0]["image"] == expected_url
+        assert response.json["artists"][0]["image"] != similar.image
 
     def test_skips_blacklisted_similar(self, client, requests_mock):
         blacklisted = artist_factories.ArtistFactory(is_blacklisted=True)

@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.artist.factories as artist_factories
+from pcapi import settings
 from pcapi.core.testing import assert_num_queries
 
 
@@ -20,6 +21,30 @@ class GetArtistsTest:
         assert response.json["id"] == artist.id
         assert response.json["name"] == artist.name
         assert response.json["description"] == artist.description
+        assert response.json["image"] == artist.image
+
+    def test_get_artist_image_uses_bucket_url_when_mediation_uuid_is_set(self, client):
+        artist = artist_factories.ArtistFactory(mediation_uuid="some-mediation-uuid")
+
+        artist_id = artist.id
+        nb_queries = 1  # artist
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v1/artists/{artist_id}")
+
+        assert response.status_code == 200
+        expected_url = f"{settings.OBJECT_STORAGE_URL}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{artist.mediation_uuid}"
+        assert response.json["image"] == expected_url
+        assert response.json["image"] != artist.image
+
+    def test_get_artist_image_falls_back_to_image_when_mediation_uuid_is_none(self, client):
+        artist = artist_factories.ArtistFactory(mediation_uuid=None)
+
+        artist_id = artist.id
+        nb_queries = 1  # artist
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v1/artists/{artist_id}")
+
+        assert response.status_code == 200
         assert response.json["image"] == artist.image
 
     def test_get_artist_with_none_fields(self, client):

@@ -620,6 +620,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                     artist_models.Artist.image,
                     artist_models.Artist.is_blacklisted,
                     artist_models.Artist.computed_image,
+                    artist_models.Artist.mediation_uuid,
                 )
             )
         )
@@ -632,6 +633,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 artist_models.Artist.image,
                 artist_models.Artist.is_blacklisted,
                 artist_models.Artist.computed_image,
+                artist_models.Artist.mediation_uuid,
             )
         )
     )
