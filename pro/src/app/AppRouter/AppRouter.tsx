@@ -10,6 +10,7 @@ import { noop } from '@/commons/utils/noop'
 import { ErrorBoundary } from './ErrorBoundary'
 import { redirectedRoutes } from './redirectedRoutes'
 import type { CustomRouteOrphan } from './types'
+import { filterRoutesByActiveFeatures } from './utils/filterRoutesByActiveFeatures'
 
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
@@ -17,16 +18,8 @@ const sentryCreateBrowserRouter =
 export const AppRouter = () => {
   const activeFeatures = useAppSelector(selectActiveFeatures)
 
-  const activeRoutes = routes
-    .filter(
-      (route) =>
-        !route.disabledWithFeatureName ||
-        !activeFeatures.includes(route.disabledWithFeatureName)
-    )
-    .filter(
-      (route) =>
-        !route.featureName || activeFeatures.includes(route.featureName)
-    )
+  const activeRoutes = filterRoutesByActiveFeatures(routes, activeFeatures)
+
   const activeRedirections = redirectedRoutes.filter(
     (route) => !route.featureName || activeFeatures.includes(route.featureName)
   )
