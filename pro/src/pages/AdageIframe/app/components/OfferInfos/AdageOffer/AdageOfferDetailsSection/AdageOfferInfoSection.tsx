@@ -61,8 +61,7 @@ export const AdageOfferInfoSection = ({
         </div>
       ) : null}
 
-      {offer.location &&
-        offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED &&
+      {offer.location?.locationType === CollectiveLocationType.TO_BE_DEFINED &&
         offer.location.locationComment && (
           <div className={styles['offer-section-group-item']}>
             <h3 className={styles['offer-section-group-item-subtitle']}>
