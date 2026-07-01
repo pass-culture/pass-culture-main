@@ -16,13 +16,14 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
-import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
+import { getAfterSubmitPath } from '@/pages/IndividualOffer/commons/utils/getAfterSubmitPath'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import { Divider } from '@/ui-kit/Divider/Divider'
@@ -89,99 +90,104 @@ export const IndividualOfferMediaScreen = ({
     }
   }
 
-  const onSubmit = async () => {
+  const onSubmit = async (): Promise<boolean> => {
     // If only videoUrl was updated, there is an inner control on the
     // definition of handleImageOnSubmit so thumbnail associated requests cannot be made
     // if hasUpsertedImage=false.
+    if (!isFormDirty) {
+      return true
+    }
 
-    if (isFormDirty) {
-      // Images can never be uploaded for product-based offers,
-      // the drag & drop should not be enabled so this is a safeguard.
-      if (!isProductBased) {
-        try {
-          await mutate(
-            [GET_OFFER_QUERY_KEY, offer.id],
-            handleImageOnSubmit(offer.id),
-            {
-              revalidate: false,
-              populateCache: (thumbnailResult, offer) => {
-                // If defined, the result comes from a thumbnail
-                // creation. Otherwise, its a result from a deletion.
-                // FIXME: in cache we update both offer.activeMediation and offer.thumbUrl
-                // properties, depending on the type of offer, one or another is actually updated
-                // (aka. getIndividualOfferImage) but we'd like an unique way to store this information.
-                if (thumbnailResult) {
-                  return {
-                    ...(offer || {}),
-                    thumbUrl: thumbnailResult.url,
-                    activeMediation: {
-                      ...(offer?.activeMediation || {}),
-                      thumbUrl: thumbnailResult.url,
-                      credit: thumbnailResult.credit,
-                    },
-                  }
-                } else {
-                  return {
-                    ...(offer || {}),
-                    thumbUrl: '',
-                    activeMediation: {
-                      ...(offer?.activeMediation || {}),
-                      thumbUrl: '',
-                      credit: '',
-                    },
-                  }
-                }
-              },
-            }
-          )
-        } catch (error) {
-          snackBar.error(
-            getHumanReadableApiError(
-              error,
-              'Une erreur est survenue lors de l’enregistrement de votre image'
-            )
-          )
-          return
-        }
-      }
-      if (hasUpdatedVideoUrl) {
-        try {
-          await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
+    // Images can never be uploaded for product-based offers,
+    // the drag & drop should not be enabled so this is a safeguard.
+    if (!isProductBased) {
+      try {
+        await mutate(
+          [GET_OFFER_QUERY_KEY, offer.id],
+          handleImageOnSubmit(offer.id),
+          {
             revalidate: false,
-          })
-        } catch (error) {
-          snackBar.error(
-            getHumanReadableApiError(
-              error,
-              'Une erreur est survenue lors de l’enregistrement de votre vidéo'
-            )
+            populateCache: (thumbnailResult, offer) => {
+              // If defined, the result comes from a thumbnail
+              // creation. Otherwise, its a result from a deletion.
+              // FIXME: in cache we update both offer.activeMediation and offer.thumbUrl
+              // properties, depending on the type of offer, one or another is actually updated
+              // (aka. getIndividualOfferImage) but we'd like an unique way to store this information.
+              if (thumbnailResult) {
+                return {
+                  ...(offer || {}),
+                  thumbUrl: thumbnailResult.url,
+                  activeMediation: {
+                    ...(offer?.activeMediation || {}),
+                    thumbUrl: thumbnailResult.url,
+                    credit: thumbnailResult.credit,
+                  },
+                }
+              } else {
+                return {
+                  ...(offer || {}),
+                  thumbUrl: '',
+                  activeMediation: {
+                    ...(offer?.activeMediation || {}),
+                    thumbUrl: '',
+                    credit: '',
+                  },
+                }
+              }
+            },
+          }
+        )
+      } catch (error) {
+        snackBar.error(
+          getHumanReadableApiError(
+            error,
+            'Une erreur est survenue lors de l’enregistrement de votre image'
           )
-          return
-        }
+        )
+        return false
       }
     }
 
-    let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-    if (mode !== OFFER_WIZARD_MODE.EDITION) {
-      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+    if (hasUpdatedVideoUrl) {
+      try {
+        await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
+          revalidate: false,
+        })
+      } catch (error) {
+        snackBar.error(
+          getHumanReadableApiError(
+            error,
+            'Une erreur est survenue lors de l’enregistrement de votre vidéo'
+          )
+        )
+
+        return false
+      }
     }
 
     if (isOfferExposureEnabled && mode === OFFER_WIZARD_MODE.EDITION) {
       snackBar.success('Votre offre a bien été modifiée.')
     }
-    if (!isOfferExposureEnabled || mode === OFFER_WIZARD_MODE.CREATION)
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-          isOnboarding,
-        })
-      )
+
+    return true
   }
+
+  const afterSubmitPath = () =>
+    getAfterSubmitPath({
+      offerId: offer.id,
+      mode,
+      isOnboarding,
+      isOfferExposureEnabled,
+      currentStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+      followingStep: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+    })
+  const { navigationGuardedSubmitHandler, navigationGuardDialog } =
+    useFormNavigationGuard({
+      afterSubmitPath,
+      form,
+      isExternallyDirty: isFormDirty,
+      onSubmit,
+    })
 
   const logOnImageDropOrSelected = () => {
     logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
@@ -191,54 +197,55 @@ export const IndividualOfferMediaScreen = ({
   }
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormLayout>
-          <FormLayout.Section title="Illustrez votre offre">
-            <FormLayout.Row inline className={styles['media-row']}>
-              <FormLayout.SubSection
-                title="Ajoutez une image"
-                className={styles['media-sub-section']}
-              >
-                <ImageDragAndDropUploader
-                  onImageUpload={onImageUpload}
-                  onImageDelete={onImageDelete}
-                  initialValues={buildInitialValues(displayedImage)}
-                  mode={UploaderModeEnum.OFFER}
-                  onImageDropOrSelected={logOnImageDropOrSelected}
-                  hideActionButtons={isProductBased}
-                  disabled={isProductBased}
+    <>
+      <FormProvider {...form}>
+        <form onSubmit={navigationGuardedSubmitHandler}>
+          <FormLayout>
+            <FormLayout.Section title="Illustrez votre offre">
+              <FormLayout.Row inline className={styles['media-row']}>
+                <FormLayout.SubSection
+                  title="Ajoutez une image"
+                  className={styles['media-sub-section']}
+                >
+                  <ImageDragAndDropUploader
+                    onImageUpload={onImageUpload}
+                    onImageDelete={onImageDelete}
+                    initialValues={buildInitialValues(displayedImage)}
+                    mode={UploaderModeEnum.OFFER}
+                    onImageDropOrSelected={logOnImageDropOrSelected}
+                    hideActionButtons={isProductBased}
+                    disabled={isProductBased}
+                  />
+                </FormLayout.SubSection>
+                <Divider
+                  orientation="vertical"
+                  className={styles['media-divider']}
                 />
-              </FormLayout.SubSection>
-              <Divider
-                orientation="vertical"
-                className={styles['media-divider']}
-              />
-              <FormLayout.SubSection
-                title="Ajoutez une vidéo"
-                className={styles['media-sub-section']}
-              >
-                <VideoUploader />
-                {!videoData?.videoThumbnailUrl && <VideoUploaderTips />}
-              </FormLayout.SubSection>
-            </FormLayout.Row>
-          </FormLayout.Section>
-        </FormLayout>
-        <ActionBar
-          onClickPrevious={handlePreviousStep}
-          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
-          isDisabled={
-            form.formState.isSubmitting ||
-            isOfferDisabled(offer) ||
-            (isOfferExposureEnabled &&
-              !isFormDirty &&
-              mode !== OFFER_WIZARD_MODE.CREATION)
-          }
-        />
-        <RouteLeavingGuardIndividualOffer
-          when={isFormDirty && !form.formState.isSubmitting}
-        />
-      </form>
-    </FormProvider>
+                <FormLayout.SubSection
+                  title="Ajoutez une vidéo"
+                  className={styles['media-sub-section']}
+                >
+                  <VideoUploader />
+                  {!videoData?.videoThumbnailUrl && <VideoUploaderTips />}
+                </FormLayout.SubSection>
+              </FormLayout.Row>
+            </FormLayout.Section>
+          </FormLayout>
+          <ActionBar
+            onClickPrevious={handlePreviousStep}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
+            isDisabled={
+              form.formState.isSubmitting ||
+              isOfferDisabled(offer) ||
+              (isOfferExposureEnabled &&
+                !isFormDirty &&
+                mode !== OFFER_WIZARD_MODE.CREATION)
+            }
+          />
+        </form>
+      </FormProvider>
+
+      {navigationGuardDialog}
+    </>
   )
 }

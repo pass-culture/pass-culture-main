@@ -124,6 +124,45 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     ).toBeInTheDocument()
   })
 
+  it('should save and navigate to the next step after confirming the warning dialog', async () => {
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
+
+    renderIndividualOfferPracticalInfosScreen({
+      offer: getIndividualOfferFactory({
+        withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
+        withdrawalDelay: 10,
+        withdrawalDetails: 'test',
+        hasPendingBookings: true,
+        subcategoryId: SubcategoryIdEnum.CONCERT,
+        bookingContact: 'test@test.co',
+      }),
+    })
+
+    await waitFor(() => {
+      screen.getByRole('heading', { name: LABELS.heading })
+    })
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Retrait sur place (guichet, comptoir...)',
+      })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: LABELS.saveButton })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je confirme le changement' })
+    )
+
+    await waitFor(() => {
+      expect(api.patchOffer).toHaveBeenCalled()
+    })
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining('/creation/recapitulatif')
+    )
+  })
+
   it('should update the offer when submitting the form', async () => {
     renderIndividualOfferPracticalInfosScreen()
 
