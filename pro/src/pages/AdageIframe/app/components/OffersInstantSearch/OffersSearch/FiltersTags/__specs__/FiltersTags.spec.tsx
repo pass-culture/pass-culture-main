@@ -144,7 +144,7 @@ describe('FiltersTag', () => {
     )
   })
 
-  it('should display domain label in tag', () => {
+  it('should display academies label in tag', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
       academies: ['Amiens', 'Paris'],
@@ -154,7 +154,7 @@ describe('FiltersTag', () => {
     expect(screen.getByText('Paris')).toBeInTheDocument()
   })
 
-  it('should remove domain tag on click', async () => {
+  it('should remove academy tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
       academies: ['Paris'],

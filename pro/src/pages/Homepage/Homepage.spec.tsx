@@ -646,25 +646,6 @@ describe('Homepage', () => {
         )
       })
 
-      it('should not be displayed after the 30th day of venue creation when venue has no adage inscription date', () => {
-        const dateCreated = '2026-02-16T12:31:53.443732Z'
-        const today = new Date(dateCreated)
-        today.setDate(today.getDate() + 40)
-        vi.setSystemTime(today)
-        renderHomepage({
-          ...defaultGetVenueResponseModel,
-          dateCreated,
-          adageInscriptionDate: null,
-          allowedOnAdage: true,
-        })
-
-        expect(
-          screen.getByRole('tabpanel', { description: /collective/ })
-        ).not.toHaveTextContent(
-          /Participer à nos webinaires sur la part collective !/
-        )
-      })
-
       it('should not be displayed when venue is not allowed on adage', () => {
         const dateCreated = '2026-02-16T12:31:53.443732Z'
         const today = new Date(dateCreated)

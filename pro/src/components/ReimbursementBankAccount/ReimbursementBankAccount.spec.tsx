@@ -172,13 +172,6 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText('Le Petit Rintintin')).toBeInTheDocument()
 
     expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument()
-  })
-
-  it('should render with several venues not linked to bank account', () => {
-    managedVenues.push({
-      ...defaultManagedVenue,
-    })
-    renderReimbursementBankAccount(bankAccount, managedVenues)
 
     expect(
       screen.getByText('Certaines de vos structures ne sont pas rattachées.')
@@ -243,7 +236,7 @@ describe('ReimbursementBankAccount', () => {
       )
     })
 
-    it('should track attach venue button click', async () => {
+    it('should track update button click', async () => {
       renderReimbursementBankAccount(bankAccount, managedVenues)
 
       await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))

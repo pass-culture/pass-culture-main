@@ -35,7 +35,7 @@ describe('ReSendEmailCallout', () => {
     expect(screen.getByText('Email envoyé.')).toBeInTheDocument()
   })
 
-  it('should display a notification on action success', async () => {
+  it('should display an error on action failure', async () => {
     renderComponent(
       () =>
         new CancelablePromise<void>((_resolve, reject) =>
