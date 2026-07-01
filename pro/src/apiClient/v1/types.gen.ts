@@ -4941,10 +4941,6 @@ export type PatchCollectiveOfferBodyModel = {
      */
     students?: Array<StudentLevels> | null;
     /**
-     * Venueid
-     */
-    venueId?: number | null;
-    /**
      * Visualdisabilitycompliant
      */
     visualDisabilityCompliant?: boolean | null;
@@ -5035,10 +5031,6 @@ export type PatchCollectiveOfferTemplateBodyModel = {
      * Students
      */
     students?: Array<StudentLevels> | null;
-    /**
-     * Venueid
-     */
-    venueId?: number | null;
     /**
      * Visualdisabilitycompliant
      */

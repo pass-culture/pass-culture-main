@@ -602,7 +602,6 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
     duration_minutes: int | None = None
     domains: list[int] | None = pydantic_v2.Field(min_length=1, default=None)
     intervention_area: typing.Annotated[list[str] | None, pydantic_v2.AfterValidator(validate_intervention_area)] = None
-    venue_id: int | None = None
     national_program_id: int | None = None
     formats: list[EacFormat] | None = pydantic_v2.Field(min_length=1, default=None)
     additional_details: str | None = pydantic_v2.Field(
@@ -617,7 +616,6 @@ class PatchCollectiveOfferBodyModel(HttpBodyModel):
         "location",
         "domains",
         "intervention_area",
-        "venue_id",
         "formats",
     )
 

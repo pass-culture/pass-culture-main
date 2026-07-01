@@ -382,38 +382,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
 
-    def test_location_change_venue(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        # offer is located at the address of its venue
-        offer_ctx.offer.locationType = models.CollectiveLocationType.ADDRESS
-        offer_ctx.offer.offererAddress = offer_ctx.venue.offererAddress
-
-        # we change offer.venue and set the location to the new venue address
-        other_venue = offerers_factories.VenueFactory(managingOfferer=offer_ctx.venue.managingOfferer)
-        payload = {
-            "venueId": other_venue.id,
-            "location": {
-                "locationType": models.CollectiveLocationType.ADDRESS.value,
-                "locationComment": None,
-                "location": {"isVenueLocation": True},
-            },
-        }
-        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 200
-        offer = (
-            db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
-        )
-        assert offer.venueId == other_venue.id
-        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
-        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.label == None
-        assert offer.locationType == models.CollectiveLocationType.ADDRESS
-        assert offer.locationComment is None
-
     def test_national_program_unchanged(self, client):
         program = factories.NationalProgramFactory()
         offer_ctx = build_offer_context(offer_kwargs={"nationalProgram": program})
@@ -983,19 +951,6 @@ class Returns403Test:
         assert offer.name == previous_name
         assert offer.description == previous_description
 
-    def test_replacing_venue_with_different_offerer(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        unrelated_venue = offerers_factories.VenueFactory()
-        data = {"venueId": unrelated_venue.id}
-        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
-
-        assert response.status_code == 403
-        assert response.json == {"venueId": "New venue needs to have the same offerer"}
-
     def test_cultural_partner_not_found(self, client):
         offer_ctx = build_offer_context()
 
@@ -1043,15 +998,3 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
-
-    def test_replacing_by_unknown_venue(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        data = {"venueId": 0}
-        response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

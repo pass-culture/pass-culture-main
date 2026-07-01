@@ -10,8 +10,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing
 from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
-from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
@@ -165,20 +163,6 @@ class Returns200Test:
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
 
-    def test_update_venue_both_offer_and_booking(self, auth_client, venue, other_related_venue):
-        offer = factories.CollectiveOfferFactory(venue=other_related_venue)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        booking = factories.PendingCollectiveBookingFactory(venue=other_related_venue, collectiveStock=stock)
-
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
-        assert response.status_code == 200
-
-        db.session.refresh(offer)
-        db.session.refresh(booking)
-
-        assert offer.venueId == venue.id
-        assert booking.venueId == venue.id
-
     @pytest.mark.parametrize("status", testing.STATUSES_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_allowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -295,38 +279,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
-
-    def test_location_change_venue(self, client):
-        # offer is located at the address of its venue
-        venue = offerers_factories.VenueFactory()
-        offer = factories.CollectiveOfferFactory(
-            venue=venue, locationType=models.CollectiveLocationType.ADDRESS, offererAddress=venue.offererAddress
-        )
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        # we change offer.venue and set the location to the new venue address
-        other_venue = offerers_factories.VenueFactory(
-            managingOfferer=offer.venue.managingOfferer, pricing_point=offer.venue
-        )
-        data = {
-            "venueId": other_venue.id,
-            "location": {
-                "locationType": models.CollectiveLocationType.ADDRESS.value,
-                "locationComment": None,
-                "location": {"isVenueLocation": True},
-            },
-        }
-        response = client.with_session_auth("user@example.com").patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 200
-        offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
-
-        assert offer.venueId == other_venue.id
-        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
-        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.label == None
-        assert offer.locationType == models.CollectiveLocationType.ADDRESS
-        assert offer.locationComment is None
 
     def test_national_program_unchanged(self, client):
         program = factories.NationalProgramFactory()
@@ -610,24 +562,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"bookingEmails": ["Cette liste doit avoir une taille minimum de 1"]}
 
-    def test_patch_collective_offer_replacing_by_venue_with_no_pricing_point(self, auth_client, venue):
-        offer = factories.PublishedCollectiveOfferFactory(venue=venue)
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": other_venue.id})
-
-        assert response.status_code == 400
-        assert response.json == {"venueId": ["No venue with a pricing point found for the destination venue."]}
-
-    def test_patch_collective_offer_replacing_by_venue_not_eligible(self, auth_client, venue, other_related_venue):
-        offer = factories.PublishedCollectiveOfferFactory(venue=venue)
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": other_venue.id})
-
-        assert response.status_code == 400
-        assert response.json == {"venueId": ["Ce partenaire culturel n'est pas éligible au transfert de l'offre"]}
-
     def test_patch_collective_offer_description_invalid(self, auth_client, venue):
         offer = factories.PublishedCollectiveOfferFactory(venue=venue)
 
@@ -831,58 +765,6 @@ class Returns400Test:
 
 
 class Returns403Test:
-    def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
-        offerer = offerers_factories.OffererFactory()
-        offerer2 = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
-        offer = factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
-        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
-
-        data = {"venueId": venue2.id}
-        client = client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 403
-        assert response.json == {"venueId": "New venue needs to have the same offerer"}
-
-    @pytest.mark.parametrize(
-        "factory",
-        [
-            factories.UsedCollectiveBookingFactory,
-            factories.ReimbursedCollectiveBookingFactory,
-        ],
-    )
-    def test_update_venue_updates_finance_events(self, auth_client, factory, venue, other_related_venue):
-        offer = factories.CollectiveOfferFactory(venue=other_related_venue)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        booking = factory(
-            # we need to set dateUsed to avoid errors when moving the finance event
-            venue=other_related_venue,
-            collectiveStock=stock,
-            dateUsed=datetime(2024, 1, 1),
-        )
-
-        finance_event = finance_factories.FinanceEventFactory(
-            status=finance_models.FinanceEventStatus.READY,
-            collectiveBooking=booking,
-            booking=None,
-            venue=other_related_venue,
-            valueDate=datetime(2024, 1, 1),
-        )
-
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
-
-        assert response.status_code == 403
-
-        db.session.refresh(offer)
-        db.session.refresh(booking)
-        db.session.refresh(finance_event)
-
-        assert offer.venueId == other_related_venue.id
-        assert booking.venueId == other_related_venue.id
-        assert finance_event.venueId == other_related_venue.id
-
     @pytest.mark.parametrize("status", testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS)
     def test_patch_collective_offer_unallowed_action(self, client, status):
         offer = factories.create_collective_offer_by_status(status)
@@ -919,15 +801,6 @@ class Returns403Test:
         db.session.refresh(offer)
         assert offer.name == previous_name
         assert offer.description == previous_description
-
-    def test_update_venue_from_past_stock(self, auth_client, venue, other_related_venue):
-        offer = factories.CollectiveOfferFactory(venue=other_related_venue)
-        factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=datetime(2024, 1, 1))
-
-        response = auth_client.patch(f"/collective/offers/{offer.id}", json={"venueId": venue.id})
-
-        assert response.status_code == 403
-        assert response.json == {"offer": "This collective offer status does not allow editing details"}
 
     def test_edit_collective_offer_with_offerer_unregister_in_adage(self, client):
         offer = factories.CollectiveOfferFactory()
@@ -973,15 +846,3 @@ class Returns404Test:
 
         assert response.status_code == 404
         assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
-
-    def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offerer)
-        offer = factories.CollectiveOfferFactory(venue__managingOfferer=offerer)
-
-        data = {"venueId": 0}
-        client = client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        assert response.status_code == 404
-        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
