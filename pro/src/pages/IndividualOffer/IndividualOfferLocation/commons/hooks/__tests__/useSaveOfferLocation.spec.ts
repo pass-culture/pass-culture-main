@@ -6,10 +6,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { PatchOfferBodyModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import {
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from '@/commons/core/Offers/constants'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -81,22 +78,22 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(toPatchOfferBodyModel).mockReturnValue({})
   })
 
-  it('should save and navigate to Useful Informations (read-only) in EDITION mode, update cache, and set local storage', async () => {
+  it('should save and update the cache in EDITION mode, forwarding shouldSendMail', async () => {
     const requestBody: PatchOfferBodyModel = { shouldSendMail: true }
     vi.mocked(toPatchOfferBodyModel).mockReturnValueOnce(requestBody)
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({
+    const hasSucceeded = await save({
       formValues,
       shouldSendMail: true,
-      closeDialog: () => {},
     })
 
+    expect(hasSucceeded).toBe(true)
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
       offer: offerBase,
       formValues,
@@ -111,18 +108,11 @@ describe('useSaveOfferLocation', () => {
       expect.anything(),
       { revalidate: false }
     )
-    expect(getIndividualOfferUrl).toHaveBeenCalledWith({
-      offerId: offerBase.id,
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
-      isOnboarding: false,
-    })
-    expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(setErrorMock).not.toHaveBeenCalled()
   })
 
-  it('should save and navigate to Media in non-EDITION mode, no cache update, respect onboarding flag, default warningMail=false', async () => {
+  it('should save and update the cache in non-EDITION mode, defaulting shouldSendMail to false', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/onboarding/create-offer',
@@ -130,12 +120,13 @@ describe('useSaveOfferLocation', () => {
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({ formValues, closeDialog: () => {} })
+    const hasSucceeded = await save({ formValues })
 
+    expect(hasSucceeded).toBe(true)
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
       offer: offerBase,
       formValues,
@@ -147,13 +138,6 @@ describe('useSaveOfferLocation', () => {
       expect.anything(),
       { revalidate: false }
     )
-    expect(getIndividualOfferUrl).toHaveBeenCalledWith({
-      offerId: offerBase.id,
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-      mode: OFFER_WIZARD_MODE.CREATION,
-      isOnboarding: true,
-    })
-    expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(setErrorMock).not.toHaveBeenCalled()
   })
@@ -165,11 +149,11 @@ describe('useSaveOfferLocation', () => {
 
     const formValues = makeLocationFormValues({ location: null })
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({ formValues, closeDialog: () => {} })
+    await save({ formValues })
 
     expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
@@ -189,13 +173,12 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(apiError)
     vi.mocked(isErrorAPIError).mockReturnValue(true)
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({
+    await save({
       formValues: makeLocationFormValues({ location: null }),
-      closeDialog: () => {},
     })
 
     expect(setErrorMock).toHaveBeenCalledWith('addressAutocomplete', {
@@ -208,21 +191,19 @@ describe('useSaveOfferLocation', () => {
     expect(navigateMock).not.toHaveBeenCalled()
   })
 
-  it('should show success snackbar and close dialog without navigating in EDITION mode when WIP_OFFER_EXPOSURE is enabled', async () => {
+  it('should show success snackbar without navigating in EDITION mode when WIP_OFFER_EXPOSURE is enabled', async () => {
     vi.mocked(useActiveFeature).mockReturnValue(true)
-    const closeDialogMock = vi.fn()
     const formValues = makeLocationFormValues({ location: null })
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({ formValues, closeDialog: closeDialogMock })
+    await save({ formValues })
 
     expect(notificationMock.success).toHaveBeenCalledWith(
       'Votre offre a bien été modifiée.'
     )
-    expect(closeDialogMock).toHaveBeenCalledOnce()
     expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
   })
@@ -231,13 +212,12 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(new Error('network'))
     vi.mocked(isErrorAPIError).mockReturnValue(false)
 
-    const { saveAndContinue } = useSaveOfferLocation({
+    const { save } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
     })
-    await saveAndContinue({
+    await save({
       formValues: makeLocationFormValues({ location: null }),
-      closeDialog: () => {},
     })
 
     expect(setErrorMock).not.toHaveBeenCalled()

@@ -68,12 +68,6 @@ const DEFAULTS = {
   submitButtonLabel: 'Enregistrer et continuer',
 }
 
-vi.mock('react-router', async () => ({
-  ...(await vi.importActual('react-router')),
-  useNavigate: vi.fn(),
-}))
-const mockNavigate = vi.fn()
-
 const MOCK_DATA = {
   title: 'My super offer',
   description: 'My super description',
@@ -240,16 +234,19 @@ const userFillsEverything = async () => {
 
 describe('<IndividualOfferDescriptionScreen />', () => {
   let contextValue: IndividualOfferContextValues
+  const mockNavigate = vi.fn()
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
+
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
 
     contextValue = individualOfferContextValuesFactory({
       categories: MOCK_DATA.categories,
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
   })
 
   it('should render the component', async () => {
@@ -290,7 +287,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         handleImageOnSubmit: mockHandleImageOnSubmit,
       })
 
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
@@ -431,7 +427,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   it('should submit the form with correct payload', async () => {
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -477,10 +472,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
         visualDisabilityCompliant: true,
       },
     })
-    expect(mockNavigate).toHaveBeenCalledWith(
-      '/offre/individuelle/12/creation/description',
-      { replace: true }
-    )
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
@@ -902,13 +893,8 @@ describe('<IndividualOfferDescriptionScreen />', () => {
           screen.getByText('Votre offre a bien été modifiée.')
         ).toBeInTheDocument()
       })
-      // Only the back-button-fix navigate (replace: true) should be called,
-      // not the navigation to the next/read-only step
-      expect(mockNavigate).toHaveBeenCalledTimes(1)
-      expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining('/edition/description'),
-        { replace: true }
-      )
+
+      expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
 
@@ -1041,10 +1027,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
   })
 
   describe('onboarding', () => {
-    beforeEach(() => {
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    })
-
     it('should display with the lateral bar', async () => {
       renderDetailsScreen({ contextValue })
       await userEvent.click(screen.getByText('Retour'))

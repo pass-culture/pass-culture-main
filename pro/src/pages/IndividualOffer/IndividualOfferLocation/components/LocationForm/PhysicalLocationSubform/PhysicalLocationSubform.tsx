@@ -45,7 +45,7 @@ export const PhysicalLocationSubform = ({
   const setLocationFields = (values: PhysicalAddressSubformValues) => {
     const keys = objectKeys(values)
     for (const key of keys) {
-      setValue(`location.${key}`, values[key])
+      setValue(`location.${key}`, values[key], { shouldDirty: true })
     }
   }
 

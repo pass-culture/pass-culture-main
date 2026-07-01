@@ -104,37 +104,32 @@ describe('useSaveOfferPriceTable', () => {
     vi.mocked(useActiveFeature).mockReturnValueOnce(true)
   })
 
-  it('should early navigate + success when EDITION mode and form not dirty', async () => {
+  it('should not save but return success when EDITION mode and form not dirty', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     vi.mocked(reactRouter.useLocation).mockReturnValue(
       useLocationMockReturnValue
     )
-    const useNavigateMock = vi.fn()
-    vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
 
     const offer = getIndividualOfferFactory({ id: 99, isEvent: false })
 
     const { result } = renderUseSaveOfferPriceTable({ offer })
+
+    let hasSucceeded: boolean | undefined
     await act(async () => {
-      await result.current.saveAndContinue(result.current.form.getValues())
+      hasSucceeded = await result.current.save(result.current.form.getValues())
     })
 
+    expect(hasSucceeded).toBe(true)
     expect(saveNonEventOfferPriceTable).not.toHaveBeenCalled()
     expect(saveEventOfferPriceTable).not.toHaveBeenCalled()
-    // SWR mutate not asserted (real SWR not mocked)
-    expect(useNavigateMock).toHaveBeenCalledWith(
-      expect.stringMatching(`/offre/individuelle/${offer.id}/tarifs$`)
-    )
     expect(snackBarSuccess).toHaveBeenCalled()
   })
 
-  it('should save non-event offer (creation) and navigate to summary', async () => {
+  it('should save non-event offer (creation) and return success', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
       useLocationMockReturnValue
     )
-    const useNavigateMock = vi.fn()
-    vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
 
     const offer = getIndividualOfferFactory({ id: 42, isEvent: false })
 
@@ -147,25 +142,20 @@ describe('useSaveOfferPriceTable', () => {
         isDirty: true,
       }
     })
+    let hasSucceeded: boolean | undefined
     await act(async () => {
-      await result.current.saveAndContinue(result.current.form.getValues())
+      hasSucceeded = await result.current.save(result.current.form.getValues())
     })
 
+    expect(hasSucceeded).toBe(true)
     expect(saveNonEventOfferPriceTable).toHaveBeenCalled()
-    expect(useNavigateMock).toHaveBeenCalledWith(
-      expect.stringMatching(
-        `/offre/individuelle/${offer.id}/creation/informations_pratiques$`
-      )
-    )
   })
 
-  it('should save event offer (creation) and navigate to stocks step', async () => {
+  it('should save event offer (creation) and return success', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
       useLocationMockReturnValue
     )
-    const useNavigateMock = vi.fn()
-    vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
 
     const offer = getIndividualOfferFactory({ id: 5, isEvent: true })
 
@@ -178,23 +168,20 @@ describe('useSaveOfferPriceTable', () => {
         isDirty: true,
       }
     })
+    let hasSucceeded: boolean | undefined
     await act(async () => {
-      await result.current.saveAndContinue(result.current.form.getValues())
+      hasSucceeded = await result.current.save(result.current.form.getValues())
     })
 
+    expect(hasSucceeded).toBe(true)
     expect(saveEventOfferPriceTable).toHaveBeenCalled()
-    expect(useNavigateMock).toHaveBeenCalledWith(
-      '/offre/individuelle/5/creation/horaires'
-    )
   })
 
-  it('should notify error when save functions throw', async () => {
+  it('should notify error and return false when save functions throw', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
       useLocationMockReturnValue
     )
-    const useNavigateMock = vi.fn()
-    vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
     vi.mocked(saveNonEventOfferPriceTable).mockRejectedValueOnce(
       new Error('boom')
     )
@@ -209,17 +196,18 @@ describe('useSaveOfferPriceTable', () => {
         isDirty: true,
       }
     })
+    let hasSucceeded: boolean | undefined
     await act(async () => {
-      await result.current.saveAndContinue(result.current.form.getValues())
+      hasSucceeded = await result.current.save(result.current.form.getValues())
     })
 
+    expect(hasSucceeded).toBe(false)
     expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la mise à jour de votre offre'
     )
-    expect(useNavigateMock).not.toHaveBeenCalled()
   })
 
-  it('should set the form with api error', async () => {
+  it('should set the form with api error and return false', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
       useLocationMockReturnValue
@@ -246,14 +234,16 @@ describe('useSaveOfferPriceTable', () => {
 
     const spyFormSetError = vi.spyOn(result.current.form, 'setError')
 
+    let hasSucceeded: boolean | undefined
     await act(async () => {
       result.current.form.formState = {
         ...result.current.form.formState,
         isDirty: true,
       }
-      await result.current.saveAndContinue(result.current.form.getValues())
+      hasSucceeded = await result.current.save(result.current.form.getValues())
     })
 
+    expect(hasSucceeded).toBe(false)
     expect(spyFormSetError).toHaveBeenCalledWith(
       'priceCategories.0.bookingLimitDatetime',
       {
