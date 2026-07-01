@@ -26,7 +26,9 @@ from pcapi.core.offers import constants
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import titelive_gtl
 from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
@@ -36,6 +38,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
+from pcapi.utils.string import is_canonical_integer
 from pcapi.utils.string import to_camelcase
 
 
@@ -657,6 +660,7 @@ def check_offer_extra_data(
         errors.add_client_error(e)
 
     try:
+        _check_gtl_id_is_allowed(extra_data)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_TYPE, music.MUSIC_TYPES_LABEL_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.MUSIC_SUB_TYPE, music.MUSIC_SUB_TYPES_BY_CODE)
         _check_value_is_allowed(extra_data, ExtraDataFieldEnum.SHOW_TYPE, show.SHOW_TYPES_LABEL_BY_CODE)
@@ -768,12 +772,24 @@ def _check_value_is_allowed(
         return
     if not isinstance(field_value, (str, int)):
         raise exceptions.OfferException({extra_data_field.value: ["should be an int or a string"]})
-    try:
-        music_type_code = int(field_value)
-    except ValueError:
-        raise exceptions.OfferException({extra_data_field.value: ["should be an int or an int string"]})
-    if music_type_code not in allowed_values:
+    # Codes can be negative so we accept a leading "-"
+    if isinstance(field_value, str):
+        if not is_canonical_integer(field_value.removeprefix("-")):
+            raise exceptions.OfferException({extra_data_field.value: ["should be an int or an int string"]})
+        field_value = int(field_value)
+    if field_value not in allowed_values:
         raise exceptions.OfferException({extra_data_field.value: ["should be in allowed values"]})
+
+
+def _check_gtl_id_is_allowed(extra_data: models.OfferExtraData) -> None:
+    field_value = extra_data.get(ExtraDataFieldEnum.GTL_ID.value)
+    if field_value is None:
+        return
+    if not isinstance(field_value, str):
+        raise exceptions.OfferException({ExtraDataFieldEnum.GTL_ID.value: ["should be a string"]})
+    # A gtl_id is valid if it belongs to the Titelive GTL taxonomy or to the music genre mapping
+    if titelive_gtl.get_gtl(field_value) is None and field_value not in providers_constants.MUSIC_SLUG_BY_GTL_ID:
+        raise exceptions.OfferException({ExtraDataFieldEnum.GTL_ID.value: ["should be a valid GTL id"]})
 
 
 def _check_ean_field(ean: str) -> None:
