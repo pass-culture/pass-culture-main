@@ -209,7 +209,6 @@ export const CollectiveOfferStockForm = ({
                 minDate={new Date()}
                 onChange={handleStartDateChange}
                 required
-                requiredIndicator="symbol"
               />
               <DatePicker
                 {...form.register('endDate')}
@@ -218,7 +217,6 @@ export const CollectiveOfferStockForm = ({
                 label={'Date de fin'}
                 minDate={minEndDate}
                 required
-                requiredIndicator="symbol"
               />
               <TimePicker
                 {...form.register('eventTime')}
@@ -226,7 +224,6 @@ export const CollectiveOfferStockForm = ({
                 error={form.formState.errors.eventTime?.message}
                 label={'Horaire de début'}
                 required
-                requiredIndicator="symbol"
               />
             </FormLayout.Row>
           </FormLayout.Section>
@@ -247,7 +244,6 @@ export const CollectiveOfferStockForm = ({
                 }
                 minDate={new Date()}
                 required
-                requiredIndicator="symbol"
               />
             </FormLayout.Row>
           </FormLayout.Section>
@@ -260,7 +256,6 @@ export const CollectiveOfferStockForm = ({
                 icon={strokeCollaborator}
                 label={"Nombre d'élèves"}
                 required
-                requiredIndicator="symbol"
                 type="number"
               />
               <TextInput
@@ -270,7 +265,6 @@ export const CollectiveOfferStockForm = ({
                 icon={strokeCollaborator}
                 label={"Nombre d'accompagnateurs"}
                 required
-                requiredIndicator="symbol"
                 type="number"
               />
             </FormLayout.Row>
@@ -288,7 +282,6 @@ export const CollectiveOfferStockForm = ({
                   label="Tarif de la prestation (en €)"
                   min={0}
                   required
-                  requiredIndicator="symbol"
                   step={0.01}
                   type="number"
                 />
