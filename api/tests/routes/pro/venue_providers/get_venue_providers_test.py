@@ -11,7 +11,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 
 class Returns200Test:
     num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # selecte venue
+    num_queries += 1  # selected venue
     num_queries += 1  # check user has rights on venue
     num_queries += 1  # check a venue_providers exists
 
@@ -52,7 +52,8 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = allocine_venue_provider.venue.id
-        with testing.assert_num_queries(self.num_queries, expire_session=False):
+        num_queries = self.num_queries + 1  # allocine_venue_provider
+        with testing.assert_num_queries(num_queries):
             response = auth_request.get(f"/venues/{venue_id}/venue-providers")
             assert response.status_code == 200
 
