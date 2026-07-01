@@ -10,6 +10,7 @@ import {
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
+import { formatPrice } from '@/commons/utils/formatPrice'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -292,7 +293,14 @@ export const CollectiveOfferStockForm = ({
             </FormLayout.SubSection>
           </FormLayout.Section>
           <FormLayout.Section
-            title={`Prix total de votre offre : ${price}€ TTC`}
+            title={
+              <>
+                Prix total de votre offre :{' '}
+                <span className={styles['collective-offer-stock-price']}>
+                  {formatPrice(price)} TTC
+                </span>
+              </>
+            }
             description="Le prix total de votre offre est calculé en fonction du tarif de la prestation et des potentiels frais annexes indiqués."
           >
             <div></div>
