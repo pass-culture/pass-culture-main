@@ -382,9 +382,11 @@ class AlgoliaSerializationMixin:
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
-        department_code = venue.offererAddress.address.departmentCode
+        venue_department_code = venue.offererAddress.address.departmentCode
 
         coordinates = _get_collective_offer_template_coordinates(collective_offer_template)
+        department_codes = _get_collective_offer_template_department_codes(collective_offer_template)
+        academies = {get_academy_from_department(department) for department in department_codes}
 
         latitude, longitude = (coordinates.latitude, coordinates.longitude) if coordinates is not None else (None, None)
 
@@ -400,13 +402,15 @@ class AlgoliaSerializationMixin:
                     collective_offer_template.locationType.value if collective_offer_template.locationType else None
                 ),
                 "description": remove_stopwords(collective_offer_template.description),
+                "departmentCodes": department_codes,
+                "academies": [academy for academy in academies if academy is not None],
             },
             "offerer": {
                 "name": offerer.name,
             },
             "venue": {
-                "academy": get_academy_from_department(department_code),
-                "departmentCode": department_code,
+                "academy": get_academy_from_department(venue_department_code),
+                "departmentCode": venue_department_code,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
@@ -439,6 +443,16 @@ def _get_collective_offer_template_coordinates(
 
         case educational_models.CollectiveLocationType.ADDRESS:
             return geography_api.get_coordinates(offer)
+
+
+def _get_collective_offer_template_department_codes(offer: educational_models.CollectiveOfferTemplate) -> list[str]:
+    match offer.locationType:
+        case educational_models.CollectiveLocationType.SCHOOL | educational_models.CollectiveLocationType.TO_BE_DEFINED:
+            return offer.interventionArea
+
+        case educational_models.CollectiveLocationType.ADDRESS:
+            assert offer.offererAddress is not None
+            return [offer.offererAddress.address.departmentCode]
 
 
 def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:
