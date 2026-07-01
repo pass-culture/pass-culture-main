@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .title {
   @include fonts.title2;
@@ -36,6 +37,11 @@
 }
 
 .card {
-  width: rem.torem(368px);
-  max-width: 100%;
+  flex: 1 1 100%;
 }
+
+@media (min-width: size.$laptop) {   
+   .card {    
+    flex: 0 0 rem.torem(368px);
+  }
+} 
