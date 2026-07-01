@@ -6,6 +6,7 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from '@/commons/core/OfferEducational/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   isCollectiveInstitutionEditable,
   isCollectiveOfferDetailsEditable,
@@ -14,8 +15,10 @@ import {
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
+import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/ui-kit/SummaryLayout/SummarySubSection'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
@@ -45,6 +48,10 @@ export const CollectiveOfferSummary = ({
   stockEditLink,
   institutionEditLink,
 }: CollectiveOfferSummaryProps) => {
+  const isNewCollectivePriceEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
+  )
+
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   const canEditDetails = isCollectiveOfferDetailsEditable(offer)
@@ -63,55 +70,116 @@ export const CollectiveOfferSummary = ({
             />
           </div>
         )}
-        <SummarySection
-          title="Détails de l’offre"
-          editLink={canEditDetails ? offerEditLink : null}
-        >
-          <CollectiveOfferVenueSection venue={offer.venue} />
-          <CollectiveOfferTypeSection offer={offer} />
-          <CollectiveOfferImagePreview offer={offer} />
-          {isCollectiveOfferTemplate(offer) && (
-            <CollectiveOfferDateSection offer={offer} />
-          )}
-          <CollectiveOfferLocationSection offer={offer} />
+        {isNewCollectivePriceEnabled && !isOfferTemplate ? (
+          <>
+            <SummarySection
+              title="Détails de l’offre"
+              editLink={canEditDetails ? offerEditLink : null}
+            >
+              <CollectiveOfferVenueSection venue={offer.venue} />
+              <CollectiveOfferTypeSection offer={offer} />
+              <CollectiveOfferImagePreview offer={offer} />
+              <CollectiveOfferLocationSection offer={offer} />
+              <CollectiveOfferParticipantSection students={offer.students} />
+              <AccessibilitySummarySection
+                accessibleItem={offer}
+                accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+                shouldShowDivider
+              />
+            </SummarySection>
+            <SummarySection
+              title="Dates et prix"
+              editLink={canEditDatesAndPrice ? stockEditLink : null}
+            >
+              <CollectiveOfferStockSection
+                stock={offer.collectiveStock}
+                venueDepartmentCode={offer.venue.departementCode}
+              />
+            </SummarySection>
+            <SummarySection
+              title="Informations pratiques"
+              editLink={canEditDetails ? offerEditLink : null}
+            >
+              {offer.bookingEmails.length > 0 && (
+                <CollectiveOfferNotificationSection
+                  bookingEmails={offer.bookingEmails}
+                />
+              )}
+              <CollectiveOfferContactSection offer={offer} />
+              {offer.collectiveStock?.priceDetail && (
+                <SummarySubSection
+                  title="Informations pratiques"
+                  shouldShowDivider
+                >
+                  <SummaryDescriptionList
+                    descriptions={[{ text: offer.collectiveStock.priceDetail }]}
+                  />
+                </SummarySubSection>
+              )}
+            </SummarySection>
+            <SummarySection
+              title="Établissement et enseignant"
+              editLink={canEditInstitution ? institutionEditLink : null}
+            >
+              <CollectiveOfferInstitutionSection
+                institution={offer.institution}
+                teacher={offer.teacher}
+              />
+            </SummarySection>
+          </>
+        ) : (
+          <>
+            <SummarySection
+              title="Détails de l’offre"
+              editLink={canEditDetails ? offerEditLink : null}
+            >
+              <CollectiveOfferVenueSection venue={offer.venue} />
+              <CollectiveOfferTypeSection offer={offer} />
+              <CollectiveOfferImagePreview offer={offer} />
+              {isCollectiveOfferTemplate(offer) && (
+                <CollectiveOfferDateSection offer={offer} />
+              )}
+              <CollectiveOfferLocationSection offer={offer} />
 
-          {isCollectiveOfferTemplate(offer) && (
-            <CollectiveOfferPriceSection offer={offer} />
-          )}
-          <CollectiveOfferParticipantSection students={offer.students} />
-          <AccessibilitySummarySection
-            accessibleItem={offer}
-            accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
-            shouldShowDivider
-          />
-          <CollectiveOfferContactSection offer={offer} />
-          {offer.bookingEmails.length > 0 && (
-            <CollectiveOfferNotificationSection
-              bookingEmails={offer.bookingEmails}
-            />
-          )}
-        </SummarySection>
-        {!isOfferTemplate && (
-          <SummarySection
-            title="Dates & Prix"
-            editLink={canEditDatesAndPrice ? stockEditLink : null}
-          >
-            <CollectiveOfferStockSection
-              stock={offer.collectiveStock}
-              venueDepartmentCode={offer.venue.departementCode}
-            />
-          </SummarySection>
-        )}
-        {!isOfferTemplate && (
-          <SummarySection
-            title={'Établissement et enseignant'}
-            editLink={canEditInstitution ? institutionEditLink : null}
-          >
-            <CollectiveOfferInstitutionSection
-              institution={offer.institution}
-              teacher={offer.teacher}
-            />
-          </SummarySection>
+              {isCollectiveOfferTemplate(offer) && (
+                <CollectiveOfferPriceSection offer={offer} />
+              )}
+              <CollectiveOfferParticipantSection students={offer.students} />
+              <AccessibilitySummarySection
+                accessibleItem={offer}
+                accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+                shouldShowDivider={!isNewCollectivePriceEnabled}
+              />
+              <CollectiveOfferContactSection offer={offer} />
+              {offer.bookingEmails.length > 0 && (
+                <CollectiveOfferNotificationSection
+                  bookingEmails={offer.bookingEmails}
+                />
+              )}
+            </SummarySection>
+            {!isOfferTemplate && (
+              <SummarySection
+                title="Dates & Prix"
+                editLink={canEditDatesAndPrice ? stockEditLink : null}
+              >
+                <CollectiveOfferStockSection
+                  stock={offer.collectiveStock}
+                  venueDepartmentCode={offer.venue.departementCode}
+                />
+              </SummarySection>
+            )}
+            {!isOfferTemplate && (
+              <SummarySection
+                title={'Établissement et enseignant'}
+                editLink={canEditInstitution ? institutionEditLink : null}
+              >
+                <CollectiveOfferInstitutionSection
+                  institution={offer.institution}
+                  teacher={offer.teacher}
+                />
+              </SummarySection>
+            )}
+          </>
         )}
       </SummaryContent>
     </SummaryLayout>
