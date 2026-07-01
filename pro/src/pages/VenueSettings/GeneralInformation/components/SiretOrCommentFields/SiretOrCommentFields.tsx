@@ -99,6 +99,26 @@ export const SiretOrCommentFields = ({
     }
   }
 
+  const siretOrRidet = () => {
+    return hasRidet ? (
+      <TextInput
+        {...register('siret')}
+        label={`RIDET de la structure`}
+        onChange={(e) => onRidetChange(e.target.value)}
+        error={errors.siret?.message}
+        required
+      />
+    ) : (
+      <TextInput
+        {...register('siret')}
+        label={`SIRET de la structure`}
+        onChange={async (e) => await onSiretChange(e.target.value)}
+        error={errors.siret?.message}
+        required
+      />
+    )
+  }
+
   return (
     <FormLayout.Row mdSpaceAfter>
       {hasComment ? (
@@ -111,22 +131,8 @@ export const SiretOrCommentFields = ({
           initialRows={6}
           error={errors.comment?.message}
         />
-      ) : hasRidet ? (
-        <TextInput
-          {...register('siret')}
-          label={`RIDET de la structure`}
-          onChange={(e) => onRidetChange(e.target.value)}
-          error={errors.siret?.message}
-          required
-        />
       ) : (
-        <TextInput
-          {...register('siret')}
-          label={`SIRET de la structure`}
-          onChange={async (e) => await onSiretChange(e.target.value)}
-          error={errors.siret?.message}
-          required
-        />
+        siretOrRidet()
       )}
     </FormLayout.Row>
   )

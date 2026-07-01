@@ -4,7 +4,9 @@ import { type ForwardedRef, forwardRef, useId } from 'react'
 import { Asset, type AssetProps } from '../common/Asset/Asset'
 import styles from './RadioButton.module.scss'
 
-type RadioButtonSizing = 'hug' | 'fill'
+export type RadioButtonSizing = 'hug' | 'fill'
+export type RadioButtonVariant = 'default' | 'detailed'
+export type RadioButtonAsset = AssetProps
 
 type RadioButtonBaseProps = {
   /** Label displayed next to the radio */

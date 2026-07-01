@@ -102,7 +102,7 @@ type ButtonAsButtonProps = ButtonBaseProps & {
   /**
    * The type of the button
    */
-  type?: ButtonTypeAttribute
+  type?: NonNullable<ButtonTypeAttribute>
   to?: never
   opensInNewTab?: never
   isExternal?: never
@@ -127,7 +127,8 @@ type ButtonAsLinkProps = ButtonBaseProps & {
     'className' | 'href' | 'style'
   >
 
-export type ButtonTypeAttribute =
+export type ButtonTypeAttribute = NonNullable<
   React.ButtonHTMLAttributes<HTMLButtonElement>['type']
+>
 
 export type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps

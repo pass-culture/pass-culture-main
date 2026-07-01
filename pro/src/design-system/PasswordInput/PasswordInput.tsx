@@ -26,7 +26,7 @@ export interface PasswordInputProps
   value: string
   onChange: ChangeEventHandler<HTMLInputElement>
   error?: string
-  requiredIndicator?: TextInputProps['requiredIndicator']
+  requiredIndicator?: NonNullable<TextInputProps['requiredIndicator']>
   required?: boolean
   disabled?: boolean
   displayValidation?: boolean

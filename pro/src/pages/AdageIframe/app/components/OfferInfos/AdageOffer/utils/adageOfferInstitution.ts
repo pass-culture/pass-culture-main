@@ -3,8 +3,11 @@ import type { CollectiveOfferResponseModel } from '@/apiClient/adage'
 export function getBookableOfferInstitutionAndTeacherName(
   offer: CollectiveOfferResponseModel
 ) {
+  const teacherName = offer.teacher
+    ? `${getTeacherFullName(offer.teacher)} - `
+    : ''
   return offer.educationalInstitution
-    ? `${offer.teacher ? `${getTeacherFullName(offer.teacher)} - ` : ''}${offer.educationalInstitution.institutionType || ''} ${offer.educationalInstitution.name}`
+    ? `${teacherName}${offer.educationalInstitution.institutionType || ''} ${offer.educationalInstitution.name}`
     : null
 }
 

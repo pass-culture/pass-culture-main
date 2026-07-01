@@ -24,7 +24,7 @@ import {
 
 export type TextInputProps = {
   label: string
-  type?: React.InputHTMLAttributes<HTMLInputElement>['type']
+  type?: NonNullable<React.InputHTMLAttributes<HTMLInputElement>['type']>
   name: string
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
@@ -42,8 +42,12 @@ export type TextInputProps = {
   icon?: string
   iconButton?: TextInputButtonProps
   extension?: React.ReactNode
-  autoComplete?: React.InputHTMLAttributes<HTMLInputElement>['autoComplete']
-  spellCheck?: React.InputHTMLAttributes<HTMLInputElement>['spellCheck']
+  autoComplete?: NonNullable<
+    React.InputHTMLAttributes<HTMLInputElement>['autoComplete']
+  >
+  spellCheck?: NonNullable<
+    React.InputHTMLAttributes<HTMLInputElement>['spellCheck']
+  >
   describedBy?: string
 }
 

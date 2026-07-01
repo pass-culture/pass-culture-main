@@ -94,13 +94,14 @@ export const OfferInfos = () => {
       icon: strokeVenueIcon,
     },
   }
-
+  const templateOfferCrumb =
+    crumbForCurrentRoute[
+      adageUser.role === AdageFrontRoles.READONLY
+        ? 'recherche'
+        : parentRouteInUrl
+    ]
   const originCrumb: Crumb = isOfferTemplate
-    ? crumbForCurrentRoute[
-        adageUser.role === AdageFrontRoles.READONLY
-          ? 'recherche'
-          : parentRouteInUrl
-      ]
+    ? templateOfferCrumb
     : crumbForCurrentRoute['mon-etablissement']
 
   if (isTemplateOfferLoading || isBookableOfferLoading) {

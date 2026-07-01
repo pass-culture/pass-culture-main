@@ -444,11 +444,11 @@ export const OfferFilters = ({
                         const isSelected2 = selectedOptions.includes(
                           option2.value
                         )
+                        const firstOptionSelected =
+                          isSelected1 && !isSelected2 ? -1 : 1
                         return isSelected1 === isSelected2
                           ? 0
-                          : isSelected1 && !isSelected2
-                            ? -1
-                            : 1
+                          : firstOptionSelected
                       })
                     }}
                   />

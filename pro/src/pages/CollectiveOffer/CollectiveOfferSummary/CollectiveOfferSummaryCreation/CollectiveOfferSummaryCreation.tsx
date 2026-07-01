@@ -23,11 +23,10 @@ export const CollectiveOfferSummaryCreation = ({
     ? `/offre/${offer.id}/collectif/vitrine/creation/apercu`
     : `/offre/${offer.id}/collectif/creation/apercu`
 
+  const withRequestId = requestId ? `?requete=${requestId}` : ''
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/collectif/vitrine/${offer.id}/creation`
-    : `/offre/${offer.id}/collectif/etablissement${
-        requestId ? `?requete=${requestId}` : ''
-      }`
+    : `/offre/${offer.id}/collectif/etablissement${withRequestId}`
 
   return (
     <CollectiveOfferLayout

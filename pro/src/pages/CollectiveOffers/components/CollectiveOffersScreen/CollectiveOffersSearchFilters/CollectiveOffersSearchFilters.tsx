@@ -110,6 +110,12 @@ export const CollectiveOffersSearchFilters = ({
     applyFilters?.(newSearchFilters)
   }
 
+  const locationType =
+    selectedFilters.locationType !== undefined &&
+    selectedFilters.locationType !== null
+      ? String(selectedFilters.locationType)
+      : 'all'
+
   const collectiveFilterStatus = [
     {
       id: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
@@ -228,10 +234,7 @@ export const CollectiveOffersSearchFilters = ({
               selectedFilters.offererAddressId !== undefined &&
               selectedFilters.offererAddressId !== null
                 ? String(selectedFilters.offererAddressId)
-                : selectedFilters.locationType !== undefined &&
-                    selectedFilters.locationType !== null
-                  ? String(selectedFilters.locationType)
-                  : 'all'
+                : locationType
             }
             label="Localisation"
           />
