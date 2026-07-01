@@ -8,6 +8,7 @@ import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 import {
   MAX_NUMBER_OF_TEACHERS,
   MAX_NUMBER_OF_TICKETS,
+  MAX_PRICE,
 } from '../utils/constants'
 import { getMaxEndDateInSchoolYear } from '../utils/getMaxEndDateInSchoolYear'
 
@@ -122,7 +123,10 @@ export const generateValidationSchema = (canEditDates: boolean) =>
       .nullable()
       .transform((value) => (Number.isNaN(value) ? null : value))
       .min(0, 'Nombre positif attendu')
-      .max(60000, 'Le prix total ne doit pas dépasser 60 000€')
+      .max(
+        MAX_PRICE,
+        `Le tarif de la prestation ne doit pas dépasser ${MAX_PRICE} €`
+      )
       .required('Le tarif de la prestation est obligatoire'),
     hasAdditionalFees: yup.boolean().required('Veuillez choisir une option'),
     additionalFees: yup

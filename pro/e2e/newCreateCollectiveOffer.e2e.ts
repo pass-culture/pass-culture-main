@@ -430,9 +430,13 @@ async function fillDatesAndPrice(
     .nth(1)
     .fill(commonOfferData.additionnalFees[1].amount)
 
+  const displayedPrice = parseFloat(commonOfferData.price).toLocaleString(
+    'fr-FR',
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  )
   await expect(
     page.getByRole('heading', {
-      name: `Prix total de votre offre : ${commonOfferData.price}€ TTC`,
+      name: `Prix total de votre offre : ${displayedPrice} € TTC`,
     })
   ).toBeVisible()
 
