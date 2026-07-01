@@ -37,7 +37,7 @@ export interface CustomRouteGroupChild extends CustomRouteBase {
   handle?: CustomRouteHandle
   /** @deprecated Move `title` within `handle` prop: `handle: { title: '...' }`. */
   title?: string
-  loader?: NonIndexRouteObject['loader']
+  loader?: NonNullable<NonIndexRouteObject['loader']>
 }
 
 export interface RedirectionRouteObject extends NonIndexRouteObject {

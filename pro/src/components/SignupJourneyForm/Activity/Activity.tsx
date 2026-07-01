@@ -65,16 +65,15 @@ const serializeActivityFormToSubmit = (
   activityForm: ActivityFormValues
 ): ActivityContext => {
   const { individual, educational } = activityForm.targetCustomer
+  const isEducational = educational
+    ? Target.INDIVIDUAL_AND_EDUCATIONAL
+    : Target.INDIVIDUAL
   return {
     ...activityForm,
     socialUrls: activityForm.socialUrls
       .filter(({ url }) => url.trim() !== '') // garder que ceux où url n'est pas vide
       .map(({ url }) => url),
-    targetCustomer: individual
-      ? educational
-        ? Target.INDIVIDUAL_AND_EDUCATIONAL
-        : Target.INDIVIDUAL
-      : Target.EDUCATIONAL,
+    targetCustomer: individual ? isEducational : Target.EDUCATIONAL,
   }
 }
 

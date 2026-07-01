@@ -39,6 +39,23 @@ export function AdageOfferPublicSection({
 
   const a11yLevels = getAccessibilityLevels(offer)
 
+  const a11yLevelList = () => {
+    return a11yLevels.length > 1 ? (
+      <ul className={styles['offer-section-group-list']}>
+        {a11yLevels.map((level, i) => (
+          <li key={level}>
+            {level}{' '}
+            {i < a11yLevels.length - 1 && (
+              <span className={styles['offer-section-group-list-pipe']}>|</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      a11yLevels[0]
+    )
+  }
+
   return (
     <>
       {studentLevels.length > 0 && (
@@ -70,26 +87,7 @@ export function AdageOfferPublicSection({
         <h3 className={styles['offer-section-group-item-subtitle']}>
           Accessibilité
         </h3>
-        {a11yLevels.length > 0 ? (
-          a11yLevels.length > 1 ? (
-            <ul className={styles['offer-section-group-list']}>
-              {a11yLevels.map((level, i) => (
-                <li key={level}>
-                  {level}{' '}
-                  {i < a11yLevels.length - 1 && (
-                    <span className={styles['offer-section-group-list-pipe']}>
-                      |
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            a11yLevels[0]
-          )
-        ) : (
-          'Non accessible'
-        )}
+        {a11yLevels.length > 0 ? a11yLevelList() : 'Non accessible'}
       </div>
     </>
   )

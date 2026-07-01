@@ -19,7 +19,7 @@ export interface OffererAuthenticationFormValues extends Address {
   'search-addressAutocomplete': string
   coords?: string
   manuallySetAddress?: boolean
-  isOpenToPublic?: string | undefined
+  isOpenToPublic?: string
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {

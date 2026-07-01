@@ -11,6 +11,14 @@ interface SortColumnProps {
   children: React.ReactNode
 }
 
+const withSortingMode = (sortingMode: SortingMode) => {
+  return sortingMode === SortingMode.DESC ? (
+    <SvgIcon src={fullUpIcon} alt="Ne plus trier" width="10" />
+  ) : (
+    <SvgIcon src={fullDownIcon} alt="Trier par ordre décroissant" width="10" />
+  )
+}
+
 export const SortColumn = ({
   sortingMode,
   onClick,
@@ -21,15 +29,7 @@ export const SortColumn = ({
       {children}
 
       {sortingMode !== SortingMode.NONE ? (
-        sortingMode === SortingMode.DESC ? (
-          <SvgIcon src={fullUpIcon} alt="Ne plus trier" width="10" />
-        ) : (
-          <SvgIcon
-            src={fullDownIcon}
-            alt="Trier par ordre décroissant"
-            width="10"
-          />
-        )
+        withSortingMode(sortingMode)
       ) : (
         <span className={styles['both-icons']}>
           <SvgIcon

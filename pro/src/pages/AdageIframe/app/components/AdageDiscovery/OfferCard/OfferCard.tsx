@@ -32,9 +32,10 @@ export const OfferCardComponent = ({
   const { adageUser } = useAdageUser()
   const navigate = useNavigate()
 
+  const isOfferTemplate = offer.isTemplate ? '' : 'B-'
   const offerLinkUrl =
     document.referrer && !document.referrer.includes('adage-iframe')
-      ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+      ? `${document.referrer}adage/passculture/offres/offerid/${isOfferTemplate}${offer.id}`
       : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
   return (
