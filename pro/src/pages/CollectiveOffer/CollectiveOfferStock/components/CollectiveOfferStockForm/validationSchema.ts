@@ -66,6 +66,7 @@ export const generateValidationSchema = (canEditDates: boolean) =>
       }),
     numberOfTickets: yup
       .number()
+      .integer('Nombre entier attendu')
       .transform((value) => (Number.isNaN(value) ? null : value))
       .min(1, 'Minimum 1 élève')
       .max(
@@ -76,6 +77,7 @@ export const generateValidationSchema = (canEditDates: boolean) =>
       .required("Le nombre d'élèves est obligatoire"),
     numberOfTeachers: yup
       .number()
+      .integer('Nombre entier attendu')
       .transform((value) => (Number.isNaN(value) ? null : value))
       .min(0, 'Minimum 0 accompagnateur')
       .max(

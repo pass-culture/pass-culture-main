@@ -133,6 +133,12 @@ describe('validationSchema', () => {
       expectedErrors: ["Le nombre d'élèves ne doit pas dépasser 3000"],
     },
     {
+      description: 'numberOfTickets should be an integer',
+      canEditDates: true,
+      formValues: { ...values, numberOfTickets: 12.5 },
+      expectedErrors: ['Nombre entier attendu'],
+    },
+    {
       description: 'number of teachers should be at least 0',
       canEditDates: true,
       formValues: {
@@ -149,6 +155,12 @@ describe('validationSchema', () => {
         numberOfTeachers: 51,
       },
       expectedErrors: ["Le nombre d'accompagnateurs ne doit pas dépasser 50"],
+    },
+    {
+      description: 'numberOfTeachers should be an integer',
+      canEditDates: true,
+      formValues: { ...values, numberOfTeachers: 12.5 },
+      expectedErrors: ['Nombre entier attendu'],
     },
     {
       description:
