@@ -1,0 +1,102 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.dropdown-width {
+  &-auto {
+    min-width: rem.torem(280px);
+    max-width: rem.torem(320px);
+    width: auto;
+  }
+
+  &-trigger {
+    width: var(--radix-dropdown-menu-trigger-width);
+  }
+}
+
+.dropdown-content {
+  border-radius: var(--size-spacing-xs);
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  background-color: var(--color-background-default);
+  box-shadow: 0 1px 6px 0 var(--color-background-shadow-overlay);
+
+  &[data-side="top"] {
+    margin-bottom: var(--size-spacing-s);
+  }
+
+  &[data-side="bottom"] {
+    margin-top: var(--size-spacing-s);
+  }
+
+  &[data-side="left"] {
+    margin-right: var(--size-spacing-s);
+  }
+
+  &[data-side="right"] {
+    margin-left: var(--size-spacing-s);
+  }
+}
+
+.dropdown-item {
+  @include fonts.body-accent-s;
+
+  border-radius: var(--size-spacing-xs);
+  cursor: pointer;
+  padding: var(--size-spacing-s) var(--size-spacing-m);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: var(--color-background-default);
+
+  &-icon {
+    width: var(--size-icon-s);
+    height: var(--size-icon-s);
+    aspect-ratio: 1 / 1;
+    margin-right: var(--size-spacing-m);
+  }
+
+  .tag-wrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  &-separator {
+    height: rem.torem(1px);
+    width: 100%;
+    background-color: var(--separator-color-subtle);
+  }
+
+  // Radix "highlighted" state that represents the "trusted" hover state
+  &[data-highlighted] {
+    background-color: var(--color-background-brand-primary-hover);
+    color: var(--color-text-inverted);
+
+    /* stylelint-disable-next-line selector-max-type */
+    .item-icon > svg {
+      fill: var(--color-icon-inverted);
+    }
+  }
+
+  // No need default outline focus because it's handled by Radix above
+  &:focus-visible {
+    outline: none;
+  }
+
+  // Disabled
+  &[data-disabled] {
+    color: var(--color-text-disabled);
+    pointer-events: none;
+  }
+
+  &-variant {
+    &-destructive {
+      color: var(--color-text-danger);
+
+      &[data-highlighted] {
+        background-color: var(--color-background-danger);
+        color: var(--color-text-inverted);
+      }
+    }
+  }
+}
