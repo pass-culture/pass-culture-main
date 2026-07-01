@@ -1,4 +1,4 @@
-import classNames, { default as cn } from 'classnames'
+import cn from 'classnames'
 import type React from 'react'
 import {
   type ForwardedRef,
@@ -174,7 +174,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <div className={className}>
         <div>
           <label
-            className={classNames(styles['label'], {
+            className={cn(styles['label'], {
               [styles['has-description']]: Boolean(description),
             })}
             htmlFor={fieldId}
