@@ -79,18 +79,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     },
     loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
   },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
-      ),
-    path: '/offre/individuelle/:offerId/recapitulatif/description',
-    handle: {
-      title: 'Description - Consulter une offre individuelle',
-    },
-    disabledWithFeatureName: 'WIP_OFFER_EXPOSURE',
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
-  },
+
   //  Practical Informations
   {
     lazy: () =>
