@@ -64,24 +64,37 @@ def _redact_url(url: str | None) -> str | None:
     fields_to_redact = "|".join(  # Fields used in Particulier API queries
         [
             "recipient",
-            "nomNaissance",
+            "Naissance",
             "prenoms%5B%5D",  # prenoms%5B%5D unquoted ⇒ prenoms[]
             "nomUsage",
-            "anneeDateNaissance",
-            "moisDateNaissance",
-            "jourDateNaissance",
             "sexeEtatCivil",
-            "codeCogInseePaysNaissance",
-            "codeCogInseeCommuneNaissance",
             "annee",
             "mois",
             # Allociné and Ciné Office (ex-CDS) want authentication token to appear in GET
             # requests. We don't want to log them.
             # For Allociné, the query param name is 'token'. For Ciné Office, the name is 'api_token'
             "token",
+            # YouTube
+            "key",
         ]
     )
     return re.sub(f"((?:{fields_to_redact})=)[^&]+", r"\1[REDACTED]", url)
+
+
+class _RedactingUrlFilter(logging.Filter):
+    """Redact sensitive query params from urllib3 retry warnings.
+
+    urllib3 logs the raw path+querystring itself when a request is
+    retried (see `urllib3.connectionpool`), bypassing our `_redact_url`.
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.args and isinstance(record.args, tuple):
+            record.args = tuple(_redact_url(arg) if isinstance(arg, str) else arg for arg in record.args)
+        return True
+
+
+logging.getLogger("urllib3.connectionpool").addFilter(_RedactingUrlFilter())
 
 
 def _wrapper(

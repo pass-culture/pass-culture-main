@@ -31,29 +31,7 @@ NO_SAMPLE_RATE = 0.0
 
 SCRUBBED_INFO_PLACEHOLDER = "[REDACTED]"
 
-SCRUBBED_KEYS = (
-    "anneeDateNaissance",
-    "all_quotient_familial_responses",
-    "codeCogInseeCommuneNaissance",
-    "codeCogInseePaysNaissance",
-    "custodian",
-    "jourDateNaissance",
-    "moisDateNaissance",
-    "nomNaissance",
-    "nomUsage",
-    "prenoms[]",
-    "recipient",
-    "sexeEtatCivil",
-    "quotient_familial_response",
-    "recipient",
-)
-
-SCRUBBED_VALUE_PREFIXES = (
-    "QuotientFamilialBonusCreditContent(",
-    "AdultDisabilityBonusCreditContent(",
-    "DisabledChildEducationBonusCreditContent(",
-    "BonusCreditPerson(",
-)
+GDPR_SENSITIVE_MODULE_BOUNDARIES = ("pcapi.core.subscription.bonus.api",)
 
 
 class SpecificPath(enum.Enum):
@@ -69,21 +47,19 @@ def scrub_token_from_url_in_event(event: "Event") -> "Event":
     return event
 
 
-def recursive_scrub_vars_dict(vars_dict: dict) -> dict:
-    r"""
-    Recursively obfuscate values inside `vars_dict` if their associated key is in `redacted_fields` list.
+def _scrub_frames_below_sensitive_boundary(frames: list[dict]) -> None:
+    boundary_frame_index: int | None = None
+    for i, frame in enumerate(frames):
+        if frame.get("module") in GDPR_SENSITIVE_MODULE_BOUNDARIES:
+            boundary_frame_index = i
+            break
 
-    /!\ This function does modify values of source `vars_dict`
-    """
-    for key in list(vars_dict):
-        value = vars_dict[key]
-        if key in SCRUBBED_KEYS:
-            vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
-        elif isinstance(value, str) and any(value.startswith(prefix) for prefix in SCRUBBED_VALUE_PREFIXES):
-            vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
-        if isinstance(value, dict):
-            vars_dict[key] = recursive_scrub_vars_dict(value)
-    return vars_dict
+    if boundary_frame_index is None:
+        return
+
+    for tainted_frame in frames[boundary_frame_index:]:
+        if tainted_frame.get("vars"):
+            tainted_frame["vars"] = {key: SCRUBBED_INFO_PLACEHOLDER for key in tainted_frame["vars"].keys()}
 
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
@@ -95,11 +71,9 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     if custom_fingerprint := get_custom_fingerprint(_hint):
         event["fingerprint"] = ["{{ default }}", custom_fingerprint]
 
-    # Scrub exceptions vars
     for exception_values in event.get("exception", {}).get("values", []):
-        for frame in exception_values.get("stacktrace", {}).get("frames", []):
-            if frame_vars := frame.get("vars"):
-                recursive_scrub_vars_dict(frame_vars)
+        frames = exception_values.get("stacktrace", {}).get("frames", [])
+        _scrub_frames_below_sensitive_boundary(frames)
 
     return event
 
