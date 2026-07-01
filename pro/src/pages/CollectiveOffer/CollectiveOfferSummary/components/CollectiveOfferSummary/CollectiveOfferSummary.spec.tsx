@@ -8,6 +8,7 @@ import {
   OfferContactFormEnum,
 } from '@/apiClient/v1'
 import {
+  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
@@ -222,5 +223,115 @@ describe('CollectiveOfferSummary', () => {
     })
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
+  })
+
+  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
+    const ffOverrides: RenderWithProvidersOptions = {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'],
+    }
+
+    it('should display the 4 main sections for a bookable offer', () => {
+      renderCollectiveOfferSummary(
+        { offer: getCollectiveOfferFactory() },
+        ffOverrides
+      )
+
+      expect(
+        screen.getByRole('heading', { name: 'Détails de l’offre' })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('heading', { name: 'Dates et prix' })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('heading', {
+          name: 'Informations pratiques',
+          level: 2,
+        })
+      ).toBeVisible()
+      expect(
+        screen.getByRole('heading', { name: 'Établissement et enseignant' })
+      ).toBeVisible()
+    })
+
+    it('should display priceDetail in "Informations pratiques" when it exists', () => {
+      renderCollectiveOfferSummary(
+        {
+          offer: getCollectiveOfferFactory({
+            collectiveStock: getCollectiveOfferCollectiveStockFactory({
+              priceDetail: 'Détail du prix pratique',
+            }),
+          }),
+        },
+        ffOverrides
+      )
+
+      const heading = screen.getByRole('heading', {
+        name: 'Informations pratiques',
+        level: 2,
+      })
+      const priceDetailElement = screen.getByText('Détail du prix pratique')
+      expect(priceDetailElement).toBeInTheDocument()
+      expect(heading.closest('.summary-layout-section')).toContainElement(
+        priceDetailElement
+      )
+    })
+
+    it('should not display priceDetail subsection when priceDetail is null', () => {
+      renderCollectiveOfferSummary(
+        {
+          offer: getCollectiveOfferFactory({
+            collectiveStock: getCollectiveOfferCollectiveStockFactory({
+              priceDetail: null,
+            }),
+          }),
+        },
+        ffOverrides
+      )
+
+      expect(
+        screen.queryByText('Détail du prix pratique')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display notification section when bookingEmails exist', () => {
+      renderCollectiveOfferSummary(
+        {
+          offer: getCollectiveOfferFactory({
+            bookingEmails: ['test-booking-email@example.com'],
+          }),
+        },
+        ffOverrides
+      )
+      expect(
+        screen.queryByRole('heading', { name: 'Dates et prix' })
+      ).toBeVisible()
+      expect(screen.getByText('test-booking-email@example.com')).toBeVisible()
+    })
+
+    it('should not display notification section when bookingEmails is empty', () => {
+      renderCollectiveOfferSummary(
+        {
+          offer: getCollectiveOfferFactory({
+            bookingEmails: [],
+          }),
+        },
+        ffOverrides
+      )
+
+      expect(
+        screen.queryByText('Notifications des réservations :')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should fall back to old layout for a template offer', () => {
+      renderCollectiveOfferSummary(
+        { offer: getCollectiveOfferTemplateFactory() },
+        ffOverrides
+      )
+
+      expect(
+        screen.queryByRole('heading', { name: 'Dates et prix' })
+      ).not.toBeInTheDocument()
+    })
   })
 })

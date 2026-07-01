@@ -1,19 +1,28 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { StudentLevels } from '@/apiClient/adage'
-import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
+import {
+  defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
+} from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   AdageOfferPublicSection,
   type AdageOfferPublicSectionProps,
 } from '../AdageOfferPublicSection'
 
+const defaultProps: AdageOfferPublicSectionProps = {
+  offer: defaultCollectiveTemplateOffer,
+}
+
 function renderAdageOfferPublicSection(
-  props: AdageOfferPublicSectionProps = {
-    offer: defaultCollectiveTemplateOffer,
-  }
+  props: AdageOfferPublicSectionProps = defaultProps,
+  features: string[] = []
 ) {
-  return render(<AdageOfferPublicSection {...props} />)
+  return renderWithProviders(<AdageOfferPublicSection {...props} />, {
+    features,
+  })
 }
 
 describe('AdageOfferPublicSection', () => {
@@ -27,9 +36,9 @@ describe('AdageOfferPublicSection', () => {
 
     expect(
       screen.getByRole('heading', { name: 'Niveau scolaire' })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Collège - 3e')).toBeInTheDocument()
-    expect(screen.getByText('Collège - 6e')).toBeInTheDocument()
+    ).toBeVisible()
+    expect(screen.getByText('Collège - 3e')).toBeVisible()
+    expect(screen.getByText('Collège - 6e')).toBeVisible()
   })
 
   it('should not display the students levels section if the offer has no students levels', () => {
@@ -60,11 +69,11 @@ describe('AdageOfferPublicSection', () => {
       screen.getByRole('heading', {
         name: 'Accessibilité',
       })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Psychique ou cognitif')).toBeInTheDocument()
-    expect(screen.getByText('Auditif')).toBeInTheDocument()
-    expect(screen.getByText('Moteur')).toBeInTheDocument()
-    expect(screen.getByText('Visuel')).toBeInTheDocument()
+    ).toBeVisible()
+    expect(screen.getByText('Psychique ou cognitif')).toBeVisible()
+    expect(screen.getByText('Auditif')).toBeVisible()
+    expect(screen.getByText('Moteur')).toBeVisible()
+    expect(screen.getByText('Visuel')).toBeVisible()
   })
 
   it('should show that the offer is not accessible if the offer has no accessibility criteria enabled', () => {
@@ -78,6 +87,62 @@ describe('AdageOfferPublicSection', () => {
       },
     })
 
-    expect(screen.getByText('Non accessible')).toBeInTheDocument()
+    expect(screen.getByText('Non accessible')).toBeVisible()
+  })
+
+  describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {
+    const features = ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
+
+    it('should display the number of participants section for a bookable offer', () => {
+      renderAdageOfferPublicSection(
+        {
+          offer: {
+            ...defaultCollectiveOffer,
+            stock: {
+              ...defaultCollectiveOffer.stock,
+              numberOfTickets: 28,
+              numberOfTeachers: 2,
+            },
+          },
+        },
+        features
+      )
+
+      expect(
+        screen.getByRole('heading', { name: 'Nombre de participants' })
+      ).toBeVisible()
+      expect(screen.getByText('28 élèves')).toBeVisible()
+      expect(screen.getByText('2 accompagnateurs')).toBeVisible()
+    })
+
+    it('should not display accompagnateurs when numberOfTeachers is 0', () => {
+      renderAdageOfferPublicSection(
+        {
+          offer: {
+            ...defaultCollectiveOffer,
+            stock: {
+              ...defaultCollectiveOffer.stock,
+              numberOfTickets: 28,
+              numberOfTeachers: 0,
+            },
+          },
+        },
+        features
+      )
+
+      expect(screen.getByText('28 élèves')).toBeVisible()
+      expect(screen.queryByText(/accompagnateur/)).not.toBeInTheDocument()
+    })
+
+    it('should not display the number of participants section for a template offer', () => {
+      renderAdageOfferPublicSection(
+        { offer: defaultCollectiveTemplateOffer },
+        features
+      )
+
+      expect(
+        screen.queryByRole('heading', { name: 'Nombre de participants' })
+      ).not.toBeInTheDocument()
+    })
   })
 })
