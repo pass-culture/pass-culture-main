@@ -5,6 +5,8 @@ from collections import abc
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from algoliasearch.search.models.search_params import SearchParams
+from algoliasearch.search.models.search_response import SearchResponse
 
 from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
@@ -1093,3 +1095,9 @@ def update_booking_count_by_product() -> list[offers_models.Product]:
 def clean_processing_queues() -> None:
     backend = _get_backend()
     backend.clean_processing_queues()
+
+
+def search(index: str, params: dict[str, typing.Any], query: str | None = None) -> SearchResponse:
+    backend = _get_backend()
+
+    return backend.search(index, params, query)

@@ -11,5 +11,5 @@ def save_sandbox() -> None:
     create_national_programs_and_domains()
     prepare_mediations_folders()
     save_test_cases_sandbox()
-    save_industrial_sandbox()
+    # save_industrial_sandbox()
     disable_external_bookings()

@@ -44,8 +44,8 @@ class AlgoliaBackend(
     def search(
         self,
         index: str,
-        query: str,
         params: dict[str, typing.Any],
+        query: str | None = None,
     ) -> SearchResponse:
         with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
             return client.search_single_index(index, {"query": query, **params})

@@ -1,7 +1,14 @@
+import time
+from decimal import Decimal
+
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest
 
+from pcapi import settings
+from pcapi.core import search
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.geography import api as geography_api
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Product
 from pcapi.core.users import api as users_api
@@ -49,6 +56,62 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
                 venue_data=serializers.ScreeningVenueData(
                     city=row["city"],
                     distance=row["distance"],
+                    label=row["label"],
+                    postal_code=row["postal_code"],
+                    street=row["street"],
+                    venue_id=row["venue_id"],
+                ),
+            )
+            for row in results
+        ],
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+
+@blueprint.native_route("/movie/calendar/algolia", methods=["GET"])
+@spectree_serialize(response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404])
+def get_movie_screenings_from_algolia(query: serializers.MovieScreeningsRequest) -> serializers.MovieCalendarResponse:
+    query_params = {
+        "aroundLatLng": f"{query.latitude}, {query.longitude}",
+        "aroundRadius": query.around_radius,
+        "attributesToHighlight": [],
+        "attributesToRetrieve": ["objectID", "_geoloc"],
+        "distinct": False,
+        "facetFilters": [[f"offer.allocineId:{query.allocine_id}"]],
+        "getRankingInfo": False,
+        "hitsPerPage": 50,
+        "page": 0,
+    }
+    search_results = search.search(index=settings.ALGOLIA_OFFERS_INDEX_NAME, params=query_params)
+    hits = [result.to_dict() for result in search_results.hits]
+    offer_distances = {
+        int(hit["objectID"]): geography_api.compute_distance(
+            geography_models.Coordinates(
+                latitude=Decimal(hit["_geoloc"]["lat"]), longitude=Decimal(hit["_geoloc"]["lng"])
+            ),
+            geography_models.Coordinates(latitude=Decimal(query.latitude), longitude=Decimal(query.longitude)),
+        )
+        for hit in hits
+    }
+    results = repository.get_screenings_from_offer_ids(
+        list(offer_distances.keys()), query.from_datetime, query.to_datetime
+    )
+    results.sort(key=lambda row: offer_distances[row["offer_id"]])
+    return serializers.MovieCalendarResponse.from_raw_screenings(
+        [
+            serializers.RawScreening(
+                beginning_datetime=row["beginning_datetime"],
+                features=row["features"],
+                is_sold_out=row["is_sold_out"],
+                offer_id=row["offer_id"],
+                price=row["price"],
+                provider_class=row["provider_class"],
+                stock_id=row["stock_id"],
+                thumb_url=row["thumb_url"],
+                venue_data=serializers.ScreeningVenueData(
+                    city=row["city"],
+                    distance=offer_distances[row["offer_id"]],
                     label=row["label"],
                     postal_code=row["postal_code"],
                     street=row["street"],

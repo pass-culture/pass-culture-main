@@ -8,11 +8,16 @@ from pydantic_core import PydanticCustomError
 
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import schemas as offerers_schemas
-from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
-from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
+
+# from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+# from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.image_conversion import CropParamsV2
 from pcapi.utils.image_conversion import CropPercent
+
+
+ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
+VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
 class BannerMetaModel(HttpBodyModel):

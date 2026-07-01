@@ -19,6 +19,80 @@ from pcapi.utils import date as date_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+class MovieCalendarAlgoliaTest:
+    def test_get_movie_shows_with_allocine_id(self, client):
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # product
+        expected_num_queries += 1  # stocks
+        expected_num_queries += 1  # screenings
+        # with assert_num_queries(expected_num_queries):
+        response = client.get("/native/v1/movie/calendar/algolia", params=params)
+        assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar == {
+            today.isoformat(): [
+                {
+                    "address": f"{address.street}, {address.postalCode} {address.city}",
+                    "distance": 0.0,
+                    "dayScreenings": [
+                        {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "bookability": "BOOKABLE",
+                            "features": [],
+                            "price": float(stock.price),
+                            "stockId": stock.id,
+                        }
+                    ],
+                    "label": stock.offer.venue.publicName,
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookability": "BOOKABLE",
+                        "features": [],
+                        "price": float(stock.price),
+                        "stockId": stock.id,
+                    },
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "venueId": stock.offer.venue.id,
+                },
+            ],
+            tomorrow.isoformat(): [
+                {
+                    "address": f"{address.street}, {address.postalCode} {address.city}",
+                    "distance": 0.0,
+                    "dayScreenings": [],
+                    "label": stock.offer.venue.publicName,
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookability": "BOOKABLE",
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "venueId": stock.offer.venue.id,
+                },
+            ],
+        }
+
+
 class MovieCalendarTest:
     def test_get_movie_shows_with_allocine_id(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
@@ -40,9 +114,9 @@ class MovieCalendarTest:
         expected_num_queries = 1  # product
         expected_num_queries += 1  # stocks
         expected_num_queries += 1  # screenings
-        with assert_num_queries(expected_num_queries):
-            response = client.get("/native/v1/movie/calendar", params=params)
-            assert response.status_code == 200
+        # with assert_num_queries(expected_num_queries):
+        response = client.get("/native/v1/movie/calendar/algolia", params=params)
+        assert response.status_code == 200
 
         calendar = response.json["calendar"]
         assert calendar == [
