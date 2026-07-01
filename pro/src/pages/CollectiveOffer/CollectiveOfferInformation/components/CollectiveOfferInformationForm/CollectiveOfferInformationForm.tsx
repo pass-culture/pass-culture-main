@@ -81,12 +81,7 @@ export const CollectiveOfferInformationForm = ({
     )
 
     // We ensure that fields initialized with venue are saved if not dirty
-    if (
-      !dirtyFields.bookingEmails &&
-      (offer.bookingEmails.length === 0 ||
-        // dirtyFields mecanism  doesn't seem to work when we only remove an email from the list
-        formValues.bookingEmails?.length !== offer.bookingEmails.length)
-    ) {
+    if (!dirtyFields.bookingEmails && offer.bookingEmails.length === 0) {
       partialOffer.bookingEmails = formValues.bookingEmails
     }
     if (
@@ -116,6 +111,17 @@ export const CollectiveOfferInformationForm = ({
     }
   }
 
+  function removeBookingEmail(index: number) {
+    return () => {
+      remove(index)
+      form.setFocus(`bookingEmails.${index - 1}.email`)
+    }
+  }
+
+  // We need to force dirty field evaluation at render
+  // since fieldArray.remove does not dirty the field by itself properly
+  const _bookingEmailsDirty = form.formState.dirtyFields.bookingEmails
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FormLayout fullWidthActions>
@@ -139,10 +145,7 @@ export const CollectiveOfferInformationForm = ({
                     <Button
                       variant={ButtonVariant.SECONDARY}
                       color={ButtonColor.NEUTRAL}
-                      onClick={() => {
-                        remove(index)
-                        form.setFocus(`bookingEmails.${index - 1}.email`)
-                      }}
+                      onClick={removeBookingEmail(index)}
                       icon={fullTrashIcon}
                       tooltip="Supprimer l’email"
                     />
