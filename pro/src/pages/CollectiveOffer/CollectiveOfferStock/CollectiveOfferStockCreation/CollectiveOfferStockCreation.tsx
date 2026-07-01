@@ -19,6 +19,7 @@ import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/util
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import { objectFromEntries } from '@/commons/utils/object'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -29,22 +30,31 @@ import {
 import { CollectiveOfferStockForm } from '../components/CollectiveOfferStockForm/CollectiveOfferStockForm'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'
 
+const BASE_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] = [
+  'bookingLimitDatetime',
+  'endDatetime',
+  'numberOfTickets',
+  'startDatetime',
+  'price',
+]
+
+const NEW_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
+  BASE_STOCK_KEYS.concat([
+    'numberOfTeachers',
+    'collectiveAdditionalFees',
+    'servicePrice',
+  ])
+
+const OLD_STOCK_KEYS: (keyof CollectiveStockCreationBodyModel)[] =
+  BASE_STOCK_KEYS.concat(['priceDetail'])
+
 function isComplete(
   stock: Partial<CollectiveStockCreationBodyModel>,
   isNewCollectivePriceEnabled: boolean
 ): stock is CollectiveStockCreationBodyModel {
-  const allKeys: (keyof CollectiveStockCreationBodyModel)[] = [
-    'bookingLimitDatetime',
-    'endDatetime',
-    'numberOfTickets',
-    'startDatetime',
-  ]
-  if (isNewCollectivePriceEnabled) {
-    allKeys.push('numberOfTeachers')
-  } else {
-    allKeys.push('price', 'priceDetail')
-  }
-  return allKeys.every((key) => key in stock && stock[key] !== undefined)
+  return (isNewCollectivePriceEnabled ? NEW_STOCK_KEYS : OLD_STOCK_KEYS).every(
+    (key) => key in stock && stock[key] !== undefined
+  )
 }
 
 function handleStockError(
@@ -71,21 +81,18 @@ function handleStockError(
   onError('Une erreur est survenue lors de la création de votre stock.')
 }
 
-function buildCreateStockBody(
+// TODO (mdesquilbet, 2026-07-01): remove this function along with *_STOCK_KEYS constants
+// when cleaning WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS
+function getStockVariant(
   newCollectiveStock: CollectiveStockCreationBodyModel,
-  offerId: number,
   isNewCollectivePriceEnabled: boolean
 ): CollectiveStockCreationBodyModel {
-  return {
-    ...newCollectiveStock,
-    offerId,
-    servicePrice: isNewCollectivePriceEnabled
-      ? newCollectiveStock.servicePrice
-      : undefined,
-    collectiveAdditionalFees: isNewCollectivePriceEnabled
-      ? newCollectiveStock.collectiveAdditionalFees
-      : undefined,
-  }
+  return objectFromEntries(
+    (isNewCollectivePriceEnabled ? NEW_STOCK_KEYS : OLD_STOCK_KEYS).map((k) => [
+      k,
+      newCollectiveStock[k],
+    ])
+  )
 }
 
 export const CollectiveOfferStockCreation = ({
@@ -172,11 +179,10 @@ export const CollectiveOfferStockCreation = ({
         })
       } else if (isComplete(newCollectiveStock, isNewCollectivePriceEnabled)) {
         response = await api.createCollectiveStock({
-          body: buildCreateStockBody(
-            newCollectiveStock,
-            offer.id,
-            isNewCollectivePriceEnabled
-          ),
+          body: {
+            ...getStockVariant(newCollectiveStock, isNewCollectivePriceEnabled),
+            offerId: offer.id,
+          },
         })
       } else {
         throw new Error('Missing required values')
