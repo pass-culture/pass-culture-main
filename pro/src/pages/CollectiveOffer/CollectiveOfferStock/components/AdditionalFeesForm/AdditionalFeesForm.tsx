@@ -1,4 +1,5 @@
 import { type ChangeEvent, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
@@ -94,7 +95,14 @@ export const AdditionalFeesForm = ({
   }
 
   function removeAdditionalFeesFieldEntry(index: number) {
-    remove(index)
+    return () => {
+      flushSync(() => remove(index))
+      const indexToFocus = Math.min(
+        index,
+        form.getValues('additionalFees').length
+      )
+      form.setFocus(`additionalFees.${indexToFocus}.amount`)
+    }
   }
 
   // We need to force dirty field evaluation at render
@@ -164,6 +172,8 @@ export const AdditionalFeesForm = ({
                     ?.message ||
                   form.formState.errors.additionalFees?.[index]?.label?.message
                 }
+                // use this to control focus on input
+                ref={form.register(`additionalFees.${index}.type`).ref}
               />
               <TextInput
                 {...form.register(`additionalFees.${index}.amount`, {
