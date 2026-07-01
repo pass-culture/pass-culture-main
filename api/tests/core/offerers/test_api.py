@@ -4043,18 +4043,24 @@ class GetUserPendingAndValidatedOffererTest:
 class CloseVenueTest:
     def test_open_venue_becomes_closed(self):
         venue = offerers_factories.VenueFactory(state=None)
+        author = users_factories.BaseUserFactory()
+
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue)
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
+
+        assert not venue.bankAccountLinks
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_closed_venue_stays_closed(self):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        author = users_factories.BaseUserFactory()
 
         with atomic():
-            offerers_api.close_venue(venue)
+            offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
         assert venue.state == offerers_models.VenueState.CLOSED
@@ -4140,3 +4146,26 @@ class DeactivateVenueOffersTest:
             log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
             record = next(rec for rec in caplog.records if rec.message == log_msg)
             assert record.extra == expected_backup_data
+
+
+class IsVenueAnothersVenuePricingPointTest:
+    def test_venue_is_not_anothers_venue_pricing_point(self):
+        venue = offerers_factories.VenueFactory()
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(venue)
+
+    def test_venue_is_its_own_pricing_point_no_one_elses(self):
+        venue = offerers_factories.VenuePricingPointLinkFactory().venue
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(venue)
+
+    def test_venue_is_anothers_venue_expired_pricing_point(self):
+        now = datetime.datetime.now(datetime.UTC)
+        timespan = [now - datetime.timedelta(days=90), now - datetime.timedelta(days=10)]
+
+        pricing_point = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(pricingPoint=pricing_point, timespan=timespan)
+
+        assert not offerers_api.is_venue_anothers_venue_pricing_point(pricing_point)
+
+    def test_venue_anothers_active_venue_pricing_point(self):
+        venue = offerers_factories.VenuePricingPointLinkFactory().pricingPoint
+        assert offerers_api.is_venue_anothers_venue_pricing_point(venue)

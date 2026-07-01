@@ -7,6 +7,7 @@ import secrets
 import time
 import typing
 from collections import defaultdict
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -22,6 +23,7 @@ import sqlalchemy.orm as sa_orm
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
@@ -3445,11 +3447,13 @@ def get_user_pending_and_validated_offerers(
     return PendingAndValidatedOfferers(validated=validated, pending=pending)
 
 
-def close_venue(venue: models.Venue) -> None:
+def close_venue(venue: models.Venue, author: users_models.User) -> None:
     if venue.is_closed:
         return
 
     venue.state = models.VenueState.CLOSING
+
+    finance_api.unlink_bank_accounts(venue, author)
 
     payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
     on_commit(
@@ -3524,3 +3528,16 @@ def deactivate_venue_offers(venue: models.Venue) -> None:
         log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
         log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
         logger.info(log_msg, extra=log_extra)
+
+
+def is_venue_anothers_venue_pricing_point(venue: offerers_models.Venue) -> bool:
+    naive_now = datetime.now(UTC).replace(tzinfo=None)
+    return db.session.query(
+        db.session.query(models.VenuePricingPointLink)
+        .filter(
+            models.VenuePricingPointLink.pricingPoint == venue,
+            models.VenuePricingPointLink.venue != venue,
+            models.VenuePricingPointLink.timespan.contains(naive_now),
+        )
+        .exists()
+    ).scalar()

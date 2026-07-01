@@ -5598,3 +5598,82 @@ class CleanDuplicateBankAccountsTest:
         api.clean_duplicate_bank_accounts()
 
         assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id}
+
+
+class HasVenueIncomingCashflowsTest:
+    def test_venue_never_had_any_cashflows(self):
+        venue = offerers_factories.VenueFactory()
+        assert not api.has_venue_incoming_cashflows(venue)
+
+    def test_venue_has_an_old_cashflow(self):
+        venue_bank_account_link = offerers_factories.VenueBankAccountLinkFactory()
+        venue = venue_bank_account_link.venue
+        bank_account = venue_bank_account_link.bankAccount
+
+        # older cashflow
+        factories.CashflowFactory(bankAccount=bank_account)
+
+        # another unrelated cashflow from a more recent batch
+        factories.CashflowFactory()
+
+        assert not api.has_venue_incoming_cashflows(venue)
+
+    def test_venue_has_an_incoming_cashflow(self):
+        venue_bank_account_link = offerers_factories.VenueBankAccountLinkFactory()
+        venue = venue_bank_account_link.venue
+        bank_account = venue_bank_account_link.bankAccount
+
+        factories.CashflowFactory(bankAccount=bank_account)
+        assert api.has_venue_incoming_cashflows(venue)
+
+
+class UnlinkBankAccountsTest:
+    def test_venue_without_any_bank_account(self):
+        user = users_factories.BaseUserFactory()
+        venue = offerers_factories.VenueFactory()
+
+        api.unlink_bank_accounts(venue, user)
+        db.session.refresh(venue)
+
+        assert not venue.bankAccountLinks
+
+    def test_venue_which_is_another_ones_pricing_point_is_not_ok(self):
+        user = users_factories.BaseUserFactory()
+
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+        pricing_point_link = offerers_factories.VenuePricingPointLinkFactory(pricingPoint=venue)
+        other_venue = pricing_point_link.venue
+
+        with pytest.raises(api.VenueIsAnothersPricingPointError):
+            api.unlink_bank_accounts(venue, user)
+
+        db.session.refresh(other_venue)
+        assert other_venue.current_pricing_point.id == venue.id
+
+        db.session.refresh(venue)
+        assert venue.bankAccountLinks
+
+    def test_venue_has_incoming_cashflows_is_not_ok(self):
+        user = users_factories.BaseUserFactory()
+
+        venue_bank_account_link = offerers_factories.VenueBankAccountLinkFactory()
+        venue = venue_bank_account_link.venue
+        bank_account = venue_bank_account_link.bankAccount
+
+        factories.CashflowFactory(bankAccount=bank_account)
+
+        with pytest.raises(api.VenueHasIncomingCashflowsError):
+            api.unlink_bank_accounts(venue, user)
+
+        db.session.refresh(venue)
+        assert venue.bankAccountLinks
+
+    def test_bank_accounts_links_are_deleted(self):
+        user = users_factories.BaseUserFactory()
+        venue = offerers_factories.VenueFactory()
+
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue)
+        api.unlink_bank_accounts(venue, user)
+
+        db.session.refresh(venue)
+        assert not venue.bankAccountLinks
