@@ -1,5 +1,5 @@
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 
-class ProEmailModel(pydantic_v1.BaseModel):
-    venue_booking_email: pydantic_v1.EmailStr
+class ProEmailModel(pydantic.BaseModel):
+    venue_booking_email: pydantic.EmailStr

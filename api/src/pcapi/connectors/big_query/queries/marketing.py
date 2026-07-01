@@ -1,11 +1,11 @@
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi import settings
 
 from .base import BaseQuery
 
 
-class ProLiveShowEmailChurned40DaysAgoModel(pydantic_v1.BaseModel):
+class ProLiveShowEmailChurned40DaysAgoModel(pydantic.BaseModel):
     venue_booking_email: str
 
 
@@ -24,7 +24,7 @@ class ProLiveShowEmailChurned40DaysAgoQuery(BaseQuery):
     model = ProLiveShowEmailChurned40DaysAgoModel
 
 
-class ProLiveShowEmailLastBooking40DaysAgoModel(pydantic_v1.BaseModel):
+class ProLiveShowEmailLastBooking40DaysAgoModel(pydantic.BaseModel):
     venue_booking_email: str
 
 
