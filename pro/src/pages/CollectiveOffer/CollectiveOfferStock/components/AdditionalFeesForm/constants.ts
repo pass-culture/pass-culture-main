@@ -1,7 +1,7 @@
 import { CollectiveAdditionalFeeType } from '@/apiClient/adage'
 import { objectEntries } from '@/commons/utils/object'
 
-export const MAX_ADDITIONAL_FEES_LENGHT = 11
+export const MAX_ADDITIONAL_FEES_LENGTH = 10
 export const ADDITIONAL_FEES = {
   [CollectiveAdditionalFeeType.ACCOMMODATION]: "Hébergement de l'intervenant•e",
   [CollectiveAdditionalFeeType.TRAVEL]: "Déplacement de l'intervenant•e",

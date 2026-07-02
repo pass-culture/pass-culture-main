@@ -18,7 +18,7 @@ import fullTrashIcon from '@/icons/full-trash.svg'
 import type { CollectiveOfferStockFormValues } from '../CollectiveOfferStockForm/validationSchema'
 import styles from './AdditionalFeesForm.module.scss'
 import { AdditionalFeeTypeInput } from './components/AdditionalFeeTypeInput/AdditionalFeeTypeInput'
-import { MAX_ADDITIONAL_FEES_LENGHT } from './constants'
+import { MAX_ADDITIONAL_FEES_LENGTH } from './constants'
 
 function dispatchRootError(rootFieldError: FieldError | undefined) {
   let rootErrorOnTypes = ''
@@ -56,7 +56,7 @@ export const AdditionalFeesForm = ({
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'collectiveAdditionalFees',
-    rules: { maxLength: MAX_ADDITIONAL_FEES_LENGHT },
+    rules: { maxLength: MAX_ADDITIONAL_FEES_LENGTH },
   })
 
   const typeInputElements = useRef<(HTMLInputElement | null)[]>([])
@@ -84,13 +84,12 @@ export const AdditionalFeesForm = ({
     return ({ type, label }: Omit<CollectiveAdditionalFeeModel, 'amount'>) => {
       form.setValue(`collectiveAdditionalFees.${index}.type`, type, {
         shouldDirty: true,
-        shouldValidate: true,
       })
       form.setValue(`collectiveAdditionalFees.${index}.label`, label, {
         shouldDirty: true,
-        shouldValidate: true,
         shouldTouch: true,
       })
+      form.trigger('collectiveAdditionalFees')
     }
   }
 
@@ -124,7 +123,7 @@ export const AdditionalFeesForm = ({
 
   const shouldShowRemoveFeeButton = canEditDiscount && fields.length > 1
   const shouldShowAddFeeButton =
-    canEditDiscount && fields.length <= MAX_ADDITIONAL_FEES_LENGHT
+    canEditDiscount && fields.length < MAX_ADDITIONAL_FEES_LENGTH
 
   // errors that we display on each amount or type field
   const { rootErrorOnTypes, rootErrorOnAmounts } = dispatchRootError(

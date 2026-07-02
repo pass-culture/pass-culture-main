@@ -289,6 +289,7 @@ export const SelectAutocomplete = forwardRef(
               value={searchField}
               ref={inputRef}
               name={name}
+              autoComplete="off"
               onChange={(e) => {
                 setHoveredOptionIndex(null)
                 setSearchField(e.target.value)

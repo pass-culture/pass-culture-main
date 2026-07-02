@@ -171,7 +171,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        collectiveAdditionalFees: Array.from({ length: 12 }, () => ({
+        collectiveAdditionalFees: Array.from({ length: 11 }, () => ({
           type: CollectiveAdditionalFeeType.OTHER,
           label: '',
           amount: 0,
