@@ -2,6 +2,10 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from '@/apiClient/v1'
+import {
+  Events,
+  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
+} from '@/commons/core/FirebaseEvents/constants'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
@@ -16,6 +20,11 @@ import {
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 
 import { OfferNameCell, type OfferNameCellProps } from './OfferNameCell'
+
+const mockLogEvent = vi.fn()
+vi.mock('@/app/App/analytics/firebase', () => ({
+  useAnalytics: () => ({ logEvent: mockLogEvent }),
+}))
 
 const renderOfferNameCell = (
   props: OfferNameCellProps,
@@ -41,6 +50,38 @@ const renderOfferNameCell = (
   )
 
 describe('OfferNameCell', () => {
+  it('should log title source tracker on whole row redirection', async () => {
+    const offer = listOffersOfferFactory({
+      id: 123,
+      name: 'Offre nom',
+    })
+
+    renderOfferNameCell({
+      offer,
+      offerLink: '/offre/123',
+    })
+
+    await userEvent.click(
+      document.querySelector('.title-column-thumb') as HTMLElement
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        used: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.TITLE_LINK,
+        offerId: 123,
+      }
+    )
+
+    await userEvent.click(screen.getByText('Offre nom'))
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        used: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.TITLE_LINK,
+        offerId: 123,
+      }
+    )
+  })
+
   it('should display a tag when offer has higlight request', () => {
     const eventOffer = listOffersOfferFactory({
       highlightRequests: [{ id: 666, name: 'mon temps fort' }],

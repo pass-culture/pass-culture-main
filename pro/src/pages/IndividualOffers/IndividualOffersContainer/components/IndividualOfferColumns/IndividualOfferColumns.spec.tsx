@@ -3,6 +3,10 @@ import userEvent from '@testing-library/user-event'
 
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import {
+  Events,
+  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
+} from '@/commons/core/FirebaseEvents/constants'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -10,6 +14,11 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { getIndividualOfferColumns } from './IndividualOfferColumns'
+
+const mockLogEvent = vi.fn()
+vi.mock('@/app/App/analytics/firebase', () => ({
+  useAnalytics: () => ({ logEvent: mockLogEvent }),
+}))
 
 const headlineOffer: HeadLineOfferResponseModel = {
   id: 123,
@@ -215,6 +224,40 @@ describe('getIndividualOfferColumns', () => {
     })
 
     expect(columns.map((column) => column.id)).toContain('actions')
+  })
+
+  it('should log source tracker on offer redirection link', async () => {
+    renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByRole('link', { name: 'Voir l’offre' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        used: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_VIEW_OFFER,
+        offerId: 123,
+      }
+    )
+  })
+
+  it('should log source tracker on offer edit redirection link', async () => {
+    renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByRole('link', { name: 'Stocks' }))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        used: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_EDIT_OFFER_STOCK,
+        offerId: 123,
+      }
+    )
   })
 
   it('should omit the actions column when isReadOnly is true', async () => {

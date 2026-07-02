@@ -102,7 +102,6 @@ export function getIndividualOfferColumns({
               : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.EXPOSURE,
           isOfferExposureEnabled,
         })
-
         const editionStockLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode: OFFER_WIZARD_MODE.EDITION,
