@@ -35,7 +35,7 @@ importers:
         version: 0.8.5(@firebase/app@0.15.0)
       '@hookform/resolvers':
         specifier: 5.4.0
-        version: 5.4.0(react-hook-form@7.78.0(react@19.2.7))
+        version: 5.4.0(react-hook-form@7.80.0(react@19.2.7))
       '@pass-culture/design-system':
         specifier: 0.10.0
         version: 0.10.0
@@ -106,8 +106,8 @@ importers:
         specifier: 15.0.0
         version: 15.0.0(react@19.2.7)
       react-hook-form:
-        specifier: 7.78.0
-        version: 7.78.0(react@19.2.7)
+        specifier: 7.80.0
+        version: 7.80.0(react@19.2.7)
       react-instantsearch:
         specifier: 7.36.0
         version: 7.36.0(algoliasearch@5.55.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -3622,8 +3622,8 @@ packages:
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
 
-  react-hook-form@7.78.0:
-    resolution: {integrity: sha512-EEZqc+N23moyzTlz61Pj+JvcXo76ICkpfOZo8JZw+sM4+wLQGh6nI2Ms+PdMOYNluFu0ghlM7B8mCzhRYtJCnA==}
+  react-hook-form@7.80.0:
+    resolution: {integrity: sha512-4P+fk6oXsxY+6xSj7Euhc2sumQD8zQqCuVHoJwoyp9EchP+IUW9OESB7uHFJOKsIBQ4MQqYE84INJFqUCYNoOg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -5040,10 +5040,10 @@ snapshots:
 
   '@hey-api/types@0.1.4': {}
 
-  '@hookform/resolvers@5.4.0(react-hook-form@7.78.0(react@19.2.7))':
+  '@hookform/resolvers@5.4.0(react-hook-form@7.80.0(react@19.2.7))':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.78.0(react@19.2.7)
+      react-hook-form: 7.80.0(react@19.2.7)
 
   '@istanbuljs/schema@0.1.6': {}
 
@@ -7571,7 +7571,7 @@ snapshots:
       prop-types: 15.8.1
       react: 19.2.7
 
-  react-hook-form@7.78.0(react@19.2.7):
+  react-hook-form@7.80.0(react@19.2.7):
     dependencies:
       react: 19.2.7
 
