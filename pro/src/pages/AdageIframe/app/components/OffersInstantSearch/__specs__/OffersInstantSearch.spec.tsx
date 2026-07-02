@@ -94,7 +94,12 @@ describe('OffersInstantSearch', () => {
 
     const setFiltersSpy = vi
       .spyOn(utils, 'adageFiltersToFacetFilters')
-      .mockReturnValue({ queryFilters: [], filtersKeys: [] })
+      .mockReturnValue({
+        queryFilters: [],
+        filtersKeys: [],
+        locationsFilter:
+          'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>',
+      })
 
     renderOffersInstantSearch()
 

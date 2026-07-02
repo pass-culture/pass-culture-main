@@ -135,6 +135,11 @@ export const OffersInstantSearch = (): JSX.Element | null => {
     return <Spinner />
   }
 
+  const { queryFilters, locationsFilter } = adageFiltersToFacetFilters({
+    ...filters,
+    institutionDepartmentCode: adageUser.departmentCode,
+  })
+
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -149,10 +154,8 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           attributesToHighlight={[]}
           attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
           clickAnalytics
-          facetFilters={adageFiltersToFacetFilters(filters).queryFilters}
-          filters={
-            'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
-          }
+          facetFilters={queryFilters}
+          filters={locationsFilter}
           hitsPerPage={8}
           aroundLatLng={
             isNumber(adageUser.lat) && isNumber(adageUser.lon)

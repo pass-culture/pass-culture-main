@@ -16,6 +16,33 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   venue: null,
 }
 
+const getLocationsFilter = (
+  locationType: string,
+  institutionDepartmentCode?: string
+): string => {
+  const baseFilters = {
+    address: 'offer.locationType:ADDRESS<score=3>',
+    school: 'offer.locationType:SCHOOL<score=2>',
+    toBeDefinedNoFilter: 'offer.locationType:TO_BE_DEFINED<score=1>',
+  }
+
+  if (!institutionDepartmentCode) {
+    return `${baseFilters.address} OR ${baseFilters.school} OR ${baseFilters.toBeDefinedNoFilter}`
+  }
+
+  const deptCode = institutionDepartmentCode
+
+  if (locationType === CollectiveLocationType.SCHOOL) {
+    return `(${baseFilters.school}) AND (offer.interventionArea:"${deptCode}")`
+  }
+
+  if (locationType === CollectiveLocationType.ADDRESS) {
+    return `(${baseFilters.address} OR ${baseFilters.toBeDefinedNoFilter}) AND (offer.locationType:ADDRESS OR offer.interventionArea:"${deptCode}")`
+  }
+
+  return `(${baseFilters.address} OR ${baseFilters.school} OR ${baseFilters.toBeDefinedNoFilter}) AND (offer.locationType:ADDRESS OR offer.interventionArea:"${deptCode}")`
+}
+
 export const adageFiltersToFacetFilters = ({
   domains,
   students,
@@ -24,6 +51,7 @@ export const adageFiltersToFacetFilters = ({
   academies,
   formats,
   venue,
+  institutionDepartmentCode,
 }: {
   domains: number[]
   students: string[]
@@ -32,6 +60,7 @@ export const adageFiltersToFacetFilters = ({
   locationType: string
   formats: string[]
   venue: VenueResponse | null
+  institutionDepartmentCode?: string
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -103,9 +132,15 @@ export const adageFiltersToFacetFilters = ({
     updatedFilters.push(filteredVenues)
   }
 
+  const locationsFilter = getLocationsFilter(
+    locationType,
+    institutionDepartmentCode
+  )
+
   return {
     queryFilters: updatedFilters,
     filtersKeys,
+    locationsFilter,
   }
 }
 
