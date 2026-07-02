@@ -203,7 +203,7 @@ describe('getOfferTags', () => {
     const tags = getOfferTags(offer, adageUser).map((tag) => tag.text)
 
     expect(tags).toEqual(expect.arrayContaining(['100,00\xa0€']))
-    expect(tags).toEqual(expect.arrayContaining(['10 élèves']))
+    expect(tags).toEqual(expect.arrayContaining(['10 participants']))
   })
 
   it('should return the price as free if the offer is bookable and the price is zero', () => {
