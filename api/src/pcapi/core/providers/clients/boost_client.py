@@ -118,7 +118,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
 
         # we move this check at the end because Boost API can respond
         # with incorrect status code (some error responses that should
-        # have a status code equal 400 have their status code equal to 401)
+        # have a status code equal to 400 have their status code equal to 401)
         if response.status_code == 401:
             raise BoostInvalidTokenException(f"Boost: {message}")
 

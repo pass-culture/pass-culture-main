@@ -334,7 +334,8 @@ class BookTicketTest:
         "error_message",
         [
             "Séance inconnue.",
-            "PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
+            # the white space at the beginning is part of the actual error message sent by CGR
+            " PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
         ],
     )
     def test_should_raise_show_does_not_exist(self, error_message, requests_mock):

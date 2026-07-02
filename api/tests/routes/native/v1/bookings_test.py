@@ -616,7 +616,8 @@ class PostBookingTest:
         "error_message",
         [
             "Séance inconnue.",
-            "PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
+            # the white space at the beginning is part of the actual error message sent by CGR
+            " PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
         ],
     )
     def test_handle_cgr_showtime_does_not_exist_case(self, error_message, client, requests_mock):
