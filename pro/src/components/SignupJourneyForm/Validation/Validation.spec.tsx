@@ -66,7 +66,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    saveNewOnboardingData: vi.fn(),
+    structureSignup: vi.fn(),
   },
 }))
 
