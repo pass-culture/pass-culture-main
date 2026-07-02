@@ -4088,6 +4088,10 @@ export type ListOffersOfferResponseModel = {
      */
     bookingsCount?: number;
     /**
+     * Hasproadvice
+     */
+    hasProAdvice: boolean;
+    /**
      * Highlightrequests
      */
     highlightRequests: Array<ShortHighlightResponseModel>;

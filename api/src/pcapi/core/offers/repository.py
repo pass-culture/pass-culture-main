@@ -165,6 +165,7 @@ def get_capped_offers_for_filters(
             )
             .joinedload(models.Product.productMediations)
         )
+        .options(sa_orm.with_expression(models.Offer.hasProAdvice, get_offer_has_pro_advice_subquery()))
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .limit(offers_limit)
