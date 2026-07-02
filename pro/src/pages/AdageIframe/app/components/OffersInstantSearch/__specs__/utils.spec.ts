@@ -1,4 +1,4 @@
-import { EacFormat } from '@/apiClient/adage'
+import { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
 
 import type { SearchFormValues } from '../OffersInstantSearch'
 import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
@@ -20,68 +20,124 @@ describe('adageFiltersToFacetFilters', () => {
   const formats: string[] = [EacFormat.CONCERT]
 
   it('should return locationType SCHOOL in facet filter when location is SCHOOL', () => {
-    expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        locationType: 'SCHOOL',
-        departments,
-        academies,
-        formats,
-        venue: venueFilter,
-      })
-    ).toStrictEqual({
-      queryFilters: [
-        ['offer.locationType:SCHOOL'],
-        ['offer.students:Collège - 4e'],
-        ['offer.domains:1'],
-        ['offer.departmentCodes:01'],
-        ['offer.academies:Paris'],
-        ['formats:Concert'],
-        ['venue.id:123', 'venue.id:456'],
-      ],
-      filtersKeys: [
-        'locationType',
-        'students',
-        'domains',
-        'departments',
-        'academies',
-        'formats',
-        'venue',
-      ],
+    const result = adageFiltersToFacetFilters({
+      domains,
+      students,
+      locationType: CollectiveLocationType.SCHOOL,
+      departments,
+      academies,
+      formats,
+      venue: venueFilter,
     })
+
+    expect(result.queryFilters).toStrictEqual([
+      ['offer.locationType:SCHOOL'],
+      ['offer.students:Collège - 4e'],
+      ['offer.domains:1'],
+      ['offer.departmentCodes:01'],
+      ['offer.academies:Paris'],
+      ['formats:Concert'],
+      ['venue.id:123', 'venue.id:456'],
+    ])
+    expect(result.filtersKeys).toStrictEqual([
+      'locationType',
+      'students',
+      'domains',
+      'departments',
+      'academies',
+      'formats',
+      'venue',
+    ])
   })
 
   it('should return locationType ADDRESS and TO_BE_DEFINED when value is ADDRESS in facet filter', () => {
-    expect(
-      adageFiltersToFacetFilters({
-        domains,
-        students,
-        locationType: 'ADDRESS',
-        departments,
-        academies,
-        formats,
-        venue: venueFilter,
+    const result = adageFiltersToFacetFilters({
+      domains,
+      students,
+      locationType: CollectiveLocationType.ADDRESS,
+      departments,
+      academies,
+      formats,
+      venue: venueFilter,
+    })
+
+    expect(result.queryFilters).toStrictEqual([
+      ['offer.locationType:ADDRESS', 'offer.locationType:TO_BE_DEFINED'],
+      ['offer.students:Collège - 4e'],
+      ['offer.domains:1'],
+      ['offer.departmentCodes:01'],
+      ['offer.academies:Paris'],
+      ['formats:Concert'],
+      ['venue.id:123', 'venue.id:456'],
+    ])
+  })
+
+  describe('locations filter with institution department', () => {
+    it('should generate locations filter without department when no departmentCode provided', () => {
+      const result = adageFiltersToFacetFilters({
+        domains: [],
+        students: [],
+        locationType: CollectiveLocationType.SCHOOL,
+        departments: [],
+        academies: [],
+        formats: [],
+        venue: null,
       })
-    ).toStrictEqual({
-      queryFilters: [
-        ['offer.locationType:ADDRESS', 'offer.locationType:TO_BE_DEFINED'],
-        ['offer.students:Collège - 4e'],
-        ['offer.domains:1'],
-        ['offer.departmentCodes:01'],
-        ['offer.academies:Paris'],
-        ['formats:Concert'],
-        ['venue.id:123', 'venue.id:456'],
-      ],
-      filtersKeys: [
-        'locationType',
-        'students',
-        'domains',
-        'departments',
-        'academies',
-        'formats',
-        'venue',
-      ],
+
+      expect(result.locationsFilter).toBe(
+        'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
+      )
+    })
+
+    it('should generate locations filter for SCHOOL with department when departmentCode provided', () => {
+      const result = adageFiltersToFacetFilters({
+        domains: [],
+        students: [],
+        locationType: CollectiveLocationType.SCHOOL,
+        departments: [],
+        academies: [],
+        formats: [],
+        venue: null,
+        institutionDepartmentCode: '75',
+      })
+
+      expect(result.locationsFilter).toBe(
+        '(offer.locationType:SCHOOL<score=2>) AND (offer.interventionArea:"75")'
+      )
+    })
+
+    it('should generate locations filter for ADDRESS with department when departmentCode provided', () => {
+      const result = adageFiltersToFacetFilters({
+        domains: [],
+        students: [],
+        locationType: CollectiveLocationType.ADDRESS,
+        departments: [],
+        academies: [],
+        formats: [],
+        venue: null,
+        institutionDepartmentCode: '75',
+      })
+
+      expect(result.locationsFilter).toBe(
+        '(offer.locationType:ADDRESS<score=3> OR offer.locationType:TO_BE_DEFINED<score=1>) AND (offer.locationType:ADDRESS OR offer.interventionArea:"75")'
+      )
+    })
+
+    it('should generate locations filter for TO_BE_DEFINED with department when departmentCode provided', () => {
+      const result = adageFiltersToFacetFilters({
+        domains: [],
+        students: [],
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        departments: [],
+        academies: [],
+        formats: [],
+        venue: null,
+        institutionDepartmentCode: '75',
+      })
+
+      expect(result.locationsFilter).toBe(
+        '(offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>) AND (offer.locationType:ADDRESS OR offer.interventionArea:"75")'
+      )
     })
   })
 })
@@ -93,7 +149,7 @@ describe('serializeFiltersForData', () => {
     const filters: SearchFormValues = {
       domains: [1],
       students: ['Collège - 4e'],
-      locationType: 'SCHOOL',
+      locationType: CollectiveLocationType.SCHOOL,
       departments: ['01'],
       academies: ['Paris'],
       formats: [EacFormat.CONCERT],
@@ -106,7 +162,7 @@ describe('serializeFiltersForData', () => {
       domains: ['domaine1'],
       query: 'test',
       students: ['Collège quatrième'],
-      locationType: 'SCHOOL',
+      locationType: CollectiveLocationType.SCHOOL,
       departments: ['01'],
       academies: ['Paris'],
       formats: ['Concert'],

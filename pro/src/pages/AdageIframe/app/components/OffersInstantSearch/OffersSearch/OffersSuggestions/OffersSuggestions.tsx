@@ -138,6 +138,10 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
   return (
     <>
       {formValuesArray.map((formValues, i) => {
+        const { queryFilters, locationsFilter } = adageFiltersToFacetFilters({
+          ...formValues.values,
+          institutionDepartmentCode: adageUser.departmentCode,
+        })
         return (
           <Index
             indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -149,13 +153,9 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
               attributesToHighlight={[]}
               attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
               clickAnalytics
-              facetFilters={
-                adageFiltersToFacetFilters(formValues.values).queryFilters
-              }
+              facetFilters={queryFilters}
               query={''}
-              filters={
-                'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
-              }
+              filters={locationsFilter}
               hitsPerPage={3}
               aroundLatLng={
                 isNumber(adageUser.lat) && isNumber(adageUser.lon)
