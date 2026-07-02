@@ -421,8 +421,8 @@ class BookTicketTest:
         )
         requests_mock.post(
             "https://cinema-0.example.com/api/sale/complete",
-            status_code=400,
-            json={"code": 400, "message": error_message},
+            status_code=401,  # unfortunately Boost uses an inappropriate status code
+            json={"code": 401, "message": error_message},
             headers={"Content-Type": "application/json"},
             additional_matcher=lambda request: not request.json().get("idsBeforeSale"),
         )

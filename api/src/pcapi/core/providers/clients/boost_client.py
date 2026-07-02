@@ -109,15 +109,18 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
             extra={"message_content": message, "status_code": response.status_code, "request_detail": request_detail},
         )
 
-        if response.status_code == 401:
-            raise BoostInvalidTokenException(f"Boost: {message}")
-
         if regex.match(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message):
             remaining_seats = int(regex.findall(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message)[0])
             raise external_bookings_exceptions.ShowSoldOutException(remaining_seats)
 
         if "No showtime found" in message:
             raise external_bookings_exceptions.ShowRemovedException()
+
+        # we move this check at the end because Boost API can respond
+        # with incorrect status code (some error responses that should
+        # have a status code equal 400 have their status code equal to 401)
+        if response.status_code == 401:
+            raise BoostInvalidTokenException(f"Boost: {message}")
 
         raise BoostAPIException(f"Error on Boost API: {error_message} - {message}")
 
