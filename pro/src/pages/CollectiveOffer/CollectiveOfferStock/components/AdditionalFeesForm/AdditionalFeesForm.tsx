@@ -199,14 +199,16 @@ export const AdditionalFeesForm = ({
               />
 
               {shouldShowRemoveFeeButton && (
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={fullTrashIcon}
-                  iconAlt={'Supprimer ce champ'}
-                  onClick={removeAdditionalFeesFieldEntry(index)}
-                  disabled={!canEditDiscount || fields.length === 1}
-                />
+                <div className={styles['remove-button-container']}>
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    icon={fullTrashIcon}
+                    iconAlt={'Supprimer ce champ'}
+                    onClick={removeAdditionalFeesFieldEntry(index)}
+                    disabled={!canEditDiscount || fields.length === 1}
+                  />
+                </div>
               )}
             </FormLayout.Row>
           ))}

@@ -13,7 +13,7 @@
   color: var(--color-text-error);
 
   &-content {
-    @include fonts.body-accent-s;
+    @include fonts.body-accent-xs;
 
     display: flex;
     align-items: center;
