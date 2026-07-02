@@ -1,10 +1,13 @@
-name: 0 [CI][⚠️ DEPRECATED] Deploy PR preview
+name: 0 [CI] Deploy PR preview
 
 on:
   workflow_dispatch:
     inputs:
+      source_branch:
+        description: "Branch of pass-culture-main repository to deploy"
+        required: true
       sandbox:
-        description: "Sandbox installed"
+        description: "Sandbox to install (empty = no sandbox)"
         required: true
         default: "empty"
         type: choice
@@ -22,117 +25,77 @@ on:
         required: false
         default: false
         type: boolean
-      deployment_source_branch:
-        description: "Branch of pass-culture-deployment repository to use for helm charts."
-        required: false
-        default: "master"
 
 permissions: write-all
 
 env:
-  docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
+  PASSDIRECTOR_VERSION: v0.7.0
 
 jobs:
   deploy-preview-env-init:
-    name: "Init"
+    name: Init
+    environment:
+      name: pcapi-preview
+      deployment: false
     runs-on: ubuntu-latest
     outputs:
-      # checksum-tag is the sha1sum of the api folder. It is used to tag the docker image
-      checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-      # resource_label names every resources created by this workflow. It is the sha1sum of the branch name
-      resource_label: ${{ steps.set_resource_label.outputs.resource_label }}
-      pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
-      # testing_label controls wether we connect to testing backend or a preview backend
-      testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
-      backend_url_for_pro: ${{ steps.set_resource_label.outputs.backend_url_for_pro }}
-      backend_url: ${{ steps.set_resource_label.outputs.backend_url }}
-      backoffice_url: ${{ steps.set_resource_label.outputs.backoffice_url }}
+      preview_id: ${{ steps.compute-labels.outputs.preview_id }}
+      backend_url_for_pro: ${{ steps.compute-labels.outputs.backend_url_for_pro }}
+      backend_url: ${{ steps.compute-labels.outputs.backend_url }}
+      backoffice_url: ${{ steps.compute-labels.outputs.backoffice_url }}
+      commit_sha: ${{ steps.checkout.outputs.commit }}
+
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        id: checkout
         with:
           fetch-tags: false
-          ref: ${{ github.ref_name }}
+          ref: ${{ inputs.source_branch }}
           persist-credentials: false
-      - name: "Set resources label name"
-        id: "set_resource_label"
+
+      - name: Compute preview environment identifiers
+        id: compute-labels
         env:
           FRONT_ONLY: ${{ inputs.front-only }}
-          BRANCH_NAME: ${{ github.ref_name }}
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
         run: |
-          BRANCH_SHA1=$(echo -n "${BRANCH_NAME}" | sha1sum | awk '{print $1}' | cut -c1-7)
-          echo "resource_label=$BRANCH_SHA1" | tee -a "$GITHUB_OUTPUT"
-          
-          backend_url=https://backend-${BRANCH_SHA1}.testing.passculture.team
+          PREVIEW_ID=$(echo -n "${SOURCE_BRANCH}" | sha1sum | awk '{print $1}' | cut -c1-7)
+          echo "preview_id=${PREVIEW_ID}" | tee -a "$GITHUB_OUTPUT"
+
+          backend_url=https://preview-${PREVIEW_ID}.backend.testing.passculture.team
+          backoffice_url=https://preview-${PREVIEW_ID}.backoffice.testing.passculture.team
+
           echo "backend_url=${backend_url}" | tee -a "$GITHUB_OUTPUT"
-          echo "backoffice_url=https://backoffice-${BRANCH_SHA1}.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
+          echo "backoffice_url=${backoffice_url}" | tee -a "$GITHUB_OUTPUT"
         
-          if [ "$FRONT_ONLY" == "true" ]; then
-            # Empty = frontend connects to shared testing backend
-            echo "backend_url_for_pro=" | tee -a "$GITHUB_OUTPUT"
+          if [ "${FRONT_ONLY}" == "true" ]; then
+            echo "backend_url_for_pro=https://backend.testing.passculture.team" | tee -a "$GITHUB_OUTPUT"
           else
             echo "backend_url_for_pro=${backend_url}" | tee -a "$GITHUB_OUTPUT"
           fi
 
-      - name: "Define pcapi image tags."
-        id: pcapi-tags
-        run: |
-          DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
-          API_CHECKSUM=$(tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }')
-          PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
-          API_TAG="checksum-tag=$API_CHECKSUM"
-          echo "PUSH_TAGS=$PUSH_TAGS"
-          echo "API_TAG=$API_TAG"
-          echo "$PUSH_TAGS" >> "$GITHUB_OUTPUT"
-          echo "$API_TAG" >> "$GITHUB_OUTPUT"
-      - name: "Authentification to Google (branch name length must be <= 77 chars — it might change)"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: secrets
-        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: "Check if pcapi already exists"
-        id: check-checksum-tag
-        run: ./.github/workflows/scripts/check-image-tag-exists.sh
-        env:
-          image: pcapi
-          tag: ${{ github.sha }}
-          token: ${{ steps.openid-auth.outputs.access_token }}
-
   deploy-pro-on-firebase-preview-env:
-    name: "[PRO] Deploy PR version for validation pr preview backend"
-    needs: [deploy-preview-env-init]
+    name: Deploy preview environment for PRO
+    needs:
+      - deploy-preview-env-init
     uses: ./.github/workflows/cd_sub_deploy_front_pro_preview.yml
     with:
       cache_bucket_name: passculture-infra-prod-github-runner-cache
       backend_url: ${{ needs.deploy-preview-env-init.outputs.backend_url_for_pro }}
-      source_branch: ${{ github.ref_name }}
+      source_branch: ${{ inputs.source_branch }}
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   build-pcapi:
-    name: "[pcapi] build docker image."
-    needs: [deploy-preview-env-init]
+    name: Build pcapi docker image
+    needs:
+      - deploy-preview-env-init
     if: inputs.front-only == false
     uses: ./.github/workflows/docker_build_image.yml
     with:
       image: pcapi
-      tag: ${{ github.sha }}
+      tag: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
 
   push-pcapi:
     name: Push pcapi docker image to artifact registry
@@ -140,299 +103,142 @@ jobs:
       - deploy-preview-env-init
       - build-pcapi
     if: inputs.front-only == false
-    uses: ./.github/workflows/docker_push_image.yml
+    uses: ./.github/workflows/docker_push_image_passdirector.yml
     with:
       image: pcapi
-      tag: ${{ github.sha }}
-      tag_latest: true
+      tag: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
+      environment: pcapi-preview
+      registry_repository: pcapi-preview
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-api:
-    name: Deploy pullrequest
+    name: Deploy preview environment
     runs-on: ubuntu-latest
+    environment:
+      name: pcapi-preview
+      deployment: true
+    permissions:
+      id-token: write
+      contents: read
     needs:
       - deploy-preview-env-init
       - push-pcapi
       - deploy-pro-on-firebase-preview-env
     if: always() && !failure() && !cancelled() && inputs.front-only == false
-    environment:
-      name: pullrequest
-      deployment: true
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          ref: ${{github.ref}}
+          ref: ${{ github.ref }}
+          fetch-tags: false
           persist-credentials: false
-      - name: "Authentification to Google"
+
+      - name: Install Argo Workflows CLI
+        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: ${{ env.PASSDIRECTOR_VERSION }}
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+      - name: Authentification to Google
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          service_account: ${{ vars.PCAPI_CI_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PRD }}
 
-      # Get GitHub api token that will be used to commit and push api_version to pass-culture-deployment repository
-      - name: "Get secrets (github)"
-        id: "secrets"
-        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3.0.0
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
         with:
-          secrets: |-
-            DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
-            DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
+          cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
+          project_id: ${{ vars.PROJECT_ID }}
+          location: ${{ vars.LOCATION }}
+          use_dns_based_endpoint: true
 
-      - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: github-token
-        with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          # Liste des repositories à cloner
-          repositories: |
-            pass-culture-deployment
-            pass-culture-main
-            rendered-manifests
-            pc-render-manifests
-            pc-connect
-            pc-firestore-cli
-          permission-contents: write
-
-      - name: "Authentification to Google"
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        id: google-auth
-        with:
-          create_credentials_file: true
-          token_format: "access_token"
-          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
-          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
-
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@46bfbcb2f617bd3dcc034e974ef6ffbe6106d3cb # pc-k8s-connect/v0.3.1
-        with:
-          cluster_scope: metier
-          cluster_environment: ehp
-          api_token_github: ${{ steps.github-token.outputs.token }}
-
-      # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
-      - name: "Generate pcapi secrets list"
-        id: generate-pcapi-secrets-list
-        run: |
-          # Retrieve pcapi secrets list from source code
-          PCAPI_SECRETS="$(grep "secrets_utils.get(" api/src/pcapi/settings.py | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -Ev '^(GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|DATABASE_URL)$')"
-          echo "$PCAPI_SECRETS"
-          # Sort list
-          PCAPI_SECRETS="$(echo "$PCAPI_SECRETS" | xargs -n1 | sort | xargs)"
-          # Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
-          PCAPI_SECRETS="secrets={$(echo "$PCAPI_SECRETS" | sed -r 's/ /,/g')}"
-          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
-
-      # Create pullrequest namespace and externalsecret containing pgsql credentials
-      - name: "Installing Pullrequest deployment prerequisites"
-        run: |
-          set -e
-          export PRID=${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          envsubst < .github/workflows/templates/pullrequest-namespace.yaml | kubectl apply -f -
-          envsubst < .github/workflows/templates/pullrequest-pgsql-externalsecret.yaml | kubectl apply -f -
-
-      - name: "Docker login"
-        id: "docker-login"
-        uses: "docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee" # v4.2.0
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.google-auth.outputs.access_token }}"
-
-      - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@c04e83ec7650bf2ec910864bcb409479cf56d8e6 # v2.2.0
-        with:
-          helmfile-version: "v1.1.3"
-
-      # Executes helmfile templating and push results to render-manifests repository
-      - name: "Setup pc-render-manifests"
-        uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@IC-284-use-pc-render-manifest-binary
-        with:
-          token: ${{ steps.github-token.outputs.token }}
-          version: "v0.7.1"
-
-      - name: "Generate and push rendered manifests"
+      - name: Deploy preview environment stack
+        id: deploy-api
+        shell: bash
         env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-          PRID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
-          DEPLOYMENT_SOURCE_BRANCH: ${{ inputs.deployment_source_branch }}
-        run: |
-          pc-render-manifests render \
-            -a pcapi \
-            -e pullrequest \
-            --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
-            --sourcePath helm/pcapi \
-            --sourceRepoRef "$DEPLOYMENT_SOURCE_BRANCH" \
-            --destinationRepoRef pcapi/pullrequests \
-            --additionalStateValues "pcapi.image.tag=${{ github.sha }}" \
-            --additionalStateValues "prId=${PRID}" \
-            --additionalStateValues "proUrl=${PRO_URL}" \
-            --additionalArg "--set ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
-            --destinationPathTemplate "{{ .OutputDir }}/{{.Release.Name}}-pr-${PRID}" \
-            --commitMsg "pcapi(pr-${PRID}) : manifests for app_version=${{ github.sha }}" \
-            --clean=false \
-            --push \
-            --silent
-
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@46bfbcb2f617bd3dcc034e974ef6ffbe6106d3cb # pc-k8s-connect/v0.3.1
-        with:
-          cluster_scope: metier
-          cluster_environment: ehp
-          api_token_github: ${{ steps.github-token.outputs.token }}
-
-      # Wait for ApplicationSet Controller to create applications
-      # TODO : Change to webhook once appset controller ingress gets proper Health endpoint
-      # PC-33270-pr-enable-argocd-applicationset-webhook
-      # Releated issue : https://github.com/argoproj/argo-cd/pull/17691
-      - name: "Wait for argocd applications to create"
-        continue-on-error: true
-        run: |
-          set +e
-          while true; do
-            if kubectl get application -n argocd | grep "postgresql-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
-            then
-               break
-            else
-               sleep 5
-            fi
-          done
-          while true; do
-            if kubectl get application -n argocd | grep "redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
-            then
-               break
-            else
-               sleep 5
-            fi
-          done
-          while true; do
-            if kubectl get application -n argocd | grep "testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}"
-            then
-               break
-            else
-               sleep 5
-            fi
-          done
-          {
-            echo "### :rocket: Applications Argocd"
-            echo "| Argocd       | Link |"
-            echo "| ------------ | ---- |"
-            echo "| Applications | https://argocd.ehp.passculture.team/applications?showFavorites=false&proj=pcapi-pullrequest&sync=&autoSync=&health=&namespace=&cluster=&labels=&search=pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: "Namespace monitoring"
-        run: |
-          {
-            echo "### :rocket: Pullrequest Namespace monitoring"
-            echo "| Namespace                                        | Link |"
-            echo "| ------------------------------------------------ | ---- |"
-            echo "| pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} | https://monitoring.ehp.passculture.team/d/pods-dashboard/k8s-resource-monitoring-pods?orgId=1&var-Filters=namespace%7C%3D%7Cpcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}&from=now-1h&to=now |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: "Sync ArgoCD Pgsql application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@076783ee6943b5e698175bdcea46d7af18bc2742 # argocd-sync/v0.8.0
-        with:
-          app_name: postgresql-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          argocd_app_wait: true
-
-      - name: "Sync ArgoCD Redis application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@076783ee6943b5e698175bdcea46d7af18bc2742 # argocd-sync/v0.8.0
-        with:
-          app_name: redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          argocd_app_wait: true
-
-      - name: "Sync ArgoCD pcapi configmaps and secrets"
-        uses: pass-culture/common-workflows/actions/argocd-sync@076783ee6943b5e698175bdcea46d7af18bc2742 # argocd-sync/v0.8.0
-        with:
-          app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          argocd_app_wait: false
-          prune: true
-          extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
-
-      - name: "Init local database"
-        run: |
-          set -e
-          VERSION="${{ github.sha }}"
-          export ENVIRONMENT="pullrequest"
-          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
-          export IMAGE="${IMAGE}:${VERSION}"
-          export PRID="${{ needs.deploy-preview-env-init.outputs.resource_label }}"
-
-          echo "=== exec: flask install_postgres_extensions"
-          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
-          export DATE
-          start="$(date +%s.%N)"
-          envsubst < .github/workflows/templates/pullrequest-db-init.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
-          while true;
-          do
-            kubectl logs -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" -f "jobs/pullrequest-db-init-${DATE}" && break
-          done
-          kubectl wait --for=condition=complete --timeout=300s -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" "jobs/pullrequest-db-init-${DATE}"
-          end="$(date +%s.%N)"
-          duration="$(date -d@"$(bc <<< "$end - $start")" -u +%H:%M:%S)"
-          {
-            echo "### :rocket: Init local database summary"
-            echo "| Command                              | Duration |"
-            echo "| ------------------------------------ | ----- |"
-            echo "| flask install_postgres_extensions    |  $duration |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: "Sync ArgoCD pcapi application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@076783ee6943b5e698175bdcea46d7af18bc2742 # argocd-sync/v0.8.0
-        with:
-          app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          argocd_app_wait: true
-          prune: true
-
-      - name: "Run sandbox"
-        if: inputs.sandbox != 'empty'
-        env:
-          SANDBOX: ${{ inputs.sandbox }}
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
+          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
+          PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
+          PCAPI_IMAGE_TAG: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
+          SANDBOX_ENABLED: ${{ inputs.sandbox != 'empty' }}
+          SANDBOX_NAME: ${{ inputs.sandbox != 'empty' && inputs.sandbox || '' }}
           SANDBOX_ARGS: ${{ inputs.sandbox-args }}
         run: |
-          set -e
-          VERSION="${{ github.sha }}"
-          export ENVIRONMENT="pullrequest"
-          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
-          export IMAGE="${IMAGE}:${VERSION}"
-          export PRID="${{ needs.deploy-preview-env-init.outputs.resource_label }}"
+          passdirector workflows submit \
+            --namespace "${NAMESPACE}" \
+            --template "${WORKFLOW_TEMPLATE}" \
+            --parameter previewId="${PREVIEW_ID}" \
+            --parameter pcapiImageTag="${PCAPI_IMAGE_TAG}" \
+            --parameter sandboxEnabled="${SANDBOX_ENABLED}" \
+            --parameter sandboxName="${SANDBOX_NAME}" \
+            --parameter sandboxArgs="${SANDBOX_ARGS}"
 
-          echo "=== exec: flask sandbox -n $SANDBOX $SANDBOX_ARGS"
-          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
-          export DATE
-          export SANDBOX_NAME="$SANDBOX"
-          export SANDBOX_ARGS="$SANDBOX_ARGS"
-          start="$(date +%s.%N)"
-          envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" apply -f -
-          while true;
-          do
-          kubectl logs -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" -f "jobs/pullrequest-db-init-sandbox-${DATE}" && break
-          done
-          kubectl wait --for=condition=complete --timeout=1800s -n "pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}" "jobs/pullrequest-db-init-sandbox-${DATE}"
-          end="$(date +%s.%N)"
-          duration="$(date -d@"$(bc <<< "$end - $start")" -u +%H:%M:%S)"
-          {
-            echo "### :rocket: Run sandbox summary"
-            echo "| Command                                                              | Duration  |"
-            echo "| -------------------------------------------------------------------- | --------- |"
-            echo "| flask sandbox -n $SANDBOX $SANDBOX_ARGS   | $duration |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: "Publish Summary"
+      - name: Publish Summary
+        shell: bash
+        env:
+          PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
+          BACKEND_URL: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+          BACKOFFICE_URL: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
         run: |
+          DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
           {
             echo "### :rocket: Deploy PRO summary"
-            echo "| Results                              | Value |"
-            echo "| ------------------------------------ | ----- |"
-            echo "| [Pro] url                            |  ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }} |"
-            echo "| [Back] url                           |  ${{ needs.deploy-preview-env-init.outputs.backend_url }} |"
-            echo "| [BO] url                             |  ${{ needs.deploy-preview-env-init.outputs.backoffice_url }} |"
+            echo "| Results                              | Value                       |"
+            echo "| ------------------------------------ | --------------------------- |"
+            echo "| Date                                 | ${DATE}                     |"
+            echo "| Branch                               | ${SOURCE_BRANCH}            |"
+            echo "| Namespace                            | ${NAMESPACE}                |"
+            echo "| [Pro] url                            | ${PRO_URL}                  |"
+            echo "| [Back] url                           | ${BACKEND_URL}              |"
+            echo "| [BO] url                             | ${BACKOFFICE_URL}           |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  ensure-preview-env-ready:
+    name: Ensure preview environment is ready (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    environment:
+      name: pcapi-preview
+      deployment: false
+    needs:
+      - deploy-preview-env-init
+      - deploy-api
+    if: always() && !failure() && !cancelled() && inputs.front-only == false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            url: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
+          - service: backoffice
+            url: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.ref }}
+          fetch-tags: false
+          persist-credentials: false
+
+      - name: Install passdirector
+        uses: ./.github/actions/setup-passdirector
+        with:
+          version: ${{ env.PASSDIRECTOR_VERSION }}
+          github_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          github_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+      - name: Ensure ${{ matrix.service }} is ready
+        shell: bash
+        env:
+          SERVICE_URL: ${{ matrix.url }}
+        run: |
+          passdirector pcapi get-version \
+            --url "${SERVICE_URL}" \
+            --retries 60 \
+            --retry-interval 30 \
+            --timeout 60
