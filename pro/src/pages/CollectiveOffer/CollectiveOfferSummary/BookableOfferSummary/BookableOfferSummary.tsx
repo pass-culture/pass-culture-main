@@ -180,6 +180,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     ? getLocation(offer.location, true)
     : 'Localisation à déterminer avec l’enseignant'
 
+  const postalCode = offer.institution?.postalCode
+    ? `- ${offer.institution.postalCode}`
+    : ''
   return (
     <BasicLayout
       mainHeading={<div className={styles['header-title']}>{offer.name}</div>}
@@ -227,7 +230,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               src={strokeTeacherIcon}
             >
               {offer.institution?.institutionType && offer.institution.name
-                ? `${offer.institution.institutionType} ${offer.institution.name} ${offer.institution.postalCode ? `- ${offer.institution.postalCode}` : ''}`
+                ? `${offer.institution.institutionType} ${offer.institution.name} ${postalCode}`
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Nombre de participants" src={strokeUserIcon}>

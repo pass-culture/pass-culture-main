@@ -154,14 +154,14 @@ const CollectiveOfferConfirmation = ({
       CollectiveOfferTemplateAllowedAction.CAN_SHARE
     )
 
+  const isOfferShared = canShareOffer
+    ? showcaseOfferWithShareLink(offer)
+    : showcaseOffer()
+  const isOfferShowcased = isShowcase ? isOfferShared : activeOffer(offer)
   const confirmationData =
     offerStatus === CollectiveOfferDisplayedStatus.UNDER_REVIEW
       ? pendingOffer
-      : isShowcase
-        ? canShareOffer
-          ? showcaseOfferWithShareLink(offer)
-          : showcaseOffer()
-        : activeOffer(offer)
+      : isOfferShowcased
 
   return (
     <BasicLayout

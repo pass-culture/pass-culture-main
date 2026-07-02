@@ -131,14 +131,7 @@ describe('getComponentProps', () => {
   })
 
   it('should return anchor props when Component is "a"', () => {
-    const result = getComponentProps(
-      'a',
-      undefined,
-      '/test',
-      false,
-      false,
-      true
-    )
+    const result = getComponentProps('a', 'button', '/test', false, false, true)
     expect(result).toEqual({
       href: '/test',
       rel: 'noopener noreferrer',
@@ -150,7 +143,7 @@ describe('getComponentProps', () => {
   it('should return link props when Component is Link', () => {
     const result = getComponentProps(
       Link,
-      undefined,
+      'button',
       '/test',
       false,
       false,
