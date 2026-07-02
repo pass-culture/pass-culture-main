@@ -151,6 +151,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
   const canEditOffer = isCollectiveOfferEditable(offer)
 
+  const { numberOfTickets, numberOfTeachers } = offer.collectiveStock || {}
+  const numberOfParticipants = (numberOfTickets || 0) + (numberOfTeachers || 0)
+
   const canArchiveOffer = isActionAllowedOnCollectiveOffer(
     offer,
     CollectiveOfferAllowedAction.CAN_ARCHIVE
@@ -234,8 +237,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Nombre de participants" src={strokeUserIcon}>
-              {offer.collectiveStock?.numberOfTickets
-                ? `${offer.collectiveStock.numberOfTickets} ${pluralizeFr(offer.collectiveStock.numberOfTickets, 'participant', 'participants')}`
+              {numberOfParticipants
+                ? `${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Prix de l’offre" src={strokeEuroIcon}>

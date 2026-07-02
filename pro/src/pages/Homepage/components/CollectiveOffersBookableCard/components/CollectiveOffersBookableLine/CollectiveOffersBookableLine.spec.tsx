@@ -36,7 +36,7 @@ describe('<CollectiveOffersBookableLine />', () => {
     expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
     expect(screen.getByRole('img')).toBeVisible()
     expect(
-      screen.getByText(`Prévu le ${expectedDisplayedDate} - 100 participants`)
+      screen.getByText(`Prévu le ${expectedDisplayedDate} - 105 participants`)
     ).toBeVisible()
     expect(screen.getByRole('link', { name: "Voir l'offre" })).toBeVisible()
     expect(screen.getByText('réservée')).toBeVisible()
@@ -59,7 +59,7 @@ describe('<CollectiveOffersBookableLine />', () => {
     expect(screen.getByText(collectiveOfferHome.name)).toBeVisible()
     expect(screen.getByRole('img')).toBeVisible()
     expect(
-      screen.getByText(`Prévu le ${expectedDisplayedDate} - 100 participants`)
+      screen.getByText(`Prévu le ${expectedDisplayedDate} - 105 participants`)
     ).toBeVisible()
     expect(
       screen.getByRole('link', { name: 'Modifier la date limite' })
@@ -117,7 +117,7 @@ describe('<CollectiveOffersBookableLine />', () => {
       )
       await user.click(
         screen.getByRole('link', {
-          name: `Expire dans 1 jour - ${collectiveOfferHome.name} - Prévu le ${expectedDate} - 100 participants - publiée`,
+          name: `Expire dans 1 jour - ${collectiveOfferHome.name} - Prévu le ${expectedDate} - 105 participants - publiée`,
         })
       )
 

@@ -42,8 +42,8 @@ const commonOfferData = {
   date: defaultDate,
   bookingLimitDate: defaultBookingLimitDate,
   time: '18:30',
-  students: '10',
-  teachers: '2',
+  students: 10,
+  teachers: 2,
   servicePrice: '80',
   additionnalFees: [
     { amount: '8', label: "Repas de l'intervenant" },
@@ -53,6 +53,8 @@ const commonOfferData = {
   priceDescription: 'description',
   institution: 'COLLEGE 123',
 }
+
+const totalParticipants = commonOfferData.students + commonOfferData.teachers
 
 test.describe('Create collective offers', () => {
   let requestContext: APIRequestContext
@@ -90,7 +92,7 @@ test.describe('Create collective offers', () => {
         '',
         `N°7${newOfferName}`,
         format(commonOfferData.date, 'dd/MM/yyyy'),
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         'COLLEGE 123 75000',
         `1 boulevard Poissonnière 75002 Paris`,
         'publiée',
@@ -121,7 +123,7 @@ test.describe('Create collective offers', () => {
         '',
         `N°8${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         'COLLEGE 123 75000',
         '3 RUE DE VALOIS 75008 Paris',
         'publiée',
@@ -155,7 +157,7 @@ test.describe('Create collective offers', () => {
         '',
         `N°9${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         'COLLEGE 123 75000',
         'Libellé de mon adresse custom - Place de la gare 12312 Y',
         'publiée',
@@ -187,7 +189,7 @@ test.describe('Create collective offers', () => {
         '',
         `N°10${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         'COLLEGE 123 75000',
         "Dans l'établissement",
         'publiée',
@@ -222,7 +224,7 @@ test.describe('Create collective offers', () => {
         '',
         `N°11${newOfferName}`,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         'COLLEGE 123 75000',
         'À déterminer',
         'publiée',
@@ -306,7 +308,7 @@ test.describe('Create collective offers', () => {
         '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         commonOfferData.institution,
         '3 RUE DE VALOIS 75008 Paris',
         'brouillon',
@@ -335,7 +337,7 @@ test.describe('Create collective offers', () => {
         '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        `${commonOfferData.price}€${commonOfferData.students} participants`,
+        `${commonOfferData.price}€${totalParticipants} participants`,
         commonOfferData.institution,
         '3 RUE DE VALOIS 75008 Paris',
         'publiée',
@@ -390,10 +392,12 @@ async function fillDatesAndPrice(
     .getByLabel(/Date de début */)
     .fill(format(commonOfferData.date, 'yyyy-MM-dd'))
   await page.getByLabel(/Horaire */).fill(commonOfferData.time)
-  await page.getByLabel(/Nombre d'élèves */).fill(commonOfferData.students)
+  await page
+    .getByLabel(/Nombre d'élèves */)
+    .fill(commonOfferData.students.toString())
   await page
     .getByLabel(/Nombre d'accompagnateurs */)
-    .fill(commonOfferData.teachers)
+    .fill(commonOfferData.teachers.toString())
   await page
     .getByLabel(/Date limite de réservation */)
     .fill(format(commonOfferData.bookingLimitDate, 'yyyy-MM-dd'))

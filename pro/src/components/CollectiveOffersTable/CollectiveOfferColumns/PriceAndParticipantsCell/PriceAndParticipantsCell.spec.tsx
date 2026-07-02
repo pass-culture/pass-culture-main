@@ -20,7 +20,7 @@ describe('PriceAndParticipantsCell', () => {
     renderWithProviders(<PriceAndParticipantsCell offer={offer} />)
 
     expect(screen.getByText('10€')).toBeInTheDocument()
-    expect(screen.getByText('5 participants')).toBeInTheDocument()
+    expect(screen.getByText('6 participants')).toBeInTheDocument()
   })
 
   it('should display dash when price or numberOfTickets are missing', () => {
