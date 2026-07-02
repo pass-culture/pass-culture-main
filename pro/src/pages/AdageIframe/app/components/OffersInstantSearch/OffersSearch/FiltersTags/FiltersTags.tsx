@@ -76,7 +76,7 @@ export const FiltersTags = ({
       return null
     }
     return createTag(
-      `Localisation des partenaires : < à ${form.watch('geolocRadius')} km`,
+      `Localisation des offres : < à ${form.watch('geolocRadius')} km`,
       () => {
         form.setValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)

@@ -46,13 +46,12 @@ export const adageFiltersToFacetFilters = ({
 
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
-  const filteredDepartments: string[] = departments.flatMap((department) => [
-    `offer.interventionArea:${department}`,
-    `venue.departmentCode:${department}`,
-  ])
+  const filteredDepartments: string[] = departments.map(
+    (department) => `offer.departmentCodes:${department}`
+  )
 
   const filteredAcademies: string[] = academies.map(
-    (academy) => `venue.academy:${academy}`
+    (academy) => `offer.academies:${academy}`
   )
 
   filtersKeys.push('locationType')

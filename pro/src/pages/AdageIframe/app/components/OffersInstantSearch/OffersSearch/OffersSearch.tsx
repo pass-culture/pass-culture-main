@@ -3,6 +3,7 @@ import {
   type SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -108,15 +109,46 @@ export const OffersSearch = ({
     label: name,
   }))
 
+  const adageUserHasValidGeoloc = useMemo(
+    () =>
+      (adageUser.lat || adageUser.lat === 0) &&
+      (adageUser.lon || adageUser.lon === 0),
+    [adageUser.lat, adageUser.lon]
+  )
+
+  const getActiveLocalisationFilter = () => {
+    if (form.watch('departments').length > 0) {
+      return LocalisationFilterStates.DEPARTMENTS
+    }
+    if (form.watch('academies').length > 0) {
+      return LocalisationFilterStates.ACADEMIES
+    }
+    if (
+      form.watch('geolocRadius') !== ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
+    ) {
+      return LocalisationFilterStates.GEOLOCATION
+    }
+    return LocalisationFilterStates.NONE
+  }
+  const [localisationFilterState, setlocalisationFilterState] =
+    useState<LocalisationFilterStates>(getActiveLocalisationFilter())
+  const [isUserTriggered, setIsUserTriggered] = useState(false)
+
+  const resetUrlSearchFilterParams = useCallback(() => {
+    searchParams.delete('domain')
+    searchParams.delete('venue')
+    searchParams.delete('siret')
+    searchParams.delete('program')
+    searchParams.delete('all')
+    setSearchParams(searchParams)
+  }, [searchParams, setSearchParams])
+
   const onSubmit = useCallback(() => {
     resetUrlSearchFilterParams()
     dispatch(setAdageFilter(form.watch()))
     dispatch(setAdagePageSaved(0))
     setFilters(form.watch())
 
-    const adageUserHasValidGeoloc =
-      (adageUser.lat || adageUser.lat === 0) &&
-      (adageUser.lon || adageUser.lon === 0)
     if (adageUserHasValidGeoloc) {
       setGeoRadius(
         localisationFilterState === LocalisationFilterStates.GEOLOCATION
@@ -124,16 +156,15 @@ export const OffersSearch = ({
           : DEFAULT_GEO_RADIUS
       )
     }
-  }, [])
-
-  function resetUrlSearchFilterParams() {
-    searchParams.delete('domain')
-    searchParams.delete('venue')
-    searchParams.delete('siret')
-    searchParams.delete('program')
-    searchParams.delete('all')
-    setSearchParams(searchParams)
-  }
+  }, [
+    adageUserHasValidGeoloc,
+    dispatch,
+    form,
+    localisationFilterState,
+    resetUrlSearchFilterParams,
+    setFilters,
+    setGeoRadius,
+  ])
 
   const resetForm = () => {
     setIsUserTriggered(true)
@@ -168,26 +199,8 @@ export const OffersSearch = ({
         })
       }
     },
-    []
+    [adageQueryFromSelector, domainsOptions, form, logTrackingFilter]
   )
-
-  const getActiveLocalisationFilter = () => {
-    if (form.watch('departments').length > 0) {
-      return LocalisationFilterStates.DEPARTMENTS
-    }
-    if (form.watch('academies').length > 0) {
-      return LocalisationFilterStates.ACADEMIES
-    }
-    if (
-      form.watch('geolocRadius') !== ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
-    ) {
-      return LocalisationFilterStates.GEOLOCATION
-    }
-    return LocalisationFilterStates.NONE
-  }
-  const [localisationFilterState, setlocalisationFilterState] =
-    useState<LocalisationFilterStates>(getActiveLocalisationFilter())
-  const [isUserTriggered, setIsUserTriggered] = useState(false)
 
   useEffect(() => {
     if (mainOffersSearchResults) {
