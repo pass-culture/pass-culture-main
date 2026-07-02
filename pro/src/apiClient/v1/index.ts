@@ -344,6 +344,7 @@ export {
   type OfferImageV2,
   OfferStatus,
   OffererMemberStatus,
+  OffererTarget,
   type PatchAllOffersActiveStatusBodyModel,
   type PatchCollectiveOfferActiveStatusBodyModel,
   type PatchCollectiveOfferArchiveBodyModel,

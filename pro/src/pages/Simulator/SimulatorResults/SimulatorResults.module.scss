@@ -1,0 +1,13 @@
+.documents {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-s);
+}
+
+.list {
+  list-style: disc;
+}
+
+.link {
+  text-decoration: underline;
+}

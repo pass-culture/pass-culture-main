@@ -6,6 +6,7 @@ import { type InfoPanelProps, InfoPanelSize } from './types'
 
 export const InfoPanel = ({
   title,
+  titleLevel = '3',
   children,
   surface,
   size = InfoPanelSize.LARGE,
@@ -15,6 +16,12 @@ export const InfoPanel = ({
 }: InfoPanelProps): JSX.Element => {
   const hasStepNumber = stepNumber !== undefined
 
+  const titleElement =
+    titleLevel === '2' ? (
+      <h2 className={styles['infopanel-title']}>{title}</h2>
+    ) : (
+      <h3 className={styles['infopanel-title']}>{title}</h3>
+    )
   return (
     <section
       className={cn(
@@ -41,7 +48,7 @@ export const InfoPanel = ({
       </div>
 
       <div className={styles['infopanel-content-wrapper']}>
-        <h3 className={styles['infopanel-title']}>{title}</h3>
+        {titleElement}
         <p className={styles['infopanel-content']}>{children}</p>
       </div>
     </section>

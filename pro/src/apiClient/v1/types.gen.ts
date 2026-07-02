@@ -5009,6 +5009,14 @@ export enum OffererMemberStatus {
 }
 
 /**
+ * OffererTarget
+ */
+export enum OffererTarget {
+    COLLECTIVE = 'COLLECTIVE',
+    INDIVIDUAL = 'INDIVIDUAL'
+}
+
+/**
  * PatchAllOffersActiveStatusBodyModel
  */
 export type PatchAllOffersActiveStatusBodyModel = {
@@ -6175,7 +6183,7 @@ export type SignupSimulationPayload = {
     /**
      * Targets
      */
-    targets: Array<string>;
+    targets: Array<OffererTarget>;
 };
 
 /**
