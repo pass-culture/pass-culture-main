@@ -526,9 +526,9 @@ class PublishedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     validation = OfferValidationStatus.APPROVED
 
     @factory.post_generation
-    def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+    def create_stock(self, _create: bool, _extracted: typing.Any, **kwargs: typing.Any) -> None:
         future = date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
-        CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self)
+        CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self, **kwargs)
 
 
 class ArchivedPublishedCollectiveOfferFactory(PublishedCollectiveOfferFactory):

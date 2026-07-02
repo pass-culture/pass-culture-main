@@ -53,6 +53,18 @@ STATUSES_NOT_IN_PUBLIC_API = {
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 }
 
+INVALID_PRICE_FIELDS_ERROR = {
+    "__root__": [
+        "Vous pouvez renseigner soit ('totalPrice', 'educationalPriceDetail'), soit ('additionalDetails', 'servicePrice', 'additionalFees', 'numberOfTeachers')"
+    ]
+}
+
+PRICE_TOO_HIGH_MODEL_ERROR = {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]}
+
+PRICE_TOO_HIGH_ERROR = {"global": ["Le prix total est trop élevé."]}
+
+PRICE_NOT_EDITABLE_ERROR = {"global": ["Le prix total ne peut pas être édité."]}
+
 time_travel_str = "2021-10-01 15:00:00"
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -781,6 +793,229 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"location": [error]}
 
+    @pytest.mark.parametrize("value", (None, "Such details"))
+    def test_additional_details(self, value):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, additionalDetails="First details"
+        )
+
+        payload = {"additionalDetails": value}
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert collective_offer.additionalDetails == value
+
+    def test_number_of_teachers(self):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue, provider=venue_provider.provider, create_stock__numberOfTeachers=10
+        )
+
+        payload = {"numberOfTeachers": 15}
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert collective_offer.collectiveStock.numberOfTeachers == 15
+
+    def test_price_fields(self):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            create_stock__price=10,
+            create_stock__servicePrice=10,
+        )
+
+        fees = [
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 10.003},
+            {"type": models.CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 15.003},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "custom fee", "amount": 20.504},
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "other custom fee", "amount": 25},
+        ]
+        payload = {"servicePrice": 40, "additionalFees": fees}
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert collective_offer.collectiveStock.price == 110.50
+        assert collective_offer.collectiveStock.servicePrice == 40
+
+        expected = [{**fee, "amount": Decimal(str(fee["amount"])).quantize(Decimal("1.00"))} for fee in fees]
+        actual = [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(collective_offer.collectiveStock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ]
+        assert actual == expected
+
+        # each amount is rounded to 2 decimals before the sum is computed
+        total_fees = sum(fee.amount for fee in collective_offer.collectiveStock.collectiveAdditionalFees)
+        assert total_fees == 70.50
+        assert total_fees + collective_offer.collectiveStock.servicePrice == collective_offer.collectiveStock.price
+
+    def test_additional_fees(self):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            create_stock__price=150,
+            create_stock__servicePrice=50,
+            create_stock__collectiveAdditionalFees=[
+                factories.CollectiveAdditionalFeeFactory(
+                    type=models.CollectiveAdditionalFeeType.TRAVEL, label=None, amount=40
+                ),
+                factories.CollectiveAdditionalFeeFactory(
+                    type=models.CollectiveAdditionalFeeType.MEAL, label=None, amount=30
+                ),
+                factories.CollectiveAdditionalFeeFactory(
+                    type=models.CollectiveAdditionalFeeType.OTHER, label="first other fee", amount=20
+                ),
+                factories.CollectiveAdditionalFeeFactory(
+                    type=models.CollectiveAdditionalFeeType.OTHER, label="second other fee", amount=10
+                ),
+            ],
+        )
+
+        new_fees = [
+            # TRAVEL amount is lowered
+            {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 30},
+            # ACCOMMODATION is added
+            {"type": models.CollectiveAdditionalFeeType.ACCOMMODATION.name, "label": None, "amount": 40},
+            # first OTHER amount is increased
+            {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "first other fee", "amount": 50},
+            # MEAL and second OTHER are removed
+        ]
+        payload = {"additionalFees": new_fees}
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert collective_offer.collectiveStock.price == 50 + 30 + 40 + 50
+        assert collective_offer.collectiveStock.servicePrice == 50
+        assert [
+            {"type": fee.type.name, "label": fee.label, "amount": fee.amount}
+            for fee in sorted(collective_offer.collectiveStock.collectiveAdditionalFees, key=lambda f: f.amount)
+        ] == new_fees
+
+    def test_price_fields_remove_fees(self):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            create_stock__price=20,
+            create_stock__servicePrice=10,
+            create_stock__collectiveAdditionalFees=[factories.CollectiveAdditionalFeeFactory()],
+        )
+
+        payload = {"servicePrice": 10.99, "additionalFees": []}
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert response.json["additionalFees"] == []
+        assert collective_offer.collectiveStock.price == Decimal("10.99")
+        assert collective_offer.collectiveStock.servicePrice == Decimal("10.99")
+        assert collective_offer.collectiveStock.collectiveAdditionalFees == []
+
+    @pytest.mark.parametrize(
+        "payload,error",
+        (
+            # receive totalPrice when the offer has additional fees
+            ({"totalPrice": 10}, PRICE_NOT_EDITABLE_ERROR),
+            # old and new price fields
+            ({"totalPrice": 10, "servicePrice": 10}, INVALID_PRICE_FIELDS_ERROR),
+            ({"educationalPriceDetail": 10, "additionalDetails": "bloup"}, INVALID_PRICE_FIELDS_ERROR),
+            ({"totalPrice": 10, "servicePrice": None}, INVALID_PRICE_FIELDS_ERROR),
+            # total price too high
+            ({"servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1, "additionalFees": []}, PRICE_TOO_HIGH_MODEL_ERROR),
+            (
+                {
+                    "servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 1000,
+                    "additionalFees": [{"type": models.CollectiveAdditionalFeeType.MEAL.value, "amount": 1001}],
+                },
+                PRICE_TOO_HIGH_MODEL_ERROR,
+            ),
+            ({"servicePrice": settings.EAC_OFFER_PRICE_LIMIT - 200 + 1}, PRICE_TOO_HIGH_ERROR),
+            (
+                {
+                    "additionalFees": [
+                        {
+                            "type": models.CollectiveAdditionalFeeType.MEAL.value,
+                            "amount": settings.EAC_OFFER_PRICE_LIMIT - 800 + 1,
+                        }
+                    ],
+                },
+                PRICE_TOO_HIGH_ERROR,
+            ),
+            # additionalFees invalid label
+            (
+                {
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": "hello", "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label n'est pas autorisé quand le type n'est pas OTHER"]},
+            ),
+            # additionalFees missing label
+            (
+                {
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": None, "amount": 10}
+                    ],
+                },
+                {"additionalFees.0.__root__": ["Le champ label est requis quand le type est OTHER"]},
+            ),
+            # additionalFees type duplicate
+            (
+                {
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un type de frais annexe est en doublon"]},
+            ),
+            # additionalFees label duplicate
+            (
+                {
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                        {"type": models.CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
+                    ],
+                },
+                {"__root__": ["Un label de frais annexe est en doublon"]},
+            ),
+            # additionalFees negative amount
+            (
+                {
+                    "additionalFees": [
+                        {"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": -10}
+                    ],
+                },
+                {"additionalFees.0.amount": ["ensure this value is greater than or equal to 0"]},
+            ),
+            # servicePrice too low
+            (
+                {"servicePrice": -10},
+                {"servicePrice": ["ensure this value is greater than or equal to 0"]},
+            ),
+        ),
+    )
+    def test_price_fields_error(self, payload, error):
+        key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = factories.PublishedCollectiveOfferFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            create_stock__price=1000,
+            create_stock__servicePrice=800,
+            create_stock__collectiveAdditionalFees=[
+                factories.CollectiveAdditionalFeeFactory(amount=100),
+                factories.CollectiveAdditionalFeeCustomFactory(amount=100),
+            ],
+        )
+
+        response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == error
+
 
 class UpdatePriceTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/v2/collective/offers/{offer_id}"
@@ -851,13 +1086,14 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
             status, venue=venue_provider.venue, provider=venue_provider.provider
         )
 
-        payload = {"name": "New name", "description": "New description"}
+        payload = {"name": "New name", "description": "New description", "additionalDetails": "New details"}
         response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
 
         assert response.status_code == 200
         db.session.refresh(offer)
         assert offer.name == "New name"
         assert offer.description == "New description"
+        assert offer.additionalDetails == "New details"
 
     @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
     def test_unallowed_action_edit_details(self, status):
@@ -866,13 +1102,14 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
             status, venue=venue_provider.venue, provider=venue_provider.provider
         )
 
-        payload = {"name": "New name", "description": "New description"}
-        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+        for field in ("name", "description", "additionalDetails"):
+            payload = {field: "New value"}
+            response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
 
-        assert response.status_code == 400
-        assert response.json == {
-            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
-        }
+            assert response.status_code == 400
+            assert response.json == {
+                "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+            }
 
     @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
     def test_allowed_action_increase_price(self, status):
@@ -890,6 +1127,78 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
         db.session.refresh(stock)
         assert stock.price == new_price
 
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_increase_service_price(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = []
+        offer.collectiveStock.price = 100
+        initial_price = offer.collectiveStock.price
+
+        new_service_price = offer.collectiveStock.servicePrice + 100
+        payload = {"servicePrice": new_service_price}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == new_service_price
+        assert offer.collectiveStock.collectiveAdditionalFees == []
+        assert offer.collectiveStock.price == new_service_price
+        assert initial_price < offer.collectiveStock.price
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_increase_fee(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+        initial_price = offer.collectiveStock.price
+
+        new_fee_amount = fee.amount + 100
+        payload = {"additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}]}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == 100
+        [new_fee] = offer.collectiveStock.collectiveAdditionalFees
+        assert (new_fee.type, new_fee.amount, new_fee.label) == (fee.type, new_fee_amount, None)
+        assert offer.collectiveStock.price == 300
+        assert initial_price < offer.collectiveStock.price
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_increase_total_price(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+        initial_price = offer.collectiveStock.price
+
+        # servicePrice is decreased but total price is increased by 5
+        new_service_price = offer.collectiveStock.servicePrice - 50
+        new_fee_amount = fee.amount + 55
+        payload = {
+            "servicePrice": new_service_price,
+            "additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}],
+        }
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == new_service_price
+        [new_fee] = offer.collectiveStock.collectiveAdditionalFees
+        assert (new_fee.type, new_fee.amount, new_fee.label) == (fee.type, new_fee_amount, None)
+        assert offer.collectiveStock.price == 205
+        assert initial_price < offer.collectiveStock.price
+
     @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
     def test_unallowed_action_increase_price(self, status):
         key, venue_provider = self.setup_active_venue_provider()
@@ -899,6 +1208,66 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
 
         new_price = offer.collectiveStock.price + 100
         payload = {"totalPrice": new_price}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_unallowed_action_increase_service_price(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        new_service_price = offer.collectiveStock.servicePrice + 100
+        payload = {"servicePrice": new_service_price}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_unallowed_action_increase_fee(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+
+        new_fee_amount = fee.amount + 100
+        payload = {"additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}]}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DETAILS) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_unallowed_action_increase_total_price(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+
+        new_service_price = offer.collectiveStock.servicePrice + 100
+        new_fee_amount = fee.amount + 100
+        payload = {
+            "servicePrice": new_service_price,
+            "additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}],
+        }
         response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
 
         assert response.status_code == 400
@@ -976,6 +1345,70 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
         assert stock.priceDetail == "yes"
         assert stock.numberOfTickets == 1200
 
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_lower_service_price_and_edit_participants(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        payload = {"servicePrice": 1, "numberOfTickets": 1200, "numberOfTeachers": 40}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == 1
+        assert offer.collectiveStock.collectiveAdditionalFees == []
+        assert offer.collectiveStock.price == 1
+        assert offer.collectiveStock.numberOfTickets == 1200
+        assert offer.collectiveStock.numberOfTeachers == 40
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_lower_fee(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+
+        new_fee_amount = fee.amount - 50
+        payload = {"additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}]}
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == 100
+        [new_fee] = offer.collectiveStock.collectiveAdditionalFees
+        assert (new_fee.type, new_fee.amount, new_fee.label) == (fee.type, new_fee_amount, None)
+        assert offer.collectiveStock.price == 150
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_allowed_action_lower_total_price(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+        offer.collectiveStock.servicePrice = 100
+        offer.collectiveStock.collectiveAdditionalFees = [factories.CollectiveAdditionalFeeFactory(amount=100)]
+        [fee] = offer.collectiveStock.collectiveAdditionalFees
+        offer.collectiveStock.price = 200
+
+        # servicePrice is increased but total price is decreased by 1
+        new_service_price = offer.collectiveStock.servicePrice + 50
+        new_fee_amount = fee.amount - 51
+        payload = {
+            "servicePrice": new_service_price,
+            "additionalFees": [{"type": fee.type.name, "amount": new_fee_amount}],
+        }
+        response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        assert offer.collectiveStock.servicePrice == new_service_price
+        [new_fee] = offer.collectiveStock.collectiveAdditionalFees
+        assert (new_fee.type, new_fee.amount, new_fee.label) == (fee.type, new_fee_amount, None)
+        assert offer.collectiveStock.price == 199
+
     @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API)
     def test_unallowed_action_lower_price_and_edit_price_details(self, status):
         key, venue_provider = self.setup_active_venue_provider()
@@ -984,6 +1417,21 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
         )
 
         for payload in ({"totalPrice": 1}, {"educationalPriceDetail": "yes", "numberOfTickets": 1200}):
+            response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": f"Cette action n'est pas autorisée car le statut de l'offre est {status.value}"
+        }
+
+    @pytest.mark.parametrize("status", set(testing.STATUSES_NOT_ALLOWING_EDIT_DISCOUNT) - STATUSES_NOT_IN_PUBLIC_API)
+    def test_unallowed_action_edit_participants(self, status):
+        key, venue_provider = self.setup_active_venue_provider()
+        offer = factories.create_collective_offer_by_status(
+            status, venue=venue_provider.venue, provider=venue_provider.provider
+        )
+
+        for payload in ({"numberOfTickets": 1200}, {"numberOfTeachers": 40}):
             response = self.make_request(key, {"offer_id": offer.id}, json_body=payload)
 
         assert response.status_code == 400
@@ -1005,6 +1453,15 @@ class AllowedActionsTest(PublicAPIVenueEndpointHelper):
             ("totalPrice", 1),  # decrease price
             ("educationalPriceDetail", "yes"),
             ("numberOfTickets", 1200),
+            ("numberOfTeachers", 10),
+            ("additionalDetails", "no"),
+            ("servicePrice", 1),
+            ("servicePrice", 2000),
+            (
+                "additionalFees",
+                [{"type": models.CollectiveAdditionalFeeType.TRAVEL.name, "amount": 1200}],
+            ),
+            ("additionalFees", []),
         ),
     )
     def test_unallowed_action_archived(self, field, value):

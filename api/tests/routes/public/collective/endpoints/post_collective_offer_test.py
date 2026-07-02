@@ -37,6 +37,8 @@ INVALID_PRICE_FIELDS_ERROR = {
     ]
 }
 
+PRICE_TOO_HIGH_ERROR = {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]}
+
 MISSING_OLD_FIELD_ERROR = {"__root__": ["Vous devez renseigner le champ 'totalPrice'"]}
 
 MISSING_NEW_FIELD_ERROR = {
@@ -719,7 +721,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
             # total price too high
             (
                 {"servicePrice": settings.EAC_OFFER_PRICE_LIMIT + 1, "numberOfTeachers": 1, "additionalFees": []},
-                {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]},
+                PRICE_TOO_HIGH_ERROR,
             ),
             (
                 {
@@ -727,7 +729,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
                     "numberOfTeachers": 1,
                     "additionalFees": [{"type": models.CollectiveAdditionalFeeType.MEAL.value, "amount": 1001}],
                 },
-                {"__root__": [f"Le prix total doit être inférieur à {settings.EAC_OFFER_PRICE_LIMIT}"]},
+                PRICE_TOO_HIGH_ERROR,
             ),
             # additionalFees invalid label
             (
