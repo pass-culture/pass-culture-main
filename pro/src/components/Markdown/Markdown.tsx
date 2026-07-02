@@ -8,7 +8,7 @@ const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
 const ITALIC_REGEXP = /_(.*?)_/gim
 const URL_REGEXP = /((https?:\/\/)|(www\.))[^\s/$.?#"].[^\s]*/gim
 const EMAIL_REGEXP =
-  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gim
+  /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gim
 
 function markdownToHtml(markdown: string) {
   markdown = markdown.replace(BOLD_REGEXP, '<strong>$1</strong>')
