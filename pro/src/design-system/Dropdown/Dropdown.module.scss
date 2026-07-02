@@ -73,7 +73,7 @@
     color: var(--color-text-inverted);
 
     /* stylelint-disable-next-line selector-max-type */
-    .item-icon > svg {
+    .dropdown-item-icon > svg {
       fill: var(--color-icon-inverted);
     }
   }
