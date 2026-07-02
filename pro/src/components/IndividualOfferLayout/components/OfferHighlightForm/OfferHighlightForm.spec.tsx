@@ -208,6 +208,28 @@ describe('OfferHighlightForm', () => {
     )
   })
 
+  it('should not send unavailable highlight ids from existing requests', async () => {
+    renderOfferHighlightForm({
+      offerId: 1,
+      highlightRequests: [
+        { id: 999, name: 'Ancien temps fort non disponible' },
+      ],
+    })
+
+    const checkbox = await screen.findByText(mockedHighlights[0].name)
+    await userEvent.click(checkbox)
+
+    const submitButton = screen.getByRole('button', {
+      name: 'Valider la sélection',
+    })
+    await userEvent.click(submitButton)
+
+    expect(postHighlightRequestOfferMock).toHaveBeenCalledWith({
+      path: { offer_id: 1 },
+      body: { highlight_ids: [1] },
+    })
+  })
+
   it('should call notify.success when new highlights list is submitted', async () => {
     renderOfferHighlightForm({ offerId: 1 })
 
