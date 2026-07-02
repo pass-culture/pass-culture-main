@@ -101,6 +101,34 @@ describe('ModalImageUpsertOrEdit', () => {
     expect(screen.getByRole('button', { name: 'Importer' })).toBeInTheDocument()
   })
 
+  it('should enforce 400x600 minimum dimensions in collective offer mode', async () => {
+    renderModalImageCrop({
+      mode: UploaderModeEnum.OFFER_COLLECTIVE,
+      initialValues: {},
+    })
+
+    await waitForRender()
+
+    const imageFile = Object.assign(
+      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+      {
+        width: 500,
+        height: 500,
+      }
+    )
+
+    await userEvent.upload(screen.getByLabelText('Importez une image'), [
+      imageFile,
+    ])
+
+    expect(
+      await screen.findByText('L’image doit faire au moins 600 pixels de haut')
+    ).toBeVisible()
+    expect(
+      screen.queryByText('L’image doit faire au moins 400 pixels de large')
+    ).not.toBeInTheDocument()
+  })
+
   it('should render a spinner until the image is loaded', async () => {
     const mockImageUrl = 'http://example.com/image.jpg'
     renderModalImageCrop({
