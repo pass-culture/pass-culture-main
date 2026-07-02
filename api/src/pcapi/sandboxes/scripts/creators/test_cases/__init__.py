@@ -19,11 +19,13 @@ from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.criteria import constants
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.event_series import factories as event_series_factories
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
 from pcapi.core.highlights import factories as highlights_factories
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -77,7 +79,6 @@ def save_test_cases_sandbox() -> None:
     create_offers_interactions()
     create_offers_with_video_url()
     create_highlights()
-    create_highlight_criterion_category()
     create_venues_across_cities()
     create_offers_with_compliance_score()
     create_offers_for_each_subcategory()
@@ -979,7 +980,9 @@ def create_offers_with_video_url() -> None:
 @log_func_duration
 def create_highlights() -> None:
     today = datetime.date.today()
-    highlights_factories.HighlightFactory.create(
+    highlight_category = criteria_factories.CriterionCategoryFactory.create(label=constants.HIGHLIGHT_CATEGORY_LABEL)
+
+    past_highlight = highlights_factories.HighlightFactory.create(
         name="Valorisation passée",
         description="Ceci est une valorisation passée",
         availability_datespan=db_utils.make_inclusive_daterange(
@@ -988,30 +991,59 @@ def create_highlights() -> None:
         highlight_datespan=db_utils.make_inclusive_daterange(
             start=today - datetime.timedelta(days=3), end=today - datetime.timedelta(days=2)
         ),
+        communication_date=today - datetime.timedelta(days=4),
     )
-    highlights_factories.HighlightFactory.create(
+    available_highlight = highlights_factories.HighlightFactory.create(
         name="Valorisation actuelle disponible",
         description="Ceci est une valorisation actuelle, à laquelle les acteurices culturelles peuvent proposer des offres",
         availability_datespan=db_utils.make_inclusive_daterange(
-            start=today - datetime.timedelta(days=10), end=today + datetime.timedelta(days=10)
+            start=today - datetime.timedelta(days=10), end=today + datetime.timedelta(days=9)
         ),
         highlight_datespan=db_utils.make_inclusive_daterange(
             start=today + datetime.timedelta(days=11), end=today + datetime.timedelta(days=12)
         ),
+        communication_date=today + datetime.timedelta(days=10),
     )
-    highlights_factories.HighlightFactory.create(
+    unavailable_highlight = highlights_factories.HighlightFactory.create(
         name="Valorisation actuelle non disponible",
         description="Ceci est un valorisation actuelle, à laquelle les acteurices culturelles ne peuvent plus proposer des offres",
         availability_datespan=db_utils.make_inclusive_daterange(
             start=today - datetime.timedelta(days=10), end=today - datetime.timedelta(days=1)
         ),
-        highlight_datespan=db_utils.make_inclusive_daterange(start=today, end=today + datetime.timedelta(days=8)),
+        highlight_datespan=db_utils.make_inclusive_daterange(
+            start=today + datetime.timedelta(days=1), end=today + datetime.timedelta(days=8)
+        ),
+        communication_date=today,
     )
 
+    _create_highlight_requests_with_tags(past_highlight, highlight_category)
+    _create_highlight_requests_with_tags(available_highlight, highlight_category)
+    _create_highlight_requests_with_tags(unavailable_highlight, highlight_category)
 
-@log_func_duration
-def create_highlight_criterion_category() -> None:
-    criteria_factories.CriterionCategoryFactory.create(label=constants.HIGHLIGHT_CATEGORY_LABEL)
+
+def _create_highlight_requests_with_tags(
+    highlight: highlights_models.Highlight,
+    highlight_category: criteria_models.CriterionCategory,
+) -> None:
+    highlight_tag = criteria_factories.CriterionFactory.create(
+        name=f"Tag - {highlight.name}",
+        description=f"Tag liant les offres à la valorisation « {highlight.name} »",
+        startDateTime=datetime.datetime.combine(highlight.highlight_datespan.lower, datetime.time()),
+        endDateTime=datetime.datetime.combine(highlight.highlight_datespan.upper, datetime.time()),
+        categories=[highlight_category],
+        highlight=highlight,
+    )
+
+    venue = offerers_factories.VenueFactory.create(name=f"Lieu avec {highlight.name}")
+
+    tagged_offer = offers_factories.EventOfferFactory.create(venue=venue)
+    untagged_offer = offers_factories.EventOfferFactory.create(venue=venue)
+
+    for offer in [tagged_offer, untagged_offer]:
+        offers_factories.EventStockFactory.create(offer=offer)
+        highlights_factories.HighlightRequestFactory.create(offer=offer, highlight=highlight)
+
+    criteria_factories.OfferCriterionFactory.create(offerId=tagged_offer.id, criterionId=highlight_tag.id)
 
 
 @log_func_duration
