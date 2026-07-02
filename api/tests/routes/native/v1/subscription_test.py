@@ -15,6 +15,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
@@ -1198,6 +1199,7 @@ class DisabilityBonusTest:
         assert aah_fraud_check.type == subscription_models.FraudCheckType.AAH_BONUS_CREDIT
         assert aeeh_fraud_check.type == subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
         assert aah_fraud_check.status == aeeh_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert aah_fraud_check.reason == aeeh_fraud_check.reason == bonus_constants.DISABILITY_ENDPOINT_ORIGIN
         assert (
             aah_fraud_check.resultContent
             == aeeh_fraud_check.resultContent
