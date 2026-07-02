@@ -162,6 +162,7 @@ jobs:
         id: deploy-api
         shell: bash
         env:
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
@@ -189,12 +190,14 @@ jobs:
           DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
           {
             echo "### :rocket: Deploy PRO summary"
-            echo "| Results                              | Value |"
-            echo "| ------------------------------------ | ----- |"
-            echo "| Date                                 | ${DATE} |"
-            echo "| [Pro] url                            |  ${PRO_URL} |"
-            echo "| [Back] url                           |  ${BACKEND_URL} |"
-            echo "| [BO] url                             |  ${BACKOFFICE_URL} |"
+            echo "| Results                              | Value                       |"
+            echo "| ------------------------------------ | --------------------------- |"
+            echo "| Date                                 | ${DATE}                     |"
+            echo "| Branch                               | ${SOURCE_BRANCH}            |"
+            echo "| Namespace                            | ${NAMESPACE}                |"
+            echo "| [Pro] url                            | ${PRO_URL}                  |"
+            echo "| [Back] url                           | ${BACKEND_URL}              |"
+            echo "| [BO] url                             | ${BACKOFFICE_URL}           |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   ensure-preview-env-ready:
