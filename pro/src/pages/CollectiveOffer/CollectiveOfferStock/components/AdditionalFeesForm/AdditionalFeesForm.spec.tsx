@@ -152,19 +152,35 @@ describe('AdditionalFeesForm', () => {
     expect(screen.getAllByLabelText(/Type de frais annexes/)).toHaveLength(2)
   })
 
-  it('should not allow adding more than 10 fee rows', () => {
-    const tenFees = Array.from({ length: 10 }, () => ({
+  it('should not allow adding more than a max number fee rows', () => {
+    const maxFees = Array.from({ length: 12 }, () => ({
       type: CollectiveAdditionalFeeType.OTHER,
       label: '',
       amount: 0,
     }))
 
     renderAdditionalFeesForm({
-      initialValues: { hasAdditionalFees: true, additionalFees: tenFees },
+      initialValues: { hasAdditionalFees: true, additionalFees: maxFees },
     })
 
     expect(
-      screen.queryByLabelText(/Ajouter un type de frais annexes/)
+      screen.queryByRole('button', { name: 'Ajouter un type de frais annexes' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not allow adding when canEditDiscout is false', () => {
+    renderAdditionalFeesForm({
+      initialValues: {
+        hasAdditionalFees: true,
+        additionalFees: [
+          { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
+        ],
+      },
+      canEditDiscount: false,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Ajouter un type de frais annexes' })
     ).not.toBeInTheDocument()
   })
 
@@ -233,6 +249,9 @@ describe('AdditionalFeesForm', () => {
       canEditDiscount: false,
     })
 
+    expect(screen.getByRole('radio', { name: 'Oui' })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: 'Non' })).toBeDisabled()
+    expect(screen.getByLabelText(/Type de frais annexes/)).toBeDisabled()
     expect(screen.getByLabelText(/Prix \(en €\)/)).toBeDisabled()
   })
 
