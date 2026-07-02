@@ -75,7 +75,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.formats,
             )
-            .joinedload(educational_models.CollectiveOffer.offererAddress)
+            .selectinload(educational_models.CollectiveOffer.offererAddress)
             .load_only()
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(geography_models.Address.timezone),
@@ -94,13 +94,13 @@ def _get_collective_bookings_query() -> sa_orm.Query:
             sa_orm.contains_eager(educational_models.CollectiveBooking.educationalDeposit).load_only(
                 educational_models.EducationalDeposit.ministry
             ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+            sa_orm.selectinload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
             ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.offerer).load_only(
+            sa_orm.selectinload(educational_models.CollectiveBooking.offerer).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name
             ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
+            sa_orm.selectinload(educational_models.CollectiveBooking.venue).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
                 offerers_models.Venue.isSoftDeleted,
@@ -115,7 +115,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
-            sa_orm.joinedload(educational_models.CollectiveBooking.incidents)
+            sa_orm.selectinload(educational_models.CollectiveBooking.incidents)
             .load_only(finance_models.BookingFinanceIncident.incidentId)
             .joinedload(finance_models.BookingFinanceIncident.incident)
             .load_only(

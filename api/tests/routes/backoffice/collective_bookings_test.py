@@ -105,11 +105,11 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session + user (1 query)
     # - fetch collective bookings with extra data (1 query)
-    # - select in load for extra data (1 query)
-    expected_num_queries = 3
+    # - select in load for extra data (6 query)
+    expected_num_queries = 8
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
-        with assert_num_queries(self.expected_num_queries - 2):
+        with assert_num_queries(1):  # only check the user
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -271,7 +271,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
     def test_list_bookings_by_id_not_found(self, authenticated_client, collective_bookings):
         search_query = str(collective_bookings[-1].id * 1000)
-        with assert_num_queries(self.expected_num_queries - 1):  # no select in load
+        with assert_num_queries(self.expected_num_queries - 6):  # no select in load
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
