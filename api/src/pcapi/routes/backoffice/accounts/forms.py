@@ -100,7 +100,7 @@ class ManualReviewForm(FlaskForm):
     reason = fields.PCOptCommentField("Raison du changement")
 
 
-class BonusCreditRequestForm(FlaskForm):
+class QFBonusCreditRequestForm(FlaskForm):
     civility = fields.PCSelectWithPlaceholderValueField(
         "Civilité du représentant légal",
         choices=utils.choices_from_enum(users_models.GenderEnum, formatter=filters.format_gender, sort=True),
@@ -129,6 +129,32 @@ class BonusCreditRequestForm(FlaskForm):
                 return False
         elif city_data:
             self.birth_city.errors = ["doit rester vide lorsque le représentant légal n'est pas né en France"]
+            return False
+        return super().validate(extra_validators)
+
+
+class DisabilityBonusCreditRequestForm(FlaskForm):
+    birth_country = fields.PCSelectWithPlaceholderValueField(
+        "Pays de naissance du jeune",
+        choices=countries_utils.INSEE_COUNTRIES,
+    )
+    birth_city = fields.PCTomSelectField(
+        "Ville de naissance du jeune (s'il est né en France)",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_cities",
+    )
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        country_data = self.birth_country.data
+        city_data = self.birth_city.single_data
+        if country_data == countries_utils.FRANCE_INSEE_CODE:
+            if not city_data:
+                self.birth_city.errors = ["obligatoire lorsque le jeune est né en France"]
+                return False
+        elif city_data:
+            self.birth_city.errors = ["doit rester vide lorsque le jeune n'est pas né en France"]
             return False
         return super().validate(extra_validators)
 

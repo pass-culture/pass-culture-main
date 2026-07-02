@@ -48,8 +48,11 @@
   {% if allowed_actions.actions.UPDATE in allowed_actions.inline_actions %}
     {{ action_bar_button("pencil-square", "Modifier les infos", modal_id="#edit-account-modal") }}
   {% endif %}
-  {% if allowed_actions.actions.BONUS in allowed_actions.inline_actions %}
-    {{ action_bar_button("patch-plus", "Demander la bonification", modal_id="#request-bonus-credit-modal") }}
+  {% if allowed_actions.actions.QF_BONUS in allowed_actions.inline_actions %}
+    {{ action_bar_button("patch-plus", "Demander la bonification QF", modal_id="#request-qf-bonus-credit-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.DISABILITY_BONUS in allowed_actions.inline_actions %}
+    {{ action_bar_button("person-wheelchair", "Demander la bonification AAH/AEEH", modal_id="#request-disability-bonus-credit-modal") }}
   {% endif %}
   {% if allowed_actions.actions.EXTRACT in allowed_actions.inline_actions %}
     {{ action_bar_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}
@@ -93,8 +96,11 @@
       {% if allowed_actions.actions.UPDATE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("pencil-square", "Modifier les infos", modal_id="#edit-account-modal") }}</li>
       {% endif %}
-      {% if allowed_actions.actions.BONUS in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("patch-plus", "Demander la bonification", modal_id="#request-bonus-credit-modal") }}</li>
+      {% if allowed_actions.actions.QF_BONUS in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("patch-plus", "Demander la bonification QF", modal_id="#request-qf-bonus-credit-modal") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.DISABILITY_BONUS in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("person-wheelchair", "Demander la bonification AAH/AEEH", modal_id="#request-disability-bonus-credit-modal") }}</li>
       {% endif %}
       {% if allowed_actions.actions.EXTRACT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}</li>
@@ -306,8 +312,11 @@
   {% if allowed_actions.actions.UPDATE in allowed_actions %}
     {{ build_simple_modal_form("edit-account", edit_account_dst, edit_account_form, "Modifier les informations", "Enregistrer") }}
   {% endif %}
-  {% if allowed_actions.actions.BONUS in allowed_actions %}
-    {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_request_bonus_credit_form', user_id=user.id) , "request-bonus-credit-modal") }}
+  {% if allowed_actions.actions.QF_BONUS in allowed_actions %}
+    {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_request_qf_bonus_credit_form', user_id=user.id) , "request-qf-bonus-credit-modal") }}
+  {% endif %}
+  {% if allowed_actions.actions.DISABILITY_BONUS in allowed_actions %}
+    {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_request_disability_bonus_credit_form', user_id=user.id) , "request-disability-bonus-credit-modal") }}
   {% endif %}
   {% if allowed_actions.actions.EXTRACT in allowed_actions %}
     <form action="{{ url_for('backoffice_web.public_accounts.create_extract_user_gdpr_data', user_id=user.id) }}"
