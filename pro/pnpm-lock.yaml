@@ -22,8 +22,8 @@ importers:
         specifier: 1.19.8
         version: 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia':
-        specifier: 1.19.8
-        version: 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+        specifier: 1.19.9
+        version: 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
       '@firebase/analytics':
         specifier: 0.10.22
         version: 0.10.22(@firebase/app@0.15.0)
@@ -301,6 +301,12 @@ packages:
 
   '@algolia/autocomplete-preset-algolia@1.19.8':
     resolution: {integrity: sha512-5XhJe5uXXLrt+C1MjIv1/BfGNHZyD1xkAYMVANTjdY+PXwO4o+3YIK2XGU0MxHTGryy70G6+xVO9TB7xA+3hGQ==}
+    peerDependencies:
+      '@algolia/client-search': '>= 4.9.1 < 6'
+      algoliasearch: '>= 4.9.1 < 6'
+
+  '@algolia/autocomplete-preset-algolia@1.19.9':
+    resolution: {integrity: sha512-x/vKrHNy2Swp83AJ+PX0hhxhkgUqWVNV6bk440LkqQOwT8CfK4EN3M/gHIt8L9YAwbJvOgviE/Vr3g3AOyDwsA==}
     peerDependencies:
       '@algolia/client-search': '>= 4.9.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
@@ -4447,6 +4453,12 @@ snapshots:
   '@algolia/autocomplete-preset-algolia@1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)':
     dependencies:
       '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+      '@algolia/client-search': 5.55.0
+      algoliasearch: 5.55.0
+
+  '@algolia/autocomplete-preset-algolia@1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)':
+    dependencies:
+      '@algolia/autocomplete-shared': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
       '@algolia/client-search': 5.55.0
       algoliasearch: 5.55.0
 
