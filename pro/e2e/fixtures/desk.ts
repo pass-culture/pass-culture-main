@@ -78,6 +78,10 @@ export const test = base.extend<{
     const context = await browser.newContext({
       storageState: authSession.storageStatePath,
       ...testInfo.project.use,
+      // Disable CSS animations so axe-core never runs mid-animation.
+      // The SnackBar's prefers-reduced-motion block forces opacity:1 immediately,
+      // preventing false color-contrast failures.
+      reducedMotion: 'reduce',
     })
     const page = await context.newPage()
 
