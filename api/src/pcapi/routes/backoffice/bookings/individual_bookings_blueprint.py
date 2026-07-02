@@ -950,7 +950,7 @@ def get_individual_booking(booking_id: int) -> response_utils.BackofficeResponse
         forms["create_incident_form"] = finance_forms.BookingOverPaymentIncidentForm()
         forms["create_incident_form"].object_ids.data = booking_id
     if BookingDetailsActionType.CREATE_COMMERCIAL_GESTURE in actions:
-        forms["create_commercial_gesture_form"] = finance_forms.BookingOverPaymentIncidentForm()
+        forms["create_commercial_gesture_form"] = finance_forms.CommercialGestureCreationForm()
         forms["create_commercial_gesture_form"].object_ids.data = booking_id
     if BookingDetailsActionType.MARK_FRAUDULENT in actions:
         forms["mark_fraudulent_form"] = booking_forms.BatchTagFraudulentBookingsForms()
