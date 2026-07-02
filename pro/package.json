@@ -106,7 +106,7 @@
     "knip": "6.16.1",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
-    "playwright-core": "1.61.0",
+    "playwright-core": "1.61.1",
     "prettier": "3.8.4",
     "regenerator-runtime": "0.14.1",
     "rollup-plugin-visualizer": "7.0.1",
