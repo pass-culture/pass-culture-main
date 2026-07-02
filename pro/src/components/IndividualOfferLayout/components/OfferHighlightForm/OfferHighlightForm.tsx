@@ -62,12 +62,19 @@ export function OfferHighlightForm({
 
   const onSubmit = async (values: OfferHighlightFormValues) => {
     try {
+      const availableHighlightIds = new Set(
+        highlightQuery.data.map((highlight) => highlight.id)
+      )
+      const highlightIdsToSubmit = values.highlightIds.filter((id) =>
+        availableHighlightIds.has(id)
+      )
+
       await mutate(
         [GET_OFFER_QUERY_KEY, offerId],
         await api.postHighlightRequestOffer({
           path: { offer_id: offerId },
           body: {
-            highlight_ids: values.highlightIds,
+            highlight_ids: highlightIdsToSubmit,
           },
         }),
         { revalidate: false }
