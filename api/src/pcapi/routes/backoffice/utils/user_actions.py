@@ -107,7 +107,7 @@ class FraudCheckAction(AccountAction):
     @property
     def comment(self) -> str | None:
         if self._fraud_check.reasonCodes:
-            if self._fraud_check.type != subscription_models.FraudCheckType.QF_BONUS_CREDIT or (
+            if self._fraud_check.type not in subscription_models.BONUS_CREDIT_CHECK_TYPES or (
                 self._bo_user
                 and perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT
                 in self._bo_user.backoffice_profile.permissions

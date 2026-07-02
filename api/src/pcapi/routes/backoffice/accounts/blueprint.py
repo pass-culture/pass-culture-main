@@ -95,7 +95,8 @@ class AccountDetailsActionType(enum.StrEnum):
     RESET_PASSWORD = enum.auto()
     BREVO = enum.auto()
     UPDATE = enum.auto()
-    BONUS = enum.auto()
+    QF_BONUS = enum.auto()
+    DISABILITY_BONUS = enum.auto()
     EXTRACT = enum.auto()
     SUSPEND = enum.auto()
     UNSUSPEND = enum.auto()
@@ -122,7 +123,11 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
     if access_control.has_current_user_permission(
         perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
     ) and users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
-        account_details_actions.add_action(AccountDetailsActionType.BONUS)
+        account_details_actions.add_action(AccountDetailsActionType.QF_BONUS)
+    if access_control.has_current_user_permission(
+        perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+    ) and users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+        account_details_actions.add_action(AccountDetailsActionType.DISABILITY_BONUS)
     if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT) and (
         user.is_beneficiary or user.roles == []
     ):
@@ -930,7 +935,7 @@ def _get_steps_for_tunnel(
         case _:
             steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, item_status_17_18)
 
-    steps += _get_steps_tunnel_bonus_credit(user)
+    steps += _get_step_tunnel_bonus_credit(user)
 
     if tunnel_type == TunnelType.NOT_ELIGIBLE:
         return steps
@@ -1528,14 +1533,24 @@ def _get_steps_tunnel_underage(user: users_models.User, item_status_15_17: dict)
     return steps
 
 
-def _get_steps_tunnel_bonus_credit(user: users_models.User) -> list[RegistrationStep]:
+def _get_step_tunnel_bonus_credit(user: users_models.User) -> list[RegistrationStep]:
+    if user.received_bonus_credit:
+        return [
+            RegistrationStep(
+                step_id=11,
+                description="Bonification",
+                subscription_item_status=subscription_schemas.SubscriptionItemStatus.OK.value,
+                icon="bi-patch-plus",
+            ),
+        ]
+
     bonus_fraud_checks = users_api.get_bonus_credit_fraud_checks(user)
     if not bonus_fraud_checks:
         return []
 
     bonus_fraud_check = bonus_fraud_checks[-1]
     match bonus_fraud_check.status:
-        case subscription_models.FraudCheckStatus.OK:
+        case subscription_models.FraudCheckStatus.OK:  # shouldn't happen, as the fraud check is deleted on success
             status = subscription_schemas.SubscriptionItemStatus.OK
         case subscription_models.FraudCheckStatus.KO:
             status = subscription_schemas.SubscriptionItemStatus.KO
@@ -1550,16 +1565,6 @@ def _get_steps_tunnel_bonus_credit(user: users_models.User) -> list[Registration
             description="Demande de bonification",
             subscription_item_status=status.value,
             icon="bi-envelope-paper",
-        ),
-        RegistrationStep(
-            step_id=12,
-            description="Bonification",
-            subscription_item_status=(
-                subscription_schemas.SubscriptionItemStatus.OK.value
-                if user.received_bonus_credit
-                else subscription_schemas.SubscriptionItemStatus.VOID.value
-            ),
-            icon="bi-patch-plus",
         ),
     ]
 
@@ -1793,18 +1798,18 @@ def _fetch_user_for_bonus(user_id: int) -> users_models.User:
     return user
 
 
-@public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["GET"])
+@public_accounts_blueprint.route("/<int:user_id>/qf-bonus", methods=["GET"])
 @access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
-def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
+def get_request_qf_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
     if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because button should not be displayed, except if the credit is granted in the meantime
         return render_template(
             "components/dynamic/modal_form.html",
-            div_id="request-bonus-credit",
-            title="Demande de bonification",
-            information="Ce compte n'est pas éligible à une bonification.",
+            div_id="request-qf-bonus-credit",
+            title="Demande de bonification QF",
+            information="Ce compte n'est pas éligible à une bonification QF.",
         )
 
     try:
@@ -1812,7 +1817,7 @@ def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResp
         content = fraud_checks[-1].source_data()
         assert isinstance(content, bonus_schemas.QuotientFamilialBonusCreditContent)
         custodian = content.custodian
-        form = account_forms.BonusCreditRequestForm(
+        form = account_forms.QFBonusCreditRequestForm(
             civility=custodian.gender.name,
             first_names=", ".join(custodian.first_names),
             last_name=custodian.last_name,
@@ -1824,34 +1829,34 @@ def get_request_bonus_credit_form(user_id: int) -> response_utils.BackofficeResp
         autocomplete.prefill_cities_choice(form.birth_city)
     except Exception:
         # No fraud check or any error => empty form
-        form = account_forms.BonusCreditRequestForm()
+        form = account_forms.QFBonusCreditRequestForm()
 
     return render_template(
         "components/dynamic/modal_form.html",
-        title="Demande de bonification",
+        title="Demande de bonification QF",
         information=Markup(
-            "Vous pouvez demander la bonification à la place du jeune. "
+            "Vous pouvez demander la bonification QF à la place du jeune. "
             "Il faut remplir l'information sur son <b>parent</b>, <b>tuteur légal</b> ou l'<b>organisme qui le prend en charge</b>."
         ),
         form=form,
-        dst=url_for("backoffice_web.public_accounts.request_bonus_credit", user_id=user_id),
-        div_id="request-bonus-credit",
+        dst=url_for("backoffice_web.public_accounts.request_qf_bonus_credit", user_id=user_id),
+        div_id="request-qf-bonus-credit",
         button_text="Faire la demande",
         ajax_submit=False,
     )
 
 
-@public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>/qf-bonus", methods=["POST"])
 @access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
-def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
+def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     user = _fetch_user_for_bonus(user_id)
 
     if not users_api.get_user_is_eligible_for_qf_bonification(user, is_from_backoffice=True):
         # This should not happen because form should not be displayed, except if the credit is granted in the meantime
-        flash("Ce compte n'est pas éligible à une bonification", "warning")
+        flash("Ce compte n'est pas éligible à une bonification QF", "warning")
         return redirect(get_public_account_link(user_id), code=303)
 
-    form = account_forms.BonusCreditRequestForm()
+    form = account_forms.QFBonusCreditRequestForm()
     if not form.validate():
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(get_public_account_link(user_id), code=303)
@@ -1871,7 +1876,92 @@ def request_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
     payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
     on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
-    flash("La demande de bonification est en cours.", "success")
+    flash("La demande de bonification QF est en cours.", "success")
+    return redirect(get_public_account_link(user_id), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/disability-bonus", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def get_request_disability_bonus_credit_form(user_id: int) -> response_utils.BackofficeResponse:
+    user = _fetch_user_for_bonus(user_id)
+
+    if not users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+        # This should not happen because button should not be displayed, except if the credit is granted in the meantime
+        return render_template(
+            "components/dynamic/modal_form.html",
+            div_id="request-disability-bonus-credit",
+            title="Demande de bonification AAH/AEEH",
+            information="Ce compte n'est pas éligible à une bonification AAH/AEEH.",
+        )
+
+    try:
+        aah_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
+        )
+        aah_content = aah_fraud_checks[-1].source_data()
+        assert isinstance(aah_content, bonus_schemas.AdultDisabilityBonusCreditContent)
+
+        aeeh_fraud_checks = users_api.get_bonus_credit_fraud_checks(
+            user, subscription_models.FraudCheckType.AEEH_BONUS_CREDIT
+        )
+        aeeh_content = aeeh_fraud_checks[-1].source_data()
+        assert isinstance(aeeh_content, bonus_schemas.DisabledChildEducationBonusCreditContent)
+
+        # Same data for AAH and AEEH
+        person = aah_content.person
+        form = account_forms.DisabilityBonusCreditRequestForm(
+            birth_country=person.birth_country_cog_code,
+            birth_city=[person.birth_city_cog_code] if person.birth_city_cog_code else None,
+        )
+        autocomplete.prefill_cities_choice(form.birth_city)
+    except Exception:
+        # No fraud check or any error => empty form
+        form = account_forms.DisabilityBonusCreditRequestForm()
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        title="Demande de bonification AAH/AEEH",
+        information=Markup(
+            "Vous pouvez demander la bonification AAH/AEEH à la place du jeune. "
+            "Il faut remplir les informations le concernant."
+        ),
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.request_disability_bonus_credit", user_id=user_id),
+        div_id="request-disability-bonus-credit",
+        button_text="Faire la demande",
+        ajax_submit=False,
+    )
+
+
+@public_accounts_blueprint.route("/<int:user_id>/disability-bonus", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
+    user = _fetch_user_for_bonus(user_id)
+
+    if not users_api.get_user_is_eligible_for_disability_bonification(user, is_from_backoffice=True):
+        # This should not happen because form should not be displayed, except if the credit is granted in the meantime
+        flash("Ce compte n'est pas éligible à une bonification AAH/AEEH", "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    form = account_forms.DisabilityBonusCreditRequestForm()
+    if not form.validate():
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    aah_fraud_check, aeeh_fraud_check = bonus_fraud_api.create_disability_bonus_credit_fraud_checks(
+        user,
+        birth_country_cog_code=form.birth_country.data,
+        birth_city_cog_code=form.birth_city.single_data,
+        origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
+    )
+
+    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+
+    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+
+    flash("La demande de bonification AAH/AEEH est en cours.", "success")
     return redirect(get_public_account_link(user_id), code=303)
 
 
