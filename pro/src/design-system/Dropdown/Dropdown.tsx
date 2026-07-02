@@ -81,6 +81,7 @@ export type DropdownProps =
   | (BaseProps & { items: (Item & { icon: string })[][] })
   | (BaseProps & { items: (Item & { icon?: never })[][] })
 
+// TODO: remove from knip ignore when used.
 export const Dropdown = ({
   label,
   width = 'auto',
