@@ -10,14 +10,15 @@ interface PriceAndParticipantsCellProps {
 export const PriceAndParticipantsCell = ({
   offer,
 }: PriceAndParticipantsCellProps) => {
-  const { price, numberOfTickets } = offer.stock || {}
+  const { price, numberOfTickets, numberOfTeachers } = offer.stock || {}
+  const numberOfParticipants = (numberOfTickets || 0) + (numberOfTeachers || 0)
 
   return (
     <div className={styles['price-and-participants-column']}>
-      {price && numberOfTickets ? (
+      {price && numberOfParticipants ? (
         <div className={styles['price-and-participants-container']}>
           <span>{price}€</span>
-          <span>{`${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`}</span>
+          <span>{`${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`}</span>
         </div>
       ) : (
         '-'
