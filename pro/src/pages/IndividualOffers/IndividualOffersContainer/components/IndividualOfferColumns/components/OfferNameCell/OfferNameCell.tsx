@@ -1,6 +1,11 @@
 import { Link } from 'react-router'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import {
+  Events,
+  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
+} from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
@@ -21,7 +26,15 @@ export interface OfferNameCellProps {
 }
 
 export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
+  const { logEvent } = useAnalytics()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const logOfferNavigation = (source: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE) => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      used: source,
+      offerId: offer.id,
+    })
+  }
 
   const getDateInformations = () => {
     const startDatetime = offer.stocks[0]
@@ -53,9 +66,17 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
   const shouldShowIndividualWarning =
     numberOfSoldOutStocks > 0 && offer.status !== OfferStatus.SOLD_OUT
 
+  const onOfferClick = () => {
+    logOfferNavigation(INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.TITLE_LINK)
+  }
+
   return (
     <div className={styles['title-column']}>
-      <Link className={styles['title-column-with-thumb']} to={offerLink}>
+      <Link
+        className={styles['title-column-with-thumb']}
+        to={offerLink}
+        onClick={onOfferClick}
+      >
         <div className={styles['title-column-thumb']}>
           <Thumb url={offer.thumbUrl} />
         </div>

@@ -9,6 +9,7 @@ import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   Events,
+  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -124,6 +125,13 @@ export const IndividualActionsCells = ({
 
   const isHeadlineActionDisplayed = isActive && isNotAProductWithoutImage
 
+  const logOfferNavigation = (source: INDIVIDUAL_OFFERS_NAVIGATION_SOURCE) => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      used: source,
+      offerId: offer.id,
+    })
+  }
+
   return (
     <>
       <div className={styles['actions-column']}>
@@ -133,7 +141,16 @@ export const IndividualActionsCells = ({
           dropdownTriggerRef={dropdownTriggerRef}
         >
           <DropdownItem icon={penIcon}>
-            <Link to={editionOfferLink}>Voir l’offre</Link>
+            <Link
+              to={editionOfferLink}
+              onClick={() =>
+                logOfferNavigation(
+                  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_VIEW_OFFER
+                )
+              }
+            >
+              Voir l’offre
+            </Link>
           </DropdownItem>
           {offer.status === OfferStatus.DRAFT ? (
             <DropdownItem
@@ -147,7 +164,14 @@ export const IndividualActionsCells = ({
             />
           ) : (
             <DropdownItem icon={fullStockIcon}>
-              <Link to={editionStockLink}>
+              <Link
+                to={editionStockLink}
+                onClick={() =>
+                  logOfferNavigation(
+                    INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_EDIT_OFFER_STOCK
+                  )
+                }
+              >
                 {offer.isEvent ? `Dates et capacités` : `Stocks`}
               </Link>
             </DropdownItem>

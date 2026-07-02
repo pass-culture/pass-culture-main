@@ -69,6 +69,12 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   OFFERS_TRASH_ICON = 'OffersTrashicon',
 }
 
+export enum INDIVIDUAL_OFFERS_NAVIGATION_SOURCE {
+  TITLE_LINK = 'IndividualOffersTitleLink',
+  ACTIONS_MENU_VIEW_OFFER = 'IndividualOffersActionsMenuViewOffer',
+  ACTIONS_MENU_EDIT_OFFER_STOCK = 'IndividualOffersActionsMenuEditOfferStock',
+}
+
 export enum SynchronizationEvents {
   CLICKED_SYNCHRONIZE_OFFER = 'hasClickedSynchronizeOffer',
   CLICKED_IMPORT = 'hasClickedImport',
