@@ -222,7 +222,7 @@ export const OfferFilters = ({
                   localisationFilterState ===
                     LocalisationFilterStates.GEOLOCATION
                 }
-                title="Localisation des partenaires"
+                title="Localisation des offres"
                 itemsLength={
                   localisationFilterState ===
                   LocalisationFilterStates.GEOLOCATION

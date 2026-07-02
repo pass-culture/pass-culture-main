@@ -216,7 +216,7 @@ describe('offersSearch component', () => {
     renderOffersSearchComponent(props, { ...user, departmentCode: '' })
 
     const localisationFilter = screen.getByRole('button', {
-      name: 'Localisation des partenaires',
+      name: 'Localisation des offres',
     })
     await userEvent.click(localisationFilter)
 
@@ -229,7 +229,7 @@ describe('offersSearch component', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(screen.getByText('Choisir un département'))
@@ -245,7 +245,7 @@ describe('offersSearch component', () => {
     )
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires (1)',
+        name: 'Localisation des offres (1)',
       })
     )
 
@@ -259,7 +259,7 @@ describe('offersSearch component', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(screen.getByText('Choisir une académie'))
@@ -275,7 +275,7 @@ describe('offersSearch component', () => {
     )
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires (1)',
+        name: 'Localisation des offres (1)',
       })
     )
 
@@ -287,7 +287,7 @@ describe('offersSearch component', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(
@@ -311,7 +311,7 @@ describe('offersSearch component', () => {
     })
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(screen.getByText('Choisir une académie'))
@@ -377,7 +377,7 @@ describe('offersSearch component', () => {
     renderOffersSearchComponent(props, user)
 
     const localisationFilter = screen.getByRole('button', {
-      name: 'Localisation des partenaires',
+      name: 'Localisation des offres',
     })
     await userEvent.click(localisationFilter)
 

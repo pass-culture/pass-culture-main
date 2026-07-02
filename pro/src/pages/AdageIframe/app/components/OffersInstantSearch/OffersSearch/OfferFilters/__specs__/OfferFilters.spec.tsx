@@ -207,7 +207,7 @@ describe('OfferFilters', () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.DEPARTMENTS)
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Localisation des partenaires' })
+      screen.getByRole('button', { name: 'Localisation des offres' })
     )
 
     expect(
@@ -219,7 +219,7 @@ describe('OfferFilters', () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.ACADEMIES)
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Localisation des partenaires' })
+      screen.getByRole('button', { name: 'Localisation des offres' })
     )
 
     expect(
@@ -239,7 +239,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(
@@ -258,7 +258,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: 'Localisation des offres',
       })
     )
     await userEvent.click(
@@ -277,7 +277,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: /Localisation des partenaires/,
+        name: /Localisation des offres/,
       })
     )
     await userEvent.click(
@@ -296,7 +296,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: /Localisation des partenaires/,
+        name: /Localisation des offres/,
       })
     )
     await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
