@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 import time_machine
@@ -90,6 +91,30 @@ def test_update_external_user(marketing_subscription):
     assert brevo_testing.brevo_requests[0].get("email") == "jeanne@example.com"
     assert brevo_testing.brevo_requests[0].get("emailBlacklisted") is not marketing_subscription
     assert brevo_testing.brevo_requests[0].get("use_pro_subaccount") is False
+
+
+@patch("celery.app.task.Task.apply_async")
+def test_update_external_user_does_not_leak_pii_in_task_logs(mock_apply_async):
+    user = BeneficiaryGrant18Factory(email="jeanne@example.com", postalCode="12345", departementCode="12")
+
+    update_external_user(user)
+
+    # In tests, tasks run eagerly, which does not reproduce the lazy (published) task path where the
+    # PII redaction actually happens. And caplog cannot capture the logs a lazy task would emit. So,
+    # to check what gets logged, we mock the publish call and inspect the redacted args it receives.
+    scrubbed_argsreprs = [
+        call.kwargs["argsrepr"] for call in mock_apply_async.call_args_list if call.kwargs.get("argsrepr")
+    ]
+    assert scrubbed_argsreprs  # at least one PII-bearing task was published
+
+    for argsrepr in scrubbed_argsreprs:
+        assert user.email not in argsrepr
+        assert user.birth_date.isoformat() not in argsrepr
+        assert user.firstName not in argsrepr
+        assert user.lastName not in argsrepr
+        assert user.postalCode not in argsrepr
+        # 12 can be easily found in time stamps
+        assert f"'DEPARTMENT_CODE': '{user.departementCode}'" not in argsrepr
 
 
 def test_email_should_not_be_blacklisted_in_brevo_by_default():

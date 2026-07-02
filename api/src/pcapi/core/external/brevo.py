@@ -17,7 +17,6 @@ from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.mails import serialization
-from pcapi.core.mails import tasks
 from pcapi.core.users import models as users_models
 
 
@@ -108,12 +107,27 @@ class BrevoOptionalAttributes(Enum):
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
 
 
+BREVO_PII_FIELDS = frozenset(
+    [
+        "email",
+        BrevoAttributes.DATE_OF_BIRTH.value,
+        BrevoAttributes.DEPARTMENT_CODE.value,
+        BrevoAttributes.FIRSTNAME.value,
+        BrevoAttributes.LASTNAME.value,
+        BrevoAttributes.POSTAL_CODE.value,
+        BrevoAttributes.BONIFICATION_STATUS.value,
+    ]
+)
+
+
 def _get_brevo_client(use_pro_subaccount: bool) -> brevo.Brevo:
     api_key = settings.SENDINBLUE_PRO_API_KEY if use_pro_subaccount else settings.SENDINBLUE_API_KEY
     return brevo.Brevo(api_key=api_key, timeout=settings.BREVO_CONTACTS_REQUEST_TIMEOUT)
 
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
+    from pcapi.core.mails import tasks
+
     if user.has_any_pro_role:
         contact_list_ids = None
     else:
@@ -139,6 +153,8 @@ def update_contact_attributes(
     cultural_survey_answers: dict[str, list[str]] | None = None,
     asynchronous: bool = True,
 ) -> None:
+    from pcapi.core.mails import tasks
+
     if attributes.is_pro:
         assert isinstance(attributes, attributes_models.ProAttributes)  # helps mypy
         formatted_attributes = format_pro_attributes(attributes)

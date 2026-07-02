@@ -33,6 +33,7 @@ def celery_async_task(
     retry_backoff_max: int = settings.CELERY_TASK_RETRY_BACKOFF_MAX,
     max_retries: int = settings.CELERY_TASK_MAX_RETRIES,
     rate_limit: int | str | None = None,
+    pii_fields: typing.Collection[str] | None = None,
 ) -> typing.Callable:
     """
     celery_async_task decorator is used to defer the function execution to a Celery worker.
@@ -43,6 +44,7 @@ def celery_async_task(
     retry_backoff: if set, the task will not be retried immediately and will follow an exponential backoff retry scheme.
     model: if not None, will perform input validation against pydantic model and parse and load it to and from JSON to ensure
     that the input is JSON serializable. Otherwise this step will be skipped.
+    pii_fields: keys of the payload that will be scrubbed for logging only
     """
 
     autoretry_for += (CloudTaskRetryException,)
@@ -56,6 +58,7 @@ def celery_async_task(
             retry_backoff_max=retry_backoff_max,
             max_retries=max_retries,
             rate_limit=rate_limit,
+            pii_fields=frozenset(pii_fields) if pii_fields else None,
         )
         @wraps(f)
         def task(self: Task, payload: dict) -> None:

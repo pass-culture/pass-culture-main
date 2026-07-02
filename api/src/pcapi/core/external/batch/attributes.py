@@ -5,7 +5,6 @@ from functools import partial
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.external.batch import serialization
-from pcapi.core.external.batch import tasks
 from pcapi.core.external.batch.utils import format_date
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import batch_tasks as batch_cloud_tasks
@@ -15,12 +14,27 @@ from pcapi.utils.transaction_manager import on_commit
 logger = logging.getLogger(__name__)
 
 
+BATCH_PII_TASKS = frozenset(
+    [
+        "date(u.date_of_birth)",
+        "u.bonification_status",
+        "u.city",
+        "u.departement_code",
+        "u.first_name",
+        "u.last_name",
+        "u.postal_code",
+    ]
+)
+
+
 def update_user_attributes(
     user_id: int,
     user_attributes: attributes_models.UserAttributes,
     cultural_survey_answers: dict[str, list[str]] | None = None,
     batch_extra_data: dict[str, datetime] | None = None,
 ) -> None:
+    from pcapi.core.external.batch import tasks
+
     if user_attributes.is_pro:
         return
 
