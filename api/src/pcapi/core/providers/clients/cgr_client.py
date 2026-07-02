@@ -32,7 +32,8 @@ CGR_TIMEOUT = 10
 CGR_SHOWTIMES_STOCKS_CACHE_KEY = "api:cinema_provider:cgr:stocks:%s:%s"
 CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT = 60
 _CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN = r"Impossible de délivrer \d places , il n'en reste que : (\d)"
-_CGR_SHOW_DOES_NOT_EXISTS_PATTERN = r"PASS CULTURE IMPOSSIBLE erreur création résa \(site\) : IdSeance\(\d+\) inconnu"
+# their error message is poorly formatted
+_CGR_SHOW_DOES_NOT_EXISTS_PATTERN = r" PASS CULTURE IMPOSSIBLE erreur création résa \(site\) : IdSeance\(\d+\) inconnu"
 
 
 class CGRAPIException(ExternalBookingException):
