@@ -19,8 +19,8 @@ importers:
         specifier: 1.19.8
         version: 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
       '@algolia/autocomplete-plugin-recent-searches':
-        specifier: 1.19.8
-        version: 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
+        specifier: 1.19.9
+        version: 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
       '@algolia/autocomplete-preset-algolia':
         specifier: 1.19.9
         version: 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
@@ -278,6 +278,12 @@ packages:
       '@algolia/client-search': '>= 4.5.1 < 6'
       algoliasearch: '>= 4.9.1 < 6'
 
+  '@algolia/autocomplete-js@1.19.9':
+    resolution: {integrity: sha512-AXtqH+BBjDrTeoqCqOom082umhMtL/RF3+DVQSkoukh/1aaFdevNAtCqxwQSUCKQFLo0YLcDsB0cBItnl1X+bg==}
+    peerDependencies:
+      '@algolia/client-search': '>= 4.5.1 < 6'
+      algoliasearch: '>= 4.9.1 < 6'
+
   '@algolia/autocomplete-plugin-algolia-insights@1.19.8':
     resolution: {integrity: sha512-ZvJWO8ZZJDpc1LNM2TTBdmQsZBLMR4rU5iNR2OYvEeFBiaf/0ESnRSSLQbryarJY4SVxtoz6A2ZtDMNM+iQEAA==}
     peerDependencies:
@@ -294,8 +300,8 @@ packages:
       '@algolia/client-search': '>= 4.5.1 < 6'
       algoliasearch: '>= 4.5.1 < 6'
 
-  '@algolia/autocomplete-plugin-recent-searches@1.19.8':
-    resolution: {integrity: sha512-Y8bLNJcdMCjSp4Mp6pfcdfl1kGCwogzlaJFUtREK3kInwDL4Ea7Fx0DO8eg8sHBkcsxq7XGHD23OH5+AmYQsKw==}
+  '@algolia/autocomplete-plugin-recent-searches@1.19.9':
+    resolution: {integrity: sha512-SSUAULhKXK8IFZQoRlBoKLYso3s+i5R62ALxcec8MX44y2cHSmWFyWVOMOKYiywtOmpYW5XLLLVZUWststszWw==}
     peerDependencies:
       '@algolia/client-search': '>= 4.5.1 < 6'
 
@@ -4417,6 +4423,18 @@ snapshots:
     transitivePeerDependencies:
       - search-insights
 
+  '@algolia/autocomplete-js@1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)':
+    dependencies:
+      '@algolia/autocomplete-core': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-preset-algolia': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+      '@algolia/autocomplete-shared': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+      '@algolia/client-search': 5.55.0
+      algoliasearch: 5.55.0
+      htm: 3.1.1
+      preact: 10.29.3
+    transitivePeerDependencies:
+      - search-insights
+
   '@algolia/autocomplete-plugin-algolia-insights@1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)':
     dependencies:
       '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
@@ -4444,12 +4462,12 @@ snapshots:
     transitivePeerDependencies:
       - search-insights
 
-  '@algolia/autocomplete-plugin-recent-searches@1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)':
+  '@algolia/autocomplete-plugin-recent-searches@1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)':
     dependencies:
-      '@algolia/autocomplete-core': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-js': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
-      '@algolia/autocomplete-preset-algolia': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
-      '@algolia/autocomplete-shared': 1.19.8(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+      '@algolia/autocomplete-core': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-js': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)(search-insights@2.17.3)
+      '@algolia/autocomplete-preset-algolia': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
+      '@algolia/autocomplete-shared': 1.19.9(@algolia/client-search@5.55.0)(algoliasearch@5.55.0)
       '@algolia/client-search': 5.55.0
     transitivePeerDependencies:
       - algoliasearch
