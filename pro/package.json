@@ -100,7 +100,7 @@
     "@vitejs/plugin-react": "6.0.3",
     "@vitest/coverage-istanbul": "4.1.7",
     "axe-core": "4.12.1",
-    "check-unused-css": "0.5.0",
+    "check-unused-css": "0.5.2",
     "dotenv": "17.4.2",
     "jsdom": "29.1.1",
     "knip": "6.16.1",
