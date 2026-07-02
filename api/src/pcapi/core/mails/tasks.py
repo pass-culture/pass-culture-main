@@ -1,6 +1,8 @@
 from brevo.core import ApiError as BrevoApiError
 
 from pcapi.celery_tasks.tasks import celery_async_task
+from pcapi.core.external.brevo import BREVO_PII_FIELDS
+from pcapi.core.external.brevo import make_update_request
 
 from .serialization import SendTransactionalEmailRequest
 from .serialization import UpdateBrevoContactRequest
@@ -11,10 +13,9 @@ from .serialization import UpdateBrevoContactRequest
     autoretry_for=(BrevoApiError,),
     model=UpdateBrevoContactRequest,
     rate_limit="30/s",
+    pii_fields=BREVO_PII_FIELDS,
 )
 def update_contact_attributes_task(payload: UpdateBrevoContactRequest) -> None:
-    from pcapi.core.external.brevo import make_update_request
-
     make_update_request(payload)
 
 

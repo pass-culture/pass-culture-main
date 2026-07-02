@@ -2,6 +2,7 @@ import logging
 
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core.external.batch import api
+from pcapi.core.external.batch import attributes
 from pcapi.core.external.batch import serialization
 
 
@@ -12,6 +13,7 @@ logger = logging.getLogger(__name__)
     "tasks.batch.priority.update_user_attributes",
     model=serialization.UpdateBatchAttributesRequestV2,
     rate_limit="3000/s",
+    pii_fields=attributes.BATCH_PII_TASKS,
 )
 def update_user_attributes_task(
     payload: serialization.UpdateBatchAttributesRequestV2,
