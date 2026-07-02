@@ -7,7 +7,13 @@
 
 .additional-fee-row {
   margin-bottom: var(--size-spacing-l);
-  align-items: end;
+  align-items: flex-start;
+}
+
+.remove-button-container {
+  padding-top: calc(
+    var(--typography-body-line-height) + var(--size-spacing-xs)
+  );
 }
 
 .additional-fee-type-select {
