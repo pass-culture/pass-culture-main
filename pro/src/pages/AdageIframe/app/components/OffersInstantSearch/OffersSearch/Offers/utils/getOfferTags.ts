@@ -127,7 +127,7 @@ export function getOfferTags(
     })
     tags.push({
       icon: fullProfileIcon,
-      text: `${offer.stock.numberOfTickets} élèves`,
+      text: `${(offer.stock.numberOfTickets ?? 0) + (offer.stock.numberOfTeachers ?? 0)} participants`,
     })
   }
 
