@@ -4,6 +4,7 @@ import type {
 } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
+import { ADDITIONAL_FEES } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/AdditionalFeesForm/constants'
 import { TOTAL_PRICE_LABEL } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
 import { Divider } from '@/ui-kit/Divider/Divider'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
@@ -127,7 +128,7 @@ export const CollectiveOfferStockSection = ({
                 {stock?.collectiveAdditionalFees?.map(
                   (fee: CollectiveAdditionalFeeResponseModel) => (
                     <li key={`${fee.type}-${fee.label}`}>
-                      {fee.label || fee.type} - {fee.amount}€
+                      {fee.label ?? ADDITIONAL_FEES[fee.type]} - {fee.amount}€
                     </li>
                   )
                 )}

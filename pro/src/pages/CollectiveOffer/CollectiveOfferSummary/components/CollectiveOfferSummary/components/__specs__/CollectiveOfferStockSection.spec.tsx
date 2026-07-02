@@ -146,9 +146,7 @@ describe('CollectiveOfferStockSection', () => {
       expect(screen.getByText('Oui')).toBeVisible()
       expect(screen.getByText('Type de frais annexe :')).toBeVisible()
       expect(screen.getByText('Transport en bus - 30€')).toBeVisible()
-      expect(
-        screen.getByText(`${CollectiveAdditionalFeeType.MEAL} - 12.5€`)
-      ).toBeVisible()
+      expect(screen.getByText("Repas de l'intervenant•e - 12.5€")).toBeVisible()
     })
   })
 })
