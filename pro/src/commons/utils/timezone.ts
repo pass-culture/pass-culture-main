@@ -8,7 +8,7 @@ import {
 
 import { buildDateTime, getToday, toISOStringWithoutMilliseconds } from './date'
 
-const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/
+const timeRegex = /^([01]?\d|2[0-3]):([0-5]\d)$/
 export const isValidTime = (time?: string | null): boolean =>
   Boolean(time && timeRegex.test(time))
 
