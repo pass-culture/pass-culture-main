@@ -1,6 +1,6 @@
 import { CollectiveAdditionalFeeType } from '@/apiClient/adage'
 
-export const MAX_ADDITIONAL_FEES = 10
+export const MAX_ADDITIONAL_FEES_LENGHT = 11
 export const ADDITIONAL_FEES_OPTIONS = [
   {
     label: "Hébergement de l'intervenant",

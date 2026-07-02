@@ -17,7 +17,10 @@ import {
 
 import type { CollectiveOfferStockFormValues } from '../CollectiveOfferStockForm/validationSchema'
 import styles from './AdditionalFeesForm.module.scss'
-import { ADDITIONAL_FEES_OPTIONS, MAX_ADDITIONAL_FEES } from './constants'
+import {
+  ADDITIONAL_FEES_OPTIONS,
+  MAX_ADDITIONAL_FEES_LENGHT,
+} from './constants'
 
 export const AdditionalFeesForm = ({
   canEditDiscount,
@@ -32,7 +35,7 @@ export const AdditionalFeesForm = ({
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'additionalFees',
-    rules: { maxLength: MAX_ADDITIONAL_FEES },
+    rules: { maxLength: MAX_ADDITIONAL_FEES_LENGHT },
   })
 
   function handleHasAdditionalFeesChange(
@@ -115,6 +118,8 @@ export const AdditionalFeesForm = ({
   const creatableOption = matchesExistingOption ? undefined : searchLabel
 
   const shouldShowRemoveFeeButton = canEditDiscount && fields.length > 1
+  const shouldShowAddFeeButton =
+    canEditDiscount && fields.length <= MAX_ADDITIONAL_FEES_LENGHT
 
   return (
     <FormLayout.Row>
@@ -123,6 +128,7 @@ export const AdditionalFeesForm = ({
         name="hasAdditionalFees"
         variant="detailed"
         display="horizontal"
+        disabled={!canEditDiscount}
         sizing="hug"
         options={[
           {
@@ -147,7 +153,6 @@ export const AdditionalFeesForm = ({
               className={styles['additional-fee-row']}
             >
               <SelectAutocomplete
-                key={field.id}
                 label="Type de frais annexes"
                 value={
                   field.type === CollectiveAdditionalFeeType.OTHER
@@ -156,17 +161,16 @@ export const AdditionalFeesForm = ({
                         (option) => option.value === field.type
                       )?.label
                 }
-                options={ADDITIONAL_FEES_OPTIONS}
+                options={ADDITIONAL_FEES_OPTIONS.filter(
+                  (o) => o.value !== CollectiveAdditionalFeeType.OTHER
+                )}
                 required
-                name={`additionalFees.${index}`}
+                disabled={!canEditDiscount}
+                name={`additionalFees.${index}.type`}
                 className={styles['additional-fee-type-select']}
                 creatableOption={creatableOption}
                 onChange={handleFeeTypeChange(index)}
-                onSearch={(searchText) => {
-                  if (searchText.length > 0) {
-                    setSearchLabel(searchText)
-                  }
-                }}
+                onSearch={setSearchLabel}
                 error={
                   form.formState.errors.additionalFees?.[index]?.type
                     ?.message ||
@@ -196,13 +200,13 @@ export const AdditionalFeesForm = ({
                   color={ButtonColor.NEUTRAL}
                   icon={fullTrashIcon}
                   iconAlt={'Supprimer ce champ'}
-                  onClick={() => removeAdditionalFeesFieldEntry(index)}
+                  onClick={removeAdditionalFeesFieldEntry(index)}
                   disabled={!canEditDiscount || fields.length === 1}
                 />
               )}
             </FormLayout.Row>
           ))}
-          {fields.length <= MAX_ADDITIONAL_FEES && (
+          {shouldShowAddFeeButton && (
             <Button
               variant={ButtonVariant.TERTIARY}
               icon={fullMoreIcon}
