@@ -118,7 +118,7 @@ describe('BookableOfferSummary', () => {
 
   it('should render the number of participants', () => {
     renderBookableOfferSummary(props)
-    expect(screen.getByText('50 participants')).toBeInTheDocument()
+    expect(screen.getByText('55 participants')).toBeInTheDocument()
   })
 
   it("should render default recap value when value doesn't exist", () => {

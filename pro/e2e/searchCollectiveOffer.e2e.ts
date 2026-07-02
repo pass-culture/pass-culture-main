@@ -37,7 +37,7 @@ function getPublishedCollectiveOfferRow(
     '',
     offerPublished.name,
     `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-    '100€25 participants',
+    '100€30 participants',
     INSTITUTION_NAME,
     'À déterminer',
     'publiée',

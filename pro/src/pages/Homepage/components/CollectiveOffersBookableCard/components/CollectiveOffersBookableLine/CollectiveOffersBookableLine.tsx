@@ -29,8 +29,9 @@ function getDateAndTicketsCount(
     return ''
   }
   const { date: startDate } = formatDateTimeParts(collectiveStock.startDatetime)
-  const numberOfTickets = collectiveStock.numberOfTickets
-  return `Prévu le ${startDate} - ${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`
+  const numberOfParticipants =
+    collectiveStock.numberOfTickets + collectiveStock.numberOfTeachers
+  return `Prévu le ${startDate} - ${numberOfParticipants} ${pluralizeFr(numberOfParticipants, 'participant', 'participants')}`
 }
 
 export const CollectiveOffersBookableLine = ({
