@@ -146,7 +146,7 @@ describe('useSaveVenueSettings', () => {
 
     const { result } = renderUseSaveVenueSettings({ venue })
     await act(async () => {
-      await result.current.saveAndContinue(
+      await result.current.save(
         result.current.form.getValues(),
         result.current.formContext
       )
@@ -176,7 +176,7 @@ describe('useSaveVenueSettings', () => {
     })
 
     await act(async () => {
-      await result.current.saveAndContinue(
+      await result.current.save(
         result.current.form.getValues(),
         result.current.formContext
       )
@@ -219,7 +219,7 @@ describe('useSaveVenueSettings', () => {
     const spyFormSetError = vi.spyOn(result.current.form, 'setError')
 
     await act(async () => {
-      await result.current.saveAndContinue(
+      await result.current.save(
         result.current.form.getValues(),
         result.current.formContext
       )
