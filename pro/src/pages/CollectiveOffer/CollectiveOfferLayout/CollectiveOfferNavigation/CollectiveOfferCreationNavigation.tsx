@@ -25,10 +25,12 @@ export const CollectiveOfferCreationNavigation = ({
 
   const hasPassedDetailsStep = offer
   const hasPassedStocksStep = hasPassedDetailsStep && offer.collectiveStock
+  const hasPassedInstitutionStep = hasPassedStocksStep && offer.institution
   const hasPassedInformationsSteps =
     hasPassedStocksStep &&
-    (!isNewCollectivePriceEnabled || !!offer.additionalDetails)
-  const hasPassedInstitutionStep = hasPassedStocksStep && offer.institution
+    (!isNewCollectivePriceEnabled ||
+      !!offer.additionalDetails ||
+      !!hasPassedInstitutionStep)
 
   let steps: Step[] = [
     {
