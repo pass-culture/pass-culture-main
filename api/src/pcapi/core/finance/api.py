@@ -36,6 +36,7 @@ import time
 import typing
 import zipfile
 from collections import defaultdict
+from functools import partial
 
 import pytz
 import sqlalchemy as sa
@@ -67,6 +68,7 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.offerers import api as offerers_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
@@ -77,6 +79,7 @@ from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 from . import conf
 from . import exceptions
@@ -3717,3 +3720,31 @@ def clean_duplicate_bank_accounts() -> None:
             synchronize_session=False
         )
         db.session.delete(bank_account)
+
+
+class CannotUnlinkBankAccount(Exception):
+    pass
+
+
+def unlink_venue_bank_accounts(venue: offerers_models.Venue) -> None:
+    if not venue.bankAccountLinks:
+        return
+
+    if offerers_api.venue_has_ongoing_bookings(venue):
+        raise CannotUnlinkBankAccount()
+
+    bank_account_link = venue.current_bank_account_link
+    if bank_account_link:
+        now = date_utils.get_naive_utc_now()
+        new_timespan = db_utils.make_timerange(start=bank_account_link.timespan.lower, end=now)
+        bank_account_link.timespan = new_timespan
+
+        db.session.flush()
+
+        on_commit(
+            partial(
+                logger.info,
+                "ending current venue bank account link",
+                extra={"venue_id": venue.id, "bank_account_id": bank_account_link.bankAccountId},
+            )
+        )

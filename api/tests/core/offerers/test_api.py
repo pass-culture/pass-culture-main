@@ -4039,7 +4039,9 @@ class CloseVenueTest:
     """
 
     def test_open_venue_becomes_closed(self):
-        venue = offerers_factories.VenueFactory(state=None, bookingEmail="some.email@test.com")
+        venue = offerers_factories.VenueBankAccountLinkFactory(
+            venue__state=None, venue__bookingEmail="some.email@test.com"
+        ).venue
         author = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4049,6 +4051,8 @@ class CloseVenueTest:
 
         assert not venue.bookingEmail
         assert not venue.contact
+
+        assert not venue.current_bank_account_link
         assert venue.state == offerers_models.VenueState.CLOSED
 
     def test_closed_venue_stays_closed(self):
@@ -4209,3 +4213,36 @@ class NullifyVenueEmailsTest:
 
         # no update to track
         assert not venue.action_history
+
+
+class VenueHasOngoingBookingsTest:
+    def test_venue_without_any_bookings_is_false(self):
+        venue = offerers_factories.VenueFactory()
+        assert not offerers_api.venue_has_ongoing_bookings(venue)
+
+    def test_venue_with_only_cancelled_and_reimbursed_bookings_is_false(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+        bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
+
+        assert not offerers_api.venue_has_ongoing_bookings(venue)
+
+    def test_venue_with_only_ongoing_bookings_is_true(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+
+        assert offerers_api.venue_has_ongoing_bookings(venue)
+
+    def test_venue_with_mixed_ongoing_and_not_bookings_is_true(self):
+        venue = offerers_factories.VenueFactory()
+
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        bookings_factories.PendingReimbursementBookingFactory(stock__offer__venue=venue)
+
+        bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
+        bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
+
+        assert offerers_api.venue_has_ongoing_bookings(venue)
