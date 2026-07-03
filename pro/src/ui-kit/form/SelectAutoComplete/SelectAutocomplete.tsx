@@ -234,9 +234,8 @@ export const SelectAutocomplete = forwardRef(
 
     useEffect(() => {
       const externalValue = value ?? inputRef.current?.value ?? ''
-
       const externalLabel = optionsLabelByValue.current?.get(externalValue)
-
+      console.log('VALUE CHANGED', value, externalValue, externalLabel)
       setSearchField(externalLabel || externalValue)
     }, [value])
 
