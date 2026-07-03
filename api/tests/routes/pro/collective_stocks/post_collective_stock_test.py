@@ -526,7 +526,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.TRAVEL.name, "label": None, "amount": 5},
                     ],
                 },
-                {"collectiveAdditionalFees": ["Un type est en doublon"]},
+                {"collectiveAdditionalFees.root": ["Un type est en doublon"]},
             ),
             # collectiveAdditionalFees label duplicate
             (
@@ -538,7 +538,7 @@ class Return400Test:
                         {"type": CollectiveAdditionalFeeType.OTHER.name, "label": "hello", "amount": 5},
                     ],
                 },
-                {"collectiveAdditionalFees": ["Un label est en doublon"]},
+                {"collectiveAdditionalFees.root": ["Un label est en doublon"]},
             ),
             # collectiveAdditionalFees negative amount
             (

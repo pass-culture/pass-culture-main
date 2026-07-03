@@ -74,13 +74,13 @@ def _validate_total_price(
             fee.type for fee in additional_fees if fee.type != models.CollectiveAdditionalFeeType.OTHER
         )
         if any(type_count > 1 for type_count in type_counter.values()):
-            raise_error_from_location(None, loc="collectiveAdditionalFees", msg="Un type est en doublon")
+            raise_error_from_location(None, loc="collectiveAdditionalFees.root", msg="Un type est en doublon")
 
         label_counter = collections.Counter(
             fee.label for fee in additional_fees if fee.type == models.CollectiveAdditionalFeeType.OTHER
         )
         if any(label_count > 1 for label_count in label_counter.values()):
-            raise_error_from_location(None, loc="collectiveAdditionalFees", msg="Un label est en doublon")
+            raise_error_from_location(None, loc="collectiveAdditionalFees.root", msg="Un label est en doublon")
 
     # check total price
     total_price = service_price + sum(fee.amount for fee in additional_fees)
