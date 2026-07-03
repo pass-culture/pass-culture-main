@@ -61,7 +61,7 @@ export const SideNavLinks = ({
     if (lastOpenSection) {
       return lastOpenSection
     }
-    return firstSectionKey
+    return null
   }
 
   const [openSection, setOpenSection] = useState<string | null>(
