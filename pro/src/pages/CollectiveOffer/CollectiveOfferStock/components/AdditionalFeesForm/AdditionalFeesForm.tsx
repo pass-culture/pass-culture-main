@@ -34,7 +34,7 @@ export const AdditionalFeesForm = ({
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: 'additionalFees',
+    name: 'collectiveAdditionalFees',
     rules: { maxLength: MAX_ADDITIONAL_FEES_LENGHT },
   })
 
@@ -46,14 +46,14 @@ export const AdditionalFeesForm = ({
     })
     if (event.target.value === 'non') {
       remove()
-      form.setValue('additionalFees', [])
+      form.setValue('collectiveAdditionalFees', [])
     } else if (event.target.value === 'oui' && fields.length === 0) {
       append({
         type: CollectiveAdditionalFeeType.OTHER,
         label: '',
         amount: 0,
       })
-      form.setFocus('additionalFees.0.type')
+      form.setFocus('collectiveAdditionalFees.0.type')
     }
   }
 
@@ -63,21 +63,25 @@ export const AdditionalFeesForm = ({
         (option) => option.value === value
       )
       if (selectedOption) {
-        form.setValue(`additionalFees.${index}.type`, selectedOption.value, {
-          shouldDirty: true,
-          shouldValidate: true,
-        })
-        form.setValue(`additionalFees.${index}.label`, null, {
+        form.setValue(
+          `collectiveAdditionalFees.${index}.type`,
+          selectedOption.value,
+          {
+            shouldDirty: true,
+            shouldValidate: true,
+          }
+        )
+        form.setValue(`collectiveAdditionalFees.${index}.label`, null, {
           shouldDirty: true,
           shouldValidate: true,
         })
       } else {
         form.setValue(
-          `additionalFees.${index}.type`,
+          `collectiveAdditionalFees.${index}.type`,
           CollectiveAdditionalFeeType.OTHER,
           { shouldDirty: true, shouldValidate: true }
         )
-        form.setValue(`additionalFees.${index}.label`, value, {
+        form.setValue(`collectiveAdditionalFees.${index}.label`, value, {
           shouldDirty: true,
           shouldValidate: true,
         })
@@ -102,15 +106,16 @@ export const AdditionalFeesForm = ({
       flushSync(() => remove(index))
       const indexToFocus = Math.min(
         index,
-        form.getValues('additionalFees').length
+        form.getValues('collectiveAdditionalFees').length
       )
-      form.setFocus(`additionalFees.${indexToFocus}.amount`)
+      form.setFocus(`collectiveAdditionalFees.${indexToFocus}.amount`)
     }
   }
 
   // We need to force dirty field evaluation at render
   // since fieldArray.remove does not dirty the field by itself properly
-  const _additionalFeesDirty = form.formState.dirtyFields.additionalFees
+  const _additionalFeesDirty =
+    form.formState.dirtyFields.collectiveAdditionalFees
 
   const matchesExistingOption = ADDITIONAL_FEES_OPTIONS.some(
     (option) => option.label === searchLabel
@@ -166,30 +171,35 @@ export const AdditionalFeesForm = ({
                 )}
                 required
                 disabled={!canEditDiscount}
-                name={`additionalFees.${index}.type`}
+                name={`collectiveAdditionalFees.${index}.type`}
                 className={styles['additional-fee-type-select']}
                 creatableOption={creatableOption}
                 onChange={handleFeeTypeChange(index)}
                 onSearch={setSearchLabel}
                 error={
-                  form.formState.errors.additionalFees?.[index]?.type
+                  form.formState.errors.collectiveAdditionalFees?.[index]?.type
                     ?.message ||
-                  form.formState.errors.additionalFees?.[index]?.label?.message
+                  form.formState.errors.collectiveAdditionalFees?.[index]?.label
+                    ?.message
                 }
                 // use this to control focus on input
-                ref={form.register(`additionalFees.${index}.type`).ref}
+                ref={
+                  form.register(`collectiveAdditionalFees.${index}.type`).ref
+                }
               />
               <TextInput
-                {...form.register(`additionalFees.${index}.amount`, {
+                {...form.register(`collectiveAdditionalFees.${index}.amount`, {
                   valueAsNumber: true,
                   onChange: () =>
-                    form.trigger(['additionalFees', 'servicePrice']),
+                    form.trigger(['collectiveAdditionalFees', 'servicePrice']),
                 })}
                 disabled={!canEditDiscount}
                 error={
                   // we display the max-total-price validator on each amount field
-                  form.formState.errors.additionalFees?.root?.message ||
-                  form.formState.errors.additionalFees?.[index]?.amount?.message
+                  form.formState.errors.collectiveAdditionalFees?.root
+                    ?.message ||
+                  form.formState.errors.collectiveAdditionalFees?.[index]
+                    ?.amount?.message
                 }
                 label="Prix (en €)"
                 min={0.01}

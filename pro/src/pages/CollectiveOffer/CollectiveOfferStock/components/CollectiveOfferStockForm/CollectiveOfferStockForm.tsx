@@ -87,7 +87,7 @@ export const CollectiveOfferStockForm = ({
       hasAdditionalFees: Boolean(
         collectiveAdditionalFees && collectiveAdditionalFees.length > 0
       ),
-      additionalFees: collectiveAdditionalFees || [],
+      collectiveAdditionalFees: collectiveAdditionalFees || [],
       ...initialDatesValues,
     },
     resolver: yupResolver(generateValidationSchema(canEditDates)),
@@ -95,7 +95,7 @@ export const CollectiveOfferStockForm = ({
   })
 
   const servicePriceValue = form.watch('servicePrice')
-  const additionalFeesValue = form.watch('additionalFees')
+  const additionalFeesValue = form.watch('collectiveAdditionalFees')
   const price = computePriceForStock(servicePriceValue, additionalFeesValue)
   const isPriceTooHigh = price > MAX_PRICE
 
@@ -106,7 +106,7 @@ export const CollectiveOfferStockForm = ({
         numberOfTeachers,
         servicePrice,
         hasAdditionalFees,
-        additionalFees,
+        collectiveAdditionalFees,
         ...dateFormValues
       } = formValues
 
@@ -124,11 +124,11 @@ export const CollectiveOfferStockForm = ({
       const hasDirtyPrice =
         dirtyKeys.has('servicePrice') ||
         dirtyKeys.has('hasAdditionalFees') ||
-        dirtyKeys.has('additionalFees')
+        dirtyKeys.has('collectiveAdditionalFees')
       if (shouldSaveAllFields || hasDirtyPrice) {
         updatedStock.servicePrice = servicePrice
         updatedStock.collectiveAdditionalFees = hasAdditionalFees
-          ? additionalFees
+          ? collectiveAdditionalFees
           : []
         updatedStock.price = price
       }
@@ -283,7 +283,10 @@ export const CollectiveOfferStockForm = ({
                   {...form.register('servicePrice', {
                     valueAsNumber: true,
                     onChange: () =>
-                      form.trigger(['additionalFees', 'servicePrice']),
+                      form.trigger([
+                        'collectiveAdditionalFees',
+                        'servicePrice',
+                      ]),
                   })}
                   disabled={!canEditDiscount}
                   error={form.formState.errors.servicePrice?.message}

@@ -18,9 +18,9 @@ import { getMaxEndDateInSchoolYear } from '../utils/getMaxEndDateInSchoolYear'
 
 function isPriceUnderMaxPrice(
   servicePrice: number | null,
-  additionalFees: CollectiveAdditionalFeeModel[]
+  collectiveAdditionalFees: CollectiveAdditionalFeeModel[]
 ) {
-  const price = computePriceForStock(servicePrice, additionalFees)
+  const price = computePriceForStock(servicePrice, collectiveAdditionalFees)
   // The first condition is tested by the `servicePrice.max()` test
   return (servicePrice ?? 0) > MAX_PRICE || price <= MAX_PRICE
 }
@@ -145,11 +145,14 @@ export const generateValidationSchema = (canEditDates: boolean) =>
         'max-total-price',
         `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
         (servicePrice, { parent }) =>
-          isPriceUnderMaxPrice(servicePrice, parent.additionalFees ?? [])
+          isPriceUnderMaxPrice(
+            servicePrice,
+            parent.collectiveAdditionalFees ?? []
+          )
       )
       .required('Le tarif de la prestation est obligatoire'),
     hasAdditionalFees: yup.boolean().required('Veuillez choisir une option'),
-    additionalFees: yup
+    collectiveAdditionalFees: yup
       .array()
       .of(
         yup.object({
@@ -179,8 +182,11 @@ export const generateValidationSchema = (canEditDates: boolean) =>
       .test(
         'max-total-price',
         `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
-        (additionalFees, { parent }) =>
-          isPriceUnderMaxPrice(parent.servicePrice, additionalFees ?? [])
+        (collectiveAdditionalFees, { parent }) =>
+          isPriceUnderMaxPrice(
+            parent.servicePrice,
+            collectiveAdditionalFees ?? []
+          )
       )
       .when('hasAdditionalFees', {
         is: true,

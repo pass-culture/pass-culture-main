@@ -21,7 +21,10 @@ function renderAdditionalFeesForm({
   onSubmit = vi.fn(),
 }: {
   initialValues: Partial<
-    Pick<CollectiveOfferStockFormValues, 'hasAdditionalFees' | 'additionalFees'>
+    Pick<
+      CollectiveOfferStockFormValues,
+      'hasAdditionalFees' | 'collectiveAdditionalFees'
+    >
   >
   canEditDiscount?: boolean
   onSubmit?: () => void
@@ -30,7 +33,7 @@ function renderAdditionalFeesForm({
     const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
     const nonFeesDefaultValues: Omit<
       CollectiveOfferStockFormValues,
-      'hasAdditionalFees' | 'additionalFees'
+      'hasAdditionalFees' | 'collectiveAdditionalFees'
     > = {
       startDate: tomorrow,
       endDate: tomorrow,
@@ -61,7 +64,7 @@ function renderAdditionalFeesForm({
 describe('AdditionalFeesForm', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderAdditionalFeesForm({
-      initialValues: { hasAdditionalFees: false, additionalFees: [] },
+      initialValues: { hasAdditionalFees: false, collectiveAdditionalFees: [] },
     })
 
     expect(await axe(container)).toHaveNoViolations()
@@ -69,7 +72,7 @@ describe('AdditionalFeesForm', () => {
 
   it('should not display additional fees fields when hasAdditionalFees is false', () => {
     renderAdditionalFeesForm({
-      initialValues: { hasAdditionalFees: false, additionalFees: [] },
+      initialValues: { hasAdditionalFees: false, collectiveAdditionalFees: [] },
     })
 
     expect(
@@ -81,7 +84,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: 'toto', amount: 5 },
           {
             type: CollectiveAdditionalFeeType.ACCOMMODATION,
@@ -99,7 +102,7 @@ describe('AdditionalFeesForm', () => {
   it('should add a row with default values and focus it when clicking "Oui"', async () => {
     const user = userEvent.setup()
     renderAdditionalFeesForm({
-      initialValues: { hasAdditionalFees: false, additionalFees: [] },
+      initialValues: { hasAdditionalFees: false, collectiveAdditionalFees: [] },
     })
 
     await user.click(screen.getByRole('radio', { name: 'Oui' }))
@@ -113,7 +116,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: CollectiveAdditionalFeeType.ACCOMMODATION,
             label: null,
@@ -137,7 +140,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -153,14 +156,15 @@ describe('AdditionalFeesForm', () => {
   })
 
   it('should not allow adding more than a max number fee rows', () => {
-    const maxFees = Array.from({ length: 12 }, () => ({
-      type: CollectiveAdditionalFeeType.OTHER,
-      label: '',
-      amount: 0,
-    }))
-
     renderAdditionalFeesForm({
-      initialValues: { hasAdditionalFees: true, additionalFees: maxFees },
+      initialValues: {
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: Array.from({ length: 12 }, () => ({
+          type: CollectiveAdditionalFeeType.OTHER,
+          label: '',
+          amount: 0,
+        })),
+      },
     })
 
     expect(
@@ -172,7 +176,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -189,7 +193,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: CollectiveAdditionalFeeType.ACCOMMODATION,
             label: null,
@@ -227,7 +231,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -242,7 +246,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -260,7 +264,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -278,7 +282,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -298,7 +302,7 @@ describe('AdditionalFeesForm', () => {
     renderAdditionalFeesForm({
       initialValues: {
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           { type: CollectiveAdditionalFeeType.OTHER, label: '', amount: 0 },
         ],
       },
@@ -315,7 +319,7 @@ describe('AdditionalFeesForm', () => {
 
     expect(onSubmit).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: CollectiveAdditionalFeeType.OTHER,
             label: 'Matos',

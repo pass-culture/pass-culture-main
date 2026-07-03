@@ -45,7 +45,7 @@ const commonOfferData = {
   students: '10',
   teachers: '2',
   servicePrice: '80',
-  additionnalFees: [
+  collectiveAdditionnalFees: [
     { amount: '8', label: "Repas de l'intervenant" },
     { amount: '12', label: 'Mon frais spécifique' },
   ],
@@ -404,14 +404,16 @@ async function fillDatesAndPrice(
   await page.getByRole('radio', { name: 'Oui' }).check()
   await page
     .getByRole('combobox', { name: /Type de frais annexes/ })
-    .fill(commonOfferData.additionnalFees[0].label.substring(0, 3))
+    .fill(commonOfferData.collectiveAdditionnalFees[0].label.substring(0, 3))
   await page
-    .getByRole('option', { name: commonOfferData.additionnalFees[0].label })
+    .getByRole('option', {
+      name: commonOfferData.collectiveAdditionnalFees[0].label,
+    })
     .click()
 
   await page
     .getByLabel(/Prix \(en €\)/)
-    .fill(commonOfferData.additionnalFees[0].amount)
+    .fill(commonOfferData.collectiveAdditionnalFees[0].amount)
 
   await page
     .getByRole('button', { name: 'Ajouter un type de frais annexes' })
@@ -419,16 +421,16 @@ async function fillDatesAndPrice(
   await page
     .getByLabel(/Type de frais annexes/)
     .nth(1)
-    .fill(commonOfferData.additionnalFees[1].label)
+    .fill(commonOfferData.collectiveAdditionnalFees[1].label)
   await page
     .getByRole('option', {
-      name: `Ajouter ${commonOfferData.additionnalFees[1].label}`,
+      name: `Ajouter ${commonOfferData.collectiveAdditionnalFees[1].label}`,
     })
     .click()
   await page
     .getByLabel(/Prix \(en €\)/)
     .nth(1)
-    .fill(commonOfferData.additionnalFees[1].amount)
+    .fill(commonOfferData.collectiveAdditionnalFees[1].amount)
 
   const displayedPrice = parseFloat(commonOfferData.price).toLocaleString(
     'fr-FR',
