@@ -3,6 +3,7 @@ import decimal
 import re
 
 import pytest
+import time_machine
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.finance.models as finance_models
@@ -247,6 +248,22 @@ class UserGeneratorTest:
         assert user.has_free_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_FREE
         assert user.deposit.amount == 0
+
+    @time_machine.travel("2026-07-01")
+    def test_pre_decree_underage_generation(self):
+        eighteen_years_ago = datetime.datetime.now(tz=None) - relativedelta(years=18, months=1)
+        year_when_user_is_sixteen = eighteen_years_ago + relativedelta(years=16, days=1)
+        user_data = users_generator.GenerateUserData(
+            birth_date=eighteen_years_ago,
+            step=users_generator.GeneratedSubscriptionStep.BENEFICIARY,
+            date_created=year_when_user_is_sixteen,
+        )
+
+        user = users_generator.generate_user(user_data)
+
+        assert user.has_underage_beneficiary_role
+        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.amount == decimal.Decimal("30")
 
     def test_generate_with_birth_date(self):
         birth_date = date_utils.get_naive_utc_now().date() - relativedelta(years=19)
