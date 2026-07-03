@@ -64,6 +64,10 @@ export const CollectiveOfferStockForm = ({
     CollectiveOfferAllowedAction.CAN_EDIT_DATES
   )
 
+  const canEditDetails = allowedActions.includes(
+    CollectiveOfferAllowedAction.CAN_EDIT_DATES
+  )
+
   const {
     startDatetime,
     endDatetime,
@@ -72,6 +76,7 @@ export const CollectiveOfferStockForm = ({
     numberOfTeachers,
     servicePrice,
     collectiveAdditionalFees,
+    price: initialPrice,
   } = initialStock
 
   const initialDatesValues = extractFormDates(
@@ -90,7 +95,14 @@ export const CollectiveOfferStockForm = ({
       collectiveAdditionalFees: collectiveAdditionalFees || [],
       ...initialDatesValues,
     },
-    resolver: yupResolver(generateValidationSchema(canEditDates)),
+    resolver: yupResolver(
+      generateValidationSchema(
+        canEditDetails,
+        canEditDates,
+        canEditDiscount,
+        initialPrice
+      )
+    ),
     mode: 'onSubmit',
   })
 
