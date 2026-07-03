@@ -26,4 +26,9 @@ def is_numeric(value: str) -> bool:
     return re.fullmatch(r"[0-9]+", value) is not None
 
 
+def is_canonical_integer(value: str) -> bool:
+    # Regex ensures that value is the canonical representation of an unsigned integer: only basic digits and no leading zeros
+    return re.fullmatch(r"0|[1-9][0-9]*", value) is not None
+
+
 u_nbsp = "\u00a0"

@@ -762,43 +762,107 @@ class CheckOfferExtraDataTest:
             is None
         )
 
-    def test_valid_show_types(self):
+    @pytest.mark.parametrize(
+        "extra_data",
+        [
+            {"showType": "100", "showSubType": "101"},
+            {"showType": "-1", "showSubType": "-1"},
+        ],
+    )
+    def test_valid_show_types(self, extra_data):
         assert (
             validation.check_offer_extra_data(
-                subcategories.SPECTACLE_REPRESENTATION.id,
-                {"showType": "200", "showSubType": "201"},
+                subcategories.CONCERT.id,
+                extra_data,
                 offerers_factories.VenueFactory(),
                 True,
             )
             is None
         )
 
-    def test_valid_music_types(self):
+    @pytest.mark.parametrize(
+        "extra_data",
+        [
+            ({"musicType": "501", "musicSubType": "502"}),
+            ({"musicType": "-1", "musicSubType": "-1"}),
+        ],
+    )
+    def test_valid_music_types(self, extra_data):
         assert (
             validation.check_offer_extra_data(
                 subcategories.CONCERT.id,
-                {"musicType": "530", "musicSubType": "533"},
+                extra_data,
                 offerers_factories.VenueFactory(),
                 False,
             )
             is None
         )
 
-    def test_invalid_show_type_code(self):
+    @pytest.mark.parametrize(
+        "extra_data, expected_error",
+        [
+            ({"showType": 1.5}, "should be an int or a string"),
+            ({"showType": "00200"}, "should be an int or an int string"),
+            ({"showType": "99999"}, "should be in allowed values"),
+        ],
+    )
+    def test_invalid_show_type(self, extra_data, expected_error):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"showType": "1"}, offerers_factories.VenueFactory(), False
+                subcategories.JEU_EN_LIGNE.id, extra_data, offerers_factories.VenueFactory(), False
             )
 
-        assert error.value.errors["showType"] == ["should be in allowed values"]
+        assert error.value.errors["showType"] == [expected_error]
 
-    def test_invalid_show_type_format(self):
+    @pytest.mark.parametrize(
+        "extra_data, expected_error",
+        [
+            ({"musicType": [100]}, "should be an int or a string"),
+            ({"musicType": "+530"}, "should be an int or an int string"),
+            ({"musicType": "99999"}, "should be in allowed values"),
+        ],
+    )
+    def test_invalid_music_type(self, extra_data, expected_error):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"showType": "one"}, offerers_factories.VenueFactory(), False
+                subcategories.JEU_EN_LIGNE.id, extra_data, offerers_factories.VenueFactory(), False
             )
 
-        assert error.value.errors["showType"] == ["should be an int or an int string"]
+        assert error.value.errors["musicType"] == [expected_error]
+
+    @pytest.mark.parametrize(
+        "extra_data",
+        [
+            {"gtl_id": "01000000"},  # present both in the GTL taxonomy and the music mapping
+            {"gtl_id": "01050000"},  # present only in the GTL taxonomy
+            {"gtl_id": "14000000"},  # present only in the music mapping (Country/Folk)
+        ],
+    )
+    def test_valid_gtl_id(self, extra_data):
+        assert (
+            validation.check_offer_extra_data(
+                subcategories.CONCERT.id,
+                extra_data,
+                offerers_factories.VenueFactory(),
+                True,
+            )
+            is None
+        )
+
+    @pytest.mark.parametrize(
+        "extra_data, expected_error",
+        [
+            ({"gtl_id": 1000000}, "should be a string"),
+            ({"gtl_id": "99999999"}, "should be a valid GTL id"),
+        ],
+    )
+    def test_invalid_gtl_id(self, extra_data, expected_error):
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_extra_data(
+                subcategories.CONCERT.id, extra_data, offerers_factories.VenueFactory(), True
+            )
+
+        assert error.value.errors["gtl_id"] == [expected_error]
 
     def test_ean_already_exists(self):
         offer = offers_factories.OfferFactory(ean="1234567891234")
