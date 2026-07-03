@@ -244,7 +244,8 @@ export const generateValidationSchema = (
         (collectiveAdditionalFees) => {
           const feeLabelSet = new Set(
             collectiveAdditionalFees.map(({ type, label }) => {
-              return (label ?? ADDITIONAL_FEES[type]).toUpperCase().trim()
+              // backticks are here to copy the readonly-string
+              return `${label ?? ADDITIONAL_FEES[type]}`.toUpperCase().trim()
             })
           )
           return collectiveAdditionalFees.length === feeLabelSet.size

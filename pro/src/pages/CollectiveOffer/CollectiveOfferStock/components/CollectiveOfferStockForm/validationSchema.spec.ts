@@ -25,7 +25,7 @@ describe('validationSchema', () => {
   it.each([
     {
       description: 'should require mandatory fields',
-      canEditDates: true,
+      initialState: {},
       formValues: {},
       expectedErrors: [
         'La date de début est obligatoire',
@@ -40,7 +40,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'start and end date should be on same school year',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         endDate: addYears(values.startDate, 2).toISOString().split('T')[0],
@@ -50,7 +50,7 @@ describe('validationSchema', () => {
     {
       description:
         'should allow a start datetime set on 01/09/N and an end datetime set on 31/08/N+1',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         startDate: '2050-09-01',
@@ -60,7 +60,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'booking datetime should not be after start datetime',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         bookingLimitDate: addDays(values.startDate, 1)
@@ -74,7 +74,7 @@ describe('validationSchema', () => {
     {
       description:
         'event time should be after current time when start date is today',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         startDate: new Date().toISOString().split('T')[0],
@@ -86,7 +86,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'booking limit date should not be in the past',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         bookingLimitDate: '2024-08-31T13:00:00Z',
@@ -98,7 +98,7 @@ describe('validationSchema', () => {
     {
       description:
         'booking limit date can be in the past if the form is read only',
-      canEditDates: false,
+      initialState: { canEditDates: false },
       formValues: {
         ...values,
         bookingLimitDate: '2024-08-31T13:00:00Z',
@@ -108,7 +108,7 @@ describe('validationSchema', () => {
     {
       description:
         'bookingLimitDate: la règle ne s’applique pas si CAN_EDIT_DATES=false',
-      canEditDates: false,
+      initialState: { canEditDates: false },
       formValues: {
         ...values,
         bookingLimitDate: '2000-01-01',
@@ -117,7 +117,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'number of participants should be at least 1',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         numberOfTickets: 0,
@@ -126,7 +126,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'number of participants should not exceed 3000',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         numberOfTickets: 3001,
@@ -135,13 +135,13 @@ describe('validationSchema', () => {
     },
     {
       description: 'numberOfTickets should be an integer',
-      canEditDates: true,
+      initialState: {},
       formValues: { ...values, numberOfTickets: 12.5 },
       expectedErrors: ['Nombre entier attendu'],
     },
     {
       description: 'number of teachers should be at least 0',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         numberOfTeachers: -1,
@@ -150,7 +150,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'number of teachers should not exceed 50',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         numberOfTeachers: 51,
@@ -159,14 +159,14 @@ describe('validationSchema', () => {
     },
     {
       description: 'numberOfTeachers should be an integer',
-      canEditDates: true,
+      initialState: {},
       formValues: { ...values, numberOfTeachers: 12.5 },
       expectedErrors: ['Nombre entier attendu'],
     },
     {
       description:
         'should require additional fees when hasAdditionalFees is true',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         hasAdditionalFees: true,
@@ -175,7 +175,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'should reject an additional fee with an invalid type',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         hasAdditionalFees: true,
@@ -191,7 +191,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'additional fees amounts should be positive',
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         hasAdditionalFees: true,
@@ -207,7 +207,7 @@ describe('validationSchema', () => {
     },
     {
       description: 'servicePrice should not exceed 60000€',
-      canEditDates: true,
+      initialState: {},
       formValues: { ...values, servicePrice: 60001 },
       expectedErrors: [
         'Le tarif de la prestation ne doit pas dépasser 60000 €',
@@ -215,13 +215,13 @@ describe('validationSchema', () => {
     },
     {
       description: 'servicePrice should be positive',
-      canEditDates: true,
+      initialState: {},
       formValues: { ...values, servicePrice: -15 },
       expectedErrors: ['Nombre positif attendu'],
     },
     {
       description: `price should should be less than ${MAX_PRICE}`,
-      canEditDates: true,
+      initialState: {},
       formValues: {
         ...values,
         servicePrice: 59_999,
@@ -246,17 +246,32 @@ describe('validationSchema', () => {
       ],
     },
   ])(`$description`, async ({
-    canEditDates,
+    initialState: {
+      canEditDetails = true,
+      canEditDates = true,
+      canEditDiscount = true,
+      initialPrice = null,
+    },
     formValues,
     expectedErrors,
   }: {
     description: string
-    canEditDates: boolean
+    initialState: {
+      canEditDetails?: boolean
+      canEditDates?: boolean
+      canEditDiscount?: boolean
+      initialPrice?: number | null
+    }
     formValues: Partial<CollectiveOfferStockFormValues>
     expectedErrors: string[]
   }) => {
     const errors = await getYupValidationSchemaErrors(
-      generateValidationSchema(canEditDates),
+      generateValidationSchema(
+        canEditDetails,
+        canEditDates,
+        canEditDiscount,
+        initialPrice
+      ),
       formValues
     )
     expect(errors).toEqual(expectedErrors)
