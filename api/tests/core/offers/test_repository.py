@@ -1999,6 +1999,21 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_query_result = repository.get_inactive_headline_offers()
         assert headline_offer_query_result == [headline_offer_without_mediation]
 
+    def test_get_inactive_headline_offers_with_product_thumb(self):
+        offer = factories.OfferFactory(isActive=True, product=factories.ProductFactory(thumbCount=1))
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
+
+        headline_offer_query_result = repository.get_inactive_headline_offers()
+        assert headline_offer_query_result == [headline_offer]
+
+    def test_get_inactive_headline_offers_with_inactive_mediation(self):
+        offer = factories.OfferFactory(isActive=True)
+        factories.MediationFactory(offer=offer, isActive=False)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
+
+        headline_offer_query_result = repository.get_inactive_headline_offers()
+        assert headline_offer_query_result == [headline_offer]
+
     def test_get_venue_active_headline_offer_even_not_yet_disabled_by_cron_for_active_offer(
         self,
     ):

@@ -1197,19 +1197,10 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
     return (
         db.session.query(models.HeadlineOffer)
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
-        .outerjoin(models.Mediation, models.Mediation.offerId == models.Offer.id)
-        .outerjoin(models.Product, models.Offer.productId == models.Product.id)
-        .outerjoin(
-            models.ProductMediation,
-            models.ProductMediation.productId == models.Product.id,
-        )
         .filter(
             sa.or_(
                 models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name,
-                sa.and_(
-                    models.ProductMediation.id.is_(None),
-                    models.Mediation.id.is_(None),
-                ),
+                sa.not_(models.Offer.hasActiveImage),
             ),
             sa.or_(
                 # We don't want to fetch HeadlineOffers that have already been marked as finished
