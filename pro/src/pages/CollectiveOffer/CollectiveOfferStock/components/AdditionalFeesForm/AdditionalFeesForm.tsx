@@ -1,6 +1,6 @@
 import { type ChangeEvent, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useFieldArray, useFormContext } from 'react-hook-form'
+import { type FieldError, useFieldArray, useFormContext } from 'react-hook-form'
 
 import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -21,6 +21,27 @@ import {
   ADDITIONAL_FEES_OPTIONS,
   MAX_ADDITIONAL_FEES_LENGHT,
 } from './constants'
+
+function dispatchRootError(rootFieldError: FieldError | undefined) {
+  let rootErrorOnTypes = ''
+  let rootErrorOnAmounts = ''
+  if (!rootFieldError) {
+    return { rootErrorOnTypes, rootErrorOnAmounts }
+  }
+  const msg = rootFieldError.message || ''
+  if (rootFieldError.type === 'max-total-price') {
+    rootErrorOnAmounts = msg
+  }
+  if (rootFieldError.type === 'custom') {
+    //comes from the API
+    if (/(type|label)/.test(msg)) {
+      rootErrorOnTypes = msg
+    } else {
+      rootErrorOnAmounts = msg
+    }
+  }
+  return { rootErrorOnTypes, rootErrorOnAmounts }
+}
 
 export const AdditionalFeesForm = ({
   canEditDiscount,
@@ -126,6 +147,11 @@ export const AdditionalFeesForm = ({
   const shouldShowAddFeeButton =
     canEditDiscount && fields.length <= MAX_ADDITIONAL_FEES_LENGHT
 
+  // errors that we display on each amount or type field
+  const { rootErrorOnTypes, rootErrorOnAmounts } = dispatchRootError(
+    form.formState.errors.collectiveAdditionalFees?.root
+  )
+
   return (
     <FormLayout.Row>
       <RadioButtonGroup
@@ -176,7 +202,9 @@ export const AdditionalFeesForm = ({
                 creatableOption={creatableOption}
                 onChange={handleFeeTypeChange(index)}
                 onSearch={setSearchLabel}
+                onBlur={() => setSearchLabel('')}
                 error={
+                  rootErrorOnTypes ||
                   form.formState.errors.collectiveAdditionalFees?.[index]?.type
                     ?.message ||
                   form.formState.errors.collectiveAdditionalFees?.[index]?.label
@@ -195,9 +223,7 @@ export const AdditionalFeesForm = ({
                 })}
                 disabled={!canEditDiscount}
                 error={
-                  // we display the max-total-price validator on each amount field
-                  form.formState.errors.collectiveAdditionalFees?.root
-                    ?.message ||
+                  rootErrorOnAmounts ||
                   form.formState.errors.collectiveAdditionalFees?.[index]
                     ?.amount?.message
                 }
