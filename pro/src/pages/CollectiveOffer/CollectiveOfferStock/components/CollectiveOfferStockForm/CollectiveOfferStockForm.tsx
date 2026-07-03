@@ -9,12 +9,12 @@ import {
   type CollectiveStockResponseModel,
 } from '@/apiClient/v1'
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -40,20 +40,23 @@ export interface CollectiveOfferStockFormProps {
   initialStock: Partial<CollectiveStockResponseModel>
   departementCode: string
   allowedActions: CollectiveOfferAllowedAction[]
-  onSubmit: (
-    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
-  ) => Promise<void>
   mode: Mode
-  goBackLink?: string
+  onAfterSubmit: (
+    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+  ) => Promise<boolean>
+  stepPaths: {
+    previous: string
+    next: string
+  }
 }
 
 export const CollectiveOfferStockForm = ({
   initialStock,
   departementCode,
   allowedActions,
-  onSubmit,
   mode,
-  goBackLink = '/offres/collectives',
+  onAfterSubmit,
+  stepPaths,
 }: CollectiveOfferStockFormProps): JSX.Element => {
   const snackBar = useSnackBar()
   const canEditDiscount = allowedActions.includes(
@@ -111,7 +114,9 @@ export const CollectiveOfferStockForm = ({
   const price = computePriceForStock(servicePriceValue, additionalFeesValue)
   const isPriceTooHigh = price > MAX_PRICE
 
-  const postForm = async (formValues: CollectiveOfferStockFormValues) => {
+  const onSubmit = async (
+    formValues: CollectiveOfferStockFormValues
+  ): Promise<boolean> => {
     try {
       const {
         numberOfTickets,
@@ -155,7 +160,8 @@ export const CollectiveOfferStockForm = ({
         )
         Object.assign(updatedStock, stockDates)
       }
-      await onSubmit(updatedStock)
+
+      return await onAfterSubmit(updatedStock)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         if ('price' in error.body) {
@@ -172,11 +178,19 @@ export const CollectiveOfferStockForm = ({
           "Une erreur est survenue lors de l'enregistrement de votre stock."
         )
       }
+
+      return false
     }
   }
 
   const endDateValue = form.watch('endDate')
   const startDateValue = form.watch('startDate')
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({
+      afterSubmitPath: stepPaths.next,
+      form,
+      onSubmit,
+    })
 
   function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     form.setValue('startDate', event.target.value, {
@@ -198,7 +212,7 @@ export const CollectiveOfferStockForm = ({
 
   return (
     <FormProvider {...form}>
-      <form noValidate onSubmit={form.handleSubmit(postForm)}>
+      <form noValidate onSubmit={navigationGuardedSubmitHandler}>
         <ScrollToFirstHookFormErrorAfterSubmit />
 
         <FormLayout className={styles['collective-offer-stock-form-layout']}>
@@ -349,7 +363,7 @@ export const CollectiveOfferStockForm = ({
                     : ButtonColor.NEUTRAL
                 }
                 label={mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
-                to={goBackLink}
+                to={stepPaths.previous}
                 variant={ButtonVariant.SECONDARY}
               />
             </ActionsBarSticky.Left>
@@ -368,9 +382,8 @@ export const CollectiveOfferStockForm = ({
           </ActionsBarSticky>
         </FormLayout>
       </form>
-      <RouteLeavingGuardCollectiveOfferCreation
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </FormProvider>
   )
 }

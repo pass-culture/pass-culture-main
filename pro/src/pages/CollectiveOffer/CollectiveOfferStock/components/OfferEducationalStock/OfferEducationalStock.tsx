@@ -13,10 +13,10 @@ import {
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { isDateValid } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
@@ -43,20 +43,23 @@ export interface OfferEducationalStockProps {
   initialStock: Partial<CollectiveStockResponseModel>
   departementCode: string
   allowedActions: CollectiveOfferAllowedAction[]
-  onSubmit: (
-    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
-  ) => Promise<void>
   mode: Mode
-  goBackLink?: string
+  onAfterSubmit: (
+    newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
+  ) => Promise<boolean>
+  stepPaths: {
+    previous: string
+    next: string
+  }
 }
 
 export const OfferEducationalStock = ({
   initialStock,
   departementCode,
   allowedActions,
-  onSubmit,
   mode,
-  goBackLink = '/offres/collectives',
+  onAfterSubmit,
+  stepPaths,
 }: OfferEducationalStockProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -95,8 +98,10 @@ export const OfferEducationalStock = ({
     mode: 'onSubmit',
   })
 
-  const postForm = async (formValues: CollectiveOfferStockFormValues) => {
+  const onSubmit = async (formValues: CollectiveOfferStockFormValues) => {
     setIsLoading(true)
+
+    let canProceed: boolean
     try {
       const { priceDetail, price, numberOfTickets, ...dateFormValues } =
         formValues
@@ -126,21 +131,33 @@ export const OfferEducationalStock = ({
         Object.assign(updatedStock, stockDates)
       }
 
-      await onSubmit(updatedStock)
+      canProceed = await onAfterSubmit(updatedStock)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
         serializeApiErrors(error.body, form.setError)
       }
+
+      canProceed = false
     }
+
     setIsLoading(false)
+
+    return canProceed
   }
+
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({
+      afterSubmitPath: stepPaths.next,
+      form,
+      onSubmit,
+    })
 
   const values = form.watch()
 
   return (
     <>
       <FormProvider {...form}>
-        <form noValidate onSubmit={form.handleSubmit(postForm)}>
+        <form noValidate onSubmit={navigationGuardedSubmitHandler}>
           <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
@@ -225,7 +242,7 @@ export const OfferEducationalStock = ({
                       ? ButtonColor.BRAND
                       : ButtonColor.NEUTRAL
                   }
-                  to={goBackLink}
+                  to={stepPaths.previous}
                   label={
                     mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'
                   }
@@ -247,9 +264,8 @@ export const OfferEducationalStock = ({
           </FormLayout>
         </form>
       </FormProvider>
-      <RouteLeavingGuardCollectiveOfferCreation
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </>
   )
 }

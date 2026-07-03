@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -99,7 +99,6 @@ export const CollectiveOfferStockCreation = ({
   offer,
 }: CollectiveOfferFromParamsProps): JSX.Element | null => {
   const snackBar = useSnackBar()
-  const navigate = useNavigate()
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
@@ -151,22 +150,21 @@ export const CollectiveOfferStockCreation = ({
   }
 
   const departementCode = offer.venue.departementCode ?? ''
-
-  const stepUrls = {
+  const stepPaths = {
     previous: `/offre/collectif/${offer.id}/creation`,
     next: `/offre/${offer.id}/collectif/etablissement`,
   }
   if (isNewCollectivePriceEnabled) {
-    stepUrls.next = `/offre/${offer.id}/collectif/informations-pratiques`
+    stepPaths.next = `/offre/${offer.id}/collectif/informations-pratiques`
   }
   if (requestId) {
-    stepUrls.previous += `?requete=${requestId}`
-    stepUrls.next += `?requete=${requestId}`
+    stepPaths.previous += `?requete=${requestId}`
+    stepPaths.next += `?requete=${requestId}`
   }
 
   const handleSubmitStock = async (
     newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
-  ) => {
+  ): Promise<boolean> => {
     if (isNewCollectivePriceEnabled) {
       delete newCollectiveStock.priceDetail
     }
@@ -199,9 +197,11 @@ export const CollectiveOfferStockCreation = ({
         { revalidate: false }
       )
 
-      navigate(stepUrls.next)
+      return true
     } catch (e) {
       handleStockError(e, snackBar.error)
+
+      return false
     }
   }
 
@@ -219,8 +219,8 @@ export const CollectiveOfferStockCreation = ({
           departementCode={departementCode}
           mode={Mode.CREATION}
           allowedActions={offer.allowedActions}
-          onSubmit={handleSubmitStock}
-          goBackLink={stepUrls.previous}
+          onAfterSubmit={handleSubmitStock}
+          stepPaths={stepPaths}
         />
       ) : (
         <OfferEducationalStock
@@ -228,8 +228,8 @@ export const CollectiveOfferStockCreation = ({
           departementCode={departementCode}
           mode={Mode.CREATION}
           allowedActions={offer.allowedActions}
-          onSubmit={handleSubmitStock}
-          goBackLink={stepUrls.previous}
+          onAfterSubmit={handleSubmitStock}
+          stepPaths={stepPaths}
         />
       )}
     </CollectiveOfferLayout>

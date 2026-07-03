@@ -21,8 +21,12 @@ const defaultProps: CollectiveOfferStockFormProps = {
   initialStock: {},
   departementCode: '75',
   allowedActions: [],
-  onSubmit: vi.fn(),
+  onAfterSubmit: vi.fn(),
   mode: Mode.CREATION,
+  stepPaths: {
+    previous: '/offre/collectif/1/creation',
+    next: '/offre/1/collectif/informations-pratiques',
+  },
 }
 
 const mockSnackBarError = vi.fn()
@@ -107,7 +111,7 @@ describe('<CollectiveOfferStockForm />', () => {
     expect(
       screen.getByText('Le tarif de la prestation est obligatoire')
     ).toBeVisible()
-    expect(testProps.onSubmit).not.toHaveBeenCalled()
+    expect(testProps.onAfterSubmit).not.toHaveBeenCalled()
 
     const userDateInput = format(addDays(new Date(), 5), FORMAT_ISO_DATE_ONLY)
     await user.type(screen.getByLabelText(/Date de début/), userDateInput)
@@ -143,7 +147,7 @@ describe('<CollectiveOfferStockForm />', () => {
     ).not.toBeInTheDocument()
 
     await user.click(submitBtn)
-    expect(testProps.onSubmit).toHaveBeenCalledOnce()
+    expect(testProps.onAfterSubmit).toHaveBeenCalledOnce()
   })
 
   it('should automatically update end date input when the user sets the start date after', async () => {
@@ -258,7 +262,7 @@ describe('<CollectiveOfferStockForm />', () => {
     expect(submitButton).not.toBeDisabled()
     await user.click(submitButton)
 
-    expect(testProps.onSubmit).toHaveBeenCalled()
+    expect(testProps.onAfterSubmit).toHaveBeenCalled()
   })
 
   it.each`
@@ -318,7 +322,7 @@ describe('<CollectiveOfferStockForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
       startDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
       endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
       bookingLimitDatetime: `${today}T21:59:59Z`,
@@ -356,7 +360,7 @@ describe('<CollectiveOfferStockForm />', () => {
     await user.type(teachersInput, '2')
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
       numberOfTeachers: 2,
     })
   })
@@ -390,7 +394,7 @@ describe('<CollectiveOfferStockForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith(
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         servicePrice: 100,
         collectiveAdditionalFees: [
@@ -455,7 +459,7 @@ describe('<CollectiveOfferStockForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
       servicePrice: 150,
       collectiveAdditionalFees: [
         {

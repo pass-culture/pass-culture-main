@@ -2,7 +2,6 @@ import { useParams } from 'react-router'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import {
@@ -62,7 +61,6 @@ export const CollectiveOfferSummaryCreation = ({
           </ActionsBarSticky.Right>
         </ActionsBarSticky>
       </div>
-      <RouteLeavingGuardCollectiveOfferCreation when={false} />
     </CollectiveOfferLayout>
   )
 }

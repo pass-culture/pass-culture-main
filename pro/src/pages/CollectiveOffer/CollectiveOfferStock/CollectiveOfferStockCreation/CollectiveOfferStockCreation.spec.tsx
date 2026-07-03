@@ -45,9 +45,11 @@ vi.mock(
 const setSubmitResponse = (
   newCollectiveStock: Partial<CollectiveStockCreationBodyModel>
 ) => {
-  const formMock = vi.fn(({ onSubmit }) => {
+  const formMock = vi.fn(({ onAfterSubmit }) => {
     return (
-      <button onClick={() => onSubmit(newCollectiveStock)}>Enregistrer</button>
+      <button onClick={() => onAfterSubmit(newCollectiveStock)}>
+        Enregistrer
+      </button>
     )
   })
   vi.mocked(OfferEducationalStock).mockImplementationOnce(formMock)

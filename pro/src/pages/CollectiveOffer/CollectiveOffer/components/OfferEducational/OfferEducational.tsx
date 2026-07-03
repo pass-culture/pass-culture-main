@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -31,13 +32,16 @@ import {
   createCollectiveOfferTemplatePayload,
 } from '@/commons/core/OfferEducational/utils/createOfferPayload'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
@@ -67,9 +71,10 @@ export const OfferEducational = ({
   mode,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
+  const offerIdRef = useRef(offer?.id)
+
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
-  const navigate = useNavigate()
   const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
@@ -107,8 +112,8 @@ export const OfferEducational = ({
     initialValues.contactEmail = undefined
   }
 
-  const onSubmit = async () => {
-    let response:
+  const onSubmit = async (): Promise<boolean> => {
+    let newOrUpdatedOffer:
       | CollectiveOfferResponseIdModel
       | GetCollectiveOfferTemplateResponseModel
       | GetCollectiveOfferResponseModel
@@ -119,15 +124,17 @@ export const OfferEducational = ({
         if (offer === undefined) {
           const payload = createCollectiveOfferTemplatePayload(offerValues)
 
-          response = await api.createCollectiveOfferTemplate({
+          newOrUpdatedOffer = await api.createCollectiveOfferTemplate({
             body: payload,
           })
+
+          offerIdRef.current = newOrUpdatedOffer.id
         } else {
           const payload = createPatchOfferTemplatePayload(
             offerValues,
             initialValues
           )
-          response = await api.editCollectiveOfferTemplate({
+          newOrUpdatedOffer = await api.editCollectiveOfferTemplate({
             path: { offer_id: offer.id },
             body: payload,
           })
@@ -138,9 +145,11 @@ export const OfferEducational = ({
           undefined,
           isNewCollectivePriceEnabled
         )
-        response = await api.createCollectiveOffer({
+        newOrUpdatedOffer = await api.createCollectiveOffer({
           body: payload,
         })
+
+        offerIdRef.current = newOrUpdatedOffer.id
       } else {
         const payload = createPatchOfferPayload(
           offerValues,
@@ -148,18 +157,22 @@ export const OfferEducational = ({
           isNewCollectivePriceEnabled
         )
 
-        response = await api.editCollectiveOffer({
+        newOrUpdatedOffer = await api.editCollectiveOffer({
           path: { offer_id: offer.id },
           body: payload,
         })
       }
 
-      const offerId = offer?.id ?? response.id
-      await handleImageOnSubmit(offerId)
+      assertOrFrontendError(
+        offerIdRef.current,
+        '`offerIdRef.current` is undefined.'
+      )
+      await handleImageOnSubmit(offerIdRef.current)
 
       if (
         offer &&
-        (isCollectiveOffer(response) || isCollectiveOfferTemplate(response))
+        (isCollectiveOffer(newOrUpdatedOffer) ||
+          isCollectiveOfferTemplate(newOrUpdatedOffer))
       ) {
         await mutate(
           [
@@ -169,13 +182,14 @@ export const OfferEducational = ({
             offer.id,
           ],
           {
-            ...response,
+            ...newOrUpdatedOffer,
             imageUrl: imageOffer?.url,
             imageCredit: imageOffer?.credit,
           },
           { revalidate: false }
         )
       }
+
       if (mode === Mode.EDITION) {
         logEvent(
           isTemplate
@@ -184,31 +198,17 @@ export const OfferEducational = ({
           { offerId: offer?.id }
         )
       }
-      navigateAfterSubmit(offerId)
+
+      return true
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
         serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
-    }
-  }
 
-  const navigateAfterSubmit = (offerId: number) => {
-    if (mode === Mode.EDITION && offer !== undefined) {
-      return navigate(
-        `/offre/${computeURLCollectiveOfferId(
-          offer.id,
-          offer.isTemplate
-        )}/collectif/recapitulatif`
-      )
+      return false
     }
-    const requestIdParams = requestId ? `?requete=${requestId}` : ''
-    navigate(
-      isTemplate
-        ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${offerId}/collectif/stocks${requestIdParams}`
-    )
   }
 
   const form = useForm<OfferEducationalFormValues>({
@@ -220,6 +220,31 @@ export const OfferEducational = ({
     mode: 'onTouched',
   })
 
+  const afterSubmitPath = () => {
+    if (!offerIdRef.current) {
+      handleUnexpectedError(
+        new FrontendError('`offerIdRef.current` is undefined.')
+      )
+
+      return undefined
+    }
+
+    if (mode === Mode.EDITION && offer !== undefined) {
+      return `/offre/${computeURLCollectiveOfferId(
+        offer.id,
+        offer.isTemplate
+      )}/collectif/recapitulatif`
+    }
+
+    const requestIdParams = requestId ? `?requete=${requestId}` : ''
+
+    return isTemplate
+      ? `/offre/${offerIdRef.current}/collectif/vitrine/creation/recapitulatif`
+      : `/offre/${offerIdRef.current}/collectif/stocks${requestIdParams}`
+  }
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({ afterSubmitPath, form, onSubmit })
+
   return (
     <>
       {offer && (
@@ -230,7 +255,7 @@ export const OfferEducational = ({
         />
       )}
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={navigationGuardedSubmitHandler}>
           <OfferEducationalForm
             mode={mode}
             userOfferer={userOfferer}
@@ -244,9 +269,8 @@ export const OfferEducational = ({
           />
         </form>
       </FormProvider>
-      <RouteLeavingGuardCollectiveOfferCreation
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </>
   )
 }

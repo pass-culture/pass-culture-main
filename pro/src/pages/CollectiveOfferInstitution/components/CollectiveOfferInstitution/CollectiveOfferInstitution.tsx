@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from '@/apiClient/api'
@@ -15,9 +15,11 @@ import {
 } from '@/apiClient/v1'
 import {
   GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import {
   extractInitialInstitutionValues,
   formatInstitutionDisplayName,
@@ -27,6 +29,7 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
@@ -34,7 +37,6 @@ import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
@@ -54,15 +56,6 @@ import styles from './CollectiveOfferInstitution.module.scss'
 export interface CollectiveOfferInstitutionProps {
   mode: Mode
   initialValues: InstitutionFormValues
-  onSuccess: ({
-    offerId,
-    message,
-    payload,
-  }: {
-    offerId: string
-    message: string
-    payload: GetCollectiveOfferResponseModel
-  }) => void
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
   offer: GetCollectiveOfferResponseModel
@@ -81,13 +74,13 @@ interface TeacherOption extends SelectOption {
 export const CollectiveOfferInstitutionScreen = ({
   mode,
   initialValues,
-  onSuccess,
   institutions,
   isLoadingInstitutions,
   offer,
   requestId = '',
 }: CollectiveOfferInstitutionProps) => {
   const snackBar = useSnackBar()
+  const { mutate } = useSWRConfig()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
 
@@ -144,14 +137,9 @@ export const CollectiveOfferInstitutionScreen = ({
     return true
   }
 
-  const onSubmit = async (values: InstitutionFormValues) => {
+  const onSubmit = async (values: InstitutionFormValues): Promise<boolean> => {
     if (!form.formState.isDirty && !requestId) {
-      onSuccess({
-        offerId: offer.id.toString(),
-        message:
-          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
-        payload: offer,
-      })
+      return true
     }
 
     const selectedTeacher: TeacherOption | null = requestId
@@ -166,7 +154,7 @@ export const CollectiveOfferInstitutionScreen = ({
       teacherEmail,
     })
     if (!isValid) {
-      return
+      return false
     }
 
     try {
@@ -178,22 +166,29 @@ export const CollectiveOfferInstitutionScreen = ({
             teacherEmail,
           },
         })
-      onSuccess({
-        offerId: offer.id.toString(),
-        message:
-          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
-        payload: collectiveOffer,
-      })
+      await mutate(
+        [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offer.id)],
+        collectiveOffer,
+        { revalidate: false }
+      )
 
       reset({
         ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
+
+      snackBar.success(
+        'Les paramètres de visibilité de votre offre ont bien été enregistrés'
+      )
+
+      return true
     } catch (error) {
       if (isErrorAPIError(error)) {
         serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
+
+      return false
     }
   }
 
@@ -220,12 +215,21 @@ export const CollectiveOfferInstitutionScreen = ({
   })
 
   const {
-    handleSubmit,
     setValue,
     reset,
     watch,
-    formState: { isDirty, isSubmitting, errors },
+    formState: { isDirty, errors },
   } = form
+
+  const afterSubmitPath =
+    mode === Mode.CREATION
+      ? `/offre/${offer.id}/collectif/creation/recapitulatif`
+      : `/offre/${computeURLCollectiveOfferId(
+          offer.id,
+          false
+        )}/collectif/recapitulatif`
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({ afterSubmitPath, form, onSubmit })
 
   const institution = watch('educationalInstitution')
   const selectedInstitution = institutionsOptions.find(
@@ -344,7 +348,7 @@ export const CollectiveOfferInstitutionScreen = ({
 
       <FormProvider {...form}>
         <div className={styles.container}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={navigationGuardedSubmitHandler}>
             <FormLayout>
               {isCollectiveOffer(offer) && offer.isPublicApi && (
                 <BannerPublicApi className={styles['banner-space']} />
@@ -455,9 +459,8 @@ export const CollectiveOfferInstitutionScreen = ({
           </form>
         </div>
       </FormProvider>
-      <RouteLeavingGuardCollectiveOfferCreation
-        when={isDirty && !isSubmitting}
-      />
+
+      {navigationGuardDialog}
     </>
   )
 }

@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -27,7 +26,6 @@ export const CollectiveOfferStockEdition = ({
   offer,
 }: CollectiveOfferFromParamsProps): JSX.Element => {
   const snackBar = useSnackBar()
-  const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const { syncVenue } = useSyncVenueCache()
   const isNewCollectivePriceEnabled = useActiveFeature(
@@ -35,15 +33,21 @@ export const CollectiveOfferStockEdition = ({
   )
 
   const departementCode = offer.venue.departementCode ?? ''
+  const stepPaths = {
+    previous: '/offres/collectives',
+    next: `/offre/${offer.id}/collectif/recapitulatif`,
+  }
 
   const handleSubmitStock = async (
     newCollectiveStock: CollectiveStockEditionBodyModel
-  ) => {
+  ): Promise<boolean> => {
     if (isNewCollectivePriceEnabled) {
       delete newCollectiveStock.priceDetail
     }
     if (!offer.collectiveStock) {
-      return snackBar.error('Impossible de mettre à jour le stock.')
+      snackBar.error('Impossible de mettre à jour le stock.')
+
+      return false
     }
     try {
       await api.editCollectiveStock({
@@ -57,15 +61,16 @@ export const CollectiveOfferStockEdition = ({
       snackBar.error(
         'Une erreur est survenue lors de la mise à jour de votre stock.'
       )
-      return
+
+      return false
     }
 
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
     await syncVenue(offer.venue.id)
 
-    const nextStep = `/offre/${offer.id}/collectif/recapitulatif`
-    navigate(nextStep)
     snackBar.success(PATCH_SUCCESS_MESSAGE)
+
+    return true
   }
   const stockCanBeEdited = isCollectiveStockEditable(offer)
 
@@ -85,17 +90,19 @@ export const CollectiveOfferStockEdition = ({
         <CollectiveOfferStockForm
           initialStock={offer.collectiveStock ?? {}}
           departementCode={departementCode}
-          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
           allowedActions={offer.allowedActions}
-          onSubmit={handleSubmitStock}
+          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
+          onAfterSubmit={handleSubmitStock}
+          stepPaths={stepPaths}
         />
       ) : (
         <OfferEducationalStock
           initialStock={offer.collectiveStock ?? {}}
           departementCode={departementCode}
-          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
           allowedActions={offer.allowedActions}
-          onSubmit={handleSubmitStock}
+          mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
+          onAfterSubmit={handleSubmitStock}
+          stepPaths={stepPaths}
         />
       )}
     </CollectiveOfferLayout>

@@ -31,7 +31,7 @@ const renderRouteLeavingGuard = (props: RouteLeavingGuardProps) => {
   )
 }
 
-describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGuard', () => {
+describe('<RouteLeavingGuard>', () => {
   let props: RouteLeavingGuardProps
 
   beforeEach(() => {

@@ -117,7 +117,6 @@ describe('CollectiveOfferInstitution', () => {
     props = {
       mode: Mode.CREATION,
       initialValues: DEFAULT_INSTITUTION_FORM_VALUES,
-      onSuccess: vi.fn(),
       institutions,
       isLoadingInstitutions: false,
       offer,
@@ -231,12 +230,9 @@ describe('CollectiveOfferInstitution', () => {
         teacherEmail: 'compte.test@education.gouv.fr',
       },
     })
-    expect(props.onSuccess).toHaveBeenCalledWith({
-      offerId: offerId.toString(),
-      message:
-        'Les paramètres de visibilité de votre offre ont bien été enregistrés',
-      payload: resultingOffer,
-    })
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Les paramètres de visibilité de votre offre ont bien été enregistrés'
+    )
   })
 
   it('should display an error when the institution could not be saved', async () => {
@@ -518,6 +514,13 @@ describe('CollectiveOfferInstitution', () => {
           educationalInstitution: '24',
         },
       })
+      // Change the institution so the form becomes dirty and the API is called.
+      const institutionInput = await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      await userEvent.type(institutionInput, 'Collège Institution 1')
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
@@ -544,6 +547,13 @@ describe('CollectiveOfferInstitution', () => {
           educationalInstitution: '24',
         },
       })
+      // Change the institution so the form becomes dirty and the API is called.
+      const institutionInput = await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      await userEvent.type(institutionInput, 'Collège Institution 1')
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )

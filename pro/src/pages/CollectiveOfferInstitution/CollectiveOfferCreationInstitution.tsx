@@ -1,11 +1,7 @@
-import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
+import { useLocation } from 'react-router'
+import useSWR from 'swr'
 
-import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
-import {
-  GET_COLLECTIVE_OFFER_QUERY_KEY,
-  GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   Mode,
@@ -26,31 +22,15 @@ export const CollectiveOfferCreationInstitution = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const navigate = useNavigate()
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
-  const { mutate } = useSWRConfig()
 
   const educationalInstitutionsQuery = useSWR(
     [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY],
     () => getEducationalInstitutions(),
     { fallbackData: [] }
   )
-
-  const onSuccess = async ({
-    offerId,
-    payload,
-  }: {
-    offerId: string
-    payload: GetCollectiveOfferResponseModel
-  }) => {
-    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offerId)], payload, {
-      revalidate: false,
-    })
-
-    navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
-  }
 
   assertOrFrontendError(
     !isCollectiveOfferTemplate(offer),
@@ -73,7 +53,6 @@ export const CollectiveOfferCreationInstitution = ({
       <CollectiveOfferInstitutionScreen
         mode={Mode.CREATION}
         initialValues={initialValues}
-        onSuccess={onSuccess}
         institutions={educationalInstitutionsQuery.data}
         isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
         offer={offer}

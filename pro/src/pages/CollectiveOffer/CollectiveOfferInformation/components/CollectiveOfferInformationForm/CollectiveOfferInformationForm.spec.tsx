@@ -2,34 +2,50 @@ import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
 import {
   CollectiveOfferAllowedAction,
   type GetVenueResponseModel,
 } from '@/apiClient/v1'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
+import * as useSnackBarModule from '@/commons/hooks/useSnackBar'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 import {
   CollectiveOfferInformationForm,
   type CollectiveOfferInformationFormProps,
 } from './CollectiveOfferInformationForm'
 
+vi.mock('@/commons/utils/sendSentryCustomError', () => ({
+  sendSentryCustomError: vi.fn(),
+}))
+
+const mockNavigate = vi.fn()
+vi.mock('react-router', async () => ({
+  ...(await vi.importActual('react-router')),
+  useNavigate: () => mockNavigate,
+}))
+
+const snackBarSuccess = vi.fn()
+const snackBarError = vi.fn()
+
 function renderCollectiveOfferInformationForm(
   props: Partial<CollectiveOfferInformationFormProps>,
-  customVenue?: Partial<GetVenueResponseModel>
+  customVenue?: Partial<GetVenueResponseModel>,
+  initialPath?: string
 ) {
   const allProps = {
     offer: getCollectiveOfferFactory(),
-    isCreation: true,
-    saveAndContinue: vi.fn(),
-    goBackLink: '/test/go/back/link',
     ...props,
   }
   return renderWithProviders(<CollectiveOfferInformationForm {...allProps} />, {
+    initialRouterEntries: initialPath ? [initialPath] : undefined,
     storeOverrides: {
       user: {
         selectedPartnerVenue: { ...defaultGetVenue, ...customVenue },
@@ -39,6 +55,20 @@ function renderCollectiveOfferInformationForm(
 }
 
 describe('<CollectiveOfferInformationForm />', () => {
+  beforeEach(async () => {
+    vi.spyOn(api, 'editCollectiveOffer').mockResolvedValue(
+      getCollectiveOfferFactory()
+    )
+    const actual = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBarModule.useSnackBar>
+    vi.spyOn(useSnackBarModule, 'useSnackBar').mockImplementation(() => ({
+      ...actual,
+      success: snackBarSuccess,
+      error: snackBarError,
+    }))
+  })
+
   it('should render without accessibility violations', async () => {
     const { container } = renderCollectiveOfferInformationForm({})
 
@@ -99,12 +129,11 @@ describe('<CollectiveOfferInformationForm />', () => {
 
   it('should remove notification mail input when trash icon is clicked', async () => {
     const user = userEvent.setup()
-    const saveAndContinue = vi.fn()
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
       bookingEmails: ['test1@example.com', 'test2@example.com'],
     })
-    renderCollectiveOfferInformationForm({ offer, saveAndContinue })
+    renderCollectiveOfferInformationForm({ offer })
 
     expect(
       screen.getAllByLabelText('Email auquel envoyer les notifications*')
@@ -119,8 +148,11 @@ describe('<CollectiveOfferInformationForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({
-      bookingEmails: ['test1@example.com'],
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+      path: { offer_id: offer.id },
+      body: {
+        bookingEmails: ['test1@example.com'],
+      },
     })
   })
 
@@ -132,9 +164,8 @@ describe('<CollectiveOfferInformationForm />', () => {
       bookingEmails: [],
       contactPhone: null,
     })
-    const saveAndContinue = vi.fn()
     renderCollectiveOfferInformationForm(
-      { offer, saveAndContinue },
+      { offer },
       { collectiveEmail: 'contact@venue.com', collectivePhone: '+33123456789' }
     )
 
@@ -146,10 +177,13 @@ describe('<CollectiveOfferInformationForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({
-      contactEmail: 'contact@venue.com',
-      bookingEmails: ['contact@venue.com'],
-      contactPhone: '+33123456789',
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+      path: { offer_id: offer.id },
+      body: {
+        contactEmail: 'contact@venue.com',
+        bookingEmails: ['contact@venue.com'],
+        contactPhone: '+33123456789',
+      },
     })
   })
 
@@ -161,9 +195,8 @@ describe('<CollectiveOfferInformationForm />', () => {
       bookingEmails: ['email@test.com'],
       contactPhone: '',
     })
-    const saveAndContinue = vi.fn()
     renderCollectiveOfferInformationForm(
-      { offer, saveAndContinue },
+      { offer },
       { collectiveEmail: 'contact@venue.com', collectivePhone: '+33123456789' }
     )
 
@@ -175,7 +208,10 @@ describe('<CollectiveOfferInformationForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({})
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+      path: { offer_id: offer.id },
+      body: {},
+    })
   })
 
   it('should disable submission when CAN_EDIT_DETAILS is not among the allowed actions', () => {
@@ -186,15 +222,14 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(screen.getByRole('button', { name: /Enregistrer/ })).toBeDisabled()
   })
 
-  it('should call saveAndContinue prop on form submit, with dirty fields', async () => {
+  it('should save the offer and show a confirmation on form submit, with dirty fields', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
       bookingEmails: ['test1@example.com'],
       contactEmail: 'contact@example.com',
     })
-    const saveAndContinue = vi.fn()
-    renderCollectiveOfferInformationForm({ offer, saveAndContinue })
+    renderCollectiveOfferInformationForm({ offer })
 
     expect(
       screen.getByRole('button', { name: /Enregistrer/ })
@@ -222,11 +257,17 @@ describe('<CollectiveOfferInformationForm />', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(saveAndContinue).toHaveBeenCalledExactlyOnceWith({
-      additionalDetails: 'Test additional details',
-      bookingEmails: ['test1@example.com', 'test2@example.com'],
-      contactPhone: '+33612345678',
+    expect(api.editCollectiveOffer).toHaveBeenCalledExactlyOnceWith({
+      path: { offer_id: offer.id },
+      body: {
+        additionalDetails: 'Test additional details',
+        bookingEmails: ['test1@example.com', 'test2@example.com'],
+        contactPhone: '+33612345678',
+      },
     })
+    expect(snackBarSuccess).toHaveBeenCalledExactlyOnceWith(
+      PATCH_SUCCESS_MESSAGE
+    )
   })
 
   it('should display field errors on API error with status 400', async () => {
@@ -238,11 +279,114 @@ describe('<CollectiveOfferInformationForm />', () => {
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
     })
-    const saveAndContinue = vi.fn().mockRejectedValueOnce(error)
-    renderCollectiveOfferInformationForm({ offer, saveAndContinue })
+    vi.spyOn(api, 'editCollectiveOffer').mockRejectedValueOnce(error)
+    renderCollectiveOfferInformationForm({ offer })
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
     expect(screen.getByText('Erreur sur ce champ !')).toBeVisible()
     expect(screen.getByText('Erreur sur ce booking email')).toBeVisible()
+  })
+
+  it('should log the other errors and display a snackbar', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+    })
+    vi.spyOn(api, 'editCollectiveOffer').mockRejectedValueOnce(
+      new Error('Something happened')
+    )
+    renderCollectiveOfferInformationForm({ offer })
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(sendSentryCustomError).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ message: 'Something happened' })
+    )
+    expect(snackBarError).toHaveBeenCalledExactlyOnceWith(
+      "Une erreur est survenue lors de l'enregistrement de votre offre."
+    )
+    expect(snackBarSuccess).not.toHaveBeenCalled()
+  })
+
+  it('on creation: should handle previous and next steps correctly', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+    })
+    renderCollectiveOfferInformationForm({ offer })
+
+    expect(screen.getByRole('link', { name: 'Retour' })).toHaveAttribute(
+      'href',
+      `/offre/${offer.id}/collectif/stocks`
+    )
+
+    await user.type(
+      screen.getByRole('textbox', {
+        name: 'Informations pratiques sur votre offre',
+      }),
+      'Some details'
+    )
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/offre/${offer.id}/collectif/etablissement`
+    )
+  })
+
+  it('on creation: should pass along the requestId to previous and next steps', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+    })
+    renderCollectiveOfferInformationForm(
+      { offer },
+      undefined,
+      `/offre/${offer.id}/collectif/informations?requete=1`
+    )
+
+    expect(screen.getByRole('link', { name: 'Retour' })).toHaveAttribute(
+      'href',
+      `/offre/${offer.id}/collectif/stocks?requete=1`
+    )
+
+    await user.type(
+      screen.getByRole('textbox', {
+        name: 'Informations pratiques sur votre offre',
+      }),
+      'Some details'
+    )
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/offre/${offer.id}/collectif/etablissement?requete=1`
+    )
+  })
+
+  it('on edition: should handle previous and next steps correctly', async () => {
+    const user = userEvent.setup()
+    const offer = getCollectiveOfferFactory({
+      allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
+    })
+    renderCollectiveOfferInformationForm(
+      { offer },
+      undefined,
+      `/offre/${offer.id}/collectif/informations/edition`
+    )
+
+    expect(
+      screen.getByRole('link', { name: 'Annuler et quitter' })
+    ).toHaveAttribute('href', `/offre/${offer.id}/collectif/recapitulatif`)
+
+    await user.type(
+      screen.getByRole('textbox', {
+        name: 'Informations pratiques sur votre offre',
+      }),
+      'Some details'
+    )
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/offre/${offer.id}/collectif/recapitulatif`
+    )
   })
 })
