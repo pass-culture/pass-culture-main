@@ -1,8 +1,11 @@
-import { type ChangeEvent, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import { flushSync } from 'react-dom'
 import { type FieldError, useFieldArray, useFormContext } from 'react-hook-form'
 
-import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
+import {
+  type CollectiveAdditionalFeeModel,
+  CollectiveAdditionalFeeType,
+} from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -10,17 +13,11 @@ import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGr
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import {
-  type CustomEvent,
-  SelectAutocomplete,
-} from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 import type { CollectiveOfferStockFormValues } from '../CollectiveOfferStockForm/validationSchema'
 import styles from './AdditionalFeesForm.module.scss'
-import {
-  ADDITIONAL_FEES_OPTIONS,
-  MAX_ADDITIONAL_FEES_LENGHT,
-} from './constants'
+import { AdditionalFeeTypeInput } from './components/AdditionalFeeTypeInput/AdditionalFeeTypeInput'
+import { MAX_ADDITIONAL_FEES_LENGHT } from './constants'
 
 function dispatchRootError(rootFieldError: FieldError | undefined) {
   let rootErrorOnTypes = ''
@@ -52,7 +49,6 @@ export const AdditionalFeesForm = ({
   canEditDiscount: boolean
 }) => {
   const form = useFormContext<CollectiveOfferStockFormValues>()
-  const [searchLabel, setSearchLabel] = useState<string>('')
 
   const hasAdditionalFees = form.watch('hasAdditionalFees')
 
@@ -82,34 +78,16 @@ export const AdditionalFeesForm = ({
   }
 
   function handleFeeTypeChange(index: number) {
-    return ({ target: { value } }: CustomEvent<'change'>) => {
-      const selectedOption = ADDITIONAL_FEES_OPTIONS.find(
-        (option) => option.value === value
-      )
-      if (selectedOption) {
-        form.setValue(
-          `collectiveAdditionalFees.${index}.type`,
-          selectedOption.value,
-          {
-            shouldDirty: true,
-            shouldValidate: true,
-          }
-        )
-        form.setValue(`collectiveAdditionalFees.${index}.label`, null, {
-          shouldDirty: true,
-          shouldValidate: true,
-        })
-      } else {
-        form.setValue(
-          `collectiveAdditionalFees.${index}.type`,
-          CollectiveAdditionalFeeType.OTHER,
-          { shouldDirty: true, shouldValidate: true }
-        )
-        form.setValue(`collectiveAdditionalFees.${index}.label`, value, {
-          shouldDirty: true,
-          shouldValidate: true,
-        })
-      }
+    return ({ type, label }: Omit<CollectiveAdditionalFeeModel, 'amount'>) => {
+      form.setValue(`collectiveAdditionalFees.${index}.type`, type, {
+        shouldDirty: true,
+        shouldValidate: true,
+      })
+      form.setValue(`collectiveAdditionalFees.${index}.label`, label, {
+        shouldDirty: true,
+        shouldValidate: true,
+        shouldTouch: true,
+      })
     }
   }
 
@@ -122,7 +100,6 @@ export const AdditionalFeesForm = ({
       },
       { shouldFocus: true }
     )
-    setSearchLabel('')
   }
 
   function removeAdditionalFeesFieldEntry(index: number) {
@@ -140,11 +117,6 @@ export const AdditionalFeesForm = ({
   // since fieldArray.remove does not dirty the field by itself properly
   const _additionalFeesDirty =
     form.formState.dirtyFields.collectiveAdditionalFees
-
-  const matchesExistingOption = ADDITIONAL_FEES_OPTIONS.some(
-    (option) => option.label === searchLabel
-  )
-  const creatableOption = matchesExistingOption ? undefined : searchLabel
 
   const shouldShowRemoveFeeButton = canEditDiscount && fields.length > 1
   const shouldShowAddFeeButton =
@@ -186,26 +158,9 @@ export const AdditionalFeesForm = ({
               inline
               className={styles['additional-fee-row']}
             >
-              <SelectAutocomplete
-                label="Type de frais annexes"
-                value={
-                  field.type === CollectiveAdditionalFeeType.OTHER
-                    ? (field.label ?? '')
-                    : ADDITIONAL_FEES_OPTIONS.find(
-                        (option) => option.value === field.type
-                      )?.label
-                }
-                options={ADDITIONAL_FEES_OPTIONS.filter(
-                  (o) => o.value !== CollectiveAdditionalFeeType.OTHER
-                )}
-                required
+              <AdditionalFeeTypeInput
+                collectiveAdditionalFee={field}
                 disabled={!canEditDiscount}
-                name={`collectiveAdditionalFees.${index}.type`}
-                className={styles['additional-fee-type-select']}
-                creatableOption={creatableOption}
-                onChange={handleFeeTypeChange(index)}
-                onSearch={setSearchLabel}
-                onBlur={() => setSearchLabel('')}
                 error={
                   rootErrorOnTypes ||
                   form.formState.errors.collectiveAdditionalFees?.[index]?.type
@@ -213,6 +168,8 @@ export const AdditionalFeesForm = ({
                   form.formState.errors.collectiveAdditionalFees?.[index]?.label
                     ?.message
                 }
+                name={`collectiveAdditionalFees.${index}.type`}
+                onChange={handleFeeTypeChange(index)}
                 // use this to control focus on input
                 ref={
                   form.register(`collectiveAdditionalFees.${index}.type`).ref
