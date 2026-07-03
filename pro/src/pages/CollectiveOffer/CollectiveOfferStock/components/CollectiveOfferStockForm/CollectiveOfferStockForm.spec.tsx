@@ -366,11 +366,7 @@ describe('<CollectiveOfferStockForm />', () => {
         numberOfTeachers: 1,
         servicePrice: 100,
         collectiveAdditionalFees: [
-          {
-            type: CollectiveAdditionalFeeType.ACCOMMODATION,
-            label: null,
-            amount: 10,
-          },
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 10 },
           { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 20 },
         ],
       },

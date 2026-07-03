@@ -19,7 +19,7 @@ describe('validationSchema', () => {
     numberOfTeachers: 5,
     servicePrice: 5,
     hasAdditionalFees: false,
-    additionalFees: [],
+    collectiveAdditionalFees: [],
   }
 
   it.each([
@@ -179,7 +179,7 @@ describe('validationSchema', () => {
       formValues: {
         ...values,
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: 'INVALID_TYPE' as CollectiveAdditionalFeeType,
             amount: 10,
@@ -195,7 +195,7 @@ describe('validationSchema', () => {
       formValues: {
         ...values,
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: CollectiveAdditionalFeeType.MEAL,
             amount: -1,
@@ -226,7 +226,7 @@ describe('validationSchema', () => {
         ...values,
         servicePrice: 59_999,
         hasAdditionalFees: true,
-        additionalFees: [
+        collectiveAdditionalFees: [
           {
             type: CollectiveAdditionalFeeType.MEAL,
             amount: 2,
@@ -240,7 +240,7 @@ describe('validationSchema', () => {
         ],
       },
       expectedErrors: [
-        // The error is on the servicePrice and on the additionalFees fields
+        // The error is on the servicePrice and on the collectiveAdditionalFees fields
         `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
         `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
       ],
