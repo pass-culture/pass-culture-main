@@ -1,16 +1,29 @@
 import { isAfter, isBefore, isSameDay, startOfToday } from 'date-fns'
 import * as yup from 'yup'
 
-import { CollectiveAdditionalFeeType } from '@/apiClient/v1'
+import {
+  type CollectiveAdditionalFeeModel,
+  CollectiveAdditionalFeeType,
+} from '@/apiClient/v1'
 import { isDateValid } from '@/commons/utils/date'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
+import { computePriceForStock } from '../utils/computePriceForStock'
 import {
   MAX_NUMBER_OF_TEACHERS,
   MAX_NUMBER_OF_TICKETS,
   MAX_PRICE,
 } from '../utils/constants'
 import { getMaxEndDateInSchoolYear } from '../utils/getMaxEndDateInSchoolYear'
+
+function isPriceUnderMaxPrice(
+  servicePrice: number | null,
+  additionalFees: CollectiveAdditionalFeeModel[]
+) {
+  const price = computePriceForStock(servicePrice, additionalFees)
+  // The first condition is tested by the `servicePrice.max()` test
+  return (servicePrice ?? 0) > MAX_PRICE || price <= MAX_PRICE
+}
 
 export const generateValidationSchema = (canEditDates: boolean) =>
   yup.object().shape({
@@ -122,10 +135,17 @@ export const generateValidationSchema = (canEditDates: boolean) =>
       .number()
       .nullable()
       .transform((value) => (Number.isNaN(value) ? null : value))
+      .defined()
       .min(0, 'Nombre positif attendu')
       .max(
         MAX_PRICE,
         `Le tarif de la prestation ne doit pas dépasser ${MAX_PRICE} €`
+      )
+      .test(
+        'max-total-price',
+        `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
+        (servicePrice, { parent }) =>
+          isPriceUnderMaxPrice(servicePrice, parent.additionalFees ?? [])
       )
       .required('Le tarif de la prestation est obligatoire'),
     hasAdditionalFees: yup.boolean().required('Veuillez choisir une option'),
@@ -154,6 +174,13 @@ export const generateValidationSchema = (canEditDates: boolean) =>
               schema.max(0, 'Le label doit être vide pour ce type de frais'),
           }),
         })
+      )
+      .defined()
+      .test(
+        'max-total-price',
+        `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
+        (additionalFees, { parent }) =>
+          isPriceUnderMaxPrice(parent.servicePrice, additionalFees ?? [])
       )
       .when('hasAdditionalFees', {
         is: true,

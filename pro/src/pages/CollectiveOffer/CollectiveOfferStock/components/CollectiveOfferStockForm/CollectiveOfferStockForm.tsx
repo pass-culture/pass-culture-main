@@ -280,7 +280,11 @@ export const CollectiveOfferStockForm = ({
             >
               <FormLayout.Row inline>
                 <TextInput
-                  {...form.register('servicePrice', { valueAsNumber: true })}
+                  {...form.register('servicePrice', {
+                    valueAsNumber: true,
+                    onChange: () =>
+                      form.trigger(['additionalFees', 'servicePrice']),
+                  })}
                   disabled={!canEditDiscount}
                   error={form.formState.errors.servicePrice?.message}
                   label="Tarif de la prestation (en €)"
