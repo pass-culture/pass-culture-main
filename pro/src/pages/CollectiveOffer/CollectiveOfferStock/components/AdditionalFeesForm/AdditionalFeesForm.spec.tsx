@@ -337,4 +337,56 @@ describe('AdditionalFeesForm', () => {
       expect.anything()
     )
   })
+
+  it('should show no-duplicate-types error on every field', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderAdditionalFeesForm({
+      initialValues: {
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 10 },
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 10 },
+        ],
+      },
+      onSubmit,
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(screen.getAllByText('Certains types sont en doubles')).toHaveLength(
+      2
+    )
+  })
+
+  it('should show no-duplicate-labels error on every field', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderAdditionalFeesForm({
+      initialValues: {
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.OTHER,
+            label: 'Droits',
+            amount: 10,
+          },
+          {
+            type: CollectiveAdditionalFeeType.OTHER,
+            label: 'DROITS ',
+            amount: 10,
+          },
+        ],
+      },
+      onSubmit,
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(screen.getAllByText('Certains labels sont en doubles')).toHaveLength(
+      2
+    )
+  })
 })
