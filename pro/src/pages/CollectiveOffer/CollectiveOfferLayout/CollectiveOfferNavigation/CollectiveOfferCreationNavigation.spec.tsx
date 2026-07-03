@@ -154,32 +154,57 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     expect(screen.getByRole('link', { name: /Dates et prix/ })).toBeVisible()
   })
 
-  it('should show the INFORMATIONS step if WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS is enabled', () => {
-    const activeStep = CollectiveOfferStep.INSTITUTION
-    const offer = getCollectiveOfferFactory()
-    renderCollectiveOfferNavigation({ offer, activeStep }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
-    ])
+  describe('with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS FF', () => {
+    const features = ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
 
-    const listItems = screen.getAllByRole('listitem')
-    expect(listItems).toHaveLength(6)
-    expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-    expect(listItems[1]).toHaveTextContent('Dates et prix')
-    expect(listItems[2]).toHaveTextContent('Informations pratiques')
-    expect(listItems[3]).toHaveTextContent('Établissement et enseignant')
-    expect(listItems[4]).toHaveTextContent('Récapitulatif')
-    expect(listItems[5]).toHaveTextContent('Aperçu')
+    it('should keep the Établissement step reachable when the institution is set but additional details are empty', () => {
+      const activeStep = CollectiveOfferStep.DETAILS
+      const offer = getCollectiveOfferFactory({
+        additionalDetails: null,
+        institution: {
+          city: '',
+          id: 1,
+          institutionId: '2',
+          name: '',
+          phoneNumber: '',
+          postalCode: '',
+          institutionType: '',
+        },
+      })
 
-    const links = screen.getAllByRole('link')
-    expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offer.id}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/informations-pratiques`
-    )
+      renderCollectiveOfferNavigation({ activeStep, offer }, features)
+
+      expect(
+        screen.getByRole('link', { name: /Établissement et enseignant/ })
+      ).toHaveAttribute('href', `/offre/${offer.id}/collectif/etablissement`)
+    })
+
+    it('should show the INFORMATIONS step', () => {
+      const activeStep = CollectiveOfferStep.INSTITUTION
+      const offer = getCollectiveOfferFactory()
+
+      renderCollectiveOfferNavigation({ offer, activeStep }, features)
+
+      const listItems = screen.getAllByRole('listitem')
+      expect(listItems).toHaveLength(6)
+      expect(listItems[0]).toHaveTextContent("Détails de l'offre")
+      expect(listItems[1]).toHaveTextContent('Dates et prix')
+      expect(listItems[2]).toHaveTextContent('Informations pratiques')
+      expect(listItems[3]).toHaveTextContent('Établissement et enseignant')
+      expect(listItems[4]).toHaveTextContent('Récapitulatif')
+      expect(listItems[5]).toHaveTextContent('Aperçu')
+
+      const links = screen.getAllByRole('link')
+      expect(links).toHaveLength(3)
+      expect(links[0].getAttribute('href')).toBe(
+        `/offre/collectif/${offer.id}/creation`
+      )
+      expect(links[1].getAttribute('href')).toBe(
+        `/offre/${offer.id}/collectif/stocks`
+      )
+      expect(links[2].getAttribute('href')).toBe(
+        `/offre/${offer.id}/collectif/informations-pratiques`
+      )
+    })
   })
 })
