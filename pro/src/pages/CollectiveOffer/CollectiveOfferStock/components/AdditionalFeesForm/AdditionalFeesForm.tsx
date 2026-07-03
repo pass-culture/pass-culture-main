@@ -29,7 +29,7 @@ function dispatchRootError(rootFieldError: FieldError | undefined) {
     return { rootErrorOnTypes, rootErrorOnAmounts }
   }
   const msg = rootFieldError.message || ''
-  if (rootFieldError.type === 'max-total-price') {
+  if (rootFieldError.type.includes('price')) {
     rootErrorOnAmounts = msg
   }
   if (/(type|label)/.test(rootFieldError.type)) {

@@ -26,7 +26,21 @@ function isPriceUnderMaxPrice(
   return (servicePrice ?? 0) > MAX_PRICE || price <= MAX_PRICE
 }
 
-export const generateValidationSchema = (canEditDates: boolean) =>
+function hasPriceDecreased(
+  servicePrice: number | null,
+  collectiveAdditionalFees: CollectiveAdditionalFeeModel[],
+  initialPrice?: number | null
+) {
+  const price = computePriceForStock(servicePrice, collectiveAdditionalFees)
+  return initialPrice ? price <= initialPrice : false
+}
+
+export const generateValidationSchema = (
+  canEditDetails: boolean,
+  canEditDates: boolean,
+  canEditDiscount: boolean,
+  initialPrice?: number | null
+) =>
   yup.object().shape({
     startDate: yup
       .string()
@@ -151,6 +165,18 @@ export const generateValidationSchema = (canEditDates: boolean) =>
             parent.collectiveAdditionalFees ?? []
           )
       )
+      .test(
+        'no-price-increase',
+        'Vous ne pouvez augmenter le prix total de cette offre.',
+        (servicePrice, { parent }) =>
+          canEditDetails ||
+          (canEditDiscount &&
+            hasPriceDecreased(
+              servicePrice,
+              parent.collectiveAdditionalFees ?? [],
+              initialPrice
+            ))
+      )
       .required('Le tarif de la prestation est obligatoire'),
     hasAdditionalFees: yup.boolean().required('Veuillez choisir une option'),
     collectiveAdditionalFees: yup
@@ -188,6 +214,18 @@ export const generateValidationSchema = (canEditDates: boolean) =>
             parent.servicePrice,
             collectiveAdditionalFees ?? []
           )
+      )
+      .test(
+        'no-price-increase',
+        'Vous ne pouvez augmenter le prix total de cette offre.',
+        (collectiveAdditionalFees, { parent }) =>
+          canEditDetails ||
+          (canEditDiscount &&
+            hasPriceDecreased(
+              parent.servicePrice,
+              collectiveAdditionalFees ?? [],
+              initialPrice
+            ))
       )
       .test(
         'no-duplicate-types',
