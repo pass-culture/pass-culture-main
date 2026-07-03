@@ -146,6 +146,14 @@ export const CollectiveOfferStockForm = ({
       await onSubmit(updatedStock)
     } catch (error) {
       if (isErrorAPIError(error) && error.status < 500) {
+        if ('price' in error.body) {
+          error.body.servicePrice = error.body.price
+          error.body['collectiveAdditionalFees.root'] = error.body.price
+          delete error.body.price
+        }
+        if ('global' in error.body) {
+          snackBar.error(error.body.global.join(' '))
+        }
         serializeApiErrors(error.body, form.setError)
       } else {
         snackBar.error(
