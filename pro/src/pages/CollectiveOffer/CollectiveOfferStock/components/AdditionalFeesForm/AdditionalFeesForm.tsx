@@ -32,6 +32,9 @@ function dispatchRootError(rootFieldError: FieldError | undefined) {
   if (rootFieldError.type === 'max-total-price') {
     rootErrorOnAmounts = msg
   }
+  if (/(type|label)/.test(rootFieldError.type)) {
+    rootErrorOnTypes = msg
+  }
   if (rootFieldError.type === 'custom') {
     //comes from the API
     if (/(type|label)/.test(msg)) {
