@@ -3,6 +3,7 @@ import { addDays, addYears, format, subMinutes } from 'date-fns'
 import { CollectiveAdditionalFeeType } from '@/apiClient/adage'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
+import { MAX_PRICE } from '../utils/constants'
 import {
   type CollectiveOfferStockFormValues,
   generateValidationSchema,
@@ -213,10 +214,36 @@ describe('validationSchema', () => {
       ],
     },
     {
-      description: 'servicePrice should  should be positive',
+      description: 'servicePrice should be positive',
       canEditDates: true,
       formValues: { ...values, servicePrice: -15 },
       expectedErrors: ['Nombre positif attendu'],
+    },
+    {
+      description: `price should should be less than ${MAX_PRICE}`,
+      canEditDates: true,
+      formValues: {
+        ...values,
+        servicePrice: 59_999,
+        hasAdditionalFees: true,
+        additionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.MEAL,
+            amount: 2,
+            label: null,
+          },
+          {
+            type: CollectiveAdditionalFeeType.TRAVEL,
+            amount: 1,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: [
+        // The error is on the servicePrice and on the additionalFees fields
+        `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
+        `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
+      ],
     },
   ])(`$description`, async ({
     canEditDates,

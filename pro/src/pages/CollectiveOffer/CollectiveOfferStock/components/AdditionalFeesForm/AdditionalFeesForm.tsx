@@ -182,13 +182,17 @@ export const AdditionalFeesForm = ({
               <TextInput
                 {...form.register(`additionalFees.${index}.amount`, {
                   valueAsNumber: true,
+                  onChange: () =>
+                    form.trigger(['additionalFees', 'servicePrice']),
                 })}
                 disabled={!canEditDiscount}
                 error={
+                  // we display the max-total-price validator on each amount field
+                  form.formState.errors.additionalFees?.root?.message ||
                   form.formState.errors.additionalFees?.[index]?.amount?.message
                 }
-                min={0.01}
                 label="Prix (en €)"
+                min={0.01}
                 required
                 step={0.01}
                 type="number"
