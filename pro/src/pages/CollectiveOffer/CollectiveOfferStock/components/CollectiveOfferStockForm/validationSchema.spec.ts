@@ -311,6 +311,52 @@ describe('validationSchema', () => {
         `Le prix total ne doit pas dépasser ${MAX_PRICE} €`,
       ],
     },
+    {
+      description: 'price can be increased when canEditDetails is true',
+      initialState: {
+        canEditDetails: true,
+        canEditDiscount: true,
+        initialPrice: 100,
+      },
+      formValues: {
+        ...values,
+        servicePrice: 120,
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.TRAVEL,
+            amount: 10,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: [],
+    },
+    {
+      description: 'price cannot be increased with canEditDiscount only',
+      initialState: {
+        canEditDetails: false,
+        canEditDiscount: true,
+        initialPrice: 100,
+      },
+      formValues: {
+        ...values,
+        servicePrice: 120,
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.TRAVEL,
+            amount: 10,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: [
+        // The error is on the servicePrice and on the collectiveAdditionalFees fields
+        'Vous ne pouvez augmenter le prix total de cette offre.',
+        'Vous ne pouvez augmenter le prix total de cette offre.',
+      ],
+    },
   ])(`$description`, async ({
     initialState: {
       canEditDetails = true,

@@ -18,7 +18,12 @@ import { AdditionalFeesForm } from './AdditionalFeesForm'
 function renderAdditionalFeesForm({
   initialValues,
   canEditDiscount = true,
+  canEditDetails = true,
   onSubmit = vi.fn(),
+  priceValues: { servicePrice = 100, price = 100 } = {
+    servicePrice: 100,
+    price: 100,
+  },
 }: {
   initialValues: Partial<
     Pick<
@@ -27,7 +32,12 @@ function renderAdditionalFeesForm({
     >
   >
   canEditDiscount?: boolean
+  canEditDetails?: boolean
   onSubmit?: () => void
+  priceValues?: {
+    servicePrice?: number
+    price?: number
+  }
 }) {
   function AdditionalFeesFormWrapper() {
     const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
@@ -41,17 +51,12 @@ function renderAdditionalFeesForm({
       bookingLimitDate: tomorrow,
       numberOfTeachers: 1,
       numberOfTickets: 50,
-      servicePrice: 100,
+      servicePrice,
     }
     const form = useForm<CollectiveOfferStockFormValues>({
       defaultValues: { ...nonFeesDefaultValues, ...initialValues },
       resolver: yupResolver(
-        generateValidationSchema(
-          canEditDiscount,
-          canEditDiscount,
-          canEditDiscount,
-          null
-        )
+        generateValidationSchema(canEditDetails, true, canEditDiscount, price)
       ),
     })
 
@@ -336,6 +341,37 @@ describe('AdditionalFeesForm', () => {
       }),
       expect.anything()
     )
+  })
+
+  it('should show no-price-increase error on every field', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderAdditionalFeesForm({
+      initialValues: {
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          { type: CollectiveAdditionalFeeType.OTHER, label: 'RAS', amount: 10 },
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 10 },
+        ],
+      },
+      onSubmit,
+      canEditDiscount: true,
+      canEditDetails: false,
+      priceValues: { servicePrice: 100, price: 120 },
+    })
+
+    const amountInput = screen.getAllByLabelText(/Prix \(en €\)/)[0]
+    await user.clear(amountInput)
+    await user.type(amountInput, '12')
+
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(
+      screen.getAllByText(
+        'Vous ne pouvez augmenter le prix total de cette offre.'
+      )
+    ).toHaveLength(2)
   })
 
   it('should show no-duplicate-types error on every field', async () => {
