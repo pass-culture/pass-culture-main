@@ -160,16 +160,16 @@ def create_disabled_adult_allowance_fraud_check_mock(
     mock_type = form.mock_type.data
     result_content = None
 
-    if mock_type == forms.DisabledAdultAllowanceMockType.BENEFICIARY.value:
+    if mock_type == forms.DisabledAdultAllowanceMockType.RECIPIENT.value:
         result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
             http_status_code=200,
-            is_disability_beneficiary=True,
+            is_disability_recipient=True,
         ).model_dump()
 
-    elif mock_type == forms.DisabledAdultAllowanceMockType.NON_BENEFICIARY.value:
+    elif mock_type == forms.DisabledAdultAllowanceMockType.NON_RECIPIENT.value:
         result_content = subscription_factories.AdultDisabilityBonusCreditContentFactory.build(
             http_status_code=200,
-            is_disability_beneficiary=False,
+            is_disability_recipient=False,
         ).model_dump()
 
     elif mock_type == forms.DisabledAdultAllowanceMockType.APPLICATION_NOT_FOUND.value:
@@ -205,22 +205,22 @@ def create_disabled_child_education_allowance_fraud_check_mock(
     mock_type = form.mock_type.data
     result_content = None
 
-    if mock_type == forms.DisabledChildEducationAllowanceMockType.BENEFICIARY.value:
+    if mock_type == forms.DisabledChildEducationAllowanceMockType.RECIPIENT.value:
         result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
             http_status_code=200,
-            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.BENEFICIARY,
+            disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.RECIPIENT,
         ).model_dump()
 
     if mock_type == forms.DisabledChildEducationAllowanceMockType.RIGHT_OPENING.value:
         result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
             http_status_code=200,
-            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.RIGHT_OPENING,
+            disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.RIGHT_OPENING,
         ).model_dump()
 
-    elif mock_type == forms.DisabledChildEducationAllowanceMockType.NON_BENEFICIARY.value:
+    elif mock_type == forms.DisabledChildEducationAllowanceMockType.NON_RECIPIENT.value:
         result_content = subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
             http_status_code=200,
-            disability_beneficiary_status=bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY,
+            disability_recipient_status=bonus_schemas.DisabledChildEducationRecipientStatus.NON_RECIPIENT,
         ).model_dump()
 
     elif mock_type == forms.DisabledChildEducationAllowanceMockType.APPLICATION_NOT_FOUND.value:

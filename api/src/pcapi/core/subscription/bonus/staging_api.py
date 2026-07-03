@@ -59,25 +59,25 @@ DISABILITY_APPLICATION_NOT_FOUND = bonus_schemas.BonusCreditPerson(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-ADULT_DISABILITY_BENEFICIARY = bonus_schemas.BonusCreditPerson(
-    last_name="dupont",
-    common_name="martin",
+ADULT_DISABILITY_RECIPIENT = bonus_schemas.BonusCreditPerson(
+    last_name="martin",
+    common_name="dupont",
     first_names=["pierre", "richard"],
     birth_date=datetime.date(1987, 12, 1),
     gender=users_models.GenderEnum.M,
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-ADULT_DISABILITY_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
-    last_name="chirac",
-    common_name="martin",
+ADULT_DISABILITY_NON_RECIPIENT = bonus_schemas.BonusCreditPerson(
+    last_name="martin",
+    common_name="chirac",
     first_names=["jacques"],
     birth_date=datetime.date(1987, 12, 1),
     gender=users_models.GenderEnum.M,
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
-DISABLED_CHILD_EDUCATION_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+DISABLED_CHILD_EDUCATION_RECIPIENT = bonus_schemas.BonusCreditPerson(
     last_name="dupont",
     first_names=["pierre"],
     birth_date=datetime.date(2015, 3, 12),
@@ -93,7 +93,7 @@ DISABLED_CHILD_EDUCATION_RIGHT_OPENING = bonus_schemas.BonusCreditPerson(
     birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="69123",
 )
-DISABLED_CHILD_EDUCATION_NON_BENEFICIARY = bonus_schemas.BonusCreditPerson(
+DISABLED_CHILD_EDUCATION_NON_RECIPIENT = bonus_schemas.BonusCreditPerson(
     last_name="bernard",
     first_names=["lucas"],
     birth_date=datetime.date(2010, 1, 5),
@@ -225,10 +225,10 @@ def get_and_mock_disabled_adult_allowance(
         mocked_person = PERSON_NOT_FOUND
     elif mock_config.http_status_code == 502:
         mocked_person = DATA_PROVIDER_ERROR
-    elif not mock_config.is_disability_beneficiary:
-        mocked_person = ADULT_DISABILITY_NON_BENEFICIARY
+    elif not mock_config.is_disability_recipient:
+        mocked_person = ADULT_DISABILITY_NON_RECIPIENT
     else:
-        mocked_person = ADULT_DISABILITY_BENEFICIARY
+        mocked_person = ADULT_DISABILITY_RECIPIENT
 
     return api_particulier.get_disabled_adult_allowance(mocked_person)
 
@@ -275,17 +275,12 @@ def get_and_mock_disabled_child_education_allowance(
         mocked_person = PERSON_NOT_FOUND
     elif mock_config.http_status_code == 502:
         mocked_person = DISABLED_CHILD_DATA_PROVIDER_ERROR
-    elif (
-        mock_config.disability_beneficiary_status
-        == bonus_schemas.DisabledChildEducationBeneficiaryStatus.NON_BENEFICIARY
-    ):
-        mocked_person = DISABLED_CHILD_EDUCATION_NON_BENEFICIARY
-    elif (
-        mock_config.disability_beneficiary_status == bonus_schemas.DisabledChildEducationBeneficiaryStatus.RIGHT_OPENING
-    ):
+    elif mock_config.disability_recipient_status == bonus_schemas.DisabledChildEducationRecipientStatus.NON_RECIPIENT:
+        mocked_person = DISABLED_CHILD_EDUCATION_NON_RECIPIENT
+    elif mock_config.disability_recipient_status == bonus_schemas.DisabledChildEducationRecipientStatus.RIGHT_OPENING:
         mocked_person = DISABLED_CHILD_EDUCATION_RIGHT_OPENING
     else:
-        mocked_person = DISABLED_CHILD_EDUCATION_BENEFICIARY
+        mocked_person = DISABLED_CHILD_EDUCATION_RECIPIENT
 
     return api_particulier.get_disabled_child_education_allowance(mocked_person)
 

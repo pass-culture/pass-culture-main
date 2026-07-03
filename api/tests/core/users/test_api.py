@@ -11,9 +11,6 @@ from dateutil.relativedelta import relativedelta
 from flask import current_app
 
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.subscription.dms.schemas as dms_schemas
-import pcapi.core.subscription.factories as subscription_factories
-import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import api as bookings_api
@@ -33,6 +30,10 @@ from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -2059,7 +2060,7 @@ class QFBonusCreditEligibilityTest:
 
         qf_bonification_status = users_api.get_user_qf_bonification_status(user)
 
-        assert qf_bonification_status == subscription_models.QFBonificationStatus.ELIGIBLE
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
 
     def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
         # user is 19 years old at the cutoff date
@@ -2070,7 +2071,7 @@ class QFBonusCreditEligibilityTest:
         with time_machine.travel(day_before_user_turns_20):
             qf_bonification_status = users_api.get_user_qf_bonification_status(user)
 
-        assert qf_bonification_status == subscription_models.QFBonificationStatus.ELIGIBLE
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.ELIGIBLE
 
     def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
         # user is 19 years old the day after the cutoff date
@@ -2081,7 +2082,7 @@ class QFBonusCreditEligibilityTest:
         with time_machine.travel(day_when_user_is_19):
             qf_bonification_status = users_api.get_user_qf_bonification_status(user)
 
-        assert qf_bonification_status == subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
     def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
         # user is 19 years old the day before the credit v3 decree
@@ -2092,7 +2093,7 @@ class QFBonusCreditEligibilityTest:
         with time_machine.travel(day_when_user_is_19):
             qf_bonification_status = users_api.get_user_qf_bonification_status(user)
 
-        assert qf_bonification_status == subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+        assert qf_bonification_status == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE
 
 
 class DisabilityBonusCreditEligibilityTest:
@@ -2101,7 +2102,7 @@ class DisabilityBonusCreditEligibilityTest:
 
         disability_bonification_status = users_api.get_user_disability_bonification_status(user)
 
-        assert disability_bonification_status == subscription_models.DisabilityBonificationStatus.ELIGIBLE
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
     def test_nineteen_year_old_within_extended_cutoff_is_eligible(self):
         # user is 19 years old at the cutoff date
@@ -2112,7 +2113,7 @@ class DisabilityBonusCreditEligibilityTest:
         with time_machine.travel(day_before_user_turns_20):
             disability_bonification_status = users_api.get_user_disability_bonification_status(user)
 
-        assert disability_bonification_status == subscription_models.DisabilityBonificationStatus.ELIGIBLE
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
     def test_nineteen_year_old_after_extended_cutoff_not_eligible(self):
         # user is 19 years old the day after the cutoff date
@@ -2123,7 +2124,7 @@ class DisabilityBonusCreditEligibilityTest:
         with time_machine.travel(day_when_user_is_19):
             disability_bonification_status = users_api.get_user_disability_bonification_status(user)
 
-        assert disability_bonification_status == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
 
     def test_nineteen_year_old_before_extended_cutoff_not_eligible(self):
         # user is 19 years old the day before the credit v3 decree
@@ -2134,4 +2135,4 @@ class DisabilityBonusCreditEligibilityTest:
         with time_machine.travel(day_when_user_is_19):
             disability_bonification_status = users_api.get_user_disability_bonification_status(user)
 
-        assert disability_bonification_status == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE

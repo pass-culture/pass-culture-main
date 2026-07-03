@@ -14,8 +14,8 @@ from pcapi.core.subscription.bonus.constants import QUOTIENT_FAMILIAL_THRESHOLD
 from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
-from tests.core.subscription.bonus.bonus_fixtures import AAH_ELIGIBLE_RESPONSE
-from tests.core.subscription.bonus.bonus_fixtures import AEEH_ELIGIBLE_RESPONSE
+from tests.core.subscription.bonus.bonus_fixtures import AAH_RECIPIENT_RESPONSE
+from tests.core.subscription.bonus.bonus_fixtures import AEEH_RECIPIENT_RESPONSE
 from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
 
 
@@ -174,7 +174,7 @@ class DisabledAdultAllowanceTest:
             birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
             birth_city_cog_code="08480",
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
 
         disability_response = api_particulier.get_disabled_adult_allowance(person)
 
@@ -206,7 +206,7 @@ class DisabledAdultAllowanceTest:
             birth_country_cog_code="99243",
             birth_city_cog_code="ignor",
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
 
         api_particulier.get_disabled_adult_allowance(person)
 
@@ -234,7 +234,7 @@ class DisabledAdultAllowanceTest:
             birth_city_cog_code=None,
             birth_city=None,
         )
-        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AAH_ENDPOINT, json=AAH_RECIPIENT_RESPONSE)
 
         api_particulier.get_disabled_adult_allowance(person)
 
@@ -278,7 +278,7 @@ class DisabledChildEducationAllowanceTest:
             birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
             birth_city_cog_code="75112",
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_RECIPIENT_RESPONSE)
 
         disability_response = api_particulier.get_disabled_child_education_allowance(person)
 
@@ -297,7 +297,7 @@ class DisabledChildEducationAllowanceTest:
 
         assert disability_response == api_particulier.DisabledChildEducationAllowanceResponse(
             data=api_particulier.DisabledChildEducationAllowanceData(
-                status=api_particulier.DisabledChildEducationAllowanceStatus.BENEFICIARY,
+                status=api_particulier.DisabledChildEducationAllowanceStatus.RECIPIENT,
                 date_debut_droit=date(2023, 6, 15),
             )
         )
@@ -312,7 +312,7 @@ class DisabledChildEducationAllowanceTest:
             birth_country_cog_code="99243",
             birth_city_cog_code="ignor",
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_RECIPIENT_RESPONSE)
 
         api_particulier.get_disabled_child_education_allowance(person)
 
@@ -339,7 +339,7 @@ class DisabledChildEducationAllowanceTest:
             birth_city_cog_code=None,
             birth_city=None,
         )
-        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_ELIGIBLE_RESPONSE)
+        requests_mock.get(api_particulier.AEEH_ENDPOINT, json=AEEH_RECIPIENT_RESPONSE)
 
         api_particulier.get_disabled_child_education_allowance(person)
 

@@ -3,7 +3,7 @@ import typing
 from dataclasses import dataclass
 
 from pcapi.core.finance import models as finance_models
-from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 
@@ -11,7 +11,7 @@ from pcapi.core.users import models as users_models
 @dataclass
 class UserAttributes:
     achievements: list[str]
-    bonification_status: subscription_models.QFBonificationStatus | None
+    bonification_status: bonus_schemas.QFBonificationStatus | None
     booking_categories: list[str]
     booking_count: int  # count non-canceled bookings from user
     booking_subcategories: list[str]
