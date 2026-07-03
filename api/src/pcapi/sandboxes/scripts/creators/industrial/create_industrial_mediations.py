@@ -7,13 +7,14 @@ from shutil import copyfile
 import pcapi.core.offers.factories as offers_factories
 import pcapi.sandboxes
 from pcapi import settings
+from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories
 from pcapi.core.object_storage import delete_public_object_recursively
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
+from pcapi.sandboxes.scripts.utils.storage_utils import read_sandbox_mediation_asset
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,6 @@ def prepare_mediations_folders() -> None:
 def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_mediations")
 
-    mediations_with_asset = {}
     mediations_by_name = {}
 
     offer_items = list(offers_by_name.items())
@@ -59,11 +59,10 @@ def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     db.session.commit()
 
     for mediation in mediations_by_name.values():
-        mediations_with_asset[mediation.id] = store_public_object_from_sandbox_assets(
-            "thumbs", mediation, mediation.offer.subcategoryId
-        )
+        image_as_bytes = read_sandbox_mediation_asset(mediation.offer.subcategoryId)
+        thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
 
-    db.session.add_all(mediations_with_asset.values())
+    db.session.add_all(mediations_by_name.values())
     db.session.commit()
 
     logger.info("created %d mediations", len(mediations_by_name))
