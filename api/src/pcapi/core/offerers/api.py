@@ -53,6 +53,7 @@ from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
+from pcapi.core.finance import api as finance_api
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
@@ -3452,6 +3453,8 @@ def close_venue(venue: models.Venue, author: users_models.User) -> None:
     venue.state = models.VenueState.CLOSING
     nullify_venue_emails(venue, author)
 
+    finance_api.unlink_venue_bank_accounts(venue)
+
     payload = tasks.FinalizeClosingVenuePayload(venue_id=venue.id)
     on_commit(
         functools.partial(
@@ -3557,3 +3560,16 @@ def deactivate_venue_offers(venue: models.Venue) -> None:
         log_extra = {"venue_id": venue.id, "offers_backup": backup_data}
         log_msg = "closing venue: offers deactivated, will be unindexed (added to queue)"
         logger.info(log_msg, extra=log_extra)
+
+
+def venue_has_ongoing_bookings(venue: models.Venue) -> bool:
+    return db.session.query(
+        db.session.query(bookings_models.Booking)
+        .filter_by(venueId=venue.id)
+        .filter(
+            bookings_models.Booking.status.not_in(
+                [bookings_models.BookingStatus.REIMBURSED, bookings_models.BookingStatus.CANCELLED]
+            )
+        )
+        .exists()
+    ).scalar()

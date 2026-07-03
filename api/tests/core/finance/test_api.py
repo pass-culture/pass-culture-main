@@ -5598,3 +5598,61 @@ class CleanDuplicateBankAccountsTest:
         api.clean_duplicate_bank_accounts()
 
         assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id}
+
+
+class UnlinkVenueBankAccountsTest:
+    def test_venue_without_any_bank_account_nothing_is_done(self):
+        venue = offerers_factories.VenueFactory()
+        api.unlink_venue_bank_accounts(venue)
+
+        db.session.refresh(venue)
+        assert not venue.bankAccountLinks
+
+    def test_one_active_bank_account_link_is_ended(self, caplog):
+        bank_account_link = offerers_factories.VenueBankAccountLinkFactory()
+        venue = bank_account_link.venue
+        assert venue.current_bank_account_link
+
+        now = datetime.datetime.now(datetime.UTC)
+        with caplog.at_level("INFO"):
+            with time_machine.travel(now, tick=False):
+                api.unlink_venue_bank_accounts(venue)
+
+                db.session.refresh(venue)
+
+                assert len(venue.bankAccountLinks) == 1
+                assert datetime.datetime.fromisoformat(venue.bankAccountLinks[0].timespan.upper) == now
+
+            assert len(caplog.records) == 1
+            assert caplog.records[0].message == "ending current venue bank account link"
+            assert caplog.records[0].extra == {
+                "venue_id": venue.id,
+                "bank_account_id": bank_account_link.bankAccountId,
+            }
+
+    def test_already_ended_bank_account_link_stays_the_same(self):
+        now = datetime.datetime.now()
+        timespan = [now - datetime.timedelta(days=256), now]
+
+        venue = offerers_factories.VenueBankAccountLinkFactory(timespan=timespan).venue
+        assert not venue.current_bank_account_link
+
+        with time_machine.travel(now, tick=False):
+            api.unlink_venue_bank_accounts(venue)
+
+            db.session.refresh(venue)
+
+            assert len(venue.bankAccountLinks) == 1
+            assert venue.bankAccountLinks[0].timespan.upper == now
+
+    def test_cannot_unlink_if_venue_has_an_ongoing_booking(self):
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+        assert venue.bankAccountLinks
+
+        bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+
+        with pytest.raises(api.CannotUnlinkBankAccount):
+            api.unlink_venue_bank_accounts(venue)
+
+        db.session.refresh(venue)
+        assert venue.current_bank_account_link
