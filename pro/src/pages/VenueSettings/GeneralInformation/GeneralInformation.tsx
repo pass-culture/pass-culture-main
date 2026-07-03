@@ -9,6 +9,7 @@ import type {
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useKey } from '@/commons/hooks/useKey'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
@@ -21,7 +22,6 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActivityDetails } from '@/components/VenueEdition/ActivityDetails/ActivityDetails'
-import { RouteLeavingGuardVenueEdition } from '@/components/VenueEdition/RouteLeavingGuardVenueEdition'
 import { VenueFormActionBar } from '@/components/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
@@ -63,7 +63,7 @@ const GeneralInformation = () => {
     mode: 'onBlur',
   })
 
-  const { saveAndContinue } = useSaveVenueSettings({ form, venue })
+  const { save: saveAndContinue } = useSaveVenueSettings({ form, venue })
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
   const [isComplementaryInfosDrawerOpen, setIsComplementaryInfosDrawerOpen] =
@@ -75,8 +75,10 @@ const GeneralInformation = () => {
     scrollToTop()
   }
 
-  const onSubmit = async (formValues: VenueSettingsFormValues) => {
-    const isSaved = await saveAndContinue(formValues, formContext)
+  const onSubmit = async (
+    formValues: VenueSettingsFormValues
+  ): Promise<boolean> => {
+    const canProceed = await saveAndContinue(formValues, formContext)
 
     const hasAddressChanged =
       formValues.addressAutocomplete !== initialValues.addressAutocomplete
@@ -93,7 +95,7 @@ const GeneralInformation = () => {
       formValues.isOpenToPublic === 'true' &&
       formValues.siret !== initialValues.siret
 
-    if (isSaved) {
+    if (canProceed) {
       setHasAddressChanged(hasAddressChanged)
       if (shouldShowAddressChangeWarning && !hasSiretChanged) {
         setIsAddressChangeDialogOpen(true)
@@ -102,7 +104,10 @@ const GeneralInformation = () => {
         setIsComplementaryInfosDrawerOpen(true)
       }
     }
+
     scrollToTop()
+
+    return canProceed
   }
 
   const {
@@ -111,8 +116,11 @@ const GeneralInformation = () => {
     watch,
     getValues,
     clearErrors,
-    formState: { isDirty, isSubmitting, isSubmitted, errors, disabled },
+    formState: { isSubmitting, errors, disabled },
   } = form
+
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({ form, onSubmit })
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
@@ -177,7 +185,7 @@ const GeneralInformation = () => {
     <>
       <MandatoryInfo />
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={navigationGuardedSubmitHandler} noValidate>
           <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout fullWidthActions>
             <FormLayout.Section title="Informations administratives">
@@ -241,20 +249,21 @@ const GeneralInformation = () => {
             )}
           </FormLayout>
           <VenueFormActionBar isSubmitting={isSubmitting} onCancel={onCancel} />
-          <RouteLeavingGuardVenueEdition
-            shouldBlock={isDirty && !isSubmitting && !isSubmitted}
-          />
         </form>
       </FormProvider>
+
       <AddressChangeDialog
         open={isAddressChangeDialogOpen}
         onOpenChange={setIsAddressChangeDialogOpen}
       />
+
       <ComplementaryInfosDrawer
         open={isComplementaryInfosDrawerOpen}
         onOpenChange={setIsComplementaryInfosDrawerOpen}
         hasAddressChanged={hasAddressChanged}
       ></ComplementaryInfosDrawer>
+
+      {navigationGuardDialog}
     </>
   )
 }

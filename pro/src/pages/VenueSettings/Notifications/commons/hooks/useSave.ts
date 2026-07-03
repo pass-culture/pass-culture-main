@@ -25,7 +25,9 @@ export const useSave = ({
   const { logEvent } = useAnalytics()
   const { syncVenueWithData } = useSyncVenueCache()
 
-  const save = async (formValues: EditVenueBodyModelNotificationsPatch) => {
+  const save = async (
+    formValues: EditVenueBodyModelNotificationsPatch
+  ): Promise<boolean> => {
     try {
       const updatedVenue = await api.editVenue({
         path: { venue_id: Number(venue.id) },
@@ -40,6 +42,8 @@ export const useSave = ({
       })
 
       snackBar.success('Vos modifications ont été sauvegardées')
+
+      return true
     } catch (error) {
       const formErrors = isErrorAPIError(error) ? error.body : {}
       const errorsKeys = Object.keys(formErrors)
@@ -63,6 +67,8 @@ export const useSave = ({
         saved: false,
         isEdition: true,
       })
+
+      return false
     }
   }
 
