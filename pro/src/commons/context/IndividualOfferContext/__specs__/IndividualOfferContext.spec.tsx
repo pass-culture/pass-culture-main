@@ -175,6 +175,12 @@ describe('IndividualOfferContextProvider', () => {
       vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
         ...offerBase,
         id: 5,
+        // Remove this once fully pydantic V2 migration is over
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
+        productId: undefined,
       })
 
       const { result } = await renderUseIndividualOfferContext()

@@ -1,6 +1,6 @@
 import type {
   GetOfferStockResponseModel,
-  PriceCategoryResponseModel,
+  PriceCategoryResponseModelV2,
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -49,7 +49,7 @@ describe('toFormValues', () => {
   it('should map existing price categories (event offer)', () => {
     const offer = { ...baseOffer, isEvent: true }
     const context = makeContext(offer)
-    const priceCategories: PriceCategoryResponseModel[] = [
+    const priceCategories: PriceCategoryResponseModelV2[] = [
       {
         id: 1,
         hasStocks: false,

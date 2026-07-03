@@ -1,4 +1,4 @@
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -8,7 +8,7 @@ import styles from './IndividualOfferTitle.module.scss'
 type IndividualOfferTitleProps = {
   mode: OFFER_WIZARD_MODE
   isConfirmationPage: boolean
-  offer?: GetIndividualOfferWithAddressResponseModel | null
+  offer?: GetIndividualOfferResponseModelV2 | null
 }
 
 export const IndividualOfferTitle = ({

@@ -50,8 +50,6 @@ describe('toPatchOfferBodyModel', () => {
       lastProvider: null,
     }
 
-    // TODO (amine) to remove once model migrated to Pydantic V2
-    // @ts-expect-error
     const result = toPatchOfferBodyModel({ ...paramsBase, offer })
 
     expect(result).toMatchObject(formValuesBase)
@@ -69,8 +67,6 @@ describe('toPatchOfferBodyModel', () => {
     }
 
     const result = toPatchOfferBodyModel({
-      // TODO (amine) to remove once model migrated to Pydantic V2
-      // @ts-expect-error
       offer,
       formValues,
       shouldSendMail: false,

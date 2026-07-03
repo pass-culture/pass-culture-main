@@ -198,7 +198,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "location": {
-                "label": None,
+                "label": offer.venue.publicName,
                 "id": offer.offererAddress.address.id,
                 "banId": offer.offererAddress.address.banId,
                 "departmentCode": offer.offererAddress.address.departmentCode,
@@ -373,8 +373,10 @@ class Returns200Test:
             location = offerers_factories.OfferLocationFactory(
                 venue=venue, address=venue.offererAddress.address, label=None
             )
+            location_label = venue.publicName
         else:
             location = offerers_factories.OfferLocationFactory(venue=venue)
+            location_label = location.label
         offer = offers_factories.OfferFactory(
             venue=venue,
             offererAddress=location,
@@ -387,7 +389,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["location"] == {
-            "label": location.label,
+            "label": location_label,
             "id": location.address.id,
             "banId": location.address.banId,
             "departmentCode": location.address.departmentCode,

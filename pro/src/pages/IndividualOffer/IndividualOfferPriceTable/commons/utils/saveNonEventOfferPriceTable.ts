@@ -2,7 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
@@ -18,7 +18,7 @@ export const saveNonEventOfferPriceTable = async (
   {
     offer,
   }: {
-    offer: GetIndividualOfferWithAddressResponseModel
+    offer: GetIndividualOfferResponseModelV2
   }
 ) => {
   if (form.formState.dirtyFields.isDuo) {

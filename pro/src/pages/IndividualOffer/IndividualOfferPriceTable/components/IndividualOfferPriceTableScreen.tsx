@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -34,7 +34,7 @@ import { NonRefundableCallout } from './NonRefundableCallout'
 import { PriceTableForm } from './PriceTableForm/PriceTableForm'
 
 interface IndividualOfferPriceTableScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   offerStocks: GetOfferStockResponseModel[] | undefined
 }
 export const IndividualOfferPriceTableScreen = ({

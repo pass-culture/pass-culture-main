@@ -1,8 +1,8 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 
 export const getIndividualOfferImage = (
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferResponseModelV2 | null
 ): IndividualOfferImage | undefined => {
   if (!offer) {
     return undefined

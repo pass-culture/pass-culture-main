@@ -3,7 +3,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -18,7 +18,7 @@ import strokeCheckIcon from '@/icons/stroke-check.svg'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface StatusToggleButtonProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {

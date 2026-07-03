@@ -6,7 +6,7 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type {
-  GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferResponseModelV2,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -33,7 +33,7 @@ import { getValidationSchema } from '../commons/validationSchema'
 import { IndividualOfferPracticalInfosForm } from './IndividualOfferPracticalInfosForm/IndividualOfferPracticalInfosForm'
 
 export type IndividualOfferPracticalInfosScreenProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
   stocks: GetOfferStockResponseModel[]
 }
 

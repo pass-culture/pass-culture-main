@@ -1,7 +1,7 @@
 import {
   ArtistType,
   type CategoryResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   type GetMusicTypesResponse,
   type SubcategoryResponseModel,
 } from '@/apiClient/v1'
@@ -10,7 +10,7 @@ import type { OfferExtraData } from '@/commons/core/Offers/types'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 
 function stringifyArtist(
-  artistOfferLinks: GetIndividualOfferWithAddressResponseModel['artistOfferLinks'],
+  artistOfferLinks: GetIndividualOfferResponseModelV2['artistOfferLinks'],
   filter: ArtistType
 ) {
   if (artistOfferLinks.length < 1) {
@@ -24,7 +24,7 @@ function stringifyArtist(
 }
 
 export function serializeArtist(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   artistExtraData: string | undefined,
   defaultValue: string,
   artistType: ArtistType
@@ -39,7 +39,7 @@ export function serializeArtist(
 }
 
 const getMusicData = (
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   musicTypes?: GetMusicTypesResponse,
   gtl_id?: string
 ): {
@@ -61,7 +61,7 @@ const getMusicData = (
 }
 
 const serializerOfferSubCategoryFields = (
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
@@ -144,7 +144,7 @@ const serializerOfferSubCategoryFields = (
 }
 
 export const serializeOfferSectionData = (
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
   musicTypes?: GetMusicTypesResponse

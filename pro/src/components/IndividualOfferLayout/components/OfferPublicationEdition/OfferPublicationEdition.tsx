@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -22,11 +22,11 @@ import type { EventPublicationEditionFormValues } from './OfferPublicationEditio
 import { OfferPublicationEditionTags } from './OfferPublicationEditionTags/OfferPublicationEditionTags'
 
 export type OfferPublicationEditionProps = {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 
 export function getPatchOfferPayloadFromFormValues(
-  offer: GetIndividualOfferWithAddressResponseModel,
+  offer: GetIndividualOfferResponseModelV2,
   values: EventPublicationEditionFormValues
 ) {
   const formattedPublicationDate =
