@@ -206,6 +206,72 @@ describe('validationSchema', () => {
       expectedErrors: ['Le prix du frais annexe doit être supérieur à 0.01'],
     },
     {
+      description: 'additional fees types should not be duplicated',
+      initialState: {},
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.MEAL,
+            amount: 1,
+            label: null,
+          },
+          {
+            type: CollectiveAdditionalFeeType.MEAL,
+            amount: 2,
+            label: null,
+          },
+        ],
+      },
+      expectedErrors: [
+        'Certains types sont en doubles',
+        'Certains labels sont en doubles',
+      ],
+    },
+    {
+      description: 'additional fees labels should not be duplicated',
+      initialState: {},
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.OTHER,
+            amount: 1,
+            label: 'Ceci est un Label dupliqué',
+          },
+          {
+            type: CollectiveAdditionalFeeType.OTHER,
+            amount: 2,
+            label: 'Ceci est UN label dupliqué',
+          },
+        ],
+      },
+      expectedErrors: ['Certains labels sont en doubles'],
+    },
+    {
+      description: 'additional fees labels should not be existing types labels',
+      initialState: {},
+      formValues: {
+        ...values,
+        hasAdditionalFees: true,
+        collectiveAdditionalFees: [
+          {
+            type: CollectiveAdditionalFeeType.COPYRIGHT,
+            amount: 1,
+            label: null,
+          },
+          {
+            type: CollectiveAdditionalFeeType.OTHER,
+            amount: 2,
+            label: "Droits d'auteur",
+          },
+        ],
+      },
+      expectedErrors: ['Certains labels sont en doubles'],
+    },
+    {
       description: 'servicePrice should not exceed 60000€',
       initialState: {},
       formValues: { ...values, servicePrice: 60001 },
