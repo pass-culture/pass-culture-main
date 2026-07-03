@@ -46,7 +46,8 @@ jobs:
       commit_sha: ${{ steps.checkout.outputs.commit }}
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: Checkout source branch
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         id: checkout
         with:
           fetch-tags: false
@@ -96,6 +97,7 @@ jobs:
     with:
       image: pcapi
       tag: ${{ needs.deploy-preview-env-init.outputs.commit_sha }}
+      base_ref: ${{ inputs.source_branch }}
 
   push-pcapi:
     name: Push pcapi docker image to artifact registry
