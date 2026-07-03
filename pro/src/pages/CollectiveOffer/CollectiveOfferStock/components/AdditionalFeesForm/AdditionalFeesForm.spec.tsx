@@ -45,7 +45,14 @@ function renderAdditionalFeesForm({
     }
     const form = useForm<CollectiveOfferStockFormValues>({
       defaultValues: { ...nonFeesDefaultValues, ...initialValues },
-      resolver: yupResolver(generateValidationSchema(true)),
+      resolver: yupResolver(
+        generateValidationSchema(
+          canEditDiscount,
+          canEditDiscount,
+          canEditDiscount,
+          null
+        )
+      ),
     })
 
     return (
@@ -272,9 +279,9 @@ describe('AdditionalFeesForm', () => {
 
     const typeInput = screen.getByLabelText(/Type de frais annexes/)
     await user.click(typeInput)
-    await user.click(screen.getByText("Hébergement de l'intervenant"))
+    await user.click(screen.getByText("Hébergement de l'intervenant•e"))
 
-    expect(typeInput).toHaveValue("Hébergement de l'intervenant")
+    expect(typeInput).toHaveValue("Hébergement de l'intervenant•e")
   })
 
   it('should set type to OTHER and store the label when typing a custom value', async () => {
