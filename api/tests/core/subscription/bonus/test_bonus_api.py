@@ -22,6 +22,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.utils.sentry import before_send
 
 import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
@@ -649,8 +650,6 @@ class DisabledAdultAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-        assert len(mails_testing.outbox) == 0
-
     def test_person_not_found(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -679,8 +678,6 @@ class DisabledAdultAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-        assert len(mails_testing.outbox) == 0
-
     def test_application_not_found(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
@@ -708,8 +705,6 @@ class DisabledAdultAllowanceTest:
         assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
-
-        assert len(mails_testing.outbox) == 0
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
@@ -813,6 +808,28 @@ class DisabledAdultAllowanceTest:
 
         assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
+    @pytest.mark.parametrize(
+        "fraud_check_origin,nb_mails_send",
+        [
+            (bonus_constants.BACKOFFICE_ORIGIN_START, 1),
+            (bonus_constants.DISABILITY_ENDPOINT_ORIGIN, 1),
+            ("auto_placeholder", 0),
+        ],
+    )
+    def test_send_bonus_declined_email(self, fraud_check_origin, nb_mails_send):
+        aah_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=fraud_check_origin,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AAH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_adult_disability_bonus(aah_bonus_fraud_check)
+
+        assert len(mails_testing.outbox) == nb_mails_send
+
     @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
     def test_has_already_received_bonus_credit(self, mock_recredit):
         user = users_factories.BeneficiaryFactory()
@@ -906,8 +923,6 @@ class DisabledChildEducationAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-        assert len(mails_testing.outbox) == 0
-
     def test_person_not_found(self):
         user = users_factories.BeneficiaryFactory()
 
@@ -937,8 +952,6 @@ class DisabledChildEducationAllowanceTest:
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
 
-        assert len(mails_testing.outbox) == 0
-
     def test_application_not_found(self):
         user = users_factories.BeneficiaryFactory()
 
@@ -967,8 +980,6 @@ class DisabledChildEducationAllowanceTest:
         assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
         assert push_request1["attribute_values"]["u.bonification_status"] == "eligible"
         assert push_request2["attribute_values"]["u.bonification_status"] == "eligible"
-
-        assert len(mails_testing.outbox) == 0
 
     def test_bonus_fraud_checks_deletion_when_granted(self):
         user = users_factories.BeneficiaryFactory()
@@ -1071,6 +1082,28 @@ class DisabledChildEducationAllowanceTest:
                 bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
 
         assert bonus_fraud_check.updatedAt > twelve_hours_ago
+
+    @pytest.mark.parametrize(
+        "fraud_check_origin,nb_mails_send",
+        [
+            (bonus_constants.BACKOFFICE_ORIGIN_START, 1),
+            (bonus_constants.DISABILITY_ENDPOINT_ORIGIN, 1),
+            ("auto_placeholder", 0),
+        ],
+    )
+    def test_send_bonus_declined_email(self, fraud_check_origin, nb_mails_send):
+        aeeh_bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            reason=fraud_check_origin,
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.AEEH_ENDPOINT, status_code=404, json=bonus_fixtures.APPLICATION_NOT_FOUND_FIXTURE)
+
+            bonus_api.apply_for_disabled_child_education_bonus(aeeh_bonus_fraud_check)
+
+        assert len(mails_testing.outbox) == nb_mails_send
 
     @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
     def test_has_already_received_bonus_credit(self, mock_recredit):

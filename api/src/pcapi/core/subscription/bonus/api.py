@@ -236,6 +236,11 @@ def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.Benefi
         if aah_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aah_fraud_check, aah_result)
 
+            if aah_fraud_check.reason and aah_fraud_check.reason.startswith(
+                (bonus_constants.BACKOFFICE_ORIGIN_START, bonus_constants.DISABILITY_ENDPOINT_ORIGIN)
+            ):
+                transactional_mails.send_bonus_declined_email(user)
+
         elif aah_result.status == subscription_models.FraudCheckStatus.OK:
             given_recredit = _grant_bonus(aah_fraud_check)
 
@@ -295,6 +300,11 @@ def apply_for_disabled_child_education_bonus(aeeh_fraud_check: subscription_mode
     with atomic():
         if aeeh_result.status == subscription_models.FraudCheckStatus.KO:
             _decline_bonus(aeeh_fraud_check, aeeh_result)
+
+            if aeeh_fraud_check.reason and aeeh_fraud_check.reason.startswith(
+                (bonus_constants.BACKOFFICE_ORIGIN_START, bonus_constants.DISABILITY_ENDPOINT_ORIGIN)
+            ):
+                transactional_mails.send_bonus_declined_email(user)
 
         elif aeeh_result.status == subscription_models.FraudCheckStatus.OK:
             given_recredit = _grant_bonus(aeeh_fraud_check)

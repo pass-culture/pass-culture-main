@@ -12,6 +12,7 @@ from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -209,7 +210,7 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
         current_user,
         birth_country_cog_code=body.birth_country_cog_code,
         birth_city_cog_code=body.birth_city_cog_code,
-        origin="enrolled from /subscription/bonus/disability endpoint",
+        origin=bonus_constants.DISABILITY_ENDPOINT_ORIGIN,
     )
 
     aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
