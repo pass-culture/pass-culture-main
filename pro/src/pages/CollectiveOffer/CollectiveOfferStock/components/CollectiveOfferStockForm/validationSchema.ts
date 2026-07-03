@@ -8,6 +8,7 @@ import {
 import { isDateValid } from '@/commons/utils/date'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
+import { ADDITIONAL_FEES } from '../AdditionalFeesForm/constants'
 import { computePriceForStock } from '../utils/computePriceForStock'
 import {
   MAX_NUMBER_OF_TEACHERS,
@@ -187,6 +188,29 @@ export const generateValidationSchema = (canEditDates: boolean) =>
             parent.servicePrice,
             collectiveAdditionalFees ?? []
           )
+      )
+      .test(
+        'no-duplicate-types',
+        'Certains types sont en doubles',
+        (collectiveAdditionalFees) => {
+          const nonOtherFees = collectiveAdditionalFees.filter(
+            (x) => x.type !== CollectiveAdditionalFeeType.OTHER
+          )
+          const feeTypeSet = new Set(nonOtherFees.map((x) => x.type))
+          return nonOtherFees.length === feeTypeSet.size
+        }
+      )
+      .test(
+        'no-duplicate-labels',
+        'Certains labels sont en doubles',
+        (collectiveAdditionalFees) => {
+          const feeLabelSet = new Set(
+            collectiveAdditionalFees.map(({ type, label }) => {
+              return (label ?? ADDITIONAL_FEES[type]).toUpperCase().trim()
+            })
+          )
+          return collectiveAdditionalFees.length === feeLabelSet.size
+        }
       )
       .when('hasAdditionalFees', {
         is: true,
