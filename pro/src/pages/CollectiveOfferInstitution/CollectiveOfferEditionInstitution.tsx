@@ -1,19 +1,12 @@
-import { useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR from 'swr'
 
-import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
-import {
-  GET_COLLECTIVE_OFFER_QUERY_KEY,
-  GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   Mode,
 } from '@/commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isCollectiveInstitutionEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
@@ -29,10 +22,6 @@ export const CollectiveOfferEditionInstitution = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const snackBar = useSnackBar()
-  const navigate = useNavigate()
-  const { mutate } = useSWRConfig()
-
   const educationalInstitutionsQuery = useSWR(
     [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY],
     () => getEducationalInstitutions(),
@@ -43,23 +32,6 @@ export const CollectiveOfferEditionInstitution = ({
     !isCollectiveOfferTemplate(offer),
     '`offer` shoud not be a (collective offer) template.'
   )
-
-  const onSuccess = async ({
-    message,
-    payload,
-  }: {
-    message: string
-    payload: GetCollectiveOfferResponseModel
-  }) => {
-    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
-    navigate(
-      `/offre/${computeURLCollectiveOfferId(
-        payload.id,
-        false
-      )}/collectif/recapitulatif`
-    )
-    snackBar.success(message)
-  }
 
   if (educationalInstitutionsQuery.isLoading) {
     return <Spinner />
@@ -79,7 +51,6 @@ export const CollectiveOfferEditionInstitution = ({
           offer.institution,
           offer.teacher
         )}
-        onSuccess={onSuccess}
         institutions={educationalInstitutionsQuery.data}
         isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
         offer={offer}

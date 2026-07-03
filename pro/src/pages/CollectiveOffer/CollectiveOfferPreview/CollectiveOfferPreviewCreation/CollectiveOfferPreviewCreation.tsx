@@ -1,4 +1,3 @@
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
@@ -19,7 +18,6 @@ export const CollectiveOfferPreviewCreation = ({
       offer={offer}
     >
       <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
-      <RouteLeavingGuardCollectiveOfferCreation when={false} />
     </CollectiveOfferLayout>
   )
 }

@@ -16,8 +16,12 @@ const defaultProps: OfferEducationalStockProps = {
   initialStock: {},
   departementCode: '75',
   allowedActions: [],
-  onSubmit: vi.fn(),
+  onAfterSubmit: vi.fn(),
   mode: Mode.CREATION,
+  stepPaths: {
+    previous: '/offre/collectif/1/creation',
+    next: '/offre/1/collectif/etablissement',
+  },
 }
 
 vi.mock('react-router', async () => ({
@@ -113,7 +117,7 @@ describe('OfferEducationalStock', () => {
     })
     await user.click(submitButton)
 
-    expect(testProps.onSubmit).toHaveBeenCalled()
+    expect(testProps.onAfterSubmit).toHaveBeenCalled()
   })
 
   it.each`
@@ -217,7 +221,7 @@ describe('OfferEducationalStock', () => {
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
       startDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
       endDatetime: `${tomorrow}T${expectedEventTime}:00Z`,
       bookingLimitDatetime: `${today}T21:59:59Z`,
@@ -258,7 +262,7 @@ describe('OfferEducationalStock', () => {
     expect(priceDetailsTextarea).toHaveValue('Nouveau contenu')
 
     await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
-    expect(testProps.onSubmit).toHaveBeenCalledExactlyOnceWith({
+    expect(testProps.onAfterSubmit).toHaveBeenCalledExactlyOnceWith({
       priceDetail: 'Nouveau contenu',
     })
   })

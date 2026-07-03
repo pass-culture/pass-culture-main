@@ -7,7 +7,6 @@ import {
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { ShareTemplateOfferLink } from '@/components/CollectiveOffer/ShareTemplateOfferLink/ShareTemplateOfferLink'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullValidateIcon from '@/icons/full-validate.svg'
@@ -188,7 +187,6 @@ const CollectiveOfferConfirmation = ({
           </div>
         </div>
       </div>
-      <RouteLeavingGuardCollectiveOfferCreation when={false} />
     </BasicLayout>
   )
 }

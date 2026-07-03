@@ -1,20 +1,28 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useFieldArray, useForm } from 'react-hook-form'
+import { useLocation } from 'react-router'
+import { useSWRConfig } from 'swr'
 
+import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
-  type PatchCollectiveOfferBodyModel,
 } from '@/apiClient/v1'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { getCollectiveOfferLink } from '@/commons/core/OfferEducational/utils/getCollectiveOfferLink'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { objectEntries, objectFromEntries } from '@/commons/utils/object'
+import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -31,23 +39,21 @@ import {
 
 export type CollectiveOfferInformationFormProps = {
   offer: GetCollectiveOfferResponseModel
-  isCreation: boolean
-  saveAndContinue: (
-    partialOffer: PatchCollectiveOfferBodyModel
-  ) => Promise<void>
-  goBackLink: string
 }
 
 export const CollectiveOfferInformationForm = ({
   offer,
-  isCreation,
-  saveAndContinue,
-  goBackLink,
 }: CollectiveOfferInformationFormProps): JSX.Element => {
   const canEditDetails = offer.allowedActions.includes(
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const location = useLocation()
+  const snackBar = useSnackBar()
+  const { mutate } = useSWRConfig()
+
+  const { requete: requestId } = queryParamsFromOfferer(location)
+  const isEdition = location.pathname.includes('edition')
 
   const defaultValues: CollectiveOfferInformationFormValues = {
     bookingEmails:
@@ -72,7 +78,9 @@ export const CollectiveOfferInformationForm = ({
     name: 'bookingEmails',
   })
 
-  const onSubmit = async (formValues: CollectiveOfferInformationFormValues) => {
+  const onSubmit = async (
+    formValues: CollectiveOfferInformationFormValues
+  ): Promise<boolean> => {
     const dirtyFields = form.formState.dirtyFields
     const partialOffer = objectFromEntries(
       objectEntries(dirtyFields)
@@ -102,12 +110,35 @@ export const CollectiveOfferInformationForm = ({
         ({ email }: Record<'email', string>) => email
       )
     }
+
     try {
-      await saveAndContinue(partialOffer)
+      const updatedOffer = await api.editCollectiveOffer({
+        path: { offer_id: offer.id },
+        body: partialOffer,
+      })
+
+      await mutate<GetCollectiveOfferResponseModel>(
+        [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offer.id)],
+        // TODO (igabriele, 2026-07-02): Moved as-is but it doesn't look like a partial response, so why do we merge it with the original?
+        { ...offer, ...updatedOffer },
+        { revalidate: false }
+      )
+
+      snackBar.success(PATCH_SUCCESS_MESSAGE)
+
+      return true
     } catch (e) {
       if (isErrorAPIError(e) && e.status < 500) {
         serializeApiErrors(e.body, form.setError)
+      } else {
+        sendSentryCustomError(e)
+
+        snackBar.error(
+          "Une erreur est survenue lors de l'enregistrement de votre offre."
+        )
       }
+
+      return false
     }
   }
 
@@ -121,9 +152,27 @@ export const CollectiveOfferInformationForm = ({
   // We need to force dirty field evaluation at render
   // since fieldArray.remove does not dirty the field by itself properly
   const _bookingEmailsDirty = form.formState.dirtyFields.bookingEmails
+  const stepUrls = {
+    previous: `/offre/${offer.id}/collectif/stocks`,
+    next: `/offre/${offer.id}/collectif/etablissement`,
+  }
+  if (isEdition) {
+    stepUrls.previous = getCollectiveOfferLink(offer.id, offer.displayedStatus)
+    stepUrls.next = getCollectiveOfferLink(offer.id, offer.displayedStatus)
+  }
+  if (requestId) {
+    stepUrls.previous += `?requete=${requestId}`
+    stepUrls.next += `?requete=${requestId}`
+  }
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({
+      afterSubmitPath: stepUrls.next,
+      form,
+      onSubmit,
+    })
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={navigationGuardedSubmitHandler}>
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
         <FormLayout.Section
@@ -209,13 +258,13 @@ export const CollectiveOfferInformationForm = ({
             as="a"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
-            to={goBackLink}
-            label={isCreation ? 'Retour' : 'Annuler et quitter'}
+            to={stepUrls.previous}
+            label={isEdition ? 'Annuler et quitter' : 'Retour'}
           />
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right
           dirtyForm={form.formState.isDirty || !offer}
-          mode={isCreation ? Mode.CREATION : Mode.EDITION}
+          mode={isEdition ? Mode.EDITION : Mode.CREATION}
         >
           <Button
             type="submit"
@@ -226,9 +275,7 @@ export const CollectiveOfferInformationForm = ({
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
 
-      <RouteLeavingGuardCollectiveOfferCreation
-        when={form.formState.isDirty && !form.formState.isSubmitting}
-      />
+      {navigationGuardDialog}
     </form>
   )
 }

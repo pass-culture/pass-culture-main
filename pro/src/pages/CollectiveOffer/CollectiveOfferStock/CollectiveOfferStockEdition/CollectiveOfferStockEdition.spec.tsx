@@ -218,9 +218,11 @@ describe('CollectiveOfferStockEdition', () => {
   it('on submit with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS enabled: should not send priceDetail on stock patch', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'editCollectiveStock').mockResolvedValueOnce({} as any)
-    const formMock = vi.fn(({ onSubmit }) => {
+    const formMock = vi.fn(({ onAfterSubmit }) => {
       const updatedStock = { numberOfTickets: 12, priceDetail: 'test' }
-      return <button onClick={() => onSubmit(updatedStock)}>Enregistrer</button>
+      return (
+        <button onClick={() => onAfterSubmit(updatedStock)}>Enregistrer</button>
+      )
     })
     vi.mocked(CollectiveOfferStockForm).mockImplementationOnce(formMock)
     vi.mocked(OfferEducationalStock).mockImplementationOnce(formMock)
