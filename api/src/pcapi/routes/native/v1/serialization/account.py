@@ -14,8 +14,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import young_status
@@ -140,8 +140,8 @@ class UserProfileResponse(HttpBodyModel):
     needs_to_fill_cultural_survey: bool
     phone_number: str | None = None
     postal_code: str | None = None
-    qf_bonification_status: subscription_models.QFBonificationStatus | None = None
-    disability_bonification_status: subscription_models.DisabilityBonificationStatus | None = None
+    qf_bonification_status: bonus_schemas.QFBonificationStatus | None = None
+    disability_bonification_status: bonus_schemas.DisabilityBonificationStatus | None = None
     recredit_amount_to_show: int | None = None
     recredit_type_to_show: finance_models.RecreditType | None = None
     remaining_bonus_attempts: int | None = None

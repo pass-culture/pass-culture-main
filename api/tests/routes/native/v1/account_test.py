@@ -15,12 +15,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 
-import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.subscription.factories as subscription_factories
-import pcapi.core.subscription.models as subscription_models
-import pcapi.core.subscription.schemas as subscription_schemas
-import pcapi.core.users.constants as users_constants
 from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.achievements import models as achievements_models
@@ -32,11 +27,17 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.external.batch import testing as push_testing
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import constants as bonus_constants
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import schemas as users_schemas
@@ -164,8 +165,8 @@ class AccountTest:
                 "physical": None,
             },
             "birthDate": "2000-01-11",
-            "qfBonificationStatus": subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value,
-            "disabilityBonificationStatus": subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value,
+            "qfBonificationStatus": bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE.value,
+            "disabilityBonificationStatus": bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE.value,
             "depositType": "GRANT_18",
             "depositActivationDate": "2018-06-01T00:00:00Z",
             "firstDepositActivationDate": "2015-02-03T00:00:00Z",
@@ -624,19 +625,19 @@ class AccountTest:
         [
             (
                 subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD,
-                subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
+                bonus_schemas.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
             ),
             (
                 subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH,
-                subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
+                bonus_schemas.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
             ),
             (
                 subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
-                subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
+                bonus_schemas.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
             ),
             (
                 subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
-                subscription_models.QFBonificationStatus.APPLICATION_NOT_FOUND,
+                bonus_schemas.QFBonificationStatus.APPLICATION_NOT_FOUND,
             ),
         ],
     )
@@ -656,11 +657,15 @@ class AccountTest:
         [
             (
                 subscription_models.FraudReasonCode.PERSON_NOT_FOUND,
-                subscription_models.DisabilityBonificationStatus.PERSON_NOT_FOUND,
+                bonus_schemas.DisabilityBonificationStatus.PERSON_NOT_FOUND,
             ),
             (
                 subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND,
-                subscription_models.DisabilityBonificationStatus.APPLICATION_NOT_FOUND,
+                bonus_schemas.DisabilityBonificationStatus.APPLICATION_NOT_FOUND,
+            ),
+            (
+                subscription_models.FraudReasonCode.NOT_RECIPIENT,
+                bonus_schemas.DisabilityBonificationStatus.NOT_RECIPIENT,
             ),
         ],
     )
@@ -687,11 +692,8 @@ class AccountTest:
         finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
-        assert (
-            response.json["disabilityBonificationStatus"]
-            == subscription_models.DisabilityBonificationStatus.GRANTED.value
-        )
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.GRANTED.value
+        assert response.json["disabilityBonificationStatus"] == bonus_schemas.DisabilityBonificationStatus.GRANTED.value
 
     def test_get_user_profile_bonification_status_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -703,26 +705,26 @@ class AccountTest:
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.TOO_MANY_RETRIES.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES.value
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_under_17(self, client):
         user = users_factories.BeneficiaryFactory(age=17)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE.value
         assert (
             response.json["disabilityBonificationStatus"]
-            == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value
+            == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE.value
         )
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_non_beneficiary(self, client):
         user = users_factories.HonorStatementValidatedUserFactory(age=18)
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.NOT_ELIGIBLE.value
         assert (
             response.json["disabilityBonificationStatus"]
-            == subscription_models.DisabilityBonificationStatus.NOT_ELIGIBLE.value
+            == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE.value
         )
 
     def test_get_user_profile_bonification_status_unknown_ko(self, client):
@@ -734,7 +736,7 @@ class AccountTest:
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.KO.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.KO.value
 
     def test_get_user_qf_profile_bonification_status_takes_latest_fraud_check(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -751,7 +753,7 @@ class AccountTest:
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.STARTED.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.STARTED.value
 
     def test_get_user_disability_profile_bonification_status_takes_latest_fraud_check(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
@@ -768,7 +770,7 @@ class AccountTest:
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.STARTED.value
+        assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.STARTED.value
 
     def test_get_user_profile_recredit_type(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
