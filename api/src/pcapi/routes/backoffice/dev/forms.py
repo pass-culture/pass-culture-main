@@ -84,7 +84,7 @@ class UserGeneratorForm(utils.PCForm):
         ],
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
-    date_created = fields.PCDateField("Date de dépôt du dossier", default=datetime.date.today)
+    date_created = fields.PCDateField("Date de création du compte", default=datetime.date.today)
     credit = fields.PCDecimalField(
         "Crédit restant",
         validators=[
