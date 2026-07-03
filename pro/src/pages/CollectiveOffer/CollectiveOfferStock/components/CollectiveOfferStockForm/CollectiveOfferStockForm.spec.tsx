@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
 
+import { ApiError } from '@/apiClient/compat'
 import {
   CollectiveAdditionalFeeType,
   CollectiveOfferAllowedAction,
@@ -23,6 +24,13 @@ const defaultProps: CollectiveOfferStockFormProps = {
   onSubmit: vi.fn(),
   mode: Mode.CREATION,
 }
+
+const mockSnackBarError = vi.fn()
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    error: mockSnackBarError,
+  }),
+}))
 
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
@@ -459,5 +467,117 @@ describe('<CollectiveOfferStockForm />', () => {
       ],
       price: 185,
     })
+  })
+
+  it('should display global errors from the backend', async () => {
+    const user = userEvent.setup()
+    const error = new ApiError('', 400, 'Bad Request', {
+      global: ['Vous ne pouvez pas faire cette action.'],
+    })
+    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const tomorrow = addDays(new Date(), 1).toISOString()
+    const testProps: CollectiveOfferStockFormProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      initialStock: {
+        id: 12,
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: tomorrow,
+        numberOfTickets: 10,
+        numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 1 },
+          { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
+        ],
+      },
+      onSubmit,
+    }
+    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    expect(mockSnackBarError).toHaveBeenCalledExactlyOnceWith(
+      'Vous ne pouvez pas faire cette action.'
+    )
+  })
+
+  it('should display price errors from the backend on all amount fields', async () => {
+    const user = userEvent.setup()
+    const error = new ApiError('', 400, 'Bad Request', {
+      price: ['Montant invalide'],
+    })
+    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const tomorrow = addDays(new Date(), 1).toISOString()
+    const testProps: CollectiveOfferStockFormProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      initialStock: {
+        id: 12,
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: tomorrow,
+        numberOfTickets: 10,
+        numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 1 },
+          { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
+        ],
+      },
+      onSubmit,
+    }
+    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    const priceErrors = await screen.findAllByText(/Montant invalide/)
+    expect(priceErrors).toHaveLength(3) // = 1 (servicePrice) + 2 (amounts)
+  })
+
+  it('should display fee type errors from the backend on all amount fields', async () => {
+    const user = userEvent.setup()
+    const error = new ApiError('', 400, 'Bad Request', {
+      'collectiveAdditionalFees.root': ['Un type est en doublon'],
+    })
+    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const tomorrow = addDays(new Date(), 1).toISOString()
+    const testProps: CollectiveOfferStockFormProps = {
+      ...defaultProps,
+      allowedActions: [
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      ],
+      initialStock: {
+        id: 12,
+        startDatetime: tomorrow,
+        endDatetime: tomorrow,
+        bookingLimitDatetime: tomorrow,
+        numberOfTickets: 10,
+        numberOfTeachers: 1,
+        servicePrice: 100,
+        collectiveAdditionalFees: [
+          { type: CollectiveAdditionalFeeType.MEAL, label: null, amount: 1 },
+          { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
+        ],
+      },
+      onSubmit,
+    }
+    renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
+
+    await user.click(screen.getByRole('button', { name: /Enregistrer/ }))
+
+    const feeTypeErrors = await screen.findAllByText(/Un type est en doublon/)
+    expect(feeTypeErrors).toHaveLength(2)
   })
 })
