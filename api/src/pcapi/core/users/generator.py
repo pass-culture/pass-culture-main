@@ -82,6 +82,8 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
             factory_kwargs["deposit__amount"] = user_data.credit
         if user_data.birth_date is not None:
             factory_kwargs["dateOfBirth"] = user_data.birth_date
+            if users_factories.IdentityValidatedUserFactory in Factory.mro():
+                factory_kwargs["validatedBirthDate"] = user_data.birth_date
         return Factory.create(
             age=user_data.get_age(),
             beneficiaryFraudChecks__type=user_data.id_provider.value,
@@ -92,7 +94,8 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
 
 def _get_user_factory(user_data: GenerateUserData) -> type[users_factories.BaseUserFactory]:
     Factory = users_factories.BaseUserFactory
-    if user_data.get_age() in users_constants.ELIGIBILITY_FREE_RANGE:
+    is_after_decree = datetime.datetime.now(tz=None) > settings.CREDIT_V3_DECREE_DATETIME
+    if is_after_decree and user_data.get_age() in users_constants.ELIGIBILITY_FREE_RANGE:
         match user_data.step:
             case GeneratedSubscriptionStep.EMAIL_VALIDATION:
                 Factory = users_factories.EmailValidatedUserFactory
