@@ -28,8 +28,7 @@ class CulturalSurveyTaskAnswers(BaseModelV2):
 @celery_async_task(
     name="tasks.cultural_survey.default.upload_answers",
     model=CulturalSurveyTaskAnswers,
-    max_per_time_window=8,
-    time_window_size=1,
+    rate_limit="8/s",
 )
 def upload_answers_task(payload: CulturalSurveyTaskAnswers) -> None:
     storage_path = f"QPI_exports/qpi_answers_{datetime.date.today().strftime('%Y%m%d')}"

@@ -26,8 +26,7 @@ UBBLE_TASK_RATE_LIMIT = int(settings.UBBLE_RATE_LIMIT * 0.9)
     name="tasks.ubble.priority.update_ubble_workflow",
     model=ubble_schemas.UpdateWorkflowPayload,
     autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
-    max_per_time_window=UBBLE_TASK_RATE_LIMIT,
-    time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+    rate_limit="200/m",
 )
 def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> None:
     fraud_check_stmt = (
@@ -87,8 +86,7 @@ def update_ubble_workflow_if_needed(
     name="tasks.ubble.default.store_id_picture",
     model=ubble_schemas.StoreIdPicturePayload,
     autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
-    max_per_time_window=settings.UBBLE_RATE_LIMIT,
-    time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+    rate_limit="200/m",
 )
 def store_id_pictures_task(payload: ubble_schemas.StoreIdPicturePayload) -> None:
     try:
@@ -101,8 +99,7 @@ def store_id_pictures_task(payload: ubble_schemas.StoreIdPicturePayload) -> None
     name="tasks.ubble.default.recover_ubble_validation_data",
     model=ubble_schemas.UpdateWorkflowPayload,
     autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
-    max_per_time_window=settings.UBBLE_RATE_LIMIT,
-    time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+    rate_limit="200/m",
 )
 def recover_incomplete_ubble_verification_task(payload: ubble_schemas.UpdateWorkflowPayload) -> None:
     with atomic():

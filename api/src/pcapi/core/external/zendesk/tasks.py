@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 @celery_async_task(
     name="tasks.zendesk.default.update_contact_attributes",
     model=serialization.UpdateZendeskAttributesRequest,
-    max_per_time_window=1,
-    time_window_size=1,
+    rate_limit="1/s",
 )
 def update_zendesk_attributes_task(payload: serialization.UpdateZendeskAttributesRequest) -> None:
     from .api import update_contact_attributes

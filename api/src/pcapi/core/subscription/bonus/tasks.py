@@ -30,8 +30,7 @@ class BonusTaskPayload(BaseModelV2):
     name="tasks.api_particulier.default.apply_for_quotient_familial_bonus",
     model=BonusTaskPayload,
     autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
-    max_per_time_window=QUOTIENT_FAMILIAL_TASK_RATE_LIMIT,
-    time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
+    rate_limit="200/m",
 )
 def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     fraud_check = (
@@ -87,8 +86,7 @@ def recover_started_quotient_familial_application() -> None:
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
     autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
-    max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
-    time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
+    rate_limit="200/m",
 )
 def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     fraud_check = (
@@ -121,8 +119,7 @@ def apply_for_adult_disability_bonus_task(payload: BonusTaskPayload) -> None:
     name="tasks.api_particulier.default.apply_for_disabled_child_education_bonus",
     model=BonusTaskPayload,
     autoretry_for=(api_particulier.ParticulierApiUnavailable, api_particulier.ParticulierApiRateLimitExceeded),
-    max_per_time_window=settings.PARTICULIER_API_RATE_LIMIT_THRESHOLD,
-    time_window_size=settings.PARTICULIER_API_RATE_LIMIT_TIME_WINDOW_SECONDS,
+    rate_limit="200/m",
 )
 def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> None:
     fraud_check = (

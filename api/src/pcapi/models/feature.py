@@ -143,9 +143,6 @@ class FeatureToggle(enum.Enum):
         "Activer le backend de tâches asynchrones Celery pour la synchro et les notifs Batch"
     )
 
-    WIP_USE_BUILT_IN_CELERY_RATE_LIMIT = (
-        "Activer le rate limit propre à Celery pour l'envoi de notification aux providers"
-    )
     WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES = "Active l'utilisation du cron pour les màj des attributs pro"
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
