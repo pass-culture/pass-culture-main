@@ -1,9 +1,9 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { AccessibilityCallout } from '@/components/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
-import { AccessibilityCallout } from '@/pages/VenueEdition/components/AccessibilityCallout/AccessibilityCallout'
 
 import styles from './ExternalAccessibility.module.scss'
 import { ExternalAccessibilityCollapse } from './ExternalAccessibilityCollapse/ExternalAccessibilityCollapse'
