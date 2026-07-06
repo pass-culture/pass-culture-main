@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
 from pcapi.utils import date as date_utils
 from pcapi.utils.repository import atomic
@@ -334,6 +335,11 @@ def _create_offer(
         provider=provider,
         offerer_address=oa,
     )
+    offers_api.finalize_offer(offer, publication_datetime=date_utils.get_naive_utc_now(), booking_allowed_datetime=None)
+    offer.lastValidationDate = date_utils.get_naive_utc_now()
+    offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationAuthorUserId = None
+    offer.validation = offers_models.OfferValidationStatus.APPROVED
 
     price_category_by_id_at_provider = {}
 
