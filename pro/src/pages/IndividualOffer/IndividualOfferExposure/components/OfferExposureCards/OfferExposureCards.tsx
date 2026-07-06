@@ -68,6 +68,7 @@ export const OfferExposureCards = ({
       <div className={styles['exposure-container']}>
         <Card className={styles['card']}>
           <Card.Header
+            className={styles['card-offer-title']}
             titleTag="p"
             title={`${formatCount(exposure?.views ?? 0)} ${pluralizeFr(exposure?.views ?? 0, 'consultation', 'consultations')}`}
             subtitle={
