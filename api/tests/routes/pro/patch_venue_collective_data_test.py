@@ -55,7 +55,7 @@ class Returns200Test:
         assert venue.collectiveWebsite == "http://website.com"
         assert venue.collectiveInterventionArea == ["01", "02"]
         assert venue.venueEducationalStatusId == educational_status.id
-        assert venue.collectivePhone == "0600000000"
+        assert venue.collectivePhone == "+33600000000"
         assert venue.collectiveEmail == "john@doe.com"
 
     def test_should_update_venue_with_activity_data(self, client) -> None:
@@ -105,7 +105,7 @@ class Returns200Test:
         assert venue.collectiveWebsite == "http://website.com"
         assert venue.collectiveInterventionArea == ["01", "02"]
         assert venue.venueEducationalStatusId == educational_status.id
-        assert venue.collectivePhone == "0600000000"
+        assert venue.collectivePhone == "+33600000000"
         assert venue.collectiveEmail == "john@doe.com"
         assert venue.activity == offerers_models.Activity.MUSEUM
 
@@ -182,6 +182,7 @@ class Returns200Test:
             "collectiveNetwork": ["network3"],
             "collectiveDescription": "Une autre description",
             "collectiveLegalStatus": educational_status_2.id,
+            "collectivePhone": "0600000001",
         }
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
@@ -194,8 +195,29 @@ class Returns200Test:
         assert venue.collectiveDescription == "Une autre description"
         assert venue.collectiveInterventionArea == ["01", "02"]
         assert venue.venueEducationalStatusId == educational_status_2.id
-        assert venue.collectivePhone == "0600000000"
+        assert venue.collectivePhone == "+33600000001"
         assert venue.collectiveEmail == "john@doe.com"
+
+    def test_should_allow_deleting_phone(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            collectivePhone="0600000000",
+        )
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = {
+            "collectivePhone": "",
+        }
+
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+
+        assert response.status_code == 200
+        venue = db.session.get(offerers_models.Venue, venue_id)
+        assert venue.collectivePhone == None
 
 
 class Returns400Test:
@@ -214,3 +236,20 @@ class Returns400Test:
 
         db.session.refresh(venue)
         assert venue.collectiveInterventionArea == ["01", "02"]
+
+    def test_should_store_collective_phone(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            collectivePhone="+33600000000",
+        )
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        response = client.patch(f"/venues/{venue.id}/collective-data", json={"collectivePhone": "+33"})
+
+        assert response.status_code == 400
+        assert response.json == {"collectivePhone": ["Numéro de téléphone invalide"]}
+        venue = db.session.get(offerers_models.Venue, venue_id)
+        assert venue.collectivePhone == "+33600000000"

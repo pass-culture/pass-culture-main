@@ -10,6 +10,7 @@ from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
+from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
 
 
@@ -97,6 +98,11 @@ class EditVenueCollectiveDataBodyModel(HttpBodyModel):
             raise PydanticError("One or more element is not a valid area")
 
         return intervention_area
+
+    @field_validator("collectivePhone", mode="after")
+    @classmethod
+    def validate_collective_phone(cls, collective_phone: str | None) -> str | None:
+        return utils.validate_phone_number_nullable(collective_phone)
 
 
 class VenuesEducationalStatusResponseModel(HttpBodyModel):
