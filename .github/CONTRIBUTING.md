@@ -24,7 +24,7 @@ Les 3 workflows principaux sont :
 - [`ci_check_push_on_maint.yml`](workflows/ci_check_push_on_maint.yml) : lance les tests sur les changements apportés à chaque push sur une branche de maintenance (branche de la forme `maint/v*`)
 
 Il y a également 2 workflows pour créer des environnements de preview, qui peuvent être lancés à la demande :
-- [`ci_deploy_pr_preview_v2.yml`](workflows/ci_deploy_pr_preview_v2.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/ci_deploy_pr_preview_v2.yml)): déploie un environnement de preview pour tester fonctionnement les changements apportés par la PR
+- [`ci_deploy_pr_preview.yml`](workflows/ci_deploy_pr_preview.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/ci_deploy_pr_preview.yml)): déploie un environnement de preview pour tester fonctionnement les changements apportés par la PR
 - [`ci_deploy_storybook_preview.yml`](workflows/ci_deploy_storybook_preview.yml) ([:arrow_forward: lancer le workflow](https://github.com/pass-culture/pass-culture-main/actions/workflows/ci_deploy_storybook_preview.yml)): déploie une preview du storybook
 
 ## CD
