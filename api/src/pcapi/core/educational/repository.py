@@ -1492,7 +1492,6 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[models.Colle
             _get_collective_offer_template_address_joinedload(),
         )
         .filter(models.EducationalRedactor.id == redactor_id)
-        .populate_existing()
         .all()
     )
 

@@ -419,6 +419,8 @@ def get_redactor_favorites_count(redactor_id: int) -> int:
                 models.CollectiveOfferTemplate.venueId,
                 models.CollectiveOfferTemplate.validation,
                 models.CollectiveOfferTemplate.isActive,
+                models.CollectiveOfferTemplate.dateArchived,
+                models.CollectiveOfferTemplate.dateRange,
             )
             .joinedload(models.CollectiveOfferTemplate.venue)
             .load_only(
