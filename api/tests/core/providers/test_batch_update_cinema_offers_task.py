@@ -97,6 +97,8 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.venue == venue
         assert offer.lastProvider == provider
         assert offer.idAtProvider == f"allocine_id:1000015954%{venue.id}"
+        assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
+        assert offer.status == offers_models.OfferStatus.ACTIVE
 
         assert price_category.label == "Tarif pass Culture"
         assert price_category.price == decimal.Decimal("5.00")
@@ -128,6 +130,8 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.venue == venue
         assert offer.lastProvider == provider
         assert offer.idAtProvider == f"visa:166715%{venue.id}"
+        assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
+        assert offer.status == offers_models.OfferStatus.ACTIVE
 
     @time_machine.travel("2026-05-01", tick=False)
     def test_create_offer_at_specific_address(self):
@@ -160,6 +164,8 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.lastProvider == provider
         assert offer.idAtProvider == f"allocine_id:1000015954%{venue.id}%{address.id}"
         assert offer.offererAddress == offerer_address
+        assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
+        assert offer.status == offers_models.OfferStatus.ACTIVE
 
         assert offerer_address.label == "Somewhere out there"
         assert offerer_address.addressId == address.id
@@ -199,6 +205,8 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.lastProvider == provider
         assert offer.idAtProvider == f"allocine_id:1000015954%{venue.id}%{address.id}"
         assert offer.offererAddress == offerer_address
+        assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
+        assert offer.status == offers_models.OfferStatus.ACTIVE
 
         assert offerer_address.label == "Somewhere out there"
         assert offerer_address.addressId == address.id
@@ -225,6 +233,7 @@ class BatchUpdateCinemaOffersTaskTest:
             lastProvider=provider,
             product=allocine_product,
             idAtProvider=f"allocine_id:1000015954%{venue.id}",
+            publicationDatetime=datetime.datetime(2026, 4, 27),
         )
         price_category = offers_factories.PriceCategoryFactory(
             price=decimal.Decimal("6.00"),
@@ -262,6 +271,8 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.venue == venue
         assert offer.lastProvider == provider
         assert offer.idAtProvider == f"allocine_id:1000015954%{venue.id}"
+        assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 4, 27)
+        assert offer.status == offers_models.OfferStatus.ACTIVE
 
         assert price_category.label == "Tarif pass Culture"
         assert price_category.price == decimal.Decimal("5.00")
@@ -416,7 +427,7 @@ class BatchUpdateCinemaOffersTaskTest:
 
     @time_machine.travel("2026-05-01", tick=False)
     def test_should_create_offer_should_not_duplicate_offerrer_address(self):
-        venue, provider, _, visa_product, address = self.setup_base_resource()
+        venue, provider, _, _, address = self.setup_base_resource()
         task_payload = self.generate_task_payload(provider_id=provider.id, venue_id=venue.id)
 
         two_weeks_from_now = date_utils.get_naive_utc_now().replace(

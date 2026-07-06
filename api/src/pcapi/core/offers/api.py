@@ -1042,8 +1042,8 @@ def finalize_offer(
     booking_allowed_datetime: datetime.datetime | None,
 ) -> models.Offer:
     """
-    :publication_datetime     : //!\\ must be a naive utc datetime
-    :booking_allowed_datetime : //!\\ must be a naive utc datetime
+    :publication_datetime     : ⚠️ must be a naive utc datetime
+    :booking_allowed_datetime : ⚠️ must be a naive utc datetime
     """
     offer.finalizationDatetime = datetime.datetime.now(datetime.UTC)
 
