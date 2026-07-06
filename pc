@@ -458,7 +458,7 @@ elif [[ "$CMD" == "deploy-preview" ]]; then
     fi
   fi
 
-  RUN="gh workflow run dev_on_dispatch_deploy_pullrequests.yml --ref $REF_ARG $EXTRA_FLAGS"
+  RUN="gh workflow run dev_on_dispatch_deploy_pullrequests.yml --source_branch $REF_ARG $EXTRA_FLAGS"
 
 
 
