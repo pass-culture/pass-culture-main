@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 @celery_async_task(
     "tasks.batch.priority.update_user_attributes",
     model=serialization.UpdateBatchAttributesRequestV2,
-    max_per_time_window=3000,
+    rate_limit="3000/s",
 )
 def update_user_attributes_task(
     payload: serialization.UpdateBatchAttributesRequestV2,
@@ -22,7 +22,7 @@ def update_user_attributes_task(
 @celery_async_task(
     "tasks.batch.priority.delete_user_attributes",
     model=serialization.DeleteBatchUserAttributesRequestV2,
-    max_per_time_window=180,
+    rate_limit="180/s",
 )
 def delete_user_attributes_task(
     payload: serialization.DeleteBatchUserAttributesRequestV2,
@@ -33,7 +33,7 @@ def delete_user_attributes_task(
 @celery_async_task(
     name="tasks.batch.priority.send_notification_data",
     model=serialization.TransactionalNotificationDataV2,
-    max_per_time_window=480,
+    rate_limit="480/s",
 )
 def send_transactional_notification_task(payload: serialization.TransactionalNotificationDataV2) -> None:
     api.send_transactional_notification(payload, can_be_asynchronously_retried=True)
@@ -42,7 +42,7 @@ def send_transactional_notification_task(payload: serialization.TransactionalNot
 @celery_async_task(
     name="tasks.batch.priority.track_event",
     model=serialization.TrackBatchEventRequestV2,
-    max_per_time_window=3000,
+    rate_limit="3000/s",
 )
 def track_event_task(payload: serialization.TrackBatchEventRequestV2) -> None:
     api.track_event(payload.user_id, payload.event_name, payload.event_payload, can_be_asynchronously_retried=True)
@@ -51,7 +51,7 @@ def track_event_task(payload: serialization.TrackBatchEventRequestV2) -> None:
 @celery_async_task(
     name="tasks.batch.priority.track_event_bulk",
     model=serialization.TrackBatchEventsRequestV2,
-    max_per_time_window=3000,
+    rate_limit="3000/s",
 )
 def track_event_bulk_task(payload: serialization.TrackBatchEventsRequestV2) -> None:
     api.track_event_bulk(payload.trigger_events, can_be_asynchronously_retried=True)

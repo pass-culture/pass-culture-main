@@ -1,7 +1,6 @@
 import enum
 import logging
 
-import pydantic as pydantic_v2
 from pydantic import BaseModel as BaseModelV2
 
 import pcapi.core.bookings.models as bookings_models
@@ -59,32 +58,9 @@ class ExternalApiBookingNotificationTaskPayload(BaseModelV2):
 @celery_async_task(
     name="tasks.providers.default.external_api_booking_notification",
     model=ExternalApiBookingNotificationTaskPayload,
-    max_per_time_window=1,
-    time_window_size=1,
-)
-def external_api_booking_notification_task(payload: ExternalApiBookingNotificationTaskPayload) -> None:
-    try:
-        response = requests.post(
-            payload.notificationUrl,
-            json=payload.data.model_dump_json(),
-            hmac=payload.signature,
-            headers={"Content-Type": "application/json"},
-        )
-        response.raise_for_status()
-    except requests.exceptions.RequestException as exception:
-        logger.warning(
-            "Failed to call provider notification url: %s",
-            exception,
-            extra={"stock_id": payload.data.stock_id, "booking_creation_date": payload.data.booking_creation_date},
-        )
-
-
-@celery_async_task(
-    name="tasks.providers.default.external_api_booking_notification",
-    model=ExternalApiBookingNotificationTaskPayload,
     rate_limit="200/m",
 )
-def external_api_booking_notification_task_with_built_in_rate_limit(
+def external_api_booking_notification_task(
     payload: ExternalApiBookingNotificationTaskPayload,
 ) -> None:
     try:
@@ -103,7 +79,7 @@ def external_api_booking_notification_task_with_built_in_rate_limit(
         )
 
 
-class BatchUpdateOffersTaskPayload(pydantic_v2.BaseModel):
+class BatchUpdateOffersTaskPayload(BaseModelV2):
     provider_id: int
     request_payload: events_serializers.PutCinemaSessions
 
