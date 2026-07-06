@@ -17,7 +17,7 @@ jobs:
       pr_url: ${{ steps.pr.outputs.url }}
       pr_title: ${{ steps.pr.outputs.title }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - uses: pass-culture-github-actions/pull-request@e858f4a1b944d91cd040811b24631694c8117d7c # v1.0.0
