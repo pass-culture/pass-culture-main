@@ -32,20 +32,22 @@ const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
   isCaledonian: false,
   withSiret: true,
   siren: '123456789',
-  isOpenToPublic: 'true',
   activity: 'someActivity' as VenueSettingsFormValues['activity'],
+  siret: '12345678901234',
 }
 
 const defaultInitialValues = {
   comment: '',
   siret: '12345678901234',
   addressAutocomplete: null,
+  isOpenToPublic: 'true',
 }
 
 const SiretOrCommentTestValidationSchema = SiretOrCommentValidationSchema.shape(
   {
     comment: yup.string().default(''),
     addressAutocomplete: yup.string().nullable().default(null),
+    isOpenToPublic: yup.string().default('true'),
   }
 )
 
@@ -96,11 +98,9 @@ describe('SiretOrCommentFields', () => {
   let props: SiretOrCommentFieldsProps
 
   beforeEach(() => {
-    const setIsFieldNameFrozen = vi.fn()
-
     props = {
-      setIsFieldNameFrozen,
       formContext: defaultFormContext,
+      onAddressUpdate: vi.fn(),
     }
   })
 
@@ -156,10 +156,6 @@ describe('SiretOrCommentFields', () => {
         expect(getSiretData).toHaveBeenCalledWith('123 456 789 01234')
       })
 
-      await waitFor(() =>
-        expect(props.setIsFieldNameFrozen).toHaveBeenCalledWith(true)
-      )
-
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Enregistrer',
@@ -170,13 +166,16 @@ describe('SiretOrCommentFields', () => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'ma super stucture',
-          addressAutocomplete: '4 rue Carnot 75001 Paris',
-          street: '4 rue Carnot',
-          postalCode: '75001',
-          city: 'Paris',
-          latitude: '48.869440910282734',
-          longitude: '2.3087717501609233',
-          inseeCode: '75056',
+          addressAutocomplete: '',
+          'search-addressAutocomplete': '',
+          street: '',
+          postalCode: '',
+          city: '',
+          latitude: '',
+          longitude: '',
+          coords: '',
+          inseeCode: null,
+          banId: null,
         }),
         expect.anything()
       )
@@ -216,7 +215,6 @@ describe('SiretOrCommentFields', () => {
       )
 
       await waitFor(() => expect(onSubmit).toHaveBeenCalled())
-      expect(props.setIsFieldNameFrozen).toHaveBeenCalledWith(false)
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
           siret: '1234567890',
@@ -366,26 +364,98 @@ describe('SiretOrCommentFields', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('should keep previous addressAutocomplete when isOpenToPublic is false and location is null', async () => {
-      vi.mocked(getSiretData).mockResolvedValue({
-        ...structureDataBodyModelFactory(),
-        location: null,
+    describe('banner behavior', () => {
+      it('should not display the banner initially', () => {
+        renderSiretOrComment(props)
+        expect(
+          screen.queryByText('Vous avez changé de SIRET.')
+        ).not.toBeInTheDocument()
       })
 
-      const formMethods = renderSiretOrComment(
-        {
+      it('should display the banner after a valid SIRET is entered', async () => {
+        vi.mocked(getSiretData).mockResolvedValue(
+          structureDataBodyModelFactory()
+        )
+
+        renderSiretOrComment(props)
+
+        const siretInput = screen.getByLabelText(/SIRET de la structure/i)
+        await userEvent.clear(siretInput)
+        await userEvent.type(siretInput, '123 456 789 01233')
+
+        expect(
+          await screen.findByText('Vous avez changé de SIRET.')
+        ).toBeVisible()
+      })
+
+      it('should not display the banner when SIRET API call fails (not diffusible)', async () => {
+        vi.mocked(getSiretData).mockResolvedValue({
+          ...structureDataBodyModelFactory(),
+          isDiffusible: false,
+        })
+
+        renderSiretOrComment(props)
+
+        const siretInput = screen.getByLabelText(/SIRET de la structure/i)
+        await userEvent.clear(siretInput)
+        await userEvent.type(siretInput, '123 456 789 01233')
+
+        await waitFor(() => {
+          expect(getSiretData).toHaveBeenCalled()
+        })
+
+        expect(
+          screen.queryByText('Vous avez changé de SIRET.')
+        ).not.toBeInTheDocument()
+      })
+
+      it('should display the banner after a RIDET change', async () => {
+        renderSiretOrComment({
           ...props,
           formContext: {
-            ...props.formContext,
-            isOpenToPublic: 'false',
+            ...defaultFormContext,
+            isCaledonian: true,
+            siren: '1234567',
           },
-        },
-        {
-          comment: '',
-          siret: '12345678901234',
-          addressAutocomplete: 'Ancienne adresse conservée',
-        }
-      )
+        })
+
+        const ridetInput = screen.getByLabelText(/RIDET de la structure/i)
+        await userEvent.clear(ridetInput)
+        await userEvent.type(ridetInput, '1234567890')
+
+        expect(screen.getByText('Vous avez changé de SIRET.')).toBeVisible()
+      })
+    })
+
+    it('should reset address fields when SIRET changes and isOpenToPublic', async () => {
+      vi.mocked(getSiretData).mockResolvedValue(structureDataBodyModelFactory())
+
+      const formMethods = renderSiretOrComment(props, {
+        comment: '',
+        siret: '12345678901234',
+        addressAutocomplete: 'Ancienne adresse conservée',
+      })
+
+      const siretInput = screen.getByLabelText(/SIRET de la structure/i)
+      await userEvent.clear(siretInput)
+      await userEvent.type(siretInput, '123 456 789 01234')
+
+      await waitFor(() => {
+        expect(getSiretData).toHaveBeenCalledWith('123 456 789 01234')
+      })
+
+      expect(formMethods.getValues('addressAutocomplete')).toBe('')
+      expect(props.onAddressUpdate).toHaveBeenCalledTimes(1)
+    })
+    it('should keep address fields when SIRET changes and isOpenToPublic is false', async () => {
+      vi.mocked(getSiretData).mockResolvedValue(structureDataBodyModelFactory())
+
+      const formMethods = renderSiretOrComment(props, {
+        comment: '',
+        siret: '12345678901234',
+        addressAutocomplete: 'Ancienne adresse conservée',
+        isOpenToPublic: 'false',
+      })
 
       const siretInput = screen.getByLabelText(/SIRET de la structure/i)
       await userEvent.clear(siretInput)
@@ -398,6 +468,7 @@ describe('SiretOrCommentFields', () => {
       expect(formMethods.getValues('addressAutocomplete')).toBe(
         'Ancienne adresse conservée'
       )
+      expect(props.onAddressUpdate).not.toHaveBeenCalled()
     })
   })
 })

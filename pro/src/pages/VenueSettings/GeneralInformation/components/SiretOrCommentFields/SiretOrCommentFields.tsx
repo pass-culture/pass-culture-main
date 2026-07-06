@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import {
   humanizeSiret,
   isSiretStartingWithSiren,
@@ -10,6 +12,7 @@ import {
   validSiretLength,
 } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -19,24 +22,28 @@ import type {
 } from '../../commons/types'
 
 export type SiretOrCommentFieldsProps = {
-  setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
+  onAddressUpdate: () => void
   formContext: VenueSettingsFormContext
 }
 
 export const SiretOrCommentFields = ({
-  setIsFieldNameFrozen,
+  onAddressUpdate,
   formContext,
 }: SiretOrCommentFieldsProps): JSX.Element => {
   const {
     setValue,
     setError,
     register,
+    watch,
     formState: { errors },
   } = useFormContext<VenueSettingsFormValues>()
-
   const hasComment = !formContext.withSiret
   const hasRidet = formContext.isCaledonian
-  const isOpenToPublic = formContext.isOpenToPublic
+
+  const isOpenToPublic = watch('isOpenToPublic')
+  const [currentSiret, setCurrentSiret] = useState<string | null>(
+    formContext.siret ?? null
+  )
 
   const onSiretChange = async (siret: string) => {
     const cleanSiret = unhumanizeSiret(siret)
@@ -48,7 +55,6 @@ export const SiretOrCommentFields = ({
       !validSiretLength(cleanSiret) ||
       !isSiretStartingWithSiren(cleanSiret, formContext.siren)
     ) {
-      setIsFieldNameFrozen?.(false)
       return
     }
 
@@ -63,22 +69,13 @@ export const SiretOrCommentFields = ({
         return
       }
 
-      /* istanbul ignore next: DEBT, TO FIX */
-      const address = `${response.location?.street} ${response.location?.postalCode} ${response.location?.city}`
-      setIsFieldNameFrozen?.(
-        response !== undefined && response.siret.length > 0
-      )
       setValue('name', response?.name ?? '')
 
-      if (isOpenToPublic === 'true' || response.location) {
-        setValue('addressAutocomplete', address)
-        setValue('street', response.location?.street ?? '')
-        setValue('postalCode', response.location?.postalCode ?? '')
-        setValue('city', response.location?.city ?? '')
-        setValue('latitude', response.location?.latitude.toString() ?? '')
-        setValue('longitude', response.location?.longitude.toString() ?? '')
-        setValue('inseeCode', response.location?.inseeCode ?? '')
+      if (isOpenToPublic === 'true') {
+        resetReactHookFormAddressFields<VenueSettingsFormValues>(setValue)
+        onAddressUpdate()
       }
+      setCurrentSiret(cleanSiret)
     } catch (_e) {
       if (isError(_e)) {
         setError('siret', {
@@ -90,13 +87,11 @@ export const SiretOrCommentFields = ({
   }
 
   const onRidetChange = (ridet: string) => {
-    setValue('siret', unhumanizeRidet(ridet || '', false, false), {
+    const cleanRidet = unhumanizeRidet(ridet || '', false, false)
+    setValue('siret', cleanRidet, {
       shouldDirty: true,
     })
-
-    if (!errors.siret?.message) {
-      setIsFieldNameFrozen?.(false)
-    }
+    setCurrentSiret(cleanRidet)
   }
 
   const siretOrRidet = () => {
@@ -120,20 +115,31 @@ export const SiretOrCommentFields = ({
   }
 
   return (
-    <FormLayout.Row mdSpaceAfter>
-      {hasComment ? (
-        <TextArea
-          {...register('comment')}
-          label={`Commentaire de la structure sans ${formContext.isCaledonian ? 'RIDET' : 'SIRET'}`}
-          description="Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique."
-          required
-          maxLength={500}
-          initialRows={6}
-          error={errors.comment?.message}
-        />
-      ) : (
-        siretOrRidet()
+    <>
+      <FormLayout.Row mdSpaceAfter>
+        {hasComment ? (
+          <TextArea
+            {...register('comment')}
+            label={`Commentaire de la structure sans ${formContext.isCaledonian ? 'RIDET' : 'SIRET'}`}
+            description="Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique."
+            required
+            maxLength={500}
+            initialRows={6}
+            error={errors.comment?.message}
+          />
+        ) : (
+          siretOrRidet()
+        )}
+      </FormLayout.Row>
+      {formContext.siret !== currentSiret && (
+        <FormLayout.Row mdSpaceAfter>
+          <Banner
+            title="Vous avez changé de SIRET."
+            description="Veuillez vérifier et mettre à jour vos informations avant de les enregistrer."
+            variant={BannerVariants.WARNING}
+          />
+        </FormLayout.Row>
       )}
-    </FormLayout.Row>
+    </>
   )
 }

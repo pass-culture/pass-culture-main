@@ -49,7 +49,6 @@ describe('toBody', () => {
       isCaledonian: false,
       siren: '418166096',
       withSiret: true,
-      isOpenToPublic: 'true',
       activity:
         'OPEN_TO_PUBLIC_ACTIVITY' as VenueSettingsFormValues['activity'],
     }

@@ -68,7 +68,6 @@ const defaultFormContext: VenueSettingsFormContext = {
   isCaledonian: false,
   withSiret: true,
   siren: '12345678901234',
-  isOpenToPublic: 'true',
 }
 
 const renderUseSaveVenueSettings = (params: {

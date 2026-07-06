@@ -13,7 +13,6 @@ describe('VenueSettingsValidationSchema', () => {
     isCaledonian: false,
     withSiret: true,
     siren: '123456789',
-    isOpenToPublic: 'true',
   }
 
   const baseFormValues: VenueSettingsFormValues = {
