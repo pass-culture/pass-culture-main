@@ -3,11 +3,12 @@ import type { FieldValues, Path, UseFormSetError } from 'react-hook-form'
 import type { ApiError } from '@/apiClient/compat'
 
 export function serializeApiErrors<T extends FieldValues>(
-  errors: Record<string, string[]>,
+  errors: Record<string, string | string[]>,
   setError: UseFormSetError<T>
 ) {
   Object.entries(errors).forEach(([key, value]) => {
-    setError(key as Path<T>, { type: 'custom', message: value.join(' ') })
+    const message = Array.isArray(value) ? value.join(' ') : value
+    setError(key as Path<T>, { type: 'custom', message })
   })
 }
 
