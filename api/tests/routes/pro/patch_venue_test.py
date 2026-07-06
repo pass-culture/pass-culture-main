@@ -1211,7 +1211,7 @@ class Returns200Test:
         )
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
-            activity=offerers_models.Activity.ART_SCHOOL,
+            activity=offerers_models.Activity.ARTISTIC_PRACTICE,
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)

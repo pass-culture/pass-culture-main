@@ -5275,7 +5275,7 @@ class CreateVenueTest(PostEndpointHelper):
         form_data = {
             "public_name": "Streaming Platform",
             "attachement_venue": venue.id,
-            "activity": offerers_models.Activity.STREAMING_PLATFORM.name,
+            "activity": offerers_models.Activity.TELEVISION_OR_VIDEO_STREAMING.name,
             "is_open_to_public": "on",
             "cultural_domains": "",
             "booking_email": "",

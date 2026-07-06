@@ -41,13 +41,15 @@ class GetOffererTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue_1 = offerers_factories.VenueFactory(
-            managingOfferer=offerer, withdrawalDetails="Venue withdrawal details", activity=None
+            managingOfferer=offerer,
+            withdrawalDetails="Venue withdrawal details",
+            activity=offerers_models.Activity.OTHER,
         )
         offers_factories.OfferFactory(venue=venue_1)
         offerers_factories.VenueFactory(
             managingOfferer=offerer,
             withdrawalDetails="Other venue withdrawal details",
-            activity=offerers_models.Activity.NOT_ASSIGNED,
+            activity=offerers_models.Activity.OTHER,
         )
         venue_3 = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -79,7 +81,9 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
-                    "activity": offerers_models.DisplayableActivity.FESTIVAL.name if venue == venue_3 else None,
+                    "activity": offerers_models.DisplayableActivity.FESTIVAL.name
+                    if venue == venue_3
+                    else offerers_models.Activity.OTHER.name,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,

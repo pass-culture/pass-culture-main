@@ -337,21 +337,6 @@ class Returns200Test:
 
         assert response.json["bannerMeta"] is None
 
-    def test_venue_with_NOT_ASSIGNED_activity(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            activity=offerers_models.Activity.NOT_ASSIGNED,
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-        venue_id = venue.id
-        with testing.assert_num_queries(self.num_queries_for_venue_with_only_free_individual_offers):
-            response = auth_request.get("/venues/%s" % venue_id)
-            assert response.status_code == 200
-
-        assert response.json["activity"] is None
-
     def test_venue_with_MiXeDcAsE_contact_website(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         WEBSITE = "HtTpS://mY.wEbSiTe.CoM/"
