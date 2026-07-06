@@ -18,28 +18,34 @@ class TestingBackend(AlgoliaBackend):
 
     search_store = testing.search_store
 
+    @typing.override
     def save_objects(self, index: str | None, serialized_object: list[dict]) -> None:
         assert index
         for obj in serialized_object:
             testing.search_store[index][obj["objectID"]] = obj
 
+    @typing.override
     def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
         assert index
         for object_id in object_ids:
             testing.search_store[index].pop(object_id, None)
 
+    @typing.override
     def clear_objects(self, index: str | None) -> None:
         assert index
         testing.search_store[index] = {}
 
+    @typing.override
     def set_settings(self, index: str | None, algolia_settings: dict) -> None:
         assert index
         raise NotImplementedError()
 
+    @typing.override
     def get_settings(self, index: str | None) -> dict:
         assert index
         raise NotImplementedError()
 
+    @typing.override
     def search(
         self,
         index: str | None,

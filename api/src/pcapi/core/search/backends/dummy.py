@@ -1,7 +1,8 @@
 import logging
 import typing
+from collections import abc
 
-from flask import current_app
+from algoliasearch.search.models import search_response
 
 from .algolia import AlgoliaBackend
 
@@ -9,35 +10,48 @@ from .algolia import AlgoliaBackend
 logger = logging.getLogger(__name__)
 
 
-class FakeClient:
-    def save_objects(self, objects: typing.Iterable[dict]) -> None:
-        logger.info(
-            "Dummy indexation of objects",
-            extra={"object_ids": [o["objectID"] for o in objects]},
-        )
-
-    def delete_objects(self, object_ids: typing.Iterable[int]) -> None:
-        logger.info("Dummy deletion of objects", extra={"object_ids": object_ids})
-
-    def clear_objects(self) -> None:
-        logger.info("Dummy clear of all objects")
-
-
 class DummyBackend(AlgoliaBackend):
     """A backend that does not communicate with the external search
     service.
-
-    We subclass a real-looking backend to be as close as possible to
-    what we have in production. Only the communication with the
-    external search service is faked.
-
-    Note that we still use Redis for the queue. We could implement all
-    Redis-related functions as no-op, but it's not worth.
     """
 
-    def __init__(self) -> None:
-        self.algolia_offers_client = FakeClient()
-        self.algolia_venues_client = FakeClient()
-        self.algolia_collective_offers_client = FakeClient()
-        self.algolia_collective_offers_templates_client = FakeClient()
-        self.redis_client = current_app.redis_client
+    @typing.override
+    def save_objects(self, index: str | None, serialized_object: list[dict]) -> None:
+        logger.info(
+            "Dummy save_objects",
+            extra={"index": index, "object_ids": [o["objectID"] for o in serialized_object]},
+        )
+
+    @typing.override
+    def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
+        logger.info("Dummy delete_objects", extra={"index": index, "object_ids": object_ids})
+
+    @typing.override
+    def clear_objects(self, index: str | None) -> None:
+        logger.info("Dummy clear_objects", extra={"index": index})
+
+    @typing.override
+    def set_settings(self, index: str | None, algolia_settings: dict) -> None:
+        logger.info("Dummy set_settings", extra={"index": index})
+
+    @typing.override
+    def get_settings(self, index: str | None) -> dict:
+        logger.info("Dummy get_settings", extra={"index": index})
+
+        return {}
+
+    @typing.override
+    def search(
+        self,
+        index: str | None,
+        query: str,
+        params: dict[str, typing.Any],
+    ) -> search_response.SearchResponse:
+        logger.info("Dummy search", extra={"index": index, "query": query, "params": params})
+
+        return search_response.SearchResponse(
+            hits=[],
+            processing_time_ms=10,
+            query="query",
+            params="?p=params",
+        )
