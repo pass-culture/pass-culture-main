@@ -70,8 +70,7 @@ class CheckClosedOfferersTest:
 
         mock_close_offerer.call_count == 4
 
-    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS=True)
-    @patch("pcapi.core.offerers.tasks.check_offerer_siren_celery_task")
+    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
         "pcapi.connectors.api_sirene.get_siren_closed_at_date",
         return_value=[

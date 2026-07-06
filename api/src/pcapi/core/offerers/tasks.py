@@ -3,7 +3,6 @@ import logging
 import sqlalchemy.orm as sa_orm
 from pydantic import BaseModel as BaseModelV2
 
-from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
@@ -13,8 +12,6 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.routes.serialization import BaseModel
-from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.transaction_manager import atomic
 
@@ -22,27 +19,17 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-class CheckOffererSirenRequest(BaseModel):
+class CheckOffererSirenRequest(BaseModelV2):
     siren: str
     close_or_tag_when_inactive: bool
 
 
-class CheckOffererSirenRequestV2(BaseModelV2):
-    siren: str
-    close_or_tag_when_inactive: bool
-
-
-@celery_async_task(name="tasks.offerers.default.check_offerer", model=CheckOffererSirenRequestV2, rate_limit="180/m")
-def check_offerer_siren_celery_task(payload: CheckOffererSirenRequestV2) -> None:
+@celery_async_task(name="tasks.offerers.default.check_offerer", model=CheckOffererSirenRequest, rate_limit="180/m")
+def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     check_offerer_siren(payload)
 
 
-@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)
-def check_offerer_siren_cloud_task(payload: CheckOffererSirenRequest) -> None:
-    check_offerer_siren(payload)
-
-
-def check_offerer_siren(payload: CheckOffererSirenRequest | CheckOffererSirenRequestV2) -> None:
+def check_offerer_siren(payload: CheckOffererSirenRequest) -> None:
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})
         return
