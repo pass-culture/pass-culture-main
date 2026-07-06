@@ -164,7 +164,6 @@ jobs:
         id: deploy-api
         shell: bash
         env:
-          SOURCE_BRANCH: ${{ inputs.source_branch }}
           NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           WORKFLOW_TEMPLATE: ${{ vars.WORKFLOW_TEMPLATE_PROVISIONER }}
           PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
@@ -185,6 +184,8 @@ jobs:
       - name: Publish Summary
         shell: bash
         env:
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
+          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
           PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
           BACKEND_URL: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
           BACKOFFICE_URL: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
