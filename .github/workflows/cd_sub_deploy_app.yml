@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Argo Workflows CLI 
-        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+        uses: pass-culture/common-workflows/actions/setup-argo@66d0c45fd010bce5b0e7873e862eb54a2d564f39 # v1.0.0
 
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector

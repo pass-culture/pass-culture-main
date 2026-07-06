@@ -1,4 +1,4 @@
-name: 0 [CI] Deploy PR preview v2
+name: 0 [CI] Deploy PR preview
 
 on:
   workflow_dispatch:
@@ -137,7 +137,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Argo Workflows CLI
-        uses: pass-culture/common-workflows/actions/setup-argo@setup-argo/v1.0.0
+        uses: pass-culture/common-workflows/actions/setup-argo@66d0c45fd010bce5b0e7873e862eb54a2d564f39 # v1.0.0
 
       - name: Install passdirector
         uses: ./.github/actions/setup-passdirector
@@ -185,12 +185,14 @@ jobs:
         shell: bash
         env:
           SOURCE_BRANCH: ${{ inputs.source_branch }}
-          NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+          NAMESPACE_PREFIX: pcapi-preview
+          PREVIEW_ID: ${{ needs.deploy-preview-env-init.outputs.preview_id }}
           PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
           BACKEND_URL: ${{ needs.deploy-preview-env-init.outputs.backend_url }}
           BACKOFFICE_URL: ${{ needs.deploy-preview-env-init.outputs.backoffice_url }}
         run: |
           DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
+          NAMESPACE="${NAMESPACE_PREFIX}-${PREVIEW_ID}"
           {
             echo "### :rocket: Deploy PRO summary"
             echo "| Results                              | Value                       |"
