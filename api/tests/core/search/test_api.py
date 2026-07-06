@@ -677,16 +677,25 @@ def test_reindex_collective_offer_template_ids():
         status: create_collective_offer_template_by_status(status)
         for status in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES
     }
-    ids = [offer.id for offer in offer_by_status.values()]
+
+    # offers with inactive / not validated offerer
+    offer_inactive_offerer = create_collective_offer_template_by_status(
+        educational_models.CollectiveOfferDisplayedStatus.PUBLISHED, venue__managingOfferer__isActive=False
+    )
+    offer_closed_offerer = create_collective_offer_template_by_status(
+        educational_models.CollectiveOfferDisplayedStatus.PUBLISHED,
+        venue__managingOfferer=offerers_factories.ClosedOffererFactory(),
+    )
+
+    ids = [offer.id for offer in offer_by_status.values()] + [offer_inactive_offerer.id, offer_closed_offerer.id]
 
     num_queries = 1  # select offers
     num_queries += 1  # selectinload domains
     with assert_num_queries(num_queries):
         search._reindex_collective_offer_template_ids(backend=search._get_backend(), collective_offer_template_ids=ids)
 
-    # only published and ended offers satisfy CollectiveOfferTemplate.is_eligible_for_search
+    # only published offers satisfy CollectiveOfferTemplate.is_eligible_for_search
     indexed_offers = search_testing.search_store[settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME]
     assert indexed_offers.keys() == {
-        f"T-{offer_by_status[educational_models.CollectiveOfferDisplayedStatus.PUBLISHED].id}",
-        f"T-{offer_by_status[educational_models.CollectiveOfferDisplayedStatus.ENDED].id}",
+        f"T-{offer_by_status[educational_models.CollectiveOfferDisplayedStatus.PUBLISHED].id}"
     }
