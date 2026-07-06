@@ -31,7 +31,7 @@ from pcapi.utils.siren import SIRET_LENGTH
 
 
 class PostVenueBodyModel(HttpBodyModel):
-    activity: offerers_models.Activity | None
+    activity: offerers_models.Activity
     address: address_serialize.LocationBodyModelV2
     booking_email: pydantic_v2.EmailStr = pydantic_v2.Field(max_length=offerers_schemas.BOOKING_EMAIL_MAX_LENGTH)
     cultural_domains: list[str] | None
@@ -167,9 +167,7 @@ class GetVenueResponseModel(HttpBodyModel):
 
         dms_application = venue.last_collective_dms_application
         return cls(
-            activity=offerers_models.DisplayableActivity[venue.activity.name]
-            if (venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED)
-            else None,
+            activity=offerers_models.DisplayableActivity[venue.activity.name],
             bannerUrl=venue.bannerUrl,
             name=venue.name,
             contact=venue.contact,

@@ -188,13 +188,9 @@ class Activity(enum.Enum):
     """
 
     ART_GALLERY = "ART_GALLERY"
-    # TODO (lmaubert 2026-06): Remove 'ART_SCHOOL', split into 'ARTISTIC_PRACTICE' and 'HIGHER_EDUCATION_INSTITUTION'
-    ART_SCHOOL = "ART_SCHOOL"
     ARTISTIC_COMPANY = "ARTISTIC_COMPANY"
     ARTISTIC_PRACTICE = "ARTISTIC_PRACTICE"
     ARTS_CENTRE = "ARTS_CENTRE"
-    # TODO (lmaubert 2026-04): Remove 'ARTS_EDUCATION', replaced by 'ARTISTIC_PRACTICE'
-    ARTS_EDUCATION = "ARTS_EDUCATION"
     BOOKSTORE = "BOOKSTORE"
     CINEMA = "CINEMA"
     COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
@@ -211,22 +207,14 @@ class Activity(enum.Enum):
     MUNICIPALITY_CULTURAL_DEPARTMENT = "MUNICIPALITY_CULTURAL_DEPARTMENT"
     MUSEUM = "MUSEUM"
     MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
-    # TODO: (lmaubert 2026-01): Remove 'NOT_ASSIGNED' that was used for non-ERP structures (is_open_to_public=False) in a previous version
-    NOT_ASSIGNED = "NOT_ASSIGNED"
     OTHER = "OTHER"
     PERFORMANCE_HALL = "PERFORMANCE_HALL"
-    # TODO (lmaubert 2026-02): Remove 'PRESS', replaced by 'PRESS_OR_MEDIA'
-    PRESS = "PRESS"
     PRESS_OR_MEDIA = "PRESS_OR_MEDIA"
     PRODUCTION_OR_PROMOTION_COMPANY = "PRODUCTION_OR_PROMOTION_COMPANY"
     PUBLISHING_HOUSE = "PUBLISHING_HOUSE"
     RADIO_OR_MUSIC_STREAMING = "RADIO_OR_MUSIC_STREAMING"
     RECORD_STORE = "RECORD_STORE"
-    # TODO (lmaubert 2026-06): Remove 'SCIENCE_CENTRE', replaced by 'SCIENTIFIC_CULTURE'
-    SCIENCE_CENTRE = "SCIENCE_CENTRE"
     SCIENTIFIC_CULTURE = "SCIENTIFIC_CULTURE"
-    # TODO (lmaubert 2026-02): Remove 'STREAMING_PLATFORM', split into two different activities
-    STREAMING_PLATFORM = "STREAMING_PLATFORM"
     TELEVISION_OR_VIDEO_STREAMING = "TELEVISION_OR_VIDEO_STREAMING"
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
     TRAVELLING_CINEMA = "TRAVELLING_CINEMA"
@@ -235,13 +223,7 @@ class Activity(enum.Enum):
 # Activities which must not be selected at venue creation
 DEPRECATED_ACTIVITIES = {
     Activity.GAMES_CENTRE,
-    Activity.NOT_ASSIGNED,
-    Activity.PRESS,
-    Activity.STREAMING_PLATFORM,
-    Activity.ART_SCHOOL,
-    Activity.SCIENCE_CENTRE,
 }
-
 
 ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
     "ActivityOpenToPublic",
@@ -304,7 +286,7 @@ ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
 
 
 DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
-    "DisplayableActivity", {x.name: x.value for x in Activity if x.name != "NOT_ASSIGNED"}
+    "DisplayableActivity", {x.name: x.value for x in Activity}
 )
 
 
@@ -517,9 +499,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
-    activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(Activity, use_values=False), nullable=True, index=True
-    )
+    activity: sa_orm.Mapped[Activity] = sa_orm.mapped_column(db_utils.MagicEnum(Activity), nullable=False, index=True)
 
     state: sa_orm.Mapped[VenueState | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(VenueState), nullable=True, default=None

@@ -113,7 +113,7 @@ def _create_pro_user(row: dict) -> User:
         phone_number=None,
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
-        activity=offerers_models.Activity.NOT_ASSIGNED,
+        activity=offerers_models.Activity.OTHER,
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
         webPresence="https://www.example.com",
     )

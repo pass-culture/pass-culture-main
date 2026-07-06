@@ -29,21 +29,16 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
     offerers_models.Activity.FESTIVAL.name: offerers_schemas.VenueTypeCode.FESTIVAL,
     offerers_models.Activity.ARTS_CENTRE.name: offerers_schemas.VenueTypeCode.VISUAL_ARTS,
     offerers_models.Activity.ART_GALLERY.name: offerers_schemas.VenueTypeCode.VISUAL_ARTS,
-    offerers_models.Activity.ART_SCHOOL.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
     offerers_models.Activity.CULTURAL_CENTRE.name: offerers_schemas.VenueTypeCode.CULTURAL_CENTRE,
     offerers_models.Activity.COMMUNITY_CENTRE.name: offerers_schemas.VenueTypeCode.CULTURAL_CENTRE,
-    offerers_models.Activity.SCIENCE_CENTRE.name: offerers_schemas.VenueTypeCode.SCIENTIFIC_CULTURE,
     offerers_models.Activity.HERITAGE_SITE.name: offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
     offerers_models.Activity.TOURIST_INFORMATION_CENTRE.name: offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
     offerers_models.Activity.OTHER.name: offerers_schemas.VenueTypeCode.OTHER,
     offerers_models.Activity.TRAVELLING_CINEMA.name: offerers_schemas.VenueTypeCode.TRAVELING_CINEMA,
-    offerers_models.Activity.ARTS_EDUCATION.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
     offerers_models.Activity.CULTURAL_MEDIATION.name: offerers_schemas.VenueTypeCode.OTHER,
     offerers_models.Activity.ARTISTIC_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
     offerers_models.Activity.PRODUCTION_OR_PROMOTION_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
-    offerers_models.Activity.PRESS.name: offerers_schemas.VenueTypeCode.OTHER,
     offerers_models.Activity.PRESS_OR_MEDIA.name: offerers_schemas.VenueTypeCode.OTHER,
-    offerers_models.Activity.STREAMING_PLATFORM.name: offerers_schemas.VenueTypeCode.DIGITAL,
     offerers_models.Activity.RADIO_OR_MUSIC_STREAMING.name: offerers_schemas.VenueTypeCode.DIGITAL,
     offerers_models.Activity.TELEVISION_OR_VIDEO_STREAMING.name: offerers_schemas.VenueTypeCode.DIGITAL,
     offerers_models.Activity.ARTISTIC_PRACTICE.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
@@ -61,7 +56,6 @@ def get_venue_type_code_from_activity(
     Temporary utility function to compute a Venue's VenueTypeCode from the chosen Activity
     If no mapping exists, None is returned instead
     """
-    assert activity.name != offerers_models.Activity.NOT_ASSIGNED.name
     return ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING[activity.name]
 
 

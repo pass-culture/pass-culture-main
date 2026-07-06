@@ -46,13 +46,9 @@ class GetOffererVenueResponseModel(HttpBodyModel):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
-        activity = None
-        if venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
-            activity = offerers_models.DisplayableActivity[venue.activity.name]
-
         dms_application = venue.last_collective_dms_application
         return cls(
-            activity=activity,
+            activity=offerers_models.DisplayableActivity[venue.activity.name],
             banner_meta=venue.bannerMeta,
             banner_url=venue.bannerUrl,
             booking_email=venue.bookingEmail,

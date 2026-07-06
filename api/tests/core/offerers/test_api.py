@@ -289,28 +289,19 @@ class CreateVenueTest:
         assert venue.siret is None
         assert venue.current_pricing_point_id is None
 
-    @pytest.mark.parametrize(
-        "cultural_domains,activity,expected_activity_code",
-        (
-            (("Architecture",), offerers_models.Activity.ART_GALLERY, offerers_models.Activity.ART_GALLERY),
-            (("Architecture",), None, None),
-            (("Média et information", "Bande dessinée"), None, None),
-        ),
-    )
-    def test_venue_with_cultural_domains(self, cultural_domains, activity, expected_activity_code):
+    def test_venue_with_cultural_domains(self):
         user_offerer = offerers_factories.UserOffererFactory()
         for domain_name in ["Architecture", "Média et information", "Bande dessinée", "Musique"]:
             educational_factories.EducationalDomainFactory(name=domain_name)
-        data = self.base_data(user_offerer.offerer) | {"cultural_domains": cultural_domains}
-        if activity:
-            data["activity"] = activity.name
-        else:
-            data["activity"] = None
+        data = self.base_data(user_offerer.offerer) | {
+            "cultural_domains": ["Architecture", "Bande dessinée"],
+            "activity": offerers_models.Activity.ART_GALLERY,
+        }
         offerers_api.create_venue(venue_serialize.PostVenueBodyModel(**data), user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
-        assert venue.activity == expected_activity_code
-        assert {domain.name for domain in venue.collectiveDomains} == set(cultural_domains)
+        assert venue.activity == offerers_models.Activity.ART_GALLERY
+        assert {domain.name for domain in venue.collectiveDomains} == set(["Architecture", "Bande dessinée"])
 
 
 class DeleteVenueTest:
