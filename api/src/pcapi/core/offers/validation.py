@@ -6,6 +6,7 @@ import warnings
 from io import BytesIO
 
 import flask
+import pytz
 import sqlalchemy as sa
 from PIL import Image
 from PIL import UnidentifiedImageError
@@ -841,21 +842,25 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
     booking_limit_datetime: datetime.datetime,
 ) -> None:
     """
-    :booking_limit_datetime: //!\\ should be a timezone-aware datetime
+    :booking_limit_datetime: ⚠️ Must be a naive utc datetime
     """
     errors = []
-    booking_limit_datetime = (
-        booking_limit_datetime
-        if booking_limit_datetime.tzinfo is not None
-        else booking_limit_datetime.replace(tzinfo=datetime.UTC)
-    )
 
-    if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
+    # To ensure ALL the datetimes are naive UTC datetimes
+    booking_limit_datetime = booking_limit_datetime.astimezone(pytz.UTC).replace(tzinfo=None)
+    publication_datetime = offer.publicationDatetime
+    booking_allowed_datetime = offer.bookingAllowedDatetime
+    if publication_datetime:
+        publication_datetime = publication_datetime.astimezone(pytz.UTC).replace(tzinfo=None)
+    if booking_allowed_datetime:
+        booking_allowed_datetime = booking_allowed_datetime.astimezone(pytz.UTC).replace(tzinfo=None)
+
+    if publication_datetime and booking_limit_datetime < publication_datetime:
         errors += [
             "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"
         ]
 
-    if offer.bookingAllowedDatetime and booking_limit_datetime < offer.bookingAllowedDatetime:
+    if booking_allowed_datetime and booking_limit_datetime < booking_allowed_datetime:
         errors += [
             "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`"
         ]
