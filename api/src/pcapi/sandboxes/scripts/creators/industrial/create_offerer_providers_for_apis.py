@@ -3,6 +3,7 @@ import logging
 import random
 
 from pcapi import settings
+from pcapi.connectors import thumb_storage
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core.bookings import factories as bookings_factories
@@ -17,6 +18,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.sandboxes.scripts.utils.storage_utils import read_sandbox_mediation_asset
 from pcapi.utils import date as date_utils
 
 
@@ -144,7 +146,10 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             total_views_last_30_days=total_views_last_30_days,
         ),
     )
-    offers_factories.HeadlineOfferFactory.create(offer=top_offer)
+    mediation = offers_factories.MediationFactory.create(offer=top_offer)
+    image_as_bytes = read_sandbox_mediation_asset(top_offer.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=top_offer, without_mediation=True)
 
     offers_factories.EventStockFactory.create(
         offer__name="Taylor à Besançon !",

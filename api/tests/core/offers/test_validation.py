@@ -1090,7 +1090,7 @@ class CheckPublicationDateTest:
 
 
 class CheckOfferIsEligibleForHeadlineOffersTest:
-    def test_check_offer_is_eligible_to_be_headline(self):
+    def test_offer_with_mediation_is_eligible(self):
         offerer = offerers_factories.OffererFactory()
         permanent_venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=permanent_venue)
@@ -1105,6 +1105,45 @@ class CheckOfferIsEligibleForHeadlineOffersTest:
             validation.check_offer_is_eligible_to_be_headline(offer_without_image)
             msg = "Offers without images can not be set to the headline"
             assert exc.value.errors["headlineOffer"] == [msg]
+
+    def test_offer_with_product_mediation_is_eligible(self):
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True)
+        product = offers_factories.ProductFactory()
+        offers_factories.ProductMediationFactory(product=product)
+        offer = offers_factories.OfferFactory(venue=permanent_venue, product=product)
+        offers_factories.StockFactory(offer=offer)
+
+        assert validation.check_offer_is_eligible_to_be_headline(offer) is None
+
+    def test_check_offer_without_any_mediation_is_not_eligible(self):
+        offerer = offerers_factories.OffererFactory()
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
+        offer_without_image = offers_factories.OfferFactory(venue=permanent_venue)
+        offers_factories.StockFactory(offer=offer_without_image)
+
+        with pytest.raises(exceptions.OfferWithoutImageCanNotBeHeadline) as exc:
+            validation.check_offer_is_eligible_to_be_headline(offer_without_image)
+            msg = "Offers without images can not be set to the headline"
+            assert exc.value.errors["headlineOffer"] == [msg]
+
+    def test_offer_with_product_thumb_is_not_eligible(self):
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True)
+        offer = offers_factories.OfferFactory(
+            venue=permanent_venue, product=offers_factories.ProductFactory(thumbCount=1)
+        )
+        offers_factories.StockFactory(offer=offer)
+
+        with pytest.raises(exceptions.OfferWithoutImageCanNotBeHeadline):
+            validation.check_offer_is_eligible_to_be_headline(offer)
+
+    def test_offer_with_inactive_mediation_is_not_eligible(self):
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True)
+        offer = offers_factories.OfferFactory(venue=permanent_venue)
+        offers_factories.StockFactory(offer=offer)
+        offers_factories.MediationFactory(offer=offer, isActive=False)
+
+        with pytest.raises(exceptions.OfferWithoutImageCanNotBeHeadline):
+            validation.check_offer_is_eligible_to_be_headline(offer)
 
 
 class CheckOfferNameDoesNotContainEanTest:

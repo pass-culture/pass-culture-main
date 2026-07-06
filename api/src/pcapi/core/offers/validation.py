@@ -912,7 +912,7 @@ class OfferValidationError(Exception):
 def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
     if offer.status != OfferStatus.ACTIVE:
         raise exceptions.InactiveOfferCanNotBeHeadline()
-    if not offer.images:
+    if not offer.hasActiveImage:
         raise exceptions.OfferWithoutImageCanNotBeHeadline()
 
 

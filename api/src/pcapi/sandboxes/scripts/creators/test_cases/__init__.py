@@ -60,7 +60,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import crea
 from pcapi.sandboxes.scripts.creators.test_cases import pro_advices_mocks
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
-from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
+from pcapi.sandboxes.scripts.utils.storage_utils import read_sandbox_mediation_asset
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.transaction_manager import atomic
@@ -738,7 +738,8 @@ def create_offer_and_stocks_for_cinemas(
                 venue=venue,
             )
             mediation = offers_factories.MediationFactory.create(offer=movie_offer)
-            store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)
+            image_as_bytes = read_sandbox_mediation_asset(movie_offer.subcategoryId)
+            thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
 
             product_stocks = []
             for daydelta in range(0, 20, 4):
@@ -958,11 +959,6 @@ def create_offers_interactions() -> None:
         isSocialMediaDiffusible=True,
     )
 
-    offers_factories.HeadlineOfferFactory.create(offer=offer_1_likes_headline)
-    offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_1)
-    offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_2)
-    offers_factories.HeadlineOfferFactory.create(offer=offer_5_likes_headline)
-
 
 @log_func_duration
 def create_offers_with_video_url() -> None:
@@ -1146,7 +1142,8 @@ def create_offers_for_each_subcategory() -> None:
                     quantity=i * 10,
                 )
             mediation = offers_factories.MediationFactory.create(offer=stock.offer)
-            store_public_object_from_sandbox_assets("thumbs", mediation, subcategory.id)
+            image_as_bytes = read_sandbox_mediation_asset(subcategory.id)
+            thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
 
 
 @log_func_duration
@@ -1274,7 +1271,10 @@ def create_pro_advices() -> None:
         offer__name=f"Offre à la une du lieu {venue_1.id} - sans avis",
         offer__subcategoryId=subcategories.SEANCE_CINE.id,
     ).offer
-    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_1)
+    mediation = offers_factories.MediationFactory.create(offer=headline_offer_1)
+    image_as_bytes = read_sandbox_mediation_asset(headline_offer_1.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_1, without_mediation=True)
 
     # Cas 2 :
     # - ✔︎ Offre à la une
@@ -1293,7 +1293,10 @@ def create_pro_advices() -> None:
         offer__name=f"Offre à la une du lieu {venue_2.id}",
         offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
     ).offer
-    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_2)
+    mediation = offers_factories.MediationFactory.create(offer=headline_offer_2)
+    image_as_bytes = read_sandbox_mediation_asset(headline_offer_2.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_2, without_mediation=True)
     offers_factories.ProAdviceFactory.create(offer=headline_offer_2, **pro_advices_mocks.advices["fully-featured"])
 
     # Cas 3 :
@@ -1313,7 +1316,10 @@ def create_pro_advices() -> None:
         offer__name=f"Offre à la une du lieu {venue_3.id} - sans avis",
         offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     ).offer
-    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_3)
+    mediation = offers_factories.MediationFactory.create(offer=headline_offer_3)
+    image_as_bytes = read_sandbox_mediation_asset(headline_offer_3.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_3, without_mediation=True)
     offer_with_advice = offers_factories.StockFactory.create(
         offer__venue=venue_3,
         offer__name=f"Offre du lieu {venue_3.id} - avec avis",
@@ -1338,7 +1344,10 @@ def create_pro_advices() -> None:
         offer__name=f"Offre à la une du lieu {venue_4.id} - avec avis",
         offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
     ).offer
-    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_4)
+    mediation = offers_factories.MediationFactory.create(offer=headline_offer_4)
+    image_as_bytes = read_sandbox_mediation_asset(headline_offer_4.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_4, without_mediation=True)
     offers_factories.ProAdviceFactory.create(offer=headline_offer_4, **pro_advices_mocks.advices["short"])
     offer_with_advice_1 = offers_factories.StockFactory.create(
         offer__venue=venue_4,
@@ -1376,7 +1385,10 @@ def create_pro_advices() -> None:
         offer__name=f"Offre à la une du lieu {venue_5.id} - sans avis",
         offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
     ).offer
-    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_5)
+    mediation = offers_factories.MediationFactory.create(offer=headline_offer_5)
+    image_as_bytes = read_sandbox_mediation_asset(headline_offer_5.subcategoryId)
+    thumb_storage.create_thumb(mediation, image_as_bytes, keep_ratio=True)
+    offers_factories.HeadlineOfferFactory.create(offer=headline_offer_5, without_mediation=True)
     offer_with_advice_1 = offers_factories.StockFactory.create(
         offer__venue=venue_5,
         offer__name=f"Offre 1 du lieu {venue_5.id} - avec avis",
@@ -1653,16 +1665,11 @@ def create_product_with_multiple_images() -> None:
         product=product, name=product.name, subcategoryId=product.subcategoryId
     )
     offers_factories.StockFactory.create(offer=offer)
-    offers_factories.ProductMediationFactory.create(
-        product=product,
-        uuid="222A",
-        imageType=ImageType.RECTO,
-    )
-    offers_factories.ProductMediationFactory.create(
-        product=product,
-        uuid="222A_1",
-        imageType=ImageType.VERSO,
-    )
+
+    image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
+    for image_type in [ImageType.RECTO, ImageType.VERSO]:
+        mediation = offers_factories.ProductMediationFactory.create(product=product, imageType=image_type)
+        thumb_storage.create_thumb(product, next(image_paths).read_bytes(), keep_ratio=True, object_id=mediation.uuid)
 
 
 @log_func_duration

@@ -668,8 +668,7 @@ class HeadlineOffer(PcObject, Model):
     @hybrid_property
     def isActive(self) -> bool:
         now = date_utils.get_naive_utc_now()
-        has_images = self.offer.mediations or (self.offer.product.images if self.offer.product else None)
-        if now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images:
+        if now in self.timespan and self.offer.status == OfferStatus.ACTIVE and self.offer.hasActiveImage:
             return True
         return False
 
@@ -681,10 +680,7 @@ class HeadlineOffer(PcObject, Model):
             cls.timespan.contains(sa.cast(sa.func.now(), sa.TIMESTAMP)),
             offer_alias.id == cls.offerId,
             offer_alias.status == OfferStatus.ACTIVE,
-            sa.or_(
-                sa.exists().where(Mediation.offerId == offer_alias.id),
-                sa.exists().where(ProductMediation.productId == offer_alias.productId),
-            ),
+            offer_alias.hasActiveImage,
         )
 
 
@@ -1012,6 +1008,19 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
+
+    @hybrid_property
+    def hasActiveImage(self) -> bool:
+        # Whether the offer has an active offer mediation or a product mediation
+        return self.activeMediation is not None or bool(self.product and self.product.productMediations)
+
+    @hasActiveImage.inplace.expression
+    @classmethod
+    def _hasActiveImageExpression(cls) -> ColumnElement[bool]:
+        return sa.or_(
+            sa.exists().where(Mediation.offerId == cls.id, Mediation.isActive.is_(True)),
+            sa.exists().where(ProductMediation.productId == cls.productId),
+        )
 
     @hybrid_property
     def canExpire(self) -> bool:

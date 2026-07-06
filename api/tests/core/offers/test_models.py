@@ -756,14 +756,14 @@ class HeadlineOfferTest:
         )
         assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
-    def test_headline_offer_is_not_active(self):
+    def test_headline_offer_with_ending_time_in_the_past_is_not_active(self):
         headline_offer = factories.HeadlineOfferFactory(timespan=(self.today, self.day_after_tomorrow))
         with time_machine.travel(self.next_month):
             assert not headline_offer.isActive
             # note: it is not possible to test the sql expression here
             # as time_machine affects only python time, not sql's
 
-    def test_headline_offer_without_mediation_is_not_active(self):
+    def test_headline_offer_without_any_mediation_is_not_active(self):
         headline_offer = factories.HeadlineOfferFactory(
             timespan=(self.today, self.day_after_tomorrow), without_mediation=True
         )
@@ -794,6 +794,30 @@ class HeadlineOfferTest:
         )
         assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).first() == None
 
+    def test_headline_offer_with_product_thumb_is_not_active(self):
+        product = factories.ProductFactory(thumbCount=1)
+        offer = factories.OfferFactory(product=product)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
+
+        assert not headline_offer.isActive
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).first() is None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).one()
+            == headline_offer
+        )
+
+    def test_headline_offer_with_inactive_mediation_is_not_active(self):
+        offer = factories.OfferFactory()
+        factories.MediationFactory(offer=offer, isActive=False)
+        headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
+
+        assert not headline_offer.isActive
+        assert db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(True)).first() is None
+        assert (
+            db.session.query(models.HeadlineOffer).filter(models.HeadlineOffer.isActive.is_(False)).one()
+            == headline_offer
+        )
+
     @pytest.mark.parametrize(
         "timespan,overlaping_timespan",
         [
@@ -816,6 +840,45 @@ class HeadlineOfferTest:
         factories.HeadlineOfferFactory(offer=offer)
         with pytest.raises(sa_exc.IntegrityError):
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
+
+
+class OfferHasActiveImageTest:
+    def test_active_offer_mediation(self):
+        offer = factories.MediationFactory().offer
+        assert offer.hasActiveImage is True
+
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Offer).filter(models.Offer.hasActiveImage.is_(True)).all() == [offer]
+
+    def test_inactive_offer_mediation(self):
+        offer = factories.MediationFactory(isActive=False).offer
+        assert offer.hasActiveImage is False
+
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Offer).filter(models.Offer.hasActiveImage.is_(False)).all() == [offer]
+
+    def test_product_mediation(self):
+        offer = factories.OfferFactory(product=factories.ProductFactory())
+        factories.ProductMediationFactory(product=offer.product)
+        assert offer.hasActiveImage is True
+
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Offer).filter(models.Offer.hasActiveImage.is_(True)).all() == [offer]
+
+    def test_product_thumb(self):
+        # product.thumbCount is a legacy column and no longer counts as a displayable image
+        offer = factories.OfferFactory(product=factories.ProductFactory(thumbCount=1))
+        assert offer.hasActiveImage is False
+
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Offer).filter(models.Offer.hasActiveImage.is_(False)).all() == [offer]
+
+    def test_no_image(self):
+        offer = factories.OfferFactory()
+        assert offer.hasActiveImage is False
+
+        # hybrid property: also check SQL expression
+        assert db.session.query(models.Offer).filter(models.Offer.hasActiveImage.is_(False)).all() == [offer]
 
 
 class OfferIsHeadlineTest:
