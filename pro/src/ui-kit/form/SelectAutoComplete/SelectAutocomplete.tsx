@@ -91,26 +91,17 @@ export const SelectAutocomplete = forwardRef(
     }: SelectAutocompleteProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
+    const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
+      null
+    ) // Represents the index of the hovered option while using keyboard (for a11y), useful for the "aria-activedescendant" attribute
+
     const optionsLabelByValue = useRef<Map<string, string>>(undefined) // Hashtables for the options (ex: "05" -> "Hautes-Alpes")
     const optionsValueByLabel = useRef<Map<string, string>>(undefined) // Inverted hashtables for the labels (ex: "Hautes-Alpes" -> "05")
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null) // Ref for "searchField"
     const listRef = useRef<HTMLUListElement>(null) // Ref for <ul> dropdown
-
-    const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
-    // Since this field is uncontrolled (terrible pattern), we at least hack the cases where we want to reset its value in a controlled manner.
-    if (
-      inputRef.current &&
-      inputRef.current.value === '' &&
-      searchField !== ''
-    ) {
-      setSearchField(inputRef.current.value)
-    }
-
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-    const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
-      null
-    ) // Represents the index of the hovered option while using keyboard (for a11y), useful for the "aria-activedescendant" attribute
 
     useEffect(() => {
       optionsLabelByValue.current = new Map(

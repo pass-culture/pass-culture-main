@@ -13,7 +13,6 @@ export type VenueSettingsFormContext = {
   siren: string | null
   withSiret: boolean
   siret?: string | null
-  isOpenToPublic?: string
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic | null
 }
 

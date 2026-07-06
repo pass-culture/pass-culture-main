@@ -9,6 +9,7 @@ import type {
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useKey } from '@/commons/hooks/useKey'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { getMapKeys } from '@/commons/mappings/helpers'
@@ -40,13 +41,13 @@ import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrC
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
+  const addressFieldKey = useKey()
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
     siren: venue.managingOfferer?.siren,
     withSiret: Boolean(venue.siret),
     siret: venue.siret,
-    isOpenToPublic: venue.isOpenToPublic.toString(),
     activity: venue.activity as VenueSettingsFormValues['activity'],
   }
 
@@ -119,9 +120,7 @@ const GeneralInformation = () => {
 
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
-    resetReactHookFormAddressFields<VenueSettingsFormValues>(
-      (name, defaultValue) => setValue(name, defaultValue)
-    )
+    resetReactHookFormAddressFields<VenueSettingsFormValues>(setValue)
     clearErrors()
   }
 
@@ -136,17 +135,6 @@ const GeneralInformation = () => {
     setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
-  const resetOpeningHoursAndAccessibility = () => {
-    const fieldsToReset: (keyof VenueSettingsFormValues)[] = [
-      'accessibility',
-      'isAccessibilityAppliedOnAllOffers',
-    ]
-
-    for (const field of fieldsToReset) {
-      form.setValue(field, initialValues[field])
-    }
-  }
-
   const toggleOpenToPublic = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isOpenToPublicValue = e.target.value.toString()
     const currentAddressAutocomplete = getValues('addressAutocomplete')
@@ -155,20 +143,16 @@ const GeneralInformation = () => {
 
     if (isOpenToPublicValue === 'false') {
       if (!currentAddressAutocomplete && initialValues.addressAutocomplete) {
-        form.setValue('street', initialValues.street)
-        form.setValue('postalCode', initialValues.postalCode)
-        form.setValue('city', initialValues.city)
-        form.setValue('latitude', initialValues.latitude)
-        form.setValue('longitude', initialValues.longitude)
-        form.setValue('inseeCode', initialValues.inseeCode)
-        form.setValue(
-          'addressAutocomplete',
-          initialValues.addressAutocomplete,
-          { shouldValidate: false }
+        resetReactHookFormAddressFields<VenueSettingsFormValues>((name) =>
+          // @ts-expect-error Hard to reconcile types with the current complexity.
+          setValue(name, initialValues[name])
         )
       }
-
-      resetOpeningHoursAndAccessibility()
+      form.setValue('accessibility', initialValues.accessibility)
+      form.setValue(
+        'isAccessibilityAppliedOnAllOffers',
+        initialValues.isAccessibilityAppliedOnAllOffers
+      )
     }
 
     const isInitialActivityValid =
@@ -198,7 +182,10 @@ const GeneralInformation = () => {
           <FormLayout fullWidthActions>
             <FormLayout.Section title="Informations administratives">
               <FormLayout.Row>
-                <SiretOrCommentFields formContext={formContext} />
+                <SiretOrCommentFields
+                  formContext={formContext}
+                  onAddressUpdate={addressFieldKey.update}
+                />
               </FormLayout.Row>
 
               <FormLayout.Row mdSpaceAfter>
@@ -228,6 +215,7 @@ const GeneralInformation = () => {
               </FormLayout.Row>
               {isOpenToPublic === 'true' && (
                 <AddressFields
+                  key={addressFieldKey.value}
                   description="Indiquez ici l'adresse où vous recevez votre public."
                   addressRegister={register('addressAutocomplete')}
                   disabled={disabled}

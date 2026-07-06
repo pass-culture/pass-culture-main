@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/utils/getSiretData'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import {
   humanizeSiret,
   isSiretStartingWithSiren,
@@ -21,12 +22,12 @@ import type {
 } from '../../commons/types'
 
 export type SiretOrCommentFieldsProps = {
-  setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
+  onAddressUpdate: () => void
   formContext: VenueSettingsFormContext
 }
 
 export const SiretOrCommentFields = ({
-  setIsFieldNameFrozen,
+  onAddressUpdate,
   formContext,
 }: SiretOrCommentFieldsProps): JSX.Element => {
   const {
@@ -54,7 +55,6 @@ export const SiretOrCommentFields = ({
       !validSiretLength(cleanSiret) ||
       !isSiretStartingWithSiren(cleanSiret, formContext.siren)
     ) {
-      setIsFieldNameFrozen?.(false)
       return
     }
 
@@ -69,19 +69,11 @@ export const SiretOrCommentFields = ({
         return
       }
 
-      setIsFieldNameFrozen?.(
-        response !== undefined && response.siret.length > 0
-      )
       setValue('name', response?.name ?? '')
 
       if (isOpenToPublic === 'true') {
-        setValue('addressAutocomplete', '')
-        setValue('street', '')
-        setValue('postalCode', '')
-        setValue('city', '')
-        setValue('latitude', '')
-        setValue('longitude', '')
-        setValue('inseeCode', '')
+        resetReactHookFormAddressFields<VenueSettingsFormValues>(setValue)
+        onAddressUpdate()
       }
       setCurrentSiret(cleanSiret)
     } catch (_e) {
@@ -100,10 +92,6 @@ export const SiretOrCommentFields = ({
       shouldDirty: true,
     })
     setCurrentSiret(cleanRidet)
-
-    if (!errors.siret?.message) {
-      setIsFieldNameFrozen?.(false)
-    }
   }
 
   const siretOrRidet = () => {
