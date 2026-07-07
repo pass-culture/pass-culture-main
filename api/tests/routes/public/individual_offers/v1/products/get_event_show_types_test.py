@@ -30,8 +30,14 @@ class GetShowTypesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
-        assert all({"id", "label"} == set(show_type_response.keys()) for show_type_response in response.json)
+        assert all(
+            {"id", "label", "familyLabel"} == set(show_type_response.keys()) for show_type_response in response.json
+        )
         musical_response = next(
             show_type for show_type in response.json if show_type["id"] == "SPECTACLE_MUSICAL-COMEDIE_MUSICALE"
         )
-        assert musical_response == {"id": "SPECTACLE_MUSICAL-COMEDIE_MUSICALE", "label": "Comédie Musicale"}
+        assert musical_response == {
+            "id": "SPECTACLE_MUSICAL-COMEDIE_MUSICALE",
+            "label": "Comédie Musicale",
+            "familyLabel": "Spectacle Musical / Cabaret / Opérette",
+        }

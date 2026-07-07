@@ -742,6 +742,7 @@ class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
 class ShowTypeResponse(serialization.ConfiguredBaseModel):
     id: ShowTypeEnum  # type: ignore[valid-type]
     label: str
+    family_label: str
 
 
 class GetShowTypesResponse(serialization.ConfiguredBaseModel):

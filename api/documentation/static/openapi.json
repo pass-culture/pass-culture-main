@@ -9243,6 +9243,10 @@
             },
             "ShowTypeResponse": {
                 "properties": {
+                    "familyLabel": {
+                        "title": "Familylabel",
+                        "type": "string"
+                    },
                     "id": {
                         "$ref": "#/components/schemas/ShowTypeEnum"
                     },
@@ -9253,7 +9257,8 @@
                 },
                 "required": [
                     "id",
-                    "label"
+                    "label",
+                    "familyLabel"
                 ],
                 "title": "ShowTypeResponse",
                 "type": "object"
