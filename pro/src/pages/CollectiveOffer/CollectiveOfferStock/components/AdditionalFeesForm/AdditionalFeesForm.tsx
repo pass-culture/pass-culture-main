@@ -186,37 +186,16 @@ export const AdditionalFeesForm = ({
               inline
               className={styles['additional-fee-row']}
             >
-              <SelectAutocomplete
-                label="Type de frais annexes"
-                value={
-                  field.type === CollectiveAdditionalFeeType.OTHER
-                    ? (field.label ?? '')
-                    : ADDITIONAL_FEES_OPTIONS.find(
-                        (option) => option.value === field.type
-                      )?.label
-                }
-                options={ADDITIONAL_FEES_OPTIONS.filter(
-                  (o) => o.value !== CollectiveAdditionalFeeType.OTHER
-                )}
-                required
-                disabled={!canEditDiscount}
-                name={`collectiveAdditionalFees.${index}.type`}
-                className={styles['additional-fee-type-select']}
+              <AdditionalFeesInput
+                field={field}
+                index={index}
+                canEditDiscount={canEditDiscount}
+                form={form}
+                setSearchLabel={setSearchLabel}
                 creatableOption={creatableOption}
-                onChange={handleFeeTypeChange(index)}
-                onSearch={setSearchLabel}
-                onBlur={() => setSearchLabel('')}
-                error={
-                  rootErrorOnTypes ||
-                  form.formState.errors.collectiveAdditionalFees?.[index]?.type
-                    ?.message ||
-                  form.formState.errors.collectiveAdditionalFees?.[index]?.label
-                    ?.message
-                }
-                // use this to control focus on input
-                ref={
-                  form.register(`collectiveAdditionalFees.${index}.type`).ref
-                }
+                handleFeeTypeChange={handleFeeTypeChange}
+                rootErrorOnTypes={rootErrorOnTypes}
+                value={form.watch(`collectiveAdditionalFees.${index}.type`)}
               />
               <TextInput
                 {...form.register(`collectiveAdditionalFees.${index}.amount`, {
@@ -261,5 +240,89 @@ export const AdditionalFeesForm = ({
         </div>
       )}
     </FormLayout.Row>
+  )
+}
+
+type AdditionalFeesInputProps = {
+  field: { type: CollectiveAdditionalFeeType; label?: string | null }
+  index: number
+  canEditDiscount: boolean
+  form: ReturnType<typeof useFormContext<CollectiveOfferStockFormValues>>
+  setSearchLabel: (label: string) => void
+  creatableOption?: string
+  handleFeeTypeChange: (index: number) => (value: CustomEvent<'change'>) => void
+  rootErrorOnTypes: string
+  value?: CollectiveAdditionalFeeType | string | null
+}
+
+function AdditionalFeesInput({
+  field,
+  index,
+  canEditDiscount,
+  form,
+  setSearchLabel,
+  creatableOption,
+  handleFeeTypeChange,
+  rootErrorOnTypes,
+  value: currentValue,
+}: Readonly<AdditionalFeesInputProps>) {
+  const getDisplayValueFrom = (
+    feeType: CollectiveAdditionalFeeType | string | null | undefined,
+    feeLabel: string | null | undefined
+  ) => {
+    if (feeType === CollectiveAdditionalFeeType.OTHER) {
+      return feeLabel ?? ''
+    }
+
+    return (
+      ADDITIONAL_FEES_OPTIONS.find((option) => option.value === feeType)
+        ?.label ?? ''
+    )
+  }
+
+  const getDisplayValue = () => {
+    const feeType = form.getValues(`collectiveAdditionalFees.${index}.type`)
+    const feeLabel = form.getValues(`collectiveAdditionalFees.${index}.label`)
+
+    return getDisplayValueFrom(feeType, feeLabel)
+  }
+
+  const [value, setValue] = useState(
+    getDisplayValueFrom(currentValue ?? field.type, field.label)
+  )
+
+  return (
+    <SelectAutocomplete
+      label="Type de frais annexes"
+      options={ADDITIONAL_FEES_OPTIONS.filter(
+        (o) => o.value !== CollectiveAdditionalFeeType.OTHER
+      )}
+      required
+      disabled={!canEditDiscount}
+      name={`collectiveAdditionalFees.${index}.type`}
+      className={styles['additional-fee-type-select']}
+      creatableOption={creatableOption}
+      onChange={handleFeeTypeChange(index)}
+      onSearch={setSearchLabel}
+      onBlur={(event) => {
+        if (!event.target.value) {
+          setValue('')
+          setSearchLabel('')
+          return
+        }
+
+        setValue(getDisplayValue())
+        setSearchLabel('')
+      }}
+      error={
+        rootErrorOnTypes ||
+        form.formState.errors.collectiveAdditionalFees?.[index]?.type
+          ?.message ||
+        form.formState.errors.collectiveAdditionalFees?.[index]?.label?.message
+      }
+      // use this to control focus on input
+      ref={form.register(`collectiveAdditionalFees.${index}.type`).ref}
+      value={value}
+    />
   )
 }
