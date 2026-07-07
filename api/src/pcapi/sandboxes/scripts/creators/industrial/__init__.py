@@ -61,9 +61,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags 
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import create_industrial_offerers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import create_industrial_pro_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_products import create_industrial_products
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
-    create_industrial_search_indexed_objects,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_settlements import create_industrial_settlements
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import create_industrial_thing_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import create_industrial_thing_stocks
@@ -156,8 +153,6 @@ def save_industrial_sandbox() -> None:
             user.deposit.expirationDate = date_utils.get_naive_utc_now()
             db.session.add(user.deposit)
             db.session.commit()
-
-    create_industrial_search_indexed_objects()
 
     create_industrial_provider_external_bookings()
 

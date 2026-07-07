@@ -39,6 +39,7 @@ def save_sandbox(
     logger.info("Sandbox %s saved", name)
     if with_indexing:
         _index_all_offers()
+        _index_all_collective_offer_templates()
         _index_all_venues()
         _index_all_artists()
         logger.info("Indexing finished")
@@ -51,6 +52,7 @@ def save_sandbox(
 def _index_all_offers() -> None:
     logger.info("Reindexing offers")
 
+    search.unindex_all_offers()
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
@@ -61,7 +63,16 @@ def _index_all_offers() -> None:
     )
     search.reindex_offer_ids([offer_id for (offer_id,) in query])
 
-    logger.info("Reindexing done")
+    logger.info("Reindexing offers done")
+
+
+def _index_all_collective_offer_templates() -> None:
+    logger.info("Reindexing collective offer templates")
+
+    search.unindex_all_collective_offer_templates()
+    search.index_all_collective_offers_and_templates()
+
+    logger.info("Reindexing collective offer templates done")
 
 
 def _index_all_artists() -> None:
@@ -71,13 +82,16 @@ def _index_all_artists() -> None:
     query = db.session.query(artists_models.Artist).with_entities(artists_models.Artist.id)
     search.reindex_artist_ids([artist_id for (artist_id,) in query])
 
-    logger.info("Reindexing done")
+    logger.info("Reindexing artists done")
 
 
 def _index_all_venues() -> None:
     logger.info("Reindexing venues")
+
+    search.unindex_all_venues()
     query = (
         db.session.query(offerer_models.Venue).with_entities(offerer_models.Venue.id).order_by(offerer_models.Venue.id)
     )
     search.reindex_venue_ids([venue_id for (venue_id,) in query])
-    logger.info("Reindexing done")
+
+    logger.info("Reindexing venues done")

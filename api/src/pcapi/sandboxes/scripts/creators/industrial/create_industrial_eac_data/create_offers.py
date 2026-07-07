@@ -8,7 +8,6 @@ from itertools import cycle
 import sqlalchemy as sa
 
 from pcapi import settings
-from pcapi.core import search
 from pcapi.core.categories.subcategories import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -122,8 +121,6 @@ def create_eac_offers(
     # eac_location_search
     offerer = offerer_by_name["eac_location_search"]
     create_collective_offer_templates_for_search(offerer)
-
-    search.index_all_collective_offers_and_templates()
 
 
 @log_func_duration
