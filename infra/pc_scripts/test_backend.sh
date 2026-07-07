@@ -13,7 +13,7 @@ function test_backend {
   done
 
   docker compose -f "$ROOT_PATH/docker-compose-backend.yml" run --rm \
-    -e RUN_ENV=tests -e SQLALCHEMY_WARN_20=1 \
+    -e RUN_ENV=tests \
     flask \
     bash -c "rm -rf static/object_store_data/thumbs* && \
              pytest -m 'not backoffice' --durations=5 --color=yes -rsx -v $pytest_args"
@@ -31,7 +31,7 @@ function test_backoffice {
     sleep 0.5
   done
 
-  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" run --rm -e RUN_ENV=tests -e SQLALCHEMY_WARN_20=1 \
+  docker compose -f "$ROOT_PATH/docker-compose-backend.yml" run --rm -e RUN_ENV=tests \
     backoffice \
     bash -c "rm -rf static/object_store_data/thumbs* && \
              pytest -m backoffice --durations=5 --color=yes -rsx -v $pytest_args"
