@@ -24,6 +24,14 @@ def test_import_sandbox(run_command):
     )
 
 
+@pytest.mark.settings(CAN_RUN_SANDBOX=True)
+def test_import_sandbox_invalid_name(run_command):
+    with pytest.raises(ValueError) as e:
+        run_command("sandbox", "--name", "bloup", raise_on_error=True)
+
+    assert e.value.args == ("Invalid name provided",)
+
+
 @pytest.mark.settings(CAN_RUN_SANDBOX=False)
 def test_import_sandbox_forbidden(run_command):
     run_command("sandbox", "--name", "accessibility_offers", "--clean", "false", raise_on_error=True)
