@@ -630,6 +630,27 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json["location.AddressLocation.adressLabel"] == ["extra fields not permitted"]
 
+    @pytest.mark.parametrize(
+        "url,error",
+        [
+            ("missing.something", "invalid or missing URL scheme"),
+            ("https:///not/domain", "URL host invalid"),
+            ("https://10.11.12.13", "IP address are forbidden."),
+            ("https://example.com/../../etc/password", "Relative path are forbidden."),
+            ("https://login:password@example.com", "Authenticated urls are forbidden."),
+            ("https://[::1]", "IP address are forbidden."),
+            ("https://missing", "URL host invalid, top level domain required"),
+        ],
+    )
+    def test_event_with_address_bad_external_ticket_office_url(self, url, error):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["externalTicketOfficeUrl"] = url
+
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == [error]
+
     def test_event_without_ticket(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 

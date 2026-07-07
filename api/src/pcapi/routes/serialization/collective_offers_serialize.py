@@ -566,7 +566,7 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: str | None = pydantic_v2.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
-    contact_url: pydantic_v2.AnyHttpUrl | None = None
+    contact_url: utils.HttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
 
@@ -651,6 +651,12 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
             raise PydanticError("contactUrl et contactForm ne peuvent pas être remplis en même temps")
 
         return self
+
+    @pydantic_v2.field_validator("contact_url", mode="after")
+    @classmethod
+    def validate_contact_url(cls, contact_url: str | None) -> str | None:
+        utils.check_url(contact_url, "v2")
+        return contact_url
 
 
 class PatchCollectiveOfferActiveStatusBodyModel(HttpBodyModel):

@@ -1040,6 +1040,61 @@ class Returns400Test:
             (
                 {},
                 {
+                    "url": "https:///not/domain",
+                    "externalTicketOfficeUrl": "https:///not/domain",
+                },
+                {
+                    "url": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                    "externalTicketOfficeUrl": ['L\'URL doit terminer par une extension (ex. ".fr")'],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "https://10.11.12.13",
+                    "externalTicketOfficeUrl": "https://10.11.12.13",
+                },
+                {
+                    "url": ["IP address are forbidden."],
+                    "externalTicketOfficeUrl": ["IP address are forbidden."],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "https://example.com/../../etc/password",
+                    "externalTicketOfficeUrl": "https://example.com/../../etc/password",
+                },
+                {
+                    "url": ["Relative path are forbidden."],
+                    "externalTicketOfficeUrl": ["Relative path are forbidden."],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "https://login:password@example.com",
+                    "externalTicketOfficeUrl": "https://login:password@example.com",
+                },
+                {
+                    "url": ["Authenticated urls are forbidden."],
+                    "externalTicketOfficeUrl": ["Authenticated urls are forbidden."],
+                },
+            ),
+            (
+                {},
+                {
+                    "url": "https://[::1]",
+                    "externalTicketOfficeUrl": "https://[::1]",
+                },
+                {
+                    "url": ["IP address are forbidden."],
+                    "externalTicketOfficeUrl": ["IP address are forbidden."],
+                },
+            ),
+            (
+                {},
+                {
                     "url": "https://missing",
                     "externalTicketOfficeUrl": "https://missing",
                 },

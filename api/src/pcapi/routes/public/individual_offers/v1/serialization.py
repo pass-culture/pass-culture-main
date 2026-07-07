@@ -178,6 +178,7 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
         description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
         example="https://example.com?token={token}&email={email}&offerId={offerId}",
     )
+    _validation_url = serialization_utils.validate_url("url")
 
 
 class ExtraDataModel(serialization.ConfiguredBaseModel):
@@ -248,6 +249,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
     _validate_bookingAllowedDatetime = serialization_utils.validate_timezoned_datetime("booking_allowed_datetime")
+    _validation_external_ticket_office_url = serialization_utils.validate_url("external_ticket_office_url")
 
     class Config:
         extra = "forbid"

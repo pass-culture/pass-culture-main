@@ -237,6 +237,41 @@ class Returns400Test:
         db.session.refresh(venue)
         assert venue.collectiveInterventionArea == ["01", "02"]
 
+    @pytest.mark.parametrize(
+        "url,error",
+        [
+            ("missing.something", "The protocol must be http:// or https://."),
+            ("https:///not/domain", "Relative path are forbidden."),
+            ("https://10.11.12.13", "IP address are forbidden."),
+            ("https://example.com/../../etc/password", "Relative path are forbidden."),
+            ("https://login:password@example.com", "Authenticated urls are forbidden."),
+            ("https://[::1]", "IP address are forbidden."),
+            ("https://missing", "Top level domains are forbidden."),
+        ],
+    )
+    def test_invalid_website(self, url, error, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, collectiveInterventionArea=["01", "02"]
+        )
+        venue_data = {
+            "collectiveDomains": [1],
+            "collectiveStudents": [educational_models.StudentLevels.COLLEGE4.value],
+            "collectiveNetwork": ["network1", "network2"],
+            "collectiveDescription": "Description",
+            "collectiveWebsite": url,
+            "collectiveInterventionArea": ["01", "02"],
+            "collectiveLegalStatus": 2,
+            "collectivePhone": "0600000000",
+            "collectiveEmail": "john@doe.com",
+        }
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["collectiveWebsite"] == [error]
+
     def test_should_store_collective_phone(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(

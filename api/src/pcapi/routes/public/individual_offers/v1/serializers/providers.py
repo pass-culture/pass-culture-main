@@ -1,8 +1,7 @@
-import pydantic as pydantic_v2
-
 from pcapi.core.providers import models as providers_models
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
+from pcapi.serialization import utils as serialization_utils
 
 
 class ProviderResponse(serialization.HttpBodyModel):
@@ -28,12 +27,12 @@ class ProviderResponse(serialization.HttpBodyModel):
 
 
 class ProviderUpdate(serialization.HttpBodyModel):
-    notification_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
-    booking_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
-    cancel_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
+    notification_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
+    booking_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
+    cancel_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
 
 
 class VenueProviderExternalUrlsUpdate(serialization.HttpBodyModel):
-    notification_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
-    booking_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
-    cancel_url: pydantic_v2.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
+    notification_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
+    booking_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
+    cancel_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED

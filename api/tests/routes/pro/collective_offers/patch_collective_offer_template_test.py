@@ -220,7 +220,7 @@ class Returns200Test:
             json={
                 "contactEmail": "a@b.com",
                 "contactPhone": "0101010101",
-                "contactUrl": "http://localhost/",
+                "contactUrl": "http://example.com/",
                 "contactForm": None,
             },
         )
@@ -231,7 +231,7 @@ class Returns200Test:
         )
         assert updated_offer.contactEmail == "a@b.com"
         assert updated_offer.contactPhone == "+33101010101"
-        assert updated_offer.contactUrl == "http://localhost/"
+        assert updated_offer.contactUrl == "http://example.com/"
         assert updated_offer.contactForm is None
 
     def test_with_start_and_end_equal(self, client):

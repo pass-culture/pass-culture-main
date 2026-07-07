@@ -1,6 +1,9 @@
 import datetime
 import decimal
+import ipaddress
 import typing
+from functools import partial
+from urllib import parse
 
 import flask
 import pydantic as pydantic_v2
@@ -177,6 +180,42 @@ def check_date_in_future_and_remove_timezone(
     return no_tz_value
 
 
+def check_url[T: (pydantic_v1.HttpUrl | pydantic_v2.HttpUrl | str | None)](
+    value: T, pydantic_version: typing.Literal["v1"] | typing.Literal["v2"]
+) -> T:
+    ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
+    if not value:
+        return value
+
+    try:
+        unquoted_url = parse.unquote(str(value))
+    except Exception:
+        raise ErrorClass("The url is invalid.")
+
+    scheme, netloc, path, query, fragment = parse.urlsplit(unquoted_url)
+
+    if "/../" in path:
+        raise ErrorClass("Relative path are forbidden.")
+    if not scheme or scheme.lower() not in ("https", "http"):
+        raise ErrorClass("The protocol must be http:// or https://.")
+    if not netloc:
+        raise ErrorClass("Relative path are forbidden.")
+    if "@" in netloc:
+        raise ErrorClass("Authenticated urls are forbidden.")
+    if "[" in netloc or "]" in netloc:
+        raise ErrorClass("IP address are forbidden.")
+    if "." not in netloc:
+        raise ErrorClass("Top level domains are forbidden.")
+    try:
+        ipaddress.ip_address(netloc)
+    except ValueError:
+        pass
+    else:
+        raise ErrorClass("IP address are forbidden.")
+
+    return value
+
+
 def _check_datetime_in_future_and_format_to_utc_datetime(value: datetime.datetime) -> datetime.datetime:
     if value.tzinfo is None:
         raise PydanticError("The datetime must be timezone-aware.")
@@ -224,6 +263,11 @@ def validate_phone_number_nullable(phone_number: str | None) -> str | None:
     return validate_phone_number(phone_number)
 
 
+def validate_url(field_name: str, always: bool = False) -> classmethod:
+    validation_function = partial(check_url, pydantic_version="v1")
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(validation_function)
+
+
 def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
     if args is None or isinstance(args, list):
         return args
@@ -234,7 +278,8 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 # use this validator for a query parameter that we need to parse as a list
 ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)
 
-HttpUrlString = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(str)]
+HttpUrl = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(partial(check_url, pydantic_version="v2"))]
+HttpUrlString = typing.Annotated[HttpUrl, pydantic_v2.AfterValidator(str)]
 
 # by default a Decimal field will have number | string in the generated schema
 # this allows us to keep only number

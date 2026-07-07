@@ -1,6 +1,5 @@
 import datetime
 import enum
-import re
 import typing
 from decimal import Decimal
 from decimal import InvalidOperation
@@ -70,10 +69,6 @@ class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     min_length = 1
 
 
-WEBSITE_URL_REGEX = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
-COMPILED_WEBSITE_URL_REGEX = re.compile(WEBSITE_URL_REGEX, flags=re.IGNORECASE)
-
-
 # NOTE(jbaudet - 02/2026): deprecated -> pydantic v2 migration ongoing
 # check VenueContactModelV2 below.
 # It has not been removed yet because it is used by another model used
@@ -103,22 +98,27 @@ class VenueContactModel(BaseModel):
 
     @validator("website")
     def validate_website_url(cls, website: str) -> str:
-        if website is None or re.match(WEBSITE_URL_REGEX, website, re.IGNORECASE):
-            return website
-        raise ValueError(f"url du site web invalide: {website}")
+        try:
+            serialization_utils.check_url(website, "v1")
+        except ValueError:
+            raise ValueError(f"url du site web invalide: {website}")
+        return website
 
 
 class VenueContactModelV2(BaseModelV2):
     email: pydantic_v2.EmailStr | None = None
-    website: typing.Annotated[str, pydantic_v2.StringConstraints(max_length=256)] | None = pydantic_v2.Field(
-        pattern=COMPILED_WEBSITE_URL_REGEX, default=None
-    )
+    website: str | None = pydantic_v2.Field(default=None, max_length=256)
     phone_number: str | None = None
     social_medias: SocialMediasV2 | None = None
 
     @pydantic_v2.field_validator("phone_number", mode="after")
     def validate_phone_number(cls, phone_number: str | None) -> str | None:
         return serialization_utils.validate_phone_number_nullable(phone_number)
+
+    @pydantic_v2.field_validator("website", mode="after")
+    def validate_website_url(cls, website: str | None) -> str | None:
+        serialization_utils.check_url(website, "v2")
+        return website
 
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,

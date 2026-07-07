@@ -12,6 +12,7 @@ from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
+from pcapi.serialization.utils import check_url
 
 
 class DMSApplicationstatus(enum.Enum):
@@ -75,6 +76,12 @@ class EditVenueCollectiveDataBodyModel(HttpBodyModel):
     collectivePhone: str | None = pydantic_v2.Field(None, max_length=50)
     collectiveEmail: str | None = pydantic_v2.Field(None, max_length=150)
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None = None
+
+    @field_validator("collectiveWebsite", mode="after")
+    @classmethod
+    def validate_collectiveWebsite(cls, website: str | None) -> str | None:
+        check_url(website, pydantic_version="v2")
+        return website
 
     @field_validator("collectiveStudents", mode="after")
     @classmethod
