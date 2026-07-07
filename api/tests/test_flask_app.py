@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+from flask import current_app
 from flask import url_for
 from werkzeug.routing import IntegerConverter
 from werkzeug.routing import PathConverter
@@ -162,3 +163,8 @@ def test_endpoints_require_authentication(client, app):
                     "Is this normal? If so add it to the endpoints whitelist in `tests.flask_app.KNOWN_PUBLIC_ENDPOINTS`."
                 )
     assert len(errors) == 0, f"Found {len(errors)} endpoint publicly reachable:\n" + "\n".join(errors)
+
+
+def test_redis():
+    info = current_app.redis_client.info()
+    assert info["redis_version"] == "7.0.0"
