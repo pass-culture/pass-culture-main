@@ -34,6 +34,7 @@ from pcapi.routes.serialization.address_serialize import retrieve_address_info_f
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
+from pcapi.serialization.utils import validate_url
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -109,6 +110,9 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
     _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
+    _validation_external_ticket_office_url = validate_url("externalTicketOfficeUrl")
+    _validation_url = validate_url("url")
+    _validation_video_url = validate_url("video_url")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -764,6 +768,9 @@ class PostOfferBodyModel(MinimalPostOfferBodyModel):
         if value == offers_models.WithdrawalTypeEnum.IN_APP:
             raise ValueError("Withdrawal type cannot be in_app for manually created offers")
         return value
+
+    _validation_external_ticket_office_url = validate_url("external_ticket_office_url")
+    _validation_url = validate_url("url")
 
 
 class ProAdviceModel(HttpBodyModel):

@@ -890,7 +890,7 @@ class UpdateVenueTest(PostEndpointHelper):
     def test_update_venue(self, mock_get_address, authenticated_client, siren, old_siret, new_siret):
         offerer = offerers_factories.OffererFactory(siren=siren)
         contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -993,7 +993,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -1076,7 +1076,7 @@ class UpdateVenueTest(PostEndpointHelper):
         ban_id,
     ):
         contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -1133,7 +1133,7 @@ class UpdateVenueTest(PostEndpointHelper):
         offerer,
     ):
         contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -1500,7 +1500,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
@@ -1533,7 +1533,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["contact.phone_number"]["new_info"] == data["phone_number"]
 
     def test_update_empty_venue_contact_email(self, authenticated_client, offerer):
-        website = "update.venue@example.com"
+        website = "http://example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,

@@ -448,7 +448,7 @@ class CreateActivityOnlineTest(CreateOfferBase):
     endpoint = "/v2/offers"
 
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online@test.com"
+        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
             "url": activity_url,
@@ -468,7 +468,7 @@ class CreateActivityOnlineTest(CreateOfferBase):
         assert offer.isEvent
 
     def test_create_offer_with_show_type_is_ok(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online@test.com"
+        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
             "extraData": {"showType": 100, "showSubType": 101},
@@ -494,7 +494,7 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
     endpoint = "/v2/offers"
 
     def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
-        activity_url = "https://activity.online@test.com"
+        activity_url = "https://activity.online.test.com"
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
             "extraData": {"showType": 100, "showSubType": 101},
@@ -517,7 +517,7 @@ class CreateActivityOnlineEventTest(CreateOfferBase):
     def test_create_offer_without_show_type_is_not_ok(self, auth_client, venue, subcategory_id):
         payload = {
             **offer_minimal_shared_data(subcategory_id, venue),
-            "url": "https://some.url@test.com",
+            "url": "https://some.url.test.com",
         }
 
         with assert_no_changes(Offer):

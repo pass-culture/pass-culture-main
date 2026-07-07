@@ -715,6 +715,28 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id != existing_offer.id).first() is None
         assert db.session.query(offers_models.Stock).first() is None
 
+    @pytest.mark.parametrize(
+        "url,error",
+        [
+            ("missing.something", "invalid or missing URL scheme"),
+            ("https:///not/domain", "URL host invalid"),
+            ("https://10.11.12.13", "IP address are forbidden."),
+            ("https://example.com/../../etc/password", "Relative path are forbidden."),
+            ("https://login:password@example.com", "Authenticated urls are forbidden."),
+            ("https://[::1]", "IP address are forbidden."),
+            ("https://missing", "URL host invalid, top level domain required"),
+        ],
+    )
+    def test_incorrect_payload_external_ticket_office_url_should_return_400(self, url, error):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["externalTicketOfficeUrl"] = url
+
+        response = self.make_request(plain_api_key, json_body=payload)
+
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == [error]
+
     def test_venue_allowed_should_return_404(self):
         not_allowed_venue = offerers_factories.VenueFactory()
         plain_api_key, _ = self.setup_active_venue_provider()

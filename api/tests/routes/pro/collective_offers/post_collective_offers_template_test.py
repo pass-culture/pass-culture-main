@@ -341,7 +341,7 @@ class Returns400Test:
             **payload,
             "contactEmail": None,
             "contactPhone": None,
-            "contactUrl": "http://localhost/dir/something.html",
+            "contactUrl": "http://example.com/dir/something.html",
             "contactForm": "form",
         }
         response = pro_client.post("/collective/offers-template", json=data)
