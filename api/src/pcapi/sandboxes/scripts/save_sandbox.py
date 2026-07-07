@@ -14,6 +14,15 @@ from pcapi.sandboxes.scripts.utils import helpers
 
 logger = logging.getLogger(__name__)
 
+SAVE_SANDBOX_BY_NAME: typing.Final[dict[str, typing.Callable[[], None]]] = {
+    "accessibility_offers": scripts.sandbox_accessibility_offers.save_sandbox,
+    "allocine": scripts.sandbox_allocine.save_sandbox,
+    "beneficiaries": scripts.sandbox_beneficiaries.save_sandbox,
+    "big": scripts.sandbox_big.save_sandbox,
+    "industrial": scripts.sandbox_industrial.save_sandbox,
+    "tiny": scripts.sandbox_tiny.save_sandbox,
+}
+
 
 def save_sandbox(
     name: tuple[str],
@@ -22,6 +31,9 @@ def save_sandbox(
     with_indexing: bool = True,
     steps_to_skip: typing.Iterable[str] | None = None,
 ) -> None:
+    if any(n for n in name if n not in SAVE_SANDBOX_BY_NAME):
+        raise ValueError("Invalid name provided")
+
     if with_clean:
         logger.info("Cleaning database")
         clean_all_database(reset_ids=True)
@@ -29,12 +41,12 @@ def save_sandbox(
     if with_clean_bucket:
         clean_industrial_mediations_bucket()
 
+    logger.info("Starting sandbox %s", name)
     for sandbox_name in name:
-        script_name = f"sandbox_{sandbox_name}"
-        sandbox_module = getattr(scripts, script_name)
+        save_sandbox_func = SAVE_SANDBOX_BY_NAME[sandbox_name]
 
         with helpers.skip_steps(steps=steps_to_skip):
-            sandbox_module.save_sandbox()
+            save_sandbox_func()
 
     logger.info("Sandbox %s saved", name)
     if with_indexing:
