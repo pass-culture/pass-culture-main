@@ -93,6 +93,7 @@ $info-box-margin-left: rem.torem(24px);
 
     &.inline-group {
       display: flex;
+      align-items: start;
       flex-flow: row wrap;
       flex-direction: row;
       gap: var(--size-spacing-l);
