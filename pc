@@ -156,8 +156,8 @@ function exit_success_restoring_branch() {
 }
 
 function pod_console() {
-  if [[ "$ENV" == pcapi-pr* ]]; then
-    POD_GREP="testing-pcapi-api"
+  if [[ "$ENV" == pcapi-preview* ]]; then
+    POD_GREP="pcapi-tst-api"
   else
     POD_GREP="$ENV-console"
   fi
@@ -417,8 +417,8 @@ elif [[ "$CMD" == "python" ]]; then
   fi
 
 # Used to deploy preview environment
-# Usage pc deploy-preview --ref <branch> -f sandbox=empty|industrial -f sandbox-args='...' -f front-only=true|false
-# -ref <branch> : branch to deploy defaults to current branch
+# Usage pc deploy-preview --branch <branch> -f sandbox=empty|industrial -f sandbox-args='...' -f front-only=true|false
+# --branch <branch> : branch to deploy defaults to current branch
 # -f sandbox : sandbox to use (empty|industrial) defaults to empty
 # -f sandbox-args : arguments to pass to the sandbox command
 # -f front-only : if true, only deploys the front-end, defaults to false
@@ -428,10 +428,10 @@ elif [[ "$CMD" == "deploy-preview" ]]; then
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --ref)
+      --branch)
         shift
         if [[ -z "${1:-}" ]]; then
-          echo "Error: --ref requires a branch name"
+          echo "Error: --branch requires a branch name"
           exit 1
         fi
         REF_ARG="$1"
@@ -453,12 +453,12 @@ elif [[ "$CMD" == "deploy-preview" ]]; then
   # If no branches is specified, use current branch
   if [[ -z "$REF_ARG" ]]; then
     if ! REF_ARG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
-      echo "Error: could not determine current git branch. Use --ref explicitly."
+      echo "Error: could not determine current git branch. Use --branch explicitly."
       exit 1
     fi
   fi
 
-  RUN="gh workflow run dev_on_dispatch_deploy_pullrequests.yml --source_branch $REF_ARG $EXTRA_FLAGS"
+  RUN="gh workflow run ci_deploy_pr_preview.yml --ref master -f source_branch=$REF_ARG $EXTRA_FLAGS"
 
 
 
