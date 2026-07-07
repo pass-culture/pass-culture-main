@@ -69,7 +69,9 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
     return serialization.GetShowTypesResponse(
         __root__=[
-            serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
+            serialization.ShowTypeResponse(
+                id=show_type_slug, label=show_type.label, family_label=show.SHOW_TYPES_BY_SLUG[show_type_slug].label
+            )
             for show_type_slug, show_type in show.SHOW_SUB_TYPES_BY_SLUG.items()
         ]
     )
