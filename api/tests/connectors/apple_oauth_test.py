@@ -5,7 +5,10 @@ import jwt
 import pytest
 
 from pcapi.connectors.apple_oauth import AppleSignInException
+from pcapi.connectors.apple_oauth import build_refresh_token_payload
+from pcapi.connectors.apple_oauth import decrypt_refresh_token_payload
 from pcapi.connectors.apple_oauth import get_apple_user
+from pcapi.connectors.apple_oauth import revoke_refresh_token
 from pcapi.utils import requests
 
 
@@ -15,14 +18,71 @@ def test_get_apple_user(mocker, requests_mock):
     mocker.patch(
         "jwt.decode", return_value={"sub": "appleUserId", "email": "mail@example.com", "email_verified": "true"}
     )
-    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
+    requests_mock.post(
+        "https://appleid.apple.com/auth/token",
+        status_code=200,
+        json={"id_token": "eyEncodedIDToken", "refresh_token": "rt_apple"},
+    )
 
-    user = get_apple_user("valid_auth_code", is_web=True)
+    user, refresh_token = get_apple_user("valid_auth_code", is_web=True)
 
     assert user.sub == "appleUserId"
     assert user.email == "mail@example.com"
     assert user.email_verified is True
     assert user.is_private_email is None
+    assert refresh_token == "rt_apple"
+
+
+def test_get_apple_user_returns_none_refresh_token_when_missing(mocker, requests_mock):
+    mocker.patch("jwt.PyJWKClient.get_signing_key_from_jwt", return_value=MagicMock(key="fake-public-key"))
+    mocker.patch("jwt.encode", return_value="eyFakeJwT")
+    mocker.patch(
+        "jwt.decode", return_value={"sub": "appleUserId", "email": "mail@example.com", "email_verified": "true"}
+    )
+    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"id_token": "eyEncodedIDToken"})
+
+    _, refresh_token = get_apple_user("valid_auth_code", is_web=True)
+
+    assert refresh_token is None
+
+
+def test_get_apple_user_raises_apple_exception_when_id_token_missing(mocker, requests_mock):
+    mocker.patch("jwt.encode", return_value="eyFakeJwT")
+    requests_mock.post("https://appleid.apple.com/auth/token", status_code=200, json={"refresh_token": "rt_apple"})
+
+    with pytest.raises(AppleSignInException):
+        get_apple_user("valid_auth_code", is_web=True)
+
+
+@pytest.mark.settings(APPLE_MOBILE_CLIENT_ID="apple.mobile.client", APPLE_WEB_CLIENT_ID="apple.web.client")
+def test_build_and_decrypt_refresh_token_payload_round_trip():
+    payload = build_refresh_token_payload("rt_apple", is_web=False)
+
+    refresh_token, client_id = decrypt_refresh_token_payload(payload)
+
+    assert refresh_token == "rt_apple"
+    assert client_id == "apple.mobile.client"
+
+
+def test_revoke_refresh_token_makes_a_single_call(mocker, requests_mock):
+    mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
+    matcher = requests_mock.post("https://appleid.apple.com/auth/revoke", status_code=200)
+
+    revoke_refresh_token("rt_apple", "apple.mobile.client")
+
+    assert matcher.call_count == 1
+    body = matcher.last_request.text
+    assert "token=rt_apple" in body
+    assert "token_type_hint=refresh_token" in body
+    assert "client_id=apple.mobile.client" in body
+
+
+def test_revoke_refresh_token_raises_on_http_error(mocker, requests_mock):
+    mocker.patch("jwt.encode", return_value="eyFakeClientSecret")
+    requests_mock.post("https://appleid.apple.com/auth/revoke", status_code=400, reason="Bad request")
+
+    with pytest.raises(requests.exceptions.HTTPError):
+        revoke_refresh_token("rt_apple", "apple.mobile.client")
 
 
 def test_logs_and_raises_on_fetch_id_token_bad_request(mocker, requests_mock, caplog):
