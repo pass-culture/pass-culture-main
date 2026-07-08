@@ -1,12 +1,12 @@
 import logging
 
 import redis
-from flask import current_app
 
 from pcapi.core.external.attributes.api import get_pro_attributes
 from pcapi.core.external.beamer.api import update_beamer_user
 from pcapi.core.external.brevo import update_contact_attributes as update_brevo_user
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -19,7 +19,7 @@ REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE = "pcapi:core:external:attributes:update_p
 
 def add_email_to_async_pro_attributes_update(email: str) -> None:
     try:
-        current_app.redis_client.sadd(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE, email)
+        get_redis_client().sadd(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE, email)
     except redis.exceptions.RedisError:
         logger.exception(
             "Could not add email to update queue",
@@ -28,7 +28,7 @@ def add_email_to_async_pro_attributes_update(email: str) -> None:
 
 
 def update_pro_attributes() -> None:
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     backup_email = redis_client.get(REDIS_BACKUP_EMAIL_TO_UPDATE)
     if backup_email:
         redis_client.sadd(REDIS_EMAIL_LIST_ATTRIBUTES_TO_UPDATE, backup_email)

@@ -13,7 +13,6 @@ from hashlib import md5
 from io import StringIO
 
 import pydantic.v1 as pydantic_v1
-from flask import current_app
 
 from pcapi import settings
 from pcapi.core.geography.constants import MAX_LATITUDE
@@ -23,6 +22,7 @@ from pcapi.utils import module_loading
 from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils import regions
 from pcapi.utils import requests
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
@@ -407,7 +407,7 @@ class ApiAdresseBackend(BaseBackend):
         if cached_data == json.dumps({"type": "FeatureCollection", "features": []}):
             # This is a broken response from BAN API, real empty response should look like this
             # {'type': 'FeatureCollection', 'version': 'draft', 'features': [], 'attribution': 'BAN', 'licence': 'ETALAB-2.0', 'query': 'Pouroi faire', 'filters': {'postcode': '97351'}, 'limit': 1}
-            current_app.redis_client.delete(key_template % {"hash_params": hash_params})
+            get_redis_client().delete(key_template % {"hash_params": hash_params})
 
         return json.loads(str(cached_data))
 

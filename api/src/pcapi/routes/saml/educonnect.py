@@ -1,7 +1,6 @@
 import logging
 from urllib.parse import urlencode
 
-from flask import current_app as app
 from flask import redirect
 from flask import request
 from flask_login import current_user
@@ -24,6 +23,7 @@ from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
@@ -75,7 +75,7 @@ def login_educonnect_e2e(body: educonnect_serializers.EduconnectUserE2ERequest) 
 
     mocked_saml_request_id = f"saml-request-id_e2e-test_{current_user.id}"
     key = educonnect_connector.build_saml_request_id_key(mocked_saml_request_id)
-    app.redis_client.set(name=key, value=current_user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    get_redis_client().set(name=key, value=current_user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     educonnect_user = users_factories.EduconnectUserFactory.create(
         birth_date=body.birth_date,
@@ -164,7 +164,7 @@ def on_educonnect_authentication_response() -> Response:
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
     key = educonnect_connector.build_saml_request_id_key(saml_request_id)
-    return app.redis_client.get(key)
+    return get_redis_client().get(key)
 
 
 def _on_educonnect_authentication_errors(

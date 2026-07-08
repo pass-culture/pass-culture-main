@@ -1,7 +1,5 @@
 import hashlib
 
-from flask import current_app
-
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
@@ -10,6 +8,7 @@ from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import logs as serialization
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -291,10 +290,10 @@ def log_tracking_filter(
     # has already been logged).
     hashed_data = hashlib.new("md5", data=str(extra_data).encode("utf-8")).hexdigest()
     key = f"adage_iframe_tracking_filter_{hashed_data}"
-    if current_app.redis_client.incr(key) == 1:
+    if get_redis_client().incr(key) == 1:
         # the key did not exist and has been created -> expire in 5s
         # incr is only used to perform exists & set.
-        current_app.redis_client.expire(key, 5)
+        get_redis_client().expire(key, 5)
     else:
         return
 

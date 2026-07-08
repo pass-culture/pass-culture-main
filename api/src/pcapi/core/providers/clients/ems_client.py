@@ -1,8 +1,6 @@
 import json
 import logging
 
-from flask import current_app
-
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
@@ -13,6 +11,7 @@ from pcapi.core.providers.clients import cinema_client
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import exceptions as requests_exception
 
 
@@ -80,7 +79,7 @@ class EMSAPIClient(cinema_client.CinemaAPIClient):
                     }
                 )
 
-                current_app.redis_client.lpush(EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
+                get_redis_client().lpush(EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
             raise
 
         self.connector.raise_for_status(response)

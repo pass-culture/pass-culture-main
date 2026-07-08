@@ -15,7 +15,6 @@ import PIL
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
@@ -79,6 +78,7 @@ from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -2448,7 +2448,7 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
         log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
         logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
 
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=offer_chunk_size)):
         try:
             with atomic():
@@ -2495,7 +2495,7 @@ def delete_unbookable_unbooked_old_offers(
 
     count = 0
 
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     max_offer_id = db.session.query(sa.func.max(models.Offer.id)).scalar()
 
     if min_id is None:

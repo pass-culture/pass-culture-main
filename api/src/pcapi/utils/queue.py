@@ -2,7 +2,8 @@ import json
 import logging
 
 import redis.exceptions
-from flask import current_app
+
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ def add_to_queue(queue_name: str, item: dict, at_head: bool = False) -> None:
     if not item:
         return
     dict_json = json.dumps(item)
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     try:
         if at_head:
             redis_client.lpush(queue_name, dict_json)
@@ -23,7 +24,7 @@ def add_to_queue(queue_name: str, item: dict, at_head: bool = False) -> None:
 
 
 def pop_from_queue(queue_name: str) -> dict | None:
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     try:
         item = redis_client.lpop(queue_name)
     except redis.exceptions.RedisError:

@@ -9,7 +9,6 @@ from decimal import Decimal
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
-from flask import current_app
 from flask import request
 
 import pcapi.core.bookings.exceptions as bookings_exceptions
@@ -55,6 +54,7 @@ from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
 
@@ -261,7 +261,7 @@ def _email_resends_key(email: str) -> str:
 
 
 def get_remaining_email_resends(email: str) -> int:
-    email_validation_resends_count = current_app.redis_client.get(_email_resends_key(email))
+    email_validation_resends_count = get_redis_client().get(_email_resends_key(email))
 
     if email_validation_resends_count:
         return max(settings.MAX_EMAIL_RESENDS - int(email_validation_resends_count), 0)
@@ -270,7 +270,7 @@ def get_remaining_email_resends(email: str) -> int:
 
 
 def get_email_validation_resends_limitation_expiration_time(email: str) -> datetime.datetime | None:
-    ttl = current_app.redis_client.ttl(_email_resends_key(email))
+    ttl = get_redis_client().ttl(_email_resends_key(email))
 
     if ttl > 0:
         return date_utils.get_naive_utc_now() + datetime.timedelta(seconds=ttl)
@@ -283,7 +283,7 @@ def check_email_validation_resends_count(email: str) -> None:
     Check if the user has reached the maximum number of email validation resends.
     If yes, raise an exception.
     """
-    email_validation_resends = current_app.redis_client.get(_email_resends_key(email))
+    email_validation_resends = get_redis_client().get(_email_resends_key(email))
 
     if email_validation_resends and int(email_validation_resends) >= settings.MAX_EMAIL_RESENDS:
         raise exceptions.EmailValidationLimitReached()
@@ -294,11 +294,11 @@ def increment_email_resends_count(email: str) -> None:
     Increment or initiate the number of resends of the email validation email
     """
     email_validation_resends_key = _email_resends_key(email)
-    email_validation_resends = current_app.redis_client.incr(email_validation_resends_key)
+    email_validation_resends = get_redis_client().incr(email_validation_resends_key)
 
     if email_validation_resends == 1:
         # If the key did not exist, set the expiration time
-        current_app.redis_client.expire(email_validation_resends_key, settings.EMAIL_RESENDS_TTL)
+        get_redis_client().expire(email_validation_resends_key, settings.EMAIL_RESENDS_TTL)
 
 
 def request_password_reset(user: models.User | None, reason: constants.SuspensionReason | None = None) -> None:

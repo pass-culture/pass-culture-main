@@ -9,7 +9,6 @@ from operator import attrgetter
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 from sqlalchemy.sql.base import ExecutableOption
 
 import pcapi.core.external_bookings.api as external_bookings_api
@@ -52,6 +51,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import queue
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -1520,7 +1520,7 @@ def cancel_unstored_external_bookings() -> None:
 
 def cancel_ems_external_bookings() -> None:
     EMS_DEADLINE_BEFORE_CANCELLING = 90
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     ems_queue = EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 
     while redis_client.llen(ems_queue) > 0:

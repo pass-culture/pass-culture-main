@@ -8,7 +8,8 @@ from typing import Iterable
 from typing import cast
 
 import pydantic.v1 as pydantic_v1
-from flask import current_app
+
+from pcapi.utils.redis import get_redis_client
 
 
 class _CacheProxy:
@@ -48,7 +49,7 @@ def get_from_cache(
         compatibility. It can be either `BaseModel` or `str`.
     :param force_update: If True force the update of the field cache.
     """
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     if key_args:
         key = key_template % key_args
     else:

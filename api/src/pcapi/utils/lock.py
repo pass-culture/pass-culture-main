@@ -4,7 +4,8 @@ import typing
 from contextlib import contextmanager
 
 import redis
-from flask import current_app
+
+from pcapi.utils.redis import get_redis_client
 
 
 class LockError(Exception):
@@ -17,7 +18,7 @@ class LockError(Exception):
 
 @contextmanager
 def lock(name: str, ttl: int | datetime.timedelta = 60, timeout: int | float = 30) -> typing.Iterator[None]:
-    redis_client = current_app.redis_client
+    redis_client = get_redis_client()
     start = time.time()
     while True:
         if not redis_client.exists(name):

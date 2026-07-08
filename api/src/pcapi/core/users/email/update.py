@@ -2,8 +2,6 @@ import enum
 import logging
 from datetime import datetime
 
-from flask import current_app
-
 import pcapi.core.external.brevo as external_contacts
 from pcapi import settings
 from pcapi.core import token as token_utils
@@ -18,6 +16,7 @@ from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
 
@@ -247,7 +246,7 @@ def check_email_update_attempts_count(user: models.User) -> None:
     """Check if the user has reached the maximum number of email update attempts.
     If yes, raise an exception.
     """
-    update_email_attempts = current_app.redis_client.get(f"update_email_attemps_user_{user.id}")
+    update_email_attempts = get_redis_client().get(f"update_email_attemps_user_{user.id}")
     if update_email_attempts and int(update_email_attempts) >= settings.MAX_EMAIL_UPDATE_ATTEMPTS:
         raise exceptions.EmailUpdateLimitReached()
 
@@ -258,18 +257,18 @@ def increment_email_update_attempts_count(user: models.User) -> None:
     """
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
 
-    result = current_app.redis_client.incr(update_email_attempts_key)
+    result = get_redis_client().incr(update_email_attempts_key)
     if result == 1:
         # If the key did not exist, set the expiration time
-        current_app.redis_client.expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)
+        get_redis_client().expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)
 
 
 def check_pro_email_update_attempts(user: models.User) -> None:
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
-    count = current_app.redis_client.incr(update_email_attempts_key)
+    count = get_redis_client().incr(update_email_attempts_key)
 
     if count == 1:
-        current_app.redis_client.expire(update_email_attempts_key, constants.EMAIL_PRO_UPDATE_ATTEMPTS_TTL)
+        get_redis_client().expire(update_email_attempts_key, constants.EMAIL_PRO_UPDATE_ATTEMPTS_TTL)
 
     if count > constants.MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO:
         raise exceptions.EmailUpdateLimitReached()

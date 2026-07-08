@@ -42,7 +42,6 @@ import pytz
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
-from flask import current_app
 from flask import render_template
 
 import pcapi.core.bookings.models as bookings_models
@@ -75,6 +74,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import Reimbursement
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -923,13 +923,13 @@ def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
     """
-    current_app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)
+    get_redis_client().set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
     _generate_cashflows(batch)
     # if the script fail we want to keep the lock to forbid backoffice to modify the data
-    current_app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)
+    get_redis_client().delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)
     return batch
 
 
@@ -3603,7 +3603,7 @@ def cancel_finance_incident(
 
 
 def are_cashflows_being_generated() -> bool:
-    return bool(current_app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))
+    return bool(get_redis_client().exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))
 
 
 def deprecate_venue_bank_account_links(bank_account: models.BankAccount, comment: str | None = None) -> None:

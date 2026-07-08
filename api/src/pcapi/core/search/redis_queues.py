@@ -3,10 +3,10 @@ import logging
 from collections import abc
 
 import redis
-from flask import current_app
 
 from pcapi import settings
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 class AlgoliaIndexingQueuesMixin:
     def __init__(self) -> None:
-        self.redis_client = current_app.redis_client
+        self.redis_client = get_redis_client()
         super().__init__()
 
     def _can_enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> bool:
@@ -281,7 +281,7 @@ class AlgoliaIndexingQueuesMixin:
         once a delay has passed and we are reasonably sure that the job
         has crashed (and that the items must be processed again).
         """
-        redis_client = current_app.redis_client
+        redis_client = get_redis_client()
         for originating_queue in QUEUES:
             # There a very few queues, no need to paginate with `_cursor`.
             pattern = f"{originating_queue}:processing:*"
@@ -297,7 +297,7 @@ class AlgoliaIndexingQueuesMixin:
                     break
 
     def _clean_processing_queue(self, processing_queue: str, originating_queue: str) -> None:
-        redis_client = current_app.redis_client
+        redis_client = get_redis_client()
         with redis_client.pipeline(transaction=True) as pipeline:
             try:
                 for id_ in redis_client.smembers(processing_queue):
