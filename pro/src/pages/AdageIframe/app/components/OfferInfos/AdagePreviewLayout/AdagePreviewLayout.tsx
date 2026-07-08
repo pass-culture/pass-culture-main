@@ -103,11 +103,19 @@ export const AdagePreviewLayout = ({
         postalCode: offer.institution?.postalCode ?? '',
         id: offer.institution?.id ?? 0,
       },
+      // the price amounts are returned in cents by the iframe routes
+      // so we need to convert the amounts of the (pc pro) offer to cents here
       stock: {
         ...offer.collectiveStock,
         price: Number(offer.collectiveStock?.price) * 100,
+        servicePrice: Number(offer.collectiveStock?.servicePrice) * 100,
         id: Number(offer.collectiveStock?.id),
         educationalPriceDetail: offer.collectiveStock?.priceDetail,
+        collectiveAdditionalFees:
+          offer.collectiveStock?.collectiveAdditionalFees?.map((fee) => ({
+            ...fee,
+            amount: Number(fee.amount) * 100,
+          })),
       },
     }),
     ...(isTemplate && { educationalPriceDetail: offer.priceDetail }),
