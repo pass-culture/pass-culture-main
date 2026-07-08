@@ -68,7 +68,6 @@ from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.videos import api as videos_api
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.offer_mixin import OfferValidationType
@@ -1979,104 +1978,6 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     if not venues_choices:
         raise exceptions.NoDestinationVenue()
     return venues_choices
-
-
-def check_can_move_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    venues_choices = offerers_repository.get_offerers_venues_with_pricing_point(
-        offer.venue,
-        include_without_pricing_points=True,
-        only_similar_pricing_points=True,
-    )
-    if not venues_choices:
-        raise exceptions.NoDestinationVenue()
-    return venues_choices
-
-
-# WARNING: this is WIP, do not use it yet
-def move_offer(
-    offer: models.Offer,
-    destination_venue: offerers_models.Venue,
-) -> None:
-    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
-        raise NotImplementedError("Activate VENUE_REGULARIZATION to use this feature")
-
-    offer_id = offer.id
-    original_venue = offer.venue
-
-    venue_choices = check_can_move_offer(offer)
-
-    if destination_venue not in venue_choices:
-        raise exceptions.ForbiddenDestinationVenue()
-
-    bookings_ids = (
-        db.session.query(bookings_models.Booking)
-        .with_entities(bookings_models.Booking.id)
-        .join(bookings_models.Booking.stock)
-        .filter(
-            models.Stock.offerId == offer.id,
-            bookings_models.Booking.venueId == original_venue.id,
-        )
-        .limit(10_000)
-    )
-    bookings = db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(bookings_ids))
-
-    db.session.flush()
-    with transaction():
-        if offer.offererAddress:
-            # The offer gets a new location since it has a new venueId, even if it was not at the same address that the old venue
-            destination_oa = offerers_api.get_or_create_offer_location(
-                offerer_id=original_venue.managingOffererId,
-                venue_id=destination_venue.id,
-                address_id=offer.offererAddress.addressId,
-                label=offer.offererAddress.label,
-            )
-            db.session.add(destination_oa)
-            offer.offererAddress = destination_oa
-
-        # End active headline offer before changing venue
-        for headline_offer in offer.headlineOffers:
-            headline_offer.venue = destination_venue
-            if headline_offer.isActive:
-                remove_headline_offer(headline_offer)
-                logger.info(
-                    "Headline Offer Deactivation",
-                    extra={
-                        "analyticsSource": "backoffice",
-                        "HeadlineOfferId": headline_offer.id,
-                        "Reason": "Offer venue was changed during regularization",
-                    },
-                    technical_message_id="headline_offer_deactivation",
-                )
-            db.session.flush()
-
-        # Delete pro_advice when changing venue
-        if offer.proAdvice is not None:
-            db.session.delete(offer.proAdvice)
-            logger.info(
-                "Pro advice deleted",
-                extra={
-                    "analyticsSource": "backoffice",
-                    "offerId": offer.id,
-                    "venueId": offer.venueId,
-                    "Reason": "Offer venue was changed during regularization",
-                },
-                technical_message_id="pro_advice.deleted",
-            )
-
-        offer.venue = destination_venue
-        db.session.add(offer)
-
-        while updated_bookings := bookings.update({"venueId": destination_venue.id}, synchronize_session=False):
-            logger.info("Updated %d bookings for offer %d", updated_bookings, offer_id)
-
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            {offer_id},
-            reason=IndexationReason.OFFER_UPDATE,
-            log_extra={"changes": {"venueId"}},
-        )
-    )
 
 
 def move_event_offer(
