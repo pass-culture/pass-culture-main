@@ -473,6 +473,7 @@ class CinemaOffer(serialization.HttpBodyModel):
         pydantic_v2.Field(min_length=1, max_length=10, description="Price categories available for offer stocks"),
         pydantic_v2.AfterValidator(_validate_ids_at_provider_are_unique),
     ]
+    enable_double_bookings: bool = fields_v2.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
     @pydantic_v2.model_validator(mode="after")
     def validate_price_categories(self) -> typing.Self:

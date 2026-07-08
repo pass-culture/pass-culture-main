@@ -16,6 +16,7 @@ You will have two dates at your disposal :
 ## July 2026
 - The `label` field has been added to the response of the [**Get Product Categories endpoint**](/rest-api#tag/Product-Offers/operation/GetProductCategories).
 - The `familyLabel` field has been added to the response of the [**Get Show Types endpoint**](/rest-api#tag/Offer-Attributes/operation/GetShowTypes).
+- The `enableDoubleBookings` param has been added in the [**Batch Update Cinema Sessions endpoint**](/rest-api#tag/Event-Offers/operation/PutBatchUpdateCinemaSessions)
 
 ## June 2026
 - A new endpoint has been added to synchronize cinema sessions: [**Batch Update Cinema Sessions**](/rest-api#tag/Event-Offers/operation/PutBatchUpdateCinemaSessions)
