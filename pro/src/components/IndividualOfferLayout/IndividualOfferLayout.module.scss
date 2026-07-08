@@ -2,6 +2,27 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
+.header-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-m);
+
+  @media screen and (min-width: size.$laptop) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--size-spacing-xl);
+  }
+}
+
+.main-heading {
+  margin-bottom: var(--size-spacing-m);
+
+  @media screen and (min-width: size.$laptop) {
+    margin-bottom: 0;
+  }
+}
+
 .content {
   margin-top: rem.torem(15px);
 }
@@ -22,13 +43,11 @@
   }
 }
 
-.title-container {
+.status-container {
   position: relative;
 
   @media screen and (min-width: size.$tablet) {
-    position: absolute;
-    top: 0;
-    right: 0;
+    flex-shrink: 0;
   }
 }
 

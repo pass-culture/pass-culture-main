@@ -18,7 +18,7 @@ interface OnboardingLayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading: React.ReactNode
+  mainHeading?: React.ReactNode
   /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
@@ -49,14 +49,14 @@ export const OnboardingLayout = ({
 }: OnboardingLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
 
-  const mainHeadingWrapper = (
+  const mainHeadingWrapper = mainHeading ? (
     <MainHeading
       className={cn(styles['main-heading'], {
         [styles['main-heading-centered']]: isEntryScreen,
       })}
       mainHeading={mainHeading}
     />
-  )
+  ) : null
 
   const layoutVariant = isStickyActionBarInChild
     ? 'sticky-onboarding'

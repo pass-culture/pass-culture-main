@@ -190,7 +190,9 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props: { offer } })
       await waitFor(() => {
-        expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('paragraph', { name: /offer name/ })
+        ).not.toBeInTheDocument()
       })
     })
 
@@ -222,7 +224,9 @@ describe('IndividualOfferLayout', () => {
         options: { features: ['WIP_OFFER_EXPOSURE'] },
       })
       await waitFor(() => {
-        expect(screen.queryByText(/offer name/)).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('paragraph', { name: /offer name/ })
+        ).not.toBeInTheDocument()
       })
     })
 

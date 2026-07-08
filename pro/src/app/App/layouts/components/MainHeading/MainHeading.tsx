@@ -17,9 +17,13 @@ export const MainHeading = ({
 }: MainHeadingProps): JSX.Element => {
   return (
     <div
-      className={cn(className, styles['main-heading-wrapper'], {
-        [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
-      })}
+      className={cn(
+        styles['main-heading-wrapper'],
+        {
+          [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
+        },
+        className
+      )}
     >
       <h1 className={styles['main-heading-title']}>
         {mainHeading}

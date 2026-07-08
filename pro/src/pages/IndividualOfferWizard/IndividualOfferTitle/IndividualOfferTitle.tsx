@@ -7,13 +7,11 @@ import styles from './IndividualOfferTitle.module.scss'
 
 type IndividualOfferTitleProps = {
   mode: OFFER_WIZARD_MODE
-  isConfirmationPage: boolean
   offer?: GetIndividualOfferWithAddressResponseModel | null
 }
 
 export const IndividualOfferTitle = ({
   mode,
-  isConfirmationPage,
   offer,
 }: IndividualOfferTitleProps) => {
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
@@ -40,10 +38,6 @@ export const IndividualOfferTitle = ({
         {synchronizationTag}
       </div>
     )
-  }
-
-  if (isConfirmationPage) {
-    return undefined
   }
 
   return 'Créer une offre'

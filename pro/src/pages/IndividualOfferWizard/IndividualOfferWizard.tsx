@@ -5,18 +5,11 @@ import { Outlet, useLocation } from 'react-router'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import {
-  IndividualOfferContextProvider,
-  useIndividualOfferContext,
-} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 
-import { IndividualOfferTitle } from './IndividualOfferTitle/IndividualOfferTitle'
 import styles from './IndividualOfferWizard.module.scss'
 
 const IndividualOfferWizardConsumer = () => {
-  const { offer } = useIndividualOfferContext()
-  const mode = useOfferWizardMode()
   const { pathname } = useLocation()
 
   const isOnboarding = pathname.includes('onboarding')
@@ -30,32 +23,12 @@ const IndividualOfferWizardConsumer = () => {
 
   if (isOnboarding) {
     return (
-      <OnboardingLayout
-        mainHeading={
-          <IndividualOfferTitle
-            isConfirmationPage={isConfirmationPage}
-            offer={offer}
-            mode={mode}
-          />
-        }
-        isStickyActionBarInChild
-      >
-        {children}
-      </OnboardingLayout>
+      <OnboardingLayout isStickyActionBarInChild>{children}</OnboardingLayout>
     )
   }
 
   return (
-    <BasicLayout
-      mainHeading={
-        <IndividualOfferTitle
-          isConfirmationPage={isConfirmationPage}
-          offer={offer}
-          mode={mode}
-        />
-      }
-      isStickyActionBarInChild={!isConfirmationPage}
-    >
+    <BasicLayout isStickyActionBarInChild={!isConfirmationPage}>
       {children}
     </BasicLayout>
   )

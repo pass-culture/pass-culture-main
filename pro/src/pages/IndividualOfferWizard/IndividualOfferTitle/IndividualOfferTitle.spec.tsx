@@ -18,7 +18,6 @@ describe('IndividualOfferTitle', () => {
     it('should render "Modifier l’offre" when mode is EDITION', () => {
       renderIndividualOfferTitle({
         mode: OFFER_WIZARD_MODE.EDITION,
-        isConfirmationPage: false,
       })
 
       expect(screen.getByText('Modifier l’offre')).toBeVisible()
@@ -28,7 +27,6 @@ describe('IndividualOfferTitle', () => {
       const offer = getIndividualOfferFactory({ name: 'Mon offre incroyable' })
       renderIndividualOfferTitle({
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        isConfirmationPage: false,
         offer,
       })
 
@@ -44,9 +42,7 @@ describe('IndividualOfferTitle', () => {
       const offer = getIndividualOfferFactory({
         name: 'Mon offre incroyable',
       })
-      renderIndividualOfferTitle({ mode, isConfirmationPage: false, offer }, [
-        'WIP_OFFER_EXPOSURE',
-      ])
+      renderIndividualOfferTitle({ mode, offer }, ['WIP_OFFER_EXPOSURE'])
 
       expect(screen.getByText(offer.name)).toBeVisible()
     })
@@ -59,9 +55,7 @@ describe('IndividualOfferTitle', () => {
         name: 'Mon offre incroyable',
         lastProvider: { name: 'Boost' },
       })
-      renderIndividualOfferTitle({ mode, isConfirmationPage: false, offer }, [
-        'WIP_OFFER_EXPOSURE',
-      ])
+      renderIndividualOfferTitle({ mode, offer }, ['WIP_OFFER_EXPOSURE'])
 
       expect(screen.getByText('Synchronisée : Boost')).toBeVisible()
     })
@@ -74,7 +68,6 @@ describe('IndividualOfferTitle', () => {
       renderIndividualOfferTitle(
         {
           mode: OFFER_WIZARD_MODE.READ_ONLY,
-          isConfirmationPage: false,
           offer,
         },
         ['WIP_OFFER_EXPOSURE']
@@ -88,7 +81,6 @@ describe('IndividualOfferTitle', () => {
     it('should render "Créer une offre" when not on confirmation page', () => {
       renderIndividualOfferTitle({
         mode: OFFER_WIZARD_MODE.CREATION,
-        isConfirmationPage: false,
       })
 
       expect(screen.getByText('Créer une offre')).toBeVisible()
