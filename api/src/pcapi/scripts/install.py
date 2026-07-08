@@ -35,7 +35,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.generate_public_api_openapi_json",
         "pcapi.scripts.generate_native_api_openapi_json",
         "pcapi.scripts.sandbox",
-        "pcapi.scripts.move_offer.move_batch_offer",
         "pcapi.utils.db",
         "pcapi.utils.human_ids",
         "pcapi.utils.secrets",

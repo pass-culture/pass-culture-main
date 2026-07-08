@@ -39,7 +39,6 @@ from pcapi.core.offers import validation as offer_validation
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
@@ -1114,34 +1113,6 @@ def create_new_location_if_offer_uses_origin_venue_location(
             label=source_venue.publicName,
         )
         collective_offer.offererAddress = destination_oa
-
-
-def move_collective_offer_for_regularization(
-    collective_offer: models.CollectiveOffer, destination_venue: offerers_models.Venue
-) -> None:
-    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
-        raise NotImplementedError("Activate VENUE_REGULARIZATION to use this feature")
-
-    venue_choices = check_can_move_collective_offer_venue(collective_offer, with_restrictions=False)
-
-    if destination_venue not in venue_choices:
-        raise offers_exceptions.ForbiddenDestinationVenue()
-
-    create_new_location_if_offer_uses_origin_venue_location(collective_offer, destination_venue)
-    collective_offer.venue = destination_venue
-    db.session.add(collective_offer)
-
-    collective_bookings_subquery = (
-        db.session.query(models.CollectiveBooking)
-        .join(models.CollectiveBooking.collectiveStock)
-        .filter(models.CollectiveStock.collectiveOfferId == collective_offer.id)
-    )
-    collective_bookings_to_update = db.session.query(models.CollectiveBooking).filter(
-        models.CollectiveBooking.id.in_(collective_bookings_subquery.with_entities(models.CollectiveBooking.id))
-    )
-
-    collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
-    db.session.add_all(collective_bookings_to_update)
 
 
 def move_collective_offer_venue(
