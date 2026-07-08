@@ -1,0 +1,1 @@
+import{n as e,t}from"./DocsRenderer-JROSPFPF-oySDx5mC.js";t();export{e as MDXProvider};
