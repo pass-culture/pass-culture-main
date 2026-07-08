@@ -7,6 +7,7 @@ import sqlalchemy as sa
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
 from pcapi.core.categories import subcategories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -30,7 +31,7 @@ def _create_offerer() -> offerers_models.Offerer:
     )
 
     new_siren = siren_utils.complete_siren_or_siret(f"{(max_siren or 0) + 1:0>8}")
-    offerer = offerers_factories.OffererFactory.build(siren=new_siren, name=f"Structure TEST - {fake.company()}")
+    offerer = offerers_factories.OffererFactory.create(siren=new_siren, name=f"Structure TEST - {fake.company()}")
     db.session.add(offerer)
     return offerer
 
@@ -45,12 +46,12 @@ def _create_cinema_offer(
         description=offer_description,
         name=offer_name,
         durationMinutes=102,
+        set_all_fields=True,
     )
     db.session.add(product)
-    offer = offers_factories.OfferFactory.build(
+    offer = offers_factories.OfferFactory.create(
         isDuo=is_duo,
         name=offer_name,
-        description=offer_description,
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
@@ -90,13 +91,25 @@ def _create_cinema_offer(
 
 def _create_venue(offerer: offerers_models.Offerer, activity: offerers_models.Activity) -> offerers_models.Venue:
     fake = faker.Faker(["fr-FR"])
-    venue = offerers_factories.VenueFactory.create(
+    latitude, longitude, _, _, _ = fake.local_latlng(country_code="FR") or (
+        geography_factories.DEFAULT_LATITUDE,
+        geography_factories.DEFAULT_LONGITUDE,
+        0,
+        0,
+        0,
+    )
+    address = geography_factories.AddressFactory(
+        street=fake.street_address(),
+        postalCode=fake.postcode(),
+        latitude=decimal.Decimal(latitude),
+        longitude=decimal.Decimal(longitude),
+    )
+    venue: offerers_models.Venue = offerers_factories.VenueFactory.create(
         activity=activity,
         managingOfferer=offerer,
         name=offerer.name,
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
-        offererAddress__address__street=fake.street_address(),
-        offererAddress__address__postalCode=fake.postcode(),
+        offererAddress__address=address,
         withdrawalDetails=fake.paragraph(nb_sentences=6),
         description=fake.paragraph(nb_sentences=20),
     )

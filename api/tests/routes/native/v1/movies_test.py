@@ -45,52 +45,58 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar == {
-            today.isoformat(): [
-                {
-                    "address": f"{address.street}, {address.postalCode} {address.city}",
-                    "distance": 0.0,
-                    "dayScreenings": [
-                        {
+        assert calendar == [
+            {
+                "date": today.isoformat(),
+                "screenings": [
+                    {
+                        "address": f"{address.street}, {address.postalCode} {address.city}",
+                        "distance": 0.0,
+                        "dayScreenings": [
+                            {
+                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "bookability": "AUTHENTICATION_REQUIRED",
+                                "features": [],
+                                "price": float(stock.price),
+                                "stockId": stock.id,
+                            }
+                        ],
+                        "label": stock.offer.venue.publicName,
+                        "nextScreening": {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                            "bookability": "BOOKABLE",
+                            "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": float(stock.price),
                             "stockId": stock.id,
-                        }
-                    ],
-                    "label": stock.offer.venue.publicName,
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": float(stock.price),
-                        "stockId": stock.id,
+                        },
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "venueId": stock.offer.venue.id,
                     },
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "venueId": stock.offer.venue.id,
-                },
-            ],
-            tomorrow.isoformat(): [
-                {
-                    "address": f"{address.street}, {address.postalCode} {address.city}",
-                    "distance": 0.0,
-                    "dayScreenings": [],
-                    "label": stock.offer.venue.publicName,
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": 10.1,
-                        "stockId": stock.id,
+                ],
+            },
+            {
+                "date": tomorrow.isoformat(),
+                "screenings": [
+                    {
+                        "address": f"{address.street}, {address.postalCode} {address.city}",
+                        "distance": 0.0,
+                        "dayScreenings": [],
+                        "label": stock.offer.venue.publicName,
+                        "nextScreening": {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "bookability": "AUTHENTICATION_REQUIRED",
+                            "features": [],
+                            "price": 10.1,
+                            "stockId": stock.id,
+                        },
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "venueId": stock.offer.venue.id,
                     },
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "venueId": stock.offer.venue.id,
-                },
-            ],
-        }
+                ],
+            },
+        ]
 
     def test_get_movie_shows_with_visa(self, client):
         product = offers_factories.ProductFactory(extraData={"visa": "12345"})
@@ -117,8 +123,8 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        assert len(response.json["calendar"][today.isoformat()]) == 1
-        assert len(response.json["calendar"][tomorrow.isoformat()]) == 1
+        assert len([e for e in response.json["calendar"] if e["date"] == today.isoformat()]) == 1
+        assert len([e for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()]) == 1
 
     def test_requires_allocine_id_or_visa(self, client):
         params = {
@@ -181,8 +187,12 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        assert response.json["calendar"][today.isoformat()] == []
-        assert response.json["calendar"][tomorrow.isoformat()] == []
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings == []
+        tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
+            0
+        ]
+        assert tomorrow_screenings == []
 
     def test_screenings_are_sorted_by_distance_then_screening_day(self, client):
         product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
@@ -227,8 +237,10 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        today_screenings = response.json["calendar"][today.isoformat()]
-        tomorrow_screenings = response.json["calendar"][tomorrow.isoformat()]
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
+            0
+        ]
         assert today_screenings[0]["dayScreenings"][0]["stockId"] == today_closest_stock.id
         assert today_screenings[1]["dayScreenings"][0]["stockId"] == today_furthest_stock.id
         assert today_screenings[2]["nextScreening"]["stockId"] == tomorrow_closest_stock.id
@@ -269,7 +281,7 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        today_screenings = response.json["calendar"][today.isoformat()]
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["stockId"] == first_stock.id
         assert today_screenings[0]["dayScreenings"][1]["stockId"] == last_stock.id
 
@@ -305,7 +317,9 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        tomorrow_screenings = response.json["calendar"][tomorrow.isoformat()]
+        tomorrow_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.isoformat()][
+            0
+        ]
         assert tomorrow_screenings[0]["nextScreening"]["stockId"] == closest_stock_from_tomorrow.id
 
     def test_screenings_are_within_around_radius(self, client):
@@ -340,7 +354,9 @@ class MovieCalendarTest:
             response = client.get("/native/v1/movie/calendar", params=params)
             assert response.status_code == 200
 
-        today_screenings = response.json["calendar"][start_of_day.date().isoformat()]
+        today_screenings = [
+            e["screenings"] for e in response.json["calendar"] if e["date"] == start_of_day.date().isoformat()
+        ][0]
         assert len(today_screenings) == 1
         assert len(today_screenings[0]["dayScreenings"]) == 1
         assert today_screenings[0]["distance"] < 10_000
@@ -372,8 +388,9 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
 
     @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
     def test_disabled_booking(self, client):
@@ -403,8 +420,9 @@ class MovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
 
 class MovieCalendarForUserTest:
@@ -438,52 +456,58 @@ class MovieCalendarForUserTest:
             assert response.status_code == 200
 
         assert response.json == {
-            "calendar": {
-                today.isoformat(): [
-                    {
-                        "address": f"{address.street}, {address.postalCode} {address.city}",
-                        "distance": 0.0,
-                        "dayScreenings": [
-                            {
+            "calendar": [
+                {
+                    "date": today.isoformat(),
+                    "screenings": [
+                        {
+                            "address": f"{address.street}, {address.postalCode} {address.city}",
+                            "distance": 0.0,
+                            "dayScreenings": [
+                                {
+                                    "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                    "bookability": "BOOKABLE",
+                                    "features": [],
+                                    "price": float(stock.price),
+                                    "stockId": stock.id,
+                                }
+                            ],
+                            "label": stock.offer.venue.publicName,
+                            "nextScreening": {
                                 "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                                 "bookability": "BOOKABLE",
                                 "features": [],
                                 "price": float(stock.price),
                                 "stockId": stock.id,
-                            }
-                        ],
-                        "label": stock.offer.venue.publicName,
-                        "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                            "bookability": "BOOKABLE",
-                            "features": [],
-                            "price": float(stock.price),
-                            "stockId": stock.id,
+                            },
+                            "offerId": stock.offer.id,
+                            "thumbUrl": None,
+                            "venueId": stock.offer.venue.id,
                         },
-                        "offerId": stock.offer.id,
-                        "thumbUrl": None,
-                        "venueId": stock.offer.venue.id,
-                    },
-                ],
-                tomorrow.isoformat(): [
-                    {
-                        "address": f"{address.street}, {address.postalCode} {address.city}",
-                        "distance": 0.0,
-                        "dayScreenings": [],
-                        "label": stock.offer.venue.publicName,
-                        "nextScreening": {
-                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                            "bookability": "BOOKABLE",
-                            "features": [],
-                            "price": 10.1,
-                            "stockId": stock.id,
+                    ],
+                },
+                {
+                    "date": tomorrow.isoformat(),
+                    "screenings": [
+                        {
+                            "address": f"{address.street}, {address.postalCode} {address.city}",
+                            "distance": 0.0,
+                            "dayScreenings": [],
+                            "label": stock.offer.venue.publicName,
+                            "nextScreening": {
+                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "bookability": "BOOKABLE",
+                                "features": [],
+                                "price": 10.1,
+                                "stockId": stock.id,
+                            },
+                            "offerId": stock.offer.id,
+                            "thumbUrl": None,
+                            "venueId": stock.offer.venue.id,
                         },
-                        "offerId": stock.offer.id,
-                        "thumbUrl": None,
-                        "venueId": stock.offer.venue.id,
-                    },
-                ],
-            },
+                    ],
+                },
+            ],
         }
 
     def test_when_stock_is_sold_out(self, client):
@@ -516,7 +540,8 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
-        assert response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
 
     @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
     def test_when_offer_booking_is_disabled(self, client):
@@ -551,10 +576,8 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
-        assert (
-            response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["bookability"]
-            == "STOCK_BOOKING_IS_DISABLED"
-        )
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
     def test_when_user_cannot_book(self, client):
         user = users_factories.UserFactory(age=100)
@@ -585,7 +608,8 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
-        assert response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
 
     def test_when_user_has_not_enough_credit(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -618,10 +642,8 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
-        assert (
-            response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["bookability"]
-            == "USER_HAS_INSUFFICIENT_CREDIT"
-        )
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_INSUFFICIENT_CREDIT"
 
     def test_when_user_has_already_booked_offer(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -655,10 +677,8 @@ class MovieCalendarForUserTest:
             response = client.get("/native/v1/movie/calendar/me", params=params)
             assert response.status_code == 200
 
-        assert (
-            response.json["calendar"][today.isoformat()][0]["dayScreenings"][0]["bookability"]
-            == "USER_HAS_ALREADY_BOOKED_OFFER"
-        )
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
 
 
 class VenueMovieCalendarTest:
@@ -676,52 +696,58 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar == {
-            today.isoformat(): [
-                {
-                    "duration": 116,
-                    "genres": [],
-                    "last30DaysBookings": 0,
-                    "movieName": stock.offer.name,
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "dayScreenings": [
-                        {
+        assert calendar == [
+            {
+                "date": today.isoformat(),
+                "screenings": [
+                    {
+                        "duration": 116,
+                        "genres": [],
+                        "last30DaysBookings": 0,
+                        "movieName": stock.offer.name,
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "dayScreenings": [
+                            {
+                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "bookability": "AUTHENTICATION_REQUIRED",
+                                "features": [],
+                                "price": 10.1,
+                                "stockId": stock.id,
+                            }
+                        ],
+                        "nextScreening": {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                            "bookability": "BOOKABLE",
+                            "bookability": "AUTHENTICATION_REQUIRED",
                             "features": [],
                             "price": 10.1,
                             "stockId": stock.id,
-                        }
-                    ],
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": 10.1,
-                        "stockId": stock.id,
-                    },
-                }
-            ],
-            tomorrow.isoformat(): [
-                {
-                    "duration": 116,
-                    "genres": [],
-                    "last30DaysBookings": 0,
-                    "movieName": stock.offer.name,
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "dayScreenings": [],
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": 10.1,
-                        "stockId": stock.id,
-                    },
-                }
-            ],
-        }
+                        },
+                    }
+                ],
+            },
+            {
+                "date": tomorrow.isoformat(),
+                "screenings": [
+                    {
+                        "duration": 116,
+                        "genres": [],
+                        "last30DaysBookings": 0,
+                        "movieName": stock.offer.name,
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "dayScreenings": [],
+                        "nextScreening": {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "bookability": "AUTHENTICATION_REQUIRED",
+                            "features": [],
+                            "price": 10.1,
+                            "stockId": stock.id,
+                        },
+                    }
+                ],
+            },
+        ]
 
     def test_day_screenings_are_sorted_by_last_30_days_bookings(self, client):
         tomorrow = datetime.today() + timedelta(days=1)
@@ -749,7 +775,9 @@ class VenueMovieCalendarTest:
             )
             assert response.status_code == 200
 
-        movie_day_screenings = response.json["calendar"][movie_day.isoformat()]
+        movie_day_screenings = [
+            e["screenings"] for e in response.json["calendar"] if e["date"] == movie_day.isoformat()
+        ][0]
         assert movie_day_screenings[0]["dayScreenings"][0]["stockId"] == most_booked_stock.id
         assert movie_day_screenings[1]["dayScreenings"][0]["stockId"] == least_booked_stock.id
 
@@ -774,7 +802,9 @@ class VenueMovieCalendarTest:
             )
             assert response.status_code == 200
 
-        tomorrow_screenings = response.json["calendar"][tomorrow.date().isoformat()]
+        tomorrow_screenings = [
+            e["screenings"] for e in response.json["calendar"] if e["date"] == tomorrow.date().isoformat()
+        ][0]
         assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
         assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
 
@@ -800,8 +830,12 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[in_two_days.date().isoformat()][0]["nextScreening"]["stockId"] == tomorrow_stock.id
-        assert calendar[in_three_days.date().isoformat()][0]["nextScreening"]["stockId"] == in_four_days_stock.id
+        in_two_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_two_days.date().isoformat()][0]
+        in_three_days_screenings = [e["screenings"] for e in calendar if e["date"] == in_three_days.date().isoformat()][
+            0
+        ]
+        assert in_two_days_screenings[0]["nextScreening"]["stockId"] == tomorrow_stock.id
+        assert in_three_days_screenings[0]["nextScreening"]["stockId"] == in_four_days_stock.id
 
     def test_calendar_is_empty_if_no_screenings_found(self, client):
         tomorrow = (datetime.today() + timedelta(days=1)).date()
@@ -816,7 +850,10 @@ class VenueMovieCalendarTest:
             )
             assert response.status_code == 200
 
-        assert response.json["calendar"] == {tomorrow.isoformat(): [], in_two_days.isoformat(): []}
+        assert response.json["calendar"] == [
+            {"date": tomorrow.isoformat(), "screenings": []},
+            {"date": in_two_days.isoformat(), "screenings": []},
+        ]
 
     def test_calendar_is_empty_if_venue_not_found(self, client):
         tomorrow = (datetime.today() + timedelta(days=1)).date()
@@ -830,7 +867,10 @@ class VenueMovieCalendarTest:
             )
             assert response.status_code == 200
 
-        assert response.json["calendar"] == {tomorrow.isoformat(): [], in_two_days.isoformat(): []}
+        assert response.json["calendar"] == [
+            {"date": tomorrow.isoformat(), "screenings": []},
+            {"date": in_two_days.isoformat(), "screenings": []},
+        ]
 
     def test_sold_out_screening(self, client):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
@@ -846,9 +886,9 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        print(calendar)
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
 
     @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
     def test_disabled_booking(self, client):
@@ -868,8 +908,9 @@ class VenueMovieCalendarTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
 
 class VenueMovieCalendarForUserTest:
@@ -894,52 +935,58 @@ class VenueMovieCalendarForUserTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar == {
-            today.isoformat(): [
-                {
-                    "duration": 116,
-                    "genres": [],
-                    "last30DaysBookings": 0,
-                    "movieName": stock.offer.name,
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "dayScreenings": [
-                        {
+        assert calendar == [
+            {
+                "date": today.isoformat(),
+                "screenings": [
+                    {
+                        "duration": 116,
+                        "genres": [],
+                        "last30DaysBookings": 0,
+                        "movieName": stock.offer.name,
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "dayScreenings": [
+                            {
+                                "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                                "bookability": "BOOKABLE",
+                                "features": [],
+                                "price": 10.1,
+                                "stockId": stock.id,
+                            }
+                        ],
+                        "nextScreening": {
                             "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
                             "bookability": "BOOKABLE",
                             "features": [],
                             "price": 10.1,
                             "stockId": stock.id,
-                        }
-                    ],
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": 10.1,
-                        "stockId": stock.id,
-                    },
-                }
-            ],
-            tomorrow.isoformat(): [
-                {
-                    "duration": 116,
-                    "genres": [],
-                    "last30DaysBookings": 0,
-                    "movieName": stock.offer.name,
-                    "offerId": stock.offer.id,
-                    "thumbUrl": None,
-                    "dayScreenings": [],
-                    "nextScreening": {
-                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
-                        "bookability": "BOOKABLE",
-                        "features": [],
-                        "price": 10.1,
-                        "stockId": stock.id,
-                    },
-                }
-            ],
-        }
+                        },
+                    }
+                ],
+            },
+            {
+                "date": tomorrow.isoformat(),
+                "screenings": [
+                    {
+                        "duration": 116,
+                        "genres": [],
+                        "last30DaysBookings": 0,
+                        "movieName": stock.offer.name,
+                        "offerId": stock.offer.id,
+                        "thumbUrl": None,
+                        "dayScreenings": [],
+                        "nextScreening": {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "bookability": "BOOKABLE",
+                            "features": [],
+                            "price": 10.1,
+                            "stockId": stock.id,
+                        },
+                    }
+                ],
+            },
+        ]
 
     def test_sold_out_screening(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -962,9 +1009,9 @@ class VenueMovieCalendarForUserTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        print(calendar)
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_IS_SOLD_OUT"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_IS_SOLD_OUT"
 
     @pytest.mark.features(DISABLE_BOOST_EXTERNAL_BOOKINGS=True)
     def test_disabled_booking(self, client):
@@ -991,8 +1038,9 @@ class VenueMovieCalendarForUserTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
     def test_when_user_cannot_book(self, client):
         user = users_factories.UserFactory(age=100)
@@ -1017,5 +1065,6 @@ class VenueMovieCalendarForUserTest:
             assert response.status_code == 200
 
         calendar = response.json["calendar"]
-        assert calendar[today.isoformat()][0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
-        assert calendar[today.isoformat()][0]["nextScreening"]["bookability"] == "USER_CANNOT_BOOK"
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
+        assert today_screenings[0]["nextScreening"]["bookability"] == "USER_CANNOT_BOOK"

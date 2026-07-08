@@ -699,7 +699,8 @@
                     "STOCK_IS_SOLD_OUT",
                     "USER_CANNOT_BOOK",
                     "USER_HAS_ALREADY_BOOKED_OFFER",
-                    "USER_HAS_INSUFFICIENT_CREDIT"
+                    "USER_HAS_INSUFFICIENT_CREDIT",
+                    "AUTHENTICATION_REQUIRED"
                 ],
                 "title": "Bookability",
                 "type": "string"
@@ -2813,6 +2814,52 @@
                 "title": "CurrencyEnum",
                 "type": "string"
             },
+            "DayMovieScreenings": {
+                "additionalProperties": false,
+                "properties": {
+                    "date": {
+                        "format": "date",
+                        "title": "Date",
+                        "type": "string"
+                    },
+                    "screenings": {
+                        "items": {
+                            "$ref": "#/components/schemas/MovieScreenings"
+                        },
+                        "title": "Screenings",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "date",
+                    "screenings"
+                ],
+                "title": "DayMovieScreenings",
+                "type": "object"
+            },
+            "DayVenueScreenings": {
+                "additionalProperties": false,
+                "properties": {
+                    "date": {
+                        "format": "date",
+                        "title": "Date",
+                        "type": "string"
+                    },
+                    "screenings": {
+                        "items": {
+                            "$ref": "#/components/schemas/VenueScreenings"
+                        },
+                        "title": "Screenings",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "date",
+                    "screenings"
+                ],
+                "title": "DayVenueScreenings",
+                "type": "object"
+            },
             "DepositAmountsByAge": {
                 "additionalProperties": false,
                 "properties": {
@@ -3935,17 +3982,11 @@
                 "additionalProperties": false,
                 "properties": {
                     "calendar": {
-                        "additionalProperties": {
-                            "items": {
-                                "$ref": "#/components/schemas/VenueScreenings"
-                            },
-                            "type": "array"
-                        },
-                        "propertyNames": {
-                            "format": "date"
+                        "items": {
+                            "$ref": "#/components/schemas/DayVenueScreenings"
                         },
                         "title": "Calendar",
-                        "type": "object"
+                        "type": "array"
                     }
                 },
                 "required": [
@@ -9017,17 +9058,11 @@
                 "additionalProperties": false,
                 "properties": {
                     "calendar": {
-                        "additionalProperties": {
-                            "items": {
-                                "$ref": "#/components/schemas/MovieScreenings"
-                            },
-                            "type": "array"
-                        },
-                        "propertyNames": {
-                            "format": "date"
+                        "items": {
+                            "$ref": "#/components/schemas/DayMovieScreenings"
                         },
                         "title": "Calendar",
-                        "type": "object"
+                        "type": "array"
                     }
                 },
                 "required": [
