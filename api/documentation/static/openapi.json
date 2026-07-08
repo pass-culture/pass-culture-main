@@ -1643,6 +1643,13 @@
                         "default": null,
                         "description": "Offer address if different from venue address"
                     },
+                    "enableDoubleBookings": {
+                        "default": true,
+                        "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
+                        "title": "Enabledoublebookings",
+                        "type": "boolean"
+                    },
                     "filmId": {
                         "description": "\nCan be either a **CNC visa** or an **Allocin\u00e9 id**:\n\n- pattern for a **CNC visa**: `\"visa:{visa_number}\"`\n- pattern for an **Allocin\u00e9 id**: `\"allocine_id:{id}\"`\n",
                         "examples": [

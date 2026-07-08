@@ -71,6 +71,7 @@ def _extract(provider_id: int, request_payload: events_serializers.PutCinemaSess
 
 class _OfferUpdate(typing.TypedDict):
     offer: offers_models.Offer
+    is_duo: bool
     pricing_categories_to_update: list[tuple[offers_models.PriceCategory, events_serializers.CinemaPriceCategory]]
     pricing_categories_to_create: list[events_serializers.CinemaPriceCategory]
     stocks_to_update: list[tuple[offers_models.Stock, events_serializers.CinemaStock]]
@@ -159,6 +160,7 @@ def _transform(
             offers_to_update.append(
                 {
                     "offer": offer,
+                    "is_duo": offer_data.enable_double_bookings,
                     "pricing_categories_to_update": pricing_categories_to_update,
                     "pricing_categories_to_create": pricing_categories_to_create,
                     "stocks_to_update": stocks_to_update,
@@ -308,29 +310,30 @@ def _get_offerer_addresses(
 
 
 def _create_offer(
-    offer_data: _OfferCreate,
+    data: _OfferCreate,
     *,
     offerer_addresses_by_label_address_id: dict[tuple[int, str | None], offerers_models.OffererAddress],
     venue: offerers_models.Venue,
     provider: providers_models.Provider,
 ) -> None:
-    product = offer_data["product"]
+    product = data["product"]
     oa: None | offerers_models.OffererAddress = None
-    if offer_data["address"]:
-        oa = offerer_addresses_by_label_address_id[(offer_data["address"].id, offer_data["address"].label)]
+    if data["address"]:
+        oa = offerer_addresses_by_label_address_id[(data["address"].id, data["address"].label)]
 
     offer = offers_api.create_offer(
         offers_schemas.CreateOffer(  # type: ignore[call-arg]
             name=product.name,
             subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=_compute_offer_id_at_provider(venue_id=venue.id, offer=offer_data["offer_data"]),
+            idAtProvider=_compute_offer_id_at_provider(venue_id=venue.id, offer=data["offer_data"]),
             ean=None,
             audioDisabilityCompliant=False,
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=False,
             visualDisabilityCompliant=False,
+            isDuo=data["offer_data"].enable_double_bookings,
         ),
-        product=offer_data["product"],
+        product=data["product"],
         venue=venue,
         provider=provider,
         offerer_address=oa,
@@ -344,7 +347,7 @@ def _create_offer(
     price_category_by_id_at_provider = {}
 
     # Create price categories
-    for price_category_data in offer_data["pricing_categories_to_create"]:
+    for price_category_data in data["pricing_categories_to_create"]:
         price_category = offers_api.create_price_category(
             offer,
             price_category_data.label,
@@ -354,7 +357,7 @@ def _create_offer(
         price_category_by_id_at_provider[price_category.idAtProvider] = price_category
 
     # Create stocks
-    for stock_data in offer_data["stocks_to_create"]:
+    for stock_data in data["stocks_to_create"]:
         _create_stock(
             stock_data,
             offer=offer,
@@ -365,6 +368,7 @@ def _create_offer(
 
 def _update_offer(data: _OfferUpdate, *, provider: providers_models.Provider) -> None:
     offer = data["offer"]
+    offer.isDuo = data["is_duo"]
     price_category_by_id_at_provider = {}
 
     # Update existing price categories
