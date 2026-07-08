@@ -7132,6 +7132,10 @@
                     "id": {
                         "$ref": "#/components/schemas/ProductCategoryEnum"
                     },
+                    "label": {
+                        "title": "Label",
+                        "type": "string"
+                    },
                     "locationType": {
                         "anyOf": [
                             {
@@ -7143,7 +7147,8 @@
                 },
                 "required": [
                     "id",
-                    "conditionalFields"
+                    "conditionalFields",
+                    "label"
                 ],
                 "title": "ProductCategoryResponse",
                 "type": "object"

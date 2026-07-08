@@ -32,17 +32,21 @@ class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
             assert response.status_code == 200
 
         assert all(
-            {"id", "conditionalFields", "locationType"} == set(category_response.keys())
+            {"id", "conditionalFields", "locationType", "label"} == set(category_response.keys())
             for category_response in response.json
         )
 
         concert_response = next(
             subcategory for subcategory in response.json if subcategory["id"] == "SPECTACLE_ENREGISTRE"
         )
-        assert concert_response["conditionalFields"] == {
-            "author": False,
-            "showType": True,
-            "stageDirector": False,
-            "performer": False,
+        assert concert_response == {
+            "id": "SPECTACLE_ENREGISTRE",
+            "conditionalFields": {
+                "author": False,
+                "showType": True,
+                "stageDirector": False,
+                "performer": False,
+            },
+            "locationType": "DIGITAL",
+            "label": "Spectacle enregistré",
         }
-        assert concert_response["locationType"] == "DIGITAL"

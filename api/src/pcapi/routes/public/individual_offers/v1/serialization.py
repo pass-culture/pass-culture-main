@@ -714,6 +714,7 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
         description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
     )
     locationType: LocationTypeEnum | None
+    label: str
 
     @classmethod
     def build_category(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
@@ -732,6 +733,7 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
             id=subcategory.id,
             conditional_fields=conditional_fields,
             locationType=locationType,
+            label=subcategory.pro_label,
         )
 
 
