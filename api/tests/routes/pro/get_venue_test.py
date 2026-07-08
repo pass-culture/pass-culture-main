@@ -248,6 +248,7 @@ class Returns200Test:
             "hasPartnerPage": True,
             "hasNonDraftOffers": True,
             "volunteeringUrl": "https://www.jeveuxaider.gouv.fr/organisations/structure-name",
+            "state": None,
         }
         db.session.expire_all()
 

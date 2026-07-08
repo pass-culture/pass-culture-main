@@ -104,6 +104,7 @@ export const makeGetVenueResponseModel = <
     volunteeringUrl: null,
     withdrawalDetails: null,
     openingHours: null,
+    state: null,
   }
 
   return {

@@ -458,6 +458,7 @@ export const defaultGetVenueResponseModel: GetVenueResponseModel = {
   hasNonDraftOffers: true,
   volunteeringUrl: null,
   openingHours: null,
+  state: null,
 }
 
 export const defaultGetBookingResponse: GetBookingResponse = {
