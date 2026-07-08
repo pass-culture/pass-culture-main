@@ -448,7 +448,7 @@ def _get_collective_offer_template_coordinates(
 def _get_collective_offer_template_department_codes(offer: educational_models.CollectiveOfferTemplate) -> list[str]:
     match offer.locationType:
         case educational_models.CollectiveLocationType.SCHOOL | educational_models.CollectiveLocationType.TO_BE_DEFINED:
-            return offer.interventionArea
+            return [code for code in offer.interventionArea if code not in {"mainland", "all"}]
 
         case educational_models.CollectiveLocationType.ADDRESS:
             assert offer.offererAddress is not None
