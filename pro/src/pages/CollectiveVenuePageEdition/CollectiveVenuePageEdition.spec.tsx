@@ -128,7 +128,7 @@ describe('CollectiveVenuePageEdition', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display popin when user is leaving page without saving', async () => {
+    it('should display the navigation guard dialog when user is leaving page without saving', async () => {
       renderCollectiveVenuePageEdition()
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -137,11 +137,11 @@ describe('CollectiveVenuePageEdition', () => {
       await userEvent.type(phoneField, '0612345678')
       await userEvent.click(screen.getByText('Annuler'))
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('Les informations non enregistrées seront perdues')
-        ).toBeInTheDocument()
-      )
+      expect(
+        await screen.findByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).toBeVisible()
     })
   })
 

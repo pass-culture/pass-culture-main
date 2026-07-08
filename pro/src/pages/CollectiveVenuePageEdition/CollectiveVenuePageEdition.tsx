@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { StudentLevels } from '@/apiClient/adage'
@@ -15,6 +14,7 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { setSelectedPartnerVenue } from '@/commons/store/user/reducer'
@@ -34,7 +34,6 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { RouteLeavingGuardVenueEdition } from '../../components/VenueEdition/RouteLeavingGuardVenueEdition'
 import styles from './CollectiveVenuePageEdition.module.scss'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import type { CollectiveVenuePageValues } from './utils/type'
@@ -47,7 +46,6 @@ const studentLevels = Object.entries(StudentLevels).map(([id, value]) => ({
 
 export const CollectiveVenuePageEdition = (): JSX.Element | null => {
   const snackBar = useSnackBar()
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
 
@@ -61,13 +59,7 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
         (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.label)
       )
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors, isDirty, isSubmitting },
-  } = useForm<CollectiveVenuePageValues>({
+  const form = useForm<CollectiveVenuePageValues>({
     defaultValues: initialValues,
     resolver: yupResolver<CollectiveVenuePageValues, unknown, unknown>(
       validationSchema
@@ -75,7 +67,9 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
     mode: 'onBlur',
   })
 
-  const onSubmit = async (values: CollectiveVenuePageValues): Promise<void> => {
+  const onSubmit = async (
+    values: CollectiveVenuePageValues
+  ): Promise<boolean> => {
     try {
       const updatedVenue = await api.editVenueCollectiveData({
         path: { venue_id: selectedPartnerVenue.id },
@@ -91,9 +85,11 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
 
       dispatch(setSelectedPartnerVenue(updatedVenue))
 
-      navigate(`/partenaire/page-collective`)
+      return true
     } catch {
       snackBar.error(SENT_DATA_ERROR_MESSAGE)
+
+      return false
     }
   }
 
@@ -108,13 +104,20 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
       label: status.name,
     })) ?? []
 
+  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
+    useFormNavigationGuard({
+      afterSubmitPath: '/partenaire/page-collective',
+      form,
+      onSubmit,
+    })
+
   if (educationalStatusesQuery.isLoading) {
     return <Spinner className={styles.spinner} />
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={navigationGuardedSubmitHandler}>
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour les enseignants">
             <FormLayout.SubSection
@@ -126,8 +129,8 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                   label="Démarche d’éducation artistique et culturelle"
                   description="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
                   maxLength={500}
-                  {...register('collectiveDescription')}
-                  error={errors.collectiveDescription?.message}
+                  {...form.register('collectiveDescription')}
+                  error={form.formState.errors.collectiveDescription?.message}
                 />
               </FormLayout.Row>
 
@@ -137,18 +140,18 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                   label="Public cible"
                   options={studentOptions}
                   defaultOptions={studentOptions.filter((option) =>
-                    watch('collectiveStudents')?.includes(option.label)
+                    form.watch('collectiveStudents')?.includes(option.label)
                   )}
                   hasSearch
                   searchLabel="Rechercher un public cible"
                   buttonLabel="Public cible"
                   onSelectedOptionsChanged={(selectedOptions) => {
-                    setValue(
+                    form.setValue(
                       'collectiveStudents',
                       selectedOptions.map((opt) => opt.label as StudentLevels)
                     )
                   }}
-                  error={errors.collectiveStudents?.message}
+                  error={form.formState.errors.collectiveStudents?.message}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
@@ -156,8 +159,8 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                   label="URL de votre site web"
                   type="url"
                   description="Format : https://exemple.com"
-                  {...register('collectiveWebsite')}
-                  error={errors.collectiveWebsite?.message}
+                  {...form.register('collectiveWebsite')}
+                  error={form.formState.errors.collectiveWebsite?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
@@ -213,7 +216,7 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                   label="Zone de mobilité"
                   options={offerInterventionOptions}
                   selectedOptions={offerInterventionOptions.filter((op) =>
-                    watch('collectiveInterventionArea')?.includes(op.id)
+                    form.watch('collectiveInterventionArea')?.includes(op.id)
                   )}
                   hasSelectAllOptions
                   hasSearch
@@ -230,21 +233,26 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                       removedOptions: removed,
                     })
 
-                    setValue('collectiveInterventionArea', Array.from(updated))
+                    form.setValue(
+                      'collectiveInterventionArea',
+                      Array.from(updated)
+                    )
                   }}
-                  error={errors.collectiveInterventionArea?.message}
+                  error={
+                    form.formState.errors.collectiveInterventionArea?.message
+                  }
                 />
               </FormLayout.Row>
 
               <FormLayout.Row>
                 <Select
                   label="Statut"
-                  {...register('collectiveLegalStatus')}
+                  {...form.register('collectiveLegalStatus')}
                   options={[
                     { value: '', label: 'Sélectionner un statut' },
                     ...statuses,
                   ]}
-                  error={errors.collectiveLegalStatus?.message}
+                  error={form.formState.errors.collectiveLegalStatus?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
@@ -253,8 +261,8 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
               <FormLayout.Row mdSpaceAfter>
                 <PhoneNumberInput
                   label="Téléphone"
-                  {...register('collectivePhone')}
-                  error={errors.collectivePhone?.message}
+                  {...form.register('collectivePhone')}
+                  error={form.formState.errors.collectivePhone?.message}
                 />
               </FormLayout.Row>
 
@@ -263,8 +271,8 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
                   label="Email"
                   type="email"
                   description="Format : email@exemple.com"
-                  {...register('collectiveEmail')}
-                  error={errors.collectiveEmail?.message}
+                  {...form.register('collectiveEmail')}
+                  error={form.formState.errors.collectiveEmail?.message}
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
@@ -280,11 +288,15 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
             label="Annuler"
           />
 
-          <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
+          <Button
+            type="submit"
+            isLoading={form.formState.isSubmitting}
+            label="Enregistrer"
+          />
         </div>
       </form>
 
-      <RouteLeavingGuardVenueEdition shouldBlock={isDirty && !isSubmitting} />
+      {navigationGuardDialog}
     </>
   )
 }
