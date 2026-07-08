@@ -55,6 +55,7 @@ def get_from_cache(
     else:
         key = key_template
 
+    data: str | pydantic_v1.BaseModel | None
     data = redis_client.get(key)
     miss = data is None
 

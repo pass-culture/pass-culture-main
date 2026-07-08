@@ -2499,8 +2499,8 @@ def delete_unbookable_unbooked_old_offers(
     max_offer_id = db.session.query(sa.func.max(models.Offer.id)).scalar()
 
     if min_id is None:
-        min_id = redis_client.get("DELETE_UNBOOKABLE_UNBOOKED_OLD_OFFERS_START_ID")
-        min_id = int(min_id) if min_id is not None else 0
+        min_id_redis = redis_client.get("DELETE_UNBOOKABLE_UNBOOKED_OLD_OFFERS_START_ID")
+        min_id = int(min_id_redis) if min_id_redis is not None else 0
 
     if max_id is None:
         # 10% of offers by run at most, no need to run for days

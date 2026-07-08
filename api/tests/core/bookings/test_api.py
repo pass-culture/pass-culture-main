@@ -584,9 +584,9 @@ class BookOfferTest:
                 "num_ope": 147150,
             }
 
-        @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.lpush")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
+        @patch("pcapi.utils.redis.current_app.redis_client.llen")
+        @patch("pcapi.utils.redis.current_app.redis_client.lpush")
+        @patch("pcapi.utils.redis.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
@@ -693,10 +693,10 @@ class BookOfferTest:
             assert mock_cancel_booking.call_count == 1
             assert not db.session.query(Booking).all()
 
-        @patch("flask.current_app.redis_client.llen")
-        @patch("flask.current_app.redis_client.rpush")
-        @patch("flask.current_app.redis_client.lpush")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
+        @patch("pcapi.utils.redis.current_app.redis_client.llen")
+        @patch("pcapi.utils.redis.current_app.redis_client.rpush")
+        @patch("pcapi.utils.redis.current_app.redis_client.lpush")
+        @patch("pcapi.utils.redis.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
@@ -776,9 +776,9 @@ class BookOfferTest:
             assert mock_cancel_booking.call_count == 0
             assert not db.session.query(Booking).all()
 
-        @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.lpush")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
+        @patch("pcapi.utils.redis.current_app.redis_client.llen")
+        @patch("pcapi.utils.redis.current_app.redis_client.lpush")
+        @patch("pcapi.utils.redis.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
@@ -841,8 +841,8 @@ class BookOfferTest:
             assert mock_cancel_booking.call_count == 0
             assert not db.session.query(Booking).all()
 
-        @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
+        @patch("pcapi.utils.redis.current_app.redis_client.llen")
+        @patch("pcapi.utils.redis.current_app.redis_client.rpop")
         @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize(
