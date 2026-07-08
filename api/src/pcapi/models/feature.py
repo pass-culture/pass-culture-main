@@ -128,7 +128,6 @@ class FeatureToggle(enum.Enum):
     USE_UNIVERSAL_LINKS = (
         "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
     )
-    VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS = (
         "Activer le backend de tâches asynchrones Celery pour la vérification automatique des entités juridiques"
@@ -213,7 +212,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
-    FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CHECK_OFFERERS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_EXTERNAL_BOOKING,
