@@ -99,6 +99,7 @@ class BatchUpdateCinemaOffersTaskTest:
         assert offer.idAtProvider == f"allocine_id:1000015954%{venue.id}"
         assert offer.publicationDatetime.replace(tzinfo=None) == datetime.datetime(2026, 5, 1)
         assert offer.status == offers_models.OfferStatus.ACTIVE
+        assert offer.isDuo
 
         assert price_category.label == "Tarif pass Culture"
         assert price_category.price == decimal.Decimal("5.00")
@@ -386,6 +387,7 @@ class BatchUpdateCinemaOffersTaskTest:
                     },
                     {
                         "filmId": "visa:166715",
+                        "enableDoubleBookings": False,
                         "priceCategories": [{"price": 600, "label": "Tarif pass Culture", "idAtProvider": "PC"}],
                         "stocks": [
                             {
@@ -421,9 +423,11 @@ class BatchUpdateCinemaOffersTaskTest:
 
         assert offer_with_address.product == visa_product
         assert offer_with_address.idAtProvider == f"visa:166715%{venue.id}%{address.id}"
+        assert offer_with_address.isDuo
 
         assert offer_vanilla.product == visa_product
         assert offer_vanilla.idAtProvider == f"visa:166715%{venue.id}"
+        assert not offer_vanilla.isDuo
 
     @time_machine.travel("2026-05-01", tick=False)
     def test_should_create_offer_should_not_duplicate_offerrer_address(self):
