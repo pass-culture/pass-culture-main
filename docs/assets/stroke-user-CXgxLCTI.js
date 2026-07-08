@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-CT_b8DTk.js";var t,n=e((()=>{t=``+new URL(`stroke-user-tt6If06o.svg`,import.meta.url).href}));export{t as n,n as t};
