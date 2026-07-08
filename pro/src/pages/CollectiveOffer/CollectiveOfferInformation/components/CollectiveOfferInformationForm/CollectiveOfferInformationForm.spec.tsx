@@ -222,7 +222,7 @@ describe('<CollectiveOfferInformationForm />', () => {
     expect(screen.getByRole('button', { name: /Enregistrer/ })).toBeDisabled()
   })
 
-  it('should save the offer and show a confirmation on form submit, with dirty fields', async () => {
+  it('on creation: should save the offer without a confirmation snackbar on form submit, with dirty fields', async () => {
     const user = userEvent.setup()
     const offer = getCollectiveOfferFactory({
       allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
@@ -265,9 +265,7 @@ describe('<CollectiveOfferInformationForm />', () => {
         contactPhone: '+33612345678',
       },
     })
-    expect(snackBarSuccess).toHaveBeenCalledExactlyOnceWith(
-      PATCH_SUCCESS_MESSAGE
-    )
+    expect(snackBarSuccess).not.toHaveBeenCalled()
   })
 
   it('should display field errors on API error with status 400', async () => {
@@ -387,6 +385,9 @@ describe('<CollectiveOfferInformationForm />', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith(
       `/offre/${offer.id}/collectif/recapitulatif`
+    )
+    expect(snackBarSuccess).toHaveBeenCalledExactlyOnceWith(
+      PATCH_SUCCESS_MESSAGE
     )
   })
 })

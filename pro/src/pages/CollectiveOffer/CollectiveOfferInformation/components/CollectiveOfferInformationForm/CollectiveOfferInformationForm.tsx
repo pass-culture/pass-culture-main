@@ -124,7 +124,9 @@ export const CollectiveOfferInformationForm = ({
         { revalidate: false }
       )
 
-      snackBar.success(PATCH_SUCCESS_MESSAGE)
+      if (isEdition) {
+        snackBar.success(PATCH_SUCCESS_MESSAGE)
+      }
 
       return true
     } catch (e) {
