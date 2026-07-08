@@ -278,27 +278,29 @@ describe('IndividualVenuePageEdition', () => {
       })
     })
 
-    it('should display the route leaving guard when clicking Annuler with unsaved changes', async () => {
+    it('should display the navigation guard dialog when clicking Annuler with unsaved changes', async () => {
       renderForm(baseVenue)
 
       await userEvent.type(screen.getByLabelText('Description'), 'test')
       await userEvent.click(screen.getByText('Annuler'))
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('Les informations non enregistrées seront perdues')
-        ).toBeInTheDocument()
-      })
+      expect(
+        await screen.findByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).toBeVisible()
     })
 
-    it('should not display the route leaving guard when leaving without any change', async () => {
+    it('should not display the navigation guard dialog when leaving without any change', async () => {
       renderForm(baseVenue)
 
       await userEvent.click(screen.getByText('Annuler'))
 
       await waitFor(() => {
         expect(
-          screen.queryByText('Les informations non enregistrées seront perdues')
+          screen.queryByRole('dialog', {
+            name: 'Des modifications ont été apportées à cette page',
+          })
         ).not.toBeInTheDocument()
       })
     })
