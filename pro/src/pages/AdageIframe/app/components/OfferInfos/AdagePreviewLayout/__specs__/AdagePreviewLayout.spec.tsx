@@ -2,6 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import {
+  CollectiveAdditionalFeeType,
   EacFormat,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
@@ -9,10 +10,14 @@ import {
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   defaultGetVenue,
+  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdagePreviewLayout } from '../AdagePreviewLayout'
@@ -20,12 +25,14 @@ import { AdagePreviewLayout } from '../AdagePreviewLayout'
 function renderAdagePreviewLayout(
   offer:
     | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory()
+    | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory(),
+  options?: RenderWithProvidersOptions
 ) {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdagePreviewLayout offer={offer} />
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    options
   )
 }
 
@@ -80,5 +87,44 @@ describe('AdagePreviewLayout', () => {
     expect(screen.getByText('My test domain')).toBeVisible()
     expect(screen.getByText(EacFormat.ATELIER_DE_PRATIQUE)).toBeVisible()
     expect(screen.queryByText('email')).not.toBeInTheDocument()
+  })
+
+  it('should handle offer price fields with WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', async () => {
+    const ffOptions: RenderWithProvidersOptions = {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'],
+    }
+
+    renderAdagePreviewLayout(
+      getCollectiveOfferFactory({
+        collectiveStock: {
+          ...getCollectiveOfferCollectiveStockFactory(),
+          price: 120.5,
+          servicePrice: 100,
+          collectiveAdditionalFees: [
+            {
+              type: CollectiveAdditionalFeeType.MEAL,
+              amount: 5,
+              label: null,
+            },
+            {
+              type: CollectiveAdditionalFeeType.OTHER,
+              amount: 15.5,
+              label: 'Autre frais',
+            },
+          ],
+        },
+      }),
+      ffOptions
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText(/Prix total TTC : 120,5 €/)).toBeVisible()
+    expect(
+      screen.getByText(/Dont le tarif de la prestation : 100 €/)
+    ).toBeVisible()
+    expect(screen.getByText(/Dont les frais annexes/)).toBeVisible()
+    expect(screen.getByText(/Repas de l'intervenant•e : 5 €/)).toBeVisible()
+    expect(screen.getByText(/Autre frais : 15,5 €/)).toBeVisible()
   })
 })

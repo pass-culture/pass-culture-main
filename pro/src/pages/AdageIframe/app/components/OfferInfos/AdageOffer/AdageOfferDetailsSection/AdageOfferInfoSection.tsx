@@ -1,5 +1,4 @@
 import {
-  type CollectiveAdditionalFeeResponse,
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
@@ -9,6 +8,7 @@ import type { GetCollectiveOfferLocationModelV2 } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
+import { ADDITIONAL_FEES } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/AdditionalFeesForm/constants'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import styles from '../AdageOffer.module.scss'
@@ -44,6 +44,11 @@ export function getLocation(
       {location.location?.city}
     </div>
   )
+}
+
+function formatAmount(amount: number): string {
+  // we receive the price amounts in cents
+  return formatPrice(amount / 100, { minimumFractionDigits: 0 })
 }
 
 export const AdageOfferInfoSection = ({
@@ -122,34 +127,23 @@ export const AdageOfferInfoSection = ({
           </h3>
           {isOfferBookable && isNewCollectivePriceEnabled ? (
             <div className={styles['price-details']}>
-              <p>
-                Prix total TTC :{' '}
-                {formatPrice(offer.stock.price / 100, {
-                  minimumFractionDigits: 0,
-                })}
-              </p>
+              <p>Prix total TTC : {formatAmount(offer.stock.price)}</p>
               {offer.stock.collectiveAdditionalFees?.length > 0 && (
                 <>
                   {offer.stock.servicePrice != null && (
                     <p>
                       Dont le tarif de la prestation :{' '}
-                      {formatPrice(offer.stock.servicePrice, {
-                        minimumFractionDigits: 0,
-                      })}
+                      {formatAmount(offer.stock.servicePrice)}
                     </p>
                   )}
                   <p>Dont les frais annexes :</p>
                   <ul className={styles['additional-fees-list']}>
-                    {offer.stock.collectiveAdditionalFees.map(
-                      (fee: CollectiveAdditionalFeeResponse) => (
-                        <li key={`${fee.type}-${fee.amount}`}>
-                          {fee.label || fee.type} :{' '}
-                          {formatPrice(fee.amount, {
-                            minimumFractionDigits: 0,
-                          })}
-                        </li>
-                      )
-                    )}
+                    {offer.stock.collectiveAdditionalFees.map((fee) => (
+                      <li key={`${fee.type}-${fee.amount}`}>
+                        {fee.label ?? ADDITIONAL_FEES[fee.type]} :{' '}
+                        {formatAmount(fee.amount)}
+                      </li>
+                    ))}
                   </ul>
                 </>
               )}
@@ -166,12 +160,12 @@ export const AdageOfferInfoSection = ({
 
       {isOfferBookable &&
         isNewCollectivePriceEnabled &&
-        offer.stock.educationalPriceDetail && (
+        offer.additionalDetails && (
           <div className={styles['offer-section-group-item-description']}>
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Informations pratiques
             </h3>
-            <p>{offer.stock.educationalPriceDetail}</p>
+            <p>{offer.additionalDetails}</p>
           </div>
         )}
     </>

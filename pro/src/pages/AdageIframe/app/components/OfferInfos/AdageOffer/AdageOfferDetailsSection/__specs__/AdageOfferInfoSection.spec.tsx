@@ -212,9 +212,9 @@ describe('AdageOfferInfoSection', () => {
         ffOptions
       )
 
-      expect(screen.getByText(/Prix total TTC/)).toBeVisible()
+      expect(screen.getByText(/Prix total TTC : 100 €/)).toBeVisible()
       expect(
-        screen.queryByText(/Dont le tarif de la prestation/)
+        screen.queryByText(/Dont le tarif de la prestation : 100 €/)
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(/Dont les frais annexes/)
@@ -232,14 +232,20 @@ describe('AdageOfferInfoSection', () => {
               servicePrice: 10000,
               collectiveAdditionalFees: [
                 {
+                  // TODO: (jcicurel 2026-07-08) the label should be null
+                  // but for now the schema has label?: string
+                  // when the backend model is migrated it should be label: string | null
                   type: CollectiveAdditionalFeeType.TRAVEL,
-                  label: 'Transport',
                   amount: 3000,
                 },
                 {
                   type: CollectiveAdditionalFeeType.MEAL,
-                  label: 'Meal',
                   amount: 1500,
+                },
+                {
+                  type: CollectiveAdditionalFeeType.OTHER,
+                  label: 'Annexe',
+                  amount: 1515,
                 },
               ],
             },
@@ -248,22 +254,27 @@ describe('AdageOfferInfoSection', () => {
         ffOptions
       )
 
-      expect(screen.getByText(/Prix total TTC/)).toBeVisible()
-      expect(screen.getByText(/Dont le tarif de la prestation/)).toBeVisible()
+      expect(screen.getByText(/Prix total TTC : 145 €/)).toBeVisible()
+      expect(
+        screen.getByText(/Dont le tarif de la prestation : 100 €/)
+      ).toBeVisible()
       expect(screen.getByText(/Dont les frais annexes/)).toBeVisible()
-      // TODO: (smokhtari 2026-07-02) use the additional fee type translation constants
-      expect(screen.getByText(/Transport/)).toBeVisible()
-      expect(screen.getByText(/Meal/)).toBeVisible()
+      expect(
+        screen.getByText(/Déplacement de l'intervenant•e : 30 €/)
+      ).toBeVisible()
+      expect(screen.getByText(/Repas de l'intervenant•e : 15 €/)).toBeVisible()
+      expect(screen.getByText(/Annexe : 15,15 €/)).toBeVisible()
     })
 
-    it('should display informations pratiques section when educationalPriceDetail exists', () => {
+    it('should display informations pratiques section when additionalDetails exists', () => {
       renderAdageOfferInfoSection(
         {
           offer: {
             ...defaultCollectiveOffer,
+            additionalDetails: "Détail pratique de l'offre",
             stock: {
               ...defaultCollectiveOffer.stock,
-              educationalPriceDetail: "Détail pratique de l'offre",
+              educationalPriceDetail: 'Détail du prix', // check that we do not read the old field
             },
           },
         },
@@ -276,14 +287,15 @@ describe('AdageOfferInfoSection', () => {
       expect(screen.getByText("Détail pratique de l'offre")).toBeVisible()
     })
 
-    it('should not display informations pratiques section when educationalPriceDetail is absent', () => {
+    it('should not display informations pratiques section when additionalDetails is absent', () => {
       renderAdageOfferInfoSection(
         {
           offer: {
             ...defaultCollectiveOffer,
+            additionalDetails: undefined,
             stock: {
               ...defaultCollectiveOffer.stock,
-              educationalPriceDetail: undefined,
+              educationalPriceDetail: 'prix',
             },
           },
         },
