@@ -18,8 +18,6 @@ import time
 import typing
 from urllib.parse import urljoin
 
-from flask import current_app
-
 from pcapi import settings
 from pcapi.connectors.entreprise import exceptions
 from pcapi.connectors.entreprise import models
@@ -29,6 +27,7 @@ from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
@@ -74,7 +73,7 @@ class EntrepriseBackend(BaseBackend):
                     "seconds_before_reset": seconds_before_reset,
                 },
             )
-            current_app.redis_client.set(self._get_lock_name(subpath), "1", ex=max(1, seconds_before_reset))
+            get_redis_client().set(self._get_lock_name(subpath), "1", ex=max(1, seconds_before_reset))
 
     def _ensure_rate_limit(self, subpath: str) -> None:
         """
@@ -82,7 +81,7 @@ class EntrepriseBackend(BaseBackend):
         Rather, wait until reset time when reasonable.
         """
         slept_time = 0.0
-        while (ttl := current_app.redis_client.ttl(self._get_lock_name(subpath))) > 0:
+        while (ttl := get_redis_client().ttl(self._get_lock_name(subpath))) > 0:
             if slept_time + ttl > self.timeout:
                 raise exceptions.RateLimitExceeded("Rate limited, please try again later")
             # Some randomness (+ 0 to 2 seconds) so that concurrent calls do not start at the same time

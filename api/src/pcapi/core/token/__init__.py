@@ -13,12 +13,12 @@ from datetime import datetime
 from datetime import timedelta
 
 import jwt
-from flask import current_app
 
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.utils import date as date_utils
 from pcapi.utils import jwt as jwt_utils
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
@@ -67,19 +67,19 @@ class AbstractToken(abc.ABC):
 
     @classmethod
     def get_token(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> "T | None":
-        encoded_token = current_app.redis_client.get(cls.get_redis_key(type_, key_suffix))
+        encoded_token = get_redis_client().get(cls.get_redis_key(type_, key_suffix))
         if encoded_token is None:
             return None
         return cls.load_without_checking(encoded_token)
 
     @classmethod
     def token_exists(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> bool:
-        return bool(current_app.redis_client.exists(cls.get_redis_key(type_, key_suffix)))
+        return bool(get_redis_client().exists(cls.get_redis_key(type_, key_suffix)))
 
     @classmethod
     def get_expiration_date(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> datetime | None:
         key = cls.get_redis_key(type_, key_suffix)
-        ttl = current_app.redis_client.ttl(key)
+        ttl = get_redis_client().ttl(key)
         if ttl < 0:
             # -2 if doesn't exist, -1 if no expiration
             return None
@@ -87,7 +87,7 @@ class AbstractToken(abc.ABC):
 
     @classmethod
     def delete(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> None:
-        current_app.redis_client.delete(cls.get_redis_key(type_, key_suffix))
+        get_redis_client().delete(cls.get_redis_key(type_, key_suffix))
 
     @classmethod
     @abc.abstractmethod
@@ -107,14 +107,14 @@ class AbstractToken(abc.ABC):
         if (
             self.type_ != type_
             or (key_suffix is not None and self.key_suffix != key_suffix)
-            or current_app.redis_client.get(redis_key) != self.encoded_token
+            or get_redis_client().get(redis_key) != self.encoded_token
         ):
             self._log(self._TokenAction.CHECK_KO)
             raise users_exceptions.InvalidToken()
         self._log(self._TokenAction.CHECK_OK)
 
     def expire(self) -> None:
-        current_app.redis_client.delete(AbstractToken.get_redis_key(self.type_, self.key_suffix))
+        get_redis_client().delete(AbstractToken.get_redis_key(self.type_, self.key_suffix))
         self._log(self._TokenAction.EXPIRE)
 
     def _log(self, action: _TokenAction) -> None:
@@ -170,7 +170,7 @@ class Token(AbstractToken):
 
         encoded_token = jwt_utils.encode_jwt_payload(payload)
         if ttl is None or ttl > timedelta(0):
-            current_app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
+            get_redis_client().set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
         token = Token.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
         return token
@@ -221,7 +221,7 @@ class UUIDToken(AbstractToken):
 
         if ttl is None or ttl > timedelta(0):
             redis_key = cls.get_redis_key(type_, random_uuid)
-            current_app.redis_client.set(redis_key, encoded_token, ex=ttl)
+            get_redis_client().set(redis_key, encoded_token, ex=ttl)
 
         token = UUIDToken.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
@@ -247,7 +247,7 @@ class SecureToken:
         """
         if token:
             self.token = token
-            raw_data = current_app.redis_client.getdel(self.key)
+            raw_data = get_redis_client().getdel(self.key)
             if not raw_data:
                 # add robustness against timing attacks
                 time.sleep(random.random())
@@ -258,7 +258,7 @@ class SecureToken:
             # generate a 512 bits secure token
             self.token = secrets.token_urlsafe(64)
             raw_data = json.dumps(self.data)
-            current_app.redis_client.set(self.key, raw_data, ex=ttl)
+            get_redis_client().set(self.key, raw_data, ex=ttl)
 
     @property
     def key(self) -> str:
@@ -320,7 +320,7 @@ class AsymetricToken(AbstractToken):
 
         encoded_token = jwt_utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):
-            current_app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
+            get_redis_client().set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
         token = cls(type_, random_uuid, encoded_token, payload["data"])
         token._log(cls._TokenAction.CREATE)
         return token
@@ -364,7 +364,7 @@ def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
         "type_": TokenType.PASSWORDLESS_LOGIN.value,
         "key_suffix": key_suffix,
     }
-    current_app.redis_client.set(redis_key, value, ex=ttl)
+    get_redis_client().set(redis_key, value, ex=ttl)
 
     token = jwt_utils.encode_jwt_payload_rs256(
         {"sub": sub, "iat": iat, "exp": exp, "jti": jti},
@@ -406,7 +406,7 @@ def validate_passwordless_token(token: str) -> dict:
         "key_suffix": key_suffix,
     }
 
-    with current_app.redis_client.pipeline() as pipeline:
+    with get_redis_client().pipeline() as pipeline:
         pipeline.get(redis_key)
         pipeline.delete(redis_key)
         results = pipeline.execute()

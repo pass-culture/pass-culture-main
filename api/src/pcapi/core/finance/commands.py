@@ -9,7 +9,6 @@ import typing
 import click
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
@@ -26,6 +25,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.redis import get_redis_client
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -224,7 +224,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
         logger.error("Rollback and delete redis lock before restarting push_invoices")
         db.session.rollback()
         time.sleep(5)
-        current_app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        get_redis_client().delete(conf.REDIS_PUSH_INVOICE_LOCK)
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, handler)

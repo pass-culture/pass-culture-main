@@ -4,7 +4,6 @@ import time
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 
 from pcapi import settings
 from pcapi.core.finance import api as finance_api
@@ -18,13 +17,14 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.redis import get_redis_client
 
 
 logger = logging.getLogger(__name__)
 
 
 def push_bank_accounts(count: int) -> None:
-    if bool(current_app.redis_client.exists(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)):
+    if bool(get_redis_client().exists(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)):
         return
 
     bank_accounts_query = (
@@ -43,7 +43,7 @@ def push_bank_accounts(count: int) -> None:
     if not bank_accounts:
         return
 
-    current_app.redis_client.set(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK, "1", ex=conf.REDIS_PUSH_BANK_ACCOUNT_LOCK_TIMEOUT)
+    get_redis_client().set(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK, "1", ex=conf.REDIS_PUSH_BANK_ACCOUNT_LOCK_TIMEOUT)
 
     try:
         bank_account_ids = [e[0] for e in bank_accounts]
@@ -73,14 +73,14 @@ def push_bank_accounts(count: int) -> None:
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
     finally:
-        current_app.redis_client.delete(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)
+        get_redis_client().delete(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)
 
 
 def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
-    if bool(current_app.redis_client.exists(conf.REDIS_PUSH_INVOICE_LOCK)):
+    if bool(get_redis_client().exists(conf.REDIS_PUSH_INVOICE_LOCK)):
         logger.info(
             "push_invoices ended because of lock",
-            extra={"redis_lock_value": current_app.redis_client.get(conf.REDIS_PUSH_INVOICE_LOCK)},
+            extra={"redis_lock_value": get_redis_client().get(conf.REDIS_PUSH_INVOICE_LOCK)},
         )
         return
 
@@ -96,7 +96,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
         logger.info("No pending invoices found")
         return
 
-    current_app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
+    get_redis_client().set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
 
     try:
         for invoice in invoices:
@@ -152,7 +152,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
             notify_invoices_finished.send(batch)
 
     finally:
-        current_app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        get_redis_client().delete(conf.REDIS_PUSH_INVOICE_LOCK)
 
 
 def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:

@@ -2,11 +2,10 @@ import json
 import logging
 import re
 
-from flask import current_app
-
 from pcapi.connectors import youtube
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.utils.redis import get_redis_client
 
 from . import exceptions
 
@@ -47,7 +46,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     It raises an error if no metadata have been found requesting the video API
     """
     video_id = extract_video_id(video_url)
-    cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
+    cached_video_metadata = get_redis_client().get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
 
     if cached_video_metadata is None:
         video_metadata_retry = youtube.get_video_metadata(video_id=video_id)
@@ -59,7 +58,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
                     "duration": video_metadata_retry.duration,
                 }
             )
-            current_app.redis_client.set(
+            get_redis_client().set(
                 f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata_retry.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
             )  # 24 hours
             return video_metadata_retry

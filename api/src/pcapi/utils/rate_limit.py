@@ -2,7 +2,7 @@ import time
 import typing
 from contextlib import contextmanager
 
-from flask import current_app as app
+from pcapi.utils.redis import get_redis_client
 
 
 class RateLimitedError(Exception):
@@ -27,8 +27,8 @@ def rate_limit(key: str, time_window_size: int, max_per_time_window: int) -> typ
     time_window_id = int(time.time()) // time_window_size
     rate_limit_key = f"pcapi:rate_limit:{key}:{time_window_size}:{time_window_id}"
 
-    current_value = app.redis_client.incr(rate_limit_key)
-    app.redis_client.expire(rate_limit_key, 2 * time_window_size, nx=True)
+    current_value = get_redis_client().incr(rate_limit_key)
+    get_redis_client().expire(rate_limit_key, 2 * time_window_size, nx=True)
 
     if current_value > max_per_time_window:
         raise RateLimitedError(time_window_size, max_per_time_window, current_value)

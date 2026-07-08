@@ -9,7 +9,6 @@ from pathlib import Path
 
 import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
-from flask import current_app
 from flask import render_template
 from sqlalchemy import func
 from sqlalchemy import orm as sa_orm
@@ -52,6 +51,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.pdf import generate_pdf_from_html
+from pcapi.utils.redis import get_redis_client
 from pcapi.utils.requests import ExternalAPIException
 
 
@@ -1028,7 +1028,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
 
 
 def _get_extract_beneficiary_data_lock() -> bool:
-    result = current_app.redis_client.set(
+    result = get_redis_client().set(
         constants.GDPR_EXTRACT_DATA_LOCK,
         "locked",
         ex=settings.GDPR_LOCK_TIMEOUT,
@@ -1038,7 +1038,7 @@ def _get_extract_beneficiary_data_lock() -> bool:
 
 
 def _release_extract_beneficiary_data_lock() -> None:
-    current_app.redis_client.delete(constants.GDPR_EXTRACT_DATA_LOCK)
+    get_redis_client().delete(constants.GDPR_EXTRACT_DATA_LOCK)
 
 
 def extract_beneficiary_data_command() -> bool:
@@ -1094,10 +1094,10 @@ class ExtractBeneficiaryDataCounter:
     def reset(self) -> None:
         now = date_utils.get_naive_utc_now()
         if now.hour == 0 and now.minute < 10:
-            current_app.redis_client.delete(self.key)
+            get_redis_client().delete(self.key)
 
     def get(self) -> int:
-        raw_counter = current_app.redis_client.get(self.key)
+        raw_counter = get_redis_client().get(self.key)
         counter = int(raw_counter) if raw_counter else 0
         return counter
 
@@ -1105,4 +1105,4 @@ class ExtractBeneficiaryDataCounter:
         return self.get() >= self.max_value
 
     def __iadd__(self, other: int) -> None:
-        current_app.redis_client.incrby(self.key, other)
+        get_redis_client().incrby(self.key, other)
