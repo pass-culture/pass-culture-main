@@ -76,7 +76,11 @@ from pcapi import settings
     with op.get_context().autocommit_block():
         op.execute("SET SESSION statement_timeout = '300s'")
         op.execute('ALTER TABLE "$table" VALIDATE CONSTRAINT "$constraint"')
-        op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+        op.execute(
+            text("SET SESSION statement_timeout=:statement_timeout").bindparams(
+                statement_timeout=settings.DATABASE_STATEMENT_TIMEOUT,
+            )
+        )
     """,
     "downgrade": """
     pass
