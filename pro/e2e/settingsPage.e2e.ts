@@ -67,7 +67,7 @@ test.describe('Settings page', () => {
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
   })
 
-  test('Leaving with unsaved changes shows the guard dialog and I can quit', async ({
+  test('Leaving with unsaved changes shows the guard dialog and I can quit without saving', async ({
     page,
   }) => {
     const requestContext = await playwrightRequest.newContext({
@@ -91,16 +91,55 @@ test.describe('Settings page', () => {
 
     await page.getByRole('link', { name: 'Informations générales' }).click()
 
-    await expect(
-      page.getByText('Les informations non enregistrées seront perdues')
-    ).toBeVisible()
+    const guardDialog = page.getByRole('dialog', {
+      name: 'Des modifications ont été apportées à cette page',
+    })
+    await expect(guardDialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Quitter la page' }).click()
+    await guardDialog
+      .getByRole('button', { name: 'Ignorer les modifications' })
+      .click()
 
     await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
-    await expect(
-      page.getByText('Les informations non enregistrées seront perdues')
-    ).not.toBeVisible()
+    await expect(guardDialog).not.toBeVisible()
+  })
+
+  test('Leaving with unsaved changes shows the guard dialog and I can save and quit', async ({
+    page,
+  }) => {
+    const requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    const userData = await createRegularOnboardedProUser(requestContext)
+    await requestContext.dispose()
+
+    await doLogin(page, userData.user.email)
+    await navigateToHubAndPickVenue(page, userData.venueName)
+
+    const navBar = page.getByRole('navigation', { name: 'Menu principal' })
+    await navBar.getByRole('link', { name: 'Paramètres' }).click()
+    await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
+    await expect(page.getByTestId('spinner')).toHaveCount(0)
+
+    await page.getByRole('link', { name: 'Notifications' }).click()
+    await expect(page).toHaveURL(/\/parametres\/notifications$/)
+
+    await page.getByLabel('Adresse email').fill('nouveau@email.com')
+
+    await page.getByRole('link', { name: 'Informations générales' }).click()
+
+    const guardDialog = page.getByRole('dialog', {
+      name: 'Des modifications ont été apportées à cette page',
+    })
+    await expect(guardDialog).toBeVisible()
+
+    await guardDialog
+      .getByRole('button', { name: 'Enregistrer et quitter' })
+      .click()
+
+    await expectSuccessSnackbar(page, 'Vos modifications ont été sauvegardées')
+    await expect(page).toHaveURL(/\/parametres\/informations-generales$/)
+    await expect(guardDialog).not.toBeVisible()
   })
 
   test('Leaving with unsaved changes shows the guard dialog and I can stay', async ({
@@ -127,15 +166,16 @@ test.describe('Settings page', () => {
 
     await page.getByRole('link', { name: 'Informations générales' }).click()
 
-    await expect(
-      page.getByText('Les informations non enregistrées seront perdues')
-    ).toBeVisible()
+    const guardDialog = page.getByRole('dialog', {
+      name: 'Des modifications ont été apportées à cette page',
+    })
+    await expect(guardDialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Rester sur la page' }).click()
+    await guardDialog
+      .getByRole('button', { name: 'Fermer la fenêtre modale' })
+      .click()
 
     await expect(page).toHaveURL(/\/parametres\/notifications$/)
-    await expect(
-      page.getByText('Les informations non enregistrées seront perdues')
-    ).not.toBeVisible()
+    await expect(guardDialog).not.toBeVisible()
   })
 })
