@@ -6,6 +6,7 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
@@ -19,6 +20,7 @@ import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import { IndividualOfferTitle } from '@/pages/IndividualOfferWizard/IndividualOfferTitle/IndividualOfferTitle'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferHeadlineCard } from './components/OfferHeadlineCard/OfferHeadlineCard'
@@ -93,21 +95,27 @@ export const IndividualOfferLayout = ({
 
   return (
     <>
-      <div className={styles['title-container']}>
-        {offer &&
-          mode !== OFFER_WIZARD_MODE.CREATION &&
-          (displayUpdatePublicationAndBookingDates ? (
-            <OfferPublicationEdition offer={offer} />
-          ) : (
-            <span className={styles.status}>
-              {
-                <Status
-                  offer={offer}
-                  canEditPublicationDates={canEditPublicationDates}
-                />
-              }
-            </span>
-          ))}
+      <div className={styles['header-container']}>
+        <MainHeading
+          mainHeading={<IndividualOfferTitle offer={offer} mode={mode} />}
+          className={styles['main-heading']}
+        />
+        <div className={styles['status-container']}>
+          {offer &&
+            mode !== OFFER_WIZARD_MODE.CREATION &&
+            (displayUpdatePublicationAndBookingDates ? (
+              <OfferPublicationEdition offer={offer} />
+            ) : (
+              <span className={styles.status}>
+                {
+                  <Status
+                    offer={offer}
+                    canEditPublicationDates={canEditPublicationDates}
+                  />
+                }
+              </span>
+            ))}
+        </div>
       </div>
       {offer && shouldDisplayOfferName && (
         <p className={styles['offer-title']}>{offer.name}</p>
