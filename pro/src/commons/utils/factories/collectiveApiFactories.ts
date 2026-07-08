@@ -367,6 +367,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasNonDraftOffers: true,
   volunteeringUrl: null,
   openingHours: null,
+  state: null,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

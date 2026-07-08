@@ -130,6 +130,7 @@ class GetVenueResponseModel(HttpBodyModel):
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
     visualDisabilityCompliant: bool | None
+    state: offerers_models.VenueState | None
 
     @classmethod
     def build(
@@ -223,6 +224,7 @@ class GetVenueResponseModel(HttpBodyModel):
             mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
             motorDisabilityCompliant=venue.motorDisabilityCompliant,
             visualDisabilityCompliant=venue.visualDisabilityCompliant,
+            state=venue.state,
         )
 
 

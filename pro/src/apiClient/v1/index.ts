@@ -409,6 +409,7 @@ export {
   type VenueListItemLiteResponseModel,
   type VenueOfOffererFromSiretResponseModel,
   type VenueProviderResponse,
+  VenueState,
   type VenueStatsDataModel,
   type VenuesEducationalStatusResponseModel,
   type VenuesEducationalStatusesResponseModel,

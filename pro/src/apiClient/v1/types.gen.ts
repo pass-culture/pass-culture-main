@@ -3707,6 +3707,7 @@ export type GetVenueResponseModel = {
      * Siret
      */
     siret: string | null;
+    state: VenueState | null;
     /**
      * Visualdisabilitycompliant
      */
@@ -6650,6 +6651,14 @@ export type VenueProviderResponse = {
      */
     venueIdAtOfferProvider: string | null;
 };
+
+/**
+ * VenueState
+ */
+export enum VenueState {
+    CLOSED = 'CLOSED',
+    CLOSING = 'CLOSING'
+}
 
 /**
  * VenueStatsDataModel
