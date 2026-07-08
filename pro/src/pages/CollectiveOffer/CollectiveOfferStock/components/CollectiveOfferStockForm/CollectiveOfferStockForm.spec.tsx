@@ -478,7 +478,7 @@ describe('<CollectiveOfferStockForm />', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       global: ['Vous ne pouvez pas faire cette action.'],
     })
-    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const onAfterSubmit = vi.fn().mockRejectedValueOnce(error)
     const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
@@ -500,7 +500,7 @@ describe('<CollectiveOfferStockForm />', () => {
           { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
         ],
       },
-      onSubmit,
+      onAfterSubmit,
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
 
@@ -516,7 +516,7 @@ describe('<CollectiveOfferStockForm />', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       price: ['Montant invalide'],
     })
-    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const onAfterSubmit = vi.fn().mockRejectedValueOnce(error)
     const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
@@ -538,7 +538,7 @@ describe('<CollectiveOfferStockForm />', () => {
           { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
         ],
       },
-      onSubmit,
+      onAfterSubmit,
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
 
@@ -553,7 +553,7 @@ describe('<CollectiveOfferStockForm />', () => {
     const error = new ApiError('', 400, 'Bad Request', {
       'collectiveAdditionalFees.root': ['Un type est en doublon'],
     })
-    const onSubmit = vi.fn().mockRejectedValueOnce(error)
+    const onAfterSubmit = vi.fn().mockRejectedValueOnce(error)
     const tomorrow = addDays(new Date(), 1).toISOString()
     const testProps: CollectiveOfferStockFormProps = {
       ...defaultProps,
@@ -575,7 +575,7 @@ describe('<CollectiveOfferStockForm />', () => {
           { type: CollectiveAdditionalFeeType.TRAVEL, label: null, amount: 1 },
         ],
       },
-      onSubmit,
+      onAfterSubmit,
     }
     renderWithProviders(<CollectiveOfferStockForm {...testProps} />)
 
