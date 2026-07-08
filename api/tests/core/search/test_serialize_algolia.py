@@ -10,8 +10,10 @@ from pcapi.core.artist import models as artists_models
 from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.educational import constants as educational_constants
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.academies import ACADEMIES
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -693,6 +695,34 @@ def test_serialize_collective_offer_template_location_to_be_defined():
     assert serialized["offer"]["departmentCodes"] == ["33", "75", "93"]
     assert sorted(serialized["offer"]["academies"]) == ["Bordeaux", "Créteil", "Paris"]
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
+
+
+def test_serialize_collective_offer_template_intervention_area_all():
+    collective_offer_template = educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory(
+        interventionArea=educational_constants.ALL_INTERVENTION_AREA
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["locationType"] == "TO_BE_DEFINED"
+    assert serialized["offer"]["departmentCodes"] == [
+        code for code in educational_constants.ALL_INTERVENTION_AREA if code not in {"mainland", "all"}
+    ]
+    assert sorted(serialized["offer"]["academies"]) == sorted(ACADEMIES.keys() - {"Nouvelle-Calédonie"})
+
+
+def test_serialize_collective_offer_template_intervention_area_mainland():
+    collective_offer_template = educational_factories.CollectiveOfferTemplateOnToBeDefinedLocationFactory(
+        interventionArea=educational_constants.MAINLAND_INTERVENTION_AREA
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized["offer"]["locationType"] == "TO_BE_DEFINED"
+    assert serialized["offer"]["departmentCodes"] == [
+        code for code in educational_constants.MAINLAND_INTERVENTION_AREA if code != "mainland"
+    ]
+    assert sorted(serialized["offer"]["academies"]) == sorted(
+        ACADEMIES.keys() - {"Guadeloupe", "Guyane", "La Réunion", "Martinique", "Mayotte", "Nouvelle-Calédonie"}
+    )
 
 
 def test_serialize_collective_offer_template():
