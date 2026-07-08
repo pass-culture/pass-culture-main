@@ -164,7 +164,8 @@ def on_educonnect_authentication_response() -> Response:
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
     key = educonnect_connector.build_saml_request_id_key(saml_request_id)
-    return get_redis_client().get(key)
+    value = get_redis_client().get(key)
+    return int(value) if value is not None else None
 
 
 def _on_educonnect_authentication_errors(

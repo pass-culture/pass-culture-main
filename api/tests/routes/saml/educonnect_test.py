@@ -300,7 +300,7 @@ class EduconnectTest:
             response.location
             == "https://webapp-v2.example.com/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
-        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
+        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": user.id}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
@@ -329,7 +329,7 @@ class EduconnectTest:
             response.location
             == "https://webapp-v2.example.com/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
-        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
+        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": user.id}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
