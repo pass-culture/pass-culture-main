@@ -29,7 +29,7 @@ on:
 permissions: write-all
 
 env:
-  PASSDIRECTOR_VERSION: v0.7.1
+  PASSDIRECTOR_VERSION: v0.7.2
 
 jobs:
   deploy-preview-env-init:
