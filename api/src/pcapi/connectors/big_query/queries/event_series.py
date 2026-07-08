@@ -20,6 +20,8 @@ class EventSeriesModel(BaseModelV2):
 
 
 class DeltaEventSeriesModel(EventSeriesModel):
+    # "remove" rows only carry an id: name is not guaranteed to be set in that case.
+    name: str | None = None  # type: ignore[assignment]
     action: DeltaAction
 
 

@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class EventSeriesLog(TypedDict):
     id: str
-    name: str
+    name: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -143,6 +143,7 @@ class EventSeriesImporter:
     def _build_event_series(
         self, model: bq_event_series_queries.EventSeriesModel | bq_event_series_queries.DeltaEventSeriesModel
     ) -> event_series_models.EventSeries:
+        assert model.name is not None  # only "remove" rows may have no name, and those never reach this method
         return event_series_models.EventSeries(
             id=model.id,
             name=model.name,
@@ -154,6 +155,7 @@ class EventSeriesImporter:
     def _apply_update(
         event_series: event_series_models.EventSeries, delta_model: bq_event_series_queries.DeltaEventSeriesModel
     ) -> None:
+        assert delta_model.name is not None  # only "remove" rows may have no name, and those never reach this method
         event_series.name = delta_model.name
         event_series.description = delta_model.description
         event_series.mediationUuid = delta_model.mediation_uuid
