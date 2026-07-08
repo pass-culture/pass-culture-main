@@ -58,6 +58,7 @@ class Bookability(enum.Enum):
     USER_CANNOT_BOOK = "USER_CANNOT_BOOK"
     USER_HAS_ALREADY_BOOKED_OFFER = "USER_HAS_ALREADY_BOOKED_OFFER"
     USER_HAS_INSUFFICIENT_CREDIT = "USER_HAS_INSUFFICIENT_CREDIT"
+    AUTHENTICATION_REQUIRED = "AUTHENTICATION_REQUIRED"
 
 
 @dataclass
@@ -122,7 +123,9 @@ class Screening(HttpBodyModel):
             if not raw_screening.user_data.has_enough_credit:
                 return Bookability.USER_HAS_INSUFFICIENT_CREDIT
 
-        return Bookability.BOOKABLE
+            return Bookability.BOOKABLE
+
+        return Bookability.AUTHENTICATION_REQUIRED
 
     @classmethod
     def from_raw_screening(cls, raw_screening: RawScreening) -> typing.Self:
@@ -171,7 +174,7 @@ class VenueScreenings(HttpBodyModel):
     next_screening: Screening | None
 
     @classmethod
-    def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
+    def from_raw_screening(cls, screening: RawScreening) -> typing.Self:
         assert screening.venue_data
         return cls(
             address=f"{screening.venue_data.street}, {screening.venue_data.postal_code} {screening.venue_data.city}",
@@ -185,8 +188,13 @@ class VenueScreenings(HttpBodyModel):
         )
 
 
+class DayVenueScreenings(HttpBodyModel):
+    date: date
+    screenings: list[VenueScreenings]
+
+
 class MovieCalendarResponse(HttpBodyModel):
-    calendar: dict[date, list[VenueScreenings]]
+    calendar: list[DayVenueScreenings]
 
     @classmethod
     def from_raw_screenings(
@@ -199,20 +207,25 @@ class MovieCalendarResponse(HttpBodyModel):
         def sort_venues_by_distance(venues: list[VenueScreenings]) -> list[VenueScreenings]:
             return sorted(venues, key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
 
-        return cls(
-            calendar=serialize_calendar(
-                raw_screenings,
-                start_date,
-                end_date,
-                block_serializer=VenueScreenings.from_raw_screening,
-                block_id_getter=get_venue_id,
-                sort_blocks=sort_venues_by_distance,
-            )
+        calendar_list = serialize_calendar(
+            raw_screenings,
+            start_date,
+            end_date,
+            block_serializer=VenueScreenings.from_raw_screening,
+            block_id_getter=get_venue_id,
+            sort_blocks=sort_venues_by_distance,
         )
+
+        return cls(calendar=[DayVenueScreenings(date=e["date"], screenings=e["screenings"]) for e in calendar_list])
+
+
+class DayMovieScreenings(HttpBodyModel):
+    date: date
+    screenings: list[MovieScreenings]
 
 
 class VenueMovieCalendarResponse(HttpBodyModel):
-    calendar: dict[date, list[MovieScreenings]]
+    calendar: list[DayMovieScreenings]
 
     @classmethod
     def from_raw_venue_screenings(
@@ -252,7 +265,7 @@ def serialize_calendar(
     block_serializer: typing.Callable[[RawScreening], T],
     block_id_getter: typing.Callable[[RawScreening], int],
     sort_blocks: typing.Callable[[list[T]], list[T]],
-) -> dict[date, list[T]]:
+) -> list[dict]:
     calendar = {}
     for day_delta in range((end_date - start_date).days + 1):
         day = (start_date + timedelta(days=day_delta)).date()
@@ -278,4 +291,4 @@ def serialize_calendar(
 
         calendar[day] = sorted_blocks
 
-    return calendar
+    return [{"date": date, "screenings": screenings} for date, screenings in calendar.items()]
