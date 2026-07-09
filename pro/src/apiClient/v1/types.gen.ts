@@ -6538,6 +6538,7 @@ export type VenueListItemLiteResponseModel = {
      * Publicname
      */
     publicName: string;
+    state: VenueState | null;
 };
 
 /**

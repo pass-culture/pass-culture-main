@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type JSX, useState } from 'react'
+import { useState } from 'react'
 
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -19,9 +19,10 @@ import highlightImg from './assets/highlight-img.svg'
 import styles from './OfferHighlightCard.module.scss'
 import { OfferHighlightDialogBuilder } from './OfferHighlightDialogBuilder'
 
-export type OfferHighlightCardProps = {
+export interface OfferHighlightCardProps {
   offerId: number
   highlightRequests: Array<ShortHighlightResponseModel>
+  isReadOnly: boolean
   onSubmit?: () => void
   submitLabel?: string
 }
@@ -29,9 +30,10 @@ export type OfferHighlightCardProps = {
 export const OfferHighlightCard = ({
   offerId,
   highlightRequests,
+  isReadOnly,
   onSubmit,
   submitLabel,
-}: OfferHighlightCardProps): JSX.Element => {
+}: Readonly<OfferHighlightCardProps>) => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
 
@@ -114,6 +116,7 @@ export const OfferHighlightCard = ({
               hasHighlights ? 'Modifier' : 'Relier l’offre à un temps fort'
             }
             fullWidth={!hasHighlights}
+            disabled={isReadOnly}
           />
         </OfferHighlightDialogBuilder>
       </div>

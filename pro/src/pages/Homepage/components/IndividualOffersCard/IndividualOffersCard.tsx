@@ -14,15 +14,17 @@ import { OffersCardVariant } from '../types'
 import { IndividualOffersLine } from './components/IndividualOffersLine/IndividualOffersLine'
 import styles from './IndividualOffersCard.module.scss'
 
-type IndividualOffersCardProps = {
+interface IndividualOffersCardProps {
+  isReadOnly: boolean
   venueId: number
   venueDepartmentCode: string | null
 }
 
 export const IndividualOffersCard = ({
+  isReadOnly,
   venueId,
   venueDepartmentCode,
-}: IndividualOffersCardProps): JSX.Element => {
+}: Readonly<IndividualOffersCardProps>) => {
   const { isLoading, data: offers } = useSWR(
     [GET_OFFERS_HOME_QUERY_KEY, venueId],
     () => api.listOffersHome({ query: { venueId } }),
@@ -41,7 +43,12 @@ export const IndividualOffersCard = ({
   }
 
   if (offers?.length === 0 || !offers) {
-    return <OffersRetentionCard variant={OffersCardVariant.INDIVIDUAL} />
+    return (
+      <OffersRetentionCard
+        isReadOnly={isReadOnly}
+        variant={OffersCardVariant.INDIVIDUAL}
+      />
+    )
   }
 
   return (

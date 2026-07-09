@@ -6,6 +6,7 @@ import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
+  VenueState,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -396,6 +397,39 @@ describe('BookableOfferSummary', () => {
         offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }
     )
+  })
+
+  describe('when the selected partner venue is closed', () => {
+    const closedVenueOptions: RenderWithProvidersOptions = {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            state: VenueState.CLOSED,
+          }),
+        },
+      },
+    }
+
+    it('should not render the "Modifier", "Dupliquer", "Archiver" and "Annuler la réservation" actions', () => {
+      renderBookableOfferSummary(props, closedVenueOptions)
+
+      expect(
+        screen.queryByLabelText('Modifier l’offre')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
+      expect(screen.queryByText('Archiver')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Annuler la réservation')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should still render the "Aperçu" action', () => {
+      renderBookableOfferSummary(props, closedVenueOptions)
+
+      expect(screen.getByText('Aperçu')).toBeVisible()
+    })
   })
 
   it('should have the correct url for the "Retour à la liste des offres" button', () => {

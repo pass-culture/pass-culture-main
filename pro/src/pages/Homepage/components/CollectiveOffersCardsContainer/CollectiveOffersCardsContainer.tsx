@@ -9,8 +9,10 @@ import {
 import { CollectiveOffersCard } from '../CollectiveOffersCard/CollectiveOffersCard'
 
 export const CollectiveOffersCardsContainer = ({
+  isReadOnly,
   venueId,
 }: {
+  isReadOnly: boolean
   venueId: number
 }) => {
   const bookableOffersQuery = useSWR(
@@ -40,6 +42,7 @@ export const CollectiveOffersCardsContainer = ({
       variant={'TEMPLATE'}
       offersToDisplay={templateOffers}
       hasOffers={hasTemplateOffers}
+      isReadOnly={isReadOnly}
       isLoading={templateOffersQuery.isLoading}
     />
   )
@@ -49,6 +52,7 @@ export const CollectiveOffersCardsContainer = ({
       variant={'BOOKABLE'}
       offersToDisplay={bookableOffers}
       hasOffers={hasBookableOffers}
+      isReadOnly={isReadOnly}
       isLoading={bookableOffersQuery.isLoading}
     />
   )

@@ -14,7 +14,10 @@ import { CollectiveOffersBookableLine } from './CollectiveOffersBookableLine'
 describe('<CollectiveOffersBookableLine />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
-      <CollectiveOffersBookableLine offer={buildCollectiveOfferHome()} />
+      <CollectiveOffersBookableLine
+        isReadOnly={false}
+        offer={buildCollectiveOfferHome()}
+      />
     )
 
     expect(await axe(container)).toHaveNoViolations()
@@ -27,7 +30,10 @@ describe('<CollectiveOffersBookableLine />', () => {
       CollectiveOfferDisplayedStatus.BOOKED
     )
     renderWithProviders(
-      <CollectiveOffersBookableLine offer={collectiveOfferHome} />
+      <CollectiveOffersBookableLine
+        isReadOnly={false}
+        offer={collectiveOfferHome}
+      />
     )
 
     const { date: expectedDisplayedDate } = formatDateTimeParts(
@@ -50,7 +56,10 @@ describe('<CollectiveOffersBookableLine />', () => {
       CollectiveOfferDisplayedStatus.PUBLISHED
     )
     renderWithProviders(
-      <CollectiveOffersBookableLine offer={collectiveOfferHome} />
+      <CollectiveOffersBookableLine
+        isReadOnly={false}
+        offer={collectiveOfferHome}
+      />
     )
 
     const { date: expectedDisplayedDate } = formatDateTimeParts(
@@ -66,6 +75,24 @@ describe('<CollectiveOffersBookableLine />', () => {
     ).toBeVisible()
     expect(screen.getByText('publiée')).toBeVisible()
     expect(screen.getByText('Expire dans 3 jours')).toBeVisible()
+  })
+
+  it('should disable the CTA of expiring offers when read-only', () => {
+    const collectiveOfferHome = buildCollectiveOfferHome(
+      3,
+      11,
+      CollectiveOfferDisplayedStatus.PUBLISHED
+    )
+    renderWithProviders(
+      <CollectiveOffersBookableLine
+        isReadOnly={true}
+        offer={collectiveOfferHome}
+      />
+    )
+
+    expect(
+      screen.getByRole('link', { name: 'Modifier la date limite' })
+    ).toHaveAttribute('aria-disabled', 'true')
   })
 
   describe('clickable behaviour', () => {
@@ -89,7 +116,10 @@ describe('<CollectiveOffersBookableLine />', () => {
             {
               path: '/',
               element: (
-                <CollectiveOffersBookableLine offer={collectiveOfferHome} />
+                <CollectiveOffersBookableLine
+                  isReadOnly={false}
+                  offer={collectiveOfferHome}
+                />
               ),
             },
             {

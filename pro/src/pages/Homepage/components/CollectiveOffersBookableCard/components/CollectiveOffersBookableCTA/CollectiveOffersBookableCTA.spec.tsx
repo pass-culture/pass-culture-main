@@ -13,10 +13,12 @@ const renderCollectiveOffersBookableCTA = (
   stock?: React.ComponentProps<typeof CollectiveOffersBookableCTA>['stock'],
   displayedStatus: React.ComponentProps<
     typeof CollectiveOffersBookableCTA
-  >['displayedStatus'] = CollectiveOfferDisplayedStatus.PREBOOKED
+  >['displayedStatus'] = CollectiveOfferDisplayedStatus.PREBOOKED,
+  isReadOnly = false
 ) => {
   const user = userEvent.setup()
   const props = {
+    isReadOnly,
     offerId: 12,
     offerLink: '/lien/vers/mon/offre/12',
     displayedStatus,
@@ -73,6 +75,19 @@ describe('<CollectiveOffersBookableCTA />', () => {
     expect(
       screen.getByText('Modification du stock de mon offre 12')
     ).toBeVisible()
+  })
+
+  it('should disable the CTA to update the booking limit when read-only', () => {
+    const stock = buildCollectiveStock(1, 2)
+    renderCollectiveOffersBookableCTA(
+      stock,
+      CollectiveOfferDisplayedStatus.PREBOOKED,
+      true
+    )
+
+    const cta = screen.getByRole('link', { name: 'Modifier la date limite' })
+    expect(cta).toHaveAttribute('aria-disabled', 'true')
+    expect(cta).not.toHaveAttribute('href')
   })
 
   it('should render a CTA to see the offer details otherwise', async () => {

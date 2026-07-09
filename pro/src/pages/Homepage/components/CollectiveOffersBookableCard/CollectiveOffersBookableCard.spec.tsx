@@ -15,9 +15,12 @@ vi.mock(
   './components/CollectiveOffersBookableLine/CollectiveOffersBookableLine',
   () => ({
     CollectiveOffersBookableLine: ({
+      isReadOnly,
       offer,
     }: CollectiveOffersBookableLineProps) => (
-      <div data-testid="collective-offer-line">Line for offer {offer.id}</div>
+      <div data-testid="collective-offer-line">
+        Line for offer {offer.id} ({isReadOnly ? 'read-only' : 'editable'})
+      </div>
     ),
   })
 )
@@ -32,7 +35,10 @@ describe('<CollectiveOffersBookableCard />', () => {
   })
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
-      <CollectiveOffersBookableCard offers={[buildCollectiveOfferHome()]} />
+      <CollectiveOffersBookableCard
+        isReadOnly={false}
+        offers={[buildCollectiveOfferHome()]}
+      />
     )
 
     expect(await axe(container)).toHaveNoViolations()
@@ -42,6 +48,7 @@ describe('<CollectiveOffersBookableCard />', () => {
     const collectiveOfferHome = buildCollectiveOfferHome()
     renderWithProviders(
       <CollectiveOffersBookableCard
+        isReadOnly={false}
         offers={[
           { ...collectiveOfferHome, id: 1 },
           { ...collectiveOfferHome, id: 2 },
@@ -57,6 +64,19 @@ describe('<CollectiveOffersBookableCard />', () => {
     })
   })
 
+  it('should forward isReadOnly to each CollectiveOffersBookableLine', () => {
+    renderWithProviders(
+      <CollectiveOffersBookableCard
+        isReadOnly={true}
+        offers={[buildCollectiveOfferHome()]}
+      />
+    )
+
+    expect(screen.getByTestId('collective-offer-line')).toHaveTextContent(
+      'read-only'
+    )
+  })
+
   it('should have a CTA that sends to collective offer list', async () => {
     const user = userEvent.setup()
     const collectiveOfferHome = buildCollectiveOfferHome(1)
@@ -66,7 +86,10 @@ describe('<CollectiveOffersBookableCard />', () => {
         {
           path: '/',
           element: (
-            <CollectiveOffersBookableCard offers={[collectiveOfferHome]} />
+            <CollectiveOffersBookableCard
+              isReadOnly={false}
+              offers={[collectiveOfferHome]}
+            />
           ),
         },
         {
@@ -92,7 +115,10 @@ describe('<CollectiveOffersBookableCard />', () => {
     const collectiveOfferHome = buildCollectiveOfferHome(1)
 
     renderWithProviders(
-      <CollectiveOffersBookableCard offers={[collectiveOfferHome]} />
+      <CollectiveOffersBookableCard
+        isReadOnly={false}
+        offers={[collectiveOfferHome]}
+      />
     )
 
     const allOffersBtn = screen.getByRole('link', {

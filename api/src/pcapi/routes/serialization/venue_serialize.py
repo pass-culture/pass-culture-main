@@ -308,6 +308,7 @@ class VenueListItemLiteResponseModel(HttpBodyModel):
     location: address_serialize.LocationResponseModelV2
     managingOffererId: int
     publicName: str
+    state: offerers_models.VenueState | None
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> "VenueListItemLiteResponseModel":
@@ -316,6 +317,7 @@ class VenueListItemLiteResponseModel(HttpBodyModel):
             location=cls._build_address(venue),
             managingOffererId=venue.managingOffererId,
             publicName=venue.publicName,
+            state=venue.state,
         )
 
     @classmethod

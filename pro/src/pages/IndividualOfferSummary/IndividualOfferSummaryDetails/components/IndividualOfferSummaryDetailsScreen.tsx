@@ -11,6 +11,7 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -185,6 +186,7 @@ export function IndividualOfferSummaryDetailsScreen({
                 }),
                 'aria-label': 'Modifier la description de l’offre',
               })}
+          isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
         >
           <SummarySubSection title="A propos de votre offre">
             <SummaryDescriptionList descriptions={aboutDescriptions} />

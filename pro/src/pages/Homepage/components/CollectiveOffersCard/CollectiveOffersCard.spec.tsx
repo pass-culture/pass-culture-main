@@ -29,6 +29,7 @@ const defaultProps: CollectiveOffersCardProps<'TEMPLATE'> = {
   variant: 'TEMPLATE',
   isLoading: false,
   hasOffers: false,
+  isReadOnly: false,
   offersToDisplay: [],
 }
 

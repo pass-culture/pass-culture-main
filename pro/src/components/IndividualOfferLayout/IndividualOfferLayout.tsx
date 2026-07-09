@@ -10,8 +10,11 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
@@ -36,9 +39,11 @@ export const IndividualOfferLayout = ({
   children,
   offer,
 }: IndividualOfferLayoutProps) => {
+  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -65,6 +70,7 @@ export const IndividualOfferLayout = ({
   const snackBar = useSnackBar()
   const navigate = useNavigate()
 
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const shouldDisplayOfferName = isOfferExposureEnabled
     ? mode === OFFER_WIZARD_MODE.CREATION
     : mode !== OFFER_WIZARD_MODE.READ_ONLY
@@ -142,16 +148,21 @@ export const IndividualOfferLayout = ({
             )}
             <div className={styles['cards-container']}>
               {shouldDisplayRecommendationCard && (
-                <OfferRecommendationCard offerId={offer.id} />
+                <OfferRecommendationCard
+                  isReadOnly={isVenueClosed}
+                  offerId={offer.id}
+                />
               )}
               {shouldDisplayHighlightCard && (
                 <OfferHighlightCard
+                  isReadOnly={isVenueClosed}
                   offerId={offer.id}
                   highlightRequests={offer.highlightRequests}
                 />
               )}
               {shouldDisplayHeadlineCard && (
                 <OfferHeadlineCard
+                  isReadOnly={isVenueClosed}
                   offerId={offer.id}
                   hasThumb={!!offer.thumbUrl}
                 />

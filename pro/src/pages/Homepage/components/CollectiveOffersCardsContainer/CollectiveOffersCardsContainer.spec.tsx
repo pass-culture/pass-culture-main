@@ -36,7 +36,9 @@ describe('CollectiveOffersCardsContainer', () => {
       offers: [],
     })
 
-    renderWithProviders(<CollectiveOffersCardsContainer venueId={1} />)
+    renderWithProviders(
+      <CollectiveOffersCardsContainer isReadOnly={false} venueId={1} />
+    )
 
     // cards rendered with fallback data on first render while waiting for SWR to fetch data
     const cardsFirstRender = screen.getAllByTestId(/^card-/)
@@ -72,7 +74,9 @@ describe('CollectiveOffersCardsContainer', () => {
         },
       ],
     })
-    renderWithProviders(<CollectiveOffersCardsContainer venueId={1} />)
+    renderWithProviders(
+      <CollectiveOffersCardsContainer isReadOnly={false} venueId={1} />
+    )
 
     // cards rendered with fallback data on first render while waiting for SWR to fetch data
     const cardsFirstRender = screen.getAllByTestId(/^card-/)

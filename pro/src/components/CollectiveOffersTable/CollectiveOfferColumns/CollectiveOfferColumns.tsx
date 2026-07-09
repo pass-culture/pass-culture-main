@@ -12,9 +12,14 @@ import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { OfferStatusCell } from './OfferStatusCell/OfferStatusCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
-export function getCollectiveOfferColumns(
-  isBookableTable?: boolean
-): Column<CollectiveOffer>[] {
+interface GetCollectiveOfferColumnsProps {
+  isBookableTable: boolean
+  isReadOnly: boolean
+}
+export function getCollectiveOfferColumns({
+  isBookableTable,
+  isReadOnly,
+}: GetCollectiveOfferColumnsProps): Column<CollectiveOffer>[] {
   const columns: Column<CollectiveOffer>[] = [
     {
       id: 'name',
@@ -62,11 +67,15 @@ export function getCollectiveOfferColumns(
       label: 'Statut',
       render: (offer: CollectiveOffer) => <OfferStatusCell offer={offer} />,
     },
-    {
+  ]
+
+  if (!isReadOnly) {
+    columns.push({
       id: 'actions',
       label: 'Actions',
       render: (offer: CollectiveOffer) => <OfferActionsCell offer={offer} />,
-    },
-  ]
+    })
+  }
+
   return columns
 }

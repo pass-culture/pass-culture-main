@@ -32,8 +32,10 @@ const RETENTION_CONFIG = {
 } satisfies Record<OffersCardVariant, unknown>
 
 export const OffersRetentionCard = ({
+  isReadOnly,
   variant,
 }: {
+  isReadOnly: boolean
   variant: OffersCardVariant
 }) => {
   const { logEvent } = useAnalytics()
@@ -70,6 +72,7 @@ export const OffersRetentionCard = ({
           to={config.to}
           as="a"
           onClick={logCreateOfferClick}
+          disabled={isReadOnly}
         />
       </Card.Footer>
     </Card>

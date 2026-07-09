@@ -24,8 +24,10 @@ import styles from './EditoCard.module.scss'
 
 export const EditoCard = ({
   canDisplayHighlights,
+  isReadOnly,
 }: {
   canDisplayHighlights: boolean
+  isReadOnly: boolean
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { logEvent } = useAnalytics()
@@ -52,6 +54,7 @@ export const EditoCard = ({
             <Button
               variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
+              disabled={isReadOnly}
               size={ButtonSize.SMALL}
               fullWidth={true}
               onClick={() =>
@@ -99,6 +102,7 @@ export const EditoCard = ({
           label="Choisir une offre"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
+          disabled={isReadOnly}
           size={ButtonSize.SMALL}
           fullWidth={true}
           to="/offres"
@@ -119,6 +123,7 @@ export const EditoCard = ({
           label="Choisir une offre"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
+          disabled={isReadOnly}
           size={ButtonSize.SMALL}
           fullWidth={true}
           to="/offres"

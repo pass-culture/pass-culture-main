@@ -24,6 +24,7 @@ import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
@@ -137,7 +138,10 @@ export const CollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  const columns = getCollectiveOfferColumns(true)
+  const columns = getCollectiveOfferColumns({
+    isBookableTable: true,
+    isReadOnly: withVenueHelpers(selectedPartnerVenue).isClosed,
+  })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',
@@ -192,7 +196,7 @@ export const CollectiveOffersScreen = ({
           data={currentPageItems}
           allData={sortedOffers}
           isLoading={isLoading}
-          selectable={true}
+          selectable={!withVenueHelpers(selectedPartnerVenue).isClosed}
           selectedIds={selectedOfferIds}
           onSelectionChange={(rows) => {
             setSelectedOffers(rows)

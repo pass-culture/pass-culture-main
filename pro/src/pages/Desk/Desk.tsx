@@ -7,7 +7,10 @@ import { api } from '@/apiClient/api'
 import type { ApiError } from '@/apiClient/compat'
 import type { GetBookingResponse } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -24,7 +27,9 @@ interface FormValues {
   token: string
 }
 
-export const Desk = (): JSX.Element => {
+export const Desk = () => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | undefined>(
     undefined
@@ -169,7 +174,10 @@ export const Desk = (): JSX.Element => {
               ) : (
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={
+                    isSubmitting ||
+                    withVenueHelpers(selectedPartnerVenue).isClosed
+                  }
                   isLoading={isSubmitting}
                   label="Valider la contremarque"
                 />

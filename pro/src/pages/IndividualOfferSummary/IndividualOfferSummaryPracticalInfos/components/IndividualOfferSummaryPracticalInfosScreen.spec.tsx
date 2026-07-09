@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -15,7 +16,14 @@ function renderIndividualOfferSummaryPracticalInfosScreen(
   props?: Partial<IndividualOfferSummaryPracticalInfosScreenProps>
 ) {
   renderWithProviders(
-    <IndividualOfferSummaryPracticalInfosScreen {...defaultProps} {...props} />
+    <IndividualOfferSummaryPracticalInfosScreen {...defaultProps} {...props} />,
+    {
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
+    }
   )
 }
 

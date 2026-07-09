@@ -4,7 +4,11 @@ import { forwardRef } from 'react'
 
 import { api } from '@/apiClient/api'
 import * as apiHelpers from '@/apiClient/helpers'
-import { DisplayableActivity, type GetVenueResponseModel } from '@/apiClient/v1'
+import {
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -179,6 +183,48 @@ describe('Header', () => {
     })
 
     expect(screen.getByRole('button', { name: /Modifier/ })).toBeInTheDocument()
+  })
+
+  it('should enable the image uploader when the venue is open', () => {
+    renderHeader('partnerPage', { state: null })
+
+    expect(screen.getByLabelText('Importez une image')).toBeEnabled()
+  })
+
+  it('should disable the image uploader when the venue is closed', () => {
+    renderHeader('partnerPage', { state: VenueState.CLOSED })
+
+    expect(screen.getByLabelText('Importez une image')).toBeDisabled()
+  })
+
+  it('should not display the preview link when the venue is closed', () => {
+    renderHeader('partnerPage', {
+      isPermanent: true,
+      state: VenueState.CLOSED,
+    })
+
+    expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
+  })
+
+  it('should not display the edit image button when the venue is closed', () => {
+    mockUseOnVenueImageUpload.mockReturnValueOnce({
+      imageValues: {
+        croppedImageUrl: 'https://www.example.com/image.png',
+        credit: '',
+      },
+      setImageValues: vi.fn(),
+      handleOnImageUpload: vi.fn(),
+    })
+
+    renderHeader('partnerPage', {
+      bannerUrl: 'https://www.example.com/image.png',
+      bannerMeta,
+      state: VenueState.CLOSED,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier l’image' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call the delete endpoint and notify success when deleting the image', async () => {

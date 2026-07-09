@@ -161,6 +161,7 @@ export const makeVenueListItemLiteResponseModel = <
     location: location,
     managingOffererId: offererId,
     publicName: `Nom public de la structure ${override.id}`,
+    state: null,
   }
 
   return {

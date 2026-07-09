@@ -5,6 +5,7 @@ import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -58,6 +59,7 @@ export const DeleteVenueProviderButton = ({
           color={ButtonColor.NEUTRAL}
           icon={fullTrashIcon}
           label="Supprimer"
+          disabled={withVenueHelpers(venue).isClosed}
         />
       }
     />

@@ -20,10 +20,14 @@ import { CollectiveOffersTemplateLine } from './CollectiveOffersTemplateLine'
 const offer = buildCollectiveOfferTemplateHome()
 
 function renderCollectiveOffersTemplateLine(
-  offerOverrides?: Partial<CollectiveOfferTemplateHomeResponseModel>
+  offerOverrides?: Partial<CollectiveOfferTemplateHomeResponseModel>,
+  isReadOnly = false
 ) {
   return renderWithProviders(
-    <CollectiveOffersTemplateLine offer={{ ...offer, ...offerOverrides }} />,
+    <CollectiveOffersTemplateLine
+      isReadOnly={isReadOnly}
+      offer={{ ...offer, ...offerOverrides }}
+    />,
     {
       storeOverrides: {
         user: {
@@ -74,6 +78,14 @@ describe('<CollectiveOffersTemplateLine />', () => {
     expect(screen.getByRole('link', { name: "Voir l'offre" })).toBeVisible()
   })
 
+  it('should disable the button to create a bookable offer when read-only', () => {
+    renderCollectiveOffersTemplateLine(undefined, true)
+
+    expect(
+      screen.getByRole('button', { name: 'Créer une offre réservable' })
+    ).toBeDisabled()
+  })
+
   it('should not display dates when offer has no dates', () => {
     const offer = {
       ...buildCollectiveOfferTemplateHome(),
@@ -101,7 +113,12 @@ describe('<CollectiveOffersTemplateLine />', () => {
           routes: [
             {
               path: '/',
-              element: <CollectiveOffersTemplateLine offer={offer} />,
+              element: (
+                <CollectiveOffersTemplateLine
+                  isReadOnly={false}
+                  offer={offer}
+                />
+              ),
             },
             {
               path: '/offre/:offerId/collectif/recapitulatif',

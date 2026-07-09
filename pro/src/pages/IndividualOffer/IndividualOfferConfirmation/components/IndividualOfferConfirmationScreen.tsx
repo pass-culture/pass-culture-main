@@ -10,8 +10,11 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { isDateValid } from '@/commons/utils/date'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -32,8 +35,10 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
-  const navigate = useNavigate()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const navigate = useNavigate()
 
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
@@ -67,6 +72,7 @@ export const IndividualOfferConfirmationScreen = ({
     shouldDisplayHeadlineCard,
   } = getOfferEnhancementCardsVisibility(offer)
 
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const shouldDisplayCardsSection =
     shouldDisplayRecommendationCard ||
     shouldDisplayHighlightCard ||
@@ -146,6 +152,7 @@ export const IndividualOfferConfirmationScreen = ({
           <div className={styles['enhancement-cards']}>
             {shouldDisplayRecommendationCard && (
               <OfferRecommendationCard
+                isReadOnly={isVenueClosed}
                 offerId={offer.id}
                 onSubmit={goToOfferPage}
                 submitLabel="Enregistrer et accéder à l’offre"
@@ -153,6 +160,7 @@ export const IndividualOfferConfirmationScreen = ({
             )}
             {shouldDisplayHighlightCard && (
               <OfferHighlightCard
+                isReadOnly={isVenueClosed}
                 offerId={offer.id}
                 highlightRequests={offer.highlightRequests}
                 onSubmit={goToOfferPage}
@@ -161,6 +169,7 @@ export const IndividualOfferConfirmationScreen = ({
             )}
             {shouldDisplayHeadlineCard && (
               <OfferHeadlineCard
+                isReadOnly={isVenueClosed}
                 offerId={offer.id}
                 hasThumb={!!offer.thumbUrl}
               />

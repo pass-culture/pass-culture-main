@@ -37,7 +37,8 @@ const baseVenue = makeGetVenueResponseModel({
 
 const renderPartnerPageCard = (
   variant: HomepageVariant = HomepageVariant.INDIVIDUAL,
-  venueOverrides?: Partial<GetVenueResponseModel>
+  venueOverrides?: Partial<GetVenueResponseModel>,
+  isReadOnly = false
 ) => {
   const venue = makeGetVenueResponseModel({
     ...baseVenue,
@@ -45,6 +46,7 @@ const renderPartnerPageCard = (
   })
   return renderWithProviders(
     <PartnerPageCard
+      isReadOnly={isReadOnly}
       venueId={venue.id}
       venueName={venue.publicName}
       venueBannerUrl={venue.bannerUrl}
@@ -199,6 +201,28 @@ describe('PartnerPageCard', () => {
       expect(
         screen.queryByRole('link', { name: /Voir ma page/ })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when isReadOnly is true', () => {
+    it('should disable the page edition and preview links', () => {
+      renderPartnerPageCard(HomepageVariant.INDIVIDUAL, undefined, true)
+
+      const editionLink = screen.getByRole('link', {
+        name: 'Compléter ma page',
+      })
+      expect(editionLink).toHaveAttribute('aria-disabled', 'true')
+      expect(editionLink).not.toHaveAttribute('href')
+
+      const previewLink = screen.getByRole('link', { name: /Voir ma page/ })
+      expect(previewLink).toHaveAttribute('aria-disabled', 'true')
+      expect(previewLink).not.toHaveAttribute('href')
+    })
+
+    it('should disable the image uploader', () => {
+      renderPartnerPageCard(HomepageVariant.INDIVIDUAL, undefined, true)
+
+      expect(screen.getByLabelText('Importez une image')).toBeDisabled()
     })
   })
 })

@@ -16,10 +16,16 @@ import { OfferBookingCell } from './components/OfferBookingCell/OfferBookingCell
 import { OfferNameCell } from './components/OfferNameCell/OfferNameCell'
 import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
-export function getIndividualOfferColumns(
-  headlineOffer: HeadLineOfferResponseModel | null,
-  isOfferExposureEnabled = false
-): Column<ListOffersOfferResponseModel>[] {
+interface GetIndividualOfferColumnsProps {
+  headlineOffer: HeadLineOfferResponseModel | null
+  isOfferExposureEnabled: boolean
+  isReadOnly: boolean
+}
+export function getIndividualOfferColumns({
+  headlineOffer,
+  isOfferExposureEnabled,
+  isReadOnly,
+}: GetIndividualOfferColumnsProps): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
     {
       id: 'name',
@@ -77,7 +83,10 @@ export function getIndividualOfferColumns(
       label: 'Réservations',
       render: (offer) => <OfferBookingCell offer={offer} />,
     },
-    {
+  ]
+
+  if (!isReadOnly) {
+    columns.push({
       id: 'actions',
       label: 'Actions',
       render: (offer) => {
@@ -110,8 +119,8 @@ export function getIndividualOfferColumns(
           />
         )
       },
-    },
-  ]
+    })
+  }
 
   return columns
 }

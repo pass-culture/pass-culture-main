@@ -7,11 +7,14 @@ import {
   isCollectiveOfferTemplate,
 } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import {
   isCollectiveInstitutionEditable,
   isCollectiveOfferDetailsEditable,
   isCollectiveStockEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
@@ -203,9 +206,15 @@ export const CollectiveOfferSummary = ({
     'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
   )
 
-  const canEditDetails = isCollectiveOfferDetailsEditable(offer)
-  const canEditDatesAndPrice = isCollectiveStockEditable(offer)
-  const canEditInstitution = isCollectiveInstitutionEditable(offer)
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+  const canEditDetails =
+    isCollectiveOfferDetailsEditable(offer) && !isVenueClosed
+  const canEditDatesAndPrice =
+    isCollectiveStockEditable(offer) && !isVenueClosed
+  const canEditInstitution =
+    isCollectiveInstitutionEditable(offer) && !isVenueClosed
 
   const layoutProps = {
     offer,

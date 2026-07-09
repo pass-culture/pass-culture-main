@@ -39,8 +39,10 @@ const EMPTY_STATE_CONFIG = {
 } satisfies Record<OffersCardVariant, unknown>
 
 export const OffersEmptyStateCard = ({
+  isReadOnly,
   variant,
 }: {
+  isReadOnly: boolean
   variant: OffersCardVariant
 }) => {
   const { logEvent } = useAnalytics()
@@ -71,6 +73,7 @@ export const OffersEmptyStateCard = ({
           to={cardContent.to}
           as="a"
           onClick={logCreateOfferClick}
+          disabled={isReadOnly}
         />
       </Card.Footer>
     </Card>

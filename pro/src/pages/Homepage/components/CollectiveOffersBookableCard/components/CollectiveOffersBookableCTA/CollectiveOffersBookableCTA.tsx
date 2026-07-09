@@ -5,7 +5,8 @@ import { canExpire } from '@/commons/core/OfferEducational/utils/canExpire'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 
-type CollectiveOffersBookableCTAProps = {
+interface CollectiveOffersBookableCTAProps {
+  isReadOnly: boolean
   stock: CollectiveOfferHomeResponseModel['collectiveStock']
   displayedStatus: CollectiveOfferHomeResponseModel['displayedStatus']
   offerId: number
@@ -13,11 +14,12 @@ type CollectiveOffersBookableCTAProps = {
 }
 
 export const CollectiveOffersBookableCTA = ({
+  isReadOnly,
   stock,
   displayedStatus,
   offerId,
   offerLink,
-}: CollectiveOffersBookableCTAProps): JSX.Element => {
+}: Readonly<CollectiveOffersBookableCTAProps>) => {
   if (stock && canExpire({ displayedStatus })) {
     const daysCountBeforeExpiration = differenceInCalendarDays(
       new Date(stock.bookingLimitDatetime),
@@ -32,10 +34,12 @@ export const CollectiveOffersBookableCTA = ({
           label="Modifier la date limite"
           as="a"
           to={stockEditionLink}
+          disabled={isReadOnly}
         />
       )
     }
   }
+
   return (
     <Button
       variant={ButtonVariant.SECONDARY}

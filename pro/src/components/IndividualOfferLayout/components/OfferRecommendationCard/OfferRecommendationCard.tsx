@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type JSX, useState } from 'react'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -20,17 +20,19 @@ import recoImg from './assets/reco-img.svg'
 import styles from './OfferRecommendationCard.module.scss'
 import { OfferRecommendationDialogBuilder } from './OfferRecommendationDialogBuilder'
 
-type OfferRecommendationCardProps = {
+interface OfferRecommendationCardProps {
+  isReadOnly: boolean
   offerId: number
   onSubmit?: () => void
   submitLabel?: string
 }
 
 export const OfferRecommendationCard = ({
+  isReadOnly,
   offerId,
   onSubmit,
   submitLabel,
-}: OfferRecommendationCardProps): JSX.Element => {
+}: Readonly<OfferRecommendationCardProps>) => {
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
 
@@ -108,6 +110,7 @@ export const OfferRecommendationCard = ({
               hasRecommendation ? 'Modifier' : 'Ajouter une recommandation'
             }
             fullWidth={!hasRecommendation}
+            disabled={isReadOnly}
           />
         </OfferRecommendationDialogBuilder>
       </div>

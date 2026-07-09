@@ -5,13 +5,17 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
+  type GetVenueResponseModel,
   OfferContactFormEnum,
+  VenueState,
 } from '@/apiClient/v1'
 import {
   getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -32,9 +36,22 @@ vi.mock('@/apiClient/api', () => ({
 
 const renderCollectiveOfferSummary = (
   props: CollectiveOfferSummaryProps,
-  overrides?: RenderWithProvidersOptions
+  overrides?: RenderWithProvidersOptions,
+  venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />, overrides)
+  renderWithProviders(<CollectiveOfferSummary {...props} />, {
+    ...overrides,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: makeGetVenueResponseModel({
+          id: 1,
+          ...venueOverrides,
+        }),
+      },
+      ...overrides?.storeOverrides,
+    },
+  })
 }
 
 describe('CollectiveOfferSummary', () => {
@@ -223,6 +240,27 @@ describe('CollectiveOfferSummary', () => {
     })
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
+  })
+
+  it('should not display any edition button when the selected venue is closed', () => {
+    renderCollectiveOfferSummary(
+      {
+        offer: getCollectiveOfferFactory({
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+            CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+          ],
+        }),
+        offerEditLink: '123',
+        stockEditLink: '234',
+        institutionEditLink: '345',
+      },
+      undefined,
+      { state: VenueState.CLOSED }
+    )
+
+    expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
   })
 
   describe('WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS', () => {

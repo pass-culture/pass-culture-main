@@ -16,6 +16,7 @@ import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic
 import { getMapKeys } from '@/commons/mappings/helpers'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AddressFields } from '@/components/AddressFields/AddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -248,7 +249,11 @@ const GeneralInformation = () => {
               />
             )}
           </FormLayout>
-          <VenueFormActionBar isSubmitting={isSubmitting} onCancel={onCancel} />
+          <VenueFormActionBar
+            disableFormSubmission={withVenueHelpers(venue).isClosed}
+            isSubmitting={isSubmitting}
+            onCancel={onCancel}
+          />
         </form>
       </FormProvider>
 

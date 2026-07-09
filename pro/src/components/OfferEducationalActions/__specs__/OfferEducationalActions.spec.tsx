@@ -51,6 +51,7 @@ describe('OfferEducationalActions', () => {
     className: 'string',
     offer: getCollectiveOfferFactory(),
     mode: Mode.EDITION,
+    isReadOnly: false,
   }
   const snackBarError = vi.fn()
   const snackBarSuccess = vi.fn()
@@ -262,6 +263,27 @@ describe('OfferEducationalActions', () => {
       screen.queryByRole('button', {
         name: 'Mettre en pause',
       })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display offer actions when isReadOnly is true', () => {
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isTemplate: true,
+        allowedActions: [
+          CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
+          CollectiveOfferTemplateAllowedAction.CAN_HIDE,
+        ],
+      }),
+      isReadOnly: true,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Publier' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Mettre en pause' })
     ).not.toBeInTheDocument()
   })
 

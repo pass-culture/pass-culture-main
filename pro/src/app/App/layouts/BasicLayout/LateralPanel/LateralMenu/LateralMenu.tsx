@@ -12,6 +12,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -180,36 +181,41 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </div>
 
         <div className={styles['nav-section-create-button-wrapper']}>
-          <Dropdown
-            title="Créer une offre"
-            open={isOpen}
-            onOpenChange={setIsOpen}
-            align="start"
-            trigger={
-              <Button
-                label="Créer une offre"
-                variant={ButtonVariant.PRIMARY}
-                icon={isOpen ? fullUpIcon : fullDownIcon}
-                iconPosition={IconPositionEnum.RIGHT}
-                fullWidth
-              />
-            }
-          >
-            <DropdownItem icon={strokePhoneIcon}>
-              <Link
-                to={getIndividualOfferUrl({
-                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                  mode: OFFER_WIZARD_MODE.CREATION,
-                  isOnboarding: false,
-                })}
-              >
-                Pour le grand public
-              </Link>
-            </DropdownItem>
-            <DropdownItem icon={strokeBagIcon}>
-              <Link to="/offre/creation">Pour les groupes scolaires</Link>
-            </DropdownItem>
-          </Dropdown>
+          {!withVenueHelpers(selectedPartnerVenue).isClosed && (
+            <Dropdown
+              title="Créer une offre"
+              open={isOpen}
+              onOpenChange={setIsOpen}
+              align="start"
+              trigger={
+                <Button
+                  label="Créer une offre"
+                  variant={ButtonVariant.PRIMARY}
+                  icon={isOpen ? fullUpIcon : fullDownIcon}
+                  iconPosition={IconPositionEnum.RIGHT}
+                  fullWidth
+                />
+              }
+            >
+              <DropdownItem icon={strokePhoneIcon}>
+                <Link
+                  to={getIndividualOfferUrl({
+                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                    mode: OFFER_WIZARD_MODE.CREATION,
+                    isOnboarding: false,
+                  })}
+                >
+                  Pour le grand public
+                </Link>
+              </DropdownItem>
+              <DropdownItem icon={strokeBagIcon}>
+                <Link to="/offre/creation">Pour les groupes scolaires</Link>
+              </DropdownItem>
+            </Dropdown>
+          )}
+          {withVenueHelpers(selectedPartnerVenue).isClosed && (
+            <Button disabled fullWidth label="Créer une offre" />
+          )}
         </div>
       </div>
 

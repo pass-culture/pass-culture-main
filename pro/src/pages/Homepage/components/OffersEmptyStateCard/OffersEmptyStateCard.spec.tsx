@@ -10,7 +10,10 @@ import { OffersEmptyStateCard } from './OffersEmptyStateCard'
 
 it('should display correct information when variant is BOOKABLE', () => {
   renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.BOOKABLE} />
+    <OffersEmptyStateCard
+      isReadOnly={false}
+      variant={OffersCardVariant.BOOKABLE}
+    />
   )
 
   expect(
@@ -32,7 +35,10 @@ it('should display correct information when variant is BOOKABLE', () => {
 
 it('should display correct information when variant is TEMPLATE', () => {
   renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.TEMPLATE} />
+    <OffersEmptyStateCard
+      isReadOnly={false}
+      variant={OffersCardVariant.TEMPLATE}
+    />
   )
 
   expect(
@@ -54,7 +60,10 @@ it('should display correct information when variant is TEMPLATE', () => {
 
 it('should display correct information when variant is INDIVIDUAL', () => {
   renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.INDIVIDUAL} />
+    <OffersEmptyStateCard
+      isReadOnly={false}
+      variant={OffersCardVariant.INDIVIDUAL}
+    />
   )
 
   expect(
@@ -82,7 +91,10 @@ it('should log event on press CTA that sends to offer creation', async () => {
   }))
   const user = userEvent.setup()
   renderWithProviders(
-    <OffersEmptyStateCard variant={OffersCardVariant.BOOKABLE} />
+    <OffersEmptyStateCard
+      isReadOnly={false}
+      variant={OffersCardVariant.BOOKABLE}
+    />
   )
 
   await user.click(
@@ -96,4 +108,19 @@ it('should log event on press CTA that sends to offer creation', async () => {
       hasOffers: false,
     }
   )
+})
+
+it('should disable the offer creation CTA when isReadOnly is true', () => {
+  renderWithProviders(
+    <OffersEmptyStateCard
+      isReadOnly={true}
+      variant={OffersCardVariant.BOOKABLE}
+    />
+  )
+
+  const createOfferLink = screen.getByRole('link', {
+    name: 'Créer une offre réservable',
+  })
+  expect(createOfferLink).toHaveAttribute('aria-disabled', 'true')
+  expect(createOfferLink).not.toHaveAttribute('href')
 })

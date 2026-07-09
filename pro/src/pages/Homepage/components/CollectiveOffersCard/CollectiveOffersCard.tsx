@@ -10,21 +10,32 @@ import {
   OffersCardVariant,
 } from '../types'
 
+type RenderOffersOptions = {
+  isReadOnly: boolean
+}
+
 type CollectiveOffersCardConfigs = {
   [K in CollectiveOffersCardVariant]: {
     emptyStateVariant: OffersCardVariant
-    renderOffers: (offers: CollectiveOffersVariantMap[K][]) => React.ReactNode
+    renderOffers: (
+      offers: CollectiveOffersVariantMap[K][],
+      options: RenderOffersOptions
+    ) => React.ReactNode
   }
 }
 
 const COLLECTIVE_OFFERS_CARD_CONFIG: CollectiveOffersCardConfigs = {
   BOOKABLE: {
     emptyStateVariant: OffersCardVariant.BOOKABLE,
-    renderOffers: (offers) => <CollectiveOffersBookableCard offers={offers} />,
+    renderOffers: (offers, { isReadOnly }: RenderOffersOptions) => (
+      <CollectiveOffersBookableCard isReadOnly={isReadOnly} offers={offers} />
+    ),
   },
   TEMPLATE: {
     emptyStateVariant: OffersCardVariant.TEMPLATE,
-    renderOffers: (offers) => <CollectiveOffersTemplateCard offers={offers} />,
+    renderOffers: (offers, { isReadOnly }: RenderOffersOptions) => (
+      <CollectiveOffersTemplateCard isReadOnly={isReadOnly} offers={offers} />
+    ),
   },
 }
 
@@ -35,6 +46,7 @@ export interface CollectiveOffersCardProps<
   offersToDisplay: CollectiveOffersVariantMap[T][]
   hasOffers: boolean
   isLoading: boolean
+  isReadOnly: boolean
 }
 
 export const CollectiveOffersCard = <K extends CollectiveOffersCardVariant>({
@@ -42,6 +54,7 @@ export const CollectiveOffersCard = <K extends CollectiveOffersCardVariant>({
   offersToDisplay,
   hasOffers,
   isLoading,
+  isReadOnly,
 }: CollectiveOffersCardProps<K>) => {
   const { emptyStateVariant, renderOffers } =
     COLLECTIVE_OFFERS_CARD_CONFIG[variant]
@@ -51,12 +64,22 @@ export const CollectiveOffersCard = <K extends CollectiveOffersCardVariant>({
   }
 
   if (!hasOffers && offersToDisplay.length === 0) {
-    return <OffersEmptyStateCard variant={emptyStateVariant} />
+    return (
+      <OffersEmptyStateCard
+        isReadOnly={isReadOnly}
+        variant={emptyStateVariant}
+      />
+    )
   }
 
   if (hasOffers && offersToDisplay.length === 0) {
-    return <OffersRetentionCard variant={emptyStateVariant} />
+    return (
+      <OffersRetentionCard
+        isReadOnly={isReadOnly}
+        variant={emptyStateVariant}
+      />
+    )
   }
 
-  return renderOffers(offersToDisplay)
+  return renderOffers(offersToDisplay, { isReadOnly })
 }

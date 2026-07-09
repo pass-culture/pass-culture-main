@@ -54,18 +54,24 @@ type RenderOptions = {
   isRefactoFutureOfferEnabled?: boolean
   headlineOffer?: HeadLineOfferResponseModel | null
   isOfferExposureEnabled?: boolean
+  isReadOnly?: boolean
 }
 
 const renderTableWithOffer = (
   offer = baseOffer,
   options: RenderOptions = {}
 ) => {
-  const { headlineOffer = null, isOfferExposureEnabled = false } = options
+  const {
+    headlineOffer = null,
+    isOfferExposureEnabled = false,
+    isReadOnly = false,
+  } = options
 
-  const columns = getIndividualOfferColumns(
+  const columns = getIndividualOfferColumns({
     headlineOffer,
-    isOfferExposureEnabled
-  )
+    isOfferExposureEnabled,
+    isReadOnly,
+  })
 
   return renderWithProviders(
     <HeadlineOfferContextProvider>
@@ -199,5 +205,31 @@ describe('getIndividualOfferColumns', () => {
     expect(
       await screen.findByRole('link', { name: 'My Offer 2 dates' })
     ).toHaveAttribute('href', expect.stringContaining('/creation/description'))
+  })
+
+  it('should include the actions column when isReadOnly is false', () => {
+    const columns = getIndividualOfferColumns({
+      headlineOffer: null,
+      isOfferExposureEnabled: false,
+      isReadOnly: false,
+    })
+
+    expect(columns.map((column) => column.id)).toContain('actions')
+  })
+
+  it('should omit the actions column when isReadOnly is true', async () => {
+    renderTableWithOffer(baseOffer, { isReadOnly: true })
+
+    expect(await screen.findByText('My Offer')).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: 'Voir les actions' })
+    ).not.toBeInTheDocument()
+
+    const columns = getIndividualOfferColumns({
+      headlineOffer: null,
+      isOfferExposureEnabled: false,
+      isReadOnly: true,
+    })
+    expect(columns.map((column) => column.id)).not.toContain('actions')
   })
 })

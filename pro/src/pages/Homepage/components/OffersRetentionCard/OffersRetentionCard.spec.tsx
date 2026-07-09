@@ -15,7 +15,10 @@ const FakeListOffersPage = ({ variant }: { variant: OffersCardVariant }) => (
   <div>Page liste offres {variant.toLowerCase()}</div>
 )
 
-const renderOffersRetentionCard = (variant: OffersCardVariant) => {
+const renderOffersRetentionCard = (
+  variant: OffersCardVariant,
+  isReadOnly = false
+) => {
   const user = userEvent.setup()
 
   return {
@@ -23,7 +26,9 @@ const renderOffersRetentionCard = (variant: OffersCardVariant) => {
       routes: [
         {
           path: '/',
-          element: <OffersRetentionCard variant={variant} />,
+          element: (
+            <OffersRetentionCard isReadOnly={isReadOnly} variant={variant} />
+          ),
         },
         {
           path: '/offre/creation/collectif/vitrine',
@@ -200,5 +205,18 @@ describe('OffersRetentionCard', () => {
         hasOffers: true,
       }
     )
+  })
+
+  it('should disable the offer creation CTA when isReadOnly is true', () => {
+    renderOffersRetentionCard(OffersCardVariant.INDIVIDUAL, true)
+
+    const createOfferLink = screen.getByRole('link', {
+      name: 'Créer une offre',
+    })
+    expect(createOfferLink).toHaveAttribute('aria-disabled', 'true')
+    expect(createOfferLink).not.toHaveAttribute('href')
+    expect(
+      screen.getByRole('link', { name: 'Voir toutes les offres' })
+    ).toHaveAttribute('href', '/offres')
   })
 })

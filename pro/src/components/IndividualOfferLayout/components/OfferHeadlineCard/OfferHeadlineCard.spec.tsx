@@ -29,12 +29,14 @@ type RenderOptions = {
   offerId: number
   hasThumb: boolean
   headlineOffer?: { id: number } | null
+  isReadOnly?: boolean
 }
 
 function renderOfferHeadlineCard({
   offerId,
   hasThumb,
   headlineOffer = null,
+  isReadOnly = false,
 }: RenderOptions) {
   vi.spyOn(HeadlineOfferContext, 'useHeadlineOfferContext').mockReturnValue({
     headlineOffer,
@@ -44,7 +46,11 @@ function renderOfferHeadlineCard({
   } as any)
 
   return renderWithProviders(
-    <OfferHeadlineCard offerId={offerId} hasThumb={hasThumb} />,
+    <OfferHeadlineCard
+      offerId={offerId}
+      hasThumb={hasThumb}
+      isReadOnly={isReadOnly}
+    />,
     {
       storeOverrides: {
         user: {
@@ -202,6 +208,21 @@ describe('OfferHeadlineCard', () => {
         expect(screen.getByText('Dialog Open')).toBeInTheDocument()
         expect(mockUpsertHeadlineOffer).not.toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('when the offer is read-only', () => {
+    it('should disable the action button', () => {
+      renderOfferHeadlineCard({
+        offerId: 1,
+        hasThumb: true,
+        headlineOffer: null,
+        isReadOnly: true,
+      })
+
+      expect(
+        screen.getByRole('button', { name: 'Mettre l’offre à la une' })
+      ).toBeDisabled()
     })
   })
 })

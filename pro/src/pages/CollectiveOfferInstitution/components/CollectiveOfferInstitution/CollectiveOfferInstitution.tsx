@@ -30,10 +30,13 @@ import {
 } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -83,6 +86,9 @@ export const CollectiveOfferInstitutionScreen = ({
   const isNewCollectivePriceEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS'
   )
+
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
@@ -351,6 +357,7 @@ export const CollectiveOfferInstitutionScreen = ({
     <>
       <OfferEducationalActions
         className={styles.actions}
+        isReadOnly={isVenueClosed}
         offer={offer}
         mode={mode}
       />

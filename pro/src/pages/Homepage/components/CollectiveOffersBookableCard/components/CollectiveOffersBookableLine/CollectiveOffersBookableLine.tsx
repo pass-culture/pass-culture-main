@@ -18,7 +18,8 @@ import {
   getTagInfo,
 } from '../CollectiveOffersBookableTag/CollectiveOffersBookableTag'
 
-export type CollectiveOffersBookableLineProps = {
+export interface CollectiveOffersBookableLineProps {
+  isReadOnly: boolean
   offer: CollectiveOfferHomeResponseModel
 }
 
@@ -35,8 +36,9 @@ function getDateAndTicketsCount(
 }
 
 export const CollectiveOffersBookableLine = ({
+  isReadOnly,
   offer,
-}: CollectiveOffersBookableLineProps): JSX.Element => {
+}: Readonly<CollectiveOffersBookableLineProps>) => {
   const offerId = computeURLCollectiveOfferId(offer.id)
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
 
@@ -86,6 +88,7 @@ export const CollectiveOffersBookableLine = ({
       <CollectiveOffersBookableCTA
         stock={offer.collectiveStock}
         displayedStatus={offer.displayedStatus}
+        isReadOnly={isReadOnly}
         offerId={offer.id}
         offerLink={offerLink}
       />

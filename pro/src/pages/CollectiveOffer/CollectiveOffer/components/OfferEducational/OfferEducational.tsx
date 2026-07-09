@@ -41,6 +41,7 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import {
   createPatchOfferPayload,
@@ -84,6 +85,7 @@ export const OfferEducational = ({
   )
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { mutate } = useSWRConfig()
 
   const { requete: requestId } = queryParamsFromOfferer(location)
@@ -250,6 +252,7 @@ export const OfferEducational = ({
       {offer && (
         <OfferEducationalActions
           className={styles.actions}
+          isReadOnly={isVenueClosed}
           offer={offer}
           mode={mode}
         />

@@ -14,8 +14,10 @@ import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import {
@@ -59,11 +61,20 @@ const renderIndividualOfferSummaryPriceTableScreen: RenderComponentFunction<
     offerStocks: params.offerStocks,
     ...params.props,
   }
+  const options: RenderWithProvidersOptions = {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
+    ...params.options,
+  }
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
       <IndividualOfferSummaryPriceTableScreen {...props} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    options
   )
 }
 

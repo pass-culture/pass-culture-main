@@ -9,6 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
@@ -92,6 +93,7 @@ export const GenericCinemaProviderEdit = ({
           color={ButtonColor.NEUTRAL}
           icon={fullEditIcon}
           label="Paramétrer"
+          disabled={withVenueHelpers(venue).isClosed}
         />
       }
       open={isDialogOpen}

@@ -9,13 +9,15 @@ import styles from '../CollectiveOffersList.module.scss'
 import { OffersCardVariant } from '../types'
 import { CollectiveOffersTemplateLine } from './components/CollectiveOffersTemplateLine/CollectiveOffersTemplateLine'
 
-type CollectiveOffersTemplateCardProps = {
+interface CollectiveOffersTemplateCardProps {
+  isReadOnly: boolean
   offers: CollectiveOfferTemplateHomeResponseModel[]
 }
 
 export const CollectiveOffersTemplateCard = ({
+  isReadOnly,
   offers,
-}: CollectiveOffersTemplateCardProps): JSX.Element => {
+}: Readonly<CollectiveOffersTemplateCardProps>) => {
   const { logEvent } = useAnalytics()
 
   const logSeeAllOffersClick = () =>
@@ -29,7 +31,11 @@ export const CollectiveOffersTemplateCard = ({
       <Card.Header title={'Offres vitrines'} />
       <Card.Content className={styles['offer-list']}>
         {offers.map((offer) => (
-          <CollectiveOffersTemplateLine key={offer.id} offer={offer} />
+          <CollectiveOffersTemplateLine
+            key={offer.id}
+            isReadOnly={isReadOnly}
+            offer={offer}
+          />
         ))}
       </Card.Content>
       <Card.Footer>

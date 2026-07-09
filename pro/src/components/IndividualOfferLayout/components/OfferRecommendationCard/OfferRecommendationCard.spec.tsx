@@ -13,10 +13,10 @@ import { OfferRecommendationCard } from './OfferRecommendationCard'
 
 const mockLogEvent = vi.fn()
 
-function renderOfferRecommendationCard() {
+function renderOfferRecommendationCard(isReadOnly = false) {
   return renderWithProviders(
     <>
-      <OfferRecommendationCard offerId={769} />
+      <OfferRecommendationCard offerId={769} isReadOnly={isReadOnly} />
       <SnackBarContainer />
     </>,
     {
@@ -149,5 +149,17 @@ describe('OfferRecommendationCard', () => {
       EngagementEvents.HAS_MADE_RECOMMENDATION,
       { offerId: 769, action: 'edited' }
     )
+  })
+
+  it('should disable the action button when the offer is read-only', async () => {
+    vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
+      proAdvice: null,
+    })
+
+    renderOfferRecommendationCard(true)
+
+    expect(
+      await screen.findByRole('button', { name: 'Ajouter une recommandation' })
+    ).toBeDisabled()
   })
 })

@@ -52,4 +52,14 @@ describe('DisplayOfferInAppLink', () => {
       offerId,
     })
   })
+
+  it('should render an inert link when disabled', () => {
+    renderWithProviders(
+      <DisplayOfferInAppLink id={789} label="View in app" disabled />
+    )
+
+    const link = screen.getByRole('link', { name: /View in app/ })
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link).not.toHaveAttribute('href')
+  })
 })

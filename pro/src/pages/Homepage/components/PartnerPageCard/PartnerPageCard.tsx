@@ -18,7 +18,8 @@ import { Card } from '@/ui-kit/Card/Card'
 import { HomepageVariant } from '../types'
 import styles from './PartnerPageCard.module.scss'
 
-type PartnerPageProps = {
+interface PartnerPageProps {
+  isReadOnly: boolean
   venueId: number
   venueName: string
   venueBannerUrl?: string | null
@@ -27,6 +28,7 @@ type PartnerPageProps = {
 }
 
 export const PartnerPageCard = ({
+  isReadOnly,
   venueId,
   venueName,
   venueBannerUrl,
@@ -76,6 +78,7 @@ export const PartnerPageCard = ({
           initialValues={imageValues}
           hideActionButtons
           onImageDropOrSelected={logButtonAddClick}
+          disabled={isReadOnly}
         />
         <h3 className={styles['venue-name']}>{venueName}</h3>
       </Card.Content>
@@ -88,6 +91,7 @@ export const PartnerPageCard = ({
           to={venueEditionLink}
           as="a"
           onClick={logFillPartnerPageClick}
+          disabled={isReadOnly}
         />
         {variant === HomepageVariant.INDIVIDUAL && (
           <Button
@@ -100,6 +104,7 @@ export const PartnerPageCard = ({
             as="a"
             opensInNewTab
             onClick={logPartnerPageClick}
+            disabled={isReadOnly}
           />
         )}
       </Card.Footer>
