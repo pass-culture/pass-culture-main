@@ -444,6 +444,35 @@ describe('Button', () => {
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
 
+    it('should render a disabled link as an anchor without href', () => {
+      renderButton({
+        as: 'a',
+        label: 'Disabled Link',
+        to: '/test',
+        disabled: true,
+      })
+
+      const link = screen.getByRole('link', { name: 'Disabled Link' })
+      expect(link.tagName).toBe('A')
+      expect(link).not.toHaveAttribute('href')
+      expect(link).toHaveAttribute('aria-disabled', 'true')
+    })
+
+    it('should not call onClick on a disabled link', async () => {
+      const handleClick = vi.fn()
+      renderButton({
+        as: 'a',
+        label: 'Disabled Clickable Link',
+        to: '/test',
+        disabled: true,
+        onClick: handleClick,
+      })
+
+      const link = screen.getByRole('link', { name: 'Disabled Clickable Link' })
+      await userEvent.click(link)
+      expect(handleClick).not.toHaveBeenCalled()
+    })
+
     it('should handle onBlur on link', () => {
       const handleBlur = vi.fn()
       renderButton({

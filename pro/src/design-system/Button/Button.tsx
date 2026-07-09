@@ -40,6 +40,7 @@ export const Button = forwardRef<
       iconAlt,
       iconPosition = IconPositionEnum.LEFT,
       iconClassName,
+      onClick,
       /***** Link props *****/
       opensInNewTab = false,
       to = '',
@@ -68,15 +69,21 @@ export const Button = forwardRef<
     const absoluteUrl =
       isSectionLink || isExternal || to.startsWith('/') ? to : `/${to}`
 
-    const Component = getComponentType(as, isExternal, isSectionLink)
-    const componentProps = getComponentProps(
+    const Component = getComponentType({
+      as,
+      disabled,
+      isExternal,
+      isSectionLink,
+    })
+    const componentProps = getComponentProps({
       Component,
       type,
       absoluteUrl,
       disabled,
       isLoading,
-      opensInNewTab
-    )
+      onClick,
+      opensInNewTab,
+    })
 
     const iconElement = (icon || opensInNewTab) && !isLoading && (
       <Icon
