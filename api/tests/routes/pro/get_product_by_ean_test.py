@@ -8,13 +8,22 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import ImageType
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 Fake = faker.Faker(locale="fr_FR")
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user access to offerer
+    num_queries += 1  # select product join load mediations
+    num_queries += 1  # select offerer join load venue
+
+    num_queries_with_offer = num_queries + 1  # select offer
+
     def test_get_product_by_ean(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -37,13 +46,10 @@ class Returns200Test:
         offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # select offer
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_with_offer):
             response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
             assert response.status_code == 200
+
         assert response.json == {
             "id": product.id,
             "name": product.name,
@@ -71,12 +77,9 @@ class Returns200Test:
         )
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # select offer
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_with_offer):
             response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+
             assert response.status_code == 200
 
     def test_get_product_by_ean_offerer_with_multiple_venues_offer_with_product(self, client):
@@ -101,16 +104,22 @@ class Returns200Test:
         offers_factories.OfferFactory(product=product, venue=venue)
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+
             assert response.status_code == 200
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns422Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user access to offerer
+    num_queries += 1  # select product join load mediations
+    num_queries += 1  # select offerer join load venue
+    num_queries += 1  # rollback
+    num_queries += 1  # rollback
+
+    num_queries_with_offer = num_queries + 1  # select offer
+
     def test_get_product_by_ean_not_gcu_compatible(self, client):
         user = users_factories.UserFactory()
         ean = Fake.ean13()
@@ -128,13 +137,7 @@ class Returns422Test:
         )
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # select offer
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_with_offer):
             response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
             assert response.status_code == 422
@@ -148,13 +151,9 @@ class Returns422Test:
         offerers_factories.VenueFactory(managingOfferer=offerer)
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = test_client.get(f"/get_product_by_ean/UNKNOWN/{offerer_id}")
+
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
 
@@ -176,19 +175,20 @@ class Returns422Test:
         offers_factories.OfferFactory(product=product, venue=venue)
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # select offer
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_with_offer):
             response = test_client.get(f"/get_product_by_ean/{ean}/{offerer_id}")
 
             assert response.status_code == 422
             assert response.json == {
                 "ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]
             }
+
+
+class Returns404Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user access to offerer
+    num_queries += 1  # rollback
+    num_queries += 1  # rollback
 
     def test_offerer_does_not_exist(self, client):
         ean = Fake.ean13()
@@ -203,13 +203,34 @@ class Returns422Test:
         )
 
         test_client = client.with_session_auth(email=user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select product join load mediations
-        num_queries += 1  # select offerer join load venue
-        num_queries += 1  # rollback
-        num_queries += 1  # rollback
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = test_client.get(f"/get_product_by_ean/{ean}/0")
 
-            assert response.status_code == 422
-            assert response.json == {"ean": ["Structure non reconnue."]}
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
+
+    def test_no_access_to_offerer(self, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerer_id = offerer.id
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ProductFactory(
+            description="Product description",
+            name="Product name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1234567891011",
+            extraData={
+                "author": "Martin Dupont",
+                "gtl_id": "02000000",
+                "performer": "Martine Dupond",
+            },
+            gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
+        )
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+
+        test_client = client.with_session_auth(email=user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+
+            assert response.status_code == 404
+            assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}
