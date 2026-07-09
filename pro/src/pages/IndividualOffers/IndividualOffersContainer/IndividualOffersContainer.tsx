@@ -16,8 +16,11 @@ import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Banner } from '@/design-system/Banner/Banner'
@@ -54,7 +57,9 @@ export const IndividualOffersContainer = ({
   categories,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
+
   const [selectedOfferIds, setSelectedOfferIds] = useState<
     Set<string | number>
   >(new Set())
@@ -133,10 +138,11 @@ export const IndividualOffersContainer = ({
   const { headlineOffer } = useHeadlineOfferContext()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
 
-  const columns = getIndividualOfferColumns(
+  const columns = getIndividualOfferColumns({
     headlineOffer,
-    isOfferExposureEnabled
-  )
+    isOfferExposureEnabled,
+    isReadOnly: withVenueHelpers(selectedPartnerVenue).isClosed,
+  })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',
@@ -189,7 +195,7 @@ export const IndividualOffersContainer = ({
           allData={offers}
           isLoading={isLoading}
           variant={TableVariant.COLLAPSE}
-          selectable={true}
+          selectable={!withVenueHelpers(selectedPartnerVenue).isClosed}
           selectedIds={selectedOfferIds}
           onSelectionChange={(offers) =>
             setSelectedOfferIds(new Set(offers.map((r) => r.id)))

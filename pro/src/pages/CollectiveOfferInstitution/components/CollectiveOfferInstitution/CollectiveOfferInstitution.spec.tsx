@@ -19,6 +19,7 @@ import {
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -90,6 +91,9 @@ const renderInstitutionStep = (
   options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(<CollectiveOfferInstitutionScreen {...props} />, {
+    storeOverrides: {
+      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+    },
     ...options,
   })
 }

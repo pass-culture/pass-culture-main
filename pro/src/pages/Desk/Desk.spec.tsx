@@ -9,8 +9,11 @@ import {
   type ApiResult,
 } from '@/apiClient/compat'
 import { HTTP_STATUS } from '@/apiClient/helpers'
+import { type GetVenueResponseModel, VenueState } from '@/apiClient/v1'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Desk } from './Desk'
@@ -22,12 +25,23 @@ import { Desk } from './Desk'
 const snackBarSuccess = vi.fn()
 const snackBarError = vi.fn()
 
-const renderDesk = () =>
+const renderDesk = (venueOverrides?: Partial<GetVenueResponseModel>) =>
   renderWithProviders(
     <Routes>
       <Route path="/guichet" element={<Desk />} />
     </Routes>,
-    { initialRouterEntries: ['/guichet'] }
+    {
+      initialRouterEntries: ['/guichet'],
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            ...venueOverrides,
+          }),
+        },
+      },
+    }
   )
 
 beforeEach(() => {
@@ -94,6 +108,20 @@ describe('Desk', () => {
       expect(
         await screen.findByText(defaultGetBookingResponse.offerName)
       ).toBeInTheDocument()
+    })
+  })
+
+  /* ---------------------------------------------------------------------- */
+  /*                              Closed venue                              */
+  /* ---------------------------------------------------------------------- */
+
+  describe('when the selected venue is closed', () => {
+    it('disables the submit button', () => {
+      renderDesk({ state: VenueState.CLOSED })
+
+      expect(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
     })
   })
 

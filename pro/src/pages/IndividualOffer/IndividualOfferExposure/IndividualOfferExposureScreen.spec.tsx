@@ -2,7 +2,11 @@ import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import {
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetVenueResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -29,8 +33,10 @@ vi.mock('@/apiClient/api', () => ({
 
 const renderIndividualOfferLocationScreen = ({
   offer,
+  venueOverrides,
 }: {
   offer: GetIndividualOfferWithAddressResponseModel
+  venueOverrides?: Partial<GetVenueResponseModel>
 }) => {
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
@@ -43,6 +49,7 @@ const renderIndividualOfferLocationScreen = ({
   }
   const selectedPartnerVenue = makeGetVenueResponseModel({
     id: 1,
+    ...venueOverrides,
   })
   const options: RenderWithProvidersOptions = {
     user: sharedCurrentUserFactory(),
@@ -94,5 +101,19 @@ describe('IndividualOfferExposureScreen', () => {
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
+  })
+
+  it('should disable the app preview link when the selected venue is closed', async () => {
+    const offer = getIndividualOfferFactory({ bookingsCount: 42 })
+    renderIndividualOfferLocationScreen({
+      offer,
+      venueOverrides: { state: VenueState.CLOSED },
+    })
+
+    const link = await screen.findByRole('link', {
+      name: /Visualiser dans l’app/,
+    })
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link).not.toHaveAttribute('href')
   })
 })

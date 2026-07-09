@@ -18,6 +18,7 @@ vi.mock('../HighlightHome/ModalHighlight/ModalHighlight', () => ({
     <>
       <button
         type="button"
+        disabled={trigger.props.disabled}
         onClick={() => {
           trigger.props.onClick?.()
           onOpenChange(true)
@@ -32,6 +33,7 @@ vi.mock('../HighlightHome/ModalHighlight/ModalHighlight', () => ({
 
 const defaultProps = {
   canDisplayHighlights: false,
+  isReadOnly: false,
 }
 
 describe('EditoCard', () => {
@@ -184,6 +186,39 @@ describe('EditoCard', () => {
           action: 'discover',
         }
       )
+    })
+  })
+
+  describe('when isReadOnly is true', () => {
+    it('should disable the headline offer and recommendation links', () => {
+      renderWithProviders(
+        <EditoCard
+          {...defaultProps}
+          canDisplayHighlights={false}
+          isReadOnly={true}
+        />
+      )
+
+      const links = screen.getAllByRole('link', { name: 'Choisir une offre' })
+      expect(links).toHaveLength(2)
+      for (const link of links) {
+        expect(link).toHaveAttribute('aria-disabled', 'true')
+        expect(link).not.toHaveAttribute('href')
+      }
+    })
+
+    it('should disable the highlights button', () => {
+      renderWithProviders(
+        <EditoCard
+          {...defaultProps}
+          canDisplayHighlights={true}
+          isReadOnly={true}
+        />
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Parcourir les temps forts' })
+      ).toBeDisabled()
     })
   })
 

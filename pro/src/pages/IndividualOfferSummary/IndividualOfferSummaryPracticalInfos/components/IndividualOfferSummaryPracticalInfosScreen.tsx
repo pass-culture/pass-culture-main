@@ -5,7 +5,10 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDelayToFrenchText } from '@/commons/utils/date'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import {
   type Description,
@@ -24,6 +27,8 @@ export type IndividualOfferSummaryPracticalInfosScreenProps = {
 export function IndividualOfferSummaryPracticalInfosScreen({
   offer,
 }: IndividualOfferSummaryPracticalInfosScreenProps) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const practicalInfoDescriptions: Description[] = []
 
   if (offer.withdrawalType) {
@@ -59,6 +64,7 @@ export function IndividualOfferSummaryPracticalInfosScreen({
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           aria-label="Modifier les informations de l’offre"
+          isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
         >
           <div className={styles['withdrawal-block']}>
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />

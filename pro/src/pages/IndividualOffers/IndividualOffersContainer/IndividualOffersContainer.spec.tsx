@@ -7,7 +7,7 @@ import type {
   GetVenueAddressResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus, VenueState } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -179,6 +179,34 @@ describe('IndividualOffersScreen', () => {
     expect(selectAllOffersCheckbox).toBeInTheDocument()
     expect(selectAllOffersCheckbox).not.toBeChecked()
     expect(selectAllOffersCheckbox).not.toBeDisabled()
+  })
+
+  it('should not display selection checkboxes when the selected venue is closed', () => {
+    const offer = listOffersOfferFactory()
+
+    renderOffers(
+      {
+        ...props,
+        offers: [offer],
+      },
+      {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 2,
+              state: VenueState.CLOSED,
+            }),
+          },
+        },
+      }
+    )
+
+    expect(screen.getByText(offer.name)).toBeVisible()
+    expect(screen.queryByLabelText('Tout sélectionner')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('checkbox', { name: offer.name })
+    ).not.toBeInTheDocument()
   })
 
   it('should display total number of offers in plural if multiple offers', () => {

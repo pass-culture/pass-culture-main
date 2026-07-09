@@ -32,12 +32,14 @@ export interface OfferEducationalActionsProps {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
   mode?: Mode
+  isReadOnly: boolean
 }
 
 export const OfferEducationalActions = ({
   className,
   offer,
   mode,
+  isReadOnly,
 }: OfferEducationalActionsProps): JSX.Element => {
   const snackBar = useSnackBar()
 
@@ -81,7 +83,7 @@ export const OfferEducationalActions = ({
   }
 
   const shouldShowOfferActions =
-    mode === Mode.EDITION || mode === Mode.READ_ONLY
+    (mode === Mode.EDITION || mode === Mode.READ_ONLY) && !isReadOnly
 
   const canPublishOffer = isActionAllowedOnCollectiveOffer(
     offer,

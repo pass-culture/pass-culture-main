@@ -3,6 +3,7 @@ import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
 import { OfferHighlightCard } from '@/components/IndividualOfferLayout/components/OfferHighlightCard/OfferHighlightCard'
@@ -30,6 +31,8 @@ export const IndividualOfferExposureScreen = ({
   offer,
 }: Readonly<IndividualOfferExposureScreenProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const {
     shouldDisplayRecommendationCard,
     shouldDisplayHighlightCard,
@@ -43,16 +46,24 @@ export const IndividualOfferExposureScreen = ({
         <h2 className={styles['title']}>Actions de mise en avant</h2>
         <div className={styles['cards-container']}>
           {shouldDisplayRecommendationCard && (
-            <OfferRecommendationCard offerId={offer.id} />
+            <OfferRecommendationCard
+              isReadOnly={isVenueClosed}
+              offerId={offer.id}
+            />
           )}
           {shouldDisplayHighlightCard && (
             <OfferHighlightCard
               offerId={offer.id}
               highlightRequests={offer.highlightRequests}
+              isReadOnly={isVenueClosed}
             />
           )}
           {shouldDisplayHeadlineCard && (
-            <OfferHeadlineCard offerId={offer.id} hasThumb={!!offer.thumbUrl} />
+            <OfferHeadlineCard
+              isReadOnly={isVenueClosed}
+              offerId={offer.id}
+              hasThumb={!!offer.thumbUrl}
+            />
           )}
         </div>
         <OfferExposureTimeline
@@ -72,6 +83,7 @@ export const IndividualOfferExposureScreen = ({
             iconPosition={IconPositionEnum.LEFT}
             size={ButtonSize.SMALL}
             icon={fullLinkIcon}
+            disabled={withVenueHelpers(selectedPartnerVenue).isClosed}
           />
         </div>
         <OfferAppPreview offer={offer} />

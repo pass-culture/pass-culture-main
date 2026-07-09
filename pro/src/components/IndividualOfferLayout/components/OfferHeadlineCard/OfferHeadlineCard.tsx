@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type JSX, useState } from 'react'
+import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -20,15 +20,17 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import headlineImg from './assets/headline-img.svg'
 import styles from './OfferHeadlineCard.module.scss'
 
-type OfferHeadlineCardProps = {
+interface OfferHeadlineCardProps {
   offerId: number
   hasThumb: boolean
+  isReadOnly: boolean
 }
 
 export const OfferHeadlineCard = ({
   offerId,
   hasThumb,
-}: OfferHeadlineCardProps): JSX.Element | undefined => {
+  isReadOnly,
+}: Readonly<OfferHeadlineCardProps>) => {
   const { logEvent } = useAnalytics()
   const [
     isConfirmDialogReplaceHeadlineOfferOpen,
@@ -133,6 +135,7 @@ export const OfferHeadlineCard = ({
               : 'Mettre l’offre à la une '
           }
           fullWidth={!isHeadlineOffer}
+          disabled={isReadOnly}
         />
       </div>
 

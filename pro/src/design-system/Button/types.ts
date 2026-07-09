@@ -115,7 +115,7 @@ type ButtonAsButtonProps = ButtonBaseProps & {
 /**
  * ******************* Link props *******************
  */
-type ButtonAsLinkProps = ButtonBaseProps & {
+export type ButtonAsLinkProps = ButtonBaseProps & {
   as: 'a'
   type?: never
   to: string

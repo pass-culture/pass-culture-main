@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { MediaSection, type MediaSectionProps } from './MediaSection'
@@ -9,7 +10,13 @@ const renderMediaSection = (props: Partial<MediaSectionProps> = {}) => {
     ...MOCK_DATA,
     ...props,
   }
-  return renderWithProviders(<MediaSection {...finalProps} />)
+  return renderWithProviders(<MediaSection {...finalProps} />, {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
+  })
 }
 
 const MOCK_DATA = {

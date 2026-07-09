@@ -7,6 +7,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   type SharedCurrentUserResponseModel,
   UserRole,
+  VenueState,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
@@ -116,6 +117,34 @@ describe('TemplateCollectiveOffersScreen', () => {
     expect(selectAllOffersCheckbox).toBeInTheDocument()
     expect(selectAllOffersCheckbox).not.toBeChecked()
     expect(selectAllOffersCheckbox).not.toBeDisabled()
+  })
+
+  it('should not display selection checkboxes when the selected venue is closed', () => {
+    const offer = collectiveOfferTemplateFactory()
+
+    renderOffers(
+      {
+        ...props,
+        offers: [offer],
+      },
+      {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 1,
+              state: VenueState.CLOSED,
+            }),
+          },
+        },
+      }
+    )
+
+    expect(screen.getByText(offer.name)).toBeVisible()
+    expect(screen.queryByLabelText('Tout sélectionner')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('checkbox', { name: offer.name })
+    ).not.toBeInTheDocument()
   })
 
   it('should display total number of offers in plural if multiple offers', () => {

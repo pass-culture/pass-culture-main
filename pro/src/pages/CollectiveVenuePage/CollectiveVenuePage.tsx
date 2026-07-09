@@ -3,6 +3,7 @@ import { DisplayableActivityMap } from '@/commons/mappings/DisplayableActivity'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { formatPhoneNumber } from '@/commons/utils/formatPhoneNumber'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import { SummaryDescriptionList } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/ui-kit/SummaryLayout/SummarySection'
@@ -15,6 +16,7 @@ export const CollectiveVenuePage = () => {
     <SummarySection
       title="Vos informations pour les enseignants"
       editLink={`/partenaire/page-collective/edition`}
+      isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
     >
       <SummarySubSection title="Présentation pour les enseignants">
         <SummaryDescriptionList

@@ -4,37 +4,32 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
-import type { ButtonProps } from '@/design-system/Button/types'
+import type { ButtonAsLinkProps } from '@/design-system/Button/types'
 
-type ButtonLinkProps = Partial<Omit<ButtonProps, 'id'>>
-interface DisplayOfferInAppLinkProps extends ButtonLinkProps {
+interface DisplayOfferInAppLinkProps
+  extends Partial<Omit<ButtonAsLinkProps, 'id'>> {
   id: number
   onClick?: () => void
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, label, icon, iconAlt, variant, color, onClick, fullWidth }) => {
+> = ({ id, onClick, ...originalProps }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
   const { logEvent } = useAnalytics()
 
   return (
     <Button
+      {...originalProps}
       as="a"
-      label={label}
       to={offerPreviewUrl}
       isExternal
-      variant={variant}
-      color={color}
-      icon={icon}
-      iconAlt={iconAlt}
       onClick={() => {
         logEvent(Events.CLICKED_VIEW_APP_OFFER, {
           offerId: id,
         })
         onClick?.()
       }}
-      fullWidth={fullWidth}
       opensInNewTab
     />
   )

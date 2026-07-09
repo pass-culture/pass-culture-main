@@ -13,6 +13,7 @@ describe('getComponentType', () => {
     expect(
       getComponentType({
         as: 'button',
+        disabled: undefined,
         isExternal: false,
         isSectionLink: false,
       })
@@ -21,13 +22,23 @@ describe('getComponentType', () => {
 
   it('should return "a" when as is "a" and isExternal is true', () => {
     expect(
-      getComponentType({ as: 'a', isExternal: true, isSectionLink: false })
+      getComponentType({
+        as: 'a',
+        disabled: undefined,
+        isExternal: true,
+        isSectionLink: false,
+      })
     ).toBe('a')
   })
 
   it('should return "a" when as is "a" and isSectionLink is true', () => {
     expect(
-      getComponentType({ as: 'a', isExternal: false, isSectionLink: true })
+      getComponentType({
+        as: 'a',
+        disabled: undefined,
+        isExternal: false,
+        isSectionLink: true,
+      })
     ).toBe('a')
   })
 
@@ -44,7 +55,12 @@ describe('getComponentType', () => {
 
   it('should return Link when as is "a" and neither isExternal nor isSectionLink', () => {
     expect(
-      getComponentType({ as: 'a', isExternal: false, isSectionLink: false })
+      getComponentType({
+        as: 'a',
+        disabled: undefined,
+        isExternal: false,
+        isSectionLink: false,
+      })
     ).toBe(Link)
   })
 })
@@ -52,7 +68,12 @@ describe('getComponentType', () => {
 describe('getButtonProps', () => {
   it('should return disabled true and a reset type', () => {
     expect(
-      getButtonProps({ type: 'reset', disabled: true, isLoading: false })
+      getButtonProps({
+        type: 'reset',
+        disabled: true,
+        isLoading: false,
+        onClick: undefined,
+      })
     ).toEqual({
       type: 'reset',
       disabled: true,
@@ -62,7 +83,12 @@ describe('getButtonProps', () => {
 
   it('should return disabled true when isLoading is true', () => {
     expect(
-      getButtonProps({ type: 'button', disabled: false, isLoading: true })
+      getButtonProps({
+        type: 'button',
+        disabled: false,
+        isLoading: true,
+        onClick: undefined,
+      })
     ).toEqual({
       type: 'button',
       disabled: true,
@@ -72,7 +98,12 @@ describe('getButtonProps', () => {
 
   it('should return disabled true when both disabled and isLoading are true', () => {
     expect(
-      getButtonProps({ type: 'button', disabled: true, isLoading: true })
+      getButtonProps({
+        type: 'button',
+        disabled: true,
+        isLoading: true,
+        onClick: undefined,
+      })
     ).toEqual({
       type: 'button',
       disabled: true,
@@ -82,7 +113,12 @@ describe('getButtonProps', () => {
 
   it('should return disabled false when both disabled and isLoading are false', () => {
     expect(
-      getButtonProps({ type: 'button', disabled: false, isLoading: false })
+      getButtonProps({
+        type: 'button',
+        disabled: false,
+        isLoading: false,
+        onClick: undefined,
+      })
     ).toEqual({
       type: 'button',
       disabled: false,
@@ -134,6 +170,7 @@ describe('getAnchorProps', () => {
     const result = getAnchorProps({
       absoluteUrl: '/test',
       disabled: false,
+      onClick: undefined,
       opensInNewTab: false,
     })
     expect(result.href).toBe('/test')
@@ -158,6 +195,7 @@ describe('getAnchorProps', () => {
     const result = getAnchorProps({
       absoluteUrl: '/test',
       disabled: false,
+      onClick: undefined,
       opensInNewTab: true,
     })
     expect(result.href).toBe('/test')
@@ -168,6 +206,7 @@ describe('getAnchorProps', () => {
     const result = getAnchorProps({
       absoluteUrl: '/test',
       disabled: false,
+      onClick: undefined,
       opensInNewTab: false,
     })
     expect(result.target).toBeUndefined()
@@ -192,6 +231,7 @@ describe('getLinkProps', () => {
     const result = getLinkProps({
       absoluteUrl: '/test',
       disabled: false,
+      onClick: undefined,
       opensInNewTab: false,
     })
     expect(result.to).toBe('/test')
@@ -213,6 +253,7 @@ describe('getLinkProps', () => {
     const result = getLinkProps({
       absoluteUrl: '/test',
       disabled: false,
+      onClick: undefined,
       opensInNewTab: true,
     })
     expect(result.to).toBe('/test')
@@ -228,6 +269,7 @@ describe('getComponentProps', () => {
       absoluteUrl: '/test',
       disabled: true,
       isLoading: false,
+      onClick: undefined,
       opensInNewTab: false,
     })
     expect(result).toEqual({
@@ -244,6 +286,7 @@ describe('getComponentProps', () => {
       absoluteUrl: '/test',
       disabled: true,
       isLoading: false,
+      onClick: undefined,
       opensInNewTab: false,
     })
     expect(result).toEqual({
@@ -260,6 +303,7 @@ describe('getComponentProps', () => {
       absoluteUrl: '/test',
       disabled: false,
       isLoading: false,
+      onClick: undefined,
       opensInNewTab: true,
     })
     expect(result).toEqual({
@@ -279,6 +323,7 @@ describe('getComponentProps', () => {
       absoluteUrl: '/test',
       disabled: false,
       isLoading: false,
+      onClick: undefined,
       opensInNewTab: true,
     })
     expect(result).toEqual({

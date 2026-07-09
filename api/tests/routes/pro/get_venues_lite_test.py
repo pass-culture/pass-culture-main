@@ -38,6 +38,7 @@ def test_loads_all_venues_ids_and_names(client):
             "id": venue.id,
             "managingOffererId": venue.managingOffererId,
             "publicName": venue.publicName,
+            "state": None,
             "location": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",
@@ -62,6 +63,7 @@ def test_loads_all_venues_ids_and_names(client):
             "id": with_pending_validation.id,
             "managingOffererId": with_pending_validation.managingOffererId,
             "publicName": with_pending_validation.publicName,
+            "state": None,
             "location": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",

@@ -3,8 +3,10 @@ import { axe } from 'vitest-axe'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
@@ -27,10 +29,18 @@ const renderIndividualOfferSummaryLocationScreen: RenderComponentFunction<
     offer: getIndividualOfferFactory(),
     ...params.props,
   }
+  const options: RenderWithProvidersOptions = {
+    storeOverrides: {
+      user: {
+        selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
+    ...params.options,
+  }
 
   return renderWithProviders(
     <IndividualOfferSummaryLocationScreen {...props} />,
-    params.options
+    options
   )
 }
 

@@ -15,10 +15,11 @@ vi.mock(
   './components/CollectiveOffersTemplateLine/CollectiveOffersTemplateLine',
   () => ({
     CollectiveOffersTemplateLine: ({
+      isReadOnly,
       offer,
     }: CollectiveOffersTemplateLineProps) => (
       <div data-testid="collective-offer-template-line">
-        Line for offer {offer.id}
+        Line for offer {offer.id} ({isReadOnly ? 'read-only' : 'editable'})
       </div>
     ),
   })
@@ -34,6 +35,7 @@ describe('<CollectiveOffersTemplateCard />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderWithProviders(
       <CollectiveOffersTemplateCard
+        isReadOnly={false}
         offers={[buildCollectiveOfferTemplateHome()]}
       />
     )
@@ -45,6 +47,7 @@ describe('<CollectiveOffersTemplateCard />', () => {
     const offer = buildCollectiveOfferTemplateHome()
     renderWithProviders(
       <CollectiveOffersTemplateCard
+        isReadOnly={false}
         offers={[
           { ...offer, id: 1 },
           { ...offer, id: 2 },
@@ -62,6 +65,19 @@ describe('<CollectiveOffersTemplateCard />', () => {
     })
   })
 
+  it('should forward isReadOnly to each CollectiveOffersTemplateLine', () => {
+    renderWithProviders(
+      <CollectiveOffersTemplateCard
+        isReadOnly={true}
+        offers={[buildCollectiveOfferTemplateHome()]}
+      />
+    )
+
+    expect(
+      screen.getByTestId('collective-offer-template-line')
+    ).toHaveTextContent('read-only')
+  })
+
   it('should have a CTA that sends to template offer list', async () => {
     const user = userEvent.setup()
     const offer = buildCollectiveOfferTemplateHome()
@@ -70,7 +86,9 @@ describe('<CollectiveOffersTemplateCard />', () => {
       routes: [
         {
           path: '/',
-          element: <CollectiveOffersTemplateCard offers={[offer]} />,
+          element: (
+            <CollectiveOffersTemplateCard isReadOnly={false} offers={[offer]} />
+          ),
         },
         {
           path: '/offres/vitrines',
@@ -94,7 +112,9 @@ describe('<CollectiveOffersTemplateCard />', () => {
     const user = userEvent.setup()
     const offer = buildCollectiveOfferTemplateHome()
 
-    renderWithProviders(<CollectiveOffersTemplateCard offers={[offer]} />)
+    renderWithProviders(
+      <CollectiveOffersTemplateCard isReadOnly={false} offers={[offer]} />
+    )
 
     const allOffersBtn = screen.getByRole('link', {
       name: 'Voir toutes les offres',

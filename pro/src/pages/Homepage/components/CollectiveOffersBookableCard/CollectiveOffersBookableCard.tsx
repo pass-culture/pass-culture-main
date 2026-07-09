@@ -9,13 +9,15 @@ import styles from '../CollectiveOffersList.module.scss'
 import { OffersCardVariant } from '../types'
 import { CollectiveOffersBookableLine } from './components/CollectiveOffersBookableLine/CollectiveOffersBookableLine'
 
-type CollectiveOffersBookableCardProps = {
+export interface CollectiveOffersBookableCardProps {
+  isReadOnly: boolean
   offers: CollectiveOfferHomeResponseModel[]
 }
 
 export const CollectiveOffersBookableCard = ({
+  isReadOnly,
   offers,
-}: CollectiveOffersBookableCardProps): JSX.Element => {
+}: Readonly<CollectiveOffersBookableCardProps>) => {
   const { logEvent } = useAnalytics()
   const logSeeAllOffersClick = () =>
     logEvent(HomepageEvents.CLICKED_SEE_ALL_OFFERS, {
@@ -28,7 +30,11 @@ export const CollectiveOffersBookableCard = ({
       <Card.Header title={'Offres réservables'} />
       <Card.Content className={styles['offer-list']}>
         {offers.map((offer) => (
-          <CollectiveOffersBookableLine key={offer.id} offer={offer} />
+          <CollectiveOffersBookableLine
+            key={offer.id}
+            isReadOnly={isReadOnly}
+            offer={offer}
+          />
         ))}
       </Card.Content>
       <Card.Footer>

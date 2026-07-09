@@ -21,10 +21,13 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-function renderOfferHighlightCard(props: OfferHighlightCardProps) {
+function renderOfferHighlightCard({
+  isReadOnly = false,
+  ...props
+}: Omit<OfferHighlightCardProps, 'isReadOnly'> & { isReadOnly?: boolean }) {
   return renderWithProviders(
     <>
-      <OfferHighlightCard {...props} />
+      <OfferHighlightCard {...props} isReadOnly={isReadOnly} />
       <SnackBarContainer />
     </>,
     {
@@ -116,6 +119,20 @@ describe('OfferHighlightCard', () => {
         EngagementEvents.HAS_REQUESTED_HIGHLIGHTS,
         { offerId: 1, action: 'edited' }
       )
+    })
+  })
+
+  describe('when the offer is read-only', () => {
+    it('should disable the action button', () => {
+      renderOfferHighlightCard({
+        offerId: 1,
+        highlightRequests: [],
+        isReadOnly: true,
+      })
+
+      expect(
+        screen.getByRole('button', { name: 'Relier l’offre à un temps fort' })
+      ).toBeDisabled()
     })
   })
 })

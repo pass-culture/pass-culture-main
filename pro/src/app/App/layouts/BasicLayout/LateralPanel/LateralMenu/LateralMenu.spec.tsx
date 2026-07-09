@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
+import { VenueState } from '@/apiClient/v1'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
@@ -46,6 +47,26 @@ describe('LateralMenu', () => {
     expect(
       screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
     ).toBeInTheDocument()
+  })
+
+  it('should show a disabled create offer button instead of the dropdown when the selected venue is closed', () => {
+    renderSideNavLinks({
+      storeOverrides: {
+        user: {
+          selectedPartnerVenue: makeGetVenueResponseModel({
+            id: 1,
+            state: VenueState.CLOSED,
+          }),
+        },
+      },
+    })
+
+    const createOfferButton = screen.getByRole('button', {
+      name: 'Créer une offre',
+    })
+    expect(createOfferButton).toBeVisible()
+    expect(createOfferButton).toBeDisabled()
+    expect(createOfferButton).not.toHaveAttribute('aria-haspopup')
   })
 
   it('should display switch venue button with selected venue name', () => {

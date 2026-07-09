@@ -13,7 +13,11 @@ import { IndividualOffersCard } from './IndividualOffersCard'
 
 vi.mock('@/apiClient/api', () => ({ api: { listOffersHome: vi.fn() } }))
 vi.mock('../OffersRetentionCard/OffersRetentionCard', () => ({
-  OffersRetentionCard: () => <div>OffersRetentionCard</div>,
+  OffersRetentionCard: ({ isReadOnly }: { isReadOnly: boolean }) => (
+    <div>
+      {isReadOnly ? 'OffersRetentionCard read-only' : 'OffersRetentionCard'}
+    </div>
+  ),
 }))
 
 const mockLogEvent = vi.fn()
@@ -29,7 +33,11 @@ describe('<IndividualOffersCard />', () => {
       defaultOfferHomeResponseModel,
     ])
     const { container } = renderWithProviders(
-      <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
+      <IndividualOffersCard
+        isReadOnly={false}
+        venueId={12}
+        venueDepartmentCode={'75'}
+      />
     )
 
     // waitFor allows to wait for the complete render of the component (after the request response)
@@ -41,9 +49,27 @@ describe('<IndividualOffersCard />', () => {
   it('should render the retention card if no offers are returned', async () => {
     vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([])
     renderWithProviders(
-      <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
+      <IndividualOffersCard
+        isReadOnly={false}
+        venueId={12}
+        venueDepartmentCode={'75'}
+      />
     )
     expect(await screen.findByText('OffersRetentionCard')).toBeVisible()
+  })
+
+  it('should forward isReadOnly to the retention card if no offers are returned', async () => {
+    vi.spyOn(api, 'listOffersHome').mockResolvedValueOnce([])
+    renderWithProviders(
+      <IndividualOffersCard
+        isReadOnly={true}
+        venueId={12}
+        venueDepartmentCode={'75'}
+      />
+    )
+    expect(
+      await screen.findByText('OffersRetentionCard read-only')
+    ).toBeVisible()
   })
 
   it('should have a CTA that sends to individual offer list', async () => {
@@ -57,7 +83,11 @@ describe('<IndividualOffersCard />', () => {
         {
           path: '/',
           element: (
-            <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
+            <IndividualOffersCard
+              isReadOnly={false}
+              venueId={12}
+              venueDepartmentCode={'75'}
+            />
           ),
         },
         {
@@ -85,7 +115,11 @@ describe('<IndividualOffersCard />', () => {
     ])
 
     renderWithProviders(
-      <IndividualOffersCard venueId={12} venueDepartmentCode={'75'} />
+      <IndividualOffersCard
+        isReadOnly={false}
+        venueId={12}
+        venueDepartmentCode={'75'}
+      />
     )
 
     const allOffersBtn = await screen.findByRole('link', {

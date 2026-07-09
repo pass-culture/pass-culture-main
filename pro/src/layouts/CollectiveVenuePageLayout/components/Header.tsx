@@ -11,6 +11,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { Button } from '@/design-system/Button/Button'
@@ -38,6 +39,8 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
       selectedPartnerVenue.bannerUrl,
       selectedPartnerVenue.bannerMeta
     )
+
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const handleOnImageDelete = async () => {
     try {
@@ -75,6 +78,7 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         mode={UploaderModeEnum.VENUE}
         hideActionButtons
         onImageDropOrSelected={logButtonAddClick}
+        disabled={isVenueClosed}
       />
 
       <div className={styles['venue-details']}>
@@ -89,19 +93,21 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
         </div>
 
         <div className={styles['venue-details-links']}>
-          {selectedPartnerVenue.isPermanent && context === 'partnerPage' && (
-            <Button
-              as="a"
-              variant={ButtonVariant.SECONDARY}
-              color={ButtonColor.NEUTRAL}
-              size={ButtonSize.SMALL}
-              to={`${WEBAPP_URL}/lieu/${selectedPartnerVenue.id}`}
-              isExternal
-              opensInNewTab
-              label="Visualiser votre page"
-            />
-          )}
-          {imageValues.croppedImageUrl && (
+          {selectedPartnerVenue.isPermanent &&
+            context === 'partnerPage' &&
+            !isVenueClosed && (
+              <Button
+                as="a"
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
+                to={`${WEBAPP_URL}/lieu/${selectedPartnerVenue.id}`}
+                isExternal
+                opensInNewTab
+                label="Visualiser votre page"
+              />
+            )}
+          {imageValues.croppedImageUrl && !isVenueClosed && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}
               initialValues={imageValues}

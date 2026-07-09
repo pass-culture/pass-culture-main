@@ -9,7 +9,7 @@ export const getComponentType = ({
   isSectionLink,
 }: {
   as: 'button' | 'a'
-  disabled?: boolean
+  disabled: boolean | undefined
   isExternal: boolean
   isSectionLink: boolean
 }): React.ElementType => {
@@ -30,9 +30,9 @@ export const getButtonProps = ({
   onClick,
   type,
 }: {
-  disabled?: boolean
-  isLoading?: boolean
-  onClick?: ButtonProps['onClick']
+  disabled: boolean | undefined
+  isLoading: boolean | undefined
+  onClick: ButtonProps['onClick']
   type: ButtonTypeAttribute
 }) => {
   return {
@@ -49,8 +49,8 @@ export const getAnchorProps = ({
   opensInNewTab,
 }: {
   absoluteUrl: string
-  disabled?: boolean
-  onClick?: ButtonProps['onClick']
+  disabled: boolean | undefined
+  onClick: ButtonProps['onClick']
   opensInNewTab?: boolean
 }) => {
   return {
@@ -72,8 +72,8 @@ export const getLinkProps = ({
   opensInNewTab,
 }: {
   absoluteUrl: string
-  disabled?: boolean
-  onClick?: ButtonProps['onClick']
+  disabled: boolean | undefined
+  onClick: ButtonProps['onClick']
   opensInNewTab?: boolean
 }) => {
   return {
@@ -95,9 +95,9 @@ export const getComponentProps = ({
   Component: React.ElementType
   type: ButtonTypeAttribute
   absoluteUrl: string
-  disabled?: boolean
-  isLoading?: boolean
-  onClick?: ButtonProps['onClick']
+  disabled: boolean | undefined
+  isLoading: boolean | undefined
+  onClick: ButtonProps['onClick']
   opensInNewTab?: boolean
 }) => {
   switch (Component) {

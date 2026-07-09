@@ -10,6 +10,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Tag } from '@/design-system/Tag/Tag'
 import {
   getCollectiveOfferActiveStep,
@@ -121,20 +122,25 @@ export const CollectiveOfferLayout = ({
         }
         mainSubHeading={subTitle}
       />
-      {/* TODO (igabriele, 2026-04-27): Isn't that the role of routing permissions to guarantee this prop is true? */}
-      {selectedPartnerVenue.allowedOnAdage &&
-        (isTemplateOffer
-          ? _renderCollectiveOfferTemplateNavigation({
-              isCreation,
-              pathname,
-              offer,
-            })
-          : _renderCollectiveOfferNavigation({
-              isCreation,
-              pathname,
-              offer,
-              requestId,
-            }))}
+
+      {!withVenueHelpers(selectedPartnerVenue).isClosed && (
+        <>
+          {/* TODO (igabriele, 2026-04-27): Isn't that the role of routing permissions to guarantee this prop is true? */}
+          {selectedPartnerVenue.allowedOnAdage &&
+            (isTemplateOffer
+              ? _renderCollectiveOfferTemplateNavigation({
+                  isCreation,
+                  pathname,
+                  offer,
+                })
+              : _renderCollectiveOfferNavigation({
+                  isCreation,
+                  pathname,
+                  offer,
+                  requestId,
+                }))}
+        </>
+      )}
 
       {children}
     </BasicLayout>

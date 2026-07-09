@@ -7,6 +7,8 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { VenueState } from '@/apiClient/v1'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -19,7 +21,7 @@ import {
 const renderCollectiveOfferLayout = (
   path: string,
   props: Partial<CollectiveOfferLayoutProps>,
-  isAllowedOnAdage = true
+  venueOverrides?: Partial<GetVenueResponseModel>
 ) => {
   renderWithProviders(
     <CollectiveOfferLayout subTitle="Ma super offre" {...props}>
@@ -33,7 +35,8 @@ const renderCollectiveOfferLayout = (
           currentUser: sharedCurrentUserFactory(),
           selectedPartnerVenue: makeGetVenueResponseModel({
             id: 1,
-            allowedOnAdage: isAllowedOnAdage,
+            allowedOnAdage: true,
+            ...venueOverrides,
           }),
         },
       },
@@ -97,15 +100,29 @@ describe('CollectiveOfferLayout', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('should not render the navigation when the partner venue is not allowed on Adage', () => {
+  it('should render the navigation stepper when the partner venue is open', () => {
+    renderCollectiveOfferLayout('/offre/A1/collectif/', { isCreation: true })
+
+    expect(screen.getByTestId('stepper')).toBeVisible()
+  })
+
+  it('should not render the navigation stepper when the partner venue is not allowed on Adage', () => {
     renderCollectiveOfferLayout(
       '/offre/A1/collectif/',
       { isCreation: true },
-      false
+      { allowedOnAdage: false }
     )
 
-    expect(
-      screen.queryByRole('navigation', { name: /Création d’offre/i })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
+  })
+
+  it('should not render the navigation stepper when the partner venue is closed', () => {
+    renderCollectiveOfferLayout(
+      '/offre/A1/collectif/',
+      { isCreation: true },
+      { state: VenueState.CLOSED }
+    )
+
+    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
   })
 })

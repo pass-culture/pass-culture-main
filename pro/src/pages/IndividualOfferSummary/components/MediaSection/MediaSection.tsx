@@ -4,6 +4,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
 import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { VideoPreview } from '@/components/VideoPreview/VideoPreview'
@@ -26,6 +29,8 @@ export const MediaSection = ({
   videoData,
   isOnCreation = false,
 }: MediaSectionProps) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
     videoData ?? {}
 
@@ -40,6 +45,7 @@ export const MediaSection = ({
           : OFFER_WIZARD_MODE.EDITION,
       })}
       aria-label="Modifier l’image et la vidéo de l’offre"
+      isReadOnly={withVenueHelpers(selectedPartnerVenue).isClosed}
       shouldShowDivider
     >
       {!isOnCreation && (

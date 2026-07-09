@@ -5,6 +5,9 @@ import type {
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { Button } from '@/design-system/Button/Button'
@@ -24,6 +27,9 @@ interface CollectiveOfferSummaryEditionProps {
 export const CollectiveOfferSummaryEdition = ({
   offer,
 }: CollectiveOfferSummaryEditionProps) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
     offer.isTemplate
@@ -48,6 +54,7 @@ export const CollectiveOfferSummaryEdition = ({
     >
       <OfferEducationalActions
         className={styles.actions}
+        isReadOnly={isVenueClosed}
         offer={offer}
         mode={Mode.EDITION}
       />

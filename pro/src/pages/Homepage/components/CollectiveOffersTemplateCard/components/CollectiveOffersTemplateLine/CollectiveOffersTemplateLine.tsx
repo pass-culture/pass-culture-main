@@ -24,7 +24,8 @@ import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from '../../../CollectiveOffersLine.module.scss'
 
-export type CollectiveOffersTemplateLineProps = {
+export interface CollectiveOffersTemplateLineProps {
+  isReadOnly: boolean
   offer: CollectiveOfferTemplateHomeResponseModel
 }
 
@@ -40,8 +41,9 @@ function formatOfferDates(
 }
 
 export const CollectiveOffersTemplateLine = ({
+  isReadOnly,
   offer,
-}: CollectiveOffersTemplateLineProps): JSX.Element => {
+}: Readonly<CollectiveOffersTemplateLineProps>) => {
   const offerId = computeURLCollectiveOfferId(offer.id, true)
   const offerLink = getCollectiveOfferLink(offerId, offer.displayedStatus)
   const navigate = useNavigate()
@@ -93,6 +95,7 @@ export const CollectiveOffersTemplateLine = ({
           variant={ButtonVariant.SECONDARY}
           label="Créer une offre réservable"
           onClick={onClickCreateBookableOffer}
+          disabled={isReadOnly}
         />
       ) : (
         <Button

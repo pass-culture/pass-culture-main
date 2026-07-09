@@ -19,6 +19,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -133,7 +134,10 @@ export const TemplateCollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  const columns = getCollectiveOfferColumns()
+  const columns = getCollectiveOfferColumns({
+    isBookableTable: false,
+    isReadOnly: withVenueHelpers(selectedPartnerVenue).isClosed,
+  })
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',
@@ -181,7 +185,7 @@ export const TemplateCollectiveOffersScreen = ({
           data={currentPageItems}
           allData={sortedOffers}
           isLoading={isLoading}
-          selectable={true}
+          selectable={!withVenueHelpers(selectedPartnerVenue).isClosed}
           selectedIds={selectedOfferIds}
           onSelectionChange={(rows) => {
             setSelectedOffers(rows)

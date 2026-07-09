@@ -18,6 +18,7 @@ interface SummaryLayoutSectionProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   editLink?: string | ReactNode
+  isReadOnly?: boolean
   'aria-label'?: string
   shouldShowDivider?: boolean
 }
@@ -27,6 +28,7 @@ export const SummarySection = ({
   children,
   className,
   editLink,
+  isReadOnly = false,
   shouldShowDivider = false,
   ...props
 }: SummaryLayoutSectionProps): JSX.Element => (
@@ -52,6 +54,7 @@ export const SummarySection = ({
           aria-label={props['aria-label']}
           icon={fullEditIcon}
           label="Modifier"
+          disabled={isReadOnly}
         />
       ) : (
         editLink

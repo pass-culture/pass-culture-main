@@ -25,6 +25,7 @@ import {
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -149,6 +150,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     }
   }
 
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const canEditOffer = isCollectiveOfferEditable(offer)
 
   const { numberOfTickets, numberOfTeachers } = offer.collectiveStock || {}
@@ -264,7 +266,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           <div className={styles['header-actions']}>
             <span className={styles['header-actions-title']}>Actions</span>
             <ul>
-              {canEditOffer && (
+              {canEditOffer && !isVenueClosed && (
                 <li className={styles['header-actions-item']}>
                   <Button
                     as="a"
@@ -294,7 +296,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 </li>
               )}
 
-              {canDuplicateOffer && (
+              {canDuplicateOffer && !isVenueClosed && (
                 <li className={styles['header-actions-item']}>
                   <Button
                     variant={ButtonVariant.SECONDARY}
@@ -319,7 +321,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   />
                 </li>
               )}
-              {canArchiveOffer && (
+              {canArchiveOffer && !isVenueClosed && (
                 <li>
                   <Button
                     onClick={() => setIsArchiveModalOpen(true)}
@@ -332,7 +334,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   />
                 </li>
               )}
-              {isBookingCancellable && (
+              {isBookingCancellable && !isVenueClosed && (
                 <li>
                   <Button
                     icon={fullClearIcon}

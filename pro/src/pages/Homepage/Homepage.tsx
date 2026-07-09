@@ -9,6 +9,7 @@ import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeadin
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getToday } from '@/commons/utils/date'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
@@ -67,6 +68,7 @@ export const Homepage = (): JSX.Element => {
     )
   }
 
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const tabs: TabItem<TabKey>[] = [
     {
       key: TABS.INDIVIDUAL,
@@ -146,6 +148,7 @@ export const Homepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             <IndividualOffersCard
+              isReadOnly={isVenueClosed}
               venueId={selectedPartnerVenue.id}
               venueDepartmentCode={
                 selectedPartnerVenue.location?.departmentCode
@@ -154,6 +157,7 @@ export const Homepage = (): JSX.Element => {
             <StatsCard venue={selectedPartnerVenue} />
             <EditoCard
               canDisplayHighlights={selectedPartnerVenue.canDisplayHighlights}
+              isReadOnly={isVenueClosed}
             />
           </div>
 
@@ -167,6 +171,7 @@ export const Homepage = (): JSX.Element => {
               />
             )}
             <PartnerPageCard
+              isReadOnly={isVenueClosed}
               venueId={selectedPartnerVenue.id}
               venueName={selectedPartnerVenue.publicName}
               venueBannerUrl={selectedPartnerVenue.bannerUrl}
@@ -210,10 +215,14 @@ export const Homepage = (): JSX.Element => {
 
           <div className={styles['main']}>
             {hasRefusedDmsApplication && (
-              <OffersEmptyStateCard variant={OffersCardVariant.INDIVIDUAL} />
+              <OffersEmptyStateCard
+                isReadOnly={isVenueClosed}
+                variant={OffersCardVariant.INDIVIDUAL}
+              />
             )}
             {selectedPartnerVenue.allowedOnAdage && (
               <CollectiveOffersCardsContainer
+                isReadOnly={isVenueClosed}
                 venueId={selectedPartnerVenue.id}
               />
             )}
@@ -231,6 +240,7 @@ export const Homepage = (): JSX.Element => {
                   />
                 )}
                 <PartnerPageCard
+                  isReadOnly={isVenueClosed}
                   venueId={selectedPartnerVenue.id}
                   venueName={selectedPartnerVenue.publicName}
                   venueBannerUrl={selectedPartnerVenue.bannerUrl}

@@ -10,6 +10,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { sortByLabel } from '@/commons/utils/strings'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -113,6 +114,7 @@ export const AddVenueProviderButton = ({
       icon={fullMoreIcon}
       ref={selectSoftwareButtonRef}
       label="Sélectionner un logiciel"
+      disabled={withVenueHelpers(venue).isClosed}
     />
   )
 
