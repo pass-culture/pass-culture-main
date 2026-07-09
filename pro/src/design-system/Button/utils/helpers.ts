@@ -1,103 +1,111 @@
 import { Link } from 'react-router'
 
-import type { ButtonTypeAttribute } from '../types'
+import type { ButtonProps, ButtonTypeAttribute } from '../types'
 
-/**
- * Get the component type.
- * @param as - The component type.
- * @param isExternal - If true, the component will be external.
- * @param isSectionLink - If true, the component will be a section link.
- * @returns The component type.
- */
-export const getComponentType = (
-  as: 'button' | 'a',
-  isExternal: boolean,
+export const getComponentType = ({
+  as,
+  disabled,
+  isExternal,
+  isSectionLink,
+}: {
+  as: 'button' | 'a'
+  disabled?: boolean
+  isExternal: boolean
   isSectionLink: boolean
-): React.ElementType => {
+}): React.ElementType => {
   if (as === 'button') {
     return 'button'
   }
-  if (isExternal || isSectionLink) {
+  // A disabled <Link> is treated as an <a> to remove its `href` and inherit proper a11y from `getAnchorProps`.
+  if (isExternal || isSectionLink || disabled) {
     return 'a'
   }
+
   return Link
 }
 
-/**
- * Get the props for the button.
- * @param disabled - If true, the button will be disabled.
- * @param isLoading - If true, the button will be loading.
- * @returns The props for the button.
- */
-export const getButtonProps = (
-  type: ButtonTypeAttribute,
-  disabled?: boolean,
+export const getButtonProps = ({
+  disabled,
+  isLoading,
+  onClick,
+  type,
+}: {
+  disabled?: boolean
   isLoading?: boolean
-) => {
-  return { type, disabled: disabled || isLoading }
-}
-
-/**
- * Get the props for the anchor.
- * @param absoluteUrl - The absolute URL.
- * @param disabled - If true, the anchor will be disabled.
- * @param opensInNewTab - If true, the anchor will open in a new tab.
- * @returns The props for the anchor.
- */
-export const getAnchorProps = (
-  absoluteUrl: string,
-  disabled?: boolean,
-  opensInNewTab?: boolean
-) => {
+  onClick?: ButtonProps['onClick']
+  type: ButtonTypeAttribute
+}) => {
   return {
-    href: disabled ? undefined : absoluteUrl,
-    rel: 'noopener noreferrer',
-    target: opensInNewTab ? '_blank' : undefined,
-    'aria-disabled': disabled || undefined,
+    type,
+    disabled: disabled || isLoading,
+    onClick: disabled ? undefined : onClick,
   }
 }
 
-/**
- * Get the props for the link.
- * @param absoluteUrl - The absolute URL.
- * @param disabled - If true, the link will be disabled.
- * @param opensInNewTab - If true, the link will open in a new tab.
- * @returns The props for the link.
- */
-export const getLinkProps = (
-  absoluteUrl: string,
-  disabled?: boolean,
+export const getAnchorProps = ({
+  absoluteUrl,
+  disabled,
+  onClick,
+  opensInNewTab,
+}: {
+  absoluteUrl: string
+  disabled?: boolean
+  onClick?: ButtonProps['onClick']
   opensInNewTab?: boolean
-) => {
+}) => {
   return {
+    'aria-disabled': disabled || undefined,
+    href: disabled ? undefined : absoluteUrl,
+    onClick: disabled ? undefined : onClick,
+    rel: 'noopener noreferrer',
+    // No `href` => `role="generic"` => `role="link"` adjustment to help screen readers interpretation.
+    // https://w3c.github.io/html-aria/#el-a
+    role: disabled ? 'link' : undefined,
+    target: opensInNewTab ? '_blank' : undefined,
+  }
+}
+
+export const getLinkProps = ({
+  absoluteUrl,
+  disabled,
+  onClick,
+  opensInNewTab,
+}: {
+  absoluteUrl: string
+  disabled?: boolean
+  onClick?: ButtonProps['onClick']
+  opensInNewTab?: boolean
+}) => {
+  return {
+    onClick: disabled ? undefined : onClick,
     to: disabled ? '' : absoluteUrl,
     target: opensInNewTab ? '_blank' : undefined,
   }
 }
 
-/**
- * Get the props for the component.
- * @param Component - The component type.
- * @param absoluteUrl - The absolute URL.
- * @param disabled - If true, the component will be disabled.
- * @param isLoading - If true, the component will be loading.
- * @param opensInNewTab - If true, the component will open in a new tab.
- * @returns The props for the component.
- */
-export const getComponentProps = (
-  Component: React.ElementType,
-  type: ButtonTypeAttribute,
-  absoluteUrl: string,
-  disabled?: boolean,
-  isLoading?: boolean,
+export const getComponentProps = ({
+  Component,
+  type,
+  absoluteUrl,
+  disabled,
+  isLoading,
+  onClick,
+  opensInNewTab,
+}: {
+  Component: React.ElementType
+  type: ButtonTypeAttribute
+  absoluteUrl: string
+  disabled?: boolean
+  isLoading?: boolean
+  onClick?: ButtonProps['onClick']
   opensInNewTab?: boolean
-) => {
+}) => {
   switch (Component) {
     case 'button':
-      return getButtonProps(type, disabled, isLoading)
+      return getButtonProps({ type, disabled, isLoading, onClick })
     case 'a':
-      return getAnchorProps(absoluteUrl, disabled, opensInNewTab)
+      return getAnchorProps({ absoluteUrl, disabled, onClick, opensInNewTab })
     default:
-      return getLinkProps(absoluteUrl, disabled, opensInNewTab)
+      return getLinkProps({ absoluteUrl, disabled, onClick, opensInNewTab })
   }
 }
