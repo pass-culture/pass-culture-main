@@ -79,8 +79,8 @@ importers:
         specifier: 3.4.11
         version: 3.4.11
       downshift:
-        specifier: 9.3.6
-        version: 9.3.6(react@19.2.7)
+        specifier: 9.4.0
+        version: 9.4.0(react@19.2.7)
       libphonenumber-js:
         specifier: 1.13.7
         version: 1.13.7
@@ -2580,8 +2580,8 @@ packages:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
-  downshift@9.3.6:
-    resolution: {integrity: sha512-xEKP1vbt/k7Siu481TKibmj8EyL6iyBwaRJgb6gCsFyLeiyZ1KEJnApS9R1U71hTdK5ym0R99AOYRROcTz1PeQ==}
+  downshift@9.4.0:
+    resolution: {integrity: sha512-yIwyzRYzycKwMZhvOahsn4BmRr4Ffi0JymdWOtTDhR+LGDEXCZHTcwgUbNBC/oZLT6YrR46iwJe/BrQUS5ClQQ==}
     peerDependencies:
       react: '>=16.12.0'
 
@@ -6401,7 +6401,7 @@ snapshots:
 
   dotenv@17.4.2: {}
 
-  downshift@9.3.6(react@19.2.7):
+  downshift@9.4.0(react@19.2.7):
     dependencies:
       '@babel/runtime': 7.29.7
       compute-scroll-into-view: 3.1.1
