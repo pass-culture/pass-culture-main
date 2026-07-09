@@ -89,9 +89,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     description: str | None = Field(description="Offer description")
     additionalDetails: str | None = Field(description="Practical information on the offer")
     durationMinutes: int | None = Field(description="Offer's duration in minutes")
-    expirationDate: datetime.datetime | None = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
-    hasUrl: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
     numberOfTickets: int = Field(description="Number of students")
@@ -99,7 +97,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     price: decimal.Decimal = Field(description="Total price of the prebooking")
     servicePrice: decimal.Decimal = Field(description="Total price minus the additional fees")
     additionalFees: list[AdditionalFeeResponse] = Field(description="Fees related to transport, accommodation...")
-    quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
@@ -110,9 +107,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
-    totalAmount: decimal.Decimal = Field(description="Total price of the prebooking")
-    url: str | None = Field(description="Url to access the offer")
-    withdrawalDetails: str | None
     domain_ids: list[int]
     domain_labels: list[str]
     interventionArea: list[str]
@@ -176,7 +170,6 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     confirmationLimitDate: datetime.datetime
     numberOfTickets: int
     numberOfTeachers: int
-    totalAmount: decimal.Decimal
     price: decimal.Decimal
     servicePrice: decimal.Decimal
     additionalFees: list[AdditionalFeeResponse]
@@ -267,12 +260,8 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     servicePrice: decimal.Decimal
     additionalFees: list[AdditionalFeeResponse]
     priceDetail: str | None
-    quantity: int
-    totalAmount: decimal.Decimal
     venueName: str
     venueTimezone: str
-    hasUrl: bool
-    withdrawalDetails: str | None
     redactor: AdageRedactor | None
 
 

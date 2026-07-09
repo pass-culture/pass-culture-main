@@ -4,7 +4,6 @@ from typing import Iterable
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
 from pcapi.core.educational.serialization.collective_offer import get_collective_offer_address
-from pcapi.core.offers.utils import offer_app_link
 
 
 def get_collective_bookings_per_year_response(
@@ -27,7 +26,6 @@ def get_collective_bookings_per_year_response(
                 confirmationLimitDate=booking.confirmationLimitDate,
                 numberOfTickets=stock.numberOfTickets,
                 numberOfTeachers=stock.numberOfTeachers,
-                totalAmount=stock.price,
                 price=stock.price,
                 servicePrice=stock.servicePrice,
                 additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
@@ -81,9 +79,7 @@ def serialize_collective_booking(
         description=offer.description,
         additionalDetails=offer.additionalDetails,
         durationMinutes=offer.durationMinutes,
-        expirationDate=None,
         id=collective_booking.id,
-        hasUrl=False,
         venueName=venue.publicName or venue.name,
         name=offer.name,
         numberOfTickets=stock.numberOfTickets,
@@ -93,7 +89,6 @@ def serialize_collective_booking(
         price=stock.price,
         servicePrice=stock.servicePrice,
         additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
-        quantity=1,
         redactor=schemas.Redactor(
             email=redactor.email,
             redactorFirstName=redactor.firstName,
@@ -105,9 +100,6 @@ def serialize_collective_booking(
         status=get_collective_booking_status(collective_booking),
         cancellationReason=collective_booking.cancellationReason,
         venueTimezone=venue.offererAddress.address.timezone,
-        totalAmount=stock.price,
-        url=offer_app_link(offer),
-        withdrawalDetails=None,
         domain_ids=[domain.id for domain in domains],
         domain_labels=[domain.name for domain in domains],
         interventionArea=offer.interventionArea,
