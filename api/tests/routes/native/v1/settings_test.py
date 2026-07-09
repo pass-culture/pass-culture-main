@@ -36,6 +36,7 @@ class SettingsTest:
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": True,
+            "imageResizingUrl": "https://image-resizing.passculture.app",
             "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
 
@@ -66,5 +67,6 @@ class SettingsTest:
             "accountUnsuspensionLimit": 60,
             "rates": {"pacificFrancToEuro": 0.00838},
             "wipEnableCreditV3": True,
+            "imageResizingUrl": "https://image-resizing.passculture.app",
             "ineligiblePostalCodes": INELIGIBLE_POSTAL_CODES,
         }
