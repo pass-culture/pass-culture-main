@@ -691,6 +691,8 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
 )
 @atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id)
+
     product = (
         db.session.query(models.Product)
         .filter(models.Product.ean == ean)
