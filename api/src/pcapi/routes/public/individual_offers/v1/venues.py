@@ -48,7 +48,7 @@ def get_offerer_venues(
     Return all the venues attached to the API key for given offerer.
     """
     rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
-    return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
+    return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows, current_api_key.provider)
 
 
 @blueprints.public_api.route("/public/offers/v1/venues/<siret>", methods=["GET"])
@@ -95,4 +95,4 @@ def get_venue_by_siret(
         raise api_errors.ResourceNotFoundError(errors={"global": "Venue cannot be found"})
     authorization.get_venue_provider_or_raise_404(venue_id=venue.id)  # check provider has access
 
-    return venues_serialization.VenueResponse.build_model(venue)
+    return venues_serialization.VenueResponse.build_model(venue, current_api_key.provider)

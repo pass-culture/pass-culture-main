@@ -188,6 +188,81 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             ],
         }
 
+    def test_get_offerer_venues_with_multiple_providers(self):
+        provider_1 = providers_factories.ProviderFactory()
+        provider_2 = providers_factories.ProviderFactory()
+
+        offerer = offerers_factories.OffererFactory(
+            name="Technical provider", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
+        )
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider_1)
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider_2)
+
+        self._setup_api_key(offerer=offerer, provider=provider_1)
+        plain_api_key = self._setup_api_key(offerer=offerer, provider=provider_2)
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            siret="12345678900005",
+            dateCreated=datetime.datetime(2022, 2, 22, 11, 11, 11),
+            name="Bien Venue",
+        )
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider_1)
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider_2)
+
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            bookingExternalUrl="https://mysolution.com/booking",
+            cancelExternalUrl="https://mysolution.com/cancel",
+            notificationExternalUrl="https://mysolution.com/notif",
+        )
+
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select offerer, venue, venue OA and venue address
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select provider
+        num_queries += 1  # select venue_provider_external_urls
+
+        with testing.assert_num_queries(num_queries):
+            response = self.make_request(plain_api_key)
+        assert response.status_code == 200
+        assert len(response.json) == 1
+        assert response.json[0] == {
+            "offerer": {
+                "allowedOnAdage": True,
+                "createdDatetime": "2022-02-22T22:22:22Z",
+                "id": venue.managingOfferer.id,
+                "name": "Technical provider",
+                "siren": "123456789",
+            },
+            "venues": [
+                {
+                    "accessibility": {
+                        "audioDisabilityCompliant": False,
+                        "mentalDisabilityCompliant": False,
+                        "motorDisabilityCompliant": False,
+                        "visualDisabilityCompliant": False,
+                    },
+                    "activityDomain": "OTHER",
+                    "createdDatetime": "2022-02-22T11:11:11Z",
+                    "id": venue.id,
+                    "legalName": "Bien Venue",
+                    "location": {
+                        "address": venue.offererAddress.address.street,
+                        "city": venue.offererAddress.address.city,
+                        "postalCode": venue.offererAddress.address.postalCode,
+                        "type": "physical",
+                    },
+                    "publicName": "Bien Venue",
+                    "siret": "12345678900005",
+                    "siretComment": None,
+                    "bookingUrl": "https://mysolution.com/booking",
+                    "cancelUrl": "https://mysolution.com/cancel",
+                    "notificationUrl": "https://mysolution.com/notif",
+                },
+            ],
+        }
+
     def test_does_not_return_inactive_venue_providers(self):
         plain_api_key, provider = self.setup_provider()
         venue = self.setup_venue()
