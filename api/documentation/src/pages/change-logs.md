@@ -5,6 +5,18 @@ title: Pass Culture API change logs
 # Change logs
 
 :::info
+The `additionalDetails`, `servicePrice`, `additionalFees` and `numberOfTeachers` fields are now available on the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic), as well as the `price` field on the response of the GET, POST and PATCH collective offer endpoints.
+- You can already use the new version of the body in the POST endpoint, that is sending the `additionalDetails` (optional), `servicePrice`, `additionalFees` and `numberOfTeachers` fields instead of `totalPrice` and `educationalPriceDetail`
+- You can still use the old fields `totalPrice` and `educationalPriceDetail` during the transition period. In this case it will also write to the `servicePrice` and `additionalDetails` fields respectively
+- You can also use each of the new fields in the PATCH endpoint
+- You cannot mix old and new fields (in the POST and PATCH endpoints)
+- If you already sent `additionalFees` on a collective offer, you can no longer send the `totalPrice` field for this offer
+- The `totalPrice` field in the endpoints response should not be used anymore, use the `price` field instead
+
+:warning: At the beginning of 2027, the `totalPrice` and `educationalPriceDetail` fields will be removed from all endpoints.
+:::
+
+:::info
 Soon, a `bookingAllowedDatetime` parameter will be available at offer creation and update. Thanks to this new parameter, you will be able to specify when your offer becomes bookable.
 
 You will have two dates at your disposal :
@@ -17,6 +29,7 @@ You will have two dates at your disposal :
 - The `label` field has been added to the response of the [**Get Product Categories endpoint**](/rest-api#tag/Product-Offers/operation/GetProductCategories).
 - The `familyLabel` field has been added to the response of the [**Get Show Types endpoint**](/rest-api#tag/Offer-Attributes/operation/GetShowTypes).
 - The `enableDoubleBookings` param has been added in the [**Batch Update Cinema Sessions endpoint**](/rest-api#tag/Event-Offers/operation/PutBatchUpdateCinemaSessions)
+- The `additionalDetails`, `price`, `servicePrice`, `additionalFees` and `numberOfTeachers` fields have been added to the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic). See the change below on the **Create Collective Offer endpoint** to see how to use these fields.
 
 ## June 2026
 - A new endpoint has been added to synchronize cinema sessions: [**Batch Update Cinema Sessions**](/rest-api#tag/Event-Offers/operation/PutBatchUpdateCinemaSessions)
