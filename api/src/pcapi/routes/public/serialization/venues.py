@@ -5,6 +5,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import OffererVenues
+from pcapi.core.providers import models as providers_models
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.utils import date as date_utils
@@ -46,8 +47,19 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     cancel_url: str | None = fields.VENUE_CANCEL_URL
 
     @classmethod
-    def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        external_urls = venue.venueProviders[0].externalUrls
+    def build_model(cls, venue: offerers_models.Venue, provider: providers_models.Provider) -> "VenueResponse":
+        venue_provider = next(
+            venue_provider for venue_provider in venue.venueProviders if venue_provider.provider.id == provider.id
+        )
+
+        notification_url = None
+        booking_url = None
+        cancel_url = None
+        if venue_provider.externalUrls:
+            notification_url = venue_provider.externalUrls.notificationExternalUrl
+            booking_url = venue_provider.externalUrls.bookingExternalUrl
+            cancel_url = venue_provider.externalUrls.cancelExternalUrl
+
         return cls(
             siret_comment=venue.comment,
             created_datetime=venue.dateCreated,
@@ -64,9 +76,9 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             siret=venue.siret,
             activity_domain=venue.venueTypeCode.name,
             accessibility=PartialAccessibility.from_orm(venue),
-            notification_url=external_urls.notificationExternalUrl if external_urls else None,
-            booking_url=external_urls.bookingExternalUrl if external_urls else None,
-            cancel_url=external_urls.cancelExternalUrl if external_urls else None,
+            notification_url=notification_url,
+            booking_url=booking_url,
+            cancel_url=cancel_url,
         )
 
     class Config:
@@ -95,16 +107,19 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
 
     @classmethod
-    def _serialize_offerer_venues(cls, row: OffererVenues) -> GetOffererVenuesResponse:
-        venues = [VenueResponse.build_model(venue) for venue in row.venues]
+    def _serialize_offerer_venues(
+        cls, row: OffererVenues, provider: providers_models.Provider
+    ) -> GetOffererVenuesResponse:
+        venues = [VenueResponse.build_model(venue, provider) for venue in row.venues]
         return GetOffererVenuesResponse(offerer=row.offerer, venues=venues)  # type: ignore [arg-type]
 
     @classmethod
     def serialize_offerers_venues(
         cls,
         rows: typing.Iterable[OffererVenues],
+        provider: providers_models.Provider,
     ) -> "GetOfferersVenuesResponse":
-        offerers_venues = [cls._serialize_offerer_venues(row) for row in rows]
+        offerers_venues = [cls._serialize_offerer_venues(row, provider) for row in rows]
         return cls(__root__=offerers_venues)
 
 

@@ -97,7 +97,7 @@ class PublicAPIEndpointBaseHelper:
     def _setup_api_key(self, offerer, provider=None) -> str:
         secret = str(uuid.uuid4())
         env = "test"
-        prefix_id = str(uuid.uuid1())
+        prefix_id = str(uuid.uuid4())
 
         self._api_key = offerers_factories.ApiKeyFactory(
             provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
@@ -153,6 +153,27 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
         venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
         return plain_api_key, venue_provider
+
+    def setup_venue_with_multiple_active_providers(self):
+        plain_api_key_1, provider_1 = self.setup_provider()
+        plain_api_key_2, provider_2 = self.setup_provider()
+        venue = self.setup_venue()
+        venue_provider_1 = providers_factories.VenueProviderFactory(venue=venue, provider=provider_1)
+        venue_provider_2 = providers_factories.VenueProviderFactory(venue=venue, provider=provider_2)
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider_1,
+            bookingExternalUrl="https://mysolution1.com/booking",
+            cancelExternalUrl="https://mysolution1.com/cancel",
+            notificationExternalUrl="https://mysolution1.com/notif",
+        )
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider_2,
+            bookingExternalUrl="https://mysolution2.com/booking",
+            cancelExternalUrl="https://mysolution2.com/cancel",
+            notificationExternalUrl="https://mysolution2.com/notif",
+        )
+
+        return plain_api_key_1, plain_api_key_2, venue_provider_1, venue_provider_2
 
 
 class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
