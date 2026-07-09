@@ -1,7 +1,6 @@
 from pcapi.core.educational import models
 from pcapi.core.educational.serialization.collective_booking import _get_educational_offer_accessibility
 from pcapi.core.educational.utils import format_collective_additional_fee_type
-from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -25,9 +24,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "description": offer.description,
         "additionalDetails": offer.additionalDetails,
         "durationMinutes": offer.durationMinutes,
-        "expirationDate": None,
         "id": booking.id,
-        "hasUrl": False,
         "venueName": venue.name,
         "name": offer.name,
         "numberOfTickets": stock.numberOfTickets,
@@ -40,7 +37,6 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
             {"label": fee.label or format_collective_additional_fee_type(fee.type), "amount": fee.amount}
             for fee in stock.collectiveAdditionalFees
         ],
-        "quantity": 1,
         "redactor": {
             "email": redactor.email,
             "redactorFirstName": redactor.firstName,
@@ -52,9 +48,6 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "status": booking.status.value,
         "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
         "venueTimezone": venue.offererAddress.address.timezone,
-        "totalAmount": float(stock.price),
-        "url": offer_app_link(offer),
-        "withdrawalDetails": None,
         "domainIds": [domain.id for domain in offer.domains],
         "domainLabels": [domain.name for domain in offer.domains],
         "interventionArea": offer.interventionArea,

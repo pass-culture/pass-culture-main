@@ -26,7 +26,6 @@ def expected_serialized_booking(booking: CollectiveBooking) -> dict:
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
         "numberOfTickets": booking.collectiveStock.numberOfTickets,
         "numberOfTeachers": booking.collectiveStock.numberOfTeachers,
-        "totalAmount": booking.collectiveStock.price,
         "price": booking.collectiveStock.price,
         "servicePrice": booking.collectiveStock.servicePrice,
         "additionalFees": [

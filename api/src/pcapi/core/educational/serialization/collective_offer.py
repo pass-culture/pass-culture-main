@@ -49,12 +49,8 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> sche
         servicePrice=stock.servicePrice,
         additionalFees=[schemas.AdditionalFeeResponse.build(fee) for fee in stock.collectiveAdditionalFees],
         priceDetail=stock.priceDetail,
-        quantity=1,
-        totalAmount=stock.price,
         venueName=venue.name,
         venueTimezone=venue.offererAddress.address.timezone,
-        hasUrl=False,
-        withdrawalDetails=None,
         redactor=schemas.AdageRedactor(
             email=collective_offer.teacher.email if collective_offer.teacher else None,
             redactorCivility=collective_offer.teacher.civility if collective_offer.teacher else None,
