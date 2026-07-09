@@ -3,15 +3,15 @@
  */
 addonList.push(
   class PcClipBoard extends PcAddOn {
-    static TOOLTIP_SELECTORS = '.pc-clipboard'
+    static CLIPBOARDS_SELECTOR = '.pc-clipboard'
     static TITLE_RESET_DURATION = 3000 // in millisecond
 
     bindEvents = () => {
-      EventHandler.on(document.body, 'click', PcClipBoard.TOOLTIP_SELECTORS, this.#clicked)
+      EventHandler.on(document.body, 'click', PcClipBoard.CLIPBOARDS_SELECTOR, this.#clicked)
     }
 
     unbindEvents = () => {
-      EventHandler.off(document.body, 'click', PcClipBoard.TOOLTIP_SELECTORS, this.#clicked)
+      EventHandler.off(document.body, 'click', PcClipBoard.CLIPBOARDS_SELECTOR, this.#clicked)
     }
 
     #clicked = (event) =>{

@@ -1,13 +1,13 @@
 {% macro copy_to_clipboard(text_to_copy, tooltip_title) %}
   {% if text_to_copy %}
     <a href=""
-       class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1"
-       style="text-decoration: none">
-      <i class="bi bi-copy pc-clipboard text-primary-subtle"
-         data-bs-toggle="tooltip"
-         data-bs-placement="top"
-         data-bs-title="{{ tooltip_title }}"
-         data-text="{{ text_to_copy }}">
+       class="pc-clipboard btn btn-outline-primary-subtle-bg border-0 px-2 py-1"
+       style="text-decoration: none"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="{{ tooltip_title }}"
+       data-text="{{ text_to_copy }}">
+      <i class="bi bi-copy text-primary-subtle">
       </i>
     </a>
   {% endif %}
