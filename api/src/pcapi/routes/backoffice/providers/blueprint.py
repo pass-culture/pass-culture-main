@@ -102,7 +102,7 @@ def get_create_provider_form() -> response_utils.BackofficeResponse:
         div_id="create-provider",
         modal_content_id="create-provider-modale-content",
         target_id="#create-provider-modale-content",
-        title="Créer un partenaire technique qui se synchronisera avec le pass Culture",
+        title="Créer un partenaire technique qui se synchronisera avec le passe Culture",
         button_text="Créer le partenaire",
         close_on_validation=False,
     )

@@ -70,22 +70,22 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             (
                 None,
                 fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
-                "Ce produit n'est pas encore dans la base de données du pass Culture.",
+                "Ce produit n'est pas encore dans la base de données du passe Culture.",
             ),
             (
                 None,
                 fixtures.INELIGIBLE_BOOK_BY_EAN_FIXTURE,
-                "Attention : Ce produit est considéré comme inéligible par le pass Culture.",
+                "Attention : Ce produit est considéré comme inéligible par le passe Culture.",
             ),
             (
                 perm_models.Permissions.PRO_FRAUD_ACTIONS,
                 fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
-                "Ce produit n'est pas encore dans la base de données du pass Culture. Vous pouvez l'ajouter en cliquant sur le bouton ci-dessous.",
+                "Ce produit n'est pas encore dans la base de données du passe Culture. Vous pouvez l'ajouter en cliquant sur le bouton ci-dessous.",
             ),
             (
                 perm_models.Permissions.PRO_FRAUD_ACTIONS,
                 fixtures.INELIGIBLE_BOOK_BY_EAN_FIXTURE,
-                "Attention : Ce produit est considéré comme inéligible par le pass Culture. Cependant, vous pouvez quand même l'ajouter si nécessaire en cliquant sur le bouton ci-dessous. Cela rendra le produit automatiquement éligible.",
+                "Attention : Ce produit est considéré comme inéligible par le passe Culture. Cependant, vous pouvez quand même l'ajouter si nécessaire en cliquant sur le bouton ci-dessous. Cela rendra le produit automatiquement éligible.",
             ),
         ],
     )
@@ -121,9 +121,9 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
 
         buttons = html_parser.extract(response.data, "button")
         if additional_permission == perm_models.Permissions.PRO_FRAUD_ACTIONS:
-            assert "Importer ce produit dans la base de données du pass Culture" in buttons
+            assert "Importer ce produit dans la base de données du passe Culture" in buttons
         else:
-            assert "Importer ce produit dans la base de données du pass Culture" not in buttons
+            assert "Importer ce produit dans la base de données du passe Culture" not in buttons
 
         soup = html_parser.get_soup(response.data)
         card_titles = html_parser.extract_cards_titles(response.data)
@@ -148,9 +148,9 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert "Code support " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
 
         if titelive_data["oeuvre"]["titre"] == fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"]:
-            assert "Inéligible pass Culture " not in card_text[0]
+            assert "Inéligible passe Culture " not in card_text[0]
         else:
-            assert "Inéligible pass Culture " in card_text[0]
+            assert "Inéligible passe Culture " in card_text[0]
 
         assert "EAN whitelisté Non" in card_text[0]
 
@@ -249,7 +249,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
 
 class ImportProductFromTiteliveButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
-    button_label = "Importer ce produit dans la base de données du pass Culture"
+    button_label = "Importer ce produit dans la base de données du passe Culture"
 
     @property
     def path(self):

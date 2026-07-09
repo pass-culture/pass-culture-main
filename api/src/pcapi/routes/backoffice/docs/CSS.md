@@ -33,7 +33,7 @@ virtually non-existent and can make style structuring more complex due to increa
 
 It also often (not to say always) leads to W3C validation errors [read more](HTML.md).
 
-**We use prefixed class, example: `.pc-script-*` for a no-css but just pass Culture organisation scripting purposes (with python or js).**
+**We use prefixed class, example: `.pc-script-*` for a no-css but just passe Culture organisation scripting purposes (with python or js).**
 
 When we separate the rules into four categories, conventions of namings are necessary to immediately understand to
 which category that specific style belongs to and its role in the general set of the page.

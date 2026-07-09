@@ -69,7 +69,9 @@
                         {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
                         <ul class="mt-2">
                           {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
-                          {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
+                          {% if csr %}
+                            <li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>
+                          {% endif %}
                         </ul>
                       </li>
                     {% endfor %}
@@ -82,7 +84,7 @@
         <ul class="list-group list-group-flush">
           {% if ineligibility_reasons %}
             <li class="list-group-item">
-              {% call description_detail_horizontal("Inéligible pass Culture") %}
+              {% call description_detail_horizontal("Inéligible passe Culture") %}
                 {% for ineligibility_reason in ineligibility_reasons %}{{ ineligibility_reason | format_badge("danger") }}{% endfor %}
               {% endcall %}
             </li>
