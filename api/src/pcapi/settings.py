@@ -218,7 +218,7 @@ NATIVE_RECAPTCHA_SECRET = secrets_utils.get("NATIVE_RECAPTCHA_SECRET")
 RECAPTCHA_IGNORE_VALIDATION = bool(int(os.environ.get("RECAPTCHA_IGNORE_VALIDATION", 0)))
 
 # JWT
-JWT_BACKEND = os.environ.get("JWT_BACKEND", "pcapi.utils.jwt.JwtSimpleBackend")
+JWT_BACKEND = os.environ.get("JWT_BACKEND", "JwtSimpleBackend")
 JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
 DISCORD_JWT_PRIVATE_KEY = secrets_utils.get("DISCORD_JWT_PRIVATE_KEY").encode("ascii")
 DISCORD_JWT_PUBLIC_KEY = secrets_utils.get("DISCORD_JWT_PUBLIC_KEY").encode("ascii")
