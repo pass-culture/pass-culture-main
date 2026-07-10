@@ -1,5 +1,7 @@
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferHeadlineCard } from '@/components/IndividualOfferLayout/components/OfferHeadlineCard/OfferHeadlineCard'
@@ -27,6 +29,7 @@ export type IndividualOfferExposureScreenProps = {
 export const IndividualOfferExposureScreen = ({
   offer,
 }: Readonly<IndividualOfferExposureScreenProps>) => {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const {
     shouldDisplayRecommendationCard,
     shouldDisplayHighlightCard,
@@ -55,7 +58,7 @@ export const IndividualOfferExposureScreen = ({
         <OfferExposureTimeline
           offerId={offer.id}
           creationDate={offer.dateCreated}
-          departmentCode={getDepartmentCode(offer)}
+          departmentCode={getDepartmentCode(offer, selectedPartnerVenue)}
         />
       </SummaryContent>
 

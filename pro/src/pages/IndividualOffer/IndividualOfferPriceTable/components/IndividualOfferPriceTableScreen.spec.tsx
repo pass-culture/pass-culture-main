@@ -13,6 +13,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -55,6 +56,9 @@ const renderPriceTableScreen: RenderComponentFunction<
   }
   const options: RenderWithProvidersOptions = {
     user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+    },
     ...params.options,
   }
   const props: ScreenProps = {

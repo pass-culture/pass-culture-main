@@ -21,7 +21,6 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
-  makeVenueListItemLiteResponseModel,
   venueAddressFactory,
 } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -51,20 +50,6 @@ const categoriesAndSubcategories = {
   ],
   subcategories: [],
 }
-
-const proVenues = [
-  makeVenueListItemLiteResponseModel({
-    id: 1,
-    name: 'Venue Name',
-    offererName: 'Mon offerer',
-    publicName: 'Venue Public Name',
-  }),
-  makeVenueListItemLiteResponseModel({
-    id: 2,
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-  }),
-]
 
 const venueAddress: GetVenueAddressResponseModel[] = [
   venueAddressFactory(1, {
@@ -123,7 +108,7 @@ describe('IndividualOffers', () => {
   const scrollToContentWrapperMock = vi.fn()
 
   let offersRecap: ListOffersOfferResponseModel[]
-  offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
+  offersRecap = [listOffersOfferFactory()]
 
   beforeEach(() => {
     vi.spyOn(useAccessibleScrollModule, 'useAccessibleScroll').mockReturnValue({
@@ -163,9 +148,7 @@ describe('IndividualOffers', () => {
 
     it('should filter according to page query param', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(
-        Array.from({ length: 14 }, () =>
-          listOffersOfferFactory({ venue: proVenues[0] })
-        )
+        Array.from({ length: 14 }, () => listOffersOfferFactory())
       )
       await renderIndividualOffers({ page: 2 })
 

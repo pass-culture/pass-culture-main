@@ -316,8 +316,6 @@ export {
   type ListOffersQueryModel,
   type ListOffersResponseModel,
   type ListOffersStockResponseModel,
-  type ListOffersVenueResponseModel,
-  type ListOffersVenueResponseModelV2,
   type ListProviderResponse,
   type ListVenueProviderResponse,
   type LocationBodyModel,

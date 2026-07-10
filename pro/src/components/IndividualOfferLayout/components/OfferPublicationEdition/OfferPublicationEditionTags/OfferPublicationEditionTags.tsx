@@ -4,6 +4,8 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
@@ -20,11 +22,13 @@ export type OfferPublicationEditionProps = {
 export function OfferPublicationEditionTags({
   offer,
 }: Readonly<OfferPublicationEditionProps>) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
   if (offer.status === OfferStatus.INACTIVE) {
     return <StatusLabel status={offer.status} />
   }
 
-  const departmentCode = getDepartmentCode(offer)
+  const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
   const publicationDate =
     offer.publicationDatetime && isAfter(offer.publicationDatetime, new Date())

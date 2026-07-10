@@ -733,7 +733,6 @@ export type CollectiveOfferResponseModel = {
      */
     name: string;
     stock: CollectiveOfferStockResponseModel | null;
-    venue: ListOffersVenueResponseModelV2;
 };
 
 /**
@@ -818,7 +817,6 @@ export type CollectiveOfferTemplateResponseModel = {
      * Name
      */
     name: string;
-    venue: ListOffersVenueResponseModelV2;
 };
 
 /**
@@ -4131,7 +4129,6 @@ export type ListOffersOfferResponseModel = {
      * Thumburl
      */
     thumbUrl?: string;
-    venue: ListOffersVenueResponseModel;
 };
 
 /**
@@ -4190,42 +4187,6 @@ export type ListOffersStockResponseModel = {
      * Remainingquantity
      */
     remainingQuantity: number | string;
-};
-
-/**
- * ListOffersVenueResponseModel
- */
-export type ListOffersVenueResponseModel = {
-    /**
-     * Departementcode
-     */
-    departementCode?: string;
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Name
-     */
-    name: string;
-};
-
-/**
- * ListOffersVenueResponseModelV2
- */
-export type ListOffersVenueResponseModelV2 = {
-    /**
-     * Departementcode
-     */
-    departementCode: string;
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Name
-     */
-    name: string;
 };
 
 /**

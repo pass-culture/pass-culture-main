@@ -4,6 +4,7 @@ import type { CastOptions } from 'yup'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
+  GetVenueResponseModel,
   PriceCategoryResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
@@ -27,19 +28,22 @@ const isGetOfferStockResponseModel = (
 export function toFormValues(
   offer: GetIndividualOfferWithAddressResponseModel,
   priceCategories: PriceCategoryResponseModel[],
-  context: PriceTableFormContext
+  context: PriceTableFormContext,
+  venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
   offer: GetIndividualOfferWithAddressResponseModel,
   offerStocks: GetOfferStockResponseModel[],
-  context: PriceTableFormContext
+  context: PriceTableFormContext,
+  venue: GetVenueResponseModel
 ): PriceTableFormValues
 export function toFormValues(
   offer: GetIndividualOfferWithAddressResponseModel,
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
-  context: PriceTableFormContext
+  context: PriceTableFormContext,
+  venue: GetVenueResponseModel
 ): PriceTableFormValues
 
 export function toFormValues(
@@ -47,7 +51,8 @@ export function toFormValues(
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
-  context: PriceTableFormContext
+  context: PriceTableFormContext,
+  venue: GetVenueResponseModel
 ): PriceTableFormValues {
   const castOptions: CastOptions = {
     assert: false,
@@ -80,7 +85,7 @@ export function toFormValues(
                   ? format(
                       getLocalDepartementDateTimeFromUtc(
                         entry.bookingLimitDatetime,
-                        getDepartmentCode(offer)
+                        getDepartmentCode(offer, venue)
                       ),
                       FORMAT_ISO_DATE_ONLY
                     )
