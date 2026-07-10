@@ -19,7 +19,7 @@ jobs:
 
   push-pcapi:
     name: Push pcapi docker image to artifact registry
-    uses: ./.github/workflows/docker_push_image_passdirector.yml
+    uses: ./.github/workflows/docker_push_image.yml
     needs:
       - build-pcapi
     with:

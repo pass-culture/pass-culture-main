@@ -39,7 +39,7 @@ jobs:
 
   push-images:
     name: Push Docker images
-    uses: ./.github/workflows/docker_push_image_passdirector.yml
+    uses: ./.github/workflows/docker_push_image.yml
     needs: build-images
     strategy:
       fail-fast: true
