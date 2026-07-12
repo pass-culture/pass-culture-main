@@ -1,30 +1,42 @@
 import logging
+import typing
 from functools import partial
 
 from pcapi import settings
-from pcapi.core.external.zendesk_sell.backends.base import BaseBackend
 from pcapi.core.external.zendesk_sell.backends.base import ContactFoundMoreThanOneError
 from pcapi.core.external.zendesk_sell.backends.base import ContactNotFoundError
 from pcapi.core.external.zendesk_sell.backends.base import ZendeskCustomFieldsShort
+from pcapi.core.external.zendesk_sell.backends.logger import LoggerBackend
+from pcapi.core.external.zendesk_sell.backends.testing import TestingBackend
+from pcapi.core.external.zendesk_sell.backends.zendesk_sell import ZendeskSellBackend
+from pcapi.core.external.zendesk_sell.backends.zendesk_sell import ZendeskSellReadOnlyBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.feature import FeatureToggle
-from pcapi.utils import module_loading
 from pcapi.utils.transaction_manager import on_commit
 
 from . import serialization
 from . import tasks
 
 
+type Backend = ZendeskSellBackend | ZendeskSellReadOnlyBackend | LoggerBackend | TestingBackend
+
+BACKEND_BY_KEY: typing.Final[dict[str, type[Backend]]] = {
+    "ZendeskSellBackend": ZendeskSellBackend,
+    "ZendeskSellReadOnlyBackend": ZendeskSellReadOnlyBackend,
+    "LoggerBackend": LoggerBackend,
+    "TestingBackend": TestingBackend,
+    "pcapi.core.external.zendesk_sell.backends.zendesk_sell.ZendeskSellBackend": ZendeskSellBackend,
+    "pcapi.core.external.zendesk_sell.backends.zendesk_sell.ZendeskSellReadOnlyBackend": ZendeskSellReadOnlyBackend,
+    "pcapi.core.external.zendesk_sell.backends.logger.LoggerBackend": LoggerBackend,
+}
 logger = logging.getLogger(__name__)
 
 SEARCH_PARENT = -1
 
 
-def get_backend() -> "BaseBackend":
-    backend_string = settings.ZENDESK_SELL_BACKEND
-    backend_class = module_loading.import_string(backend_string)
-    return backend_class()
+def get_backend() -> Backend:
+    return BACKEND_BY_KEY[settings.ZENDESK_SELL_BACKEND]()
 
 
 def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
