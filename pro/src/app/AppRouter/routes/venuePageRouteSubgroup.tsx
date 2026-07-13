@@ -23,6 +23,9 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
         },
         {
           path: 'edition',
+          loader: withUserPermissions(
+            (userPermissions) => userPermissions.isSelectedPartnerVenueActive
+          ),
           lazy: () =>
             import(
               '@/pages/CollectiveVenuePageEdition/CollectiveVenuePageEdition'
@@ -45,6 +48,9 @@ export const venuePageRouteSubgroup: CustomRouteGroup = {
         },
         {
           path: 'edition',
+          loader: withUserPermissions(
+            (userPermissions) => userPermissions.isSelectedPartnerVenueActive
+          ),
           lazy: () =>
             import(
               '@/pages/IndividualVenuePageEdition/IndividualVenuePageEdition'

@@ -23,6 +23,7 @@ import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteTree } from './types'
 import {
   mustBeAuthenticated,
+  mustBeOnboardedWithActiveSelectedPartnerVenue,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
   mustNotBeOnboardedWithSelectedPartnerVenue,
@@ -124,7 +125,7 @@ export const routes: CustomRouteTree = [
   },
   {
     lazy: () => import('@/pages/CollectiveOffer/CollectiveOfferType/OfferType'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/creation',
     handle: {
       title: 'Créer une offre collective',
@@ -144,7 +145,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplication'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/creation/collectif/selection',
     handle: {
       title: 'Edition d’une offre collective',
@@ -155,7 +156,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockCreation/CollectiveOfferStockCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/stocks',
     handle: {
       title: 'Dates et prix - Créer une offre réservable',
@@ -166,7 +167,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferInformation/CollectiveOfferInformation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/informations-pratiques',
     handle: {
       title: 'Informations pratiques - Créer une offre réservable',
@@ -177,7 +178,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/creation/collectif',
     handle: {
       title: 'Détails - Créer une offre réservable',
@@ -188,7 +189,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/creation/collectif/vitrine',
     handle: {
       title: 'Détails - Créer une offre collective vitrine',
@@ -199,7 +200,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/collectif/:offerId/creation',
     handle: {
       title: 'Détails - Créer une offre collective vitrine',
@@ -210,7 +211,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/collectif/vitrine/:offerId/creation',
     handle: {
       title: 'Edition d’une offre collective',
@@ -221,7 +222,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOfferInstitution/CollectiveOfferCreationInstitution'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/etablissement',
     handle: {
       title: 'Établissement - Créer une offre réservable',
@@ -232,7 +233,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     handle: {
       title: 'Récapitulatif - Créer une offre réservable',
@@ -243,7 +244,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/creation/apercu',
     handle: {
       title: 'Aperçu - Créer une offre réservable',
@@ -254,7 +255,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/vitrine/creation/apercu',
     handle: {
       title: 'Aperçu - Créer une offre vitrine',
@@ -265,7 +266,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     handle: {
       title: 'Récapitulatif - Créer une offre vitrine',
@@ -276,7 +277,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/confirmation',
     handle: {
       title: 'Confirmation - Offre réservable publiée',
@@ -287,7 +288,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     handle: {
       title: 'Confirmation - Offre collective vitrine publiée',
@@ -298,7 +299,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/CollectiveOfferEdition'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/edition',
     handle: {
       title: 'Détails - Modifier une offre collective réservable',
@@ -343,7 +344,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockEdition/CollectiveOfferStockEdition'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/stocks/edition',
     handle: {
       title: 'Dates et prix - Modifier une offre collective réservable',
@@ -354,7 +355,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOffer/CollectiveOfferInformation/CollectiveOfferInformation'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/informations-pratiques/edition',
     handle: {
       title:
@@ -366,7 +367,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/CollectiveOfferInstitution/CollectiveOfferEditionInstitution'
       ),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/:offerId/collectif/etablissement/edition',
     handle: {
       title: 'Établissement - Modifier une offre collective réservable',
@@ -375,7 +376,7 @@ export const routes: CustomRouteTree = [
   {
     lazy: () =>
       import('@/pages/CollectiveOfferFromRequest/CollectiveOfferFromRequest'),
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
     path: '/offre/collectif/creation/:offerId/requete/:requestId',
     handle: {
       title: 'Détails - Créer une offre réservable',
@@ -504,11 +505,7 @@ export const routes: CustomRouteTree = [
       import(
         '@/pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
-    loader: withUserPermissions(
-      (userPermissions) =>
-        userPermissions.isAuthenticated &&
-        !userPermissions.isSelectedPartnerVenueOnboarded
-    ),
+    loader: withUserPermissions(mustNotBeOnboardedWithSelectedPartnerVenue),
     path: '/onboarding/individuel',
     handle: {
       title: 'Offre à destination des jeunes - Onboarding',
@@ -545,7 +542,10 @@ export const routes: CustomRouteTree = [
   {
     lazy: () => import('@/pages/NonAttached/NonAttached'),
     loader: withUserPermissions(
-      (userPermissions) => !userPermissions.isSelectedPartnerVenueAssociated
+      (userPermissions) =>
+        userPermissions.isAuthenticated &&
+        userPermissions.hasSelectedPartnerVenue &&
+        !userPermissions.isSelectedPartnerVenueAssociated
     ),
     path: '/rattachement-en-cours',
     handle: {

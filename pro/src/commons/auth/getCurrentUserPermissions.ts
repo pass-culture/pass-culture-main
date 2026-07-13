@@ -1,4 +1,6 @@
 import type { UserSliceState } from '../store/user/reducer'
+import { COOKIES } from '../utils/localStorageManager'
+import { withVenueHelpers } from '../utils/withVenueHelpers'
 import type { UserPermissions } from './types'
 
 /**
@@ -24,6 +26,7 @@ export const getCurrentUserPermissions = (
       hasSelectedAdminOfferer: false,
       hasVenues: false,
       isAuthenticated: false,
+      isSelectedPartnerVenueActive: false,
       isSelectedAdminOffererAssociated: false,
       isSelectedPartnerVenueAssociated: false,
       isSelectedPartnerVenueOnboarded: false,
@@ -32,6 +35,8 @@ export const getCurrentUserPermissions = (
 
   const hasSelectedAdminOfferer = !!selectedAdminOfferer
   const hasSelectedPartnerVenue = !!selectedPartnerVenue
+  const isSelectedPartnerVenueActive =
+    hasSelectedPartnerVenue && !withVenueHelpers(selectedPartnerVenue).isClosed
   const isSelectedAdminOffererAssociated =
     hasSelectedAdminOfferer &&
     !!offererNames?.some(
@@ -42,14 +47,19 @@ export const getCurrentUserPermissions = (
     !venuesWithPendingValidation?.some(
       (venue) => venue.id === selectedPartnerVenue.id
     )
+  const isSelectedPartnerVenueOnboarded =
+    hasSelectedPartnerVenue &&
+    (selectedPartnerVenue.isOnboarded ||
+      document.cookie.includes(COOKIES.DID_SKIP_ONBOARDING))
 
   return {
     hasSelectedAdminOfferer,
     hasSelectedPartnerVenue,
     hasVenues: !!venues?.length,
     isAuthenticated: true,
+    isSelectedPartnerVenueActive,
     isSelectedAdminOffererAssociated,
     isSelectedPartnerVenueAssociated,
-    isSelectedPartnerVenueOnboarded: !!selectedPartnerVenue?.isOnboarded,
+    isSelectedPartnerVenueOnboarded,
   }
 }

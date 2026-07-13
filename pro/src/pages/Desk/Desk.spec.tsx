@@ -18,10 +18,6 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Desk } from './Desk'
 
-/* -------------------------------------------------------------------------- */
-/*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
-
 const snackBarSuccess = vi.fn()
 const snackBarError = vi.fn()
 
@@ -52,10 +48,6 @@ beforeEach(() => {
 })
 
 describe('Desk', () => {
-  /* ---------------------------------------------------------------------- */
-  /*                              Token typing                              */
-  /* ---------------------------------------------------------------------- */
-
   describe('token typing behaviour', () => {
     it('removes QR code prefix', async () => {
       vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
@@ -111,10 +103,6 @@ describe('Desk', () => {
     })
   })
 
-  /* ---------------------------------------------------------------------- */
-  /*                              Closed venue                              */
-  /* ---------------------------------------------------------------------- */
-
   describe('when the selected venue is closed', () => {
     it('disables the submit button', () => {
       renderDesk({ state: VenueState.CLOSED })
@@ -124,10 +112,6 @@ describe('Desk', () => {
       ).toBeDisabled()
     })
   })
-
-  /* ---------------------------------------------------------------------- */
-  /*                           Form validation (YUP)                        */
-  /* ---------------------------------------------------------------------- */
 
   describe('form validation', () => {
     beforeEach(() => {
@@ -172,10 +156,6 @@ describe('Desk', () => {
       ).toBeInTheDocument()
     })
   })
-
-  /* ---------------------------------------------------------------------- */
-  /*                          Token validation flow                          */
-  /* ---------------------------------------------------------------------- */
 
   describe('validate contremarque', () => {
     beforeEach(() => {
@@ -231,10 +211,6 @@ describe('Desk', () => {
       expect(input).toHaveValue('AAAAAA')
     })
   })
-
-  /* ---------------------------------------------------------------------- */
-  /*                         Token invalidation flow                         */
-  /* ---------------------------------------------------------------------- */
 
   describe('invalidate contremarque', () => {
     beforeEach(() => {
