@@ -84,7 +84,7 @@ class ArtistAdvancedSearchSubForm(forms_utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(ArtistAdvancedSearchAttributes),
+        choices=forms_utils.choices_from_enum(ArtistAdvancedSearchAttributes, sort=True),
         validators=[
             wtforms.validators.Optional(""),
         ],

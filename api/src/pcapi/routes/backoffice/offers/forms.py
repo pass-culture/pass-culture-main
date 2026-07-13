@@ -227,7 +227,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(IndividualOffersSearchAttributes),
+        choices=forms_utils.choices_from_enum(IndividualOffersSearchAttributes, sort=True),
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -449,7 +449,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(IndividualOffersAlgoliaSearchAttributes),
+        choices=forms_utils.choices_from_enum(IndividualOffersAlgoliaSearchAttributes, sort=True),
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -565,7 +565,7 @@ class OfferLlmSearchSubForm(forms_utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(IndividualOffersLlmSearchAttributes),
+        choices=forms_utils.choices_from_enum(IndividualOffersLlmSearchAttributes, sort=True),
         validators=[
             wtforms.validators.Optional(""),
         ],
