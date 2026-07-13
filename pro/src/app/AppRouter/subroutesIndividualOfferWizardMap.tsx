@@ -4,6 +4,7 @@ import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteGroupChild } from './types'
 import {
+  mustBeOnboardedWithActiveSelectedPartnerVenue,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from './utils'
@@ -55,7 +56,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Description - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -66,7 +67,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Description - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -90,7 +91,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Informations pratiques - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -113,7 +114,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Localisation - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -148,7 +149,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Image et vidéo - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -183,7 +184,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Tarifs - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -218,7 +219,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Horaires - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -252,7 +253,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Informations pratiques - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   {
     lazy: () =>
@@ -299,7 +300,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Confirmation - Offre individuelle publiée',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
   // Summary pages
   {
@@ -311,7 +312,7 @@ export const routesIndividualOfferWizard: CustomRouteGroupChild[] = [
     handle: {
       title: 'Récapitulatif - Créer une offre individuelle',
     },
-    loader: withUserPermissions(mustBeOnboardedWithSelectedPartnerVenue),
+    loader: withUserPermissions(mustBeOnboardedWithActiveSelectedPartnerVenue),
   },
 ]
 

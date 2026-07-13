@@ -1,3 +1,4 @@
+import { VenueState } from '@/apiClient/v1'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   makeUserSliceState,
@@ -7,10 +8,19 @@ import {
   makeGetVenueResponseModel,
   makeVenueListItemLiteResponseModel,
 } from '@/commons/utils/factories/venueFactories'
+import { COOKIES } from '@/commons/utils/localStorageManager'
 
 import { getCurrentUserPermissions } from '../getCurrentUserPermissions'
 
+function mockCookie(value: string) {
+  Object.defineProperty(document, 'cookie', { writable: true, value })
+}
+
 describe('getCurrentUserPermissions', () => {
+  beforeEach(() => {
+    mockCookie('')
+  })
+
   describe('when user is not authenticated', () => {
     it('should return all permissions as false', () => {
       const userSliceState = makeUserSliceState({
@@ -26,6 +36,7 @@ describe('getCurrentUserPermissions', () => {
         hasSelectedPartnerVenue: false,
         hasVenues: false,
         isAuthenticated: false,
+        isSelectedPartnerVenueActive: false,
         isSelectedPartnerVenueAssociated: false,
         isSelectedPartnerVenueOnboarded: false,
       })
@@ -116,6 +127,7 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: false,
             hasVenues: true,
             isAuthenticated: true,
+            isSelectedPartnerVenueActive: false,
             isSelectedPartnerVenueAssociated: false,
             isSelectedPartnerVenueOnboarded: false,
           })
@@ -140,6 +152,7 @@ describe('getCurrentUserPermissions', () => {
             hasSelectedPartnerVenue: true,
             hasVenues: true,
             isAuthenticated: true,
+            isSelectedPartnerVenueActive: true,
             isSelectedPartnerVenueAssociated: true,
             isSelectedPartnerVenueOnboarded: false,
           })
@@ -165,6 +178,53 @@ describe('getCurrentUserPermissions', () => {
               isAuthenticated: true,
               isSelectedPartnerVenueAssociated: true,
               isSelectedPartnerVenueOnboarded: false,
+            })
+          })
+        })
+
+        describe('when venue is closed', () => {
+          it.each([
+            VenueState.CLOSED,
+            VenueState.CLOSING,
+          ])('should return isSelectedPartnerVenueActive as false when venue state is %s', (venueState) => {
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: true,
+                state: venueState,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: null,
+            })
+
+            const result = getCurrentUserPermissions(userSliceState)
+
+            expect(result).toMatchObject({
+              hasSelectedPartnerVenue: true,
+              isSelectedPartnerVenueActive: false,
+            })
+          })
+        })
+
+        describe('when venue is not onboarded but onboarding was skipped', () => {
+          it('should return isSelectedPartnerVenueOnboarded as true', () => {
+            mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
+            const userSliceState = makeUserSliceState({
+              currentUser: fakeCurrentUser,
+              selectedPartnerVenue: makeGetVenueResponseModel({
+                id: fakeVenue.id,
+                isOnboarded: false,
+              }),
+              venues: fakeVenues,
+              venuesWithPendingValidation: null,
+            })
+
+            const result = getCurrentUserPermissions(userSliceState)
+
+            expect(result).toMatchObject({
+              hasSelectedPartnerVenue: true,
+              isSelectedPartnerVenueOnboarded: true,
             })
           })
         })
@@ -211,6 +271,7 @@ describe('getCurrentUserPermissions', () => {
               hasSelectedPartnerVenue: true,
               hasVenues: true,
               isAuthenticated: true,
+              isSelectedPartnerVenueActive: true,
               isSelectedPartnerVenueAssociated: true,
               isSelectedPartnerVenueOnboarded: true,
             })

@@ -1,5 +1,4 @@
 import type { UserPermissions } from '@/commons/auth/types'
-import { COOKIES } from '@/commons/utils/localStorageManager'
 
 export const mustBeAuthenticated = (userPermissions: UserPermissions) =>
   userPermissions.isAuthenticated
@@ -7,15 +6,17 @@ export const mustBeAuthenticated = (userPermissions: UserPermissions) =>
 export const mustBeUnauthenticated = (userPermissions: UserPermissions) =>
   !userPermissions.isAuthenticated
 
-export const mustBeOnboardedOrSkipped = (userPermissions: UserPermissions) =>
-  userPermissions.isSelectedPartnerVenueOnboarded ||
-  document.cookie.includes(COOKIES.DID_SKIP_ONBOARDING)
-
 export const mustBeOnboardedWithSelectedPartnerVenue = (
   userPermissions: UserPermissions
 ) =>
   mustHaveSelectedPartnerVenue(userPermissions) &&
-  mustBeOnboardedOrSkipped(userPermissions)
+  userPermissions.isSelectedPartnerVenueOnboarded
+
+export const mustBeOnboardedWithActiveSelectedPartnerVenue = (
+  userPermissions: UserPermissions
+) =>
+  mustBeOnboardedWithSelectedPartnerVenue(userPermissions) &&
+  userPermissions.isSelectedPartnerVenueActive
 
 export const mustHaveSelectedPartnerVenue = (
   userPermissions: UserPermissions
@@ -31,4 +32,5 @@ export const mustNotBeOnboardedWithSelectedPartnerVenue = (
   userPermissions: UserPermissions
 ) =>
   userPermissions.isAuthenticated &&
-  !userPermissions.isSelectedPartnerVenueOnboarded
+  !userPermissions.isSelectedPartnerVenueOnboarded &&
+  userPermissions.isSelectedPartnerVenueActive

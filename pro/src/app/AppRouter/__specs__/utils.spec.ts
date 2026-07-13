@@ -1,31 +1,15 @@
-import type { UserPermissions } from '@/commons/auth/types'
-import { COOKIES } from '@/commons/utils/localStorageManager'
+import { makeUserPermissions } from '@/commons/utils/factories/authFactories'
 
 import {
   mustBeAuthenticated,
-  mustBeOnboardedOrSkipped,
+  mustBeOnboardedWithActiveSelectedPartnerVenue,
   mustBeOnboardedWithSelectedPartnerVenue,
   mustBeUnauthenticated,
   mustHaveSelectedAdminOfferer,
+  mustHaveSelectedPartnerVenue,
   mustNotBeOnboardedWithSelectedPartnerVenue,
 } from '../utils'
 
-const makeUserPermissions = (
-  overrides: Partial<UserPermissions> = {}
-): UserPermissions => ({
-  hasSelectedAdminOfferer: false,
-  hasSelectedPartnerVenue: false,
-  hasVenues: false,
-  isAuthenticated: false,
-  isSelectedAdminOffererAssociated: false,
-  isSelectedPartnerVenueAssociated: false,
-  isSelectedPartnerVenueOnboarded: false,
-  ...overrides,
-})
-
-function mockCookie(value: string) {
-  Object.defineProperty(document, 'cookie', { writable: true, value })
-}
 describe('utils', () => {
   describe('mustBeAuthenticated', () => {
     it('should return true when user is authenticated', () => {
@@ -55,34 +39,32 @@ describe('utils', () => {
     })
   })
 
-  describe('mustBeOnboardedOrSkipped', () => {
-    it('should return true when user is onboarded whatever the sessions storage value is', () => {
-      mockCookie('')
+  describe('mustHaveSelectedPartnerVenue', () => {
+    it('should return true when user is authenticated and venue is associated', () => {
       const permissions = makeUserPermissions({
-        isSelectedPartnerVenueOnboarded: true,
+        isAuthenticated: true,
+        isSelectedPartnerVenueAssociated: true,
       })
-      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
 
-      mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
-      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
+      expect(mustHaveSelectedPartnerVenue(permissions)).toBe(true)
     })
 
-    it('should return false when user is not onboarded with no cookie', () => {
-      mockCookie('')
+    it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
-        isSelectedPartnerVenueOnboarded: false,
+        isAuthenticated: false,
+        isSelectedPartnerVenueAssociated: true,
       })
 
-      expect(mustBeOnboardedOrSkipped(permissions)).toBe(false)
+      expect(mustHaveSelectedPartnerVenue(permissions)).toBe(false)
     })
 
-    it('should return true when user is not onboarded with the cookie set', () => {
-      mockCookie(`${COOKIES.DID_SKIP_ONBOARDING}=true`)
+    it('should return false when venue is not associated', () => {
       const permissions = makeUserPermissions({
-        isSelectedPartnerVenueOnboarded: false,
+        isAuthenticated: true,
+        isSelectedPartnerVenueAssociated: false,
       })
 
-      expect(mustBeOnboardedOrSkipped(permissions)).toBe(true)
+      expect(mustHaveSelectedPartnerVenue(permissions)).toBe(false)
     })
   })
 
@@ -108,7 +90,6 @@ describe('utils', () => {
     })
 
     it('should return false when user is not onboarded', () => {
-      mockCookie('')
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isSelectedPartnerVenueOnboarded: false,
@@ -129,10 +110,52 @@ describe('utils', () => {
     })
   })
 
-  describe('mustNotBeOnboardedWithSelectedPartnerVenue', () => {
-    it('should return true when user is authenticated but not onboarded', () => {
+  describe('mustBeOnboardedWithActiveSelectedPartnerVenue', () => {
+    it('should return true when user is onboarded with an associated and active venue', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
+        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAssociated: true,
+        isSelectedPartnerVenueOnboarded: true,
+      })
+
+      expect(mustBeOnboardedWithActiveSelectedPartnerVenue(permissions)).toBe(
+        true
+      )
+    })
+
+    it('should return false when venue is not active', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        isSelectedPartnerVenueActive: false,
+        isSelectedPartnerVenueAssociated: true,
+        isSelectedPartnerVenueOnboarded: true,
+      })
+
+      expect(mustBeOnboardedWithActiveSelectedPartnerVenue(permissions)).toBe(
+        false
+      )
+    })
+
+    it('should return false when user is not onboarded', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        isSelectedPartnerVenueActive: true,
+        isSelectedPartnerVenueAssociated: true,
+        isSelectedPartnerVenueOnboarded: false,
+      })
+
+      expect(mustBeOnboardedWithActiveSelectedPartnerVenue(permissions)).toBe(
+        false
+      )
+    })
+  })
+
+  describe('mustNotBeOnboardedWithSelectedPartnerVenue', () => {
+    it('should return true when user is authenticated with an active venue but not onboarded', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        isSelectedPartnerVenueActive: true,
         isSelectedPartnerVenueOnboarded: false,
       })
 
@@ -142,6 +165,7 @@ describe('utils', () => {
     it('should return false when user is not authenticated', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
+        isSelectedPartnerVenueActive: true,
         isSelectedPartnerVenueOnboarded: false,
       })
 
@@ -153,7 +177,20 @@ describe('utils', () => {
     it('should return false when user is onboarded', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
+        isSelectedPartnerVenueActive: true,
         isSelectedPartnerVenueOnboarded: true,
+      })
+
+      expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(
+        false
+      )
+    })
+
+    it('should return false when venue is not active', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        isSelectedPartnerVenueActive: false,
+        isSelectedPartnerVenueOnboarded: false,
       })
 
       expect(mustNotBeOnboardedWithSelectedPartnerVenue(permissions)).toBe(
