@@ -110,7 +110,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(CollectiveOffersSearchAttributes),
+        choices=forms_utils.choices_from_enum(CollectiveOffersSearchAttributes, sort=True),
         validators=[
             wtforms.validators.Optional(""),
         ],

@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 
 from pcapi.models import feature
 from pcapi.utils import email as email_utils
+from pcapi.utils.clean_accents import clean_accents
 
 
 class PCForm(FlaskForm):
@@ -27,7 +28,7 @@ def choices_from_enum(
 ) -> list[tuple]:
     choices = [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
     if sort:
-        return sorted(choices, key=lambda x: x[1])
+        return sorted(choices, key=lambda x: clean_accents(x[1]))
     return choices
 
 
