@@ -332,6 +332,17 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
+    def test_list_bookings_by_stock_id(self, authenticated_client):
+        booking = bookings_factories.BookingFactory(stock__id=987654321)
+        search_query = str(booking.stock.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID stock"] == search_query
+
     def test_list_bookings_by_user_id(self, authenticated_client, bookings):
         search_query = str(bookings[1].user.id)
         with assert_num_queries(self.expected_num_queries):

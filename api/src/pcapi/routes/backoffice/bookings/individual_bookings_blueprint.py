@@ -81,6 +81,7 @@ def _get_individual_bookings_query() -> sa_orm.Query:
         .options(
             sa_orm.joinedload(bookings_models.Booking.stock)
             .load_only(
+                offers_models.Stock.id,
                 offers_models.Stock.quantity,
                 offers_models.Stock.offerId,
                 offers_models.Stock.beginningDatetime,
@@ -208,6 +209,7 @@ def _get_individual_bookings(
         id_filters=[
             bookings_models.Booking.id,
             offers_models.Offer.id,
+            offers_models.Stock.id,
             users_models.User.id,
         ],
         name_filters=[

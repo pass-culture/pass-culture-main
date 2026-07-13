@@ -244,7 +244,15 @@
                   </div>
                 {% endif %}
               </td>
-              <td>{{ stock.id }}</td>
+              <td>
+                <a aria-label="Voir les réservations du stock {{ stock.id }}"
+                   class="link-primary"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Voir les réservations du stock {{ stock.id }}"
+                   href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', q=stock.id) }}">
+                  {{ stock.id }}
+                </a>
+              </td>
               <td>{{ stock.dnBookedQuantity }}</td>
               <td>
                 {% if stock.isSoftDeleted %}
