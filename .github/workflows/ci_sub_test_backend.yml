@@ -207,53 +207,7 @@ jobs:
                 status_code=1
               exit $status_code
             '
-
-  restore-test-durations:
-    name: Restore pytest durations
-    runs-on: ubuntu-latest
-    outputs:
-      # This output will be used to know if we had a cache hit (exact match or not), or no cache hit at all.
-      # See documentation about the `cache-hit` output:
-      # https://github.com/actions/cache/blob/main/README.md#outputs
-      # > cache-hit - A string value to indicate an exact match was found for the key.
-      # > If there's a cache hit, this will be 'true' or 'false' to indicate if there's an exact match for key.
-      # > If there's a cache miss, this will be an empty string.
-      restored: ${{ steps.restore-test-durations.outputs.cache-hit == '' && 'false' || 'true' }}
-      date: ${{ steps.get-date.outputs.date }}
-    steps:
-      # http://man7.org/linux/man-pages/man1/date.1.html
-      - name: Get Date
-        working-directory: /
-        id: get-date
-        run: |
-          echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      # It's mandatory to use the exact same path when saving/restoring cache, otherwise it won't work
-      # (the same key is not enough - cf https://github.com/actions/cache/blob/main/README.md#cache-version).
-      - name: Restore test durations
-        id: restore-test-durations
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: /tests/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}
-          restore-keys: |
-            tests-durations-${{ steps.get-date.outputs.date }}-
-            tests-durations-
-          fail-on-cache-miss: false
-
-      # Then we upload the restored test durations as an artifact. This way, each matrix job will download
-      # it when it starts. When a matrix job is manually retried, it will also reuse the artifact (to
-      # retry the exact same tests, even if the cache has been updated in the meantime).
-      - name: Upload test durations
-        if: steps.restore-test-durations.outputs.cache-hit != ''
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: test-durations-before
-          path: /tests/.test_durations
-
   pytest:
-    needs: restore-test-durations
     name: "Pytest ${{ matrix.pytest_args.description }} : ${{ matrix.group }}/4"
     env:
       RUN_ENV: tests
@@ -264,9 +218,9 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-          - collection: "--ignore=tests/routes/backoffice"
+          - collection: "--ignore=tests/routes/backoffice --durations-path /tests/.test_durations_without_BO"
             description: "(without BO)"
-          - collection: "tests/routes/backoffice"
+          - collection: "tests/routes/backoffice  --durations-path /tests/.test_durations_only_BO"
             description: "(only BO)"
         group: [1, 2, 3, 4]
     services:
@@ -330,22 +284,6 @@ jobs:
               chown -R pcapi:pcapi /tests
             '
 
-      # These two steps will be executed only when there IS a cache hit (exact match or not).
-      # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
-      - name: Download test durations
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: test-durations-before
-
-      - name: Use cached test durations
-        if: needs.restore-test-durations.outputs.restored == 'true'
-        run: mv .test_durations "${{ runner.workspace }}/pass-culture-main/api/tests/.test_durations"
-
-        # When running pytest, we write the new test durations using options `--store-durations --clean-durations`.
-        # Option `--clean-durations` is undocumented but you can check its implementation here:
-        # https://github.com/jerry-git/pytest-split/blob/fb9af7e0122c18a96a7c01ca734c4ab01027f8d9/src/pytest_split/plugin.py#L68-L76
-        # > Removes the test duration info for tests which are not present while running the suite with > '--store-durations'.
       - name: "Run pytest"
         run: |
           docker run \
@@ -357,7 +295,7 @@ jobs:
             -c '
               pytest ${{ matrix.pytest_args.collection }} \
               --splits 4 --group ${{ matrix.group }} \
-              --store-durations --durations-path /tests/.test_durations --clean-durations \
+              --store-durations \
               --durations=10 --junitxml="/tests/junit.xml" \
               -q --color=yes
             '
@@ -380,8 +318,8 @@ jobs:
           fail_on_failure: false
           skip_success_summary: true
 
-  cache-test-durations:
-    name: Cache test durations
+  save-test-durations:
+    name: Save test durations
     needs: pytest
     if: github.run_attempt == 1 && (success() || failure())
     runs-on: ubuntu-latest
@@ -392,14 +330,23 @@ jobs:
           pattern: test-durations-after-partial-*
           path: ${{ runner.temp }}
 
-      # This step regroups the 8 partial files and sorts keys alphabetically
-      - name: Merge all partial test durations
+      # This step regroups the 4 partial files (without BO)  and sorts keys alphabetically
+      - name: Merge <without BO> partial test durations
         # overrides workflow default
         working-directory: /
         run: |
-          jq -s 'add' ${{ runner.temp }}/test-durations-after-partial-*/.test_durations \
+          jq -s 'add' ${{ runner.temp }}/test-durations-after-partial-\(without* \
           | jq 'to_entries | sort_by(.key) | from_entries' \
-          > ${{ runner.temp }}/.test_durations
+          > ${{ runner.temp }}/.test_durations_without_BO
+
+      # This step regroups the 4 partial files (without BO)  and sorts keys alphabetically
+      - name: Merge <only BO> partial test durations
+        # overrides workflow default
+        working-directory: /
+        run: |
+          jq -s 'add' ${{ runner.temp }}/test-durations-after-partial-\(only* \
+          | jq 'to_entries | sort_by(.key) | from_entries' \
+          > ${{ runner.temp }}/.test_durations_only_BO
 
       # This step uploads the final file as an artifact.
       # We can download it from the GitHub GUI, and we would then commit it if we implemented a fallback mechanism
@@ -407,7 +354,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-durations-after
-          path: ${{ runner.temp }}/.test_durations
+          path: ${{ runner.temp }}/.test_durations*
           if-no-files-found: warn
           include-hidden-files: true
 
@@ -417,11 +364,3 @@ jobs:
         run: |
           echo "date=$(/bin/date -u "+%Y%m%d")" >> "$GITHUB_OUTPUT"
         shell: bash
-
-      # Finally, we cache the new test durations. This file will be restored in next CI execution
-      # (see step "Restore test durations" above).
-      - name: Cache final test durations
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ${{ runner.temp }}/.test_durations
-          key: tests-durations-${{ steps.get-date.outputs.date }}-${{ github.run_id }}
