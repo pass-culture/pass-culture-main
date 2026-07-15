@@ -14,8 +14,10 @@ class JwtSimpleBackend(JwtBaseBackend):
 
         key = key if key is not None else settings.JWT_SECRET_KEY
 
+        self._complete_payload(payload)
+
         return jwt.encode(
-            payload=self._complete_payload(payload),
+            payload=payload,
             key=key,
             algorithm=ALGORITHM_HS_256,
         )

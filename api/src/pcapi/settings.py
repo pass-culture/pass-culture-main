@@ -219,7 +219,8 @@ RECAPTCHA_IGNORE_VALIDATION = bool(int(os.environ.get("RECAPTCHA_IGNORE_VALIDATI
 
 # JWT
 JWT_BACKEND = os.environ.get("JWT_BACKEND", "JwtSimpleBackend")
-JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
+JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY", "")
+JWT_KEY_SECRET_NAME = secrets_utils.get("JWT_KEY_SECRET_NAME", "")
 DISCORD_JWT_PRIVATE_KEY = secrets_utils.get("DISCORD_JWT_PRIVATE_KEY").encode("ascii")
 DISCORD_JWT_PUBLIC_KEY = secrets_utils.get("DISCORD_JWT_PUBLIC_KEY").encode("ascii")
 DISCORD_RECAPTCHA_SECRET_KEY = secrets_utils.get("DISCORD_RECAPTCHA_SECRET_KEY", "")
