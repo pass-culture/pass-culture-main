@@ -214,7 +214,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.q.label.text = "Code contremarque ou liste, nom d'offre, email ou ID (offre, jeune ou résa)"
+        self.q.label.text = "Code contremarque ou liste, nom d'offre, email ou ID (offre, jeune, résa ou stock)"
         self.status.choices = utils.choices_from_enum(BookingStatus)
 
         self._fields.move_to_end("deposit")
