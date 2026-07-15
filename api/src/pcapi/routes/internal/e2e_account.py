@@ -1,6 +1,8 @@
 import datetime
+import itertools
 
 from pcapi.core import token as token_utils
+from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
@@ -111,3 +113,19 @@ def configure_api_disabled_child_education_allowance_response(user_id: int) -> t
     create_disabled_child_education_allowance_fraud_check_mock(user, form)
 
     return {}, 200
+
+
+@private_api.route("/e2e/bonus_credit/<user_id>/recover", methods=["POST"])
+@transaction_manager.atomic()
+@api_key_required
+def recover_started_bonus_credit_applications(user_id: int) -> tuple[dict[str, list[int]], int]:
+    handled_fraud_checks = bonus_tasks.recover_started_bonus_credit_applications(user_id=user_id)
+    handled_fraud_checks.sort(key=lambda fraud_check: fraud_check.type.value)
+
+    fraud_check_ids_by_type: dict[str, list[int]] = {}
+    for fraud_check_type, fraud_check_group in itertools.groupby(
+        handled_fraud_checks, key=lambda fraud_check: fraud_check.type.value
+    ):
+        fraud_check_ids_by_type[fraud_check_type] = [fraud_check.id for fraud_check in fraud_check_group]
+
+    return fraud_check_ids_by_type, 200

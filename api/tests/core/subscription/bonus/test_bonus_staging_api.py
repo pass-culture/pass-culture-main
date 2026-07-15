@@ -1,7 +1,4 @@
-import datetime
-
 import pytest
-from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import api_particulier
 from pcapi.core.finance import models as finance_models
@@ -243,7 +240,6 @@ class StagingQuotientFamilialTest:
         ]
 
     def test_mock_data_provider_error(self, requests_mock):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -258,7 +254,6 @@ class StagingQuotientFamilialTest:
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
-            updatedAt=twelve_hours_ago,
         )
         requests_mock.get(
             api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
@@ -271,8 +266,6 @@ class StagingQuotientFamilialTest:
 
         query_string = requests_mock.request_history[0].qs
         assert query_string["nomNaissance"] == [staging_api.DATA_PROVIDER_ERROR.last_name.upper()]
-
-        assert qf_fraud_check.updatedAt > twelve_hours_ago
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -411,7 +404,6 @@ class StagingDisabledAdultAllowanceTest:
         ]
 
     def test_mock_disabled_adult_allowance_data_provider_error(self, requests_mock):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -426,7 +418,6 @@ class StagingDisabledAdultAllowanceTest:
             type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
-            updatedAt=twelve_hours_ago,
         )
         requests_mock.get(
             api_particulier.AAH_ENDPOINT,
@@ -439,8 +430,6 @@ class StagingDisabledAdultAllowanceTest:
 
         query_string = requests_mock.request_history[0].qs
         assert query_string["nomNaissance"] == [staging_api.DATA_PROVIDER_ERROR.last_name.upper()]
-
-        assert aah_fraud_check.updatedAt > twelve_hours_ago
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -611,7 +600,6 @@ class StagingDisabledChildEducationAllowanceTest:
         ]
 
     def test_mock_disabled_adult_allowance_data_provider_error(self, requests_mock):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -626,7 +614,6 @@ class StagingDisabledChildEducationAllowanceTest:
             type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.AdultDisabilityBonusCreditContentFactory().model_dump(),
-            updatedAt=twelve_hours_ago,
         )
         requests_mock.get(
             api_particulier.AEEH_ENDPOINT,
@@ -639,8 +626,6 @@ class StagingDisabledChildEducationAllowanceTest:
 
         query_string = requests_mock.request_history[0].qs
         assert query_string["nomNaissance"] == [staging_api.DISABLED_CHILD_DATA_PROVIDER_ERROR.last_name.upper()]
-
-        assert aeeh_fraud_check.updatedAt > twelve_hours_ago
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits

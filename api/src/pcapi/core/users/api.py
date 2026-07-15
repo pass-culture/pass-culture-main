@@ -1612,13 +1612,19 @@ def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.
     aah_bonus_credit_fraud_checks = get_bonus_credit_fraud_checks(
         user, subscription_models.FraudCheckType.AAH_BONUS_CREDIT
     )
-    aah_bonus_fraud_check = aah_bonus_credit_fraud_checks[-1] if aah_bonus_credit_fraud_checks else None
-    aah_fraud_check_status = aah_bonus_fraud_check.status if aah_bonus_fraud_check is not None else None
+    if not aah_bonus_credit_fraud_checks:
+        return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
-    if aah_fraud_check_status in (
+    aah_bonus_fraud_check = aah_bonus_credit_fraud_checks[-1]
+    aah_fraud_check_status = aah_bonus_fraud_check.status
+    is_pending_fraud_check = aah_fraud_check_status in (
         subscription_models.FraudCheckStatus.STARTED,
         subscription_models.FraudCheckStatus.PENDING,
-    ):
+    )
+    is_automatic_fraud_check = aah_bonus_fraud_check.reason is not None and aah_bonus_fraud_check.reason.startswith(
+        bonus_constants.AUTOMATIC_ORIGIN
+    )
+    if is_pending_fraud_check and not is_automatic_fraud_check:
         return bonus_schemas.DisabilityBonificationStatus.STARTED
 
     has_never_completely_tried = aah_fraud_check_status in (
@@ -1626,8 +1632,7 @@ def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.
         subscription_models.FraudCheckStatus.CANCELED,
         subscription_models.FraudCheckStatus.ERROR,
     )
-
-    if has_never_completely_tried:
+    if has_never_completely_tried or (is_pending_fraud_check and is_automatic_fraud_check):
         return bonus_schemas.DisabilityBonificationStatus.ELIGIBLE
 
     if aah_fraud_check_status == subscription_models.FraudCheckStatus.KO:

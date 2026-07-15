@@ -31,6 +31,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.testing import assert_num_queries
@@ -2102,3 +2103,16 @@ class DisabilityBonusCreditEligibilityTest:
             disability_bonification_status = users_api.get_user_disability_bonification_status(user)
 
         assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.NOT_ELIGIBLE
+
+    def test_started_automatic_fraud_check_ignored(self):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.STARTED, reason=f"{bonus_constants.AUTOMATIC_ORIGIN}"
+        )
+
+        disability_bonification_status = users_api.get_user_disability_bonification_status(user)
+
+        assert disability_bonification_status == bonus_schemas.DisabilityBonificationStatus.ELIGIBLE

@@ -58,6 +58,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
@@ -1896,10 +1897,17 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
         origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
     )
 
-    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+    if FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
+        payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
-    flash("La demande de bonification QF est en cours.", "success")
+        flash("La demande de bonification QF est en cours.", "success")
+    else:
+        flash(
+            "La demande de bonification QF a été créée mais ne sera pas traitée tant que le FF ENABLE_BONUS_CREDIT est désactivé.",
+            "warning",
+        )
+
     return redirect(get_public_account_link(user_id), code=303)
 
 
@@ -1978,13 +1986,20 @@ def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeRe
         origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
     )
 
-    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+    if FeatureToggle.ENABLE_BONUS_CREDIT.is_active():
+        aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
 
-    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+        aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
 
-    flash("La demande de bonification AAH/AEEH est en cours.", "success")
+        flash("La demande de bonification AAH/AEEH est en cours.", "success")
+    else:
+        flash(
+            "La demande de bonification AAH/AEEH a été créée mais ne sera pas traitée tant que le FF ENABLE_BONUS_CREDIT est désactivé.",
+            "warning",
+        )
+
     return redirect(get_public_account_link(user_id), code=303)
 
 

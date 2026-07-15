@@ -21,6 +21,7 @@ import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+import pcapi.utils.date as date_utils
 from pcapi.core.external.batch import models as batch_models
 from pcapi.core.mails.transactional.brevo_template_ids import TransactionalEmail
 from pcapi.core.subscription.bonus import constants as bonus_constants
@@ -209,12 +210,13 @@ class QuotientFamilialApplicationTest:
     def test_application_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
+        now = date_utils.get_naive_utc_now()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
-            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=custodian, quotient_familial=None
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.create(
+                custodian=custodian, quotient_familial=None, next_retry_at=now
             ).model_dump(),
         )
 
@@ -237,6 +239,7 @@ class QuotientFamilialApplicationTest:
             children=None,
             http_status_code=404,
             error_code="37003",
+            next_retry_at=now,
         )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -258,12 +261,13 @@ class QuotientFamilialApplicationTest:
     def test_person_not_found(self, caplog):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
+        now = date_utils.get_naive_utc_now()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=custodian, quotient_familial=None
+                custodian=custodian, quotient_familial=None, next_retry_at=now
             ).model_dump(),
         )
 
@@ -286,6 +290,7 @@ class QuotientFamilialApplicationTest:
             children=None,
             http_status_code=422,
             error_code="00355",
+            next_retry_at=now,
         )
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
@@ -307,12 +312,13 @@ class QuotientFamilialApplicationTest:
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
         custodian = subscription_factories.BonusCreditPersonFactory()
+        now = date_utils.get_naive_utc_now()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=custodian, quotient_familial=None
+                custodian=custodian, quotient_familial=None, next_retry_at=now
             ).model_dump(),
         )
 
@@ -355,6 +361,7 @@ class QuotientFamilialApplicationTest:
                 )
             ],
             http_status_code=200,
+            next_retry_at=now,
         )
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
@@ -378,12 +385,13 @@ class QuotientFamilialApplicationTest:
         high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
         user = _build_user_from_fixture(high_quotient_familial)
         custodian = subscription_factories.BonusCreditPersonFactory()
+        now = date_utils.get_naive_utc_now()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
-                custodian=custodian, quotient_familial=None
+                custodian=custodian, quotient_familial=None, next_retry_at=now
             ).model_dump(),
         )
 
@@ -428,6 +436,7 @@ class QuotientFamilialApplicationTest:
                 )
             ],
             http_status_code=200,
+            next_retry_at=now,
         )
 
         assert finance_models.RecreditType.BONUS_CREDIT not in [
@@ -533,22 +542,6 @@ class QuotientFamilialApplicationTest:
 
         for frame in stacktrace_frames[1:]:
             assert all(value == "[REDACTED]" for value in frame["vars"].values())
-
-    def test_touch_fraud_check_despite_error(self):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-        bonus_fraud_check = subscription_factories.QFBonusCreditFraudCheckFactory.create(
-            status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
-        )
-
-        with requests_mock.Mocker() as mock:
-            mock.get(
-                api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR
-            )
-
-            with pytest.raises(api_particulier.ParticulierApiException):
-                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
-
-        assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
     @patch("pcapi.core.finance.deposit_api.recredit_bonus_credit")
     def test_has_already_received_bonus_credit(self, mock_recredit):
@@ -786,22 +779,6 @@ class DisabledAdultAllowanceTest:
 
         for frame in stacktrace_frames[1:]:
             assert all(value == "[REDACTED]" for value in frame["vars"].values())
-
-    def test_touch_fraud_check_despite_error(self):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
-            type=subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
-            status=subscription_models.FraudCheckStatus.STARTED,
-            updatedAt=twelve_hours_ago,
-        )
-
-        with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AAH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
-
-            with pytest.raises(api_particulier.ParticulierApiException):
-                bonus_api.apply_for_adult_disability_bonus(bonus_fraud_check)
-
-        assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
     @pytest.mark.parametrize(
         "fraud_check_origin,nb_mails_send",
@@ -1062,22 +1039,6 @@ class DisabledChildEducationAllowanceTest:
 
         for frame in stacktrace_frames[1:]:
             assert all(value == "[REDACTED]" for value in frame["vars"].values())
-
-    def test_touch_fraud_check_despite_error(self):
-        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
-            type=subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
-            status=subscription_models.FraudCheckStatus.STARTED,
-            updatedAt=twelve_hours_ago,
-        )
-
-        with requests_mock.Mocker() as mock:
-            mock.get(api_particulier.AEEH_ENDPOINT, status_code=502, json=bonus_fixtures.DATA_PROVIDER_ERROR)
-
-            with pytest.raises(api_particulier.ParticulierApiException):
-                bonus_api.apply_for_disabled_child_education_bonus(bonus_fraud_check)
-
-        assert bonus_fraud_check.updatedAt > twelve_hours_ago
 
     @pytest.mark.parametrize(
         "fraud_check_origin,nb_mails_send",
