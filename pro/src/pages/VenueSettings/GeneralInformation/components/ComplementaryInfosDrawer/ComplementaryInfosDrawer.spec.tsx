@@ -37,6 +37,7 @@ const defaultProps = {
   hasAddressChanged: false,
   open: true,
   onOpenChange: vi.fn(),
+  onClose: vi.fn(),
 }
 
 const renderDialog = (props: Partial<typeof defaultProps> = {}) => {

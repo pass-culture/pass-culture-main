@@ -36,6 +36,7 @@ import type {
 } from './commons/types'
 import { toFormValues } from './commons/utils/toFormValues'
 import { AddressChangeDialog } from './components/AddressChangeDialog/AddressChangeDialog'
+import { ComplementaryInfosDialog } from './components/ComplementaryInfosDialog/ComplementaryInfosDialog'
 import { ComplementaryInfosDrawer } from './components/ComplementaryInfosDrawer/ComplementaryInfosDrawer'
 import { ReimbursementFields } from './components/ReimbursementFields/ReimbursementFields'
 import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrCommentFields'
@@ -69,8 +70,9 @@ const GeneralInformation = () => {
     useState(false)
   const [isComplementaryInfosDrawerOpen, setIsComplementaryInfosDrawerOpen] =
     useState(false)
+  const [isComplementaryInfosDialogOpen, setIsComplementaryInfosDialogOpen] =
+    useState(false)
   const [hasAddressChanged, setHasAddressChanged] = useState(false)
-
   const onCancel = () => {
     form.reset()
     scrollToTop()
@@ -95,20 +97,29 @@ const GeneralInformation = () => {
     const hasSiretChanged =
       formValues.isOpenToPublic === 'true' &&
       formValues.siret !== initialValues.siret
+    const shouldOpenModal =
+      shouldShowAddressChangeWarning || hasSiretChanged || hasBecomeOpenToPublic
 
     if (canProceed) {
       setHasAddressChanged(hasAddressChanged)
       if (shouldShowAddressChangeWarning && !hasSiretChanged) {
         setIsAddressChangeDialogOpen(true)
       }
-      if (hasBecomeOpenToPublic || hasSiretChanged) {
+      if (hasSiretChanged) {
         setIsComplementaryInfosDrawerOpen(true)
       }
+      if (hasBecomeOpenToPublic) {
+        setIsComplementaryInfosDialogOpen(true)
+      }
+
+      // The main form has been successfully saved.
+      // Reset it so the navigation guard does not reopen while handling
+      // follow-up complementary information dialogs.
+      form.reset(formValues)
     }
 
     scrollToTop()
-
-    return canProceed
+    return canProceed && !shouldOpenModal
   }
 
   const {
@@ -120,8 +131,12 @@ const GeneralInformation = () => {
     formState: { isSubmitting, errors, disabled },
   } = form
 
-  const { navigationGuardDialog, navigationGuardedSubmitHandler } =
-    useFormNavigationGuard({ form, onSubmit })
+  const {
+    hasPendingNavigation,
+    navigationGuardDialog,
+    navigationGuardedSubmitHandler,
+    proceedWithPendingNavigation,
+  } = useFormNavigationGuard({ form, onSubmit })
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
@@ -259,15 +274,41 @@ const GeneralInformation = () => {
 
       <AddressChangeDialog
         open={isAddressChangeDialogOpen}
-        onOpenChange={setIsAddressChangeDialogOpen}
+        onOpenChange={(open) => {
+          setIsAddressChangeDialogOpen(open)
+          if (!open && hasPendingNavigation) {
+            proceedWithPendingNavigation()
+          }
+        }}
       />
 
       <ComplementaryInfosDrawer
         open={isComplementaryInfosDrawerOpen}
-        onOpenChange={setIsComplementaryInfosDrawerOpen}
+        onOpenChange={(open) => {
+          setIsComplementaryInfosDrawerOpen(open)
+          if (!open && hasPendingNavigation) {
+            proceedWithPendingNavigation()
+          }
+        }}
         hasAddressChanged={hasAddressChanged}
+        onClose={() => {
+          setIsComplementaryInfosDrawerOpen(false)
+          if (hasPendingNavigation) {
+            proceedWithPendingNavigation()
+          }
+        }}
       ></ComplementaryInfosDrawer>
 
+      <ComplementaryInfosDialog
+        open={isComplementaryInfosDialogOpen}
+        onOpenChange={setIsComplementaryInfosDialogOpen}
+        openNextDialog={setIsComplementaryInfosDrawerOpen}
+        onCancel={() => {
+          if (hasPendingNavigation) {
+            proceedWithPendingNavigation()
+          }
+        }}
+      />
       {navigationGuardDialog}
     </>
   )
