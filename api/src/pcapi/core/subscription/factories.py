@@ -178,6 +178,7 @@ class QuotientFamilialBonusCreditContentFactory(factory.Factory):
 
     custodian = factory.SubFactory(BonusCreditPersonFactory)
     quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
+    next_retry_at = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class AdultDisabilityBonusCreditContentFactory(factory.Factory):
@@ -185,6 +186,7 @@ class AdultDisabilityBonusCreditContentFactory(factory.Factory):
         model = bonus_schemas.AdultDisabilityBonusCreditContent
 
     person = factory.SubFactory(BonusCreditPersonFactory)
+    next_retry_at = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class DisabledChildEducationBonusCreditContentFactory(factory.Factory):
@@ -192,6 +194,7 @@ class DisabledChildEducationBonusCreditContentFactory(factory.Factory):
         model = bonus_schemas.DisabledChildEducationBonusCreditContent
 
     person = factory.SubFactory(BonusCreditPersonFactory)
+    next_retry_at = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, type[factory.Factory] | None] = {

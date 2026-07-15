@@ -16,6 +16,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.sql import text
 
+from pcapi import settings
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -55,6 +56,7 @@ class FeatureToggle(enum.Enum):
         "Active la synchronisation des comptes bancaires avec l'outil finance externe (Cegid XRP Flex)"
     )
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
+    ENABLE_BONUS_CREDIT = "Active la bonification des jeunes via Quotient Familial ou allocations handicap"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API Ciné Office (ex-CDS)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des entités juridiques avec un cron"
     ENABLE_CHRONICLES_SYNC = "Activer la synchronisation des chroniques"
@@ -216,6 +218,9 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order
 )
+
+if settings.IS_PROD:
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.ENABLE_BONUS_CREDIT,)
 
 
 def install_feature_flags() -> None:

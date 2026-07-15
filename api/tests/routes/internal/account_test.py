@@ -1,12 +1,17 @@
 import datetime
 import decimal
+from unittest.mock import call
+from unittest.mock import patch
 
 import pytest
 from dateutil.relativedelta import relativedelta
 
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -158,3 +163,55 @@ class E2EAccountAEEHConfigTest:
         user = users_factories.BeneficiaryFactory()
         response = auth_client.post(f"/e2e/account/{user.id}/aeeh", json={"mock_type": "RECIPIENT"})
         assert response.status_code == 200, response.json
+
+
+class E2EAccountBonusCreditRecoveryTest:
+    def test_recover_started_bonus_credit_applications_unauthorized(self, client):
+        response = client.post("/e2e/bonus_credit/1/recover")
+
+        assert response.status_code == 401
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    def test_recover_started_bonus_credit_applications_full_page(
+        self, mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task, auth_client
+    ):
+        user = users_factories.BeneficiaryFactory()
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
+        started_fraud_check_1 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, user=user, resultContent={"next_retry_at": next_year}
+        )
+        started_fraud_check_2 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, user=user, resultContent={"next_retry_at": next_year}
+        )
+        aah_fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, user=user, resultContent={"next_retry_at": next_year}
+        )
+        aeeh_fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, user=user, resultContent={"next_retry_at": next_year}
+        )
+
+        response = auth_client.post(f"/e2e/bonus_credit/{user.id}/recover")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "aah_bonus_credit": [aah_fraud_check.id],
+            "aeeh_bonus_credit": [aeeh_fraud_check.id],
+            "qf_bonus_credit": [started_fraud_check_1.id, started_fraud_check_2.id],
+        } or response.json == {
+            "aah_bonus_credit": [aah_fraud_check.id],
+            "aeeh_bonus_credit": [aeeh_fraud_check.id],
+            "qf_bonus_credit": [started_fraud_check_2.id, started_fraud_check_1.id],
+        }
+
+        mocked_apply_for_qf_task.assert_has_calls(
+            [
+                call(payload={"fraud_check_id": started_fraud_check_1.id}),
+                call(payload={"fraud_check_id": started_fraud_check_2.id}),
+            ],
+            any_order=True,
+        )
+        mocked_apply_for_aah_task.assert_has_calls([call(payload={"fraud_check_id": aah_fraud_check.id})])
+        mocked_apply_for_aeeh_task.assert_has_calls([call(payload={"fraud_check_id": aeeh_fraud_check.id})])

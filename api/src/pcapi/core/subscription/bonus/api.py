@@ -47,7 +47,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     """
     user = quotient_familial_fraud_check.user
     if not deposit_api.can_receive_bonus_credit(user):
-        logger.error("trying to apply for bonus when not able to receive said bonus")
+        logger.warning("trying to apply for bonus when not able to receive said bonus")
         return
 
     source_data = quotient_familial_fraud_check.source_data()
@@ -342,7 +342,6 @@ def _call_api_particulier[
 ) -> _ApiParticulierResult[ResponseT]:
     """
     Run fetch() and format the API Particulier errors into a result.
-    Re-raises unexpected errors after bumping updatedAt so the recovery cron doesn't loop.
     """
     response: ResponseT | None = None
     reason_codes = []
@@ -360,17 +359,10 @@ def _call_api_particulier[
         http_status_code, error_code = e.status_code, e.error_code
     except api_particulier.ParticulierApiException as e:
         with atomic():
-            fraud_check.updatedAt = datetime.datetime.now(tz=None)
-
             if not fraud_check.resultContent:
                 fraud_check.resultContent = {}
             fraud_check.resultContent["http_status_code"] = e.status_code
             fraud_check.resultContent["error_code"] = e.error_code
-
-        raise
-    except Exception:
-        with atomic():
-            fraud_check.updatedAt = datetime.datetime.now(tz=None)
 
         raise
 
