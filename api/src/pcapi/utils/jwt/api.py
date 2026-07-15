@@ -5,6 +5,7 @@ import jwt
 from flask import current_app
 
 from pcapi import settings
+from pcapi.utils.jwt.backends.secret_manager import JwtSecretManagerBackend
 from pcapi.utils.jwt.backends.simple import JwtSimpleBackend
 
 
@@ -20,6 +21,7 @@ ALGORITHM_RS_256 = "RS256"
 _JWT_BACKEND_ATTR = "pc_jwt_backend"
 _BACKEND_CLASSES = {
     "JwtSimpleBackend": JwtSimpleBackend,
+    "JwtSecretManagerBackend": JwtSecretManagerBackend,
 }
 
 
