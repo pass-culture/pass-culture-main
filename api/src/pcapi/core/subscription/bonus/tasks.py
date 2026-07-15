@@ -59,29 +59,6 @@ def apply_for_quotient_familial_bonus_task(payload: BonusTaskPayload) -> None:
     apply_for_quotient_familial_bonus(fraud_check)
 
 
-def recover_started_quotient_familial_application() -> None:
-    """
-    Recovers the `page_size` first started Quotient Familial fraud checks.
-    This function only recovers the first page, and is meant to be called as often as needed by recovery workers.
-    """
-    twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
-    started_qf_fraud_check_stmt = (
-        sa.select(subscription_models.BeneficiaryFraudCheck.id)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.STARTED,
-            subscription_models.BeneficiaryFraudCheck.updatedAt <= twelve_hours_ago,
-        )
-        .order_by(subscription_models.BeneficiaryFraudCheck.id)
-        .limit(QUOTIENT_FAMILIAL_TASK_RATE_LIMIT)
-    )
-    started_qf_fraud_check_ids = db.session.scalars(started_qf_fraud_check_stmt).all()
-
-    for fraud_check_id in started_qf_fraud_check_ids:
-        payload = BonusTaskPayload(fraud_check_id=fraud_check_id)
-        apply_for_quotient_familial_bonus_task.delay(payload=payload.model_dump())
-
-
 @celery_async_task(
     name="tasks.api_particulier.default.apply_for_adult_disability_bonus",
     model=BonusTaskPayload,
@@ -146,3 +123,62 @@ def apply_for_disabled_child_education_bonus_task(payload: BonusTaskPayload) -> 
         return
 
     apply_for_disabled_child_education_bonus(fraud_check)
+
+
+def recover_started_bonus_credit_applications(page_size: int = 200) -> None:
+    """
+    Recovers the `page_size` first started QF/AAH/AEEH fraud checks.
+    This function only recovers the first page, and is meant to be called as often as needed by recovery workers,
+    but no more than once per minute for rate limit reasons.
+    """
+    cutoff_time = datetime.datetime.now(tz=None) - relativedelta(seconds=settings.BONUS_CREDIT_DELAY)
+    started_bonus_credit_fraud_check_stmt = (
+        sa.select(subscription_models.BeneficiaryFraudCheck)
+        .filter(
+            subscription_models.BeneficiaryFraudCheck.type.in_(
+                [
+                    subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+                    subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+                    subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+                ]
+            ),
+            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.STARTED,
+            subscription_models.BeneficiaryFraudCheck.updatedAt <= cutoff_time,
+        )
+        .order_by(subscription_models.BeneficiaryFraudCheck.id)
+        .limit(page_size)
+    )
+    started_bonus_credit_fraud_checks = db.session.scalars(started_bonus_credit_fraud_check_stmt).all()
+
+    expected_api_particulier_calls = 0
+    for fraud_check in started_bonus_credit_fraud_checks:
+        match fraud_check.type:
+            case subscription_models.FraudCheckType.QF_BONUS_CREDIT:
+                expected_api_particulier_calls += 12
+
+                if expected_api_particulier_calls > page_size:
+                    return
+
+                payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
+                apply_for_quotient_familial_bonus_task.delay(payload=payload.model_dump())
+
+            case subscription_models.FraudCheckType.AAH_BONUS_CREDIT:
+                expected_api_particulier_calls += 1
+
+                if expected_api_particulier_calls > page_size:
+                    return
+
+                payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
+                apply_for_adult_disability_bonus_task.delay(payload=payload.model_dump())
+
+            case subscription_models.FraudCheckType.AEEH_BONUS_CREDIT:
+                expected_api_particulier_calls += 1
+
+                if expected_api_particulier_calls > page_size:
+                    return
+
+                payload = BonusTaskPayload(fraud_check_id=fraud_check.id)
+                apply_for_disabled_child_education_bonus_task.delay(payload=payload.model_dump())
+
+            case _:
+                logger.error("Unexpected %s fraud check %s was queried", fraud_check.type, fraud_check.id)

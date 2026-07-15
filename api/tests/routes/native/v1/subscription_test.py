@@ -294,6 +294,7 @@ class UpdateProfileTest:
         expected_num_queries += 1  # recredit
         expected_num_queries += 1  # deposit (update)
         expected_num_queries += 1  # recredit (insert)
+        expected_num_queries += 1  # beneficiary_fraud_checks (insert)
         expected_num_queries += 1  # booking
         expected_num_queries += 1  # favorite
         expected_num_queries += 1  # achievement

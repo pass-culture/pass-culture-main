@@ -47,7 +47,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     """
     user = quotient_familial_fraud_check.user
     if not deposit_api.can_receive_bonus_credit(user):
-        logger.error("trying to apply for bonus when not able to receive said bonus")
+        logger.warning("trying to apply for bonus when not able to receive said bonus")
         return
 
     source_data = quotient_familial_fraud_check.source_data()

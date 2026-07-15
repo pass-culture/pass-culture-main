@@ -50,6 +50,7 @@ def create_disability_bonus_credit_fraud_checks(
     birth_city_cog_code: str | None = None,
     origin: str,
 ) -> tuple[subscription_models.BeneficiaryFraudCheck, subscription_models.BeneficiaryFraudCheck]:
+    eligibility = user.eligibility
     person = _build_bonus_credit_person_for_disability(user, birth_country_cog_code, birth_city_cog_code)
     aah_fraud_check_content = bonus_schemas.AdultDisabilityBonusCreditContent(person=person)
 
@@ -60,7 +61,7 @@ def create_disability_bonus_credit_fraud_checks(
         reason=origin,
         thirdPartyId=f"aah-bonus-credit-{user.id}",
         resultContent=aah_fraud_check_content.model_dump(exclude_unset=True),
-        eligibilityType=user.eligibility,
+        eligibilityType=eligibility,
     )
     db.session.add(aah_fraud_check)
 
@@ -72,10 +73,9 @@ def create_disability_bonus_credit_fraud_checks(
         reason=origin,
         thirdPartyId=f"aeeh-bonus-credit-{user.id}",
         resultContent=aeeh_fraud_check_content.model_dump(exclude_unset=True),
-        eligibilityType=user.eligibility,
+        eligibilityType=eligibility,
     )
     db.session.add(aeeh_fraud_check)
-
     db.session.flush()
 
     return aah_fraud_check, aeeh_fraud_check

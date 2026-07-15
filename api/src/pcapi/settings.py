@@ -688,3 +688,4 @@ DIGITAL_CAP_V2_DATETIME = datetime.fromisoformat(os.environ.get("DIGITAL_CAP_V2_
 EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME = datetime.fromisoformat(
     os.environ.get("EXTENDED_BIRTHDAY_BONUS_CUTOFF_DATETIME", "2026-01-01")
 )
+BONUS_CREDIT_DELAY = int(os.environ.get("BONUS_CREDIT_DELAY", "0"))

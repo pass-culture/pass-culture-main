@@ -12,6 +12,7 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.core.categories.models import ReimbursementRuleChoices
 from pcapi.core.external.batch import trigger_events
+from pcapi.core.subscription.bonus import fraud_check_api
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.utils import date as date_utils
@@ -143,9 +144,12 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
     recredit = _recredit_user(user)
     if not recredit:
         raise exceptions.UserCannotBeRecredited("Failed to recredit user")
+
     if recredit.recreditType == models.RecreditType.RECREDIT_18:
-        user.remove_underage_beneficiary_role()
         user.add_beneficiary_role()
+        fraud_check_api.create_disability_bonus_credit_fraud_checks(
+            user, origin="automatic attempt through recredit cron"
+        )
 
     user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
     db.session.add(user)
