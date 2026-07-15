@@ -28,12 +28,14 @@ interface ComplementaryInfosDrawerProps {
   hasAddressChanged: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
+  onClose: () => void
 }
 
 export const ComplementaryInfosDrawer = ({
   open,
   onOpenChange,
   hasAddressChanged,
+  onClose,
 }: Readonly<ComplementaryInfosDrawerProps>) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const { syncVenueWithData } = useSyncVenueCache()
@@ -104,6 +106,7 @@ export const ComplementaryInfosDrawer = ({
         saved: false,
         isEdition: true,
       })
+      onClose()
     }
   }
   return (
@@ -159,6 +162,7 @@ export const ComplementaryInfosDrawer = ({
             <div className={styles['dialog-buttons']}>
               <Dialog.Close asChild>
                 <Button
+                  onClick={onClose}
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}
                   label="Annuler"

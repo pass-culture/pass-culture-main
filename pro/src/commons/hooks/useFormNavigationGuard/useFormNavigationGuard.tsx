@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 import { useBlocker, useNavigate } from 'react-router'
 
@@ -29,6 +30,8 @@ export const useFormNavigationGuard = <
 }): {
   navigationGuardedSubmitHandler: () => Promise<void>
   navigationGuardDialog: JSX.Element
+  proceedWithPendingNavigation: () => void
+  hasPendingNavigation: boolean
 } => {
   // https://react-hook-form.com/docs/useform/formstate#:~:text=isReady%5D)-,RULES
   // > Returned formState is wrapped with a Proxy to improve render performance
@@ -42,12 +45,32 @@ export const useFormNavigationGuard = <
     () => !isSubmitting && (isDirty || isExternallyDirty)
   )
   const navigate = useNavigate()
+  const [pendingNavigationPath, setPendingNavigationPath] = useState<
+    string | null
+  >(null)
+
+  const proceedWithPendingNavigation = () => {
+    if (!pendingNavigationPath) {
+      return
+    }
+
+    navigate(pendingNavigationPath)
+    setPendingNavigationPath(null)
+  }
 
   const navigationGuardedSubmitHandler = form.handleSubmit(
     async (transformedFormValues: TTransformedValues) => {
       const canProceed = await onSubmit(transformedFormValues)
       if (!canProceed) {
         if (blocker.state === 'blocked') {
+          const blockedPath = blocker.location
+            ? `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`
+            : null
+
+          if (blockedPath) {
+            setPendingNavigationPath(blockedPath)
+          }
+
           blocker.reset()
         }
 
@@ -83,6 +106,7 @@ export const useFormNavigationGuard = <
 
   const leaveWithoutSubmitting = () => {
     if (blocker.state === 'blocked') {
+      setPendingNavigationPath(null)
       blocker.proceed()
     }
   }
@@ -113,7 +137,9 @@ export const useFormNavigationGuard = <
   )
 
   return {
+    hasPendingNavigation: pendingNavigationPath !== null,
     navigationGuardedSubmitHandler,
     navigationGuardDialog,
+    proceedWithPendingNavigation,
   }
 }

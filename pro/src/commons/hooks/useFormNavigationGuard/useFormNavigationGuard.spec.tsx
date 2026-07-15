@@ -30,6 +30,7 @@ const EXPECTATIONS = {
 const renderNavigationGuardedFakeForm = (initialProps: {
   afterSubmitPath?: string | (() => string)
   isExternallyDirty?: boolean
+  resetFormAfterSubmit?: boolean
   onSubmit: () => Promise<boolean>
 }) => {
   const fakeFormSchema = object({
@@ -49,7 +50,15 @@ const renderNavigationGuardedFakeForm = (initialProps: {
         afterSubmitPath: initialProps.afterSubmitPath,
         form,
         isExternallyDirty: initialProps.isExternallyDirty,
-        onSubmit: initialProps.onSubmit,
+        onSubmit: async () => {
+          const canProceed = await initialProps.onSubmit()
+
+          if (initialProps.resetFormAfterSubmit) {
+            form.reset(form.getValues())
+          }
+
+          return canProceed
+        },
       })
 
     return (
@@ -160,6 +169,8 @@ describe('useFormNavigationGuard', () => {
         },
         {
           afterSubmitPath?: string | (() => string)
+          isExternallyDirty?: boolean
+          resetFormAfterSubmit?: boolean
           onSubmit: () => Promise<boolean>
         }
       >

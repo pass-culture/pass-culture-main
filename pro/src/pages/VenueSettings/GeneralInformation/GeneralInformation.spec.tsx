@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import type { UseFormRegisterReturn } from 'react-hook-form'
+import { Link } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -89,6 +90,41 @@ const renderGeneralInformation = (
     storeOverrides: {
       user: { currentUser: user, selectedPartnerVenue: venue },
       ...options?.storeOverrides,
+    },
+  })
+}
+
+const renderGeneralInformationWithNavigation = (
+  venueOverrides: Partial<GetVenueResponseModel> = {}
+) => {
+  const user = sharedCurrentUserFactory()
+
+  const venue = {
+    ...defaultGetVenue,
+    publicName: 'Adresse de la venue',
+    ...venueOverrides,
+  }
+
+  return renderWithProviders(<GeneralInformation />, {
+    user,
+    initialRouterEntries: ['/general-information'],
+    routes: [
+      {
+        path: '/general-information',
+        element: (
+          <>
+            <GeneralInformation />
+            <Link to="/destination">Quitter la page</Link>
+          </>
+        ),
+      },
+      {
+        path: '/destination',
+        element: <h1>Destination page</h1>,
+      },
+    ],
+    storeOverrides: {
+      user: { currentUser: user, selectedPartnerVenue: venue },
     },
   })
 }
@@ -319,7 +355,7 @@ describe('GeneralInformation', () => {
 
       expect(
         await screen.findByRole('heading', {
-          name: 'Informations complémentaires',
+          name: 'Informations complémentaires requises',
         })
       ).toBeInTheDocument()
     })
@@ -351,7 +387,7 @@ describe('GeneralInformation', () => {
 
       expect(
         await screen.findByRole('heading', {
-          name: 'Informations complémentaires',
+          name: 'Informations complémentaires requises',
         })
       ).toBeInTheDocument()
     })
@@ -370,6 +406,155 @@ describe('GeneralInformation', () => {
           name: /Important : Le changement d'adresse postale/,
         })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('navigation guard integration', () => {
+    it('should redirect to destination after save-and-quit when complementary infos dialog is closed', async () => {
+      const user = userEvent.setup()
+
+      renderGeneralInformationWithNavigation({
+        id: 1,
+        isOpenToPublic: false,
+        hasActiveIndividualOffer: true,
+      })
+
+      await user.click(await screen.findByRole('radio', { name: /Oui/ }))
+
+      await user.click(
+        await screen.findByRole('link', { name: 'Quitter la page' })
+      )
+
+      expect(
+        await screen.findByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).toBeVisible()
+
+      await user.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer et quitter',
+        })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Informations complémentaires requises',
+        })
+      ).toBeVisible()
+
+      await user.click(
+        screen.getByRole('button', { name: 'Compléter plus tard' })
+      )
+
+      expect(
+        await screen.findByRole('heading', { name: 'Destination page' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should redirect to destination after save-and-quit when complementary infos drawer is closed without saving', async () => {
+      const user = userEvent.setup()
+
+      renderGeneralInformationWithNavigation({
+        id: 1,
+        isOpenToPublic: false,
+        hasActiveIndividualOffer: true,
+      })
+
+      await user.click(await screen.findByRole('radio', { name: /Oui/ }))
+
+      await user.click(
+        await screen.findByRole('link', { name: 'Quitter la page' })
+      )
+
+      expect(
+        await screen.findByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).toBeVisible()
+
+      await user.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer et quitter',
+        })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Informations complémentaires requises',
+        })
+      ).toBeVisible()
+
+      await user.click(
+        screen.getByRole('button', { name: 'Compléter maintenant' })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Informations complémentaires',
+        })
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Annuler' }))
+
+      expect(
+        await screen.findByRole('heading', { name: 'Destination page' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should redirect to destination after save-and-quit when address change dialog is closed', async () => {
+      const user = userEvent.setup()
+
+      renderGeneralInformationWithNavigation({
+        id: 1,
+        isOpenToPublic: true,
+        hasActiveIndividualOffer: true,
+      })
+
+      await user.click(await screen.findByText('Sélectionner une adresse'))
+
+      await user.click(
+        await screen.findByRole('link', { name: 'Quitter la page' })
+      )
+
+      expect(
+        await screen.findByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).toBeVisible()
+
+      await user.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer et quitter',
+        })
+      )
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Important : Le changement d'adresse postale/,
+        })
+      ).toBeVisible()
+
+      await user.click(screen.getByRole('button', { name: "J'ai compris" }))
+
+      expect(
+        await screen.findByRole('heading', { name: 'Destination page' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('dialog', {
+          name: 'Des modifications ont été apportées à cette page',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })
