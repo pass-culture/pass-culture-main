@@ -16,13 +16,14 @@ addonList.push(
 
     #clicked = (event) =>{
       event.preventDefault()
-      navigator.clipboard.writeText(event.target.dataset.text)
-      const tooltip = bootstrap.Tooltip.getInstance(event.target)
+      const target = event.target.closest(PcClipBoard.CLIPBOARDS_SELECTOR)
+      navigator.clipboard.writeText(target.dataset.text)
+      const tooltip = bootstrap.Tooltip.getInstance(target)
       tooltip.setContent({ ".tooltip-inner": "Copié" })
 
       setTimeout(() => {
         if (!!tooltip._element) {  // ensure that the tooltip is still present in the dom as it might have been dismissed
-          tooltip.setContent({ ".tooltip-inner": event.target.dataset.bsTitle })
+          tooltip.setContent({ ".tooltip-inner": target.dataset.bsTitle })
         }
       }, PcClipBoard.TITLE_RESET_DURATION)
     }
