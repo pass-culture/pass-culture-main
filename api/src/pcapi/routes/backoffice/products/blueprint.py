@@ -589,7 +589,7 @@ def search_product() -> response_utils.BackofficeResponse:
                 is_ean_product=True,
                 titelive_data=titelive_data,
                 ineligibility_reason=ineligibility_reason,
-                button_text="Importer ce produit dans la base de données du pass Culture",
+                button_text="Importer ce produit dans la base de données du passe Culture",
             )
 
     if not product:

@@ -84,7 +84,7 @@ class SearchEanTest(GetEndpointHelper):
         assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
         assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
         assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
-        assert "Inéligible pass Culture :" not in card_text[0]
+        assert "Inéligible passe Culture :" not in card_text[0]
         assert "EAN white listé : Non" in card_text[0]
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
@@ -102,7 +102,7 @@ class SearchEanTest(GetEndpointHelper):
             assert response.status_code == 200
 
         card_text = html_parser.extract_cards_text(response.data)
-        assert "Inéligible pass Culture :" not in card_text[0]
+        assert "Inéligible passe Culture :" not in card_text[0]
         assert "EAN white listé : Oui" in card_text[0]
         assert f"Date d'ajout : {date_utils.get_naive_utc_now().strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
@@ -117,7 +117,7 @@ class SearchEanTest(GetEndpointHelper):
             assert response.status_code == 200
 
         card_text = html_parser.extract_cards_text(response.data)
-        assert "Inéligible pass Culture : extracurricular" in card_text[0]
+        assert "Inéligible passe Culture : extracurricular" in card_text[0]
         assert "EAN white listé : Non" in card_text[0]
 
 
