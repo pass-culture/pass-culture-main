@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { VenueListItemLiteResponseModel } from '@/apiClient/v1'
+import { type VenueListItemLiteResponseModel, VenueState } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -103,6 +103,27 @@ describe('Hub', () => {
     expect(
       screen.getByRole('button', { name: /Cinéma Lumière/ })
     ).toBeInTheDocument()
+  })
+
+  it('should display closed venues', () => {
+    renderHub({
+      venues: [
+        makeVenueListItemLiteResponseModel({
+          id: 101,
+          publicName: 'Venue ouverte 1',
+          managingOffererId: 100,
+          state: null,
+        }),
+        makeVenueListItemLiteResponseModel({
+          id: 102,
+          publicName: 'Venue fermée',
+          managingOffererId: 100,
+          state: VenueState.CLOSED,
+        }),
+      ],
+    })
+
+    expect(screen.getByText('Structure fermée')).toBeInTheDocument()
   })
 
   it('should display venue address', () => {

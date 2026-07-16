@@ -14,6 +14,7 @@ import { Footer } from '@/components/Footer/Footer'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -118,6 +119,11 @@ export const Hub = () => {
               onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
               type="button"
             >
+              {withVenueHelpers(venue).isClosed && (
+                <div className={styles['venue-item-state']}>
+                  <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+                </div>
+              )}
               <span
                 className={styles['venue-item-name']}
                 id={`venue-${venue.id}-name`}

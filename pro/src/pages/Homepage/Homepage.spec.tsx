@@ -5,6 +5,7 @@ import { axe } from 'vitest-axe'
 import {
   DMSApplicationstatus,
   type GetVenueResponseModel,
+  VenueState,
 } from '@/apiClient/v1'
 import { defaultDMSApplicationForEACV2 } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -150,6 +151,17 @@ describe('Homepage', () => {
       })
 
       expect(screen.getByText('Homologation')).toBeVisible()
+    })
+  })
+
+  describe('closed venue banner', () => {
+    it('should be displayed when venue state is closed', () => {
+      renderHomepage({
+        ...defaultGetVenueResponseModel,
+        state: VenueState.CLOSED,
+      })
+
+      expect(screen.getByText('Structure fermée')).toBeVisible()
     })
   })
 

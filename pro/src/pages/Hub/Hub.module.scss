@@ -52,6 +52,10 @@
   display: block;
 }
 
+.venue-item-state {
+  margin-bottom: var(--size-spacing-l);
+}
+
 .venue-location {
   @include fonts.body-xs;
 
