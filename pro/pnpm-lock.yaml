@@ -37,8 +37,8 @@ importers:
         specifier: 5.4.0
         version: 5.4.0(react-hook-form@7.80.0(react@19.2.7))
       '@pass-culture/design-system':
-        specifier: 0.10.0
-        version: 0.10.0
+        specifier: 0.11.0
+        version: 0.11.0
       '@radix-ui/react-dialog':
         specifier: 1.1.18
         version: 1.1.18(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1377,8 +1377,8 @@ packages:
     resolution: {integrity: sha512-tmmZ3lQxAe/k/+rNnXQRawJ4NjxO2hqiOLTHvWchtGZULp4RyFeh6aU4XdOYBFe2KE1oShQTv4AblOs2iOrNnQ==}
     engines: {node: '>= 10.0.0'}
 
-  '@pass-culture/design-system@0.10.0':
-    resolution: {integrity: sha512-IZSrPg2IeqONRJHXX6Nup7xM7coo+ox9bs+80aURFECtjNyO7X0FZ/zLoWgvEMpCDQtGPg82yh8ZnCPwI3AWwQ==}
+  '@pass-culture/design-system@0.11.0':
+    resolution: {integrity: sha512-3Vsy5L1+8d3V+fREnqZP0ehEt2KhgsyaLH1vJbP12O6Khk2J6SyuWksklCdSaaj/uVyZ/hNl74Qc/gIsVz8G7Q==}
 
   '@playwright/test@1.61.1':
     resolution: {integrity: sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==}
@@ -5189,7 +5189,7 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.6
     optional: true
 
-  '@pass-culture/design-system@0.10.0': {}
+  '@pass-culture/design-system@0.11.0': {}
 
   '@playwright/test@1.61.1':
     dependencies:
