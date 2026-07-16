@@ -70,9 +70,9 @@ def signin(body: authentication.SigninRequestV2) -> authentication.SigninRespons
 
 
 @blueprint.native_route("/refresh_access_token", version="v2", methods=["POST"])
-@atomic()
 @authenticated_with_refresh_token
 @spectree_serialize(response_model=authentication.RefreshResponseV2, api=blueprint.api, on_error_statuses=[401])
+@atomic()
 def refresh(body: authentication.RefreshRequestV2) -> authentication.RefreshResponseV2:
     # TODO remove when PC-42051 is in prod
     if email_hash := g.jwt.data.user_claims.get("email_hash", None):
