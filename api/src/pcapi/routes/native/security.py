@@ -58,13 +58,6 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
         if not hasattr(flask.g, "jwt"):
             raise UnauthorizedError()
 
-        # lock session refresh to avoid creating multiple valid token at once
-        db.session.query(
-            users_models.NativeUserSession.id,
-        ).filter(
-            users_models.NativeUserSession.refreshToken == flask.g.jwt.data.jti,
-        ).with_for_update().one_or_none()
-
         try:
             user = (
                 db.session.query(users_models.User)
