@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";var t,n=e((()=>{t=``+new URL(`stroke-thing-BaAe5Op7.svg`,import.meta.url).href}));export{t as n,n as t};
