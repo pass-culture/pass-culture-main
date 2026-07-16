@@ -91,6 +91,29 @@ class Returns204Test:
         user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey is False
 
+    def test_when_email_is_already_used(self, client):
+        data = BASE_DATA_PRO.copy()
+        response = client.post("/users/signup", json=data)
+        assert response.status_code == 204
+
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").one()
+
+        assert user.email == "toto_pro@example.com"
+
+        mails_testing.reset_outbox()
+        data["firstName"] = "Jojo"
+        data["lastName"] = "Hello"
+        response = client.post("/users/signup", json=data)
+
+        assert response.status_code == 204
+        user = db.session.query(User).filter_by(email="toto_pro@example.com").one()
+        assert user.email == "toto_pro@example.com"
+        assert user.firstName == "Toto"
+        assert user.lastName == "Pro"
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.CHECK_DOUBLE_SIGNUP_TO_PRO.value)
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -111,19 +134,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         data["email"] = "toto"
-
-        # When
-        response = client.post("/users/signup", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "email" in error
-
-    def test_when_email_is_already_used(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        client.post("/users/signup", json=data)
 
         # When
         response = client.post("/users/signup", json=data)

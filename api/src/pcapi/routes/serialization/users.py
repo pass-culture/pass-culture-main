@@ -57,6 +57,7 @@ class ProUserCreationBodyV2Model(HttpBodyModel):
     first_name: str
     last_name: str
     password: typing.Annotated[str, pydantic_v2.AfterValidator(validate_password_strength)]
+    # TODO bdalbianco 28/07/26 remove phone number
     phone_number: str | None = None
     contact_ok: bool
     token: str
