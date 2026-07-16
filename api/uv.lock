@@ -79,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "algoliasearch"
-version = "4.41.1"
+version = "4.44.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -89,9 +89,9 @@ dependencies = [
     { name = "requests" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/81/6f/4a0c59914074654ca862ab8803217f6c933c6231c29860b0d1f844ab76b8/algoliasearch-4.41.1.tar.gz", hash = "sha256:777784a620c949e7cfbc5e65e9cae08c826dd00c4c75e3693fb99c100737be17", size = 412910, upload-time = "2026-05-29T12:06:27.886Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ae/e3/d92bebdd9794cc00ad72b333d39354ea1ab5b7d5cde2ea69f4a3265212fb/algoliasearch-4.44.3.tar.gz", hash = "sha256:1c5e3b72912ef162bc0e772c84767e7db48f5549e375d88930aed8b78a1db3b3", size = 460153, upload-time = "2026-07-08T08:23:21.596Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/86/1db52170c12736af8ac6dbf0079b85303db09b252b9ebd71f8c5ebc01c7b/algoliasearch-4.41.1-py3-none-any.whl", hash = "sha256:67a5988d6a5ea34f22653cdfc42b8bc05037913239bba3b72c9138ef36f99ee9", size = 1096821, upload-time = "2026-05-29T12:06:26.166Z" },
+    { url = "https://files.pythonhosted.org/packages/32/05/84c46d0844055735c1192ba1a0364d871251dbf03e26a465eedf148e63f1/algoliasearch-4.44.3-py3-none-any.whl", hash = "sha256:6326db9d102e0c43712c04334bb9a9e8bd980c7bc1a471cb75b320f4d606953d", size = 1265650, upload-time = "2026-07-08T08:23:19.671Z" },
 ]
 
 [[package]]
@@ -2067,7 +2067,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = "==1.18.4" },
-    { name = "algoliasearch", specifier = "==4.41.1" },
+    { name = "algoliasearch", specifier = "==4.44.3" },
     { name = "authlib", specifier = "==1.7.2" },
     { name = "babel", specifier = "==2.18.0" },
     { name = "bcrypt", specifier = "==5.0.0" },
