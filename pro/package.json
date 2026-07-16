@@ -103,7 +103,7 @@
     "check-unused-css": "0.5.5",
     "dotenv": "17.4.2",
     "jsdom": "29.1.1",
-    "knip": "6.24.0",
+    "knip": "6.25.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
     "playwright-core": "1.61.1",
