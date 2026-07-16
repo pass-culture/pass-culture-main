@@ -55,7 +55,7 @@ export const NavLinkItems = <T extends string>({
                       Lien actif
                     </span>
                   )}
-                  {label}
+                  <span>{label}</span>
                 </span>
               </Link>
             </li>

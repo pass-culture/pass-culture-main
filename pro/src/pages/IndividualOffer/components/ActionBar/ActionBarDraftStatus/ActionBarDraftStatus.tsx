@@ -18,12 +18,12 @@ export function ActionBarDraftStatus({ isSaved }: ActionBarDraftStatusProps) {
             width="16"
             className={styles['draft-saved-icon']}
           />
-          Brouillon enregistré
+          <span>Brouillon enregistré</span>
         </span>
       ) : (
         <span className={styles['draft-indicator']}>
           <div className={styles['draft-not-saved-icon']} />
-          Brouillon non enregistré
+          <span>Brouillon non enregistré</span>
         </span>
       )}
     </>

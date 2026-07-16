@@ -96,7 +96,7 @@ export const RadioButton = forwardRef(
               aria-invalid={hasError}
             />
             <div>
-              {label}
+              <span>{label}</span>
               {description && isVariantDetailed && (
                 <p className={styles['description']}>{description}</p>
               )}
