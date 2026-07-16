@@ -1351,6 +1351,21 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
     return ""
 
 
+def format_error_codes(error_codes: list[str] | None) -> str:
+    if not error_codes:
+        return ""
+
+    ERROR_CODES_LABELS = {
+        subscription_models.FraudReasonCode.APPLICATION_NOT_FOUND.value: "Identifié mais aucun dossier associé",
+        subscription_models.FraudReasonCode.PERSON_NOT_FOUND.value: "Identification impossible",
+        subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD.value: "Non associé au foyer fiscal",
+        subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH.value: "Quotient familial trop élevé",
+        subscription_models.FraudReasonCode.NOT_RECIPIENT.value: "Non allocataire",
+    }
+    error_codes_labels = [ERROR_CODES_LABELS.get(e_code, e_code) for e_code in error_codes]
+    return format_string_list(error_codes_labels)
+
+
 def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
     return "prête" if date_processed else "en attente"
 
@@ -2340,6 +2355,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_eligibility_type"] = format_eligibility_type
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_fraud_action_dict_url"] = format_fraud_action_dict_url
+    app.jinja_env.filters["format_error_codes"] = format_error_codes
     app.jinja_env.filters["format_legal_category_code"] = format_legal_category_code
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state

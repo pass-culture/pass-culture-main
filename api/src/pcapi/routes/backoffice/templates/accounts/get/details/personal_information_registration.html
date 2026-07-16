@@ -76,8 +76,8 @@
               </td>
               <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
               <td>
-                {% if fraud_action['type'] != "qf_bonus_credit" or can_see_bonus_credit_details %}
-                  {{ fraud_action['errorCode'] | format_string_list }}
+                {% if fraud_action['type'] not in ["qf_bonus_credit", "aah_bonus_credit", "aeeh_bonus_credit"] or can_see_bonus_credit_details %}
+                  {{ fraud_action['errorCode'] | format_error_codes }}
                 {% endif %}
               </td>
               <td>
@@ -146,39 +146,39 @@
                 {% else %}
                 class="me-3"
                 {% endif %}>
-              {% set div_class %}
-                {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
-              {% endset %}
-              <div class="steps {{ div_class }}"
-                   disabled
-                   data-bs-toggle="tooltip"
-                   data-bs-placement="top"
-                   data-bs-custom-class="primary-tooltip"
-                   data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
-                <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
-                  {% if step.icon %}
-                    <i class="bi {{ step.icon }} pe-none"></i>
-                  {% else %}
-                    {{ step.text }}
-                  {% endif %}
-                  {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
-                  {% if status_icon %}
-                    <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
-                      {{ status_icon }}
-                    </div>
-                  {% endif %}
-                  <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
-                </span>
-              </div>
-            </li>
-          {% endfor %}
-        </ol>
-      </div>
+            {% set div_class %}
+              {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
+            {% endset %}
+            <div class="steps {{ div_class }}"
+                 disabled
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-custom-class="primary-tooltip"
+                 data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
+              <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
+                {% if step.icon %}
+                  <i class="bi {{ step.icon }} pe-none"></i>
+                {% else %}
+                  {{ step.text }}
+                {% endif %}
+                {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
+                {% if status_icon %}
+                  <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                    {{ status_icon }}
+                  </div>
+                {% endif %}
+                <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
+              </span>
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
     </div>
-    <div class="fs-3 ps-3 pt-3 mt-3 text-secondary right-scroll">
-      <i class="bi bi-chevron-right " />
-    </i>
   </div>
+  <div class="fs-3 ps-3 pt-3 mt-3 text-secondary right-scroll">
+    <i class="bi bi-chevron-right " />
+  </i>
+</div>
 </div>
 {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
 </div>
