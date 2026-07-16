@@ -112,7 +112,10 @@ class FraudCheckAction(AccountAction):
                 and perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT
                 in self._bo_user.backoffice_profile.permissions
             ):
-                reason_codes = [getattr(reason, "value", str(reason)) for reason in self._fraud_check.reasonCodes]
+                reason_codes = [
+                    filters.ERROR_CODES_LABELS.get(reason.value, reason.value)
+                    for reason in self._fraud_check.reasonCodes
+                ]
             else:
                 reason_codes = ["raison confidentielle"]
         else:
