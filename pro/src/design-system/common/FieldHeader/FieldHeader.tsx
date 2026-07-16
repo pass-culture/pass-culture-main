@@ -29,7 +29,7 @@ export function FieldHeader({
       <div>
         {label && (
           <label htmlFor={fieldId} className={styles['label']}>
-            {label}
+            <span>{label}</span>
             {required && requiredIndicator === 'symbol' && (
               <span className={styles['label-mandatory-symbol']}>*</span>
             )}

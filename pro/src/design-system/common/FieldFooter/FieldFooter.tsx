@@ -36,7 +36,7 @@ export function FieldFooter({
               alt=""
               className={styles['error-content-icon']}
             />
-            {error}
+            <span>{error}</span>
           </p>
         )}
       </div>

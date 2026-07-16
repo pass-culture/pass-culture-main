@@ -22,7 +22,7 @@ export const Right = ({
   const draftIndicator = dirtyForm ? (
     <span className={style['draft-indicator']}>
       <div className={style['draft-not-saved-icon']} />
-      Brouillon non enregistré
+      <span>Brouillon non enregistré</span>
     </span>
   ) : (
     <span className={style['draft-indicator']}>

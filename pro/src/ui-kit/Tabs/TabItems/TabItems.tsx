@@ -87,7 +87,7 @@ export const TabItems = <T extends string>({
                     Onglet actif
                   </span>
                 )}
-                {label}
+                <span>{label}</span>
               </span>
             </button>
           )
