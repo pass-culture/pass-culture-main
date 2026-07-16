@@ -13,6 +13,7 @@ import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import {
   getPanelId,
   getTabId,
@@ -115,9 +116,13 @@ export const Homepage = (): JSX.Element => {
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
-
+      {withVenueHelpers(selectedPartnerVenue).isClosed && (
+        <div className={styles['venue-banner']}>
+          <Banner variant={BannerVariants.ERROR} title="Structure fermée" />
+        </div>
+      )}
       {shouldDisplayVenueValidationBanner && (
-        <div className={styles['venue-validation-banner']}>
+        <div className={styles['venue-banner']}>
           <VenueValidationBanner />
         </div>
       )}
