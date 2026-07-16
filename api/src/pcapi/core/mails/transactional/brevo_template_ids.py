@@ -102,6 +102,7 @@ class TransactionalEmail(Enum):
     BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = models.TemplatePro(id_prod=39, id_not_prod=38)
     BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = models.TemplatePro(id_prod=40, id_not_prod=39)
     BOOKING_EXPIRATION_TO_PRO = models.TemplatePro(id_prod=38, id_not_prod=37, send_to_ehp=False)
+    CHECK_DOUBLE_SIGNUP_TO_PRO = models.TemplatePro(id_prod=631, id_not_prod=80)
     EAC_NEW_BOOKING_TO_PRO = models.TemplatePro(id_prod=18, id_not_prod=18)
     EAC_NEW_PREBOOKING_TO_PRO = models.TemplatePro(id_prod=19, id_not_prod=19)
     EAC_ONE_DAY_AFTER_EVENT = models.TemplatePro(id_prod=24, id_not_prod=25, send_to_ehp=False)

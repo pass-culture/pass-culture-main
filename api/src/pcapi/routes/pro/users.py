@@ -45,7 +45,6 @@ from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
@@ -71,14 +70,13 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
         raise ApiErrors({"token": "The given token is invalid"})
 
     try:
-        pro_user = users_api.create_pro_user(body)
-        users_api.create_and_send_signup_email_confirmation(pro_user)
-    except phone_number_utils.InvalidPhoneNumber:
-        raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
-    except phone_number_utils.RequiredPhoneNumber:
-        raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est requis"]})
+        new_user = users_api.create_pro_user(body)
+        users_api.create_and_send_signup_email_confirmation(new_user)
     except users_exceptions.UserAlreadyExistsException:
-        raise ApiErrors(errors={"email": ["l'email existe déjà"]})
+        user = users_repo.find_user_by_email(body.email)
+        assert user
+        token = users_api.create_reset_password_token(user)
+        transactional_mails.send_double_signup_to_pro_email(user, token)
 
 
 @private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
