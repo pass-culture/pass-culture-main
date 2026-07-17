@@ -28,7 +28,9 @@ class VenueAccessibilityModel(BaseModel):
 class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         if key == "openingHours":
-            return self._obj.opening_hours
+            if self._obj.isOpenToPublic:
+                return self._obj.opening_hours
+            return None
         if key == "externalAccessibilityData":
             if not self._obj.accessibilityProvider:
                 return None
@@ -49,10 +51,17 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
             return self._obj.venueTypeCode.name
 
         if key == "address":
-            return self._obj.offererAddress.address.street
+            if self._obj.isOpenToPublic:
+                return self._obj.offererAddress.address.street
+            return None
 
-        if key in ("street", "latitude", "longitude", "postalCode", "city", "timezone"):
-            return getattr(self._obj.offererAddress.address, key)
+        if key == "timezone":
+            return self._obj.offererAddress.address.timezone
+
+        if key in ("street", "latitude", "longitude", "postalCode", "city"):
+            if self._obj.isOpenToPublic:
+                return getattr(self._obj.offererAddress.address, key)
+            return None
 
         if key == "accessibility":
             return VenueAccessibilityModel(

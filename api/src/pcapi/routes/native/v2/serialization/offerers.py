@@ -122,8 +122,20 @@ class VenueResponse(HttpBodyModel):
             banner_credit = venue.bannerMeta.get("image_credit")
             banner_is_from_google = venue.bannerMeta.get("is_from_google", False)
 
-        latitude = float(venue.offererAddress.address.latitude)
-        longitude = float(venue.offererAddress.address.longitude)
+        if venue.isOpenToPublic:
+            latitude = float(venue.offererAddress.address.latitude)
+            longitude = float(venue.offererAddress.address.longitude)
+            street = venue.offererAddress.address.street
+            city = venue.offererAddress.address.city
+            opening_hours = venue.opening_hours
+            postal_code = venue.offererAddress.address.postalCode
+        else:
+            latitude = None
+            longitude = None
+            street = None
+            city = None
+            opening_hours = None
+            postal_code = None
 
         return cls(
             id=venue.id,
@@ -132,7 +144,7 @@ class VenueResponse(HttpBodyModel):
             banner_is_from_google=banner_is_from_google,
             banner_url=venue.bannerUrl,
             accessibility_data=accessibility_data,
-            city=venue.offererAddress.address.city,
+            city=city,
             contact=VenueContact.model_validate(venue.contact) if venue.contact else None,
             description=venue.description,
             external_accessibility_data=external_accessibility_data,
@@ -143,9 +155,9 @@ class VenueResponse(HttpBodyModel):
             latitude=latitude,
             longitude=longitude,
             name=venue.publicName,
-            opening_hours=venue.opening_hours,
-            postal_code=venue.offererAddress.address.postalCode,
-            street=venue.offererAddress.address.street,
+            opening_hours=opening_hours,
+            postal_code=postal_code,
+            street=street,
             timezone=venue.offererAddress.address.timezone,
             volunteering_url=venue.volunteeringUrl,
             withdrawal_details=venue.withdrawalDetails,

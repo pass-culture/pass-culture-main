@@ -120,6 +120,26 @@ class GetVenueTest:
             "withdrawalDetails": venue.withdrawalDetails,
         }
 
+    def test_get_venue_not_open_to_public(self, client):
+        venue = offerers_factories.VenueFactory(
+            isOpenToPublic=False,
+            isPermanent=True,
+        )
+
+        venue_id = venue.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v2/venue/{venue_id}")
+            assert response.status_code == 200
+
+        response_venue = response.json
+        assert response_venue["city"] is None
+        assert response_venue["latitude"] is None
+        assert response_venue["longitude"] is None
+        assert response_venue["openingHours"] is None
+        assert response_venue["postalCode"] is None
+        assert response_venue["street"] is None
+
     def test_get_venue_google_banner_meta(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.GooglePlacesInfoFactory(
