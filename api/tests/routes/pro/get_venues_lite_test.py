@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.models import db
@@ -107,3 +108,20 @@ def test_only_return_non_softdeleted_venues(client):
     assert "venues" in response.json
     assert len(response.json["venues"]) == 1
     assert not response.json["venuesWithPendingValidation"]
+
+
+def test_closed_venues_are_returned_last(client):
+    user_offerer = offerers_factories.UserOffererFactory()
+    open_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, publicName="AAA", state=None)
+    closed_venue = offerers_factories.VenueFactory(
+        managingOfferer=user_offerer.offerer,
+        publicName="AAA closed",
+        state=offerers_models.VenueState.CLOSED,
+    )
+
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.get("/lite/venues")
+
+    assert response.status_code == 200
+    ids = [v["id"] for v in response.json["venues"]]
+    assert ids == [open_venue.id, closed_venue.id]
