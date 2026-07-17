@@ -65,17 +65,14 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
 from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
-from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.utils import countries as countries_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
-from .helpers import search as search_helpers
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
-from .helpers.url import assert_response_location
 
 
 pytestmark = [
@@ -192,157 +189,104 @@ def user_id_from_card(card_text: str) -> int | None:
     return match.groupdict().get("user_id") if match else None
 
 
-class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
+class ListPublicAccountsTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.list_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + user tags
-    expected_num_queries_when_no_query = 2
+    # - session + authenticated user (1 query)
+    # - user tags to fill in the choices of each sub-form tags field (1 query)
+    expected_num_queries_when_no_search = 2
+    # - fetch users, including tags, suspension info and current deposit (1 query)
+    expected_num_queries = expected_num_queries_when_no_search + 1
+    # - rollback after form validation error (1 query)
+    expected_num_queries_when_invalid = expected_num_queries_when_no_search + 1
+    # - one more user tags query for the additional sub-form entry (1 query)
+    expected_num_queries_with_two_filters = expected_num_queries + 1
 
-    # + results + count
-    expected_num_queries = expected_num_queries_when_no_query + 2
+    def test_list_accounts_without_search(self, authenticated_client):
+        create_bunch_of_accounts()
 
-    # + results in email history + count
-    expected_num_queries_when_old_email_and_single_result = expected_num_queries + 2
+        with assert_num_queries(self.expected_num_queries_when_no_search):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-    def test_malformed_query(self, authenticated_client, legit_user):
-        url = url_for(self.endpoint, q=legit_user.email, per_page="unknown_field")
+        assert len(html_parser.extract_cards_text(response.data)) == 0
 
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
-            response = authenticated_client.get(url)
-            assert response.status_code == 400
-
-    @pytest.mark.parametrize("query", ["", " ", "   ", " , ,,;"])
-    def test_empty_query(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 400
-
-    def test_can_search_public_account_by_id(self, authenticated_client):
+    def test_list_accounts_by_id(self, authenticated_client):
         underage, _, _, _, _, _ = create_bunch_of_accounts()
         user_id = underage.id
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=str(user_id)))
-            assert response.status_code == 303
+            response = authenticated_client.get(url_for(self.endpoint, query_search=str(user_id)))
+            assert response.status_code == 200
 
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=underage.id,
-            q=underage.id,
-            search_rank=1,
-            total_items=1,
-        )
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], underage)
 
-    def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
+    def test_list_accounts_by_multiple_ids(self, authenticated_client):
         searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.id}, {searched_user2.id}"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=search_query))
             assert response.status_code == 200
 
         cards_titles = html_parser.extract_cards_titles(response.data)
         assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
 
-    def test_can_search_public_account_by_small_id(self, authenticated_client):
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="2"))
-            assert response.status_code == 200
-
-        assert b"Attention, la recherche doit contenir au moins 3 lettres." not in response.data
-
-    @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
-    def test_can_search_public_account_by_short_name(self, authenticated_client, query):
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
-            response = authenticated_client.get(url_for(self.endpoint, q="v"))
-            assert response.status_code == 400
-
-        assert "Attention, la recherche doit contenir au moins 3 lettres." in html_parser.extract_warnings(
-            response.data
-        )
-
-    @pytest.mark.parametrize(
-        "query,expected_index",
-        [
-            ("Yves", 1),  # "Abdel Yves Akhim"
-            ("Abdel Akhim", 1),  # "Abdel Yves Akhim"
-            ("Gérard", 3),  # Gérard
-            ("Gerard", 3),  # Gérard
-            ("Jean Luc", 5),  # Jean-Luc
-        ],
-    )
-    def test_can_search_public_account_by_first_name(self, authenticated_client, query, expected_index):
-        accounts = create_bunch_of_accounts()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=accounts[expected_index].id,
-            q=query,
-            search_rank=1,
-            total_items=1,
-        )
-
     @pytest.mark.parametrize("query", ["ALGÉZIC", "Algézic", "Algezic"])
-    def test_can_search_public_account_by_name(self, authenticated_client, query):
+    def test_list_accounts_by_name(self, authenticated_client, query):
         _, _, _, _, random, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 303
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
+            assert response.status_code == 200
 
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=random.id,
-            q=query,
-            search_rank=1,
-            total_items=1,
-        )
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], random)
 
-    def test_can_search_public_account_by_email(self, authenticated_client):
+    @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
+    def test_list_accounts_by_both_first_name_and_name(self, authenticated_client, query):
+        _, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], old_grant_18)
+
+    def test_list_accounts_by_email(self, authenticated_client):
         _, _, _, _, random, _ = create_bunch_of_accounts()
         email = random.email
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 303
+            response = authenticated_client.get(url_for(self.endpoint, query_search=email))
+            assert response.status_code == 200
 
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=random.id,
-            q=email,
-            search_rank=1,
-            total_items=1,
-        )
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], random)
 
-    def test_can_search_public_account_by_multiple_emails(self, authenticated_client):
+    def test_list_accounts_by_multiple_emails(self, authenticated_client):
         searched_user1, _, _, _, searched_user2, _ = create_bunch_of_accounts()
         search_query = f" {searched_user1.email},   {searched_user2.email},"
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=search_query))
             assert response.status_code == 200
 
         cards_titles = html_parser.extract_cards_titles(response.data)
         assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
 
-    def test_can_search_public_account_by_email_domain(self, authenticated_client):
+    def test_list_accounts_by_email_domain(self, authenticated_client):
         underage, old_grant_18, new_grant_18, _, random, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
+            response = authenticated_client.get(url_for(self.endpoint, query_search="@example.net"))
             assert response.status_code == 200
 
         cards_titles = html_parser.extract_cards_titles(response.data)
@@ -360,125 +304,99 @@ class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_user_equals(cards_text[3], random)
 
     @pytest.mark.parametrize("query", ["+33756273849", "0756273849", "756273849"])
-    def test_can_search_public_account_by_phone(self, authenticated_client, query):
+    def test_list_accounts_by_phone(self, authenticated_client, query):
         _, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 303
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
+            assert response.status_code == 200
 
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=old_grant_18.id,
-            q=query,
-            search_rank=1,
-            total_items=1,
-        )
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], old_grant_18)
 
-    def test_can_search_public_account_even_with_missing_city_address(self, authenticated_client):
+    def test_list_accounts_even_with_missing_city_address(self, authenticated_client):
         _, _, _, _, _, no_address = create_bunch_of_accounts()
         phone_number = no_address.phoneNumber
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=phone_number))
-            assert response.status_code == 303
+            response = authenticated_client.get(url_for(self.endpoint, query_search=phone_number))
+            assert response.status_code == 200
 
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=no_address.id,
-            q=phone_number,
-            search_rank=1,
-            total_items=1,
-        )
-
-    @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
-    def test_can_search_public_account_by_both_first_name_and_name(self, authenticated_client, query):
-        _, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=old_grant_18.id,
-            q=query,
-            search_rank=1,
-            total_items=1,
-        )
-
-        redirected_response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(redirected_response.data, raise_if_not_found=False) is None
-
-    def test_can_search_public_account_by_first_name_and_very_short_name(self, authenticated_client):
-        create_bunch_of_accounts()
-        user = users_factories.UserFactory(firstName="ANN", lastName="A", email="ann.a@example.com")
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="Ann A"))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=user.id,
-            q="Ann A",
-            search_rank=1,
-            total_items=1,
-        )
-
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "Les termes étant très courts, la recherche n'a porté que sur le nom complet exact."
-        )
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], no_address)
 
     @pytest.mark.parametrize("query", ["Gédéon Flaille", "Abdal Flaille", "Autre Algézic"])
-    def test_can_search_public_account_names_which_do_not_match(self, authenticated_client, query):
+    def test_list_accounts_names_which_do_not_match(self, authenticated_client, query):
         create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
+            assert response.status_code == 200
+
+        assert len(html_parser.extract_cards_text(response.data)) == 0
+
+    @pytest.mark.parametrize("query", ["'", '""', "v", "xx", " vv,; "])
+    def test_list_accounts_by_short_query(self, authenticated_client, query):
+        create_bunch_of_accounts()
+
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Attention, la recherche doit contenir au moins 3 lettres."
+
+    def test_list_accounts_with_percent_is_forbidden(self, authenticated_client):
+        create_bunch_of_accounts()
+
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, query_search="%terms"))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Le caractère % n'est pas autorisé"
+
+    def test_list_accounts_by_small_numeric_query(self, authenticated_client):
+        user = users_factories.UserFactory()
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, query_search=str(user_id)))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 0
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], user)
 
-    def test_can_search_public_account_empty_query(self, authenticated_client):
-        create_bunch_of_accounts()
+    def test_list_accounts_by_short_query_with_filter(self, authenticated_client):
+        tag = users_factories.UserTagFactory()
+        tagged_user = users_factories.BeneficiaryGrant18Factory(firstName="Vincent", tags=[tag])
+        users_factories.BeneficiaryGrant18Factory(firstName="Victor", tags=[])
 
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
-            response = authenticated_client.get(url_for(self.endpoint, q=""))
-            assert response.status_code == 400
+        query_args = {
+            "query_search": "vi",
+            "search-0-search_field": "TAGS",
+            "search-0-operator": "IN",
+            "search-0-tags": tag.id,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == {str(tagged_user.id)}
 
     @pytest.mark.parametrize("query", ["Ge*", "([{#/="])
-    def test_can_search_public_account_unexpected(self, authenticated_client, query):
+    def test_list_accounts_by_unexpected_query(self, authenticated_client, query):
         create_bunch_of_accounts()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=query))
             assert response.status_code == 200
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 0
+        assert len(html_parser.extract_cards_text(response.data)) == 0
 
-    def test_search_public_account_with_percent_is_forbidden(self, authenticated_client):
-        create_bunch_of_accounts()
-
-        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  #  rollback
-            response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
-            assert response.status_code == 400
-
-        assert "Le caractère % n'est pas autorisé" in html_parser.extract_warnings(response.data)
-
-    def test_can_search_public_account_young_but_also_pro(self, authenticated_client):
+    def test_list_accounts_young_but_also_pro(self, authenticated_client):
         # She has started subscription process, but is also hired by an offerer
         young_and_pro = users_factories.BeneficiaryFactory(
             firstName="Maud",
@@ -490,111 +408,80 @@ class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         email = young_and_pro.email
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=young_and_pro.id,
-            q=email,
-            search_rank=1,
-            total_items=1,
-        )
-
-    def test_can_search_public_account_by_credit_type_only(self, authenticated_client, settings):
-        users_factories.BeneficiaryGrant18Factory(
-            deposit__dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1),
-        )
-        new_grant_18 = users_factories.BeneficiaryFactory()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, filter="PASS_18_V3"))
-            assert response.status_code == 303
-
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=new_grant_18.id,
-            filter="PASS_18_V3",
-            search_rank=1,
-            total_items=1,
-        )
-
-    def test_can_search_public_account_by_tag(self, authenticated_client):
-        tag = users_factories.UserTagFactory(name="ambassador")
-        tag_id = tag.id
-        user_with_tag = users_factories.BeneficiaryGrant18Factory(tags=[tag])
-        users_factories.BeneficiaryFactory()
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, tag=tag_id))
-            assert response.status_code == 303
-
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=user_with_tag.id,
-            tag=tag_id,
-            search_rank=1,
-            total_items=1,
-        )
-
-    def test_can_search_public_account_by_mulitple_tags(self, authenticated_client):
-        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
-        tag1_id = tag1.id
-        tag2_id = tag2.id
-        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
-        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
-        user_with_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag2])
-        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
-        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, tag=[tag1_id, tag2_id]))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=email))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 3
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
-        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id), str(user_with_tag2.id)}
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], young_and_pro)
 
-    def test_can_search_public_account_having_mulitple_tags(self, authenticated_client):
-        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
-        tag1_id = tag1.id
-        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
-        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
-        users_factories.BeneficiaryGrant18Factory(tags=[tag2])  # user with tag2
-        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
-        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
+    # TODO (THIS PR): Check that case
+    def test_list_accounts_by_old_email_no_longer_matches(self, authenticated_client):
+        event = users_factories.EmailValidationEntryFactory()
+        event.user.email = event.newEmail
+        old_email = event.oldEmail
+
+        db.session.flush()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, tag=tag1_id))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=old_email))
+            assert response.status_code == 200
+
+        assert len(html_parser.extract_cards_text(response.data)) == 0
+
+    def test_list_suspended_account_data(self, authenticated_client):
+        underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
+        common_name = "Suspended-Family"
+        underage.lastName = common_name
+        underage.isActive = False
+        old_grant_18.lastName = common_name
+        old_grant_18.isActive = False
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=None,
+            user=underage,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, query_search=common_name))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 2
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
-        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id)}
+        assert_user_equals(cards_text[0], underage)
+        assert_user_equals(cards_text[1], old_grant_18)
 
-    def test_can_search_public_account_by_tags_and_query(self, authenticated_client):
-        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
-        tag2_id = tag2.id
-        users_factories.BeneficiaryGrant18Factory(tags=[tag1], firstName="jean")  # user1
-        user2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2], firstName="jean")
-        users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jacques")  # user3
-        user4 = users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jean")
-        users_factories.BeneficiaryGrant18Factory(tags=[], firstName="jean")  # user5
+    def test_list_account_suspended_unsuspended_twice_without_duplicates(self, authenticated_client):
+        user = users_factories.UserFactory(isActive=False)
+        email = user.email
+        now = date_utils.get_naive_utc_now()
+        for days, action_type in (
+            (4, history_models.ActionType.USER_SUSPENDED),
+            (3, history_models.ActionType.USER_UNSUSPENDED),
+            (2, history_models.ActionType.USER_SUSPENDED),
+            (1, history_models.ActionType.USER_UNSUSPENDED),
+        ):
+            history_factories.ActionHistoryFactory(
+                actionType=action_type,
+                actionDate=now - datetime.timedelta(days=days),
+                user=user,
+                extraData=(
+                    {"reason": users_constants.SuspensionReason.UPON_USER_REQUEST}
+                    if action_type == history_models.ActionType.USER_SUSPENDED
+                    else {}
+                ),
+            )
+
+        db.session.flush()
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, tag=tag2_id, q="jean"))
+            response = authenticated_client.get(url_for(self.endpoint, query_search=email))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
-        assert user_ids == {str(user2.id), str(user4.id)}
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], user)
 
     def test_display_accounts_tags(self, authenticated_client):
         tag1 = users_factories.UserTagFactory(label="Tag 1")
@@ -605,7 +492,7 @@ class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         users_factories.UserFactory(tags=[], firstName="robert", lastName="trois")
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="jean"))
+            response = authenticated_client.get(url_for(self.endpoint, query_search="jean"))
             assert response.status_code == 200
 
         soup = html_parser.get_soup(response.data)
@@ -622,164 +509,351 @@ class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert set(card1_badges) == {"Tag 1", "tag-2"}
         assert set(card2_badges) == {"Tag 3"}
 
-    def test_search_suspended_public_account_data(self, authenticated_client):
-        underage, old_grant_18, _, _, _, _ = create_bunch_of_accounts()
-        # we must have at least two results so that it does not redirect to details page and we can check cards content
-        common_name = "Suspended-Family"
-        underage.lastName = common_name
-        underage.isActive = False
-        old_grant_18.lastName = common_name
-        old_grant_18.isActive = False
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
-            actionDate=None,
-            user=underage,
-            extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
-        )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=common_name))
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        assert_user_equals(cards_text[0], underage)
-        assert_user_equals(cards_text[1], old_grant_18)
-
-    def test_search_suspended_unsuspended_twice(self, authenticated_client):
-        user = users_factories.UserFactory(isActive=False)
-        email = user.email
-        now = date_utils.get_naive_utc_now()
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
-            actionDate=now - datetime.timedelta(days=4),
-            user=user,
-            extraData={"reason": users_constants.SuspensionReason.UPON_USER_REQUEST},
-        )
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_UNSUSPENDED,
-            actionDate=now - datetime.timedelta(days=3),
-            user=user,
-        )
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_SUSPENDED,
-            actionDate=now - datetime.timedelta(days=2),
-            user=user,
-            extraData={"reason": users_constants.SuspensionReason.UPON_USER_REQUEST},
-        )
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.USER_UNSUSPENDED,
-            actionDate=now - datetime.timedelta(days=1),
-            user=user,
-        )
-
-        db.session.flush()
-
-        # Ensure that search result is redirected, no single card result with "4 résultats"
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=email))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=user.id,
-            q=email,
-            search_rank=1,
-            total_items=1,
-        )
-
-    def test_can_search_old_email(self, authenticated_client):
-        event = users_factories.EmailValidationEntryFactory()
-        event.user.email = event.newEmail
-        old_email = event.oldEmail
-
-        db.session.flush()
-
-        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result):
-            response = authenticated_client.get(url_for(self.endpoint, q=old_email))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=event.user.id,
-            q=old_email,
-            search_rank=1,
-            total_items=1,
-        )
-
     @pytest.mark.parametrize(
-        "search_filter,expected_user",
+        "operator,date_value,expected_users",
         [
-            (search_forms.AccountSearchFilter.PASS_17_V3.name, "underage_user"),
-            (search_forms.AccountSearchFilter.PASS_18_V3.name, "beneficiary_user"),
-            (search_forms.AccountSearchFilter.PASS_15_17.name, "old_underage_user"),
-            (search_forms.AccountSearchFilter.PASS_18.name, "old_beneficiary_user"),
-            (search_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
-            (search_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
+            ("DATE_EQUALS", datetime.date(2006, 5, 12), ["born_in_2006"]),
+            ("DATE_FROM", datetime.date(2007, 1, 1), ["born_in_2008"]),
+            ("DATE_TO", datetime.date(2007, 1, 1), ["born_in_2006"]),
         ],
     )
-    def test_search_with_single_filter(self, authenticated_client, search_filter, expected_user):
-        common_name = "Last-Name"
-        underage_user = users_factories.BeneficiaryFactory(
-            lastName=common_name,
-            age=17,
-            deposit__type=finance_models.DepositType.GRANT_17_18,
+    def test_list_accounts_by_birth_date(self, authenticated_client, operator, date_value, expected_users):
+        born_in_2006 = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2006, 5, 12), validatedBirthDate=datetime.date(2006, 5, 12)
         )
-        beneficiary_user = users_factories.BeneficiaryFactory(
-            lastName=common_name,
-            deposit__type=finance_models.DepositType.GRANT_17_18,
+        born_in_2008 = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2008, 11, 2), validatedBirthDate=datetime.date(2008, 11, 2)
         )
-        old_underage_user = users_factories.UnderageBeneficiaryFactory(lastName=common_name)
-        old_beneficiary_user = users_factories.BeneficiaryGrant18Factory(
-            lastName=common_name, deposit__type=finance_models.DepositType.GRANT_18
-        )
-        public_user = users_factories.UserFactory(lastName=common_name)
-        suspended_user = users_factories.BeneficiaryFactory(lastName=common_name, isActive=False)
+        users = {"born_in_2006": born_in_2006, "born_in_2008": born_in_2008}
+        expected_ids = {str(users[name].id) for name in expected_users}
 
+        query_args = {
+            "search-0-search_field": "BIRTHDAY",
+            "search-0-operator": operator,
+            "search-0-date": date_value.isoformat(),
+        }
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=common_name, filter=search_filter))
-            assert response.status_code == 303
-
-        redirected_id = int(re.match(r".*/(\d+)\?.*", response.location).group(1))
-        assert redirected_id == locals()[expected_user].id
-
-    def test_search_with_several_filters(self, authenticated_client):
-        common_name = "First-Name"
-        common_last_name = "Last-Name"
-        underage_user = users_factories.BeneficiaryFactory(firstName=common_name, lastName=common_last_name, age=17)
-        users_factories.BeneficiaryFactory(
-            firstName=common_name,
-            lastName=common_last_name,
-        )
-        users_factories.UserFactory(
-            firstName=common_name,
-            lastName=common_last_name,
-        )
-        suspended_user = users_factories.BeneficiaryFactory(
-            firstName=common_name, lastName=common_last_name, isActive=False
-        )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    q=common_name,
-                    filter=[
-                        search_forms.AccountSearchFilter.PASS_17_V3.name,
-                        search_forms.AccountSearchFilter.SUSPENDED.name,
-                    ],
-                )
-            )
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 2
-        assert_user_equals(cards_text[0], underage_user)
-        assert_user_equals(cards_text[1], suspended_user)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    @pytest.mark.parametrize(
+        "operator,days_from_now,expected_users",
+        [
+            ("DATE_FROM", 100, ["expiring_later"]),
+            ("DATE_TO", 100, ["expiring_soon"]),
+        ],
+    )
+    def test_list_accounts_by_deposit_expiration_date(
+        self, authenticated_client, operator, days_from_now, expected_users
+    ):
+        now = date_utils.get_naive_utc_now()
+        expiring_soon = users_factories.BeneficiaryFactory(deposit__expirationDate=now + datetime.timedelta(days=30))
+        expiring_later = users_factories.BeneficiaryFactory(deposit__expirationDate=now + datetime.timedelta(days=300))
+        users = {"expiring_soon": expiring_soon, "expiring_later": expiring_later}
+        expected_ids = {str(users[name].id) for name in expected_users}
+
+        query_args = {
+            "search-0-search_field": "DEPOSIT_EXPIRATION_DATE",
+            "search-0-operator": operator,
+            "search-0-date": (now + datetime.timedelta(days=days_from_now)).date().isoformat(),
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    def test_list_accounts_by_deposit_expiration_date_ignores_expired_deposits(self, authenticated_client):
+        now = date_utils.get_naive_utc_now()
+        users_factories.BeneficiaryFactory(deposit__expirationDate=now - datetime.timedelta(days=100))
+
+        query_args = {
+            "search-0-search_field": "DEPOSIT_EXPIRATION_DATE",
+            "search-0-operator": "DATE_TO",
+            "search-0-date": now.date().isoformat(),
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        assert len(html_parser.extract_cards_text(response.data)) == 0
+
+    @pytest.mark.parametrize(
+        "operator,searched_domain,expected_users",
+        [
+            ("EQUALS", "beneficiaries.net", ["net_user"]),
+            ("NOT_EQUALS", "beneficiaries.net", ["com_user"]),
+            ("CONTAINS", "beneficiaries", ["net_user", "com_user"]),
+            ("NO_CONTAINS", ".net", ["com_user"]),
+        ],
+    )
+    def test_list_accounts_by_email_domain_filter(
+        self, authenticated_client, operator, searched_domain, expected_users
+    ):
+        net_user = users_factories.UserFactory(email="one@beneficiaries.net")
+        com_user = users_factories.UserFactory(email="two@beneficiaries.com")
+        users = {"net_user": net_user, "com_user": com_user}
+        expected_ids = {str(users[name].id) for name in expected_users}
+
+        query_args = {
+            "search-0-search_field": "EMAIL_TDL",
+            "search-0-operator": operator,
+            "search-0-string": searched_domain,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    @pytest.mark.parametrize(
+        "operator,expected_users",
+        [
+            ("IN", ["brittany_user"]),
+            ("NOT_IN", ["paris_user"]),
+        ],
+    )
+    def test_list_accounts_by_region(self, authenticated_client, operator, expected_users):
+        brittany_user = users_factories.UserFactory(departementCode="29", postalCode="29000")
+        paris_user = users_factories.UserFactory(departementCode="75", postalCode="75001")
+        users = {"brittany_user": brittany_user, "paris_user": paris_user}
+        expected_ids = {str(users[name].id) for name in expected_users}
+
+        query_args = {
+            "search-0-search_field": "REGIONS",
+            "search-0-operator": operator,
+            "search-0-regions": "Bretagne",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    @pytest.mark.parametrize(
+        "credit_key,expected_user",
+        [
+            ("PASS_17_V3", "underage_user"),
+            ("PASS_18_V3", "beneficiary_user"),
+            ("PASS_15_17", "old_underage_user"),
+            ("PASS_18", "old_beneficiary_user"),
+        ],
+    )
+    def test_list_accounts_by_credit(self, authenticated_client, credit_key, expected_user):
+        users = self._create_users_by_credit()
+        expected_ids = {str(users[expected_user].id)}
+
+        query_args = {
+            "search-0-search_field": "CREDITS",
+            "search-0-operator": "IN",
+            "search-0-credits": credit_key,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    def test_list_accounts_by_credit_not_in(self, authenticated_client):
+        users = self._create_users_by_credit()
+        # TODO (THIS PR): Check that case -> the suspended user matches because no credit predicate holds for an inactive user
+        expected_ids = {str(users[name].id) for name in ("old_underage_user", "old_beneficiary_user", "suspended_user")}
+
+        query_args = {
+            "search-0-search_field": "CREDITS",
+            "search-0-operator": "NOT_IN",
+            "search-0-credits": ["PASS_17_V3", "PASS_18_V3"],
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert {user_id_from_card(card_text) for card_text in cards_text} == expected_ids
+
+    def _create_users_by_credit(self) -> dict[str, users_models.User]:
+        return {
+            "underage_user": users_factories.BeneficiaryFactory(
+                age=17, deposit__type=finance_models.DepositType.GRANT_17_18
+            ),
+            "beneficiary_user": users_factories.BeneficiaryFactory(
+                deposit__type=finance_models.DepositType.GRANT_17_18
+            ),
+            "old_underage_user": users_factories.UnderageBeneficiaryFactory(),
+            "old_beneficiary_user": users_factories.BeneficiaryGrant18Factory(
+                deposit__type=finance_models.DepositType.GRANT_18
+            ),
+            "public_user": users_factories.UserFactory(),
+            "suspended_user": users_factories.BeneficiaryFactory(isActive=False),
+        }
+
+    def test_list_accounts_by_tag(self, authenticated_client):
+        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
+        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
+        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag2])  # user with tag2
+        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
+        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
+
+        query_args = {
+            "search-0-search_field": "TAGS",
+            "search-0-operator": "IN",
+            "search-0-tags": tag1.id,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id)}
+
+    def test_list_accounts_by_multiple_tags(self, authenticated_client):
+        tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
+        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
+        user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
+        user_with_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag2])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
+        users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
+
+        query_args = {
+            "search-0-search_field": "TAGS",
+            "search-0-operator": "IN",
+            "search-0-tags": [tag1.id, tag2.id],
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id), str(user_with_tag2.id)}
+
+    def test_list_accounts_by_tags_and_query(self, authenticated_client):
+        tag1, tag2, _ = users_factories.UserTagFactory.create_batch(3)
+        users_factories.BeneficiaryGrant18Factory(tags=[tag1], firstName="jean")  # user1
+        user2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2], firstName="jean")
+        users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jacques")  # user3
+        user4 = users_factories.BeneficiaryGrant18Factory(tags=[tag2], firstName="jean")
+        users_factories.BeneficiaryGrant18Factory(tags=[], firstName="jean")  # user5
+
+        query_args = {
+            "query_search": "jean",
+            "search-0-search_field": "TAGS",
+            "search-0-operator": "IN",
+            "search-0-tags": tag2.id,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
+        assert user_ids == {str(user2.id), str(user4.id)}
+
+    def test_list_accounts_by_multiple_filters(self, authenticated_client):
+        matching_user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2006, 5, 12),
+            validatedBirthDate=datetime.date(2006, 5, 12),
+            email="matching@beneficiaries.net",
+        )
+        users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2006, 5, 12),
+            validatedBirthDate=datetime.date(2006, 5, 12),
+            email="same-birth-date@other.com",
+        )
+        users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(1999, 1, 1),
+            validatedBirthDate=datetime.date(1999, 1, 1),
+            email="same-domain@beneficiaries.net",
+        )
+
+        query_args = {
+            "search-0-search_field": "BIRTHDAY",
+            "search-0-operator": "DATE_EQUALS",
+            "search-0-date": "2006-05-12",
+            "search-1-search_field": "EMAIL_TDL",
+            "search-1-operator": "EQUALS",
+            "search-1-string": "beneficiaries.net",
+        }
+        with assert_num_queries(self.expected_num_queries_with_two_filters):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert_user_equals(cards_text[0], matching_user)
+
+    def test_list_accounts_by_invalid_field(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "CITY",
+            "search-0-operator": "IN",
+            "search-0-string": "Quimper",
+        }
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Le filtre CITY est invalide."
+
+    def test_list_accounts_by_invalid_operator(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "BIRTHDAY",
+            "search-0-operator": "EQUALS",
+            "search-0-date": "2006-05-12",
+        }
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "L'opérateur « est égal à » n'est pas supporté par le filtre Date de naissance."
+        )
+
+    def test_list_accounts_using_unknown_operator(self, authenticated_client):
+        tag = users_factories.UserTagFactory()
+
+        query_args = {
+            "search-0-search_field": "TAGS",
+            "search-0-operator": "OUT",
+            "search-0-tags": tag.id,
+        }
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "L'opérateur OUT n'est pas supporté par le filtre TAGS."
+
+    @pytest.mark.parametrize(
+        "search_field,operator,operand",
+        [
+            ("BIRTHDAY", "DATE_FROM", "date"),
+            ("CREDITS", "IN", "credits"),
+            ("DEPOSIT_EXPIRATION_DATE", "DATE_TO", "date"),
+            ("EMAIL_TDL", "EQUALS", "string"),
+            ("REGIONS", "IN", "regions"),
+            ("TAGS", "IN", "tags"),
+        ],
+    )
+    def test_list_accounts_by_empty_field(self, authenticated_client, search_field, operator, operand):
+        query_args = {
+            "search-0-search_field": search_field,
+            "search-0-operator": operator,
+            f"search-0-{operand}": "",
+        }
+        with assert_num_queries(self.expected_num_queries_when_invalid):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert "est vide" in html_parser.extract_alert(response.data)
 
 
 class GetPublicAccountTest(GetEndpointHelper):
