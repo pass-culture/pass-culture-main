@@ -1465,7 +1465,7 @@ def get_user_is_eligible_for_qf_bonification(user: models.User, *, is_from_backo
             bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES,
             bonus_schemas.QFBonificationStatus.STARTED,
         }
-    return deposit_api.can_receive_bonus_credit(user) and get_user_qf_bonification_status(user) not in excluded_statuses
+    return get_user_qf_bonification_status(user) not in excluded_statuses
 
 
 def get_user_is_eligible_for_disability_bonification(user: models.User, *, is_from_backoffice: bool = False) -> bool:
@@ -1478,10 +1478,7 @@ def get_user_is_eligible_for_disability_bonification(user: models.User, *, is_fr
             bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES,
             bonus_schemas.DisabilityBonificationStatus.STARTED,
         }
-    return (
-        deposit_api.can_receive_bonus_credit(user)
-        and get_user_disability_bonification_status(user) not in excluded_statuses
-    )
+    return get_user_disability_bonification_status(user) not in excluded_statuses
 
 
 def get_bonus_credit_fraud_checks(
