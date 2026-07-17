@@ -96,7 +96,7 @@ describe('Banner', () => {
     })
 
     const internalLink = screen.getByRole('link', { name: 'Internal Link' })
-    const externalLink = screen.getByRole('link', { name: 'External Link' })
+    const externalLink = screen.getByRole('link', { name: /External Link/ })
 
     expect(internalLink).toHaveAttribute('target', '_self')
     expect(internalLink).not.toHaveAttribute('rel')
