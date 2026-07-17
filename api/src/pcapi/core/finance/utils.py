@@ -26,7 +26,7 @@ class CurrencyEnum(enum.Enum):
     XPF = "XPF"
 
 
-def to_cents(amount_in_euros: decimal.Decimal | float) -> int:
+def to_cents(amount_in_euros: decimal.Decimal | float | int) -> int:
     exponent = decimal.Decimal("0.01")
     # 0.010 to 0.014 -> 0.01
     # 0.015 to 0.019 -> 0.02
