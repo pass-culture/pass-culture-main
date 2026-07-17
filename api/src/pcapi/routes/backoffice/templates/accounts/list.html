@@ -1,0 +1,17 @@
+{% extends "layouts/connected.html" %}
+
+{% from "components/forms.html" import build_advanced_filters_form with context %}
+
+{% block page %}
+<div class="py-4 px-5">
+  <div class="mx-3">
+    <h1>{% block title %}Jeunes bénéficiaires ou à venir{% endblock title %}</h1>
+  </div>
+  <div class="container-fluid">
+    <div class="pc-search-block rounded p-4">
+      {{ build_advanced_filters_form(advanced_form, search_dst, "advanced-search") }}
+    </div>
+    {% include "accounts/list_rows.html" %}
+  </div>
+</div>
+{% endblock page %}

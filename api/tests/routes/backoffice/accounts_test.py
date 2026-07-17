@@ -192,8 +192,8 @@ def user_id_from_card(card_text: str) -> int | None:
     return match.groupdict().get("user_id") if match else None
 
 
-class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
-    endpoint = "backoffice_web.public_accounts.search_public_accounts"
+class ListPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.list_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
     # session + user tags

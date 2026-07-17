@@ -1,0 +1,18 @@
+{% macro result_card_switch(row) %}
+  {% include "components/search/result_card.html" %}
+{% endmacro %}
+
+<div>
+  {% if rows %}
+    <div>
+      <p class="lead">{{ rows | length }} résultat{{ rows | length | pluralize }}</p>
+      <div>
+        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {% for row in rows %}
+            <div class="col">{{ result_card_switch(row) }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

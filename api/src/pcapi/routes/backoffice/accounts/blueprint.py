@@ -63,6 +63,8 @@ from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import request as request_utils
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
 from pcapi.routes.backoffice.utils import user_actions
@@ -71,6 +73,7 @@ from pcapi.routes.backoffice.utils.extra_funcs import no_cache
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import regions as regions_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -88,6 +91,75 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     url_prefix="/public-accounts",
     permission=perm_models.Permissions.READ_PUBLIC_ACCOUNT,
 )
+
+
+def _get_credits_filter(credit_names: typing.Iterable[str]) -> sa.ColumnElement:
+    predicates = {
+        "PASS_17_V3": sa.and_(
+            finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_underage_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        "PASS_18_V3": sa.and_(
+            finance_models.Deposit.type == finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        "PASS_15_17": sa.and_(
+            finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_underage_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+        "PASS_18": sa.and_(
+            finance_models.Deposit.type != finance_models.DepositType.GRANT_17_18,
+            users_models.User.has_beneficiary_role,
+            users_models.User.isActive.is_(True),
+        ),
+    }
+    return sa.or_(*[predicates[name] for name in credit_names])
+
+
+SEARCH_FIELDS_DEFINITION: dict[str, dict[str, typing.Any]] = {
+    "BIRTHDAY": {"field": "date", "column": users_models.User.birth_date},
+    "CREDITS": {
+        "field": "credits",
+        "custom_filters": {
+            "IN": _get_credits_filter,
+            "NOT_IN": lambda values: sa.not_(_get_credits_filter(values)),
+        },
+        "custom_filters_inner_joins": {"IN": {"deposit"}, "NOT_IN": {"deposit"}},
+    },
+    "DEPOSIT_EXPIRATION_DATE": {
+        "field": "date",
+        "column": finance_models.Deposit.expirationDate,
+        "inner_join": "deposit",
+    },
+    "EMAIL_TDL": {"field": "string", "column": sa.func.email_domain(users_models.User.email)},
+    "REGIONS": {
+        "field": "regions",
+        "column": users_models.User.departementCode,
+        "special": regions_utils.get_department_codes_for_regions,
+    },
+    "TAGS": {"field": "tags", "column": users_models.UserTag.id, "inner_join": "tag"},
+}
+
+
+def _get_search_joins_definition() -> dict[str, list[dict[str, typing.Any]]]:
+    return {
+        "deposit": [
+            {
+                "name": "deposit",
+                "args": (
+                    finance_models.Deposit,
+                    sa.and_(
+                        finance_models.Deposit.userId == users_models.User.id,
+                        finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
+                    ),
+                ),
+            }
+        ],
+        "tag": [{"name": "tag", "args": (users_models.UserTag, users_models.User.tags)}],
+    }
 
 
 class AccountDetailsActionType(enum.StrEnum):
@@ -299,88 +371,64 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
             flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
 
 
+def _get_user_ids_query(advanced_form: account_forms.GetAccountsSearchForm) -> sa_orm.Query:
+    query, _, _, warnings = advanced_search.generate_search_query(
+        query=users_api.search_public_account(advanced_form.query_search.data),
+        search_parameters=advanced_form.search.data,
+        fields_definition=SEARCH_FIELDS_DEFINITION,
+        joins_definition=_get_search_joins_definition(),
+        subqueries_definition={},
+    )
+    for warning in warnings:
+        flash(warning, "warning")
+
+    # +1 to check if there are more results than requested
+    return query.with_entities(users_models.User.id).limit(advanced_form.limit.data + 1)
+
+
+def _get_and_sort_users(user_ids_query: sa_orm.Query) -> list[users_models.User]:
+    query = db.session.query(users_models.User).filter(users_models.User.id.in_(user_ids_query))
+    query = _load_suspension_info(query)
+    query = _load_current_deposit_data(query, join_needed=True)
+
+    return (
+        query.options(
+            sa_orm.joinedload(users_models.User.tags).load_only(
+                users_models.UserTag.id, users_models.UserTag.name, users_models.UserTag.label
+            )
+        )
+        .order_by(users_models.User.id)
+        .all()
+    )
+
+
 @public_accounts_blueprint.route("/search", methods=["GET"])
-def search_public_accounts() -> response_utils.BackofficeResponse:
-    """
-    Renders two search pages: first the one with the search form, then
-    the one of the results.
-    """
-    if not request.args:
-        return render_search_template()
+def list_public_accounts() -> response_utils.BackofficeResponse:
+    advanced_form = account_forms.GetAccountsSearchForm(formdata=request_utils.get_query_params())
+    if not advanced_form.validate():
+        mark_transaction_as_invalid()
+        return render_template(
+            "accounts/list.html",
+            advanced_form=advanced_form,
+            search_dst=url_for(".list_public_accounts"),
+        ), 400
 
-    form = account_forms.AccountSearchForm(request.args)
-    form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
-    if not form.validate():
-        flash(response_utils.build_form_error_msg(form), "warning")
-        return render_search_template(form), 400
-
-    users_query = users_api.search_public_account(form.q.data)
-    users_query = search_utils.apply_filter_on_beneficiary_status(users_query, form.filter.data)
-    users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
-    users_query = _load_suspension_info(users_query)
-    users_query = _load_current_deposit_data(users_query, join_needed=False)
-    paginated_rows = search_utils.paginate(
-        query=users_query,
-        page=form.page.data,
-        per_page=form.per_page.data,
-    )
-
-    # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
-    # (so it would select count twice: in users.count() and in users.paginate)
-    if (
-        paginated_rows.total == 0
-        and form.q.data
-        and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data))
-    ):
-        users_query = users_api.search_public_account_in_history_email(form.q.data)
-        users_query = users_api.apply_filter_on_beneficiary_tag(users_query, form.tag.data)
-        users_query = _load_suspension_info(users_query)
-        users_query = _load_current_deposit_data(users_query)
-        paginated_rows = search_utils.paginate(
-            users_query,
-            page=form.page.data,
-            per_page=form.per_page.data,
+    if advanced_form.is_empty():
+        return render_template(
+            "accounts/list.html",
+            advanced_form=advanced_form,
+            search_dst=url_for(".list_public_accounts"),
         )
 
-    if paginated_rows.total == 1:
-        return redirect(
-            url_for(
-                ".get_public_account",
-                user_id=paginated_rows.items[0].id,
-                q=form.q.data,
-                filter=form.filter.data,
-                tag=form.tag.data,
-                search_rank=1,
-                total_items=1,
-            ),
-            code=303,
-        )
-
-    next_page = partial(url_for, ".search_public_accounts", **form.raw_data)
-    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
-
-    form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+    users = _get_and_sort_users(_get_user_ids_query(advanced_form))
+    rows = search_utils.limit_rows(users, advanced_form.limit.data)
 
     return render_template(
-        "accounts/search_result.html",
-        search_form=form,
-        search_dst=url_for(".search_public_accounts"),
-        next_pages_urls=next_pages_urls,
+        "accounts/list.html",
+        advanced_form=advanced_form,
+        search_dst=url_for(".list_public_accounts"),
         get_link_to_detail=get_public_account_link,
-        rows=paginated_rows,
-    )
-
-
-def render_search_template(form: account_forms.AccountSearchForm | None = None) -> str:
-    if not form:
-        form = account_forms.AccountSearchForm()
-        form.tag.choices = [(tag.id, str(tag)) for tag in get_user_tags()]
-
-    return render_template(
-        "accounts/search.html",
-        title="Recherche grand public",
-        dst=url_for(".search_public_accounts"),
-        form=form,
+        rows=rows,
     )
 
 
@@ -600,7 +648,7 @@ def render_public_account_details(
     return render_template(
         "accounts/get.html",
         search_form=search_form,
-        search_dst=url_for(".search_public_accounts"),
+        search_dst=url_for(".list_public_accounts"),
         user=user,
         tunnel=tunnel,
         fraud_actions_desc=fraud_actions_desc,
