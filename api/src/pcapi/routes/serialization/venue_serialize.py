@@ -339,8 +339,8 @@ class GetVenueListLiteResponseModel(HttpBodyModel):
         venues: typing.Collection[offerers_models.Venue],
         with_pending_validation: typing.Collection[offerers_models.Venue],
     ) -> "GetVenueListLiteResponseModel":
-        venues = sorted(venues, key=lambda v: v.publicName)
-        with_pending_validation = sorted(with_pending_validation, key=lambda v: v.publicName)
+        venues = sorted(venues, key=lambda v: (v.is_closed, v.publicName))
+        with_pending_validation = sorted(with_pending_validation, key=lambda v: (v.is_closed, v.publicName))
 
         return cls(
             venues=[VenueListItemLiteResponseModel.build(venue) for venue in venues],
