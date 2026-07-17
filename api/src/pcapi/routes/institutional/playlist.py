@@ -19,17 +19,18 @@ def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
     offers = (
         db.session.query(offers_models.Offer)
         .join(offers_models.Offer.criteria)
-        .join(offers_models.Offer.stocks)
+        .join(offers_models.Offer.venue)
+        .join(offerers_models.Venue.managingOfferer)
         .filter(
             criteria_models.Criterion.name == tag_name,
             offers_models.Offer.isReleased,
         )
         .options(
             sa_orm.joinedload(offers_models.Offer.stocks),
-            sa_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.contains_eager(offers_models.Offer.venue).contains_eager(offerers_models.Venue.managingOfferer),
             sa_orm.joinedload(offers_models.Offer.mediations),
         )
         .limit(PLAYLIST_MAX_SIZE)
         .all()
     )
-    return serializers.OffersResponse(__root__=[serializers.OfferResponse.from_orm(offer) for offer in offers])
+    return serializers.OffersResponse(root=[serializers.OfferResponse.model_validate(offer) for offer in offers])

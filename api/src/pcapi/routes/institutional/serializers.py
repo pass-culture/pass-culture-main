@@ -1,47 +1,40 @@
-from typing import Any
+import typing
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import validator
-from pydantic.v1.utils import GetterDict
+from pydantic import Field
+from pydantic import RootModel
+from pydantic import field_validator
 
-from pcapi.routes.serialization import ConfiguredBaseModel
-from pcapi.routes.shared.price import convert_to_cent
+from pcapi.core.finance.utils import to_cents
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class OfferImageResponse(ConfiguredBaseModel):
+class OfferImageResponse(HttpBodyModel):
     url: str
     credit: str | None
 
 
-class OfferVenueResponse(ConfiguredBaseModel):
+class OfferVenueResponse(HttpBodyModel):
     id: int
-    publicName: str | None = Field(alias="commonName")
+    publicName: str = Field(alias="commonName")
 
 
-class OfferStockResponse(ConfiguredBaseModel):
+class OfferStockResponse(HttpBodyModel):
     id: int
     price: int
 
-    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    @field_validator("price", mode="before")
+    @classmethod
+    def validate_price(cls, price: typing.Any) -> int:
+        return to_cents(price)
 
 
-class ActiveStockGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        if key == "stocks":
-            return [OfferStockResponse.from_orm(stock) for stock in self._obj.stocks if stock.isBookable]
-        return super().get(key, default)
-
-
-class OfferResponse(ConfiguredBaseModel):
+class OfferResponse(HttpBodyModel):
     id: int
     name: str
     venue: OfferVenueResponse
     image: OfferImageResponse | None
-    stocks: list[OfferStockResponse]
-
-    class Config:
-        getter_dict = ActiveStockGetterDict
+    stocks: list[OfferStockResponse] = Field(validation_alias="bookableStocks")
 
 
-class OffersResponse(ConfiguredBaseModel):
-    __root__: list[OfferResponse]
+class OffersResponse(RootModel):
+    root: list[OfferResponse]
