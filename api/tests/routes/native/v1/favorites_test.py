@@ -202,6 +202,25 @@ class GetTest:
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
             assert favorites[0]["offer"]["venueName"] == "Le Petit Rintintin"
 
+        def test_do_not_display_deactivated_favorites(self, client):
+            # Given
+            user = users_factories.UserFactory()
+            active_offer = offers_factories.EventOfferFactory()
+            users_factories.FavoriteFactory(offer=active_offer, user=user)
+            inactive_offer = offers_factories.EventOfferFactory(publicationDatetime=None)
+            users_factories.FavoriteFactory(offer=inactive_offer, user=user)
+
+            # When
+            client = client.with_token(user)
+            with assert_num_queries(self.expected_num_queries):
+                response = client.get(FAVORITES_URL)
+                assert response.status_code == 200
+
+            # Then
+            assert response.json["nbFavorites"] == 1
+            assert len(response.json["favorites"]) == 1
+            assert response.json["favorites"][0]["offer"]["id"] == active_offer.id
+
         def test_offer_venue_name_is_public_name_for_non_digital_offer(self, client):
             user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
@@ -261,28 +280,18 @@ class GetTest:
                 offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
             )
 
-            # Deactivated event offer future stock
-            offer5 = offers_factories.EventOfferFactory(venue=venue, isActive=False)
-            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
-            offers_factories.EventStockFactory(offer=offer5, beginningDatetime=tomorow, price=10)
-
-            # Deactivated thing offer with no date
-            offer6 = offers_factories.ThingOfferFactory(venue=venue, isActive=False)
-            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
-            offers_factories.ThingStockFactory(offer=offer6, price=10)
-
             # Event offer with soft deleted stock
-            offer7 = offers_factories.EventOfferFactory(venue=venue)
-            favorite7 = users_factories.FavoriteFactory(offer=offer7, user=user)
+            offer5 = offers_factories.EventOfferFactory(venue=venue)
+            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(
-                offer=offer7, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
+                offer=offer5, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
             )
 
             # Event offer with booked stock
-            offer8 = offers_factories.EventOfferFactory(venue=venue)
-            favorite8 = users_factories.FavoriteFactory(offer=offer8, user=user)
-            stock8 = offers_factories.EventStockFactory(offer=offer8, beginningDatetime=tomorow, quantity=1, price=10)
-            bookings_factories.BookingFactory(stock=stock8, user=user)
+            offer6 = offers_factories.EventOfferFactory(venue=venue)
+            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
+            stock6 = offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, quantity=1, price=10)
+            bookings_factories.BookingFactory(stock=stock6, user=user)
 
             client.with_token(user)
 
@@ -293,7 +302,7 @@ class GetTest:
             # Then
             assert response.status_code == 200
             favorites = response.json["favorites"]
-            count = 8
+            count = 6
             assert len(favorites) == count
 
             favorites.reverse()
@@ -305,8 +314,6 @@ class GetTest:
                 favorite4.id,
                 favorite5.id,
                 favorite6.id,
-                favorite7.id,
-                favorite8.id,
             ]
             assert [fav["offer"]["isExpired"] for fav in favorites] == [
                 False,
@@ -315,12 +322,8 @@ class GetTest:
                 True,
                 False,
                 False,
-                False,
-                False,
             ]
             assert [fav["offer"]["isSoldOut"] for fav in favorites] == [
-                False,
-                False,
                 False,
                 False,
                 False,
@@ -333,8 +336,6 @@ class GetTest:
                 True,
                 True,
                 True,
-                False,
-                False,
                 True,
                 True,
             ]
@@ -464,6 +465,17 @@ class CreateFavoriteTest:
 
         # When
         response = client.with_token(user).post(FAVORITES_URL, json={"offerId": 0})
+
+        # Then
+        assert response.status_code == 404
+        assert db.session.query(Favorite).count() == 0
+
+    def test_offer_is_deactivated(self, client):
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory(publicationDatetime=None)
+
+        # When
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
 
         # Then
         assert response.status_code == 404

@@ -102,7 +102,10 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[serial
             )
             .options(sa_orm.joinedload(Offer.offererAddress).joinedload(OffererAddress.address))
         )
-        .filter(Favorite.userId == user.id)
+        .filter(
+            Favorite.userId == user.id,
+            Offer.isPublished,
+        )
         .order_by(Favorite.id.desc())
     )
 
@@ -150,7 +153,19 @@ def get_favorites() -> serializers.PaginatedFavoritesResponse:
 @spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
     if settings.MAX_FAVORITES:
-        if db.session.query(Favorite).filter_by(user=current_user).count() >= settings.MAX_FAVORITES:
+        query = (
+            db.session.query(
+                Favorite,
+            )
+            .join(
+                Favorite.offer,
+            )
+            .filter(
+                Favorite.userId == current_user.id,
+                Offer.isPublished,
+            )
+        )
+        if query.count() >= settings.MAX_FAVORITES:
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
 
     try:
@@ -158,10 +173,10 @@ def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteRe
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
 
-    if not offer.isApproved:
+    if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
         raise ResourceNotFoundError()
 
-    if not (offer.venue.managingOfferer.isActive and offer.venue.managingOfferer.isValidated):
+    if not offer.isPublished:
         raise ResourceNotFoundError()
 
     stmt: sa.sql.dml.ReturningInsert = (
