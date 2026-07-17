@@ -1,24 +1,25 @@
 from typing import Any
 
-from pydantic.v1 import Field
+from pydantic import Field
+from pydantic import RootModel
 from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.shared.price import convert_to_cent
 
 
-class OfferImageResponse(ConfiguredBaseModel):
+class OfferImageResponse(HttpBodyModel):
     url: str
-    credit: str | None
+    credit: str | None = None
 
 
-class OfferVenueResponse(ConfiguredBaseModel):
+class OfferVenueResponse(HttpBodyModel):
     id: int
-    publicName: str | None = Field(alias="commonName")
+    publicName: str = Field(alias="commonName")
 
 
-class OfferStockResponse(ConfiguredBaseModel):
+class OfferStockResponse(HttpBodyModel):
     id: int
     price: int
 
@@ -32,16 +33,16 @@ class ActiveStockGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class OfferResponse(ConfiguredBaseModel):
+class OfferResponse(HttpBodyModel):
     id: int
     name: str
     venue: OfferVenueResponse
-    image: OfferImageResponse | None
+    image: OfferImageResponse | None = None
     stocks: list[OfferStockResponse]
 
     class Config:
         getter_dict = ActiveStockGetterDict
 
 
-class OffersResponse(ConfiguredBaseModel):
-    __root__: list[OfferResponse]
+class OffersResponse(RootModel):
+    root: list[OfferResponse]
