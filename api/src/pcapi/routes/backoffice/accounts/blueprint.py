@@ -42,7 +42,6 @@ from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
-from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -73,7 +72,6 @@ from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
-from pcapi.utils.transaction_manager import on_commit
 
 from . import forms as account_forms
 from . import report
@@ -1861,7 +1859,7 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
         flash(response_utils.build_form_error_msg(form), "warning")
         return redirect(get_public_account_link(user_id), code=303)
 
-    fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
+    bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         user,
         gender=users_models.GenderEnum[form.civility.data],
         first_names=list(filter(None, re.split(",|;| ", form.first_names.data))),
@@ -1871,10 +1869,8 @@ def request_qf_bonus_credit(user_id: int) -> response_utils.BackofficeResponse:
         birth_country_cog_code=form.birth_country.data,
         birth_city_cog_code=form.birth_city.single_data,
         origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
+        publish_task=True,
     )
-
-    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
     flash("La demande de bonification QF est en cours.", "success")
     return redirect(get_public_account_link(user_id), code=303)
@@ -1953,13 +1949,8 @@ def request_disability_bonus_credit(user_id: int) -> response_utils.BackofficeRe
         birth_country_cog_code=form.birth_country.data,
         birth_city_cog_code=form.birth_city.single_data,
         origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
+        publish_task=True,
     )
-
-    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
-
-    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
 
     flash("La demande de bonification AAH/AEEH est en cours.", "success")
     return redirect(get_public_account_link(user_id), code=303)

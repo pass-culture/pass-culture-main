@@ -969,8 +969,7 @@ class QuotientFamilialBonusTest:
             },
         }
 
-        mocked_task.assert_called_once()
-        mocked_task.assert_called_with({"fraud_check_id": bonus_fraud_check.id})
+        mocked_task.assert_not_called()
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
@@ -1040,7 +1039,7 @@ class QuotientFamilialBonusTest:
         assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
 
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-    def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_task, client):
+    def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_apply_for_qf_task, client):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.QFBonusCreditFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
 
@@ -1223,11 +1222,8 @@ class DisabilityBonusTest:
             }
         )
 
-        mocked_aah_task.assert_called_once()
-        mocked_aah_task.assert_called_with({"fraud_check_id": aah_fraud_check.id})
-
-        mocked_aeeh_task.assert_called_once()
-        mocked_aeeh_task.assert_called_with({"fraud_check_id": aeeh_fraud_check.id})
+        mocked_aah_task.assert_not_called()
+        mocked_aeeh_task.assert_not_called()
 
         route_call_record = caplog.records[0]
         assert route_call_record.deviceId == route_call_record.extra["deviceId"] == "[REDACTED]"
