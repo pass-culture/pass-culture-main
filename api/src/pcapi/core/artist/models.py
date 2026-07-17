@@ -97,6 +97,21 @@ class ArtistProductLink(PcObject, Model):
     )
 
 
+class ArtistMusicPlatform(PcObject, Model):
+    __tablename__ = "artist_music_platform"
+
+    artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", back_populates="music_platform")
+    spotify_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    isni_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    apple_music_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    deezer_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    genius_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    soundcloud_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+
 class Artist(Model):
     __tablename__ = "artist"
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
@@ -127,6 +142,9 @@ class Artist(Model):
     is_eligible_for_search: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     # identifier of the artist image stored in object storage
     mediation_uuid: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    music_platform: sa_orm.Mapped["ArtistMusicPlatform | None"] = sa_orm.relationship(
+        "ArtistMusicPlatform", back_populates="artist", uselist=False, cascade="all, delete-orphan"
+    )
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", back_populates="artists", secondary=ArtistProductLink.__table__
