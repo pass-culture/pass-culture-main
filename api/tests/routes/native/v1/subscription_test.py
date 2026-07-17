@@ -1270,16 +1270,42 @@ class DisabilityBonusTest:
         assert response.status_code == 400
         assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
 
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
-    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
-    def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_aeeh_task, mocked_aah_task, client):
+    def test_not_eligible_if_too_many_retries_after_one_failing_try_on_today(self, client):
         user = users_factories.BeneficiaryFactory()
         subscription_factories.AAHBonusCreditFraudCheckFactory(
             user=user, status=subscription_models.FraudCheckStatus.KO
         )
         subscription_factories.AEEHBonusCreditFraudCheckFactory(
-            user=user, status=subscription_models.FraudCheckStatus.KO
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
         )
+
+        response = client.with_token(user).post(
+            "/native/v1/subscription/bonus/disability",
+            json={
+                "birthCountryCogCode": "99100",
+                "birthCityCogCode": "67482",  # Strasbourg
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+    def test_create_bonus_fraud_check_eligible_after_one_failing_try_on_previous_days(
+        self, mocked_aeeh_task, mocked_aah_task, client
+    ):
+
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(days=1)):
+            user = users_factories.BeneficiaryFactory()
+            subscription_factories.AAHBonusCreditFraudCheckFactory(
+                user=user, status=subscription_models.FraudCheckStatus.KO
+            )
+            subscription_factories.AEEHBonusCreditFraudCheckFactory(
+                user=user,
+                status=subscription_models.FraudCheckStatus.KO,
+            )
 
         response = client.with_token(user).post(
             "/native/v1/subscription/bonus/disability",

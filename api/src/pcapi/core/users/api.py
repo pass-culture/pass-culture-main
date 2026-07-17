@@ -1636,6 +1636,9 @@ def get_user_disability_bonification_status(user: models.User) -> bonus_schemas.
     if aah_fraud_check_status == subscription_models.FraudCheckStatus.KO:
         reason_codes = (aah_bonus_fraud_check.reasonCodes if aah_bonus_fraud_check else None) or []
 
+        if aah_bonus_fraud_check and aah_bonus_fraud_check.dateCreated.date() >= date_utils.get_naive_utc_now().date():
+            return bonus_schemas.DisabilityBonificationStatus.TOO_MANY_RETRIES
+
         if subscription_models.FraudReasonCode.PERSON_NOT_FOUND in reason_codes:
             return bonus_schemas.DisabilityBonificationStatus.PERSON_NOT_FOUND
 
