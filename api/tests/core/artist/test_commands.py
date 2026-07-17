@@ -46,6 +46,12 @@ class UpdateArtistsFromDeltaTest:
                 wikipedia_url="Wikipedia du nouvel artiste",
                 wikidata_id="Q123456",
                 mediation_uuid="new-uuid",
+                spotify_id="spotify_id_nouvel_artiste",
+                isni_id="isni_id_nouvel_artiste",
+                apple_music_id="apple_music_id_nouvel_artiste",
+                deezer_id="deezer_id_nouvel_artiste",
+                genius_id="genius_id_nouvel_artiste",
+                soundcloud_id="soundcloud_id_nouvel_artiste",
                 action=DeltaAction.ADD,
             ),
             DeltaArtistModel(id=artist_to_delete.id, action=DeltaAction.REMOVE, name="Artist to Delete"),
@@ -65,6 +71,13 @@ class UpdateArtistsFromDeltaTest:
         assert new_artist.wikipedia_url == "Wikipedia du nouvel artiste"
         assert new_artist.wikidata_id == "Q123456"
         assert new_artist.mediation_uuid == "new-uuid"
+        assert new_artist.music_platform is not None
+        assert new_artist.music_platform.spotify_id == "spotify_id_nouvel_artiste"
+        assert new_artist.music_platform.isni_id == "isni_id_nouvel_artiste"
+        assert new_artist.music_platform.apple_music_id == "apple_music_id_nouvel_artiste"
+        assert new_artist.music_platform.deezer_id == "deezer_id_nouvel_artiste"
+        assert new_artist.music_platform.genius_id == "genius_id_nouvel_artiste"
+        assert new_artist.music_platform.soundcloud_id == "soundcloud_id_nouvel_artiste"
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkDeltaQuery.execute")
     def test_updates_and_creates_artist_product_links(self, mock_link_delta_query):
@@ -121,6 +134,12 @@ class UpdateArtistsFromDeltaTest:
                 wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
                 biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
                 mediation_uuid=mediation_uuid,
+                spotify_id="spotify_id_rick_astley",
+                isni_id="isni_id_rick_astley",
+                apple_music_id="apple_music_id_rick_astley",
+                deezer_id="deezer_id_rick_astley",
+                genius_id="genius_id_rick_astley",
+                soundcloud_id="soundcloud_id_rick_astley",
                 action=DeltaAction.UPDATE,
             ),
         ]
@@ -137,6 +156,13 @@ class UpdateArtistsFromDeltaTest:
             == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
         )
         assert artist_to_update.mediation_uuid == mediation_uuid
+        assert artist_to_update.music_platform is not None
+        assert artist_to_update.music_platform.spotify_id == "spotify_id_rick_astley"
+        assert artist_to_update.music_platform.isni_id == "isni_id_rick_astley"
+        assert artist_to_update.music_platform.apple_music_id == "apple_music_id_rick_astley"
+        assert artist_to_update.music_platform.deezer_id == "deezer_id_rick_astley"
+        assert artist_to_update.music_platform.genius_id == "genius_id_rick_astley"
+        assert artist_to_update.music_platform.soundcloud_id == "soundcloud_id_rick_astley"
 
     @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_does_nothing_for_non_existent_artist(self, mock_artist_delta_query):
