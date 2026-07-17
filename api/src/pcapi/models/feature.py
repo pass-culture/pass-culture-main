@@ -10,7 +10,6 @@ import enum
 import logging
 
 import flask
-from alembic import op
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.orm import Mapped
@@ -164,11 +163,6 @@ class FeatureToggle(enum.Enum):
             return flask.request._cached_features[self.name]  # type: ignore[attr-defined]
         return db.session.query(Feature).filter_by(name=self.name).one().isActive
 
-    def __bool__(self) -> bool:
-        # TODO(tconte-pass, 2026-04-17): remove this function if the log hasn't appeared for a while
-        logger.error("This function should not be used. Use `is_active()` explicitly instead.")
-        return self.is_active()
-
 
 class Feature(PcObject, Model, DeactivableMixin):
     __tablename__ = "feature"
@@ -222,33 +216,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order
 )
-
-
-def add_feature_to_database(feature: Feature) -> None:
-    """This function is to be used in the "downgrade" function of a
-    migration when removing a new feature flag (so that it's added
-    back if we revert the migration).
-    """
-    statement = text(
-        """
-        INSERT INTO feature (name, description, "isActive")
-        VALUES (:name, :description, :is_active)
-        """
-    )
-    statement = statement.bindparams(
-        name=feature.name,
-        description=feature.description,
-        is_active=feature.isActive,
-    )
-    op.execute(statement)
-
-
-def remove_feature_from_database(feature: Feature) -> None:
-    """This function is to be used in the "upgrade" function of a
-    migration when removing a feature flag.
-    """
-    statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
-    op.execute(statement)
 
 
 def install_feature_flags() -> None:
