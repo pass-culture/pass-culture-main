@@ -79,7 +79,8 @@ export const getLinkProps = ({
   return {
     onClick: disabled ? undefined : onClick,
     to: disabled ? '' : absoluteUrl,
-    target: opensInNewTab ? '_blank' : undefined,
+    target: opensInNewTab ? '_blank' : '_self',
+    rel: opensInNewTab ? 'noopener noreferrer' : undefined,
   }
 }
 

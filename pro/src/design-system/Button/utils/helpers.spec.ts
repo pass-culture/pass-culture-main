@@ -223,7 +223,7 @@ describe('getLinkProps', () => {
       opensInNewTab: false,
     })
     expect(result.to).toBe('')
-    expect(result.target).toBeUndefined()
+    expect(result.target).toBe('_self')
     expect(result.onClick).toBeUndefined()
   })
 
@@ -235,7 +235,7 @@ describe('getLinkProps', () => {
       opensInNewTab: false,
     })
     expect(result.to).toBe('/test')
-    expect(result.target).toBeUndefined()
+    expect(result.target).toBe('_self')
   })
 
   it('should return onClick when disabled is false', () => {
@@ -329,6 +329,7 @@ describe('getComponentProps', () => {
     expect(result).toEqual({
       to: '/test',
       target: '_blank',
+      rel: 'noopener noreferrer',
       onClick: undefined,
     })
   })

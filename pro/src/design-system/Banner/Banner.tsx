@@ -102,11 +102,10 @@ export const Banner = ({
                             ? ButtonSize.SMALL
                             : ButtonSize.DEFAULT
                         }
-                        target={a.isExternal ? '_blank' : '_self'}
-                        rel={a.isExternal ? 'noopener noreferrer' : undefined}
                         to={a.href}
                         icon={a.icon}
                         iconAlt={a.iconAlt}
+                        opensInNewTab={a.isExternal}
                         isExternal={a.isExternal}
                         onClick={() => a.onClick?.()}
                         isSectionLink={a.href.startsWith('#')}
