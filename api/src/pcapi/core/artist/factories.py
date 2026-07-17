@@ -51,3 +51,16 @@ class ArtistOfferLinkFactory(BaseFactory):
         model = models.ArtistOfferLink
 
     artist_type = models.ArtistType.PERFORMER
+
+
+class ArtistMusicPlatformFactory(BaseFactory):
+    class Meta:
+        model = models.ArtistMusicPlatform
+
+    artist_id = factory.LazyAttribute(lambda o: o.artist.id if hasattr(o, "artist") else None)
+    spotify_id = None
+    isni_id = None
+    apple_music_id = None
+    deezer_id = None
+    genius_id = None
+    soundcloud_id = None

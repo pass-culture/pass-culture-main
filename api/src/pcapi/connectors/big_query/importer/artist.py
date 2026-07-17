@@ -173,7 +173,7 @@ class ArtistImporter:
                 file_id=model.mediation_uuid,
             )
 
-        return artist_models.Artist(
+        artist = artist_models.Artist(
             id=model.id,
             name=model.name,
             description=model.description,
@@ -185,6 +185,35 @@ class ArtistImporter:
             biography=model.biography,
             wikipedia_url=model.wikipedia_url,
             mediation_uuid=mediation_uuid,
+        )
+        if self._has_music_platform(model):
+            artist.music_platform = self._build_music_platform(model)
+        return artist
+
+    @staticmethod
+    def _has_music_platform(model: bq_artist_queries.ArtistModel) -> bool:
+        return any(
+            [
+                model.spotify_id,
+                model.isni_id,
+                model.apple_music_id,
+                model.deezer_id,
+                model.genius_id,
+                model.soundcloud_id,
+            ]
+        )
+
+    @staticmethod
+    def _build_music_platform(
+        model: bq_artist_queries.ArtistModel,
+    ) -> artist_models.ArtistMusicPlatform:
+        return artist_models.ArtistMusicPlatform(
+            spotify_id=model.spotify_id,
+            isni_id=model.isni_id,
+            apple_music_id=model.apple_music_id,
+            deezer_id=model.deezer_id,
+            genius_id=model.genius_id,
+            soundcloud_id=model.soundcloud_id,
         )
 
     @staticmethod
@@ -198,6 +227,18 @@ class ArtistImporter:
         artist.wikidata_id = delta_model.wikidata_id
         artist.biography = delta_model.biography
         artist.wikipedia_url = delta_model.wikipedia_url
+        if ArtistImporter._has_music_platform(delta_model):
+            if artist.music_platform:
+                artist.music_platform.spotify_id = delta_model.spotify_id
+                artist.music_platform.isni_id = delta_model.isni_id
+                artist.music_platform.apple_music_id = delta_model.apple_music_id
+                artist.music_platform.deezer_id = delta_model.deezer_id
+                artist.music_platform.genius_id = delta_model.genius_id
+                artist.music_platform.soundcloud_id = delta_model.soundcloud_id
+            else:
+                artist.music_platform = ArtistImporter._build_music_platform(delta_model)
+        else:
+            artist.music_platform = None
 
     def _apply_update_with_mediation(
         self, artist: artist_models.Artist, delta_model: bq_artist_queries.DeltaArtistModel

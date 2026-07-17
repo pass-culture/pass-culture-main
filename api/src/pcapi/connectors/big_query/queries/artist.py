@@ -24,6 +24,12 @@ class ArtistModel(BaseModelV2):
     biography: str | None = None
     wikipedia_url: str | None = None
     mediation_uuid: str | None = None
+    spotify_id: str | None = None
+    isni_id: str | None = None
+    apple_music_id: str | None = None
+    deezer_id: str | None = None
+    genius_id: str | None = None
+    soundcloud_id: str | None = None
 
 
 class DeltaArtistModel(ArtistModel):
@@ -44,6 +50,12 @@ class ArtistDeltaQuery(BaseQuery):
             artist_biography as biography,
             wikipedia_url,
             artist_mediation_uuid as mediation_uuid,
+            spotify_id,
+            isni_id,
+            apple_music_id,
+            deezer_id,
+            genius_id,
+            soundcloud_id,
             action
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
