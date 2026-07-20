@@ -4,6 +4,7 @@ import {
   DisplayableActivity,
   OfferStatus,
   SubcategoryIdEnum,
+  VenueState,
 } from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
@@ -372,6 +373,20 @@ describe('getFormReadOnlyFields', () => {
         true,
         defaultVenue
       )
+    ).toStrictEqual(expectedValues)
+  })
+
+  it('should disable all field when venue is closed', () => {
+    const expectedValues = [
+      ...Object.keys(DEFAULT_DETAILS_FORM_VALUES),
+      'accessibility',
+    ]
+
+    expect(
+      getFormReadOnlyFields(getIndividualOfferFactory(), false, {
+        ...defaultVenue,
+        state: VenueState.CLOSING,
+      })
     ).toStrictEqual(expectedValues)
   })
 

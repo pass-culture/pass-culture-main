@@ -40,7 +40,6 @@ export const DetailsForm = ({
     setValue,
     watch,
   } = useFormContext<DetailsFormValues>()
-
   const subcategoryId = watch('subcategoryId')
   const accessibility = watch('accessibility')
 

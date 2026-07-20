@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
+import { VenueState } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -250,6 +251,35 @@ describe('DetailsEanSearch', () => {
 
         expect(getButton()).toBeDisabled()
       })
+    })
+  })
+
+  it('should disable the input when the selected partner venue is closed', async () => {
+    renderWithProviders(
+      <IndividualOfferContext.Provider value={contextValue}>
+        <DetailsEanSearch
+          isDraftOffer={true}
+          isProductBased={false}
+          subcategoryId={DEFAULT_DETAILS_FORM_VALUES.subcategoryId}
+          onEanSearch={vi.fn()}
+          onEanReset={vi.fn()}
+        />
+      </IndividualOfferContext.Provider>,
+      {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 2,
+              state: VenueState.CLOSED,
+            }),
+          },
+        },
+      }
+    )
+
+    await waitFor(() => {
+      expect(getInput()).toBeDisabled()
     })
   })
 
