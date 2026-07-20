@@ -333,6 +333,7 @@ export {
   type NewPasswordBodyModel,
   OfferContactFormEnum,
   type OfferDomain,
+  type OfferExtraData,
   type OfferHomeResponseModel,
   type OfferImage,
   type OfferImageV2,

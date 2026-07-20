@@ -4649,6 +4649,248 @@ export type OfferDomain = {
 };
 
 /**
+ * OfferExtraData
+ */
+export type OfferExtraData = {
+    /**
+     * Allocineid
+     */
+    allocineId?: number;
+    /**
+     * Artist
+     */
+    artist?: string;
+    /**
+     * Author
+     */
+    author?: string;
+    /**
+     * Backlink
+     */
+    backlink?: string;
+    /**
+     * Bookformat
+     */
+    bookFormat?: string;
+    /**
+     * Cast
+     */
+    cast?: Array<string>;
+    /**
+     * Certificate
+     */
+    certificate?: string;
+    /**
+     * Codeclil
+     */
+    codeClil?: string;
+    /**
+     * Collection
+     */
+    collection?: string;
+    /**
+     * Comicseries
+     */
+    comicSeries?: string;
+    /**
+     * Comment
+     */
+    comment?: string;
+    /**
+     * Companies
+     */
+    companies?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Contenuexplicite
+     */
+    contenuExplicite?: string;
+    /**
+     * Countries
+     */
+    countries?: Array<string>;
+    /**
+     * Credits
+     */
+    credits?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Csrid
+     */
+    csrId?: string;
+    /**
+     * Dateparution
+     */
+    dateParution?: string;
+    /**
+     * Dewey
+     */
+    dewey?: string;
+    /**
+     * Diffusionversion
+     */
+    diffusionVersion?: string;
+    /**
+     * Dispo
+     */
+    dispo?: number;
+    /**
+     * Dispolabel
+     */
+    dispoLabel?: string;
+    /**
+     * Distributeur
+     */
+    distributeur?: string;
+    /**
+     * Ean
+     */
+    ean?: string;
+    /**
+     * Editeur
+     */
+    editeur?: string;
+    /**
+     * Eidr
+     */
+    eidr?: string;
+    /**
+     * Genres
+     */
+    genres?: Array<string>;
+    /**
+     * Gtlid
+     */
+    gtlId?: string;
+    /**
+     * Langue
+     */
+    langue?: string;
+    /**
+     * Langueiso
+     */
+    langueiso?: string;
+    /**
+     * Musiclabel
+     */
+    musicLabel?: string;
+    /**
+     * Musicsubtype
+     */
+    musicSubType?: string;
+    /**
+     * Musictype
+     */
+    musicType?: string;
+    /**
+     * Nbgalettes
+     */
+    nbGalettes?: string;
+    /**
+     * Nbpages
+     */
+    nbPages?: string;
+    /**
+     * Numincollection
+     */
+    numInCollection?: string;
+    /**
+     * Originaltitle
+     */
+    originalTitle?: string;
+    /**
+     * Performer
+     */
+    performer?: string;
+    /**
+     * Posterurl
+     */
+    posterUrl?: string;
+    /**
+     * Prixlivre
+     */
+    prixLivre?: string;
+    /**
+     * Prixmusique
+     */
+    prixMusique?: string;
+    /**
+     * Productionyear
+     */
+    productionYear?: number;
+    /**
+     * Rayon
+     */
+    rayon?: string;
+    /**
+     * Releasedate
+     */
+    releaseDate?: string;
+    /**
+     * Releases
+     */
+    releases?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Runtime
+     */
+    runtime?: number;
+    /**
+     * Schoolbook
+     */
+    schoolbook?: boolean;
+    /**
+     * Showsubtype
+     */
+    showSubType?: string;
+    /**
+     * Showtype
+     */
+    showType?: string;
+    /**
+     * Speaker
+     */
+    speaker?: string;
+    /**
+     * Stagedirector
+     */
+    stageDirector?: string;
+    /**
+     * Synopsis
+     */
+    synopsis?: string;
+    /**
+     * Theater
+     */
+    theater?: {
+        [key: string]: unknown;
+    };
+    /**
+     * Titeliveregroup
+     */
+    titeliveRegroup?: string;
+    /**
+     * Title
+     */
+    title?: string;
+    /**
+     * Top
+     */
+    top?: string;
+    /**
+     * Type
+     */
+    type?: string;
+    /**
+     * Visa
+     */
+    visa?: string;
+};
+
+/**
  * OfferHomeResponseModel
  */
 export type OfferHomeResponseModel = {
@@ -5033,10 +5275,7 @@ export type PatchOfferBodyModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasculturaloutreachclaim
      */
