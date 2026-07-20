@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import json
 import typing
 from typing import Any
 
@@ -89,7 +90,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     isNational: bool | None
     name: str | None
-    extraData: Any
+    extraData: offers_models.OfferExtraData | None
     externalTicketOfficeUrl: HttpUrl | None
     url: HttpUrl | None
     withdrawalDetails: str | None
@@ -136,6 +137,16 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
         check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
+
+    @validator("extraData", pre=True, allow_reuse=True)
+    def check_extra_data_max_size(cls, extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
+        offers_validation.validate_extra_data_size(extra_data)
+        return extra_data
+
+    @validator("extraData", pre=True, allow_reuse=True)
+    def check_extra_data_injection(cls, extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
+        offers_validation.validate_extra_data_content(extra_data)
+        return extra_data
 
     class Config:
         alias_generator = to_camel

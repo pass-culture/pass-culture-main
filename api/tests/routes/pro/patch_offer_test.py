@@ -1190,6 +1190,33 @@ class Returns400Test:
                     ]
                 },
             ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {
+                    "extraData": {
+                        "malicious_data": ["a", "very", "large", "dict"],
+                    },
+                },
+                {
+                    "extraData.malicious_data": ["Vous ne pouvez pas changer cette information"],
+                },
+            ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {"extraData": {"cast": ["A" * 70000]}},
+                {
+                    "extraData": ["Le champ extraData est trop volumineux (maximum 64 Ko)."],
+                },
+            ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {"extraData": {"cast": ["><img+stc=x+oneerror=alert(document.cookie)>"]}},
+                {
+                    "extraData": [
+                        "Le contenu du champ extraData contient des caractères ou des scripts non autorisés."
+                    ],
+                },
+            ),
         ],
     )
     def when_sending_incorrect_patch_body_to_offer(self, offer_data, patch_body, expected_response_json, client):
