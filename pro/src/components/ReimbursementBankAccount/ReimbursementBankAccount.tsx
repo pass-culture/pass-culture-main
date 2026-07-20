@@ -2,6 +2,7 @@ import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
   type ManagedVenue,
+  VenueState,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -9,6 +10,7 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -156,11 +158,20 @@ export const ReimbursementBankAccount = ({
                 {hasLinkedVenues && (
                   <>
                     <div className={styles['linked-venues']}>
-                      {bankAccount.linkedVenues.map(({ id, commonName }) => (
-                        <div className={styles['linked-venue']} key={id}>
-                          {commonName}
-                        </div>
-                      ))}
+                      {bankAccount.linkedVenues.map(
+                        ({ id, commonName, state }) => (
+                          <div className={styles['linked-venue']} key={id}>
+                            {commonName}
+                            {(state === VenueState.CLOSING ||
+                              state === VenueState.CLOSED) && (
+                              <Tag
+                                variant={TagVariant.ERROR}
+                                label="Structure fermée"
+                              />
+                            )}
+                          </div>
+                        )
+                      )}
                     </div>
 
                     <Button

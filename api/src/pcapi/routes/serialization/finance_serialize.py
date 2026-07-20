@@ -5,6 +5,7 @@ import pydantic as pydantic_v2
 from pydantic import RootModel
 
 import pcapi.core.finance.models as finance_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 
@@ -63,6 +64,7 @@ class LinkedVenue(HttpBodyModel):
 
     id: int
     publicName: str = pydantic_v2.Field(alias="commonName")
+    state: offerers_models.VenueState | None
 
 
 class ManagedVenue(HttpBodyModel):
@@ -72,6 +74,7 @@ class ManagedVenue(HttpBodyModel):
     siret: str | None
     bank_account_id: int | None
     has_pricing_point: bool
+    state: offerers_models.VenueState | None
 
 
 class BankAccountResponseModel(HttpBodyModel):

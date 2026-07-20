@@ -795,7 +795,9 @@ def get_offerer_with_bank_accounts(offerer_id: int) -> models.Offerer | None:
         )
         .options(
             sa_orm.contains_eager(models.Offerer.managedVenues)
-            .load_only(models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name)
+            .load_only(
+                models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name, models.Venue.state
+            )
             .contains_eager(models.Venue.bankAccountLinks)
         )
         .options(

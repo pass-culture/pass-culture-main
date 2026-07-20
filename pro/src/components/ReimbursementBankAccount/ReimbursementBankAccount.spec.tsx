@@ -6,6 +6,7 @@ import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
   type ManagedVenue,
+  VenueState,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -62,7 +63,9 @@ describe('ReimbursementBankAccount', () => {
       dsApplicationId: 6,
       status: BankAccountApplicationStatus.ACCEPTE,
       dateCreated: '2023-09-22T12:44:05.410448',
-      linkedVenues: [{ id: 315, commonName: 'Le Petit Rintintin' }],
+      linkedVenues: [
+        { id: 315, commonName: 'Le Petit Rintintin', state: null },
+      ],
     }
 
     managedVenues = [
@@ -262,6 +265,15 @@ describe('ReimbursementBankAccount', () => {
     })
   })
 
+  it('should display closed tag', () => {
+    bankAccount.linkedVenues = [
+      { id: 315, commonName: 'Le Petit Rintintin', state: VenueState.CLOSED },
+    ]
+    renderReimbursementBankAccount(bankAccount, managedVenues)
+
+    expect(screen.getByText('Structure fermée')).toBeInTheDocument()
+  })
+
   it('should call the onUpdateButtonClick function when clicking the action button', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -325,6 +337,7 @@ describe('ReimbursementBankAccount', () => {
       bankAccount.linkedVenues.push({
         id: 316,
         commonName: 'Le Petit Rintintin 2',
+        state: null,
       })
       // Adds a venue not linked to a bank account
       managedVenues.push({

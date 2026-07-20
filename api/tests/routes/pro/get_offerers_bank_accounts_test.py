@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 from pcapi.utils import date as date_utils
 
@@ -101,6 +102,7 @@ class OfferersBankAccountTest:
         assert venues[0]["id"] == expected_venue.id
         assert venues[0]["commonName"] == expected_venue.publicName
         assert venues[0]["siret"] == expected_venue.siret
+        assert venues[0]["state"] == expected_venue.state
         assert venues[0]["hasPricingPoint"] is True
         assert not venues[0]["bankAccountId"]
         assert venues[1]["id"] == expected_venue_without_siret.id
@@ -114,7 +116,9 @@ class OfferersBankAccountTest:
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        expected_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, state=offerers_models.VenueState.CLOSED
+        )
         non_linked_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         non_linked_venue_bis = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.StockFactory(offer__venue=expected_venue)
@@ -145,6 +149,7 @@ class OfferersBankAccountTest:
         linked_venue = bank_account["linkedVenues"].pop()
         assert linked_venue["id"] == expected_venue.id
         assert linked_venue["commonName"] == expected_venue.publicName
+        assert linked_venue["state"] == "CLOSED"
 
     @pytest.mark.usefixtures("db_session")
     def test_user_can_only_see_active_bank_accounts(self, client):

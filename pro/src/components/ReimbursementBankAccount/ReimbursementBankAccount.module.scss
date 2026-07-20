@@ -65,5 +65,9 @@
     background-color: var(--color-background-subtle);
     border-radius: var(--size-border-radius-m);
     padding: var(--size-spacing-m) var(--size-spacing-l);
+    display: flex;
+    flex-direction: row;
+    gap: var(--size-spacing-xl);
+    flex-shrink: 1;
   }
 }
