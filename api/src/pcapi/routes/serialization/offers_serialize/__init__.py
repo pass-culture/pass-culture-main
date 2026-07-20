@@ -593,16 +593,6 @@ class DeleteStockListBody(BaseModel):
         ids_to_delete: conlist(int, max_items=offers_repository.STOCK_LIMIT_TO_DELETE)
 
 
-class DeleteFilteredStockListBody(BaseModel):
-    date: datetime.date | None
-    time: datetime.time | None
-    price_category_id: int | None
-
-
-class ImageBodyModel(BaseModel):
-    url: str
-
-
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
