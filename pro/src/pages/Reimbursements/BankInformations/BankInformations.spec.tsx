@@ -31,6 +31,7 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
     {
       commonName: 'carefully',
       id: 1,
+      state: null,
     },
   ],
   obfuscatedIban: 'XXXX-123',

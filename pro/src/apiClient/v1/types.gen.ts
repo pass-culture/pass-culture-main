@@ -3983,6 +3983,7 @@ export type LinkedVenue = {
      * Id
      */
     id: number;
+    state: VenueState | null;
 };
 
 /**
@@ -4516,6 +4517,7 @@ export type ManagedVenue = {
      * Siret
      */
     siret: string | null;
+    state: VenueState | null;
 };
 
 /**

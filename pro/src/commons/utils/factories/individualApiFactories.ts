@@ -491,6 +491,7 @@ export const defaultBankAccount: BankAccountResponseModel = {
     {
       commonName: 'Mon super lieu',
       id: 1,
+      state: null,
     },
   ],
   obfuscatedIban: 'XXXX-123',
@@ -504,6 +505,7 @@ export const defaultManagedVenue: ManagedVenue = {
   siret: '123456789',
   bankAccountId: null,
   hasPricingPoint: true,
+  state: null,
 }
 
 export const defaultVenueProvider: VenueProviderResponse = {

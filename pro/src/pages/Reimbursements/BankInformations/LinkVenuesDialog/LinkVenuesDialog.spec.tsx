@@ -4,7 +4,11 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/compat'
 import * as apiHelpers from '@/apiClient/helpers'
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import {
+  type BankAccountResponseModel,
+  type ManagedVenue,
+  VenueState,
+} from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
@@ -66,6 +70,21 @@ describe('LinkVenueDialog', () => {
     expect(screen.getByRole('checkbox', { name: 'Lieu 2' })).toBeChecked()
   })
 
+  it('should display closed tag for closed venue', () => {
+    const managedVenues = [
+      {
+        ...defaultManagedVenue,
+        id: 1,
+        commonName: 'Lieu 1',
+        state: VenueState.CLOSED,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    expect(screen.getByText('Structure fermée')).toBeInTheDocument()
+  })
+
   it('should display select siret button if venue does not have pricing point', () => {
     const managedVenues = [
       defaultManagedVenue,
@@ -75,8 +94,8 @@ describe('LinkVenueDialog', () => {
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     expect(
-      screen.getAllByRole('button', { name: 'Sélectionner un SIRET' }).length
-    ).toEqual(1)
+      screen.getAllByRole('button', { name: 'Sélectionner un SIRET' })
+    ).toHaveLength(1)
   })
 
   it('should display pricing point pop-in when clicking select siret button', async () => {

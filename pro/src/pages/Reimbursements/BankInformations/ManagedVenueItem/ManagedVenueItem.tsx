@@ -1,9 +1,14 @@
 import { useState } from 'react'
 
-import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import {
+  type BankAccountResponseModel,
+  type ManagedVenue,
+  VenueState,
+} from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
@@ -28,7 +33,7 @@ export function ManadgedVenueItem({
   setSelectedVenuesIds,
   venuesForPricingPoint,
   hasError,
-}: ManadgedVenueItemProps) {
+}: Readonly<ManadgedVenueItemProps>) {
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenue | null>(null)
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
@@ -48,18 +53,24 @@ export function ManadgedVenueItem({
 
   return (
     <div className={styles['dialog-checkbox-container']}>
-      <Checkbox
-        disabled={
-          (Boolean(venue.bankAccountId) &&
-            venue.bankAccountId !== selectedBankAccount.id) ||
-          !venue.hasPricingPoint
-        }
-        label={venue.commonName}
-        name={venue.id.toString()}
-        checked={selectedVenuesIds.indexOf(venue.id) >= 0}
-        onChange={(e) => handleVenueChange(e, venue.id)}
-        hasError={hasError}
-      />
+      <div className={styles['dialog-checkbox-label']}>
+        <Checkbox
+          disabled={
+            (Boolean(venue.bankAccountId) &&
+              venue.bankAccountId !== selectedBankAccount.id) ||
+            !venue.hasPricingPoint
+          }
+          label={venue.commonName}
+          name={venue.id.toString()}
+          checked={selectedVenuesIds.includes(venue.id)}
+          onChange={(e) => handleVenueChange(e, venue.id)}
+          hasError={hasError}
+        />
+        {(venue.state === VenueState.CLOSED ||
+          venue.state === VenueState.CLOSING) && (
+          <Tag variant={TagVariant.ERROR} label="Structure fermée" />
+        )}
+      </div>
       {!venue.hasPricingPoint && (
         <DialogBuilder
           open={isPricingPointDialogOpen}

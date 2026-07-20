@@ -4,3 +4,10 @@
   justify-content: space-between;
   margin-bottom: var(--size-spacing-xl);
 }
+
+.dialog-checkbox-label {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 100%;
+}

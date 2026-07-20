@@ -231,6 +231,7 @@ def get_offerer_bank_accounts_and_attached_venues(
                 siret=venue.siret,
                 has_pricing_point=bool(venue.pricing_point_links),
                 bank_account_id=venue.bankAccountLinks[0].bankAccountId if venue.bankAccountLinks else None,
+                state=venue.state,
             )
             for venue in offerer.managedVenues
         ],
