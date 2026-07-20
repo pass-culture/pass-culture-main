@@ -82,7 +82,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    artistOfferLinks: list[artist_serialize.ArtistOfferLinkBodyModel] | None
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
@@ -101,18 +101,18 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     shouldSendMail: bool | None
     publicationDatetime: datetime.datetime | NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
-    subcategoryId: str | None
-    videoUrl: HttpUrl | None
-    audioDisabilityCompliant: bool | None
-    mentalDisabilityCompliant: bool | None
-    motorDisabilityCompliant: bool | None
-    visualDisabilityCompliant: bool | None
+    subcategory_id: str | None
+    video_url: HttpUrl | None
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
     _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
     _validation_external_ticket_office_url = validate_url("externalTicketOfficeUrl")
     _validation_url = validate_url("url")
-    _validation_video_url = validate_url("videoUrl")
+    _validation_video_url = validate_url("video_url")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -120,18 +120,18 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
             offers_validation.check_offer_name_length_is_valid(name)
         return name
 
-    @validator("videoUrl", pre=True)
+    @validator("video_url", pre=True)
     def clean_video_url(cls, v: str) -> str | None:
         if v == "":
             return None
         return v
 
-    @validator("videoUrl")
+    @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
         offers_validation.check_video_url(video_url)
         return video_url
 
-    @validator("subcategoryId", pre=True)
+    @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
         from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 
@@ -139,16 +139,14 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return subcategory_id
 
     @validator("extraData", pre=True, allow_reuse=True)
-    def check_extra_data_max_size(cls, extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
-        offers_validation.validate_extra_data_size(extra_data)
-        return extra_data
-
-    @validator("extraData", pre=True, allow_reuse=True)
-    def check_extra_data_injection(cls, extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
-        offers_validation.validate_extra_data_content(extra_data)
-        return extra_data
+    def validate_and_format_extra_data(cls, extra_data: typing.Any) -> offers_models.OfferExtraData:
+        formated_extra_data = offers_validation.format_extra_data(extra_data)
+        offers_validation.validate_extra_data_size(formated_extra_data)
+        offers_validation.validate_extra_data_content(formated_extra_data)
+        return formated_extra_data
 
     class Config:
+        alias_generator = to_camel
         extra = "forbid"
 
 

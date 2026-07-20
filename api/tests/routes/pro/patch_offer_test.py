@@ -1220,7 +1220,7 @@ class Returns400Test:
                     },
                 },
                 {
-                    "extraData.malicious_data": ["Vous ne pouvez pas changer cette information"],
+                    "extraData.maliciousData": ["Vous ne pouvez pas changer cette information"],
                 },
             ),
             (

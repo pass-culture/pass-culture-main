@@ -3,6 +3,7 @@ import decimal
 import json
 import logging
 import re
+import typing
 import warnings
 from io import BytesIO
 
@@ -983,3 +984,13 @@ def validate_extra_data_content(extra_data: offers_models.OfferExtraData) -> off
             }
         )
     return extra_data
+
+
+def format_extra_data(extra_data: typing.Any) -> offers_models.OfferExtraData:
+    formated_extra_data: dict[str, typing.Any] = {}
+
+    for key, value in extra_data.items():
+        field_name = to_camelcase(key)
+        formated_extra_data[field_name] = value
+
+    return typing.cast(offers_models.OfferExtraData, formated_extra_data)

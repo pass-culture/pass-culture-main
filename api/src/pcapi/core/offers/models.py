@@ -9,7 +9,6 @@ import psycopg2.extras
 import sqlalchemy as sa
 import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
-from pydantic import v1 as pydantic_v1
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
