@@ -66,7 +66,7 @@ export function StocksCalendarTable({
   onUpdateStock,
   onDeleteStocks,
   onUpdateFilters,
-}: StocksCalendarTableProps) {
+}: Readonly<StocksCalendarTableProps>) {
   const [isEditStockDialogOpen, setIsEditStockDialogOpen] = useState(false)
   const [stockOpenedInDialog, setStockOpenedInDialog] =
     useState<GetOfferStockResponseModel | null>(null)

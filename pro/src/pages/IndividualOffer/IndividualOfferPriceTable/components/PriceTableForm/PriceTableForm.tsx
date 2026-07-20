@@ -15,6 +15,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -59,6 +60,7 @@ export const PriceTableForm = ({
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
@@ -85,7 +87,7 @@ export const PriceTableForm = ({
   )
 
   const areAllFieldsDisabled =
-    isOfferDisabled(offer) || hasPublishedOfferWithSameEan
+    isOfferDisabled(offer) || hasPublishedOfferWithSameEan || isVenueClosed
   const areAllFieldsDisabledButQuantity =
     !areAllFieldsDisabled &&
     isOfferSynchronized(offer) &&

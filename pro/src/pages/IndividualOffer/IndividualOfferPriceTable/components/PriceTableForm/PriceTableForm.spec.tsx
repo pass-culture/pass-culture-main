@@ -6,6 +6,7 @@ import { vi } from 'vitest'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
+  VenueState,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -18,6 +19,7 @@ import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
@@ -39,15 +41,19 @@ vi.mock(
   })
 )
 
+const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
+
 const renderPriceTableForm: RenderComponentFunction<
   PriceTableFormProps,
   PriceTableFormContext,
   {
     offer: GetIndividualOfferWithAddressResponseModel
     defaultValues?: PriceTableFormValues
+    isVenueClosed?: boolean
   }
 > = (params) => {
   const offer = params.offer ?? getIndividualOfferFactory({ id: 1 })
+  const isVenueClosed = params.isVenueClosed ?? false
 
   const contextValues: PriceTableFormContext = {
     isCaledonian: params.contextValues?.isCaledonian ?? false,
@@ -98,7 +104,12 @@ const renderPriceTableForm: RenderComponentFunction<
 
   return renderWithProviders(<Wrapper />, {
     storeOverrides: {
-      user: { selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }) },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: isVenueClosed
+          ? makeGetVenueResponseModel({ id: 1, state: VenueState.CLOSED })
+          : defaultSelectedPartnerVenue,
+      },
     },
   })
 }
@@ -747,5 +758,24 @@ describe('PriceTableForm', () => {
       Events.UPDATED_BOOKING_LIMIT_DATE,
       expect.objectContaining({ bookingLimitDatetime: '2020-12-15' })
     )
+  })
+
+  it('should disable all fields when venue is closed', () => {
+    const offer = { ...eventOffer, status: OfferStatus.ACTIVE }
+    renderPriceTableForm({ offer, isVenueClosed: true })
+
+    const labelInput = screen.getByLabelText(LABELS.fields.label)
+    expect(labelInput).toBeDisabled()
+
+    const priceInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: LABELS.fields.price,
+    })
+    expect(priceInput).toBeDisabled()
+
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.addEntry,
+      })
+    ).not.toBeInTheDocument()
   })
 })

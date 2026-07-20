@@ -22,6 +22,7 @@ import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/u
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -50,6 +51,7 @@ export const IndividualOfferPriceTableScreen = ({
   const { pathname } = useLocation()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 
@@ -164,7 +166,8 @@ export const IndividualOfferPriceTableScreen = ({
                   disabled={
                     isOfferDisabled(offer) ||
                     hasPublishedOfferWithSameEan ||
-                    isOfferSynchronized(offer)
+                    isOfferSynchronized(offer) ||
+                    isVenueClosed
                   }
                 />
               </FormLayout.Section>
@@ -179,7 +182,8 @@ export const IndividualOfferPriceTableScreen = ({
               form.formState.isSubmitting ||
               (isOfferExposureEnabled &&
                 !form.formState.isDirty &&
-                mode !== OFFER_WIZARD_MODE.CREATION)
+                mode !== OFFER_WIZARD_MODE.CREATION) ||
+              isVenueClosed
             }
             dirtyForm={form.formState.isDirty}
             isEvent={false}

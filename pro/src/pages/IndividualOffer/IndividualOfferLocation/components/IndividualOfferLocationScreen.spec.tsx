@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import { VenueState } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -43,8 +44,9 @@ vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
 
 const renderIndividualOfferLocationScreen: RenderComponentFunction<
   IndividualOfferLocationScreenProps,
-  IndividualOfferContextValues
-> = (params) => {
+  IndividualOfferContextValues,
+  { isVenueClosed?: boolean }
+> = ({ isVenueClosed = false, ...params }) => {
   const offer = getIndividualOfferFactory()
   const selectedPartnerVenue = makeGetVenueResponseModel({
     id: 1,
@@ -63,6 +65,7 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
       street: '3 Rue de Valois',
       departmentCode: '75',
     },
+    state: isVenueClosed ? VenueState.CLOSED : null,
   })
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
@@ -420,6 +423,16 @@ describe('<IndividualOfferLocationScreen />', () => {
         const props = { offer: onlineOffer }
 
         renderIndividualOfferLocationScreen({ contextValues, props })
+
+        expect(
+          await screen.findByRole('textbox', { name: LABELS.fields.url })
+        ).toBeDisabled()
+      })
+
+      it('should disable the forms if the venue is closed', async () => {
+        const props = { offer: onlineOffer }
+
+        renderIndividualOfferLocationScreen({ props, isVenueClosed: true })
 
         expect(
           await screen.findByRole('textbox', { name: LABELS.fields.url })

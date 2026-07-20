@@ -4,7 +4,10 @@ import { forwardRef } from 'react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import {
+  type GetIndividualOfferWithAddressResponseModel,
+  VenueState,
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -20,6 +23,8 @@ import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -54,18 +59,26 @@ const waitForScrollToFirstErrorHookUseEffect = async () => {
   })
 }
 
+const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
+
 const renderIndividualOfferMediaScreen = async ({
   props = {},
   mode = OFFER_WIZARD_MODE.CREATION,
   features = [],
+  isVenueClosed = false,
 }: {
   props?: { offer?: GetIndividualOfferWithAddressResponseModel }
   mode?: OFFER_WIZARD_MODE
   features?: string[]
+  isVenueClosed?: boolean
 } = {}) => {
   const finalOffer = getIndividualOfferFactory(props.offer)
   const finalContextValue: IndividualOfferContextValues =
     individualOfferContextValuesFactory({ offer: finalOffer })
+
+  const selectedPartnerVenue = isVenueClosed
+    ? makeGetVenueResponseModel({ id: 1, state: VenueState.CLOSED })
+    : defaultSelectedPartnerVenue
 
   const res = renderWithProviders(
     <IndividualOfferContext.Provider value={finalContextValue}>
@@ -88,6 +101,12 @@ const renderIndividualOfferMediaScreen = async ({
         }),
       ],
       features,
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue,
+        },
+      },
     }
   )
 
@@ -248,6 +267,18 @@ describe('IndividualOfferMediaScreen', () => {
 
       await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
       expect(mockHandleImageOnSubmit).toHaveBeenCalled()
+    })
+
+    it('should disable the field when the venue is closed', async () => {
+      await renderIndividualOfferMediaScreen({
+        props: {
+          offer: getIndividualOfferFactory(),
+        },
+        isVenueClosed: true,
+      })
+
+      const imageInput = screen.getByLabelText(LABELS.imageInput)
+      expect(imageInput).toBeDisabled()
     })
 
     describe('when the offer is product based', () => {

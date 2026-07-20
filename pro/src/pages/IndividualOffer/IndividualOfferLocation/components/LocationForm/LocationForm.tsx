@@ -5,7 +5,10 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 
@@ -17,7 +20,8 @@ export const LocationForm = () => {
     register,
     formState: { errors },
   } = useFormContext<LocationFormValues>()
-
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const { hasPublishedOfferWithSameEan, offer } = useIndividualOfferContext()
   assertOrFrontendError(offer, '`offer` is undefined in LocationForm.')
 
@@ -26,7 +30,8 @@ export const LocationForm = () => {
     mode === OFFER_WIZARD_MODE.READ_ONLY ||
     hasPublishedOfferWithSameEan ||
     [OfferStatus.PENDING, OfferStatus.REJECTED].includes(offer.status) ||
-    isOfferSynchronized(offer)
+    isOfferSynchronized(offer) ||
+    isVenueClosed
 
   return (
     <FormLayout.Section title="Où profiter de l’offre ?">

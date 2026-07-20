@@ -1,5 +1,9 @@
+import cn from 'classnames'
 import { useState } from 'react'
 
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -21,6 +25,8 @@ export const VideoUploader = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { videoData, onVideoDelete } = useVideoUploaderContext()
   const { videoDuration, videoTitle, videoThumbnailUrl } = videoData ?? {}
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   return (
     <div className={styles['video-uploader-container']}>
@@ -42,6 +48,7 @@ export const VideoUploader = () => {
                   size={ButtonSize.SMALL}
                   icon={fullEditIcon}
                   label="Modifier"
+                  disabled={isVenueClosed}
                 />
               }
             />
@@ -52,11 +59,16 @@ export const VideoUploader = () => {
               icon={fullTrashIcon}
               onClick={onVideoDelete}
               label="Supprimer"
+              disabled={isVenueClosed}
             />
           </div>
         </>
       ) : (
-        <div className={styles['video-uploader-no-video']}>
+        <div
+          className={cn(styles['video-uploader-no-video'], {
+            [styles['video-uploader-no-video-disabled']]: isVenueClosed,
+          })}
+        >
           <SvgIcon src={strokeVideoIcon} alt="" width="44" />
           <ModalVideo
             onOpenChange={setIsOpen}
@@ -67,6 +79,7 @@ export const VideoUploader = () => {
                 color={ButtonColor.NEUTRAL}
                 icon={fullMoreIcon}
                 label="Ajouter une URL Youtube"
+                disabled={isVenueClosed}
               />
             }
           />
