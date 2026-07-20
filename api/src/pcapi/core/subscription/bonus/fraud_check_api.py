@@ -1,4 +1,5 @@
 import datetime
+import logging
 from functools import partial
 
 from pcapi import settings
@@ -7,6 +8,9 @@ from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils.transaction_manager import on_commit
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_qf_bonus_credit_fraud_check(
@@ -98,12 +102,17 @@ def create_disability_bonus_credit_fraud_checks(
     if publish_task is None:
         publish_task = settings.BONUS_CREDIT_DELAY == 0
 
+    logger.error("delay %s", settings.BONUS_CREDIT_DELAY)
+    logger.error("publish_task %s", publish_task)
+
     if publish_task:
         aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
         on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
 
         aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
         on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
+
+        logger.error("tasks published")
 
     return aah_fraud_check, aeeh_fraud_check
 
