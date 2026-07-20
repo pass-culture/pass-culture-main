@@ -35,6 +35,15 @@ export const App = (): JSX.Element => {
   )
 
   useEffect(() => {
+    const logData = () => {
+      if (LOGS_DATA) {
+        logCatalogView({
+          iframeFrom: location.pathname,
+          source: siret || venueId ? 'partnersMap' : 'homepage',
+        })
+      }
+    }
+
     async function authenticate() {
       setIsLoading(true)
       try {
@@ -43,6 +52,7 @@ export const App = (): JSX.Element => {
         if (user.email) {
           setSentryUser({ email: user.email })
         }
+        logData()
       } catch {
         setUser(null)
       } finally {
@@ -51,13 +61,6 @@ export const App = (): JSX.Element => {
     }
 
     authenticate()
-
-    if (LOGS_DATA) {
-      logCatalogView({
-        iframeFrom: location.pathname,
-        source: siret || venueId ? 'partnersMap' : 'homepage',
-      })
-    }
   }, [siret, venueId, logCatalogView])
 
   if (isLoading) {
