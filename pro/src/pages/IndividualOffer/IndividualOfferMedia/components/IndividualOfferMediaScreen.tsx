@@ -16,10 +16,13 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBasedButNotSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useFormNavigationGuard } from '@/commons/hooks/useFormNavigationGuard/useFormNavigationGuard'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
@@ -48,6 +51,8 @@ export const IndividualOfferMediaScreen = ({
   const isOnboarding = pathname.includes('onboarding')
   const mode = useOfferWizardMode()
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const initialImageOffer = getIndividualOfferImage(offer)
   const {
@@ -215,8 +220,8 @@ export const IndividualOfferMediaScreen = ({
                     initialValues={buildInitialValues(displayedImage)}
                     mode={UploaderModeEnum.OFFER}
                     onImageDropOrSelected={logOnImageDropOrSelected}
-                    hideActionButtons={isProductBased}
-                    disabled={isProductBased}
+                    hideActionButtons={isProductBased || isVenueClosed}
+                    disabled={isProductBased || isVenueClosed}
                   />
                 </FormLayout.SubSection>
                 <Divider

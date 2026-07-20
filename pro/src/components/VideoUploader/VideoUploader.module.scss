@@ -21,6 +21,11 @@
     background: var(--color-background-subtle);
     border-color: var(--color-border-brand-primary);
   }
+
+  &-disabled {
+    background: var(--color-background-subtle);
+    border-color: var(--color-border-default);
+  }
 }
 
 .action-wrapper {

@@ -1,15 +1,28 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { VenueState } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { VideoUploaderContextProvider } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
 
 import { VideoUploader } from './VideoUploader'
 
+const selectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
+const defaultStoreOverrides = {
+  user: {
+    currentUser: sharedCurrentUserFactory(),
+    selectedPartnerVenue,
+  },
+}
+
 describe('VideoUploader', () => {
   it('should render a button and a text when no video has been provided', () => {
-    renderWithProviders(<VideoUploader />)
+    renderWithProviders(<VideoUploader />, {
+      storeOverrides: defaultStoreOverrides,
+    })
 
     expect(
       screen.getByRole('button', { name: 'Ajouter une URL Youtube' })
@@ -35,7 +48,8 @@ describe('VideoUploader', () => {
         initialVideoData={offer.videoData}
       >
         <VideoUploader />
-      </VideoUploaderContextProvider>
+      </VideoUploaderContextProvider>,
+      { storeOverrides: defaultStoreOverrides }
     )
 
     expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument()
@@ -44,14 +58,16 @@ describe('VideoUploader', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('img', { name: 'Prévisualisation de l’image' })
+      screen.getByRole('img', { name: 'Prévisualisation de l\u2019image' })
     ).toBeInTheDocument()
     expect(screen.getByText('Ma super vidéo')).toBeInTheDocument()
     expect(screen.getByText('3 min')).toBeInTheDocument()
   })
 
   it('should open modal on click on add video button', async () => {
-    renderWithProviders(<VideoUploader />)
+    renderWithProviders(<VideoUploader />, {
+      storeOverrides: defaultStoreOverrides,
+    })
 
     await userEvent.click(
       await screen.findByRole('button', {
@@ -63,5 +79,25 @@ describe('VideoUploader', () => {
         name: /Ajouter une vidéo/,
       })
     ).toBeInTheDocument()
+  })
+
+  it('should disable form when venue is closed', () => {
+    const closedVenue = makeGetVenueResponseModel({
+      id: 1,
+      state: VenueState.CLOSED,
+    })
+
+    renderWithProviders(<VideoUploader />, {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: closedVenue,
+        },
+      },
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Ajouter une URL Youtube' })
+    ).toBeDisabled()
   })
 })
