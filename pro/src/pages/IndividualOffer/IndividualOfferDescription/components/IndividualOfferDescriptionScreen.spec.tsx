@@ -11,6 +11,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
+  VenueState,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -373,6 +374,25 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     expect(
       await screen.findByRole('heading', { name: 'Informations artistiques' })
     ).toBeInTheDocument()
+  })
+
+  it('should disable the form when selected partner venue is closed', async () => {
+    renderDetailsScreen({
+      contextValue,
+      options: {
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory(),
+            selectedPartnerVenue: makeGetVenueResponseModel({
+              id: 189,
+              state: VenueState.CLOSED,
+            }),
+          },
+        },
+      },
+    })
+
+    expect(await screen.findByLabelText(/Titre de l’offre/)).toBeDisabled()
   })
 
   it('should show errors in the form when not all field has been filled', async () => {
