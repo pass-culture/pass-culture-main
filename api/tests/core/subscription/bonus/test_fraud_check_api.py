@@ -9,6 +9,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils import countries as countries_utils
 
 
+@pytest.mark.usefixtures("db_session")
 class QuotientFamilialTest:
     @pytest.mark.settings(BONUS_CREDIT_DELAY=0)
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
@@ -87,6 +88,7 @@ class QuotientFamilialTest:
         mocked_apply_for_qf_task.assert_called_with({"fraud_check_id": fraud_check.id})
 
 
+@pytest.mark.usefixtures("db_session")
 class DisabilityAllowanceTest:
     @pytest.mark.settings(BONUS_CREDIT_DELAY=0)
     @patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
