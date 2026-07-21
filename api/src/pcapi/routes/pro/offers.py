@@ -212,7 +212,7 @@ def upsert_offer_stocks(
 
     stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
     for stock in body.stocks:
-        data = stock.dict(by_alias=False, exclude={"offer_id"})
+        data = stock.model_dump(by_alias=False, exclude={"offer_id"})
         stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
 
     offers_api.upsert_offer_thing_stocks(offer, stock_inputs)

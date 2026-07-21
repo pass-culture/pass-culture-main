@@ -17,10 +17,13 @@ Quantity = Annotated[int, pydantic_v2.Field(ge=0, le=models.Stock.MAX_STOCK_QUAN
 # Decimal(str(value)) -> Decimal('19.95')
 Decimal = Annotated[decimal.Decimal, lambda value: decimal.Decimal(str(value))]
 
+# pattern [^,;.]+ is "any number of character that is not one of ,;."
+ActivationCode = Annotated[str, pydantic_v2.StringConstraints(pattern=r"^[^,;.]+$")]
+
 
 class ThingStockUpsertBodyModel(HttpBodyModel):
     id: int | None = None
-    activation_codes: list[str] | None = None
+    activation_codes: list[ActivationCode] | None = None
     activation_codes_expiration_datetime: serialization_utils.future_tz_aware_datetime | None = None
     booking_limit_datetime: serialization_utils.future_tz_aware_datetime | None = None
     offer_id: int
