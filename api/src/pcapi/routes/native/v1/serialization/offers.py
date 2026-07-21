@@ -19,6 +19,7 @@ from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles.api import get_offer_published_chronicles
+from pcapi.core.chronicles.models import ChronicleClubType
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
@@ -447,6 +448,7 @@ class OfferChronicleAuthor(ConfiguredBaseModel):
 class OfferChronicle(ConfiguredBaseModel):
     id: int
     author: OfferChronicleAuthor | None
+    club_type: ChronicleClubType
     content: str
     date_created: datetime
 

@@ -5,6 +5,7 @@ import pytest
 import time_machine
 
 import pcapi.core.chronicles.factories as chronicles_factories
+import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
@@ -406,6 +407,31 @@ class OfferChroniclesTest:
         contents = [chronicle["content"] for chronicle in response.json["chronicles"]]
         assert "Test Chronicle 2" in contents
         assert "Test Chronicle" in contents
+        club_types = [chronicle["clubType"] for chronicle in response.json["chronicles"]]
+        assert club_types == ["BOOK", "BOOK"]
+
+    def test_get_offer_scene_club_chronicles(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
+        chronicles_factories.ChronicleFactory(
+            offers=[offer],
+            content="Test Scene Chronicle",
+            clubType=chronicles_models.ChronicleClubType.SCENE_CLUB,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            productIdentifier=str(offer.id),
+            isActive=True,
+            isSocialMediaDiffusible=True,
+        )
+
+        offer_id = offer.id
+        db.session.expire_all()
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/offer/{offer_id}/chronicles")
+        assert response.status_code == 200
+
+        chronicles = response.json["chronicles"]
+        assert len(chronicles) == 1
+        assert chronicles[0]["content"] == "Test Scene Chronicle"
+        assert chronicles[0]["clubType"] == "SCENE"
 
     def test_get_offer_chronicles_with_no_author(self, client):
         product = offers_factories.ProductFactory(name="Test Product")
