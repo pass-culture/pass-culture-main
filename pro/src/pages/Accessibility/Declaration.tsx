@@ -24,25 +24,19 @@ export const Declaration = () => {
         <p className={styles['paragraph']}>
           Le pass Culture s’engage à rendre son site internet et ses
           applications mobiles accessibles conformément à l’article 47 de la loi
-          n° 2005-102 du 11 février 2005.
+          n° 2005-102 du 11 février 2005 et à l’article 16 de la loi n°2023-171
+          du 9 mars 2023.
         </p>
         <p className={styles['paragraph']}>
-          À cette fin, il met en œuvre la stratégie et les actions suivantes
+          À cette fin, il met en œuvre la stratégie et les actions suivantes :
         </p>
 
         <ul>
           <li className={styles['list-item']}>
             <Link
               color={LinkColor.NEUTRAL}
-              to="/accessibilite/schema-pluriannuel"
+              to="/schema-pluriannuel-2025-2027"
               label="Schéma pluriannuel d’accessibilité 2024 - 2025"
-            />
-          </li>
-          <li className={styles['list-item']}>
-            <Link
-              color={LinkColor.NEUTRAL}
-              to="/accessibilite/schema-pluriannuel"
-              label="Plan d’actions 2024 - 2025"
             />
           </li>
         </ul>
@@ -57,19 +51,27 @@ export const Declaration = () => {
         </p>
         <h2 className={styles['heading2']}>État de conformité</h2>
         <p className={styles['paragraph']}>
-          Le site pass Culture n’est pas conforme avec le référentiel général
-          d’amélioration de l’accessibilité.
+          Le site Pass Culture – Portail Pro est non conforme avec la norme
+          européenne 301 549 (v3.2.1).
         </p>
-        <h3 className={styles['heading3']}>Résultat des tests</h3>
         <p className={styles['paragraph']}>
-          L’audit de conformité réalisé par la DINUM révèle que :
+          La méthodologie d’audit se base sur le Référentiel d'Évaluation de
+          l'Accessibilité Web (RAWeb 1.1), seule méthode opérationnelle publiée
+          à ce jour pour vérifier l’ensemble des critères de la norme
+          européenne.
         </p>
-        <ul>
-          <li className={styles['list-item']}>
-            48 % des critères RGAA version 4.1 sont respectés.
-          </li>
-        </ul>
-        <h2 className={styles['heading2']}>Contenus non accessibles</h2>
+        <p className={styles['paragraph']}>
+          Le site Pass Culture – Portail Pro
+          (https://integration.passculture.pro/accueil) est partiellement
+          conforme avec le RAWeb version 1.1 et le RGAA version 4.1, en raison
+          des non-conformités énumérées dans la section « Résultats des tests ».
+        </p>
+        <h2 className={styles['heading2']}>Résultat des tests</h2>
+        <p className={styles['paragraph']}>
+          L’audit de conformité réalisé par la société Access42 révèle que le
+          site est conforme à 67.65 % au RGAA version 4.1.
+        </p>
+        <h2 className={styles['heading2']}>Contenus inaccessibles</h2>
         <p className={styles['paragraph']}>
           Les contenus listés ci-dessous ne sont pas accessibles pour les
           raisons suivantes.
@@ -77,132 +79,127 @@ export const Declaration = () => {
         <h3 className={styles['heading3']}>Non conformité</h3>
         <ul>
           <li className={styles['list-item']}>
-            Sur toutes les pages contenant le menu principal, les éléments du
-            menu sortent de l’écran lorsque la largeur d’écran est réduite, que
-            le zoom de la page est augmenté ou que l’écran est en mode paysage.
-            De plus, quand c’est le cas, le bouton de déconnexion est invisible.
+            [1.2 - RGAA] Une image de décoration au moins n'est pas ignorée des
+            technologies d’assistance.
           </li>
           <li className={styles['list-item']}>
-            Dans l’ensemble de l’application, les notifications suivant les
-            actions ne sont pas restituées aux utilisateurs de technologies
-            d’assistance.
+            [1.3 - RGAA] L'alternative textuelle d'une image porteuse
+            d’information au moins n'est pas pertinente.
           </li>
           <li className={styles['list-item']}>
-            Sur les pages connexion, mot de passe oublié, accueil et inscription
-            la technologie de recaptcha google embarque une iframe avec des
-            attributs frameborder et scrolling.
+            [3.1 - RGAA] Une information au moins est véhiculée uniquement par
+            la couleur.
           </li>
           <li className={styles['list-item']}>
-            Les champs de formulaire e-mail, quantité et url ont des exemples ou
-            indications de remplissage qui sont contenus uniquement dans les
-            textes de substitution.
+            [5.3 - RGAA] Un tableau utilisé à des fins de présentation au moins
+            n'est pas déclaré pas comme tel et/ou les contenus linéarisés de ce
+            tableau ne se présentent pas dans un ordre logique dans le code
+            source.
           </li>
           <li className={styles['list-item']}>
-            Les champs ayant une validation du format pendant la saisie de
-            l’utilisateur annoncent le message d’erreur en mode prioritaire.
+            [5.4 - RGAA] Le titre d'un tableau de données au moins n'est pas
+            correctement associé au tableau.
           </li>
           <li className={styles['list-item']}>
-            Les champs indicatif de téléphone et numéro de téléphone ont des
-            intitulés cachés visuellement.
+            [5.5 - RGAA] Le titre d'un tableau de données au moins n'est pas
+            pertinent.
           </li>
           <li className={styles['list-item']}>
-            Sur la page d’inscription, les indications de format de mot de passe
-            sont cachées par défaut.
+            [5.7 - RGAA] Les en-têtes d'un tableau de données au moins ne sont
+            pas correctement associés aux cellules.
           </li>
           <li className={styles['list-item']}>
-            Les messages d’erreur au niveau des groupes de cases à cocher ne
-            sont pas restitués aux utilisateurs de lecteurs d’écran lorsqu’ils
-            apparaissent.
+            [5.8 - RGAA] Un tableau utilisé à des fins de présentation au moins
+            utilise des éléments propres aux tableaux de données.
           </li>
           <li className={styles['list-item']}>
-            Les chemins d’étape des pages de formulaire d’offre ne permettent
-            pas d’identifier l’étape active si les feuilles de styles sont
-            désactivées.
+            [7.1 - RGAA] Une fonctionnalité JavaScript au moins n'est pas
+            compatible avec les technologies d’assistance ou fait un usage
+            inapproprié de propriétés ARIA.
           </li>
           <li className={styles['list-item']}>
-            Sur la page <strong>Création d’une offre - Détail</strong> le dialog
-            de modification d’image a un attribut aria-labelledby invalide et le
-            champ de saisie de l’image a un attribut aria-invalid="true” par
-            défaut. Par ailleurs dans le dialog, les indications de format ne
-            sont pas reliées au champ de saisie de l’image.
+            [7.5 - RGAA] Un message de statut au moins n'est pas restitué par
+            les technologies d’assistance.
           </li>
           <li className={styles['list-item']}>
-            Dans la page <strong>Réservations / recherche réservations</strong>{' '}
-            la modification des résultats de la recherche n’est pas restituée.
-            Sur cette même page, les champs de dates et de type de réservation
-            voient leur contenu coupé en cas de modification de l’espace entre
-            les lettres. Enfin, les intitulés des champs de filtrage sont cachés
-            visuellement.
+            [8.9 - RGAA] Une balise au moins est utilisée à des fins de
+            présentation (par exemple des paragraphes vides et/ou des textes non
+            structurés dans des balises de paragraphes).
           </li>
           <li className={styles['list-item']}>
-            Dans le parcours d’inscription les étapes de rattachement, de
-            structure, d’identification, de validation et d’activité n’ont pas
-            une hiérarchie des titres cohérente.
+            [9.1 - RGAA] La hiérarchie des titres d'une page au moins n'est pas
+            pertinente.
           </li>
           <li className={styles['list-item']}>
-            Dans la page <strong>Inscription - Identification</strong> les blocs
-            “Nom public” et “Adresse postale” ont des informations qui ne sont
-            pas reliées aux champs correspondants. Par ailleurs, sur cette page
-            tous les champs de site internet et réseau social ont le même
-            intitulé. Enfin, lors de l’ajout d’un nouveau champ de site internet
-            et réseau social, les utilisateurs de lecteurs d’écran ne sont pas
-            avertis.
+            [9.2 - RGAA] La structure du document d'une page au moins n'est pas
+            cohérente.
           </li>
           <li className={styles['list-item']}>
-            Dans la page <strong>Création d’une offre - Tarifs</strong>, lors de
-            l’ajout d’un bloc tarif les utilisateurs de lecteurs d’écran ne sont
-            pas avertis. Par ailleurs les champs relatifs à chaque tarifs ne
-            sont pas regroupés. Enfin, les exemples de tarifs ne sont pas repris
-            dans les messages d’erreur.
+            [9.3 - RGAA] Une liste au moins n'est pas correctement structurée.
           </li>
           <li className={styles['list-item']}>
-            Dans la page{' '}
-            <strong>Création d’une offre - Dates & Capacités</strong>, le titre
-            de la table n’est pas correctement associé au tableau. Sur cette
-            page, les titres du dialog ne représentent pas la structure de la
-            page. Par ailleurs, dans le tableau des dates, les cases à cocher
-            ont des labels sans intitulé, et les champs de filtre ne sont pas
-            regroupés.
+            [10.4 - RGAA] Un contenu au moins présente des pertes d’information
+            et de lisibilité lorsque le texte est agrandi à 200%.
           </li>
           <li className={styles['list-item']}>
-            Dans les formulaires de création d’offre collective, certains champs
-            ont un message d’erreur trop générique “Champ requis”.
+            [10.6 - RGAA] Un lien en environnement de texte au moins n'est pas
+            suffisamment visible.
           </li>
           <li className={styles['list-item']}>
-            Dans la page{' '}
-            <strong>Création d’une offre - Collective - Détail</strong>, le lien
-            "Aide” ne donne pas l’information qu’il s’ouvre dans une nouvelle
-            fenêtre. Dans cette même page, l’affichage de la liste de choix du
-            sélecteur domaine artistique et culturel n’est pas annoncé aux
-            utilisateurs de lecteurs d’écran. Ce même sélecteur ne permet pas de
-            cocher les cases des options avec la touche espace du clavier. Ces
-            cases à cocher ne sont pas regroupées, et n’ont pas de légende. Et
-            enfin, dans ce formulaire, l’ajout d’un e-mail de notification ne
-            repositionne pas l’élément actif.
+            [10.9 - RGAA] Une information au moins est véhiculée uniquement par
+            la forme, la taille ou la position.
           </li>
           <li className={styles['list-item']}>
-            Dans la page{' '}
-            <strong>Création d’une offre - Collective - Aperçu</strong>, les
-            textes alternatifs des logos de l’aperçu sont non pertinents.
+            [11.1 - RGAA] Un champ de formulaire au moins n'a pas d'étiquette.
+          </li>
+          <li className={styles['list-item']}>
+            [11.2 - RGAA] L'étiquette d'un champ de formulaire au moins n'est
+            pas pertinente.
+          </li>
+          <li className={styles['list-item']}>
+            [11.6 - RGAA] Un regroupement de champs de formulaires au moins n'a
+            pas de légende.
+          </li>
+          <li className={styles['list-item']}>
+            [11.10 - RGAA] Le contrôle de saisie d'un champ au moins n'est pas
+            pertinent (absence d'identification des champs obligatoires et/ou
+            absence de présentation des formats de données attendus).
+          </li>
+          <li className={styles['list-item']}>
+            [13.10 - RGAA] Une fonctionnalité au moins, utilisable au moyen d'un
+            geste complexe, n'a pas d'alternative au moyen d'un geste simple.
+          </li>
+          <li className={styles['list-item']}>
+            [15.1 - RAWeb] Au moins un outil d'édition ne permet de définir les
+            informations d'accessibilités nécessaires à la création d'un contenu
+            accessible.
+          </li>
+          <li className={styles['list-item']}>
+            [15.3 - RAWeb] Au moins un contenu généré par une transformation des
+            contenus n'est pas accessible.
+          </li>
+          <li className={styles['list-item']}>
+            [16.2 - RAWeb] Le service d'assistance ne répond pas aux besoins de
+            communication des personnes handicapées.
           </li>
         </ul>
         <h3 className={styles['heading3']}>
           Dérogations pour charge disproportionnée
         </h3>
         <ul>
-          <li className={styles['list-item']}>Aucune</li>
+          <li className={styles['list-item']}>Pas de dérogation identifiée</li>
         </ul>
         <h3 className={styles['heading3']}>
           Contenus non soumis à l’obligation d’accessibilité
         </h3>
         <ul>
-          <li className={styles['list-item']}>Aucune</li>
+          <li className={styles['list-item']}>Pas d'exemption identifiée</li>
         </ul>
         <h2 className={styles['heading2']}>
           Établissement de cette déclaration d’accessibilité
         </h2>
         <p className={styles['paragraph']}>
-          Cette déclaration a été établie le 2 avril 2024.
+          Cette déclaration a été établie le 10 juillet 2026.
         </p>
         <h3 className={styles['heading3']}>
           Technologies utilisées pour la réalisation du site
@@ -213,39 +210,38 @@ export const Declaration = () => {
           <li className={styles['list-item']}>JavaScript</li>
           <li className={styles['list-item']}>React</li>
         </ul>
-        <h3 className={styles['heading3']}>Environnement de test</h3>
-        <p className={styles['paragraph']}>
-          La restitution des contenus avec les outils d’assistance a été testée
-          conformément aux environnements de test suivants :
-        </p>
-        <p className={styles['paragraph']}>
-          <Link
-            color={LinkColor.NEUTRAL}
-            to="https://accessibilite.numerique.gouv.fr/methode/environnement-de-test/"
-            isExternalLink
-            label="Plus d’information sur l’environnement de test"
-          />
-        </p>
         <h3 className={styles['heading3']}>
-          Les outils utilisés lors de l’évaluation
+          Agents utilisateurs, technologies d'assistance et outils utilisés pour
+          vérifier l'accessibilité
         </h3>
         <p className={styles['paragraph']}>
-          L’outil le plus utilisé pour réaliser cet audit a été l’inspecteur de
-          code que propose chaque navigateur. Un ensemble d’outils ont également
-          été utilisés afin de s’assurer d’une restitution correcte de contenus
-          accessibles dans le cas où l’examen du code seul n’a pas suffi.
+          Les tests des pages web ont été effectués avec les combinaisons de
+          navigateurs web et lecteurs d’écran suivants :
         </p>
+        <ul>
+          <li className={styles['list-item']}>Firefox 152 et NVDA 2025</li>
+          <li className={styles['list-item']}>Firefox 152 et JAWS 2025</li>
+          <li className={styles['list-item']}>
+            Safari 26.5 et VoiceOver (macOS 26.5)
+          </li>
+          <li className={styles['list-item']}>
+            Safari 26.5 et VoiceOver (iOS 26.5)
+          </li>
+          <li className={styles['list-item']}>
+            Chrome 146 et TalkBack (Android 16)
+          </li>
+        </ul>
         <p className={styles['paragraph']}>
-          <Link
-            color={LinkColor.NEUTRAL}
-            to="https://accessibilite.numerique.gouv.fr/ressources/methodologie-de-test/"
-            isExternalLink
-            label="Plus d’information sur les outils d’assistance"
-          />
+          La vérification de l’accessibilité est le résultat de tests manuels,
+          assistés par des outils (feuilles CSS dédiés, extensions HeadingsMaps
+          et WebDeveloper Toolbar, Color Contrast Analyser).
         </p>
         <h3 className={styles['heading3']}>
           Pages du site ayant fait l’objet de la vérification de conformité
         </h3>
+        <p className={styles['paragraph']}>
+          L’audit a porté sur l’échantillon de pages listé ci-dessous.
+        </p>
         <table className={styles['table']}>
           <thead>
             <tr>
@@ -255,29 +251,18 @@ export const Declaration = () => {
           </thead>
           <tbody>
             <tr>
-              <td className={styles['td']}>Connexion</td>
+              <td className={styles['td']}>Tuto de bienvenue (6 étapes)</td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
-                  to="https://passculture.pro/connexion?de=%2F"
+                  to="https://passculture.pro/bienvenue"
                   isExternalLink
-                  label="https://passculture.pro/connexion?de=%2F"
+                  label="https://passculture.pro/bienvenue"
                 />
               </td>
             </tr>
             <tr>
-              <td className={styles['td']}>Mot de passe oublié</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  to="https://passculture.pro/demande-mot-de-passe"
-                  isExternalLink
-                  label="https://passculture.pro/demande-mot-de-passe"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Inscription</td>
+              <td className={styles['td']}>Inscription et validation</td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
@@ -288,174 +273,33 @@ export const Declaration = () => {
               </td>
             </tr>
             <tr>
-              <td className={styles['td']}>
-                Confirmation d’inscription - Merci
-              </td>
+              <td className={styles['td']}>Connexion</td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
-                  to="https://passculture.pro/inscription/compte/confirmation"
+                  to="https://passculture.pro/connexion"
                   isExternalLink
-                  label="https://passculture.pro/inscription/compte/confirmation"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Accueil connecté</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/accueil"
-                  label="https://passculture.pro/accueil"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Offres / Recherche offres</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offres"
-                  label="https://passculture.pro/offres"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Création d’une offre - Accueil</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offre/creation"
-                  label="https://passculture.pro/offre/creation"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Création d’une offre - Détails</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
-                  label="https://passculture.pro/offre/individuelle/creation/informations?offer-type=PHYSICAL_GOOD"
+                  label="https://passculture.pro/connexion"
                 />
               </td>
             </tr>
             <tr>
               <td className={styles['td']}>
-                Réservations / recherche réservations
+                Inscription structure (3 étapes et validation)
               </td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
-                  isExternalLink
                   to="https://passculture.pro/inscription/structure/recherche"
+                  isExternalLink
                   label="https://passculture.pro/inscription/structure/recherche"
                 />
               </td>
             </tr>
             <tr>
               <td className={styles['td']}>
-                Création d’une offre - Stock & prix
-              </td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offre/individuelle/24200/creation/stocks"
-                  label="https://passculture.pro/offre/individuelle/24200/creation/stocks"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>
-                Création d’une offre - Récapitulatif
-              </td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offre/individuelle/24200/creation/recapitulatif"
-                  label="https://passculture.pro/offre/individuelle/24200/creation/recapitulatif"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>
-                Création d’une offre - Confirmation
-              </td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/offre/individuelle/creation/confirmation"
-                  label="https://passculture.pro/offre/individuelle/creation/confirmation"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>
-                Première connexion - Rattachement
-              </td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/inscription/structure/rattachement"
-                  label="https://passculture.pro/inscription/structure/rattachement"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Première connexion - Accueil</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/inscription/structure"
-                  label="https://passculture.pro/inscription/structure"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Première connexion - Structure</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/inscription/structure/recherche"
-                  label="https://passculture.pro/inscription/structure/recherche"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Inscription - Identification</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/inscription/structure/identification"
-                  label="https://passculture.pro/inscription/structure/identification"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>Inscription - Activité</td>
-              <td className={styles['td']}>
-                <Link
-                  color={LinkColor.NEUTRAL}
-                  isExternalLink
-                  to="https://passculture.pro/inscription/structure/activite"
-                  label="https://passculture.pro/inscription/structure/activite"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className={styles['td']}>
-                Création d’une offre - Collective - Détail
+                Création offre réservable (parcours 3) (5 étapes et
+                confirmation)
               </td>
               <td className={styles['td']}>
                 <Link
@@ -468,49 +312,116 @@ export const Declaration = () => {
             </tr>
             <tr>
               <td className={styles['td']}>
-                Création d’une offre - Collective - Aperçu
+                Création offre individuelle (parcours 5) (7 étapes et
+                confirmation)
               </td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
                   isExternalLink
-                  to="https://passculture.pro/offre/552/collectif/creation/apercu"
-                  label="https://passculture.pro/offre/552/collectif/creation/apercu"
+                  to="https://passculture.pro/offre/individuelle/creation/description"
+                  label="https://passculture.pro/offre/individuelle/creation/description"
                 />
               </td>
             </tr>
             <tr>
-              <td className={styles['td']}>Inscription - Validation</td>
+              <td className={styles['td']}>Informations bancaires</td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
                   isExternalLink
-                  to="https://passculture.pro/inscription/structure/confirmation"
-                  label="https://passculture.pro/inscription/structure/confirmation"
+                  to="https://passculture.pro/administration/remboursements/informations-bancaires"
+                  label="https://passculture.pro/administration/remboursements/informations-bancaires"
                 />
               </td>
             </tr>
             <tr>
-              <td className={styles['td']}>Création d’une offre - Tarifs</td>
+              <td className={styles['td']}>Page d'accueil</td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
                   isExternalLink
-                  to="https://passculture.pro/offre/individuelle/68514/creation/tarifs"
-                  label="https://passculture.pro/offre/individuelle/68514/creation/tarifs"
+                  to="https://passculture.pro/accueil"
+                  label="https://passculture.pro/accueil"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Les offres</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/offres"
+                  label="https://passculture.pro/offres"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Les réservations</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/reservations"
+                  label="https://passculture.pro/reservations"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Contenus téléchargeables</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/ecoconception/declaration"
+                  label="https://passculture.pro/ecoconception/declaration"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Accessibilité</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/accessibilite/declaration"
+                  label="https://passculture.pro/accessibilite/declaration"
                 />
               </td>
             </tr>
             <tr>
               <td className={styles['td']}>
-                Création d’une offre - Dates & Capacités
+                Les offres réservables (collectif)
               </td>
               <td className={styles['td']}>
                 <Link
                   color={LinkColor.NEUTRAL}
                   isExternalLink
-                  to="https://.passculture.pro/offre/individuelle/68514/creation/stocks"
-                  label="https://passculture.pro/offre/individuelle/68514/creation/stocks"
+                  to="https://passculture.pro/offres/collectives"
+                  label="https://passculture.pro/offres/collectives"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Page d'erreur</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/xyz"
+                  label="https://passculture.pro/xyz"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={styles['td']}>Plan du site</td>
+              <td className={styles['td']}>
+                <Link
+                  color={LinkColor.NEUTRAL}
+                  isExternalLink
+                  to="https://passculture.pro/inscription/plan-du-site"
+                  label="https://passculture.pro/inscription/plan-du-site"
                 />
               </td>
             </tr>
@@ -518,51 +429,59 @@ export const Declaration = () => {
         </table>
         <h2 className={styles['heading2']}>Retour d’information et contact</h2>
         <p className={styles['paragraph']}>
-          Si vous avez des questions ou des remarques concernant l’accessibilité
-          du site, veuillez contacter notre équipe à l’adresse suivante:&nbsp;
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            isExternal
-            to="mailto:accessibilite@passculture.app"
-            label="accessibilite@passculture.app"
-          />{' '}
+          Il est important de rappeler qu’en vertu de l’article 11 de la loi de
+          février 2005 :
+        </p>
+        <p className={styles['quote']}>
+          « la personne handicapée a droit à la compensation des conséquences de
+          son handicap, quels que soient l’origine et la nature de sa
+          déficience, son âge ou son mode de vie. »
+        </p>
+        <p className={styles['paragraph']}>
+          Le pass Culture s'engage à prendre les moyens nécessaires afin de
+          donner accès, dans un délai raisonnable, aux informations et
+          fonctionnalités recherchées par la personne handicapée, que le contenu
+          fasse l'objet d'une dérogation ou non.
+        </p>
+        <p className={styles['paragraph']}>
+          Le pass Culture invite les personnes qui rencontreraient des
+          difficultés à le contacter à l'adresse&nbsp;
+          <Link
+            color={LinkColor.NEUTRAL}
+            isExternalLink
+            to="mailto:support@passculture.app"
+            label="support@passculture.app"
+          />
+          &nbsp;afin qu’une assistance puisse être apportée (alternative
+          accessible, information et contenu donnés sous une autre forme).
         </p>
         <h2 className={styles['heading2']}>Voies de recours</h2>
         <p className={styles['paragraph']}>
-          Cette procédure est à utiliser dans le cas suivant.
+          Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à
+          un contenu ou une fonctionnalité du site, que vous nous le signalez et
+          que vous ne parvenez pas à obtenir une réponse de notre part, vous
+          êtes en droit de faire parvenir vos doléances ou une demande de
+          saisine au Défenseur des droits.
         </p>
         <p className={styles['paragraph']}>
-          Vous avez signalé au responsable du site internet un défaut
-          d’accessibilité qui vous empêche d’accéder à un contenu ou à un des
-          services du portail et vous n’avez pas obtenu de réponse
-          satisfaisante.{' '}
+          Plusieurs moyens sont à votre disposition :
         </p>
         <ul>
           <li className={styles['list-item']}>
-            Écrire un message au Défenseur des droits (
+            Un&nbsp;
             <Link
               color={LinkColor.NEUTRAL}
               isExternalLink
               to="https://formulaire.defenseurdesdroits.fr/"
-              label="Ouvrir le formulaire"
+              label="formulaire de contact"
             />
-            )
           </li>
           <li className={styles['list-item']}>
-            Contacter le délégué du Défenseur des droits dans votre région (
-            <Link
-              color={LinkColor.NEUTRAL}
-              isExternalLink
-              to="https://www.defenseurdesdroits.fr/saisir/delegues"
-              label="Consulter l’annuaire des délégués"
-            />
-            )
+            Un numéro de téléphone : 09 69 39 00 00
           </li>
           <li className={styles['list-item']}>
-            Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
-            Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07
+            Une adresse postale (courrier gratuit, sans affranchissement) : Le
+            Défenseur des droits - Libre réponse 71120 - 75342 Paris CEDEX 07
           </li>
         </ul>
       </div>

@@ -85,7 +85,7 @@ export const Footer = ({ layout }: FooterProps) => {
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             to="/accessibilite"
-            label="Accessibilité : non conforme"
+            label="Accessibilité : partiellement conforme"
           />
         </li>
         <li className={styles['footer-list-item']}>
