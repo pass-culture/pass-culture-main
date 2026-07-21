@@ -2,7 +2,11 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from '@/apiClient/v1'
+import {
+  SubcategoryIdEnum,
+  VenueState,
+  WithdrawalTypeEnum,
+} from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -10,6 +14,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { MOCKED_SUBCATEGORY } from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
@@ -20,7 +25,8 @@ import {
 } from './IndividualOfferPracticalInfosForm'
 
 function renderIndividualOfferPracticalInfosForm(
-  props?: Partial<IndividualOfferPracticalInfosFormProps>
+  props?: Partial<IndividualOfferPracticalInfosFormProps>,
+  isVenueClosed = false
 ) {
   function IndividualOfferPracticalInfosFormWrapper() {
     const form = useForm<IndividualOfferPracticalInfosFormValues>({
@@ -48,6 +54,14 @@ function renderIndividualOfferPracticalInfosForm(
   }
   renderWithProviders(<IndividualOfferPracticalInfosFormWrapper />, {
     user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedPartnerVenue: isVenueClosed
+          ? makeGetVenueResponseModel({ id: 1, state: VenueState.CLOSED })
+          : makeGetVenueResponseModel({ id: 1 }),
+      },
+    },
   })
 }
 
@@ -141,5 +155,14 @@ describe('IndividualOfferPracticalInfosForm', () => {
     expect(
       screen.getByText('Cette offre est synchronisée avec provider')
     ).toBeInTheDocument()
+  })
+
+  it('should be disabled if the venue is closed', () => {
+    renderIndividualOfferPracticalInfosForm(undefined, true)
+
+    expect(screen.getByLabelText(/Informations complémentaires/)).toBeDisabled()
+    expect(
+      screen.getByLabelText(/URL de votre site ou billetterie/)
+    ).toBeDisabled()
   })
 })

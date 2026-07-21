@@ -11,7 +11,11 @@ import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureCurrentUser } from '@/commons/store/user/selectors'
+import {
+  ensureCurrentUser,
+  ensureSelectedPartnerVenue,
+} from '@/commons/store/user/selectors'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -36,6 +40,9 @@ export function IndividualOfferPracticalInfosForm({
   subCategory,
   stocks,
 }: Readonly<IndividualOfferPracticalInfosFormProps>) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+
   const form = useFormContext<IndividualOfferPracticalInfosFormValues>()
 
   const currentUser = useAppSelector(ensureCurrentUser)
@@ -44,7 +51,7 @@ export function IndividualOfferPracticalInfosForm({
   const bookingEmail = form.watch('bookingEmail')
 
   const isOfferDisabledOrSynchronized =
-    isOfferDisabled(offer) || isOfferSynchronized(offer)
+    isOfferDisabled(offer) || isOfferSynchronized(offer) || isVenueClosed
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 
@@ -86,7 +93,7 @@ export function IndividualOfferPracticalInfosForm({
               {...form.register('withdrawalDetails')}
               label="Informations complémentaires"
               maxLength={500}
-              disabled={isOfferDisabled(offer)}
+              disabled={isOfferDisabled(offer) || isVenueClosed}
               description="Ces informations seront communiquées aux jeunes après leur réservation."
             />
           </FormLayout.Row>
@@ -123,7 +130,7 @@ export function IndividualOfferPracticalInfosForm({
               {...form.register('externalTicketOfficeUrl')}
               label="URL de votre site ou billetterie"
               type="url"
-              disabled={isOfferDisabled(offer)}
+              disabled={isOfferDisabled(offer) || isVenueClosed}
               description="Format : https://exemple.com"
               error={form.formState.errors.externalTicketOfficeUrl?.message}
             />

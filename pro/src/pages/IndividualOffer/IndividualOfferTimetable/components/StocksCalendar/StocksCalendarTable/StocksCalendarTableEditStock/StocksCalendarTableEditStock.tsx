@@ -49,7 +49,7 @@ export function StocksCalendarTableEditStock({
   departmentCode,
   priceCategories,
   onUpdateStock,
-}: StocksCalendarTableEditStockProps) {
+}: Readonly<StocksCalendarTableEditStockProps>) {
   const isCaledonian = useIsCaledonian()
 
   const form = useForm<EditStockFormValues>({
