@@ -1,11 +1,11 @@
 import pytest
 
+from pcapi.core import token as token_utils
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing
 from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -69,16 +69,18 @@ class Returns204Test:
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
         )
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=user.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
             ).model_dump(),
+            ttl=20,
         )
 
-        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        response_token = client.get(f"/users/connect-as/{token}")
         assert response_token.status_code == 302
 
         offer_id = collective_booking.collectiveStock.collectiveOffer.id

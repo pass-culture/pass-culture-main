@@ -13,13 +13,13 @@ from sqlalchemy import func
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
@@ -336,7 +336,8 @@ def connect_as() -> response_utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return request_utils.safe_redirect_back(request)
 
-    token = SecureToken(
+    token = token_utils.create_token(
+        token_type=token_utils.TokenType.CONNECT_AS,
         data=ConnectAsInternalModel(
             user_id=user_id,
             internal_admin_id=current_user.id,
@@ -344,5 +345,5 @@ def connect_as() -> response_utils.BackofficeResponse:
             redirect_link=settings.PRO_URL + form.redirect.data,
         ).model_dump(),
         ttl=10,
-    ).token
+    )
     return redirect(urls.build_pc_pro_connect_as_link(token), code=303)

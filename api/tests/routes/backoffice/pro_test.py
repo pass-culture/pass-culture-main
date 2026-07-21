@@ -7,6 +7,7 @@ import pytest
 from flask import url_for
 
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.history import factories as history_factories
@@ -16,7 +17,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -847,7 +847,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_user_invalid_redirect(self, authenticated_client, legit_user):
         user = users_factories.ProFactory()
@@ -968,7 +970,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_venue_without_user(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -1081,7 +1085,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_offerer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1102,7 +1108,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_offerer_without_user(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -1207,7 +1215,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_offer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1231,7 +1241,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_offer_without_user(self, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -1342,7 +1354,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_bank_account(self, authenticated_client, legit_user):
         bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
@@ -1364,7 +1378,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_bank_account_without_user(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -1473,7 +1489,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_collective_offer(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1497,7 +1515,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_collective_offer_without_user(self, authenticated_client):
         offer = educational_factories.CollectiveOfferFactory()
@@ -1608,7 +1628,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_collective_offer_template(self, authenticated_client, legit_user):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -1632,7 +1654,9 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
 
     def test_connect_as_collective_offer_template_without_user(self, authenticated_client):
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -1743,4 +1767,6 @@ class ConnectAsProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         base_url, key_token = response.location.rsplit("/", 1)
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
-        assert SecureToken(token=key_token).data == expected_token_data
+        assert (
+            token_utils.load_token(token=key_token, token_type=token_utils.TokenType.CONNECT_AS) == expected_token_data
+        )
