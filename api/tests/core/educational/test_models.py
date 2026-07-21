@@ -635,7 +635,7 @@ class CollectiveOfferTemplateHasEndDatePassedTest:
         assert {o.id for o in not_passed_offers} == {offer_without_range.id, offer_with_range.id}
 
 
-class CollectiveOfferConstraintsTest:
+class CollectiveConstraintsTest:
     def test_collective_offer_location_type(self):
         with pytest.raises(sa_exc.IntegrityError):
             factories.CollectiveOfferFactory(locationType=None)
@@ -643,6 +643,14 @@ class CollectiveOfferConstraintsTest:
     def test_collective_offer_template_location_type(self):
         with pytest.raises(sa_exc.IntegrityError):
             factories.CollectiveOfferTemplateFactory(locationType=None)
+
+    def test_collective_stock_price(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.CollectiveStockFactory(price=-1)
+
+    def test_collective_stock_service_price(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.CollectiveStockFactory(servicePrice=-1)
 
 
 class CollectiveBookingTest:
