@@ -56,7 +56,8 @@ export const IndividualActionsCells = ({
   isHeadline,
 }: IndividualActionsCellsProps) => {
   const { storedFilters } = useStoredFilterConfig('individual')
-  const { upsertHeadlineOffer } = useHeadlineOfferContext()
+  const { headlineOffer, upsertHeadlineOffer, removeHeadlineOffer } =
+    useHeadlineOfferContext()
   const urlSearchFilters = useQuerySearchFilters()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
   const finalSearchFilters = {
@@ -67,6 +68,7 @@ export const IndividualActionsCells = ({
   const isNewProAdviceAccess = useActiveFeature('WIP_NEW_PRO_ADVICE_ACCESS')
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
+  const headlineButtonTriggerRef = useRef<HTMLButtonElement>(null)
 
   const { mutate } = useSWRConfig()
   const [isConfirmDialogDeleteDraftOpen, setIsConfirmDialogDeleteDraftOpen] =
@@ -126,7 +128,22 @@ export const IndividualActionsCells = ({
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }
 
-  async function onClickAddHeadlineOffer() {}
+  async function onClickAddHeadlineOffer() {
+    if (isHeadline) {
+      await removeHeadlineOffer({ offerId: offer.id })
+    } else if (offer.thumbUrl) {
+      if (headlineOffer?.id) {
+        setIsConfirmDialogReplaceHeadlineOfferOpen(true)
+      } else {
+        await upsertHeadlineOffer({
+          offerId: offer.id,
+          context: { actionType: 'add' },
+        })
+      }
+    } else {
+      setIsDialogForHeadlineOfferWithoutImageOpen(true)
+    }
+  }
 
   const isActive = offer.status === OfferStatus.ACTIVE
   const isProduct = !!offer.productId
@@ -151,12 +168,12 @@ export const IndividualActionsCells = ({
       <div className={styles['actions-column']}>
         {isNewProAdviceAccess && (
           <Button
-            color={ButtonColor.NEUTRAL}
+            color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
             variant={ButtonVariant.SECONDARY}
             size={ButtonSize.SMALL}
             icon={isHeadline ? fullStarIcon : strokeStarIcon}
             onClick={onClickAddHeadlineOffer}
-            tooltip="Mettre à la une"
+            tooltip={isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'}
             ref={headlineButtonTriggerRef}
           />
         )}
@@ -222,7 +239,9 @@ export const IndividualActionsCells = ({
         onConfirm={onConfirmDeleteDraftOffer}
         title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
         open={isConfirmDialogDeleteDraftOpen}
-        refToFocusOnClose={dropdownTriggerRef}
+        refToFocusOnClose={
+          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        }
       />
       <ConfirmDialog
         icon={strokeStarIcon}
@@ -234,7 +253,9 @@ export const IndividualActionsCells = ({
           'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
         }
         open={isConfirmDialogReplaceHeadlineOfferOpen}
-        refToFocusOnClose={dropdownTriggerRef}
+        refToFocusOnClose={
+          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        }
       />
       <HeadlineOfferImageDialogs
         offerId={offer.id}
