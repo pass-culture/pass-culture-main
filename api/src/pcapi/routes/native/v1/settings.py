@@ -7,6 +7,7 @@ from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.settings import IMAGE_RESIZING_URL
 from pcapi.settings import OBJECT_STORAGE_URL
 from pcapi.utils import postal_code
 
@@ -46,6 +47,7 @@ def get_settings() -> serializers.SettingsResponse:
         deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(),
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
+        image_resizing_url=IMAGE_RESIZING_URL,
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         ineligible_postal_codes=postal_code.INELIGIBLE_POSTAL_CODES,

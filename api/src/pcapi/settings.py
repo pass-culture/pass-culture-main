@@ -348,6 +348,9 @@ OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL", "")
 OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER")
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
+# IMAGE RESIZING
+IMAGE_RESIZING_URL = os.environ.get("IMAGE_RESIZING_URL", "https://image-resizing.passculture.app")
+
 # THUMBS
 THUMBS_FOLDER_NAME = os.environ.get("THUMBS_FOLDER_NAME", "thumbs")
 DATA_TITELIVE_THUMBS_FOLDER_NAME = os.environ.get("DATA_TITELIVE_THUMBS_FOLDER_NAME", "titelive/images")
