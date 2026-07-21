@@ -18,6 +18,8 @@
 }
 
 .list {
+  @include fonts.body-xs;
+
   list-style: inside;
   margin-top: var(--size-spacing-s);
 }
