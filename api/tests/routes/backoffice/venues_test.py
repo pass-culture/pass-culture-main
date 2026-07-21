@@ -540,6 +540,18 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert "Partenaire culturel Fermé " in response_text
 
+    def test_get_closed_venue_with_active_offerer(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Fermé" in badges
+        assert "Suspendu" not in badges
+
     def test_can_reset_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         url = url_for(self.endpoint, venue_id=venue.id)
