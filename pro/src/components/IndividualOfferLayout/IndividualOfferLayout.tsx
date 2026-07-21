@@ -18,7 +18,11 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { IndividualOfferTitle } from '@/pages/IndividualOfferWizard/IndividualOfferTitle/IndividualOfferTitle'
 
@@ -135,6 +139,7 @@ export const IndividualOfferLayout = ({
                   onClick={onDeleteOfferWithAlreadyExistingEan}
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}
+                  size={ButtonSize.SMALL}
                   icon={fullTrashIcon}
                   label="Supprimer ce brouillon"
                 />
