@@ -4,8 +4,8 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factories
+from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as booking_factory
-from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.models import db
 from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
@@ -44,16 +44,18 @@ class Returns200Test:
         booking_2 = booking_factory.BookingFactory(stock=batch_stocks[1])
         data = {"ids_to_delete": [stock.id for stock in batch_stocks]}
         admin = users_factories.AdminFactory(email="admin@example.com")
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
             data=ConnectAsInternalModel(
                 redirect_link="https://example.com",
                 user_id=user_offerer.user.id,
                 internal_admin_email=admin.email,
                 internal_admin_id=admin.id,
             ).model_dump(),
+            ttl=20,
         )
 
-        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        response_token = client.get(f"/users/connect-as/{secure_token}")
         assert response_token.status_code == 302
 
         # When

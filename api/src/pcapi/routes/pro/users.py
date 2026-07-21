@@ -18,7 +18,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
@@ -320,11 +319,11 @@ def cookies_consent(body: CookieConsentRequest) -> None:
 def connect_as(token: str) -> Response:
     # This route is not used by PRO but it is used by the Backoffice
     try:
-        secure_token = SecureToken(token=token)
+        token_redis_data = token_utils.load_token(token_type=token_utils.TokenType.CONNECT_AS, token=token)
     except users_exceptions.InvalidToken:
         raise ForbiddenError({"global": "Le token est invalide"})
 
-    token_data = ConnectAsInternalModel(**secure_token.data)
+    token_data = ConnectAsInternalModel(**token_redis_data)
     user = db.session.query(users_models.User).filter(users_models.User.id == token_data.user_id).one_or_none()
 
     if not user:

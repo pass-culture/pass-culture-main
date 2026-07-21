@@ -85,16 +85,18 @@ class OffererPatchBankAccountsTest:
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
         # impersonate pro user
-        secure_token = token.SecureToken(
+        secure_token = token.create_token(
+            token_type=token.TokenType.CONNECT_AS,
             data=token_serialization.ConnectAsInternalModel(
                 redirect_link="http://example.com",
                 user_id=pro_user.id,
                 internal_admin_email=impersonator.email,
                 internal_admin_id=impersonator.id,
             ).dict(),
+            ttl=20,
         )
 
-        client.get(f"/users/connect-as/{secure_token.token}")
+        client.get(f"/users/connect-as/{secure_token}")
 
         assert not bank_account.venueLinks
 

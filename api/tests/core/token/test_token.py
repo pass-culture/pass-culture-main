@@ -157,47 +157,62 @@ class TokenTest:
 
 
 class SecureTokenTest:
-    def test_create_token_with_data(self, app):
+    def test_create_token_with_data(self, app, clear_redis):
         data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
 
-        token = token_tools.SecureToken(data=data)
+        token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, data=data, ttl=30)
 
-        assert 29 < app.redis_client.ttl(f"pcapi:token:SecureToken:{token.token}") <= 30
-        assert len(token.token) == 86
-        assert token.data["int"] == data["int"]
-        assert token.data["str"] == data["str"]
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=token)
+        assert 29 < app.redis_client.ttl(redis_key) <= 30
+        assert len(token) == 86
 
-    def test_create_token_without_data(self, app):
-        token = token_tools.SecureToken(ttl=10)
+    def test_create_token_without_data(self, app, clear_redis):
+        token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=10)
 
-        assert 9 < app.redis_client.ttl(f"pcapi:token:SecureToken:{token.token}") <= 10
-        assert len(token.token) == 86
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=token)
+        assert 9 < app.redis_client.ttl(redis_key) <= 10
+        assert len(token) == 86
 
-    def test_retrieve_token_with_data(self, app):
+    def test_retrieve_token_with_data(self, app, clear_redis):
         data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
-        original_token = token_tools.SecureToken(data=data)
+        original_token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, data=data, ttl=3)
 
-        token = token_tools.SecureToken(token=original_token.token)
+        token_data = token_tools.load_token(token=original_token, token_type=token_tools.TokenType.CONNECT_AS)
 
-        assert app.redis_client.ttl(f"pcapi:token:SecureToken:{original_token.token}") == -2
-        assert token.data["int"] == data["int"]
-        assert token.data["str"] == data["str"]
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
+        assert app.redis_client.ttl(redis_key) == -2
+        assert token_data["int"] == data["int"]
+        assert token_data["str"] == data["str"]
 
-    def test_retrieve_token_without_data(self, app):
-        original_token = token_tools.SecureToken()
+    def test_retrieve_token_without_data(self, app, clear_redis):
+        original_token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=3)
 
-        token = token_tools.SecureToken(token=original_token.token)
+        data = token_tools.load_token(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
 
-        assert app.redis_client.ttl(f"pcapi:token:SecureToken:{original_token.token}") == -2
-        assert token.data == {}
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
+        assert app.redis_client.ttl(redis_key) == -2
+        assert data == {}
 
-    def test_retrieve_unknown_token(self, app):
+    def test_retrieve_unknown_token(self, app, clear_redis):
         # create token
-        original_token = token_tools.SecureToken()
+        original_token = token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=3)
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
+
         # remove token from redis
-        app.redis_client.delete(f"pcapi:token:SecureToken:{original_token.token}")
+        app.redis_client.delete(redis_key)
         with pytest.raises(InvalidToken):
-            token_tools.SecureToken(token=original_token.token)
+            token_tools.load_token(token_type=token_tools.TokenType.CONNECT_AS, token=original_token)
+
+    def test_negative_ttl(self, app, clear_redis):
+        with pytest.raises(ValueError):
+            token_tools.create_token(token_type=token_tools.TokenType.CONNECT_AS, ttl=-1)
+
+        redis_key = token_tools._get_token_key(token_type=token_tools.TokenType.CONNECT_AS, token="*")
+        assert app.redis_client.keys(redis_key) == []
+
+    def test_empty_token(self, app):
+        with pytest.raises(ValueError):
+            token_tools.load_token(token_type=token_tools.TokenType.CONNECT_AS, token="")
 
 
 class PasswordLessLoginTokenTest:

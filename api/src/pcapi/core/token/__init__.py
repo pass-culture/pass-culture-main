@@ -37,6 +37,7 @@ class TokenType(enum.Enum):
     OAUTH_STATE = "oauth_state"
     DISCORD_OAUTH = "discord_oauth"
     PASSWORDLESS_LOGIN = "passwordless_login"
+    CONNECT_AS = "connect_as"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -228,41 +229,46 @@ class UUIDToken(AbstractToken):
         return token
 
 
-class SecureToken:
-    """A "single use token" implementation that put emphasis on security over any other concerns"""
+def _get_token_key(token_type: TokenType, token: str) -> str:
+    return f"pcapi:token:{token_type.value}:{token}"
 
-    def __init__(self, token: str = "", ttl: int = 30, data: dict | None = None):
-        """
-        This object has two modes:
-        - If token is provided this class will try to retrieve the data from redis. If they are not found it will
-        raise a ValueError.
 
-        Warning retrieving a token from redis will destroy it (it is single use and this operation is atomic)
+def create_token(token_type: TokenType, ttl: timedelta | int, data: dict | None = None) -> str:
+    """
+    Create a single use secure token that emphasis on security over any other concerns
 
-        - If no token is provided this class will dump data in json, generate a token and store the data with the
-        ttl (in seconds) in redis.
+    ttl can be either a timedelta or an in in seconds
+    """
+    if isinstance(ttl, timedelta):
+        ttl = int(ttl.total_seconds())
 
-        Once the object has been instantiated you can retrieve the data with token.data and the token with
-        token.token.
-        """
-        if token:
-            self.token = token
-            raw_data = get_redis_client().getdel(self.key)
-            if not raw_data:
-                # add robustness against timing attacks
-                time.sleep(random.random())
-                raise users_exceptions.InvalidToken()
-            self.data = json.loads(raw_data)
-        else:
-            self.data = data or {}
-            # generate a 512 bits secure token
-            self.token = secrets.token_urlsafe(64)
-            raw_data = json.dumps(self.data)
-            get_redis_client().set(self.key, raw_data, ex=ttl)
+    if ttl <= 0:
+        raise ValueError("A strictly positive ttl value is mandatory when creating a token")
 
-    @property
-    def key(self) -> str:
-        return f"pcapi:token:SecureToken:{self.token}"
+    # generate a 512 bits secure token
+    token = secrets.token_urlsafe(64)
+    raw_data = json.dumps(data or {})
+    key = _get_token_key(token_type, token)
+    get_redis_client().set(key, raw_data, ex=ttl)
+    return token
+
+
+def load_token(token_type: TokenType, token: str) -> dict:
+    """
+    Retrieve a token's content and delete it
+
+    raises `InvalidToken` if the token is not found in redis
+    """
+    if not token:
+        raise ValueError("Cannot check an empty token")
+
+    key = _get_token_key(token_type, token)
+    raw_data = get_redis_client().getdel(key)
+    if not raw_data:
+        # add robustness against timing attacks
+        time.sleep(random.random())
+        raise users_exceptions.InvalidToken()
+    return json.loads(raw_data)
 
 
 PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"

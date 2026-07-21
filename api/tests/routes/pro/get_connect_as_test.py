@@ -1,5 +1,5 @@
+from pcapi.core import token as token_utils
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -17,7 +17,9 @@ class Returns200Test:
         target = users_factories.ProFactory()
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -27,7 +29,7 @@ class Returns200Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 302
 
         # then
@@ -45,7 +47,9 @@ class Returns200Test:
         target = users_factories.NonAttachedProFactory()
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -55,7 +59,7 @@ class Returns200Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 302
 
         # then
@@ -74,7 +78,9 @@ class Returns200Test:
         real_target = users_factories.ProFactory()
 
         expected_redirect_link = "https://example.com"
-        intermediary_secure_token = SecureToken(
+        intermediary_secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=intermediary_target.id,
@@ -82,7 +88,9 @@ class Returns200Test:
                 internal_admin_id=admin.id,
             ).model_dump(),
         )
-        real_secure_token = SecureToken(
+        real_secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=real_target.id,
@@ -93,7 +101,7 @@ class Returns200Test:
 
         # use connect as to connect to a pro
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{intermediary_secure_token.token}")
+            response = client.get(f"/users/connect-as/{intermediary_secure_token}")
             assert response.status_code == 302
 
         assert response.location == expected_redirect_link
@@ -104,7 +112,7 @@ class Returns200Test:
         # +1 get admin user
         expected_num_queries = self.expected_num_queries + 3
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/users/connect-as/{real_secure_token.token}")
+            response = client.get(f"/users/connect-as/{real_secure_token}")
             assert response.status_code == 302
 
         assert response.location == expected_redirect_link
@@ -125,7 +133,9 @@ class Returns200Test:
         target = users_factories.ProFactory()
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -139,7 +149,7 @@ class Returns200Test:
         # +1 get current user
         # +1 get current session
         with assert_num_queries(self.expected_num_queries + 2):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 302
 
         # then
@@ -180,7 +190,9 @@ class Returns403Test:
         target = users_factories.ProFactory(isActive=False)
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -190,7 +202,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 403
 
         # then
@@ -208,7 +220,9 @@ class Returns403Test:
         target = users_factories.AdminFactory()
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -218,7 +232,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 403
 
         # then
@@ -236,7 +250,9 @@ class Returns403Test:
         target = users_factories.ProFactory(roles=[users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED])
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -246,7 +262,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 403
 
         # then
@@ -264,7 +280,9 @@ class Returns403Test:
         target = users_factories.BeneficiaryGrant18Factory()
 
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=target.id,
@@ -274,7 +292,7 @@ class Returns403Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 403
 
         # then
@@ -295,7 +313,9 @@ class Returns404Test:
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
         expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
+        secure_token = token_utils.create_token(
+            token_type=token_utils.TokenType.CONNECT_AS,
+            ttl=20,
             data=ConnectAsInternalModel(
                 redirect_link=expected_redirect_link,
                 user_id=0,
@@ -305,7 +325,7 @@ class Returns404Test:
         )
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/users/connect-as/{secure_token.token}")
+            response = client.get(f"/users/connect-as/{secure_token}")
             assert response.status_code == 404
 
         # then
