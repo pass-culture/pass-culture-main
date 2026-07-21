@@ -12,6 +12,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
@@ -73,6 +74,12 @@ function renderIndividualOfferPracticalInfosScreen(
     </IndividualOfferContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+        },
+      },
       features,
     }
   )

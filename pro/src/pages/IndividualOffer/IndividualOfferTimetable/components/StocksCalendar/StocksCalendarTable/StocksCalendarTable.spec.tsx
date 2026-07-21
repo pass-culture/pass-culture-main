@@ -2,12 +2,14 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
-import { OfferStatus } from '@/apiClient/v1'
+import { OfferStatus, VenueState } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -21,10 +23,17 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+const defaultSelectedPartnerVenue = makeGetVenueResponseModel({ id: 1 })
+
 function renderStocksCalendarTable(
-  props: Partial<StocksCalendarTableProps> = {}
+  props: Partial<StocksCalendarTableProps> = {},
+  isVenueClosed = false
 ) {
-  renderWithProviders(
+  const selectedPartnerVenue = isVenueClosed
+    ? makeGetVenueResponseModel({ id: 1, state: VenueState.CLOSED })
+    : defaultSelectedPartnerVenue
+
+  return renderWithProviders(
     <StocksCalendarTable
       departmentCode="56"
       checkedStocks={new Set()}
@@ -42,7 +51,15 @@ function renderStocksCalendarTable(
       hasNoStocks={false}
       isLoading={false}
       pagination={{ pageCount: 1, currentPage: 1, onPageClick: vi.fn() }}
-    />
+    />,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedPartnerVenue,
+        },
+      },
+    }
   )
 }
 
@@ -128,6 +145,29 @@ describe('StocksCalendarTable', () => {
       offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),
       mode: OFFER_WIZARD_MODE.EDITION,
     })
+
+    expect(
+      screen.queryByRole('button', { name: 'Supprimer la date' })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier la date' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not render the delete and edit options when the venue is closed', () => {
+    renderStocksCalendarTable(
+      {
+        stocks: [
+          getOfferStockFactory({
+            id: 1,
+            beginningDatetime: addDays(new Date(), 2).toISOString(),
+          }),
+        ],
+        mode: OFFER_WIZARD_MODE.EDITION,
+      },
+      true
+    )
 
     expect(
       screen.queryByRole('button', { name: 'Supprimer la date' })

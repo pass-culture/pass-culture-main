@@ -23,6 +23,7 @@ import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
@@ -337,9 +338,18 @@ function DialogBuilderButton({
     values: RecurrenceFormValues
   ) => Promise<void>
 }>) {
+  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
+
   return (
     <DialogBuilder
-      trigger={<Button variant={triggerVariant} label={triggerLabel} />}
+      trigger={
+        <Button
+          variant={triggerVariant}
+          label={triggerLabel}
+          disabled={isVenueClosed}
+        />
+      }
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}
       variant="drawer"
