@@ -75,12 +75,13 @@
   flex-direction: column;
   color: var(--color-text-default);
 
-  &-large {
-    @include fonts.body;
+  .description {
+    @include fonts.body-s;
   }
 
-  .description * {
-    @include fonts.body-s;
+  &-large,
+  &-large .description {
+    @include fonts.body;
   }
 }
 
