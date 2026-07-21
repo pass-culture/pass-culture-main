@@ -5,10 +5,11 @@ import pytest
 
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import factories as users_factories
 
 
 def test_recover_started_bonus_credit_applications_unauthorized(client):
-    response = client.post("/e2e/bonus_credit/recover")
+    response = client.post("/e2e/bonus_credit/1/recover")
 
     assert response.status_code == 401
 
@@ -20,20 +21,21 @@ def test_recover_started_bonus_credit_applications_unauthorized(client):
 def test_recover_started_bonus_credit_applications_full_page(
     mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task, auth_client
 ):
+    user = users_factories.BeneficiaryFactory()
     started_fraud_check_1 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED
+        status=subscription_models.FraudCheckStatus.STARTED, user=user
     )
     started_fraud_check_2 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED
+        status=subscription_models.FraudCheckStatus.STARTED, user=user
     )
     aah_fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED
+        status=subscription_models.FraudCheckStatus.STARTED, user=user
     )
     aeeh_fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED
+        status=subscription_models.FraudCheckStatus.STARTED, user=user
     )
 
-    response = auth_client.post("/e2e/bonus_credit/recover")
+    response = auth_client.post(f"/e2e/bonus_credit/{user.id}/recover")
 
     assert response.status_code == 200
     assert response.json == {

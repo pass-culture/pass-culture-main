@@ -13,30 +13,26 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/e2e/bonus_credit/recover", methods=["POST"])
+@private_api.route("/e2e/bonus_credit/<user_id>/recover", methods=["POST"])
 @atomic()
 @api_key_required
-def recover_started_bonus_credit_applications() -> tuple[dict, int]:
+def recover_started_bonus_credit_applications(user_id: int) -> tuple[dict, int]:
     """
     Copy of bonus.tasks.recover_started_bonus_credit_applications with a few differences:
     - no cutoff time
-    - fraud checks are reverse sorted
+    - a filter on user id
     """
     page_size = 200
-    started_bonus_credit_fraud_check_stmt = (
-        sa.select(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.type.in_(
-                [
-                    subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-                    subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
-                    subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
-                ]
-            ),
-            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.STARTED,
-        )
-        .order_by(subscription_models.BeneficiaryFraudCheck.id.desc())
-        .limit(200)
+    started_bonus_credit_fraud_check_stmt = sa.select(subscription_models.BeneficiaryFraudCheck).filter(
+        subscription_models.BeneficiaryFraudCheck.type.in_(
+            [
+                subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+                subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+                subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            ]
+        ),
+        subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.BeneficiaryFraudCheck.userId == user_id,
     )
     started_bonus_credit_fraud_checks = db.session.scalars(started_bonus_credit_fraud_check_stmt).all()
 
