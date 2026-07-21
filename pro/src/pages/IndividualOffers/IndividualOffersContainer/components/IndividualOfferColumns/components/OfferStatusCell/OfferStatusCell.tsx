@@ -1,3 +1,4 @@
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isAfter } from 'date-fns'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
@@ -25,6 +26,7 @@ export const OfferStatusCell = ({
   isHeadline,
 }: OfferStatusCellProps) => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isNewProAdviceAccess = useActiveFeature('WIP_NEW_PRO_ADVICE_ACCESS')
 
   const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
@@ -50,7 +52,7 @@ export const OfferStatusCell = ({
       ) : (
         <StatusLabel status={offer.status} />
       )}
-      {isHeadline && (
+      {!isNewProAdviceAccess && isHeadline && (
         <div className={styles['status-column-headline-offer-star']}>
           <Tooltip content="Offre à la une">
             <button
