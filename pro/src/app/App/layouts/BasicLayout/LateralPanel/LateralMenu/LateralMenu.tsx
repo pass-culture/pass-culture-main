@@ -4,7 +4,6 @@ import classnames from 'classnames'
 import { useState } from 'react'
 import { Link } from 'react-router'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -38,9 +37,7 @@ interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
-const generateNavItems = (
-  selectedPartnerVenue: GetVenueResponseModel
-): NavItem[] => {
+const generateNavItems = (): NavItem[] => {
   const individualChildren: NavItem[] = [
     {
       key: 'offers',
@@ -65,17 +62,13 @@ const generateNavItems = (
       title: 'Guichet',
       to: '/guichet',
     },
-    ...(selectedPartnerVenue.hasPartnerPage
-      ? [
-          {
-            key: 'page',
-            type: 'link',
-            group: 'main' as const,
-            title: 'Page sur l’application',
-            to: `/partenaire/page-partenaire`,
-          },
-        ]
-      : []),
+    {
+      key: 'page',
+      type: 'link',
+      group: 'main' as const,
+      title: 'Page sur l’application',
+      to: `/partenaire/page-partenaire`,
+    },
   ]
 
   const collectifChildren: NavItem[] = [
@@ -145,7 +138,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const navItems = generateNavItems(selectedPartnerVenue)
+  const navItems = generateNavItems()
 
   return (
     <div

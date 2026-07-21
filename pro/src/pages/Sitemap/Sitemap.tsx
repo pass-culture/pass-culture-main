@@ -50,7 +50,6 @@ export const Sitemap = () => {
             {
               title: "Page sur l'application (si offre individuelle créée)",
               path: `/partenaire/page-partenaire`,
-              hidden: !selectedPartnerVenue?.hasPartnerPage,
               children: [],
             },
           ],
