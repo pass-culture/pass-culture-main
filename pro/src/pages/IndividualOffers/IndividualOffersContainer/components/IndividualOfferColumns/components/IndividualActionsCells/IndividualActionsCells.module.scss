@@ -6,5 +6,7 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .actions-column {
-  place-self: center;
+  display: flex;
+  justify-content: space-between;
+  gap: rem.torem(16px);
 }
