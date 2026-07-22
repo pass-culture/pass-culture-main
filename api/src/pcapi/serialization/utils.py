@@ -74,6 +74,8 @@ def before_handler(
         "too_long": "Cette liste doit avoir une taille maximum de {max_length}",
         "model_attributes_type": "Format incorrect",
         "datetime_type": "Format de date invalide",
+        "decimal_max_places": "Saisissez un nombre avec au maximum {decimal_places} décimales",
+        "decimal_max_digits": "Saisissez un nombre avec au maximum {max_digits} chiffres au total",
     }
 
     if pydantic_error and pydantic_error.errors():
