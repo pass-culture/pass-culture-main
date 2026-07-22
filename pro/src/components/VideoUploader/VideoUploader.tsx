@@ -46,8 +46,9 @@ export const VideoUploader = () => {
               }
             />
             <Button
-              variant={ButtonVariant.TERTIARY}
+              variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               icon={fullTrashIcon}
               onClick={onVideoDelete}
               label="Supprimer"
