@@ -26,7 +26,9 @@ describe('Footer', () => {
     renderFooter(true)
 
     expect(
-      screen.queryByRole('link', { name: 'Accessibilité : non conforme' })
+      screen.queryByRole('link', {
+        name: 'Accessibilité : partiellement conforme',
+      })
     ).toBeInTheDocument()
   })
 

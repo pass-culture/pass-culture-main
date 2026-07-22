@@ -33,7 +33,7 @@ test.describe('Cookie banner', () => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
 
       await page
-        .getByText('Accessibilité : non conforme')
+        .getByText('Accessibilité : partiellement conforme')
         .click({ force: true })
 
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
@@ -77,7 +77,7 @@ test.describe('Cookie banner', () => {
         .click()
       await expect(page.locator('.orejime-Modal')).not.toBeVisible()
 
-      await page.getByText('Accessibilité : non conforme').click()
+      await page.getByText('Accessibilité : partiellement conforme').click()
 
       await expect(
         page.getByText('Respect de votre vie privée')

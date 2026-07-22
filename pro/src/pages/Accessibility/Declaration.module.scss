@@ -12,8 +12,13 @@
 .list-item,
 .table,
 .td,
+.quote,
 .th {
   margin-bottom: var(--size-spacing-l);
+}
+
+.quote {
+  @include fonts.body-italic;
 }
 
 .list-item {
