@@ -12,7 +12,6 @@ from flask import current_app
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi import settings
-from pcapi.core import token as token_utils
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import factories as bookings_factories
@@ -414,35 +413,25 @@ class ChangeUserEmailTest:
     new_email = "newemail@mail.com"
     mock_redis_client = fakeredis.FakeStrictRedis()
 
-    def _init_token(self, user):
-        return token_utils.Token.create(
-            token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
-            users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
-            user.id,
-            {"new_email": self.new_email},
-        ).encoded_token
-
     def test_change_user_email(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.SingleSignOnFactory(user=user)
         users_factories.UserSessionFactory(user=user)
 
-        token = self._init_token(user)
         # When
-        returned_user = email_update.validate_email_update_request(token)
+        email_update.validate_email_update_request(user=user, new_email=self.new_email)
 
         # Then
-        reloaded_user = db.session.get(users_models.User, user.id)
-        assert returned_user == reloaded_user
-        assert reloaded_user.email == self.new_email
+        db.session.refresh(user)
+        assert user.email == self.new_email
         assert db.session.query(users_models.User).filter_by(email=self.old_email).first() is None
-        assert db.session.query(users_models.UserSession).filter_by(userId=reloaded_user.id).first() is None
-        assert db.session.query(users_models.SingleSignOn).filter_by(userId=reloaded_user.id).first() is None
+        assert db.session.query(users_models.UserSession).filter_by(userId=user.id).first() is None
+        assert db.session.query(users_models.SingleSignOn).filter_by(userId=user.id).first() is None
 
-        assert len(reloaded_user.email_history) == 1
+        assert len(user.email_history) == 1
 
-        history = reloaded_user.email_history[0]
+        history = user.email_history[0]
         assert history.oldEmail == self.old_email
         assert history.newEmail == self.new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
@@ -453,17 +442,15 @@ class ChangeUserEmailTest:
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.SingleSignOnFactory(user=user)
         other_user = users_factories.UserFactory(email=self.new_email)
-        token = self._init_token(user)
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
-            email_update.validate_email_update_request(token)
+            email_update.validate_email_update_request(user=user, new_email=self.new_email)
 
         # Then
-        user = db.session.get(users_models.User, user.id)
+        db.session.refresh(user)
+        db.session.refresh(other_user)
         assert user.email == "oldemail@mail.com"
-
-        other_user = db.session.get(users_models.User, other_user.id)
         assert other_user.email == self.new_email
 
         single_sign_on = (
@@ -472,23 +459,6 @@ class ChangeUserEmailTest:
             .one_or_none()
         )
         assert single_sign_on is not None
-
-    def test_change_user_email_expired_token(self, app):
-        # Given
-        user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
-        users_factories.UserSessionFactory(user=user)
-        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with time_machine.travel("2021-01-01"):
-                token = self._init_token(user)
-
-            # When
-            with time_machine.travel("2021-01-03"):
-                with pytest.raises(users_exceptions.InvalidToken):
-                    email_update.validate_email_update_request(token)
-
-                # Then
-                user = db.session.get(users_models.User, user.id)
-                assert user.email == self.old_email
 
     def test_change_user_email_twice(self):
         """
@@ -501,29 +471,25 @@ class ChangeUserEmailTest:
 
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserSessionFactory(user=user)
-        token = self._init_token(user)
 
         # first call, email is updated as expected
-        returned_user = email_update.validate_email_update_request(token)
+        email_update.validate_email_update_request(user=user, new_email=self.new_email)
 
-        reloaded_user = db.session.get(users_models.User, user.id)
-        assert returned_user == reloaded_user
-        assert reloaded_user.email == self.new_email
+        db.session.refresh(user)
+        assert user.email == self.new_email
 
         # second call, no error, no update
-        returned_user = email_update.validate_email_update_request(token)
-        reloaded_user = db.session.get(users_models.User, user.id)
-        assert returned_user == reloaded_user
-        assert reloaded_user.email == self.new_email
+        email_update.validate_email_update_request(user=user, new_email=self.new_email)
+        db.session.refresh(user)
+        assert user.email == self.new_email
 
     def test_validating_email_updates_external_contact(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
 
-        token = self._init_token(user)
         # When
-        email_update.validate_email_update_request(token)
+        email_update.validate_email_update_request(user=user, new_email=self.new_email)
 
         assert brevo_testing.brevo_requests == [
             {
