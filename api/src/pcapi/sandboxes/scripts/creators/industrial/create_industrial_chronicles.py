@@ -248,3 +248,27 @@ la convoitise.
             user=user,
             offers=([offers[i + 5]] if (i + 5) in offers else []),
         )
+
+    logger.info("Creating 'SCENE' type chronicles attached to a live show offer")
+    scene_offer = offers_factories.OfferFactory.create(
+        name="Spectacle avec chroniques",
+        subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+    )
+    offers_factories.StockFactory.create(offer=scene_offer)
+    for user, i in zip(itertools.cycle(users), range(5)):
+        chronicles_factories.ChronicleFactory.create(
+            age=(15 + (i % 5)),
+            city=user.city,
+            content=f"Chronique SCÈNE sur l'offre {scene_offer.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
+            identifierChoiceId=hashlib.sha256(str(scene_offer.id).encode()).hexdigest()[:20],
+            productIdentifier=str(scene_offer.id),
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            clubType=chronicles_models.ChronicleClubType.SCENE_CLUB,
+            email=user.email,
+            firstName=user.firstName,
+            isActive=bool(i < 4),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i < 3),
+            user=user,
+            offers=[scene_offer],
+        )

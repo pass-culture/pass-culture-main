@@ -255,6 +255,7 @@ class ChronicleAuthor(HttpBodyModel):
 class ChroniclePreview(HttpBodyModel):
     id: int
     author: ChronicleAuthor | None = None
+    club_type: chronicle_models.ChronicleClubType
     content_preview: str
     date_created: datetime.datetime
 
@@ -271,6 +272,7 @@ class ChroniclePreview(HttpBodyModel):
         return cls(
             id=chronicle.id,
             author=author,
+            club_type=chronicle.clubType,
             content_preview=textwrap.shorten(chronicle.content, width=255, placeholder="…"),
             date_created=chronicle.dateCreated,
         )

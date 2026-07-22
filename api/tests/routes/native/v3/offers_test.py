@@ -7,6 +7,7 @@ import time_machine
 
 import pcapi.core.artist.factories as artists_factories
 import pcapi.core.chronicles.factories as chronicles_factories
+import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
@@ -702,11 +703,35 @@ class OffersV3Test:
         assert response.json["chronicles"] == [
             {
                 "id": chronicle.id,
+                "clubType": "BOOK",
                 "contentPreview": "a " * 126 + "a…",
                 "dateCreated": date_utils.format_into_utc_date(chronicle.dateCreated),
                 "author": {"firstName": chronicle.firstName, "age": chronicle.age, "city": chronicle.city},
             }
         ]
+
+    def test_offer_with_scene_club_chronicles(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
+        chronicles_factories.ChronicleFactory(
+            offers=[offer],
+            content="Test Scene Chronicle",
+            clubType=chronicles_models.ChronicleClubType.SCENE_CLUB,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            productIdentifier=str(offer.id),
+            isActive=True,
+            isSocialMediaDiffusible=True,
+        )
+
+        offer_id = offer.id
+        with assert_num_queries(self.base_num_queries):
+            response = client.get(f"/native/v3/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 1
+        chronicles = response.json["chronicles"]
+        assert len(chronicles) == 1
+        assert chronicles[0]["contentPreview"] == "Test Scene Chronicle"
+        assert chronicles[0]["clubType"] == "SCENE"
 
     def test_offer_with_n_chronicles(self, client):
         product = offers_factories.ProductFactory()

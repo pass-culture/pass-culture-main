@@ -2366,6 +2366,17 @@
                 "title": "ChronicleAuthor",
                 "type": "object"
             },
+            "ChronicleClubType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "CINE",
+                    "BOOK",
+                    "ALBUM",
+                    "CONCERT",
+                    "SCENE"
+                ],
+                "title": "ChronicleClubType"
+            },
             "ChroniclePreview": {
                 "additionalProperties": false,
                 "properties": {
@@ -2379,6 +2390,9 @@
                             }
                         ],
                         "default": null
+                    },
+                    "clubType": {
+                        "$ref": "#/components/schemas/ChronicleClubType"
                     },
                     "contentPreview": {
                         "title": "Contentpreview",
@@ -2396,6 +2410,7 @@
                 },
                 "required": [
                     "id",
+                    "clubType",
                     "contentPreview",
                     "dateCreated"
                 ],
@@ -4614,6 +4629,9 @@
                         "nullable": true,
                         "title": "OfferChronicleAuthor"
                     },
+                    "clubType": {
+                        "$ref": "#/components/schemas/ChronicleClubType"
+                    },
                     "content": {
                         "title": "Content",
                         "type": "string"
@@ -4630,6 +4648,7 @@
                 },
                 "required": [
                     "id",
+                    "clubType",
                     "content",
                     "dateCreated"
                 ],
