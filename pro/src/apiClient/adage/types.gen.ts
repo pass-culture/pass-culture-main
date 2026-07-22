@@ -29,8 +29,6 @@ export type AdageBaseModel = {
 
 /**
  * AdageFrontRoles
- *
- * An enumeration.
  */
 export enum AdageFrontRoles {
     REDACTOR = 'redactor',
@@ -83,53 +81,50 @@ export type AuthenticatedResponse = {
     /**
      * Canprebook
      */
-    canPrebook?: boolean;
+    canPrebook: boolean | null;
     /**
      * Departmentcode
      */
-    departmentCode?: string;
+    departmentCode: string | null;
     /**
      * Email
      */
-    email?: string;
+    email: string | null;
     /**
      * Favoritescount
      */
-    favoritesCount?: number;
+    favoritesCount: number;
     /**
      * Institutioncity
      */
-    institutionCity?: string;
+    institutionCity: string | null;
     /**
      * Institutionname
      */
-    institutionName?: string;
-    institutionRuralLevel?: InstitutionRuralLevel;
+    institutionName: string | null;
+    institutionRuralLevel: InstitutionRuralLevel | null;
     /**
      * Lat
      */
-    lat?: number;
+    lat: number | null;
     /**
      * Lon
      */
-    lon?: number;
+    lon: number | null;
     /**
      * Offerscount
      */
-    offersCount?: number;
-    /**
-     * RedactorPreferences
-     */
-    preferences?: RedactorPreferences;
+    offersCount: number;
+    preferences: RedactorPreferencesV2 | null;
     /**
      * Programs
      */
-    programs?: Array<EducationalInstitutionProgramModel>;
+    programs: Array<EducationalInstitutionProgramModel>;
     role: AdageFrontRoles;
     /**
      * Uai
      */
-    uai?: string;
+    uai: string | null;
 };
 
 /**
@@ -540,11 +535,11 @@ export type EducationalInstitutionProgramModel = {
     /**
      * Description
      */
-    description?: string;
+    description: string | null;
     /**
      * Label
      */
-    label?: string;
+    label: string | null;
     /**
      * Name
      */
@@ -668,8 +663,6 @@ export type HighlightBannerBody = {
 
 /**
  * InstitutionRuralLevel
- *
- * An enumeration.
  */
 export enum InstitutionRuralLevel {
     GRANDS_CENTRES_URBAINS = 'Grands centres urbains',
@@ -1141,6 +1134,20 @@ export type RedactorPreferences = {
      * Feedback Form Closed
      */
     feedback_form_closed?: boolean;
+};
+
+/**
+ * RedactorPreferencesV2
+ */
+export type RedactorPreferencesV2 = {
+    /**
+     * Broadcast Help Closed
+     */
+    broadcast_help_closed?: boolean | null;
+    /**
+     * Feedback Form Closed
+     */
+    feedback_form_closed?: boolean | null;
 };
 
 /**

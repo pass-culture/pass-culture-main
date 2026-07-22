@@ -9,7 +9,10 @@ import {
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'
-import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
+import {
+  defaultAdageUser,
+  defaultCollectiveTemplateOffer,
+} from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -50,6 +53,7 @@ const renderAdageFavoritesOffers = (
 
 describe('OffersFavorites', () => {
   const user = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',

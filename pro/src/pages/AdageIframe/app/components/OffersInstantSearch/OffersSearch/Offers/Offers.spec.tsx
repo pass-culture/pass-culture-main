@@ -14,6 +14,7 @@ import { apiAdage } from '@/apiClient/api'
 import { CancelablePromise } from '@/apiClient/compat'
 import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
+  defaultAdageUser,
   defaultCollectiveOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
@@ -159,8 +160,9 @@ describe('offers', () => {
 
   beforeEach(() => {
     adageUser = {
+      ...defaultAdageUser,
       role: AdageFrontRoles.REDACTOR,
-      preferences: { feedback_form_closed: undefined },
+      preferences: { feedback_form_closed: null },
     }
 
     offerInParis = defaultCollectiveOffer
@@ -532,7 +534,7 @@ describe('offers', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {
-      name: 'Un autre titre Le Petit Rintintin 33',
+      name: /Un autre titre Le Petit Rintintin 33/,
     })
 
     link.addEventListener('click', (e) => {
