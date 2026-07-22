@@ -1,7 +1,4 @@
-import type {
-  CreatePriceCategoryModel,
-  PriceCategoryBody,
-} from '@/apiClient/v1'
+import type { PriceCategoryBody } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 import type { PriceTableFormValues } from '../schemas'
@@ -14,10 +11,10 @@ export const toPriceCategoryBody = (
       assertOrFrontendError(entry.label, '`entry.label` is undefined.')
 
       return {
-        ...(entry.id === null ? {} : { id: entry.id }),
+        id: entry.id,
         label: entry.label,
         price: entry.price ?? 0,
-      } satisfies CreatePriceCategoryModel
+      }
     }),
   }
 }
