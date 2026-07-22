@@ -46,7 +46,7 @@ jobs:
             cd pro
             pnpm ci
 
-      - run: pnpm tsc -b
+      - run: pnpm typecheck
       - run: pnpm lint:dead-code
       - run: pnpm lint:dead-code:production
       - run: pnpm lint:js

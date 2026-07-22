@@ -61,7 +61,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run typescript quality on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",tsc," ]]; then
     echo "Quality checking..."
-    pnpm tsc -b
+    pnpm typecheck
     QUALITY_EXIT_CODE=$?
 
     # check linter exit code
