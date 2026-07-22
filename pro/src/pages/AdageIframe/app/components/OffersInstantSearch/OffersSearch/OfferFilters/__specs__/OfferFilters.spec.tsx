@@ -195,7 +195,7 @@ describe('OfferFilters', () => {
     renderOfferFilters(initialValues, LocalisationFilterStates.NONE, {
       ...defaultAdageUser,
       lat: 10,
-      lon: undefined,
+      lon: null,
     })
 
     expect(

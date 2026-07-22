@@ -18,7 +18,7 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
 
 const getLocationsFilter = (
   locationType: string,
-  institutionDepartmentCode?: string
+  institutionDepartmentCode: string | null
 ): string => {
   const baseFilters = {
     address: 'offer.locationType:ADDRESS<score=3>',
@@ -60,7 +60,7 @@ export const adageFiltersToFacetFilters = ({
   locationType: string
   formats: string[]
   venue: VenueResponse | null
-  institutionDepartmentCode?: string
+  institutionDepartmentCode: string | null
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []

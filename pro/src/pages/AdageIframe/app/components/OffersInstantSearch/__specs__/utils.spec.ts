@@ -28,6 +28,7 @@ describe('adageFiltersToFacetFilters', () => {
       academies,
       formats,
       venue: venueFilter,
+      institutionDepartmentCode: null,
     })
 
     expect(result.queryFilters).toStrictEqual([
@@ -59,6 +60,7 @@ describe('adageFiltersToFacetFilters', () => {
       academies,
       formats,
       venue: venueFilter,
+      institutionDepartmentCode: null,
     })
 
     expect(result.queryFilters).toStrictEqual([
@@ -82,6 +84,7 @@ describe('adageFiltersToFacetFilters', () => {
         academies: [],
         formats: [],
         venue: null,
+        institutionDepartmentCode: null,
       })
 
       expect(result.locationsFilter).toBe(

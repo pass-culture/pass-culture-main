@@ -5,7 +5,10 @@ import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
+import {
+  defaultAdageUser,
+  defaultCollectiveOffer,
+} from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -23,6 +26,7 @@ const mockOnWholePlaylistSeen = vi.fn()
 
 const renderClassroomPlaylist = () => {
   const user = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',

@@ -4,6 +4,7 @@ import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -132,6 +133,7 @@ describe('app', () => {
   describe('when is authenticated', () => {
     beforeEach(() => {
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
+        ...defaultAdageUser,
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
@@ -187,6 +189,7 @@ describe('app', () => {
 
     it('should add geo location filter when user has latitude and longitude', async () => {
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+        ...defaultAdageUser,
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
