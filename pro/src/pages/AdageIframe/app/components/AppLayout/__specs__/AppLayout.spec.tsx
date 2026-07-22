@@ -102,7 +102,7 @@ describe('AppLayout', () => {
   it('should redirect to the search page if the user is in Marseille en Grand and if the FF is active', () => {
     renderAppLayout(featureOverrides, {
       ...defaultAdageUser,
-      programs: [{ label: '', name: MARSEILLE_EN_GRAND }],
+      programs: [{ label: '', name: MARSEILLE_EN_GRAND, description: null }],
     })
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()

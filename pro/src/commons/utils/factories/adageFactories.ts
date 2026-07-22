@@ -124,6 +124,11 @@ export const defaultAdageUser: AuthenticatedResponse = {
   lat: 1,
   lon: 2,
   canPrebook: true,
+  favoritesCount: 0,
+  offersCount: 0,
+  programs: [],
+  institutionRuralLevel: null,
+  preferences: null,
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionBudgetResponseModel =

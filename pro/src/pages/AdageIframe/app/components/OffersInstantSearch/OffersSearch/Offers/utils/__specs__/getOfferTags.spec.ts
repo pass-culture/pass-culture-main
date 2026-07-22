@@ -147,7 +147,7 @@ describe('getOfferTags', () => {
     }
     const tags = getOfferTags(
       offer,
-      { ...adageUser, lat: undefined, lon: undefined },
+      { ...adageUser, lat: null, lon: null },
       false
     ).map((tag) => tag.text)
 
