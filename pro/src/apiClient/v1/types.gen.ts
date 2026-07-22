@@ -1094,20 +1094,6 @@ export type CreateOffererBodyModel = {
 };
 
 /**
- * CreatePriceCategoryModel
- */
-export type CreatePriceCategoryModel = {
-    /**
-     * Label
-     */
-    label: string;
-    /**
-     * Price
-     */
-    price: number;
-};
-
-/**
  * CreateThumbnailBodyModel
  */
 export type CreateThumbnailBodyModel = {
@@ -1358,24 +1344,6 @@ export enum EacFormat {
     VISITE_GUID_E = 'Visite guidée',
     VISITE_LIBRE = 'Visite libre'
 }
-
-/**
- * EditPriceCategoryModel
- */
-export type EditPriceCategoryModel = {
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Label
-     */
-    label: string;
-    /**
-     * Price
-     */
-    price: number;
-};
 
 /**
  * EditVenueBodyModel
@@ -5499,7 +5467,7 @@ export type PriceCategoryBody = {
     /**
      * Pricecategories
      */
-    priceCategories: Array<CreatePriceCategoryModel | EditPriceCategoryModel>;
+    priceCategories: Array<UpsertPriceCategoryModel>;
 };
 
 /**
@@ -6336,6 +6304,24 @@ export type TotalRevenue = {
      * Total
      */
     total: number;
+};
+
+/**
+ * UpsertPriceCategoryModel
+ */
+export type UpsertPriceCategoryModel = {
+    /**
+     * Id
+     */
+    id: number | null;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Price
+     */
+    price: number;
 };
 
 /**

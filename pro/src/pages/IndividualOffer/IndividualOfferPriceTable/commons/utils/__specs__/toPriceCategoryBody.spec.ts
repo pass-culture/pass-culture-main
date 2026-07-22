@@ -29,7 +29,7 @@ describe('toPriceCategoryBody', () => {
     const result = toPriceCategoryBody(formValues)
 
     expect(result).toEqual({
-      priceCategories: [{ label: 'Normal', price: 10 }],
+      priceCategories: [{ id: null, label: 'Normal', price: 10 }],
     })
   })
 
