@@ -265,67 +265,6 @@ class SecureToken:
         return f"pcapi:token:SecureToken:{self.token}"
 
 
-class AsymetricToken(AbstractToken):
-    """A token that uses asymmetric encryption to encode and decode the token
-    mainly used for external services that need to verify the token signature
-    """
-
-    @classmethod
-    def load_and_check(
-        cls, encoded_token: str, public_key: bytes, *args: typing.Any, **kwargs: typing.Any
-    ) -> "AsymetricToken":
-        try:
-            payload = jwt_utils.decode_jwt_token_rs256(
-                encoded_token, public_key=public_key
-            )  # do we want to use the same key to all our tokens?
-            type_ = TokenType(payload["token_type"])
-            uuid4 = payload["uuid"]
-        except jwt.exceptions.ExpiredSignatureError as e:
-            raise users_exceptions.ExpiredToken() from e
-        except (KeyError, ValueError, jwt.PyJWTError) as e:
-            raise users_exceptions.InvalidToken() from e
-
-        data = payload.get("data", {})
-        return cls(type_, uuid4, encoded_token, data)
-
-    @classmethod
-    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "AsymetricToken":
-        """Decode the JWT token without verifying signature. If you want to be able to trust
-        the data within the payload, you must use `load_and_check`
-        """
-        payload = jwt_utils.decode_jwt_token_rs256(encoded_token, verify_signature=False)
-        type_ = TokenType(payload["token_type"])
-        uuid4 = payload["uuid"]
-
-        data = payload.get("data", {})
-        return cls(type_, uuid4, encoded_token, data)
-
-    @classmethod
-    def create(
-        cls,
-        type_: TokenType,
-        private_key: bytes,
-        ttl: timedelta | None,
-        *,
-        data: dict | None = None,
-    ) -> "AsymetricToken":
-        random_uuid = str(uuid.uuid4())
-        payload: dict[str, typing.Any] = {
-            "token_type": type_.value,
-            "uuid": random_uuid,
-            "data": data or {},
-        }
-        if ttl:
-            payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
-
-        encoded_token = jwt_utils.encode_jwt_payload_rs256(payload, private_key=private_key)
-        if ttl is None or ttl > timedelta(0):
-            get_redis_client().set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
-        token = cls(type_, random_uuid, encoded_token, payload["data"])
-        token._log(cls._TokenAction.CREATE)
-        return token
-
-
 PASSWORDLESS_REDIS_KEY_TEMPLATE = "pcapi:token:%(type_)s:%(key_suffix)s"
 
 
