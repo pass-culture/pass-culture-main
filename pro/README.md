@@ -352,5 +352,5 @@ pnpm lint:dead-code
 ## Identifier des problèmes de types TS
 
 ```bash
-pnpm tsc -b
+pnpm typecheck
 ```
