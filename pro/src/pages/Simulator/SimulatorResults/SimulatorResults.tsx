@@ -69,7 +69,7 @@ export const SimulatorResults = (): JSX.Element => {
         body: {
           activity: finalActivity,
           isOpenToPublic: finalOpenToPublic === 'true',
-          siret: finalSiret ?? '',
+          siret: finalSiret.replaceAll(' ', '') ?? '',
           targets: finalTargetCustomer?.individual
             ? finalTargetCustomer?.educational
               ? [OffererTarget.INDIVIDUAL, OffererTarget.COLLECTIVE]
