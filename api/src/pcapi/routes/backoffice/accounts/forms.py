@@ -1,5 +1,6 @@
 import datetime
 import enum
+import json
 import typing
 
 import sqlalchemy.orm as sa_orm
@@ -19,11 +20,39 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.utils import advanced_search
+from pcapi.routes.backoffice.utils import geography as geography_utils
 from pcapi.utils import countries as countries_utils
 from pcapi.utils import string as string_utils
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
+
+
+ADVANCED_FORM_FIELDS_CONFIG: dict[str, dict[str, typing.Any]] = {
+    "BIRTHDAY": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "CREDITS": {"field": "credits", "operator": ["IN", "NOT_IN"]},
+    "DEPOSIT_EXPIRATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "EMAIL_TDL": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS", "CONTAINS", "NO_CONTAINS"]},
+    "REGIONS": {"field": "regions", "operator": ["IN", "NOT_IN"]},
+    "TAGS": {"field": "tags", "operator": ["IN", "NOT_IN"]},
+}
+
+
+class AdvancedFormFieldKeys(enum.Enum):
+    BIRTHDAY = "Date de naissance"
+    CREDITS = "Crédits"
+    DEPOSIT_EXPIRATION_DATE = "Date d’expiration du crédit"
+    EMAIL_TDL = "Nom de domaine de l'email"
+    REGIONS = "Régions"
+    TAGS = "Tags"
+
+
+class AccountCreditKeys(enum.Enum):
+    PASS_17_V3 = "Pass 17"
+    PASS_18_V3 = "Pass 18"
+    PASS_15_17 = "Ancien Pass 15-17"
+    PASS_18 = "Ancien Pass 18"
 
 
 def _get_tags_query() -> sa_orm.Query:
@@ -56,6 +85,161 @@ class AccountSearchForm(search.SearchForm):
         split_data = query_str.split()
         if len(split_data) > 1 and all(len(item) <= 3 for item in split_data):
             flash("Les termes étant très courts, la recherche n'a porté que sur le nom complet exact.", "info")
+        return True
+
+
+class AccountSearchSubForm(utils.PCForm):
+    class Meta:
+        csrf = False
+        locales = ["fr_FR", "fr"]
+
+    json_data = json.dumps(
+        {
+            "display_configuration": ADVANCED_FORM_FIELDS_CONFIG,
+            "all_available_fields": [
+                "credits",
+                "date",
+                "regions",
+                "string",
+                "tags",
+            ],
+            "sub_rule_type_field_name": "search_field",
+            "operator_field_name": "operator",
+        }
+    )
+
+    search_field = fields.PCSelectWithPlaceholderValueField(
+        "Champ de recherche",
+        choices=utils.choices_from_enum(AdvancedFormFieldKeys, sort=True),
+        validators=[
+            wtforms.validators.Optional(strip_whitespace=True),
+        ],
+    )
+    operator = fields.PCSelectField(
+        "Opérateur",
+        choices=utils.choices_from_enum(advanced_search.AdvancedSearchOperators),
+        default=advanced_search.AdvancedSearchOperators.EQUALS,
+        validators=[
+            wtforms.validators.Optional(strip_whitespace=True),
+        ],
+    )
+    credits = fields.PCSelectMultipleField(
+        "Crédits",
+        choices=utils.choices_from_enum(AccountCreditKeys),
+        field_list_compatibility=True,
+        search_inline=True,
+    )
+    date = fields.PCOptDateField()
+    regions = fields.PCSelectMultipleField(
+        "Régions",
+        choices=geography_utils.get_regions_choices(),
+        field_list_compatibility=True,
+        search_inline=True,
+    )
+    string = fields.PCOptStringField(
+        "Texte",
+        validators=[
+            wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
+        ],
+    )
+    tags = fields.PCSelectMultipleField(
+        "Tags",
+        coerce=int,
+        field_list_compatibility=True,
+        search_inline=True,
+    )
+
+    def __init__(self, *args: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+        self.tags.choices = [(tag.id, str(tag)) for tag in _get_tags_query()]
+
+
+class GetAccountsSearchForm(utils.PCForm):
+    class Meta:
+        csrf = False
+        locales = ["fr_FR", "fr"]
+
+    method = "GET"
+
+    form_field_configuration = ADVANCED_FORM_FIELDS_CONFIG
+    search_attributes = AdvancedFormFieldKeys
+
+    query_search = fields.PCOptStringField(label="Recherche", full_width=True)
+    search = fields.PCFieldListField(
+        fields.PCFormField(AccountSearchSubForm),
+        label="recherches",
+        min_entries=1,
+    )
+
+    sort = wtforms.HiddenField("sort", default="id")
+    order = wtforms.HiddenField("order", default="asc")
+    limit = fields.PCLimitField(
+        "Nombre maximum de résultats",
+        choices=(
+            (100, "Afficher 100 résultats maximum"),
+            (500, "Afficher 500 résultats maximum"),
+            (1000, "Afficher 1000 résultats maximum"),
+            (3000, "Afficher 3000 résultats maximum"),
+        ),
+        default="100",
+        coerce=int,
+        validators=(wtforms.validators.Optional(),),
+    )
+
+    def is_empty(self) -> bool:
+        if self.query_search.data:
+            return False
+
+        for search_field_data in self.search.data:
+            if not self._is_search_field_data_empty(search_field_data):
+                return False
+
+        return True
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        errors = []
+
+        query_str = self.query_search.data.strip(" \t,;") if self.query_search.data else ""
+        if "%" in query_str:
+            errors.append("Le caractère % n'est pas autorisé")
+        elif (
+            query_str
+            and len(query_str) < 3
+            and not string_utils.is_numeric(query_str)
+            and all(self._is_search_field_data_empty(search_field_data) for search_field_data in self.search.data)
+        ):
+            errors.append("Attention, la recherche doit contenir au moins 3 lettres.")
+
+        for search_field_data in self.search.data:
+            if search_field := search_field_data.get("search_field"):
+                if self._is_search_field_data_empty(search_field_data):
+                    try:
+                        errors.append(f"Le filtre « {self.search_attributes[search_field].value} » est vide.")
+                    except KeyError:
+                        errors.append(f"Le filtre {search_field} est invalide.")
+                else:
+                    operator = search_field_data.get("operator")
+                    if operator not in self.form_field_configuration.get(search_field, {}).get("operator", []):
+                        try:
+                            errors.append(
+                                f"L'opérateur « {advanced_search.AdvancedSearchOperators[operator].value} » n'est pas supporté par le filtre {self.search_attributes[search_field].value}."
+                            )
+                        except KeyError:
+                            errors.append(f"L'opérateur {operator} n'est pas supporté par le filtre {search_field}.")
+
+        if errors:
+            flash("\n".join(errors), "warning")
+            return False
+
+        return super().validate(extra_validators)
+
+    def _is_search_field_data_empty(self, search_field_data: dict[str, typing.Any]) -> bool:
+        field_name = search_field_data.get("search_field")
+        if field_name:
+            field_attribute_name = self.form_field_configuration.get(field_name, {}).get("field", "")
+            field_data = search_field_data.get(field_attribute_name)
+            if field_data not in (None, []):
+                return False
         return True
 
 
