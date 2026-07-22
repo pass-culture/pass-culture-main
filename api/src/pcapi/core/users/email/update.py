@@ -182,30 +182,16 @@ def cancel_email_update_request(encoded_token: str) -> None:
 
 
 def validate_email_update_request(
-    encoded_email_validation_token: str,
-) -> models.User:
+    user: models.User,
+    new_email: str,
+) -> None:
     """
     Change a user's email and add a new (validation) entry to its email
     history.
-
-    If no user is found, check whether a validated update request
-    exists: if so, there is no need to panic nor to redo the update
-    since it already has been done.
-
-    Therefore this function can be called multiple times with the same
-    inputs safely.
     """
-    email_update_validation_token = token_utils.Token.load_without_checking(encoded_email_validation_token)
-    user = db.session.get(models.User, email_update_validation_token.user_id)
-    if not user:
-        raise exceptions.UserDoesNotExist()
-
     old_email = user.email
-    new_email = email_update_validation_token.data["new_email"]
     if old_email == new_email:
-        return user
-
-    email_update_validation_token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
+        return
 
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
@@ -213,14 +199,9 @@ def validate_email_update_request(
     external_contacts.update_contact_email(user=user, old_email=old_email, new_email=new_email)
     transactional_mails.send_email_change_information_email(user)
 
-    email_update_validation_token.expire()
     recent_password_reset_token = token_utils.Token.get_token(token_utils.TokenType.RECENTLY_RESET_PASSWORD, user.id)
     if recent_password_reset_token:
         recent_password_reset_token.expire()
-
-    user = db.session.get(models.User, user.id)
-    assert user  # helps mypy
-    return user
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:

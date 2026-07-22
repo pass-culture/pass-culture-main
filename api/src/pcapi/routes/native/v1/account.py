@@ -25,6 +25,7 @@ from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.utils import get_or_404
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -133,24 +134,30 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 @spectree_serialize(response_model=serializers.ChangeBeneficiaryEmailResponse, on_success_status=200, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> serializers.ChangeBeneficiaryEmailResponse:
     try:
-        user: users_models.User | None = email_api.update.validate_email_update_request(body.token)
-    except pydantic_v1.ValidationError:
-        raise api_errors.ApiErrors(
-            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
-            status_code=400,
+        token = token_utils.Token.load_and_check(
+            encoded_token=body.token,
+            type_=token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
         )
     except exceptions.InvalidToken:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
         )
+    token.expire()
+    user = get_or_404(users_models.User, token.user_id)
+
+    try:
+        email_api.update.validate_email_update_request(user=user, new_email=token.data["new_email"])
+    except pydantic_v1.ValidationError:
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
+            status_code=400,
+        )
     except exceptions.EmailExistsError:
         # Returning an error message might help the end client find
         # existing email addresses through user enumeration attacks.
-        token = token_utils.Token.load_without_checking(body.token)
-        user = db.session.get(users_models.User, token.user_id)
+        pass
 
-    assert user  # helps mypy
     if user.is_eligible and not user.is_beneficiary:
         try:
             dms_subscription_api.try_dms_orphan_adoption(user)
