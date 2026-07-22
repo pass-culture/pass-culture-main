@@ -7,3 +7,7 @@ allowBuilds:
 overrides:
   esbuild@>=0.17.0 <0.28.1: '>=0.28.1'
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
+  # TODO: transitive DoS fix, remove once @hey-api/openapi-ts pulls js-yaml >= 4.3.0
+  js-yaml@4.2.0: 4.3.0
+  # TODO: transitive DoS fix, remove once stylelint pulls fast-uri >= 3.1.4
+  fast-uri@3.1.3: 3.1.4
