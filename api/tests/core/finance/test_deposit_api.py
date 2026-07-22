@@ -504,13 +504,20 @@ class UserRecreditTest:
     @time_machine.travel("2025-03-03")
     def test_user_cannot_be_recredited(self, age):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
+        user = users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
 
         before_recredit_number = db.session.query(models.Recredit.id).count()
         api.recredit_users()
         after_recredit_number = db.session.query(models.Recredit.id).count()
 
         assert before_recredit_number == after_recredit_number
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @time_machine.travel("2025-03-03")
     def test_user_already_received_pre_decree_17yo_recredit(self):
@@ -523,6 +530,13 @@ class UserRecreditTest:
         after_recredit_number = db.session.query(models.Recredit.id).count()
 
         assert before_recredit_number == after_recredit_number
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     def test_user_recredited_at_18(self):
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
@@ -540,6 +554,16 @@ class UserRecreditTest:
             assert len(user.deposits) == 1
             assert len(user.deposit.recredits) == 2
 
+            bonus_fraud_check_types = [
+                fraud_check.type
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+            ]
+            assert set(bonus_fraud_check_types) == {
+                subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+                subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            }
+
     def test_user_not_recredited_at_18_if_missing_step(self):
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
         with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
@@ -549,16 +573,25 @@ class UserRecreditTest:
             api.recredit_users()
             assert len(user.deposit.recredits) == 1
 
-    def test_users_recredited_once(self):
-        user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
-        with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
-            assert user.age == 18
-            subscription_factories.PhoneValidationFraudCheckFactory(user=user)
-            subscription_factories.BeneficiaryFraudCheckFactory(
-                user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
-            )
-            subscription_factories.HonorStatementFraudCheckFactory(user=user)
-            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            bonus_fraud_checks = [
+                fraud_check
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+            ]
+            assert not bonus_fraud_checks
+
+        def test_users_recredited_once(self):
+            user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
+            with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
+                assert user.age == 18
+                subscription_factories.PhoneValidationFraudCheckFactory(user=user)
+                subscription_factories.BeneficiaryFraudCheckFactory(
+                    user=user,
+                    type=subscription_models.FraudCheckType.UBBLE,
+                    status=subscription_models.FraudCheckStatus.OK,
+                )
+                subscription_factories.HonorStatementFraudCheckFactory(user=user)
+                subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
             api.recredit_users()
 
@@ -568,6 +601,16 @@ class UserRecreditTest:
             api.recredit_users()
             assert len(user.deposits) == 1
             assert len(user.deposit.recredits) == 2
+
+            bonus_fraud_check_types = [
+                fraud_check.type
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+            ]
+            assert set(bonus_fraud_check_types) == {
+                subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+                subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+            }
 
     def test_user_with_missing_steps_is_not_recredited(self):
         user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
@@ -578,6 +621,13 @@ class UserRecreditTest:
             api.recredit_users()
             assert len(user.deposits) == 1
             assert len(user.deposit.recredits) == 1
+
+            bonus_fraud_checks = [
+                fraud_check
+                for fraud_check in user.beneficiaryFraudChecks
+                if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+            ]
+            assert not bonus_fraud_checks
 
             # Finish missing steps
             subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
@@ -590,6 +640,16 @@ class UserRecreditTest:
 
         assert len(user.deposits) == 1
         assert len(user.deposit.recredits) == 2
+
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
 
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
@@ -618,11 +678,28 @@ class UserRecreditTest:
             user_1.deposit.amount == 12 + 50
         )  #  12 (remaining credit 16 before decree) + 50 (for 17 year old after decree)
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user_1.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
         # User 2 is 18, and was recredited with RECREDIT_18 on its new deposit
         assert len(user_2.deposits) == 2
         assert user_2.deposit.type == models.DepositType.GRANT_17_18
         assert user_2.deposit.recredits[0].recreditType == models.RecreditType.RECREDIT_18
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
+
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user_2.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
 
     def test_booking_transfer_when_recrediting_underage_deposit(self):
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
@@ -673,6 +750,13 @@ class UserRecreditTest:
         api.recredit_users()
 
         assert models.RecreditType.RECREDIT_18 not in [recredit.recreditType for recredit in user.deposit.recredits]
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @pytest.mark.skip(
         reason="This test is very long and must be executed in a flask shell, outside of db_session fixture"

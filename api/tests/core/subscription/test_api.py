@@ -1776,7 +1776,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
 
         is_success = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
         assert not is_success
+        assert not user.is_beneficiary
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     def test_admin_review_ko(self):
         user = users_factories.UserFactory(
@@ -1819,6 +1828,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert not is_success
         assert not user.is_beneficiary
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     def test_missing_step(self):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
@@ -1845,6 +1861,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert not user.is_beneficiary
         assert user.firstName is None
         assert user.lastName is None
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     def test_duplicate_detected(self):
         first_name = "Alain"
@@ -1889,6 +1912,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert to_invalidate_check.reasonCodes == [subscription_models.FraudReasonCode.DUPLICATE_USER]
         assert user.firstName is None
         assert user.lastName is None
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     AGE18_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=18, months=4)
     UNDERAGE_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=17, months=4)
@@ -1940,6 +1970,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 50
         assert user.recreditAmountToShow == 50
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     def test_rejected_identity(self):
         user = self.eligible_user(validate_phone=False)
 
@@ -1956,6 +1993,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
         assert not user.is_beneficiary
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     def test_missing_profile_after_dms_application(self):
         user = self.eligible_user(validate_phone=True, city=None)
         subscription_factories.BeneficiaryFraudCheckFactory(
@@ -1969,6 +2013,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not subscription_api.activate_beneficiary_if_no_missing_step(user)
         assert not user.is_beneficiary
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     def test_underage_ubble_valid_for_18(self):
         identity_firstname = "Yolan"
@@ -2128,6 +2179,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 30
         assert user.recreditAmountToShow == 30
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @time_machine.travel("2025-03-03")
     def test_pre_decree_at_17_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -2145,6 +2203,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.amount == 20 + 0 + 50
         assert user.recreditAmountToShow == 70
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @time_machine.travel("2025-03-03")
     def test_pre_decree_at_17_when_registration_started_at_16(self):
@@ -2164,6 +2229,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 30 + 50
         assert user.recreditAmountToShow == 80
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @time_machine.travel("2025-03-03")
     def test_pre_decree_at_16_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -2182,6 +2254,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 20
         assert user.recreditAmountToShow == 20
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @time_machine.travel("2025-03-03")
     def test_pre_decree_18_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -2196,6 +2275,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @time_machine.travel("2025-03-03")
     def test_pre_decree_18_eligibility_at_19_year_old(self):
@@ -2212,6 +2298,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert is_user_activated
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_transition_to_18(self):
@@ -2233,6 +2326,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_transition_to_18_ignores_false_age_18_fraud_checks(self):
@@ -2264,6 +2364,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
 
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
+
     @time_machine.travel("2025-03-03")
     def test_underage_transition_to_18_after_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
@@ -2285,6 +2392,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.recreditAmountToShow == 150
 
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
+
     @pytest.mark.parametrize("age", [18, 19, 20])
     def test_post_decree_18_eligibility(self, age):
         user = users_factories.HonorStatementValidatedUserFactory(age=18)
@@ -2300,6 +2417,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         [recredit] = user.deposit.recredits
         assert recredit.recreditType == finance_models.RecreditType.RECREDIT_18
         assert user.recreditAmountToShow == 150
+
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
 
     def test_post_decree_when_registration_started_at_16_before_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1)
@@ -2322,6 +2449,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 50 + 150
         assert user.recreditAmountToShow == 50 + 150
 
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
+
     @pytest.mark.parametrize("age", [18, 19, 20])
     def test_post_decree_when_registration_started_at_17_after_decree(self, age):
         starting_age = 17
@@ -2342,6 +2479,16 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert set(recredit_types) == {finance_models.RecreditType.RECREDIT_17, finance_models.RecreditType.RECREDIT_18}
         assert user.recreditAmountToShow == 200
 
+        bonus_fraud_check_types = [
+            fraud_check.type
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert set(bonus_fraud_check_types) == {
+            subscription_models.FraudCheckType.AAH_BONUS_CREDIT,
+            subscription_models.FraudCheckType.AEEH_BONUS_CREDIT,
+        }
+
     def test_free_eligibility(self):
         user = users_factories.ProfileCompletedUserFactory(age=16)
 
@@ -2352,6 +2499,13 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_FREE
         assert not user.deposit.recredits
         assert not mails_testing.outbox
+
+        bonus_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in subscription_models.BONUS_CREDIT_CHECK_TYPES
+        ]
+        assert not bonus_fraud_checks
 
     def test_user_with_old_fraud_checks_get_correct_deposit_and_role(self):
         """

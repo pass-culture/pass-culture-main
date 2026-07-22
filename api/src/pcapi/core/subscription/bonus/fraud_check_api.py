@@ -1,9 +1,12 @@
 import datetime
+from functools import partial
 
+from pcapi import settings
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils.transaction_manager import on_commit
 
 
 def create_qf_bonus_credit_fraud_check(
@@ -17,7 +20,10 @@ def create_qf_bonus_credit_fraud_check(
     birth_country_cog_code: str | None = None,
     birth_city_cog_code: str | None = None,
     origin: str,
+    publish_task: bool | None = None,
 ) -> subscription_models.BeneficiaryFraudCheck:
+    from pcapi.core.subscription.bonus import tasks as bonus_tasks
+
     custodian = bonus_schemas.BonusCreditPerson(
         last_name=last_name,
         common_name=common_name,
@@ -40,6 +46,14 @@ def create_qf_bonus_credit_fraud_check(
     )
     db.session.add(fraud_check)
     db.session.flush()
+
+    if publish_task is None:
+        publish_task = settings.BONUS_CREDIT_DELAY == 0
+
+    if publish_task:
+        payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
     return fraud_check
 
 
@@ -49,7 +63,11 @@ def create_disability_bonus_credit_fraud_checks(
     birth_country_cog_code: str | None = None,
     birth_city_cog_code: str | None = None,
     origin: str,
+    publish_task: bool | None = None,
 ) -> tuple[subscription_models.BeneficiaryFraudCheck, subscription_models.BeneficiaryFraudCheck]:
+    from pcapi.core.subscription.bonus import tasks as bonus_tasks
+
+    eligibility = user.eligibility
     person = _build_bonus_credit_person_for_disability(user, birth_country_cog_code, birth_city_cog_code)
     aah_fraud_check_content = bonus_schemas.AdultDisabilityBonusCreditContent(person=person)
 
@@ -60,7 +78,7 @@ def create_disability_bonus_credit_fraud_checks(
         reason=origin,
         thirdPartyId=f"aah-bonus-credit-{user.id}",
         resultContent=aah_fraud_check_content.model_dump(exclude_unset=True),
-        eligibilityType=user.eligibility,
+        eligibilityType=eligibility,
     )
     db.session.add(aah_fraud_check)
 
@@ -72,11 +90,20 @@ def create_disability_bonus_credit_fraud_checks(
         reason=origin,
         thirdPartyId=f"aeeh-bonus-credit-{user.id}",
         resultContent=aeeh_fraud_check_content.model_dump(exclude_unset=True),
-        eligibilityType=user.eligibility,
+        eligibilityType=eligibility,
     )
     db.session.add(aeeh_fraud_check)
-
     db.session.flush()
+
+    if publish_task is None:
+        publish_task = settings.BONUS_CREDIT_DELAY == 0
+
+    if publish_task:
+        aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
+
+        aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
+        on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
 
     return aah_fraud_check, aeeh_fraud_check
 

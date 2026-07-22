@@ -44,7 +44,11 @@ def test_apply_for_quotient_familial_bonus_task(mocked_get_quotient_familial):
 
 
 @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task):
+@patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+@patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+def test_recover_started_bonus_credit_applications_full_page(
+    mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
+):
     twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
     started_fraud_check_1 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
@@ -52,8 +56,14 @@ def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task)
     started_fraud_check_2 = subscription_factories.QFBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago - relativedelta(seconds=1)
     )
+    aah_fraud_check = subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
+    )
+    aeeh_fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
+    )
 
-    tasks.recover_started_quotient_familial_application()
+    tasks.recover_started_bonus_credit_applications(page_size=12 + 12 + 1 + 1)
 
     mocked_apply_for_qf_task.assert_has_calls(
         [
@@ -62,16 +72,40 @@ def test_recover_started_quotient_familial_application(mocked_apply_for_qf_task)
         ],
         any_order=True,
     )
+    mocked_apply_for_aah_task.assert_has_calls([call(payload={"fraud_check_id": aah_fraud_check.id})])
+    mocked_apply_for_aeeh_task.assert_has_calls([call(payload={"fraud_check_id": aeeh_fraud_check.id})])
 
 
 @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
-def test_recovery_ignores_recent_quotient_familial_application(mocked_apply_for_qf_task):
-    twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
+@patch("pcapi.core.subscription.bonus.tasks.apply_for_adult_disability_bonus_task.delay")
+@patch("pcapi.core.subscription.bonus.tasks.apply_for_disabled_child_education_bonus_task.delay")
+@pytest.mark.settings(BONUS_CREDIT_DELAY=43200)  # 12 hours
+def test_recovery_ignores_recent_quotient_familial_application(
+    mocked_apply_for_aeeh_task, mocked_apply_for_aah_task, mocked_apply_for_qf_task
+):
+    too_late = datetime.datetime.now(tz=None) - relativedelta(hours=12) + relativedelta(minutes=1)
     subscription_factories.QFBonusCreditFraudCheckFactory.create(
-        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago + relativedelta(minutes=1)
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=too_late
+    )
+    subscription_factories.AAHBonusCreditFraudCheckFactory.create(
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=too_late
+    )
+    subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
+        status=subscription_models.FraudCheckStatus.STARTED, updatedAt=too_late
     )
 
-    tasks.recover_started_quotient_familial_application()
+    tasks.recover_started_bonus_credit_applications()
+
+    mocked_apply_for_qf_task.assert_not_called()
+    mocked_apply_for_aah_task.assert_not_called()
+    mocked_apply_for_aeeh_task.assert_not_called()
+
+
+@patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+def test_recovery_does_not_overflow_page_size(mocked_apply_for_qf_task):
+    subscription_factories.QFBonusCreditFraudCheckFactory.create(status=subscription_models.FraudCheckStatus.STARTED)
+
+    tasks.recover_started_bonus_credit_applications(page_size=11)
 
     mocked_apply_for_qf_task.assert_not_called()
 
@@ -101,7 +135,7 @@ def test_apply_for_disabled_child_education_allowance(mocked_disabled_child_educ
     person = subscription_factories.BonusCreditPersonFactory.create()
     fraud_check = subscription_factories.AEEHBonusCreditFraudCheckFactory.create(
         status=subscription_models.FraudCheckStatus.STARTED,
-        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+        resultContent=subscription_factories.DisabledChildEducationBonusCreditContentFactory.build(
             person=person
         ).model_dump(),
     )

@@ -127,10 +127,10 @@ def ubble_archive_past_identifications_automation() -> None:
     archive_past_identification_pictures(start_date, end_date, picture_storage_status=False)
 
 
-@blueprint.cli.command("recover_started_quotient_familial_applications")
+@blueprint.cli.command("recover_started_bonus_credit_applications")
 @cron_decorators.log_cron
-def recover_started_quotient_familial_applications() -> None:
-    bonus_tasks.recover_started_quotient_familial_application()
+def recover_started_bonus_credit_applications() -> None:
+    bonus_tasks.recover_started_bonus_credit_applications()
 
 
 @blueprint.cli.command("recover_incomplete_ubble_id_verification")

@@ -20,6 +20,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_check_api
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -110,6 +111,11 @@ def activate_beneficiary_for_eligibility(
     activated_eligibility = eligibility_api.get_activated_eligibility(deposit.type)
     eligibility_api.add_eligibility_role(user, activated_eligibility)
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
+
+    if user.has_beneficiary_role and user.received_pass_18_v3:
+        bonus_fraud_check_api.create_disability_bonus_credit_fraud_checks(
+            user, origin="automatic attempt through beneficiary activation"
+        )
 
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
     external_attributes_api.update_external_user(user)

@@ -1,6 +1,5 @@
 import logging
 import typing
-from functools import partial
 
 from flask_login import current_user
 from pydantic import ValidationError
@@ -14,7 +13,6 @@ from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
-from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -25,7 +23,6 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.transaction_manager import atomic
-from pcapi.utils.transaction_manager import on_commit
 
 from .. import blueprint
 from .serialization import subscription as serializers
@@ -180,7 +177,7 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,
         )
-    fraud_check = bonus_fraud_api.create_qf_bonus_credit_fraud_check(
+    bonus_fraud_api.create_qf_bonus_credit_fraud_check(
         current_user,
         last_name=body.last_name,
         common_name=body.common_name,
@@ -191,8 +188,6 @@ def create_quotient_familial_bonus_credit_fraud_check(body: serializers.Quotient
         birth_city_cog_code=body.birth_city_cog_code,
         origin="enrolled from /subscription/bonus/quotient_familial endpoint",
     )
-    payload = bonus_tasks.BonusTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
 
 
 @blueprint.native_route("/subscription/bonus/disability", methods=["POST"])
@@ -212,9 +207,3 @@ def create_disability_bonus_credit_fraud_checks(body: serializers.DisabilityBonu
         birth_city_cog_code=body.birth_city_cog_code,
         origin=bonus_constants.DISABILITY_ENDPOINT_ORIGIN,
     )
-
-    aah_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aah_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_adult_disability_bonus_task.delay, aah_payload))
-
-    aeeh_payload = bonus_tasks.BonusTaskPayload(fraud_check_id=aeeh_fraud_check.id).model_dump()
-    on_commit(partial(bonus_tasks.apply_for_disabled_child_education_bonus_task.delay, aeeh_payload))
