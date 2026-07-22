@@ -672,17 +672,19 @@ class AccountTest:
     def test_get_user_profile_bonification_disability_status_ko(
         self, client, reason_code, expected_disability_bonification_status
     ):
-        user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.AAHBonusCreditFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.KO,
-            reasonCodes=[reason_code],
-            user=user,
-        )
-        subscription_factories.AEEHBonusCreditFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.KO,
-            reasonCodes=[reason_code],
-            user=user,
-        )
+        # Need travel on yesterday to avoid too_many_retries
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(days=1)):
+            user = users_factories.BeneficiaryFactory(age=18)
+            subscription_factories.AAHBonusCreditFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.KO,
+                reasonCodes=[reason_code],
+                user=user,
+            )
+            subscription_factories.AEEHBonusCreditFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.KO,
+                reasonCodes=[reason_code],
+                user=user,
+            )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["disabilityBonificationStatus"] == expected_disability_bonification_status.value
@@ -695,7 +697,7 @@ class AccountTest:
         assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.GRANTED.value
         assert response.json["disabilityBonificationStatus"] == bonus_schemas.DisabilityBonificationStatus.GRANTED.value
 
-    def test_get_user_profile_bonification_status_too_many_retries(self, client):
+    def test_get_user_profile_bonification_qf_status_too_many_retries(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         subscription_factories.QFBonusCreditFraudCheckFactory.create_batch(
             size=users_constants.MAX_QF_BONUS_RETRIES,
@@ -706,6 +708,20 @@ class AccountTest:
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES.value
+
+    def test_get_user_profile_bonification_disability_status_too_many_retries(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.AAHBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO, user=user
+        )
+        subscription_factories.AEEHBonusCreditFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO, user=user
+        )
+        response = client.with_token(user).get("/native/v1/me")
+        assert response.status_code == 200
+        assert (
+            response.json["disabilityBonificationStatus"] == bonus_schemas.QFBonificationStatus.TOO_MANY_RETRIES.value
+        )
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_under_17(self, client):
         user = users_factories.BeneficiaryFactory(age=17)
