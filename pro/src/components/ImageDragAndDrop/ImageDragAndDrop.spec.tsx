@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { MAX_FILE_SIZE } from './constants'
 import { ImageDragAndDrop } from './ImageDragAndDrop'
 
 function mockData(files: File[]) {
@@ -122,7 +123,7 @@ describe('ImageDragAndDrop', () => {
         height: 600,
       }
     )
-    Object.defineProperty(file, 'size', { value: 11 * 1024 * 1024 })
+    Object.defineProperty(file, 'size', { value: MAX_FILE_SIZE + 1 })
     const data = mockData([file])
 
     const onError = vi.fn()

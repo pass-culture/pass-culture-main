@@ -89,13 +89,9 @@ export const ImageEditor = forwardRef<AvatarEditorRef, ImageEditorProps>(
       100,
       canvasHeight
     )
-    const responsiveCanvasWidth = map(
-      windowWidth,
-      0,
-      CANVAS_MOBILE_BREAKPOINT,
-      100,
-      canvasWidth
-    )
+    // Derived from the height so that the crop area always keeps the same aspect ratio
+    const responsiveCanvasWidth =
+      responsiveCanvasHeight * (canvasWidth / canvasHeight)
     const responsiveCropBorderWidth = map(
       windowWidth,
       0,
