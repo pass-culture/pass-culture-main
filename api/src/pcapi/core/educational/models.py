@@ -1202,17 +1202,9 @@ class CollectiveOfferTemplate(
         return cls.dateArchived.is_not(sa.null())
 
     @property
-    def isReleased(self) -> bool:
-        return (
-            self.isActive
-            and self.validation == offer_mixin.OfferValidationStatus.APPROVED
-            and self.venue.managingOfferer.isActive
-            and self.venue.managingOfferer.isValidated
-        )
-
-    @property
     def is_eligible_for_search(self) -> bool:
-        return bool(self.isReleased)
+        offerer_is_active = self.venue.managingOfferer.isActive and self.venue.managingOfferer.isValidated
+        return offerer_is_active and self.displayedStatus == CollectiveOfferDisplayedStatus.PUBLISHED
 
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
