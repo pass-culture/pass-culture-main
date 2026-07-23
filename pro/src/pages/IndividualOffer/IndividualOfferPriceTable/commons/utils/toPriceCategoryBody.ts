@@ -1,6 +1,6 @@
 import type {
-  CreatePriceCategoryModel,
   PriceCategoryBody,
+  UpsertPriceCategoryModel,
 } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
@@ -14,10 +14,10 @@ export const toPriceCategoryBody = (
       assertOrFrontendError(entry.label, '`entry.label` is undefined.')
 
       return {
-        ...(entry.id === null ? {} : { id: entry.id }),
+        id: entry.id,
         label: entry.label,
         price: entry.price ?? 0,
-      } satisfies CreatePriceCategoryModel
+      } satisfies UpsertPriceCategoryModel
     }),
   }
 }

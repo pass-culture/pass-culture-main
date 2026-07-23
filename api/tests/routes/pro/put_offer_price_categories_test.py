@@ -21,7 +21,7 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
 
-        data = {"priceCategories": [{"price": 20.34, "label": "Behind a post"}]}
+        data = {"priceCategories": [{"id": None, "price": 20.34, "label": "Behind a post"}]}
 
         response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
         assert response.status_code == 200
@@ -39,9 +39,9 @@ class Returns200Test:
 
         data = {
             "priceCategories": [
-                {"price": 20, "label": "Behind a post"},
-                {"price": 12.3, "label": "On your friend knees"},
-                {"price": 28.71, "label": "The throne"},
+                {"id": None, "price": 20, "label": "Behind a post"},
+                {"id": None, "price": 12.3, "label": "On your friend knees"},
+                {"id": None, "price": 28.71, "label": "The throne"},
             ],
         }
 
@@ -81,8 +81,8 @@ class Returns200Test:
 
         data = {
             "priceCategories": [
-                {"price": 20, "label": "Already exists"},  # Create
-                {"price": 25, "label": "Does not exists"},  # Create
+                {"id": None, "price": 20, "label": "Already exists"},  # Create
+                {"id": None, "price": 25, "label": "Does not exists"},  # Create
                 {"price": 25, "label": "Five people", "id": price_category.id},  # Edit
             ],
         }
@@ -151,7 +151,7 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 350, "label": "Behind a post"},
+                {"id": None, "price": 350, "label": "Behind a post"},
             ],
         }
 
@@ -223,17 +223,17 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 20, "label": "Behind a post"},
-                {"price": 12.3, "label": "On your friend knees"},
-                {"price": 28.71, "label": "The throne"},
-                {"price": 20, "label": "Behind a post"},
+                {"id": None, "price": 20, "label": "Behind a post"},
+                {"id": None, "price": 12.3, "label": "On your friend knees"},
+                {"id": None, "price": 28.71, "label": "The throne"},
+                {"id": None, "price": 20, "label": "Behind a post"},
             ],
         }
 
         response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"priceCategories": ["Price categories must be unique"]}
+        assert response.json == {"priceCategories": ["Les tarifs doivent être uniques"]}
 
     def test_cannot_replace_price_categories_with_deletion_on_published_offer(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -245,9 +245,9 @@ class Returns400Test:
         )
         data = {
             "priceCategories": [
-                {"price": 12.3, "label": "On your friend knees"},
-                {"price": 25, "label": "cat gold"},
-                {"price": 20, "label": "Behind a post"},
+                {"id": None, "price": 12.3, "label": "On your friend knees"},
+                {"id": None, "price": 25, "label": "cat gold"},
+                {"id": None, "price": 20, "label": "Behind a post"},
             ],
         }
 
@@ -262,11 +262,11 @@ class Returns400Test:
 
         response = client.with_session_auth("user@example.com").put(
             f"/offers/{offer.id}/price_categories",
-            json={"priceCategories": [{"price": i, "label": f"Tarif {i}"} for i in range(51)]},
+            json={"priceCategories": [{"id": None, "price": i, "label": f"Tarif {i}"} for i in range(51)]},
         )
 
         assert response.status_code == 400
-        assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
+        assert response.json == {"priceCategories": ["Cette liste doit avoir une taille maximum de 50"]}
 
     @pytest.mark.parametrize(
         "validation_status",
@@ -308,6 +308,9 @@ class Returns400Test:
         assert db.session.query(offers_models.PriceCategory).filter_by(id=price_category.id).one()
 
     def test_create_same_price_categories_twice(self, client):
+        """
+        Ensures no duplicated price categories after decimal truncation
+        """
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -316,8 +319,8 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 10.00, "label": "The throne"},
-                {"price": 10.00001, "label": "The throne"},
+                {"id": None, "price": 10.00, "label": "The throne"},
+                {"id": None, "price": 10.00001, "label": "The throne"},
             ],
         }
 
@@ -325,11 +328,35 @@ class Returns400Test:
 
         assert response.status_code == 400, response.json
         assert db.session.query(offers_models.PriceCategory).count() == 0
-        # TODO(xordoquy): Error message is far from decent, it'll be reworked soon enough with Pydantic v2 migration
         assert response.json == {
-            "priceCategories.1.id": ["Ce champ est obligatoire"],
             "priceCategories.1.price": [
-                "ensure that there are no more than 2 decimal places",
-                "ensure that there are no more than 2 decimal places",
+                "Saisissez un nombre avec au maximum 2 décimales",
+            ],
+        }
+
+    def test_create_price_categories_with_too_many_digits(self, client):
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "priceCategories": [
+                {"id": None, "price": 1234567890123, "label": "big"},
+                {"id": None, "price": 12345678901.23, "label": "big decimal"},
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400, response.json
+        assert db.session.query(offers_models.PriceCategory).count() == 0
+        assert response.json == {
+            "priceCategories.0.price": [
+                "Saisissez un nombre avec au maximum 12 chiffres au total",
+            ],
+            "priceCategories.1.price": [
+                "Saisissez un nombre avec au maximum 12 chiffres au total",
             ],
         }

@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import typing
 from typing import Any
 
@@ -8,12 +7,10 @@ from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import conlist
-from pydantic.v1 import constr
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
@@ -30,7 +27,9 @@ from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import NOW_LITERAL
+from pcapi.serialization.utils import DecimalField
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.serialization.utils import validate_url
@@ -612,56 +611,34 @@ class DeleteOfferRequestBody(BaseModel):
     ids: list[int | None]
 
 
-class CreatePriceCategoryModel(BaseModel):
-    if typing.TYPE_CHECKING:
-        label: str
-    else:
-        label: constr(min_length=1, max_length=50)
-    price: decimal.Decimal = Field(
+class UpsertPriceCategoryModel(HttpBodyModel):
+    # id is set when updating price category
+    id: int | None
+    label: str = pydantic_v2.Field(min_length=1, max_length=50)
+    # TODO: check if we want to keep max_digits or replace with custom validation
+    price: DecimalField = pydantic_v2.Field(
         max_digits=12,
         decimal_places=2,
         ge=0.00,
     )
 
-    class Config:
-        extra = "forbid"
 
-
-class EditPriceCategoryModel(BaseModel):
-    id: int
-    if typing.TYPE_CHECKING:
-        label: str
-    else:
-        label: constr(min_length=1, max_length=50)
-    price: decimal.Decimal = Field(
-        max_digits=12,
-        decimal_places=2,
-        ge=0.00,
+class PriceCategoryBody(HttpBodyModel):
+    price_categories: list[UpsertPriceCategoryModel] = pydantic_v2.Field(
+        max_length=offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER
     )
 
-    class Config:
-        extra = "forbid"
-
-
-class PriceCategoryBody(BaseModel):
-    price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel] = Field(
-        max_items=offers_models.Offer.MAX_PRICE_CATEGORIES_PER_OFFER
-    )
-
-    @validator("price_categories")
+    @pydantic_v2.field_validator("price_categories")
     def get_unique_price_categories(
         cls,
-        price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel],
-    ) -> list[CreatePriceCategoryModel | EditPriceCategoryModel]:
+        price_categories: list[UpsertPriceCategoryModel],
+    ) -> list[UpsertPriceCategoryModel]:
         unique_price_categories = []
         for price_category in price_categories:
             if (price_category.label, price_category.price) in unique_price_categories:
-                raise ValueError("Price categories must be unique")
+                raise PydanticError("Les tarifs doivent être uniques")
             unique_price_categories.append((price_category.label, price_category.price))
         return price_categories
-
-    class Config:
-        alias_generator = to_camel
 
 
 class MusicTypeResponse(BaseModel):
