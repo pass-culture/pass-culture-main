@@ -66,7 +66,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    saveNewOnboardingData: vi.fn(),
+    structureSignup: vi.fn(),
   },
 }))
 
@@ -369,7 +369,7 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = 'nom public'
       }
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(api, 'structureSignup').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -378,7 +378,7 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+      expect(api.structureSignup).toHaveBeenCalledWith({
         body: {
           activity: 'MUSEUM',
           otherActivityComment: null,
@@ -409,7 +409,7 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = ''
       }
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(api, 'structureSignup').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -418,7 +418,7 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+      expect(api.structureSignup).toHaveBeenCalledWith({
         body: {
           culturalDomains: undefined,
           activity: 'MUSEUM',
@@ -451,7 +451,7 @@ describe('ValidationScreen', () => {
         contextValue.offerer.isOpenToPublic = 'true'
       }
       const saveNewOnboardingDataMock = vi
-        .spyOn(api, 'saveNewOnboardingData')
+        .spyOn(api, 'structureSignup')
         .mockResolvedValue({} as PostOffererResponseModel)
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
@@ -475,7 +475,7 @@ describe('ValidationScreen', () => {
         ]
       }
       const saveNewOnboardingDataMock = vi
-        .spyOn(api, 'saveNewOnboardingData')
+        .spyOn(api, 'structureSignup')
         .mockResolvedValue({} as PostOffererResponseModel)
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
@@ -502,7 +502,7 @@ describe('ValidationScreen', () => {
         contextValue.activity.activity = ActivityOpenToPublic.OTHER
         contextValue.activity.otherActivityComment = 'urbex en pleine nature'
       }
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+      vi.spyOn(api, 'structureSignup').mockResolvedValue(
         {} as PostOffererResponseModel
       )
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -511,7 +511,7 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+      expect(api.structureSignup).toHaveBeenCalledWith({
         body: {
           culturalDomains: undefined,
           activity: 'OTHER',
@@ -540,7 +540,7 @@ describe('ValidationScreen', () => {
 
     describe('navigation after creation', () => {
       beforeEach(() => {
-        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        vi.spyOn(api, 'structureSignup').mockResolvedValue(
           {} as PostOffererResponseModel
         )
         vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
@@ -588,7 +588,7 @@ describe('ValidationScreen', () => {
 
     it('should call initializeUser with newOffererId and navigate to user default path', async () => {
       const createdOfferer = { id: 42 } as PostOffererResponseModel
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(createdOfferer)
+      vi.spyOn(api, 'structureSignup').mockResolvedValue(createdOfferer)
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
       } as unknown as HTMLScriptElement)
@@ -638,7 +638,7 @@ describe('ValidationScreen', () => {
     })
 
     it('should display error message on api error', async () => {
-      vi.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
+      vi.spyOn(api, 'structureSignup').mockRejectedValue({})
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
       } as unknown as HTMLScriptElement)

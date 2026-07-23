@@ -15,9 +15,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
-from pcapi import settings
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -167,38 +164,6 @@ def create_offerer(
         user_offerer = api.create_offerer(current_user, body, insee_data=siren_info)
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
-
-    return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
-
-
-@private_api.route("/offerers/new", methods=["POST"])
-@atomic()
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    response_model=public_information_serialize.PostOffererResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def save_new_onboarding_data(
-    body: offerers_serialize.SaveNewOnboardingDataQueryModel,
-) -> public_information_serialize.PostOffererResponseModel:
-    try:
-        check_web_recaptcha_token(
-            body.token,
-            settings.RECAPTCHA_SECRET,
-            original_action="saveNewOnboardingData",
-            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
-        )
-    except ReCaptchaException:
-        raise ApiErrors({"token": "The given token is invalid"})
-    try:
-        user_offerer = api.create_from_onboarding_data(current_user, body)
-    except offerers_exceptions.InactiveSirenException:
-        raise ApiErrors({"siret": "SIRET is no longer active"})
-    except offerers_exceptions.NotACollectivity:
-        raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
-    except offerers_exceptions.publicNameRequiredException:
-        raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
 
     return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
 

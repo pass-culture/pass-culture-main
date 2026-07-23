@@ -1023,6 +1023,15 @@ export type Consent = {
 };
 
 /**
+ * ContentMessageSignupSimulation
+ */
+export enum ContentMessageSignupSimulation {
+    COLLECTIVE = 'COLLECTIVE',
+    BOOKSTORE = 'BOOKSTORE',
+    UNUSUAL_APE_CODE = 'UNUSUAL_APE_CODE'
+}
+
+/**
  * CookieConsentRequest
  */
 export type CookieConsentRequest = {
@@ -1682,6 +1691,21 @@ export type EducationalRedactorResponseModel = {
  * EducationalRedactors
  */
 export type EducationalRedactors = Array<EducationalRedactor>;
+
+/**
+ * EligibilityDocuments
+ */
+export enum EligibilityDocuments {
+    WEBSITE = 'WEBSITE',
+    RESUME_OR_PORTFOLIO = 'RESUME_OR_PORTFOLIO',
+    DIPLOMAS = 'DIPLOMAS',
+    SOUND_DESIGN_DIPLOMAS = 'SOUND_DESIGN_DIPLOMAS',
+    PRICES = 'PRICES',
+    SHOP_PICTURES = 'SHOP_PICTURES',
+    SOUND_STUDIO_PICTURES = 'SOUND_STUDIO_PICTURES',
+    CRIMINAL_RECORDS = 'CRIMINAL_RECORDS',
+    DESCRIPTION = 'DESCRIPTION'
+}
 
 /**
  * EventDateScheduleAndPriceCategoriesCountModel
@@ -3860,6 +3884,14 @@ export type HistoryStep = {
 };
 
 /**
+ * ImportanceLevelMessageSignupSimulation
+ */
+export enum ImportanceLevelMessageSignupSimulation {
+    INFO = 'INFO',
+    ALERT = 'ALERT'
+}
+
+/**
  * IndividualRevenue
  */
 export type IndividualRevenue = {
@@ -4766,6 +4798,14 @@ export enum OfferStatus {
 export enum OffererMemberStatus {
     VALIDATED = 'validated',
     PENDING = 'pending'
+}
+
+/**
+ * OffererTarget
+ */
+export enum OffererTarget {
+    COLLECTIVE = 'COLLECTIVE',
+    INDIVIDUAL = 'INDIVIDUAL'
 }
 
 /**
@@ -5913,6 +5953,50 @@ export type ShortHighlightResponseModel = {
      * Name
      */
     name: string;
+};
+
+/**
+ * SignupSimulationMessages
+ */
+export type SignupSimulationMessages = {
+    content: ContentMessageSignupSimulation;
+    importanceLevel: ImportanceLevelMessageSignupSimulation;
+};
+
+/**
+ * SignupSimulationPayload
+ */
+export type SignupSimulationPayload = {
+    /**
+     * Activity
+     */
+    activity: ActivityOpenToPublic | ActivityNotOpenToPublic;
+    /**
+     * Isopentopublic
+     */
+    isOpenToPublic: boolean;
+    /**
+     * Siret
+     */
+    siret: string;
+    /**
+     * Targets
+     */
+    targets: Array<OffererTarget>;
+};
+
+/**
+ * SignupSimulationResponseModel
+ */
+export type SignupSimulationResponseModel = {
+    /**
+     * Eligibilitydocuments
+     */
+    eligibilityDocuments: Array<EligibilityDocuments>;
+    /**
+     * Messages
+     */
+    messages: Array<SignupSimulationMessages>;
 };
 
 /**
@@ -9968,6 +10052,35 @@ export type getStructureSearchBySearchInputResponses = {
 };
 
 export type getStructureSearchBySearchInputResponse = getStructureSearchBySearchInputResponses[keyof getStructureSearchBySearchInputResponses];
+
+export type postStructureSignupSimulationData = {
+    body: SignupSimulationPayload;
+    path?: never;
+    query?: never;
+    url: '/structure/signup_simulation';
+};
+
+export type postStructureSignupSimulationErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postStructureSignupSimulationError = postStructureSignupSimulationErrors[keyof postStructureSignupSimulationErrors];
+
+export type postStructureSignupSimulationResponses = {
+    /**
+     * OK
+     */
+    200: SignupSimulationResponseModel;
+};
+
+export type postStructureSignupSimulationResponse = postStructureSignupSimulationResponses[keyof postStructureSignupSimulationResponses];
 
 export type postUsersAnonymizeData = {
     body?: never;

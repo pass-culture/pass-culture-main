@@ -56,6 +56,14 @@ class TestingBackend(BaseBackend):
                     "9103Z",
                     "Gestion des sites et monuments historiques et des attractions touristiques similaires",
                 ),
+                "111511111": (
+                    "4303Z",
+                    "Faux code ape hors whitelist",
+                ),
+                "111111111": (
+                    "4403Z",
+                    "Faux code ape dans la whitelist",
+                ),
             },
         )
 

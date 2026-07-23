@@ -166,6 +166,12 @@ class Target(enum.Enum):
     INDIVIDUAL = "INDIVIDUAL"
 
 
+# TODO bdalbianco 06/07/26: replace Target instances with OffererTarget
+class OffererTarget(enum.Enum):
+    COLLECTIVE = "COLLECTIVE"
+    INDIVIDUAL = "INDIVIDUAL"
+
+
 class InvitationStatus(enum.Enum):
     PENDING = "PENDING"
     ACCEPTED = "ACCEPTED"
