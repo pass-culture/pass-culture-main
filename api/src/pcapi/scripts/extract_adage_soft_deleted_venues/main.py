@@ -37,6 +37,7 @@ class Result:
     destination_venue_id: int | None
     destination_venue_name: str | None
     destination_venue_adageId: str | None
+    comment: str | None
 
 
 def main() -> None:
@@ -71,6 +72,7 @@ def main() -> None:
             destination_venue_id=None,
             destination_venue_name=None,
             destination_venue_adageId=None,
+            comment=None,
         )
         results.append(venue_result)
 
@@ -85,35 +87,47 @@ def main() -> None:
         actions = (
             db.session.query(history_models.ActionHistory)
             .filter(
-                history_models.ActionHistory.actionType == history_models.ActionType.VENUE_REGULARIZATION,
+                history_models.ActionHistory.actionType.in_(
+                    (history_models.ActionType.VENUE_REGULARIZATION, history_models.ActionType.VENUE_SOFT_DELETED)
+                ),
                 history_models.ActionHistory.venueId == venue.id,
-                history_models.ActionHistory.extraData["destination_venue_id"].is_not(None),
             )
             .all()
         )
 
-        if len(actions) != 1:
-            logger.warning("Venue %s: did not find a single venue with siret or a single action history", venue.id)
+        regul_actions = [
+            action for action in actions if action.actionType == history_models.ActionType.VENUE_REGULARIZATION
+        ]
+        if regul_actions:
+            if len(regul_actions) > 1:
+                logger.warning("Venue %s: multiple regul action history rows", venue.id)
+                continue
+
+            [action] = regul_actions
+            assert action.extraData is not None
+
+            destination_venue_id = action.extraData["destination_venue_id"]
+            venue_result.destination_venue_id = destination_venue_id
+
+            destination_venue = (
+                db.session.query(offerers_models.Venue)
+                .filter(offerers_models.Venue.id == destination_venue_id)
+                .one_or_none()
+            )
+
+            if destination_venue is None:
+                logger.warning("destination_venue_id %s: did not find the corresponding venue", destination_venue_id)
+                continue
+
+            venue_result.destination_venue_name = destination_venue.name
+            venue_result.destination_venue_adageId = destination_venue.adageId
             continue
 
-        [action] = actions
-        assert action.extraData is not None
-
-        destination_venue_id = action.extraData["destination_venue_id"]
-        venue_result.destination_venue_id = destination_venue_id
-
-        destination_venue = (
-            db.session.query(offerers_models.Venue)
-            .filter(offerers_models.Venue.id == destination_venue_id)
-            .one_or_none()
-        )
-
-        if destination_venue is None:
-            logger.warning("destination_venue_id %s: did not find the corresponding venue", destination_venue_id)
-            continue
-
-        venue_result.destination_venue_name = destination_venue.name
-        venue_result.destination_venue_adageId = destination_venue.adageId
+        soft_deleted_actions = [
+            action for action in actions if action.actionType == history_models.ActionType.VENUE_SOFT_DELETED
+        ]
+        if soft_deleted_actions:
+            venue_result.comment = "\n".join([action.comment for action in soft_deleted_actions if action.comment])
 
     with open(f"{os.environ.get('OUTPUT_DIRECTORY')}/venues_soft_deleted_adage_id.csv", "w") as f:
         writer = csv.DictWriter(
@@ -125,6 +139,7 @@ def main() -> None:
                 "destination_venue_id",
                 "destination_venue_name",
                 "destination_venue_adageId",
+                "comment",
             ],
         )
         writer.writeheader()
