@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
-    "@biomejs/biome": "2.5.3",
+    "@biomejs/biome": "2.5.4",
     "@hey-api/openapi-ts": "0.99.0",
     "@playwright/test": "1.61.1",
     "@storybook/addon-a11y": "10.4.6",
