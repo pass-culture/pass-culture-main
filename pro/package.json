@@ -107,7 +107,7 @@
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
     "playwright-core": "1.61.1",
-    "prettier": "3.9.4",
+    "prettier": "3.9.5",
     "regenerator-runtime": "0.14.1",
     "rollup-plugin-visualizer": "7.0.1",
     "sass": "1.101.0",
