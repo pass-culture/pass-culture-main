@@ -25,7 +25,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5a1dc2af9db42434fec30b2579cc7030e2624582
       - name: "Cache the node_modules"
         id: "pnpm-modules-cache"
         uses: pass-culture-github-actions/cache@88f07af200f0bcf2480f9c194e3dbb9488a1902b # v1.0.0
@@ -76,7 +76,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5a1dc2af9db42434fec30b2579cc7030e2624582
 
       - name: "OpenID Connect Authentication"
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
@@ -151,7 +151,7 @@ jobs:
           cache: pnpm
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@5a1dc2af9db42434fec30b2579cc7030e2624582
 
       - name: "Cache the node_modules"
         id: "pnpm-modules-cache"
