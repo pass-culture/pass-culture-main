@@ -7,3 +7,5 @@ overrides:
   serialize-javascript@<=7.0.2: '>=7.0.3'
   serialize-javascript@>=5.0.0 <7.0.5: '>=7.0.5'
   uuid@<11.1.1: '>=11.1.1'
+  # Pinned so every docusaurus package resolves the same @docusaurus/theme-common instance
+  postcss: '>=8.5.16'
