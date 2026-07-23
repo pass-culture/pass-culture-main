@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 import {
@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import { type ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { resizeImageURL } from '@/commons/utils/resizeImageURL'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 
@@ -80,7 +81,7 @@ const renderArtistField = ({
   }
 
   return {
-    ...render(<Wrapper />),
+    ...renderWithProviders(<Wrapper />),
     getValues: () => getValues(),
   }
 }
@@ -183,6 +184,7 @@ describe('ArtistField', () => {
     expect(resizeImageURL).toHaveBeenCalledWith({
       imageURL: 'any-url',
       width: 44,
+      requestImgproxyFormat: false,
     })
   })
 
