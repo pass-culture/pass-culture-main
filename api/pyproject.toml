@@ -97,7 +97,7 @@ dev = [
   "djlint==1.40.7",
   "fakeredis==2.36.2",
   "ipdb==0.13.13",
-  "jsbeautifier ==1.15.4",                  # djlint requires 1.15.1 which is broken
+  "jsbeautifier==2.0.3",                  # djlint requires 1.15.1 which is broken
   "mypy==2.3.0",
   "pgcli==4.5.0",
   "psycopg[binary]==3.3.4",
