@@ -1197,7 +1197,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-iam"
-version = "2.23.0"
+version = "2.24.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1207,9 +1207,9 @@ dependencies = [
     { name = "proto-plus" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/5f/128a1462354e0f8f0b7baff34b5a1a4e5cd7aee100d8db0eb39843b43d1d/google_cloud_iam-2.23.0.tar.gz", hash = "sha256:49246f6221026d381cff4f8d804daf1bb6416153f2504bf5ef54d4af2450b828", size = 561685, upload-time = "2026-05-07T08:04:16.253Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/13/d6c3f207c8147768f4b56406c1534bdda034be76712bd960a048412f7001/google_cloud_iam-2.24.0.tar.gz", hash = "sha256:199a2512723abec10a49d581e638ccdf5b8a9671e1d5d6ff3ffeaa727075435f", size = 559063, upload-time = "2026-06-22T23:21:31.061Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/ee/470f0c337a235b12c6a880df25809b8b11b33986510d66450cb5ef540a83/google_cloud_iam-2.23.0-py3-none-any.whl", hash = "sha256:a123ac45080a5c1735218a6b3db4c6e6ea12a1cdc86feec1c30ad1ede6c91fc6", size = 515952, upload-time = "2026-05-07T08:02:48.144Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/74/31220c86789d4591aa493652656b83a428dcdd46f62b518e2118f98f76bd/google_cloud_iam-2.24.0-py3-none-any.whl", hash = "sha256:29d52032f774b4d3c01b6d8e1f4a8d029ae61c3bdba60ddac402866be11159db", size = 514860, upload-time = "2026-06-22T23:19:15.287Z" },
 ]
 
 [[package]]
@@ -2113,7 +2113,7 @@ requires-dist = [
     { name = "google-api-python-client", specifier = "==2.198.0" },
     { name = "google-auth", specifier = "==2.56.0" },
     { name = "google-cloud-bigquery", specifier = "==3.42.2" },
-    { name = "google-cloud-iam", specifier = "==2.23.0" },
+    { name = "google-cloud-iam", specifier = "==2.24.0" },
     { name = "google-cloud-secret-manager", specifier = ">=2.29.0" },
     { name = "google-cloud-storage", specifier = "==3.13.0" },
     { name = "google-cloud-tasks", specifier = "==2.23.0" },
