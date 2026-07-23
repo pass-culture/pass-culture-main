@@ -8,7 +8,10 @@ import {
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
+import {
+  defaultAdageUser,
+  defaultEducationalInstitution,
+} from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -44,6 +47,7 @@ vi.mock('@/apiClient/api', () => ({
 describe('AdageHeader', () => {
   const snackBarError = vi.fn()
   const user = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',
@@ -103,16 +107,6 @@ describe('AdageHeader', () => {
     )
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 12' })
-    ).toBeInTheDocument()
-  })
-
-  it('should display 0 in case the user institution offer count is not available', async () => {
-    renderAdageHeader({ ...user, offersCount: undefined })
-    await waitFor(() =>
-      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-    )
-    expect(
-      screen.getByRole('link', { name: 'Pour mon établissement 0' })
     ).toBeInTheDocument()
   })
 

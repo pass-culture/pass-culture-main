@@ -5,7 +5,10 @@ import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
+import {
+  defaultAdageUser,
+  defaultCollectiveTemplateOffer,
+} from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -35,6 +38,7 @@ const renderNewOfferPlaylist = (user: AuthenticatedResponse) => {
 describe('AdageDiscovery', () => {
   const snackBarError = vi.fn()
   const user = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',

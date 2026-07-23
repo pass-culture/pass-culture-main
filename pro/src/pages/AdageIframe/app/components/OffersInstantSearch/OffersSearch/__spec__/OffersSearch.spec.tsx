@@ -8,6 +8,7 @@ import { StudentLevels } from '@/apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
+  defaultAdageUser,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
 } from '@/commons/utils/factories/adageFactories'
@@ -156,6 +157,7 @@ vi.mock('react-instantsearch', async () => {
 describe('offersSearch component', () => {
   let props: SearchProps
   const user = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',
@@ -307,7 +309,7 @@ describe('offersSearch component', () => {
       ...user,
       departmentCode: '',
       lat: 0,
-      lon: undefined,
+      lon: null,
     })
     await userEvent.click(
       screen.getByRole('button', {

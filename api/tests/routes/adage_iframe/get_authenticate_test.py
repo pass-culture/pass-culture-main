@@ -110,7 +110,6 @@ class AuthenticateTest:
         }
 
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, client, valid_user) -> None:
-        # Given
         redactor = educational_factories.EducationalRedactorFactory(email=valid_user.get("mail"))
         institution = educational_factories.EducationalInstitutionFactory(institutionId=valid_user.get("uai"))
         educational_factories.CollectiveStockFactory(
@@ -123,10 +122,8 @@ class AuthenticateTest:
 
         valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=valid_user.get("uai"))
 
-        # When
         response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 200
         assert response.json == {**expected_serialized_auth_base(redactor, institution), "offersCount": 1}
 
@@ -160,13 +157,10 @@ class AuthenticateTest:
         assert response.json["preferences"] == {"broadcast_help_closed": True, "feedback_form_closed": True}
 
     def test_should_return_readonly_role_when_token_has_no_uai_code(self, client, valid_user) -> None:
-        # Given
         valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=None)
 
-        # When
         response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 200
         assert response.json == {
             "role": "readonly",
@@ -186,38 +180,29 @@ class AuthenticateTest:
         }
 
     def test_should_return_error_response_when_jwt_invalid(self, client):
-        # Given
         corrupted_token = self._create_adage_invalid_token()
 
-        # When
         response = client.with_explicit_token(corrupted_token).get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 401
         assert "Unrecognized token" in response.json["msg"]
 
     def test_should_return_error_response_when_jwt_expired(self, client, valid_user):
-        # Given
         now = date_utils.get_naive_utc_now()
         expired_token = self._create_adage_valid_token_from_expiration_date(
             valid_user, expiration_date=now - datetime.timedelta(days=1)
         )
 
-        # When
         response = client.with_explicit_token(expired_token).get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 401
         assert "Token expired" in response.json["msg"]
 
     def test_should_return_error_response_when_no_expiration_date_in_token(self, client, valid_user):
-        # Given
         no_expiration_date_token = self._create_adage_valid_token_from_expiration_date(valid_user, expiration_date=None)
 
-        # When
         response = client.with_explicit_token(no_expiration_date_token).get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 401
         assert "No expiration date provided" in response.json["msg"]
 

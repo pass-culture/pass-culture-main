@@ -10,6 +10,7 @@ import { api, apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -51,6 +52,7 @@ const renderAdageDiscovery = (user: AuthenticatedResponse) => {
 describe('AdageDiscovery', () => {
   const snackBarError = vi.fn()
   const adageUser = {
+    ...defaultAdageUser,
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
     departmentCode: '30',
