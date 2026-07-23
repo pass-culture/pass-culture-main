@@ -336,6 +336,15 @@ def create_artists() -> None:
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
+    artist_factories.ArtistMusicPlatformFactory.create(
+        artist_id=artist_2.id,
+        spotify_id="0p4nmQO2msCgU4IF37Wi3j",
+        isni_id="0000000114946276",
+        apple_music_id="459885",
+        deezer_id="35",
+        genius_id="Avril-lavigne",
+        soundcloud_id="avrillavigne",
+    )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         offer = offers_factories.OfferFactory.create(product=product, venue=venue)
@@ -382,6 +391,14 @@ def create_artists() -> None:
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
+    artist_factories.ArtistMusicPlatformFactory.create(
+        artist_id=artist_4.id,
+        spotify_id="7IlRNXHjoOCgEAWN5qYksg",
+        isni_id="0000000462953608",
+        apple_music_id="1042004371",
+        deezer_id="8909272",
+        genius_id="Aya-nakamura",
+    )
     _create_offers_for_artist(
         venue, artist_4, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
     )
@@ -395,6 +412,15 @@ def create_artists() -> None:
         image="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Clara_Luciani%2C_Singer_Songwriter%2C_at_82nd_Venice_International_Film_Festival_in_Venice%2C_Italy.-1.jpg/500px-Clara_Luciani%2C_Singer_Songwriter%2C_at_82nd_Venice_International_Film_Festival_in_Venice%2C_Italy.-1.jpg",
         image_license="CC BY-SA 4.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
+    )
+    artist_factories.ArtistMusicPlatformFactory.create(
+        artist_id=artist_5.id,
+        spotify_id="2oVrruuEI0Dr2I4NvLtQS0",
+        apple_music_id="1178021987",
+        isni_id="0000000466535577",
+        deezer_id="4889156",
+        genius_id="Clara-luciani",
+        soundcloud_id="claraluciani",
     )
     _create_offers_for_artist(
         venue, artist_5, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, ArtistType.PERFORMER, count=2
@@ -415,6 +441,15 @@ def create_artists() -> None:
         image="https://commons.wikimedia.org/wiki/Special:FilePath/Le_chanteur_Stromae.jpg",
         image_license="CC BY-SA 2.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
+    )
+    artist_factories.ArtistMusicPlatformFactory.create(
+        artist_id=artist_6.id,
+        spotify_id="5j4HeCoUlzhfWtjAfM1acR",
+        isni_id="0000000084160095",
+        apple_music_id="270954369",
+        deezer_id="310260",
+        genius_id="Stromae",
+        soundcloud_id="STROMAE",
     )
     _create_offers_for_artist(
         venue, artist_6, subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ArtistType.PERFORMER, count=3
