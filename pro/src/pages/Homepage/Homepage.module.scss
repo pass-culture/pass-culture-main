@@ -71,3 +71,66 @@
 .onboarding-container {
   max-width: rem.torem(721px);
 }
+
+.dialog-content-simple {
+  background-color: #fff;
+  display: flex;
+  gap: var(--size-spacing-xl);
+  padding: var(--size-spacing-xl);
+  border-radius: var(--size-border-radius-l);
+  corner-shape: squircle;
+  flex-direction: column;
+  max-width: rem.torem(780px);
+  box-shadow: 0 0 rem.torem(16px) var(--color-background-shadow-overlay);
+  will-change: transform, opacity;
+
+  @media screen and (prefers-reduced-motion: no-preference) {
+    animation: simple-appear 100ms;
+  }
+}
+
+@keyframes simple-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-25px);
+  }
+}
+
+.dialog-content-detailed {
+  background-color: #fff;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: var(--size-spacing-xl);
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 45dvw;
+  padding: var(--size-spacing-xl);
+  box-shadow: 0 0 rem.torem(16px) var(--color-background-shadow-overlay);
+  will-change: transform, opacity;
+
+  @media screen and (prefers-reduced-motion: no-preference) {
+    animation: detailed-appear 200ms;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: var(--size-spacing-m);
+    margin-top: auto;
+  }
+}
+
+@keyframes detailed-appear {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+}
+
+.open-modal-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: var(--size-spacing-xl);
+  margin-bottom: var(--size-spacing-xl);
+}

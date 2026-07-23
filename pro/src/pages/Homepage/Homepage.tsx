@@ -14,6 +14,9 @@ import { CollectiveDmsTimeline } from '@/components/CollectiveDmsTimeline/Collec
 import { CollectiveDmsTimelineVariant } from '@/components/CollectiveDmsTimeline/types'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
+import { BaseDialog } from '@/ui-kit/BaseDialog/BaseDialog'
 import {
   getPanelId,
   getTabId,
@@ -57,6 +60,9 @@ export const Homepage = (): JSX.Element => {
   )
   const individualId = useId()
   const collectiveId = useId()
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isDetailedDialogOpen, setIsDetailedDialogOpen] = useState(false)
 
   if (!hasIndividualTab && !hasCollectiveTab) {
     return (
@@ -113,6 +119,101 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <>
+      <div className={styles['open-modal-buttons']}>
+        <Button
+          label="Ouvrir une modale simple"
+          onClick={() => {
+            setIsDialogOpen(true)
+          }}
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.SMALL}
+        />
+        <Button
+          label="Ouvrir une modale detailed"
+          onClick={() => {
+            setIsDetailedDialogOpen(true)
+          }}
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.SMALL}
+        />
+      </div>
+
+      {/* Simple modal example */}
+      <BaseDialog
+        isOpen={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false)
+        }}
+      >
+        <div className={styles['dialog-content-simple']}>
+          <h1>Modale simple</h1>
+          <p>
+            Voici le contenu d'une modale simple implémentée par dessus le
+            composant utilitaire <code>&lt;BaseDialog&gt;</code>, lui-même basé
+            sur la balise HTML5 standard <code>&lt;dialog&gt;</code>
+          </p>
+          <p>
+            Second paragraphe contenant un{' '}
+            <Button
+              as="a"
+              label="lien focusable"
+              to="https://google.com"
+              isExternal
+              opensInNewTab
+              variant={ButtonVariant.TERTIARY}
+            />
+          </p>
+          <Button
+            label="Fermer la modale"
+            onClick={() => {
+              setIsDialogOpen(false)
+            }}
+          >
+            Close Dialog
+          </Button>
+        </div>
+      </BaseDialog>
+
+      {/* Detailed modal example */}
+      <BaseDialog
+        isOpen={isDetailedDialogOpen}
+        onClose={() => {
+          setIsDetailedDialogOpen(false)
+        }}
+      >
+        <div className={styles['dialog-content-detailed']}>
+          <h1>Modale detailed</h1>
+          <p>
+            Voici le contenu d'une modale detailed implémentée par dessus le
+            composant utilitaire <code>&lt;BaseDialog&gt;</code>, lui-même basé
+            sur la balise HTML5 standard <code>&lt;dialog&gt;</code>
+          </p>
+          <Button
+            label="Ré-ouvrir la modale simple par dessus"
+            variant={ButtonVariant.SECONDARY}
+            size={ButtonSize.SMALL}
+            onClick={() => {
+              setIsDialogOpen(true)
+            }}
+          />
+          <div className={styles['action-buttons']}>
+            <Button
+              label="Annuler"
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => {
+                setIsDetailedDialogOpen(false)
+              }}
+            />
+            <Button
+              label="Confirmer"
+              onClick={() => {
+                setIsDetailedDialogOpen(false)
+              }}
+            />
+          </div>
+        </div>
+      </BaseDialog>
+
       <MainHeading
         mainHeading={`Votre espace ${selectedPartnerVenue.publicName}`}
       />
