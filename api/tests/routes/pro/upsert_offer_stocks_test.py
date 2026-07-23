@@ -293,6 +293,35 @@ class Returns400Test:
             "stocks.0.quantity": [f"Saisissez un nombre inférieur ou égal à {offers_models.Stock.MAX_STOCK_QUANTITY}"]
         }
 
+    @pytest.mark.parametrize("activation_code", ("CODE;", ".CODE", "CO,DE", "C;O.D,E"))
+    def test_create_with_invalid_activation_codes(self, client, activation_code):
+        offer = offers_factories.DigitalOfferFactory()
+        user = users_factories.UserFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        activation_codes = [activation_code]
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=2)
+        activation_codes_expiration_datetime = booking_limit_datetime + datetime.timedelta(days=7)
+        payload = {
+            "stocks": [
+                {
+                    "id": None,
+                    "offerId": offer.id,
+                    "activationCodes": activation_codes,
+                    "activationCodesExpirationDatetime": format_into_utc_date(activation_codes_expiration_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
+                    "price": 0,
+                    "quantity": None,  # server should set to len(activation_codes)
+                }
+            ]
+        }
+        response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"stocks.0.activationCodes.0": ["String should match pattern '^[^,;.]+$'"]}
+        db.session.refresh(offer)
+        assert len(offer.activeStocks) == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
