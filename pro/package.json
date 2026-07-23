@@ -46,7 +46,7 @@
     "@algolia/autocomplete-preset-algolia": "1.19.9",
     "@firebase/analytics": "0.10.22",
     "@firebase/app": "0.15.1",
-    "@firebase/remote-config": "0.8.5",
+    "@firebase/remote-config": "0.9.0",
     "@hookform/resolvers": "5.4.0",
     "@pass-culture/design-system": "0.11.0",
     "@radix-ui/react-dialog": "1.1.19",
