@@ -13,6 +13,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import { api } from 'apiClient/api'
 import { getIndividualOfferColumns } from './IndividualOfferColumns'
 
 const mockLogEvent = vi.fn()
@@ -68,7 +69,8 @@ type RenderOptions = {
 
 const renderTableWithOffer = (
   offer = baseOffer,
-  options: RenderOptions = {}
+  options: RenderOptions = {},
+  features: string[] = []
 ) => {
   const {
     headlineOffer = null,
@@ -112,6 +114,7 @@ const renderTableWithOffer = (
           selectedPartnerVenue: makeGetVenueResponseModel({ id: 2 }),
         },
       },
+      features,
     }
   )
 }
@@ -274,5 +277,55 @@ describe('getIndividualOfferColumns', () => {
       isReadOnly: true,
     })
     expect(columns.map((column) => column.id)).not.toContain('actions')
+  })
+
+  describe('With WIP_NEW_PRO_ADVICE_ACCESS FF', () => {
+    it('should omit the headline button in the dropdown with the FF', async () => {
+      renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, [
+        'WIP_NEW_PRO_ADVICE_ACCESS',
+      ])
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
+      )
+
+      expect(
+        await screen.findByRole('link', { name: 'Stocks' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre à la une' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should upsert headline', async () => {
+      const upsertMock = vi.fn()
+      vi.spyOn(api, 'upsertHeadlineOffer').mockImplementation(upsertMock)
+      renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, [
+        'WIP_NEW_PRO_ADVICE_ACCESS',
+      ])
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(screen.getByLabelText('Mettre à la une'))
+      expect(upsertMock).toHaveBeenCalled()
+    })
+
+    it('should show the right label for the headline button', async () => {
+      const deleteMock = vi.fn()
+      vi.spyOn(api, 'deleteHeadlineOffer').mockImplementation(deleteMock)
+
+      renderTableWithOffer(
+        { ...baseOffer, isEvent: false, id: headlineOffer.id },
+        { headlineOffer: headlineOffer },
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(
+        await screen.findByLabelText('Ne plus mettre à la une')
+      )
+
+      expect(deleteMock).toHaveBeenCalled()
+    })
   })
 })

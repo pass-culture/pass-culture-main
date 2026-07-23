@@ -151,6 +151,7 @@ class FeatureToggle(enum.Enum):
         "Génère les filtres en fonction du statut pour la liste des offres du portail pro"
     )
     WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS = "Active la nouvelle logique de détail du prix d'une offre réservable"
+    WIP_NEW_PRO_ADVICE_ACCESS = "Active le nouvel affichage de mise à la une et de recomendation d'une offre"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -212,6 +213,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS,
     FeatureToggle.WIP_ENABLE_NEW_OFFER_STATUS_FILTER,
+    FeatureToggle.WIP_NEW_PRO_ADVICE_ACCESS,
     FeatureToggle.WIP_OFFER_EXPOSURE,
     FeatureToggle.WIP_PRE_SIGNUP_SIMULATION,
     # Please keep alphabetic order

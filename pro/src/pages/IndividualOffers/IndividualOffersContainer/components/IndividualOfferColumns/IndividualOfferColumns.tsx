@@ -113,6 +113,7 @@ export function getIndividualOfferColumns({
         return (
           <IndividualActionsCells
             offer={offer}
+            isHeadline={offer.id === headlineOffer?.id}
             editionOfferLink={offerLink}
             editionStockLink={editionStockLink}
           />
