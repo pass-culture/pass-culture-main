@@ -220,6 +220,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return offer_location_getter_dict_helper(self._obj)
         if key == "bookingsCount":
             return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
+        if key == "hasProAdvice":
+            return bool(self._obj.hasProAdvice)
         if key == "highlightRequests":
             return [
                 highlight_request.highlight
@@ -244,6 +246,7 @@ class ListOffersOfferResponseModel(BaseModel):
     bookingsCount: int | None
     productId: int | None
     highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    hasProAdvice: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
