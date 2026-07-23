@@ -1,0 +1,20 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.base-dialog {
+  // Reset the browser's default styles on the <dialog> tag
+  border: none;
+  background: transparent;
+  margin: auto;
+  overflow: visible;
+
+  // Remove the browser's default outline (the outline will be handled by inner focusable elements)
+  &:focus-visible {
+    outline: none;
+  }
+
+  // Default backdrop configuration (the darkened background)
+  &::backdrop {
+    background-color: var(--color-background-overlay);
+    backdrop-filter: blur(4px); // Modern blur effect
+  }
+}
