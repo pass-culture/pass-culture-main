@@ -701,7 +701,7 @@ def create_collective_offers_with_different_displayed_status(
             stock.collectiveOffer.lastValidationDate = stock.dateCreated + timedelta(minutes=10)
 
         if booking_factory:
-            booking_attributes = {
+            booking_attributes: dict[str, typing.Any] = {
                 key: attributes[key] for key in ("cancellationReason", "confirmationDate") if key in attributes
             }
 
