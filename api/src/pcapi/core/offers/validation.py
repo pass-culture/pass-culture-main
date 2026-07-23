@@ -1,7 +1,9 @@
 import datetime
 import decimal
+import json
 import logging
 import re
+import typing
 import warnings
 from io import BytesIO
 
@@ -26,6 +28,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import constants
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
@@ -81,6 +84,9 @@ MIN_THUMBNAIL_HEIGHT = 400
 STANDARD_THUMBNAIL_WIDTH = 400
 STANDARD_THUMBNAIL_HEIGHT = 600
 ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
+
+MAX_EXTRA_DATA_SIZE_BYTES = 64 * 1024
+HTML_INJECTION_REGEX = re.compile(r"<[^>]*>|on\w+\s*=", re.IGNORECASE)
 
 
 def check_can_edit_synchronized_stock(
@@ -958,3 +964,33 @@ def check_artist_offer_links(
             raise api_errors.ApiErrors(
                 errors={"artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]}
             )
+
+
+def validate_extra_data_size(extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
+    if extra_data is None:
+        return extra_data
+
+    if len(json.dumps(extra_data).encode("utf-8")) > MAX_EXTRA_DATA_SIZE_BYTES:
+        raise api_errors.ApiErrors(errors={"extraData": ["Le champ extraData est trop volumineux (maximum 64 Ko)."]})
+
+    return extra_data
+
+
+def validate_extra_data_content(extra_data: offers_models.OfferExtraData) -> offers_models.OfferExtraData:
+    if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
+        raise api_errors.ApiErrors(
+            errors={
+                "extraData": ["Le contenu du champ extraData contient des caractères ou des scripts non autorisés."]
+            }
+        )
+    return extra_data
+
+
+def format_extra_data(extra_data: typing.Any) -> offers_models.OfferExtraData:
+    formated_extra_data: dict[str, typing.Any] = {}
+
+    for key, value in extra_data.items():
+        field_name = to_camelcase(key)
+        formated_extra_data[field_name] = value
+
+    return typing.cast(offers_models.OfferExtraData, formated_extra_data)

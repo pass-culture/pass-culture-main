@@ -472,6 +472,28 @@ class Returns200Test:
         assert updated_offer.extraData == {}
         assert updated_offer.ean == "1111111111111"
 
+    def test_patch_offer_with_product_with_gtl_id(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            ean="1111111111111",
+            name="New name",
+            description="description",
+        )
+        offer = offers_factories.OfferFactory(venue=venue)
+
+        data = {"extraData": {"gtl_id": "010101010"}}
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
+
+        assert response.status_code == 200, response.json
+        assert response.json["id"] == offer.id
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.extraData == {"gtl_id": "010101010"}
+
     def test_patch_offer_with_product_with_same_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -562,7 +584,7 @@ class Returns200Test:
             self.endpoint.format(offer_id=offer.id), json=data
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
 
         updated_offer = db.session.get(Offer, offer.id)
@@ -1188,6 +1210,33 @@ class Returns400Test:
                     "durationMinutes": [
                         "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
                     ]
+                },
+            ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {
+                    "extraData": {
+                        "malicious_data": ["a", "very", "large", "dict"],
+                    },
+                },
+                {
+                    "extraData.maliciousData": ["Vous ne pouvez pas changer cette information"],
+                },
+            ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {"extraData": {"cast": ["A" * 70000]}},
+                {
+                    "extraData": ["Le champ extraData est trop volumineux (maximum 64 Ko)."],
+                },
+            ),
+            (
+                {"subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id, "url": None},
+                {"extraData": {"cast": ["><img+stc=x+oneerror=alert(document.cookie)>"]}},
+                {
+                    "extraData": [
+                        "Le contenu du champ extraData contient des caractères ou des scripts non autorisés."
+                    ],
                 },
             ),
         ],
