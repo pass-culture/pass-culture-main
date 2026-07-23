@@ -906,7 +906,7 @@ def edit_stock(
         if id_at_provider is not None:
             validation.check_can_input_id_at_provider_for_this_stock(
                 stock.offer.id,
-                id_at_provider,  # type: ignore[arg-type]
+                id_at_provider,
                 stock.id,
             )
         modifications["idAtProviders"] = id_at_provider
