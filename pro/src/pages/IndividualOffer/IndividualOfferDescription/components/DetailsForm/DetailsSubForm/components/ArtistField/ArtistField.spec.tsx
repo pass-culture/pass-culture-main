@@ -184,7 +184,7 @@ describe('ArtistField', () => {
     expect(resizeImageURL).toHaveBeenCalledWith({
       imageURL: 'any-url',
       width: 44,
-      requestImgproxyFormat: false,
+      shouldUseRequestImgproxyFormat: false,
     })
   })
 
