@@ -10,6 +10,11 @@ vi.mock('use-debounce', async () => ({
 
 describe('ImageEditor', () => {
   const mockImage = new File(['image'], 'image.jpg', { type: 'image/jpeg' })
+  const initialInnerWidth = global.innerWidth
+
+  afterEach(() => {
+    global.innerWidth = initialInnerWidth
+  })
 
   const defaultProps = {
     image: mockImage,
@@ -66,6 +71,35 @@ describe('ImageEditor', () => {
     expect(
       screen.getByText('L’image est trop petite pour utiliser le zoom.')
     ).toBeInTheDocument()
+  })
+
+  it.each([
+    { name: 'portrait', canvasHeight: 297, canvasWidth: 198, ratio: 2 / 3 },
+    { name: 'landscape', canvasHeight: 138, canvasWidth: 207, ratio: 3 / 2 },
+  ])('keeps the $name canvas ratio when it is shrunk on a mobile screen', ({
+    canvasHeight,
+    canvasWidth,
+    ratio,
+  }) => {
+    // Mobile screen width in the sentry issue : https://pass-culture.sentry.io/issues/127987982
+    global.innerWidth = 384
+
+    // No crop border, so that the canvas dimensions are the crop area ones
+    render(
+      <ImageEditor
+        {...defaultProps}
+        canvasHeight={canvasHeight}
+        canvasWidth={canvasWidth}
+        cropBorderHeight={0}
+        cropBorderWidth={0}
+      />
+    )
+
+    const canvas = screen.getByLabelText("Editeur d'image")
+    const width = Number(canvas.getAttribute('width'))
+    const height = Number(canvas.getAttribute('height'))
+
+    expect(width / height).toBeCloseTo(ratio)
   })
 })
 

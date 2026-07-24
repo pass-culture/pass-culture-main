@@ -8,6 +8,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import {
   ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  MAX_FILE_SIZE,
   UPLOAD_IMAGE_MAX_RESOLUTION,
 } from './constants'
 import { getImageDimensions } from './getImageDimensions'
@@ -107,7 +108,7 @@ export const ImageDragAndDrop = forwardRef(
     const { getRootProps, getInputProps, fileRejections } = useDropzone({
       accept: ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
       maxFiles: 1,
-      maxSize: 10 * 1024 * 1024,
+      maxSize: MAX_FILE_SIZE,
       onDragEnter: () => {
         setCustomErrors([])
         setIsDraggedOver(true)

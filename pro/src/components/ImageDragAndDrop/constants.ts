@@ -22,3 +22,5 @@ export const ALLOWED_IMAGE_TYPES_TO_EXTENSIONS = Object.fromEntries(
 )
 
 export const UPLOAD_IMAGE_MAX_RESOLUTION = 80_000_000
+
+export const MAX_FILE_SIZE = 10_000_000
