@@ -1519,7 +1519,9 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
     for booking in bookings:
         with atomic():
             try:
-                bookings_api.cancel_booking_on_closed_offerer(booking, author_id=author_id)
+                bookings_api.cancel_booking_on_closed_offerer_or_venue(
+                    booking, bookings_models.BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id
+                )
             except Exception as exc:
                 mark_transaction_as_invalid()
                 logger.exception(
@@ -1536,7 +1538,9 @@ def cancel_individual_bookings_on_venue_closure(venue_id: int, author_id: int | 
     for booking in bookings:
         with atomic():
             try:
-                bookings_api.cancel_booking_on_closed_venue(booking, author_id=author_id)
+                bookings_api.cancel_booking_on_closed_offerer_or_venue(
+                    booking, bookings_models.BookingCancellationReasons.VENUE_CLOSED, author_id=author_id
+                )
             except Exception as exc:
                 mark_transaction_as_invalid()
                 logger.exception(

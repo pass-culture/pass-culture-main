@@ -38,6 +38,7 @@ from pcapi.core.external.batch import transactional_notifications
 from pcapi.core.external.batch import trigger_events
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.core.providers.tasks import BookingAction
@@ -924,55 +925,30 @@ def cancel_booking_on_user_requested_account_suspension(booking: models.Booking)
     transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
-def cancel_booking_on_closed_offerer(booking: models.Booking, author_id: int | None = None) -> None:
+def cancel_booking_on_closed_offerer_or_venue(
+    booking: models.Booking, reason: models.BookingCancellationReasons, *, author_id: int | None = None
+) -> None:
     """
     What it does :
         - (Check) Check booking can be cancelled
         - Call _cancel_booking
-        - (DB) Cancel booking uniterally if external cancellatio has failed
+        - (DB) Cancel booking uniterally if external cancellation failed or provider is no longer active or valid
         - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
-        of that it was a cancellation caused by offerer closing
+        of that it was a cancellation caused by offerer or venue closing
         - (Async task) Send email to beneficiary only, as pro already received an email
     """
     validation.check_booking_can_be_cancelled(booking)
     try:
-        cancelled = _cancel_booking(booking, models.BookingCancellationReasons.OFFERER_CLOSED, author_id=author_id)
-    except external_bookings_exceptions.ExternalBookingException as exc:
+        _cancel_booking(booking, reason, raise_if_error=True, author_id=author_id)
+    except (external_bookings_exceptions.ExternalBookingException, providers_exceptions.ProviderException) as exc:
         logger.info(
             "API error while cancelling external booking, try to cancel unilaterally",
             extra={"exc": exc, "booking": booking.id},
         )
-        cancelled = _cancel_booking(
-            booking, models.BookingCancellationReasons.OFFERER_CLOSED, one_side_cancellation=True, author_id=author_id
-        )
-    if not cancelled:
-        return
-    logger.info("Cancelled booking on closed offerer", extra={"booking": booking.id})
-    transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+        _cancel_booking(booking, reason, one_side_cancellation=True, raise_if_error=True, author_id=author_id)
 
-
-def cancel_booking_on_closed_venue(booking: models.Booking, author_id: int | None = None) -> None:
-    """
-    What it does :
-        - (Check) Check booking can be cancelled
-        - Call _cancel_booking
-        - (DB) Cancel booking uniterally if external cancellatio has failed
-        - (Log) Log if success -> duplicate the log in `_cancel_booking` with the additional info
-        of that it was a cancellation caused by venue closing
-    """
-    validation.check_booking_can_be_cancelled(booking)
-    try:
-        cancelled = _cancel_booking(booking, models.BookingCancellationReasons.VENUE_CLOSED, author_id=author_id)
-    except external_bookings_exceptions.ExternalBookingException as exc:
-        logger.info(
-            "API error while cancelling external booking, try to cancel unilaterally",
-            extra={"exc": exc, "booking": booking.id},
-        )
-        cancelled = _cancel_booking(
-            booking, models.BookingCancellationReasons.VENUE_CLOSED, one_side_cancellation=True, author_id=author_id
-        )
-
-    logger.info("Cancelled booking on closed venue", extra={"booking": booking.id, "cancelled": cancelled})
+    # exception has been raised if cancellation failed
+    logger.info("Cancelled booking on %s", reason.name, extra={"booking": booking.id})
     transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
 
 
