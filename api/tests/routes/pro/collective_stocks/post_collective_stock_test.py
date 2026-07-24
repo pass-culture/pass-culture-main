@@ -28,6 +28,17 @@ BASE_PAYLOAD_NO_DETAIL = {
 
 BASE_PAYLOAD = {**BASE_PAYLOAD_NO_DETAIL, "priceDetail": "Détail du prix"}
 
+# when WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS FF is removed:
+# - rename this BASE_PAYLOAD_WITH_SERVICE_PRICE to BASE_PAYLOAD
+# - delete BASE_PAYLOAD_NO_DETAIL and BASE_PAYLOAD above
+BASE_PAYLOAD_WITH_SERVICE_PRICE = {
+    **BASE_PAYLOAD_NO_DETAIL,
+    "numberOfTeachers": 10,
+    "price": 10.99,
+    "servicePrice": 10.99,
+    "collectiveAdditionalFees": [],
+}
+
 
 def _create_educational_year():
     factories.create_educational_year(date_time=datetime.datetime.fromisoformat("2022-01-17T22:00:00Z"))
@@ -35,6 +46,7 @@ def _create_educational_year():
 
 class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     def test_create_valid_stock_for_collective_offer(self, client):
         _create_educational_year()
         offer = factories.DraftCollectiveOfferFactory()
@@ -137,7 +149,7 @@ class Return404Test:
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 404
@@ -147,7 +159,7 @@ class Return404Test:
     def test_create_collective_stocks_should_not_be_available_if_offer_not_found(self, client):
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": 123456789}
+        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": 123456789}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 404
@@ -271,7 +283,7 @@ class Return400Test:
         offer = factories.CollectiveStockFactory().collectiveOffer
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
@@ -317,7 +329,7 @@ class Return400Test:
         offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks", json=stock_payload)
 
         assert response.status_code == 400
@@ -336,7 +348,7 @@ class Return400Test:
         )
 
         stock_payload = {
-            **BASE_PAYLOAD,
+            **BASE_PAYLOAD_WITH_SERVICE_PRICE,
             "offerId": offer.id,
             "startDatetime": "2022-01-17T22:00:00Z",
             "endDatetime": "2023-01-18T18:00:00Z",
@@ -385,7 +397,7 @@ class Return400Test:
         offer = factories.CollectiveOfferFactory(validation=status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
+        stock_payload = {**BASE_PAYLOAD_WITH_SERVICE_PRICE, "offerId": offer.id}
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
 
         assert response.status_code == 400
