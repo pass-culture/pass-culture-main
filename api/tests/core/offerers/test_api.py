@@ -18,10 +18,12 @@ from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
@@ -41,6 +43,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import repository as providers_repository
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -57,6 +60,8 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.transaction_manager import atomic
 
 import tests
+from tests.connectors.cgr import soap_definitions
+from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 from tests.test_utils import gen_offerer_tags
 
 
@@ -2026,6 +2031,81 @@ class CloseOffererTest:
         assert mails_testing.outbox[0]["To"] == confirmed_booking_in_2_days.user.email
         assert mails_testing.outbox[0]["params"]["OFFER_NAME"] == confirmed_booking_in_2_days.stock.offer.name
         assert mails_testing.outbox[0]["params"]["REASON"] == "OFFERER_CLOSED"
+
+    def test_close_offerer_with_external_ticket(self, requests_mock):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        requests_mock.get(
+            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_annulation_response_template(
+                message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
+            ),
+        )
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue,
+                offer__subcategoryId=subcategories.SEANCE_CINE.id,
+                offer__lastProvider=cgr_provider,
+                offer__idAtProvider="123%12354114%CGR",
+                lastProvider=cgr_provider,
+                idAtProviders="123%12354114%CGR#111",
+                beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+            )
+        )
+        external_bookings_factories.ExternalBookingFactory(booking=booking)
+
+        offerers_api.close_offerer(offerer)
+
+        assert offerer.isClosed
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert booking.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER_CLOSED
+        assert len(mails_testing.outbox) == 1
+
+    def test_close_offerer_with_inactive_provider(self, requests_mock):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider, isActive=False)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue,
+                offer__subcategoryId=subcategories.SEANCE_CINE.id,
+                offer__lastProvider=cgr_provider,
+                offer__idAtProvider="123%12354114%CGR",
+                lastProvider=cgr_provider,
+                idAtProviders="123%12354114%CGR#111",
+                beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+            )
+        )
+        external_bookings_factories.ExternalBookingFactory(booking=booking)
+
+        offerers_api.close_offerer(offerer)
+
+        assert offerer.isClosed
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert booking.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER_CLOSED
+        assert len(mails_testing.outbox) == 1
 
     def test_close_offerer_with_collective_bookings(self):
         offerer = offerers_factories.OffererFactory()
@@ -4070,6 +4150,79 @@ class CloseVenueTest:
         assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    def test_close_venue_with_external_ticket(self, requests_mock):
+        venue = offerers_factories.VenueFactory()
+
+        requests_mock.get(
+            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_annulation_response_template(
+                message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
+            ),
+        )
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue,
+                offer__subcategoryId=subcategories.SEANCE_CINE.id,
+                offer__lastProvider=cgr_provider,
+                offer__idAtProvider="123%12354114%CGR",
+                lastProvider=cgr_provider,
+                idAtProviders="123%12354114%CGR#111",
+                beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+            )
+        )
+        external_bookings_factories.ExternalBookingFactory(booking=booking)
+
+        offerers_api.close_venue(venue, author=users_factories.AdminFactory())
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert booking.cancellationReason == bookings_models.BookingCancellationReasons.VENUE_CLOSED
+        assert len(mails_testing.outbox) == 1
+
+    def test_close_offerer_with_inactive_provider(self, requests_mock):
+        venue = offerers_factories.VenueFactory()
+
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=cgr_provider, isActive=False)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue=venue,
+                offer__subcategoryId=subcategories.SEANCE_CINE.id,
+                offer__lastProvider=cgr_provider,
+                offer__idAtProvider="123%12354114%CGR",
+                lastProvider=cgr_provider,
+                idAtProviders="123%12354114%CGR#111",
+                beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+            )
+        )
+        external_bookings_factories.ExternalBookingFactory(booking=booking)
+
+        offerers_api.close_venue(venue, author=users_factories.AdminFactory())
+
+        assert venue.state == offerers_models.VenueState.CLOSED
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert booking.cancellationReason == bookings_models.BookingCancellationReasons.VENUE_CLOSED
+        assert len(mails_testing.outbox) == 1
+
 
 class DeactivateVenueOffersTest:
     def test_venue_without_offers_nor_syncs(self):
@@ -4294,22 +4447,20 @@ class CancelIndividualBookingsOnVenueClosureTest:
         venue = offerers_factories.VenueFactory()
         author = users_factories.UserFactory()
 
-        bookings = bookings_factories.BookingFactory.create_batch(3, stock__offer__venue=venue)
+        bookings_factories.BookingFactory.create_batch(3, stock__offer__venue=venue)
 
         with caplog.at_level("INFO"):
             with patch("pcapi.core.bookings.api._cancel_booking") as mock_cancel_booking:
-                mock_cancel_booking.side_effect = [True, False, True, True]
+                mock_cancel_booking.side_effect = [True, Exception(), True]
 
                 with atomic():
                     offerers_api.cancel_individual_bookings_on_venue_closure(venue.id, author.id)
 
-        target_log_msg = "Cancelled booking on closed venue"
-
-        log_records = [record for record in caplog.records if record.message == target_log_msg]
-        assert len(log_records) == len(bookings)
-
-        assert len([record for record in log_records if record.extra["cancelled"]]) == (len(bookings) - 1)
-        assert len([record for record in log_records if not record.extra["cancelled"]]) == 1
+        log_messages = [record.message for record in caplog.records]
+        assert len([message for message in log_messages if message == "Cancelled booking on VENUE_CLOSED"]) == 2
+        assert (
+            len([message for message in log_messages if message == "Failed to cancel booking when closing venue"]) == 1
+        )
 
 
 class CancelCollectiveBookingsOnVenueClosureTest:
