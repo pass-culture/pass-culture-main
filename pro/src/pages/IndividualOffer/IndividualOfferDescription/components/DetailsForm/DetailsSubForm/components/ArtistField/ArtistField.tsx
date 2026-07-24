@@ -74,7 +74,7 @@ export function ArtistField({
     }
   }
 
-  const useImgProxyRequestFormat = useActiveFeature('WIP_IMGPROXY_PRO')
+  const shouldUseImgProxyRequestFormat = useActiveFeature('WIP_IMGPROXY_PRO')
 
   return (
     <>
@@ -144,7 +144,8 @@ export function ArtistField({
                       ? resizeImageURL({
                           imageURL: artist.thumbUrl,
                           width: ARTIST_THUMB_WIDTH,
-                          requestImgproxyFormat: useImgProxyRequestFormat,
+                          shouldUseRequestImgproxyFormat:
+                            shouldUseImgProxyRequestFormat,
                         })
                       : null,
                   }))

@@ -24,7 +24,7 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      requestImgproxyFormat: false,
+      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(mockImageURL)
@@ -36,7 +36,7 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      requestImgproxyFormat: false,
+      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(mockImageURL)
@@ -50,7 +50,7 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      requestImgproxyFormat: false,
+      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(
@@ -66,7 +66,7 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      requestImgproxyFormat: true,
+      shouldUseRequestImgproxyFormat: true,
     })
 
     expect(result).toBe(
@@ -86,7 +86,7 @@ describe('resizeImageURL', () => {
     const result = resizeImageURL({
       imageURL: mockImageURL,
       width: 300,
-      requestImgproxyFormat: false,
+      shouldUseRequestImgproxyFormat: false,
     })
 
     expect(result).toBe(

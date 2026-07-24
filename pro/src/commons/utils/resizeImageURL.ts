@@ -3,11 +3,11 @@ import { IMAGE_RESIZING_URL, IS_DEV } from '@/commons/utils/config'
 export const resizeImageURL = ({
   imageURL,
   width,
-  requestImgproxyFormat,
+  shouldUseRequestImgproxyFormat: requestImgproxyFormat,
 }: {
   imageURL: string
   width: number
-  requestImgproxyFormat: boolean
+  shouldUseRequestImgproxyFormat: boolean
 }): string => {
   if (IS_DEV || !IMAGE_RESIZING_URL || !imageURL) {
     return imageURL
