@@ -29,6 +29,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
+    @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
         factories.EducationalYearFactory(beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31))
@@ -115,7 +116,7 @@ class Return200Test:
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
             "id": stock.id,
             "price": 1200.0,
-            "servicePrice": 100.0,
+            "servicePrice": 1200.0,
             "collectiveAdditionalFees": [],
             "numberOfTickets": 32,
             "numberOfTeachers": 5,
@@ -140,6 +141,8 @@ class Return200Test:
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
             "price": 1500,
+            "servicePrice": 1500,
+            "collectiveAdditionalFees": [],
         }
 
         client.with_session_auth("user@example.com")
@@ -162,8 +165,8 @@ class Return200Test:
             startDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
+            numberOfTeachers=10,
             bookingLimitDatetime=datetime(2021, 12, 1),
-            priceDetail="Détail du prix",
         )
         booking = factories.PendingCollectiveBookingFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(
@@ -173,8 +176,10 @@ class Return200Test:
 
         stock_edition_payload = {
             "price": 1500,
+            "servicePrice": 1500,
+            "collectiveAdditionalFees": [],
             "numberOfTickets": 38,
-            "priceDetail": "Nouvelle description du prix",
+            "numberOfTeachers": 5,
         }
 
         client.with_session_auth("user@example.com")
@@ -187,12 +192,12 @@ class Return200Test:
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
-        assert edited_stock.priceDetail == "Nouvelle description du prix"
+        assert edited_stock.numberOfTeachers == 5
         assert edited_booking.confirmationLimitDate is not None
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(edited_booking).dict(),
-            updatedFields=["price", "numberOfTickets", "priceDetail"],
+            updatedFields=["price", "servicePrice", "collectiveAdditionalFees", "numberOfTickets", "numberOfTeachers"],
         )
         assert testing.adage_requests[0]["sent_data"] == expected_payload
         assert testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
@@ -358,7 +363,7 @@ class Return403Test:
             user__email="user@example.com", offerer=stock.collectiveOffer.venue.managingOfferer
         )
 
-        stock_edition_payload = {"price": 1500}
+        stock_edition_payload = {"numberOfTickets": 20}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
@@ -374,14 +379,9 @@ class Return404Test:
             startDatetime=datetime(2021, 12, 18),
             price=1200,
         )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        stock_edition_payload = {
-            "startDatetime": "2022-01-17T22:00:00Z",
-            "price": 1500,
-        }
+        stock_edition_payload = {"startDatetime": "2022-01-17T22:00:00Z"}
 
         client.with_session_auth("user@example.com")
         response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)

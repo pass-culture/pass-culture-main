@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test'
 import { addDays, format } from 'date-fns'
-import type { Response } from 'playwright-core'
+import {
+  type APIRequestContext,
+  request as playwrightRequest,
+  type Response,
+} from 'playwright-core'
 
 import {
   BOOKABLE_OFFERS_COLUMNS,
@@ -17,6 +21,7 @@ import {
   expectCollectiveOffersAreFound,
   expectSuccessSnackbar,
 } from './helpers/assertions'
+import { setFeatureFlags } from './helpers/features'
 import { navigateToHubAndPickVenue } from './helpers/navigation'
 import {
   isGetCollectiveOffersBookableResponse,
@@ -25,6 +30,7 @@ import {
   isGetInstitutionalRedactorsResponse,
   isPostCollectiveStocksResponse,
 } from './helpers/requests'
+import { BASE_API_URL } from './helpers/sandbox'
 
 const newOfferName = 'Ma nouvelle offre collective créée'
 const venueName = 'Mon Lieu A'
@@ -49,7 +55,19 @@ const commonOfferData = {
 //     - rename this file `createCollectiveTemplateOffer.ts`
 //     - remove all non-template related tests
 test.describe('Create collective offers', () => {
+  // deactivate FF because it is ON by default
+  let requestContext: APIRequestContext
   test.beforeEach(async ({ authenticatedPage: page }) => {
+    requestContext = await playwrightRequest.newContext({
+      baseURL: BASE_API_URL,
+    })
+    await setFeatureFlags(requestContext, [
+      {
+        name: 'WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS',
+        isActive: false,
+      },
+    ])
+
     await navigateToHubAndPickVenue(page, venueName)
     await page.goto('/offre/creation')
     await mockAddressSearch(page)

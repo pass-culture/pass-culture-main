@@ -38,8 +38,10 @@ class CreateCollectiveOfferStocksTest:
             endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
             price=1200,
+            servicePrice=1200,
+            collectiveAdditionalFees=[],
             numberOfTickets=35,
-            priceDetail="hello",
+            numberOfTeachers=5,
         )
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
@@ -48,7 +50,10 @@ class CreateCollectiveOfferStocksTest:
         assert stock.startDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
+        assert stock.servicePrice == 1200
+        assert stock.collectiveAdditionalFees == []
         assert stock.numberOfTickets == 35
+        assert stock.numberOfTeachers == 5
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
@@ -64,8 +69,10 @@ class CreateCollectiveOfferStocksTest:
             endDatetime=start_date,
             bookingLimitDatetime=start_date,
             price=1200,
+            servicePrice=1200,
+            collectiveAdditionalFees=[],
             numberOfTickets=35,
-            priceDetail="hello",
+            numberOfTeachers=5,
         )
 
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
@@ -88,8 +95,10 @@ class CreateCollectiveOfferStocksTest:
             endDatetime=start_date,
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
             price=1500,
+            servicePrice=1500,
+            collectiveAdditionalFees=[],
             numberOfTickets=38,
-            priceDetail="hello",
+            numberOfTeachers=5,
         )
 
         with pytest.raises(exceptions.EducationalException) as error:

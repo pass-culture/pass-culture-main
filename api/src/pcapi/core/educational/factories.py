@@ -204,7 +204,11 @@ class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
     numberOfTickets = 25
     numberOfTeachers = 5
     price = 100
-    servicePrice = 100
+    collectiveAdditionalFees = factory.LazyFunction(list)
+    # when not given, set servicePrice to be consistent with price and collectiveAdditionalFees
+    servicePrice = factory.LazyAttribute(
+        lambda stock: stock.price - sum(fee.amount for fee in stock.collectiveAdditionalFees)
+    )
     priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
 
 
