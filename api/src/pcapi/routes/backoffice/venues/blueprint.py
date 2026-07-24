@@ -47,6 +47,8 @@ from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import blueprint as backoffice_blueprint
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice.bookings import forms as bookings_forms
+from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
@@ -272,6 +274,7 @@ class VenueDetailsActionType(enum.StrEnum):
     ERP_SYNCHRONISATION = enum.auto()
     DELETE = enum.auto()
     DELETE_SIRET = enum.auto()
+    CLOSE = enum.auto()
     BLOCK_REIMBURSEMENTS = enum.auto()
     UNBLOCK_REIMBURSEMENTS = enum.auto()
 
@@ -289,6 +292,12 @@ def _get_venue_details_actions(venue: offerers_models.Venue) -> DetailsActions:
         venue_details_actions.add_action(VenueDetailsActionType.DELETE)
     if access_control.has_current_user_permission(perm_models.Permissions.MOVE_SIRET):
         venue_details_actions.add_action(VenueDetailsActionType.DELETE_SIRET)
+    if (
+        access_control.has_current_user_permission(perm_models.Permissions.CLOSE_VENUE)
+        and venue.managingOfferer.isValidated
+        and not venue.is_closed
+    ):
+        venue_details_actions.add_action(VenueDetailsActionType.CLOSE)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION):
         if venue.isReimbursementSuspended:
             venue_details_actions.add_action(VenueDetailsActionType.UNBLOCK_REIMBURSEMENTS)
@@ -1395,6 +1404,89 @@ def get_remove_siret_form(venue_id: int) -> response_utils.BackofficeResponse:
 
     form = forms.RemoveSiretForm(venue)
     return _render_remove_siret_content(venue, form=form)
+
+
+@venue_blueprint.route("/<int:venue_id>/close", methods=["GET"])
+@access_control.permission_required(perm_models.Permissions.CLOSE_VENUE)
+def get_close_venue_form(venue_id: int) -> response_utils.BackofficeResponse:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+
+    form = forms.FlaskForm()
+    info = None
+
+    count_individual_bookings = len(offerers_api.get_individual_bookings_to_cancel(venue_id=venue.id))
+    count_collective_bookings = len(offerers_api.get_collective_bookings_to_cancel(venue_id=venue.id))
+
+    if count_individual_bookings or count_collective_bookings:
+        info = Markup("<p>La fermeture du partenaire culturel entraînera l'annulation automatique de :<p><ul>")
+        if count_individual_bookings:
+            info += Markup(
+                """<li><b>{count}</b> <a href="{url}" target="_blank" class="link-primary">réservation{s} individuelle{s}</a></li>"""
+            ).format(
+                count=count_individual_bookings,
+                url=url_for(
+                    "backoffice_web.individual_bookings.list_individual_bookings",
+                    venue=venue.id,
+                    status=[bookings_forms.BookingStatus.BOOKED.name, bookings_forms.BookingStatus.CONFIRMED.name],
+                ),
+                s=pluralize(count_individual_bookings),
+            )
+        if count_collective_bookings:
+            info += Markup(
+                """<li><b>{count}</b> <a href="{url}" target="_blank" class="link-primary">réservation{s} collective{s}</a></li>"""
+            ).format(
+                count=count_collective_bookings,
+                url=url_for(
+                    "backoffice_web.collective_bookings.list_collective_bookings",
+                    venue=venue.id,
+                    status=[
+                        bookings_forms.CollectiveBookingStatus.PENDING.name,
+                        bookings_forms.CollectiveBookingStatus.CONFIRMED.name,
+                    ],
+                ),
+                s=pluralize(count_collective_bookings),
+            )
+        info += Markup("</ul>")
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        info=info,
+        form=form,
+        dst=url_for("backoffice_web.venue.close_venue", venue_id=venue.id),
+        div_id=f"close-modal-{venue.id}",  # must be consistent with parameter passed to build_lazy_modal
+        title=f"Fermer le partenaire culturel {venue.name.upper()}",
+        button_text="Fermer le partenaire culturel",
+        ajax_submit=False,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/close", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.CLOSE_VENUE)
+def close_venue(venue_id: int) -> response_utils.BackofficeResponse:
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .filter_by(id=venue_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
+    if not venue:
+        raise NotFound()
+
+    if not venue.managingOfferer.isValidated:
+        flash("Seul un partenaire culturel validé peut être fermé", "warning")
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+
+    form = forms.FlaskForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(response_utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+
+    offerers_api.close_venue(venue, author=current_user)
+
+    flash(Markup("Le partenaire culturel <b>{name}</b> a été fermé").format(name=venue.name), "success")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])

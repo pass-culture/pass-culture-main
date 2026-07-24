@@ -32,6 +32,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils import date as date_utils
 
@@ -539,6 +540,7 @@ class GetVenueTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Partenaire culturel Fermé " in response_text
+        assert "Fermer le partenaire culturel" not in response_text
 
     def test_get_closed_venue_with_active_offerer(self, authenticated_client):
         venue = offerers_factories.VenueFactory(state=offerers_models.VenueState.CLOSED)
@@ -551,6 +553,9 @@ class GetVenueTest(GetEndpointHelper):
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Fermé" in badges
         assert "Suspendu" not in badges
+
+        response_text = html_parser.content_as_text(response.data)
+        assert "Fermer le partenaire culturel" not in response_text
 
     def test_can_reset_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -3236,6 +3241,90 @@ class RemoveSiretTest(PostEndpointHelper):
         assert response.status_code == 200
         assert venue.siret is None
         assert venue.current_pricing_point == target_venue
+
+
+class GetCloseVenueFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_close_venue_form"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.CLOSE_VENUE
+
+    # session + venue + individual bookings + collective bookings
+    expected_num_queries = 4
+
+    def test_get_close_venue_form_with_no_ongoing_booking(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        html_parser.assert_no_alert(response.data)
+
+    def test_get_close_venue_form_with_ongoing_bookings(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        bookings_factories.BookingFactory.create_batch(2, stock__offer__venue=venue)
+        educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == (
+            "La fermeture du partenaire culturel entraînera l'annulation automatique de :"
+            "2 réservations individuelles"
+            "1 réservation collective"
+        )
+
+
+class CloseVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.close_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.CLOSE_VENUE
+
+    def test_close_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"Le partenaire culturel {venue.name} a été fermé"
+
+        db.session.refresh(venue)
+        assert venue.state == offerers_models.VenueState.CLOSED
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.REJECTED, ValidationStatus.CLOSED],
+    )
+    def test_close_venue_not_validated(self, authenticated_client, validation_status):
+        venue = offerers_factories.VenueFactory(managingOfferer__validationStatus=validation_status)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "Seul un partenaire culturel validé peut être fermé"
+
+        db.session.refresh(venue)
+        assert venue.managingOfferer.validationStatus == validation_status
+
+    def test_close_venue_returns_404_if_venue_is_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, venue_id=1)
+
+        assert response.status_code == 404
 
 
 class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):

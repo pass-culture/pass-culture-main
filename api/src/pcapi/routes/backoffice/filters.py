@@ -108,6 +108,7 @@ ACTION_TYPE_TO_STRING = {
     history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED: "Lien avec le partenaire technique modifié",
     history_models.ActionType.LINK_VENUE_PROVIDER_DELETED: "Suppression du lien avec le partenaire technique",
     history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du partenaire culturel avec un partenaire technique",
+    history_models.ActionType.VENUE_CLOSED: "Fermeture du partenaire culturel",
     history_models.ActionType.VENUE_REGULARIZATION: "Régularisation des partenaires culturels",
     history_models.ActionType.VENUE_SOFT_DELETED: "Suppression réversible",
     history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED: "Blocage des remboursements",
