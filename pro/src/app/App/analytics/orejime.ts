@@ -14,6 +14,18 @@ import {
 // biome-ignore lint/suspicious/noExplicitAny: Orejime comes from a loaded script
 export const orejimeRef = { current: null as any }
 
+// TODO (smokhtari, 2026-07-24) Temporary workaround (pc-42726): remove when Orejime fixes
+// https://github.com/boscop-fr/orejime/issues/170.
+const blockInvalidFocusinTargets = (event: FocusEvent) => {
+  if (event.target instanceof Element) {
+    return
+  }
+
+  // Some mobile/webview flows can dispatch `focusin` with `Document` as target.
+  // Orejime 3.1.0 expects an Element and crashes on getBoundingClientRect.
+  event.stopImmediatePropagation()
+}
+
 function addListener(
   setConsentedToFirebase: Dispatch<SetStateAction<boolean>>,
   setConsentedToBeamer: Dispatch<SetStateAction<boolean>>
@@ -71,6 +83,14 @@ export const useOrejime = () => {
   const location = useLocation()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
+
+  useEffect(() => {
+    document.addEventListener('focusin', blockInvalidFocusinTargets, true)
+
+    return () => {
+      document.removeEventListener('focusin', blockInvalidFocusinTargets, true)
+    }
+  }, [])
 
   useEffect(() => {
     if (location.pathname.includes('/adage-iframe')) {
