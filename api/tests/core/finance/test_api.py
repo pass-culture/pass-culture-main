@@ -2734,7 +2734,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     total_rate_rows = html_parser.extract(total_account_table, tag="tr", class_="coloredSection")
     assert len(total_rate_rows) == 1
     total_rate_row = total_rate_rows[0]
-    assert total_rate_row == "TOTAL RÈGLEMENT PASS CULTURE 23,40 €"
+    assert total_rate_row == "TOTAL RÈGLEMENT PASSE CULTURE 23,40 €"
     total_account_table_soup = html_parser.get_soup(total_account_table)
     # remove the 1 column row to be able to parse the rest
     total_account_table_soup.find("tr", class_="coloredSection").decompose()

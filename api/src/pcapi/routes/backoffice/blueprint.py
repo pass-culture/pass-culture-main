@@ -37,7 +37,7 @@ SECURITY_SCHEMES = [
 
 backoffice_web_schema = ExtendedSpecTree(
     "flask",
-    title="pass Culture poc backoffice web",
+    title="Passe Culture backoffice web",
     MODE="strict",
     before=before_handler,
     PATH="bo",
