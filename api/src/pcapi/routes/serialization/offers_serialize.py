@@ -30,6 +30,7 @@ from pcapi.routes.serialization.address_serialize import retrieve_address_info_f
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import DecimalField
+from pcapi.serialization.utils import HttpUrlString
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.serialization.utils import validate_url
@@ -101,7 +102,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicationDatetime: datetime.datetime | NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
     subcategory_id: str | None
-    video_url: HttpUrl | None
     audio_disability_compliant: bool | None
     mental_disability_compliant: bool | None
     motor_disability_compliant: bool | None
@@ -111,24 +111,12 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
     _validation_external_ticket_office_url = validate_url("externalTicketOfficeUrl")
     _validation_url = validate_url("url")
-    _validation_video_url = validate_url("video_url")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
         if name:
             offers_validation.check_offer_name_length_is_valid(name)
         return name
-
-    @validator("video_url", pre=True)
-    def clean_video_url(cls, v: str) -> str | None:
-        if v == "":
-            return None
-        return v
-
-    @validator("video_url")
-    def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
-        offers_validation.check_video_url(video_url)
-        return video_url
 
     @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
@@ -168,6 +156,23 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class UpdateOfferVideoBodyModel(HttpBodyModel):
+    video_url: HttpUrlString | None
+
+    @pydantic_v2.field_validator("video_url", mode="before")
+    @classmethod
+    def clean_video_url(cls, value: typing.Any) -> HttpUrl | None:
+        if value == "":
+            return None
+        return value
+
+    @pydantic_v2.field_validator("video_url")
+    @classmethod
+    def validate_video_url(cls, video_url: HttpUrl | None) -> HttpUrl | None:
+        offers_validation.check_video_url(video_url)
+        return video_url
 
 
 class PatchOfferPublishBodyModel(BaseModel):

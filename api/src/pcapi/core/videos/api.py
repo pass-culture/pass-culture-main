@@ -96,6 +96,8 @@ def remove_video_data_from_offer_metadata(
         technical_message_id="offer.video.deleted",
     )
 
+    db.session.flush()
+
 
 def upsert_video_and_metadata(
     video_url: str,
@@ -143,4 +145,6 @@ def upsert_video_and_metadata(
     offer.metaData.videoThumbnailUrl = cached_video_metadata.thumbnail_url
     offer.metaData.videoDuration = cached_video_metadata.duration
     offer.metaData.videoUrl = video_url
+
     db.session.add(offer.metaData)
+    db.session.flush()

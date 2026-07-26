@@ -13,7 +13,6 @@ from pydantic.v1 import validator
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import artist_serialize
@@ -100,7 +99,6 @@ class UpdateOffer(BaseModel):
     withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
-    video_url: HttpUrl | None
     subcategory_id: str | None = None
 
     # is_national must be placed after url so that the validator
@@ -119,17 +117,6 @@ class UpdateOffer(BaseModel):
         url = values.get("url")
         is_national = True if url else bool(is_national)
         return is_national
-
-    @validator("video_url", pre=True)
-    def clean_video_url(cls, v: str) -> str | None:
-        if v == "":
-            return None
-        return v
-
-    @validator("video_url")
-    def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
-        offers_validation.check_video_url(video_url)
-        return video_url
 
     class Config:
         arbitrary_types_allowed = True
