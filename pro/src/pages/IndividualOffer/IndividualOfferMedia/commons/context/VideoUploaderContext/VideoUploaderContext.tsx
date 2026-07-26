@@ -10,16 +10,13 @@ import {
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  VideoData,
-} from '@/apiClient/v1'
+import type { VideoData } from '@/apiClient/v1'
 import { noop, noopAsync } from '@/commons/utils/noop'
 
 type VideoUploaderContextValues = {
   setVideoUrl: Dispatch<SetStateAction<string | null | undefined>>
   videoData?: VideoData
-  handleVideoOnSubmit: () => Promise<GetIndividualOfferWithAddressResponseModel>
+  handleVideoOnSubmit: () => Promise<VideoData>
   onVideoUpload: (p: onVideoUploadProps) => Promise<void>
   onVideoDelete: () => void
   videoUrl?: string | null
@@ -85,7 +82,7 @@ export function VideoUploaderContextProvider({
   }, [])
 
   const handleVideoOnSubmit = useCallback(async () => {
-    return await api.patchOffer({
+    return await api.updateOfferVideo({
       path: { offer_id: offerId },
       body: {
         videoUrl: videoUrl ?? '',

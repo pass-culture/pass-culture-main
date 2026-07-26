@@ -5315,10 +5315,6 @@ export type PatchOfferBodyModel = {
      */
     url?: string;
     /**
-     * Videourl
-     */
-    videoUrl?: string;
-    /**
      * Visualdisabilitycompliant
      */
     visualDisabilityCompliant?: boolean;
@@ -6541,6 +6537,16 @@ export type TotalRevenue = {
      * Total
      */
     total: number;
+};
+
+/**
+ * UpdateOfferVideoBodyModel
+ */
+export type UpdateOfferVideoBodyModel = {
+    /**
+     * Videourl
+     */
+    videoUrl: string | null;
 };
 
 /**
@@ -10039,6 +10045,37 @@ export type postOffersByOfferIdStocksDeleteResponses = {
 };
 
 export type postOffersByOfferIdStocksDeleteResponse = postOffersByOfferIdStocksDeleteResponses[keyof postOffersByOfferIdStocksDeleteResponses];
+
+export type putOffersByOfferIdVideoData = {
+    body: UpdateOfferVideoBodyModel;
+    path: {
+        offer_id: number;
+    };
+    query?: never;
+    url: '/offers/{offer_id}/video';
+};
+
+export type putOffersByOfferIdVideoErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type putOffersByOfferIdVideoError = putOffersByOfferIdVideoErrors[keyof putOffersByOfferIdVideoErrors];
+
+export type putOffersByOfferIdVideoResponses = {
+    /**
+     * OK
+     */
+    200: VideoData;
+};
+
+export type putOffersByOfferIdVideoResponse = putOffersByOfferIdVideoResponses[keyof putOffersByOfferIdVideoResponses];
 
 export type getOffersByVenueIdEanByEanData = {
     body?: never;

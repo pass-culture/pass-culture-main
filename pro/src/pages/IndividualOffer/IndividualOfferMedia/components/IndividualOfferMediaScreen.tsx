@@ -121,20 +121,20 @@ export const IndividualOfferMediaScreen = ({
               // (aka. getIndividualOfferImage) but we'd like an unique way to store this information.
               if (thumbnailResult) {
                 return {
-                  ...(offer || {}),
+                  ...offer,
                   thumbUrl: thumbnailResult.url,
                   activeMediation: {
-                    ...(offer?.activeMediation || {}),
+                    ...offer?.activeMediation,
                     thumbUrl: thumbnailResult.url,
                     credit: thumbnailResult.credit,
                   },
                 }
               } else {
                 return {
-                  ...(offer || {}),
+                  ...offer,
                   thumbUrl: '',
                   activeMediation: {
-                    ...(offer?.activeMediation || {}),
+                    ...offer?.activeMediation,
                     thumbUrl: '',
                     credit: '',
                   },
@@ -158,6 +158,12 @@ export const IndividualOfferMediaScreen = ({
       try {
         await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
           revalidate: false,
+          populateCache: (videoData, offer) => {
+            return {
+              ...offer,
+              videoData,
+            }
+          },
         })
       } catch (error) {
         snackBar.error(

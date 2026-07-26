@@ -119,7 +119,7 @@ const mockHandleImageOnSubmit = vi.fn()
 const mockNavigate = vi.fn()
 vi.mock('@/apiClient/api', () => ({
   api: {
-    patchOffer: vi.fn(),
+    updateOfferVideo: vi.fn(),
     getOfferVideoMetadata: vi.fn(),
   },
 }))
@@ -261,9 +261,13 @@ describe('IndividualOfferMediaScreen', () => {
         'useIndividualOfferImageUpload'
       ).mockReturnValue({
         hasUpsertedImage: true,
-        handleImageOnSubmit: mockHandleImageOnSubmit,
+        handleImageOnSubmit: mockHandleImageOnSubmit.mockResolvedValue({
+          url: 'http://image.url/thumb.jpg',
+          credit: 'Un crédit',
+        }),
       } as any)
-      await renderIndividualOfferMediaScreen()
+      const knownOffer = getIndividualOfferFactory()
+      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
       expect(mockHandleImageOnSubmit).toHaveBeenCalled()
@@ -282,7 +286,7 @@ describe('IndividualOfferMediaScreen', () => {
     })
 
     describe('when the offer is product based', () => {
-      it('should not allow any image update by disabling image input', async () => {
+      it('should disable image input', async () => {
         await renderIndividualOfferMediaScreen({
           props: {
             offer: getIndividualOfferFactory({
@@ -298,6 +302,36 @@ describe('IndividualOfferMediaScreen', () => {
             'Des informations proviennent d’un EAN et ne peuvent pas être modifiées depuis l’espace partenaire'
           )
         ).toBeInTheDocument()
+      })
+
+      it('should never call the api handler', async () => {
+        vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+          videoDuration: 3,
+          videoThumbnailUrl: 'http://youtube.image.com',
+          videoTitle: 'Ma super vidéo',
+          videoUrl: MOCK_DATA.videoUrl,
+        })
+
+        vi.spyOn(
+          imageUploadModule,
+          'useIndividualOfferImageUpload'
+        ).mockReturnValue({
+          hasUpsertedImage: true,
+          handleImageOnSubmit: mockHandleImageOnSubmit,
+        } as any)
+
+        await renderIndividualOfferMediaScreen({
+          props: {
+            offer: getIndividualOfferFactory({
+              productId: 1,
+            }),
+          },
+        })
+
+        await updateVideoUrlAndSubmit()
+
+        expect(api.updateOfferVideo).toHaveBeenCalled()
+        expect(mockHandleImageOnSubmit).not.toHaveBeenCalled()
       })
     })
 
@@ -318,26 +352,32 @@ describe('IndividualOfferMediaScreen', () => {
   })
 
   describe('about video url input', () => {
-    it('should not call the patch offer api until the video url has changed', async () => {
+    it('should not call the update offer video api until the video url has changed', async () => {
       await renderIndividualOfferMediaScreen()
 
       await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
-      expect(api.patchOffer).not.toHaveBeenCalled()
+      expect(api.updateOfferVideo).not.toHaveBeenCalled()
     })
 
-    it('should call the patch offer api when the video url has changed', async () => {
+    it('should call the update offer video api when the video url has changed', async () => {
       vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
         videoDuration: 3,
         videoThumbnailUrl: 'http://youtube.image.com',
         videoTitle: 'Ma super vidéo',
         videoUrl: 'http://youtube.url',
       })
+      vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({
+        videoDuration: 3,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+        videoUrl: MOCK_DATA.videoUrl,
+      })
 
       const knownOffer = getIndividualOfferFactory()
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit()
-      expect(api.patchOffer).toHaveBeenCalledWith({
+      expect(api.updateOfferVideo).toHaveBeenCalledWith({
         path: { offer_id: knownOffer.id },
         body: {
           videoUrl: MOCK_DATA.videoUrl,
@@ -345,7 +385,9 @@ describe('IndividualOfferMediaScreen', () => {
       })
     })
 
-    it('should call the patch offer api when the video url has been deleted (empty string)', async () => {
+    it('should call the update offer video api when the video url has been deleted (empty string)', async () => {
+      vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
+
       const knownOffer = getIndividualOfferFactory({
         videoData: {
           videoUrl: MOCK_DATA.videoUrl,
@@ -357,10 +399,49 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit({ text: '' })
-      expect(api.patchOffer).toHaveBeenCalledWith({
+      expect(api.updateOfferVideo).toHaveBeenCalledWith({
         path: { offer_id: knownOffer.id },
         body: {
           videoUrl: '',
+        },
+      })
+    })
+
+    it('should call both api handlers when the image and the video url have changed', async () => {
+      vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+        videoDuration: 3,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+        videoUrl: MOCK_DATA.videoUrl,
+      })
+      vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({
+        videoDuration: 3,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+        videoUrl: MOCK_DATA.videoUrl,
+      })
+
+      vi.spyOn(
+        imageUploadModule,
+        'useIndividualOfferImageUpload'
+      ).mockReturnValue({
+        hasUpsertedImage: true,
+        handleImageOnSubmit: mockHandleImageOnSubmit.mockResolvedValue({
+          url: 'http://image.url/thumb.jpg',
+          credit: 'Un crédit',
+        }),
+      } as any)
+
+      const knownOffer = getIndividualOfferFactory()
+      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
+
+      await updateVideoUrlAndSubmit()
+
+      expect(mockHandleImageOnSubmit).toHaveBeenCalledWith(knownOffer.id)
+      expect(api.updateOfferVideo).toHaveBeenCalledWith({
+        path: { offer_id: knownOffer.id },
+        body: {
+          videoUrl: MOCK_DATA.videoUrl,
         },
       })
     })
@@ -453,9 +534,7 @@ describe('IndividualOfferMediaScreen', () => {
           videoTitle: 'Ma super vidéo',
           videoUrl: 'http://youtube.url',
         })
-        vi.spyOn(api, 'patchOffer').mockResolvedValue(
-          getIndividualOfferFactory()
-        )
+        vi.spyOn(api, 'updateOfferVideo').mockResolvedValue({})
         const mode = OFFER_WIZARD_MODE.EDITION
         const knownOffer = getIndividualOfferFactory()
         await renderIndividualOfferMediaScreen({
@@ -475,7 +554,7 @@ describe('IndividualOfferMediaScreen', () => {
       })
 
       it('should log error when video upload fail in api', async () => {
-        vi.spyOn(api, 'patchOffer').mockRejectedValue("c'est cassé")
+        vi.spyOn(api, 'updateOfferVideo').mockRejectedValue("c'est cassé")
         const mode = OFFER_WIZARD_MODE.EDITION
         const knownOffer = getIndividualOfferFactory()
         await renderIndividualOfferMediaScreen({
