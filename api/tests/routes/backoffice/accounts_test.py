@@ -6322,3 +6322,33 @@ class ViewIdDocumentTest(PostEndpointHelper):
             expected_num_queries=self.expected_num_queries_with_rollback,
             user_id=999999,
         )
+
+
+class DisconnectPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.disconnect_public_account"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_disconnect_public_account(self, authenticated_client):
+        user = users_factories.UserFactory()
+        users_factories.NativeUserSessionFactory(user=user)
+        users_factories.UserSessionFactory(user=user)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "comment": "A funny comment",
+            },
+            user_id=user.id,
+        )
+
+        assert response.status_code == 303
+
+        assert db.session.query(users_models.NativeUserSession).filter_by(id=user.id).count() == 0
+        assert db.session.query(users_models.UserSession).filter_by(id=user.id).count() == 0
+
+        action_history = db.session.query(history_models.ActionHistory).one()
+
+        assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
+        assert action_history.comment == "A funny comment"
+        assert action_history.userId == user.id

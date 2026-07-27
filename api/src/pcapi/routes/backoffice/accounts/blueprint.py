@@ -50,6 +50,7 @@ from pcapi.core.users import eligibility_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
+from pcapi.core.users import sessions
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.password_utils import random_password
@@ -98,6 +99,7 @@ class AccountDetailsActionType(enum.StrEnum):
     QF_BONUS = enum.auto()
     DISABILITY_BONUS = enum.auto()
     EXTRACT = enum.auto()
+    DISCONNECT = enum.auto()
     SUSPEND = enum.auto()
     UNSUSPEND = enum.auto()
     REVIEW = enum.auto()
@@ -132,6 +134,8 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
         user.is_beneficiary or user.roles == []
     ):
         account_details_actions.add_action(AccountDetailsActionType.EXTRACT)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        account_details_actions.add_action(AccountDetailsActionType.DISCONNECT)
     if user.isActive and access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
         account_details_actions.add_action(AccountDetailsActionType.SUSPEND)
     if not user.isActive and access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
@@ -540,6 +544,13 @@ def render_public_account_details(
             {
                 "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
                 "password_reset_form": empty_forms.EmptyForm(),
+            },
+        )
+    if AccountDetailsActionType.DISCONNECT in allowed_actions:
+        kwargs.update(
+            {
+                "disconnect_user_dst": url_for(".disconnect_public_account", user_id=user.id),
+                "disconnect_user_form": account_forms.DisconnectNativeUserForm(),
             },
         )
     if AccountDetailsActionType.INVALIDATE_PASSWORD in allowed_actions:
@@ -2252,6 +2263,39 @@ def has_gdpr_extract(user: users_models.User) -> bool:
     if not user.gdprUserDataExtracts:
         return False
     return any(not extract.is_expired for extract in user.gdprUserDataExtracts)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/disconnect", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def disconnect_public_account(user_id: int) -> response_utils.BackofficeResponse:
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
+    if not user:
+        raise NotFound()
+
+    form = account_forms.DisconnectNativeUserForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash("Le formulaire n'est pas valide", "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    count = sessions.disconnect_native_user_sessions(user_id)
+    count += sessions.disconnect_user_session(user_id)
+
+    if count:
+        history_api.add_action(
+            action_type=history_models.ActionType.USER_DISCONNECTED,
+            author=current_user,
+            user=user,
+            comment=form.comment.data,
+        )
+        if count > 1:
+            flash(f"Les {count} sessions ont été déconnectées", "success")
+        else:
+            flash("La session a été déconnectée", "success")
+    else:
+        flash("Aucune session n'a été trouvée pour être déconnectée", "warning")
+
+    return redirect(get_public_account_link(user_id), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])

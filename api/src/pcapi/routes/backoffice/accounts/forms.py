@@ -325,3 +325,7 @@ class TagFraudulentBookingsForm(utils.PCForm):
 class GetIdDocumentForm(utils.PCForm):
     username = fields.PCStringField("Identifiant de clé d'accès")
     password = fields.PCPasswordField("Clé d'accès secrète")
+
+
+class DisconnectNativeUserForm(utils.PCForm):
+    comment = fields.PCOptCommentField("Commentaire facultatif à propos de la déconnexion")
