@@ -14,21 +14,21 @@
 🟢 : accessible  
 🟠 : partiellement accessible
 
-**P01** : Tuto de bienvenue 🟠 
-**P02** : Inscription et validation 🟠  
-**P03** : Connexion 🟠 
-**P04** : Inscription structure 🟠 
-**P05** : Création offre réservable 🟠  
-**P06** : Création offre individuelle 🟠
-**P07** : Informations bancaires 🟠  
-**P08** : Page d'accueil 🟠 
-**P09** : Les offres 🟠
-**P10** : Les réservations 🟠
-**P11** : Contenus téléchargeables 🟠
-**P12** : Accessibilité 🟠
-**P13** : Les offres réservables (collectif) 🟠
-**P14** : Page d'erreur 🟢 
-**P15** : Plan du site 🟠
+- **P01** : Tuto de bienvenue 🟠
+- **P02** : Inscription et validation 🟠
+- **P03** : Connexion 🟠
+- **P04** : Inscription structure 🟠
+- **P05** : Création offre réservable 🟠
+- **P06** : Création offre individuelle 🟠
+- **P07** : Informations bancaires 🟠
+- **P08** : Page d'accueil 🟠
+- **P09** : Les offres 🟠
+- **P10** : Les réservations 🟠
+- **P11** : Contenus téléchargeables 🟠
+- **P12** : Accessibilité 🟠
+- **P13** : Les offres réservables (collectif) 🟠
+- **P14** : Page d'erreur 🟢
+- **P15** : Plan du site 🟠
 
 <br>
 
