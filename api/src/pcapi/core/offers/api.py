@@ -15,6 +15,7 @@ import PIL
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+import sqlalchemy.orm.exc as sa_orm_exc
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
@@ -1160,7 +1161,11 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
 
 def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
     stock.isSoftDeleted = True
-    db.session.flush()
+    try:
+        with atomic():
+            db.session.flush()
+    except sa_orm_exc.StaleDataError:
+        return
 
     # the algolia sync for the stock will happen within this function
     cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock, author_id, user_connect_as)

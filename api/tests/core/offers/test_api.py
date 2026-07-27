@@ -14,6 +14,7 @@ from unittest import mock
 
 import pytest
 import sqlalchemy as sa
+import sqlalchemy.orm.exc as sa_orm_exc
 import time_machine
 from factory.faker import faker
 from flask import current_app
@@ -3941,6 +3942,17 @@ class DeleteStocksTest:
         assert stock_1.isSoftDeleted
         assert not stock_2.isSoftDeleted
         assert stock_3.isSoftDeleted
+
+    def test_delete_batch_stocks_with_concurent_access(self):
+        stocks = factories.StockFactory.create_batch(3)
+        with mock.patch("pcapi.core.offers.api.db") as mocked_db:
+            mocked_db.session.flush.side_effect = sa_orm_exc.StaleDataError(
+                "UPDATE statement on table 'stock' expected to update 1 row(s); 0 were matched."
+            )
+            api.batch_delete_stocks(stocks, author_id=None, user_connect_as=None)
+        # This call should not have modified the stock deletion because another process should
+        # have updated them already.
+        assert all(not stock.isSoftDeleted for stock in stocks)
 
 
 class FormatExtraDataTest:
