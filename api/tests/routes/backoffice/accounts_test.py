@@ -5704,6 +5704,42 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         assert response.status_code == 404
 
 
+class ClearEmailTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.clear_email"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    def test_clear_email(self, authenticated_client):
+        user = users_factories.UserFactory(isActive=False)
+        old_email = user.email
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+        assert response.status_code == 200  # after redirect
+
+        assert user.email == f"{user.id}@email.supprime"
+
+        assert len(user.email_history) == 1
+        history = user.email_history[0]
+        assert history.oldEmail == old_email
+        assert history.newEmail == user.email
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
+
+        assert f"L'adresse email {old_email} a été libérée" in html_parser.extract_alert(response.data)
+
+    def test_clear_email_active_user(self, authenticated_client):
+        user = users_factories.UserFactory(isActive=True)
+        original_email = user.email
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 404
+
+        assert user.email == original_email
+
+    def test_clear_email_user_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, user_id=0)
+        assert response.status_code == 404
+
+
 class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.invalidate_public_account_password"
     endpoint_kwargs = {"user_id": 1}
