@@ -1,10 +1,12 @@
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { OfferRecommendationDialogBuilder } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationDialogBuilder'
 import { Button } from 'design-system/Button/Button'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
 } from 'design-system/Button/types'
+import fullEditIcon from 'icons/full-edit.svg'
 import { useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -15,6 +17,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
+  EngagementEvents,
   Events,
   INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -25,9 +28,11 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import penIcon from '@/icons/full-edit.svg'
+import fullMessageIcon from '@/icons/full-message.svg'
 import fullStarIcon from '@/icons/full-star.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import strokeMessageIcon from '@/icons/stroke-message.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
@@ -73,6 +78,8 @@ export const IndividualActionsCells = ({
   const { mutate } = useSWRConfig()
   const [isConfirmDialogDeleteDraftOpen, setIsConfirmDialogDeleteDraftOpen] =
     useState(false)
+  const [isProAdviceOpen, setIsProAdviceOpen] = useState(false)
+
   const [
     isConfirmDialogReplaceHeadlineOfferOpen,
     setIsConfirmDialogReplaceHeadlineOfferOpen,
@@ -145,6 +152,14 @@ export const IndividualActionsCells = ({
     }
   }
 
+  function onClickAddProAdvice() {
+    logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+      offerId: offer.id,
+      action: offer.hasProAdvice ? 'edited' : 'started',
+    })
+    setIsProAdviceOpen(true)
+  }
+
   const isActive = offer.status === OfferStatus.ACTIVE
   const isProduct = !!offer.productId
   const hasImage = !!offer.thumbUrl
@@ -167,15 +182,47 @@ export const IndividualActionsCells = ({
     <>
       <div className={styles['actions-column']}>
         {isNewProAdviceAccess && (
-          <Button
-            color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
-            variant={ButtonVariant.SECONDARY}
-            size={ButtonSize.SMALL}
-            icon={isHeadline ? fullStarIcon : strokeStarIcon}
-            onClick={onClickAddHeadlineOffer}
-            tooltip={isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'}
-            ref={headlineButtonTriggerRef}
-          />
+          <>
+            <Button
+              color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
+              variant={ButtonVariant.SECONDARY}
+              size={ButtonSize.SMALL}
+              icon={isHeadline ? fullStarIcon : strokeStarIcon}
+              onClick={onClickAddHeadlineOffer}
+              tooltip={
+                isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'
+              }
+              ref={headlineButtonTriggerRef}
+            />
+
+            <OfferRecommendationDialogBuilder
+              onOpenChange={setIsProAdviceOpen}
+              offerId={offer.id}
+              isOpen={isProAdviceOpen}
+              proAdvice={null}
+              onSubmit={async () => {
+                await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
+                setIsProAdviceOpen(false)
+              }}
+              submitLabel={'Enregistrer la recommandation'}
+              loadAdviceFromOffer={offer.hasProAdvice}
+            >
+              <Button
+                color={
+                  offer.hasProAdvice ? ButtonColor.BRAND : ButtonColor.NEUTRAL
+                }
+                variant={ButtonVariant.SECONDARY}
+                size={ButtonSize.SMALL}
+                icon={offer.hasProAdvice ? fullMessageIcon : strokeMessageIcon}
+                onClick={() => setIsProAdviceOpen(true)}
+                tooltip={
+                  offer.hasProAdvice
+                    ? 'Modifier la recommandation'
+                    : 'Recommander'
+                }
+              />
+            </OfferRecommendationDialogBuilder>
+          </>
         )}
         <Dropdown
           title="Voir les actions"
