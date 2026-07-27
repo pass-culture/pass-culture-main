@@ -26,6 +26,7 @@ import { CGU_LINK } from '@/pages/IndividualOffer/IndividualOfferPracticalInfos/
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import phoneImg from './assets/phone.png'
 import styles from './OfferRecommendationForm.module.scss'
 
 interface OfferRecommendationFormProps {
@@ -139,16 +140,36 @@ export function OfferRecommendationForm({
         <div className={styles['form-subcontainer']}>
           <div className={styles['form-content-container']}>
             <p className={styles['subtitle']}>
-              Les jeunes sont sensibles aux recommandations de professionnels.
-              En ajoutant la vôtre, votre offre augmente ses chances d’être
-              visualisée.
+              La recommandation écrite est un gage de réassurance pour les
+              jeunes. Celle-ci s’affiche sur votre offre et booste sa visibilité
+              sur l’application.
             </p>
+            <div className={styles['recommandation-header']}>
+              <img
+                src={phoneImg}
+                alt="Téléphone affichant un example de recommandation sur l'application jeunes"
+              />
+              <div className={styles['recommandation-header-side']}>
+                <p className={styles['recommandation-header-title']}>
+                  Exemples issus d’autres offres de la même catégorie :
+                </p>
+                <cite className={styles['recommandation-header-citation']}>
+                  “Une aventure mystérieuse qui va vous émerveiller. Les
+                  illustrations sont à couper le souffle. Plongez !”
+                </cite>
+                <cite className={styles['recommandation-header-citation']}>
+                  “Bluffant de maîtrise et de drôlerie, aussi fin que juste,
+                  sensible que mordant.”
+                </cite>
+              </div>
+            </div>
             <div className={styles['form-content']}>
               <TextArea
                 {...register('content')}
                 label="Recommandation"
                 required
-                maxLength={800}
+                requiredIndicator="explicit"
+                maxLength={500}
                 error={errors.content?.message}
               />
 
@@ -179,7 +200,7 @@ export function OfferRecommendationForm({
               <div className={styles['form-delete']}>
                 <Button
                   variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
+                  color={ButtonColor.DANGER}
                   onClick={onDelete}
                   label="Supprimer la recommandation"
                   icon={fullTrashIcon}
