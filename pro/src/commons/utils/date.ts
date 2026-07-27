@@ -4,6 +4,8 @@ import { format } from 'date-fns-tz'
 
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 
+import type { SelectOption } from '../custom_types/form'
+
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 const FORMAT_OPTIONS = { locale: fr }
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
@@ -245,4 +247,19 @@ export function mapMonthNumberToFrench(numero: number) {
     'Décembre',
   ]
   return mois[numero - 1]
+}
+
+export const getPublicationHoursOptions = (): SelectOption[] => {
+  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
+  const minutes = ['00', '15', '30', '45']
+  const options: SelectOption[] = []
+
+  for (const hour of hours) {
+    for (const minute of minutes) {
+      const option = `${hour}:${minute}`
+      options.push({ label: option, value: option })
+    }
+  }
+
+  return options
 }

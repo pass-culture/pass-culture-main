@@ -1,87 +1,16 @@
-import type { ChangeEvent } from 'react'
-import { useFormContext } from 'react-hook-form'
-
-import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { PublicationAndBookingFields } from '@/components/PublicationAndBookingFields/PublicationAndBookingFields'
 import { Divider } from '@/ui-kit/Divider/Divider'
-import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
-import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import styles from './EventPublicationForm.module.scss'
-import type { EventPublicationFormValues } from './types'
-
-const hours = [
-  '00',
-  '01',
-  '02',
-  '03',
-  '04',
-  '05',
-  '06',
-  '07',
-  '08',
-  '09',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
-  '20',
-  '21',
-  '22',
-  '23',
-]
-
-const minutes = ['00', '15', '30', '45']
-
-export const getPublicationHoursOptions = (): SelectOption[] => {
-  const options = []
-
-  for (const hour of hours) {
-    for (const minute of minutes) {
-      const option = `${hour}:${minute}`
-      options.push({ label: option, value: option })
-    }
-  }
-
-  return options
-}
 
 export const EventPublicationForm = () => {
-  const today = new Date()
-
-  const { register, watch, setValue, formState, trigger } =
-    useFormContext<EventPublicationFormValues>()
-  const publicationMode = watch('publicationMode')
-
   const sectionTitle = (
     <div className={styles['title-container']}>
       <span className={styles['title']}>Publication et réservation</span>
     </div>
   )
-
-  const updatePublicationDate = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextPublicationDate = event.target.value
-
-    setValue('publicationDate', nextPublicationDate, { shouldValidate: true })
-  }
-
-  const updatePublicationTime = async (
-    event: ChangeEvent<HTMLSelectElement>
-  ) => {
-    const nextPublicationTime = event.target.value
-
-    setValue('publicationTime', nextPublicationTime)
-
-    await trigger('publicationDate')
-  }
 
   return (
     <>
@@ -98,105 +27,10 @@ export const EventPublicationForm = () => {
               </TipsBanner>
             }
           >
-            <RadioButtonGroup
-              label="Quand votre offre doit-elle être publiée&nbsp;?"
-              name="publicationMode"
-              variant="detailed"
-              options={[
-                { label: 'Publier maintenant', value: 'now' },
-                {
-                  label: 'Publier plus tard',
-                  description:
-                    'L’offre restera secrète pour le public jusqu’à sa publication.',
-                  value: 'later',
-                  collapsed: publicationMode === 'later' && (
-                    <FormLayout.Row inline className={styles['publish-later']}>
-                      <DatePicker
-                        label="Date"
-                        minDate={today}
-                        className={styles['date-picker']}
-                        required
-                        {...register('publicationDate', {
-                          onChange: updatePublicationDate,
-                        })}
-                        error={formState.errors.publicationDate?.message}
-                      />
-                      <Select
-                        label="Heure"
-                        options={getPublicationHoursOptions()}
-                        defaultOption={{ label: 'HH:MM', value: '' }}
-                        className={styles['time-picker']}
-                        required
-                        {...register('publicationTime', {
-                          onChange: updatePublicationTime,
-                        })}
-                        error={formState.errors.publicationTime?.message}
-                      />
-                    </FormLayout.Row>
-                  ),
-                },
-              ]}
-              checkedOption={watch('publicationMode')}
-              onChange={(event) => {
-                setValue(
-                  'publicationMode',
-                  event.target
-                    .value as EventPublicationFormValues['publicationMode']
-                )
-              }}
-            />
+            <PublicationAndBookingFields />
           </FormLayout.Row>
         </FormLayout.Section>
-        <FormLayout.Section>
-          <RadioButtonGroup
-            label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
-            name="bookingAllowedMode"
-            variant="detailed"
-            options={[
-              {
-                label: 'Rendre réservable dès la publication',
-                value: 'now',
-              },
-              {
-                label: 'Rendre réservable plus tard',
-                description:
-                  'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
-                value: 'later',
-                collapsed: watch('bookingAllowedMode') === 'later' && (
-                  <FormLayout.Row inline className={styles['publish-later']}>
-                    <DatePicker
-                      label="Date"
-                      minDate={today}
-                      className={styles['date-picker']}
-                      required
-                      {...register('bookingAllowedDate')}
-                      error={formState.errors.bookingAllowedDate?.message}
-                    />
-                    <Select
-                      label="Heure"
-                      options={getPublicationHoursOptions()}
-                      defaultOption={{ label: 'HH:MM', value: '' }}
-                      className={styles['time-picker']}
-                      required
-                      {...register('bookingAllowedTime')}
-                      error={formState.errors.bookingAllowedTime?.message}
-                    />
-                  </FormLayout.Row>
-                ),
-              },
-            ]}
-            checkedOption={watch('bookingAllowedMode')}
-            onChange={(event) => {
-              setValue(
-                'bookingAllowedMode',
-                event.target
-                  .value as EventPublicationFormValues['bookingAllowedMode']
-              )
-            }}
-          />
-        </FormLayout.Section>
       </FormLayout>
-
       <Divider />
     </>
   )

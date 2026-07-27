@@ -118,6 +118,7 @@ export const IndividualOfferSummaryScreen = ({
       bookingAllowedDate: '',
       bookingAllowedTime: '',
     },
+    mode: 'onBlur',
     resolver: yupResolver(validationSchema),
   })
 
@@ -163,7 +164,7 @@ export const IndividualOfferSummaryScreen = ({
   ]
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onPublish)}>
+      <form onSubmit={methods.handleSubmit(onPublish)} noValidate>
         <div className={styles['offer-preview-banners']}>
           <Banner
             title="Vous y êtes presque !"
