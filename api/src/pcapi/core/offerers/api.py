@@ -3523,30 +3523,22 @@ def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None
 
     Old values are saved using history objects.
     """
-    if not venue.bookingEmail and (venue.contact and not venue.contact.email):
+    if not venue.contact or not venue.contact.email:
         return
 
-    venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
-    venue_snapshot.trace_update({"bookingEmail": None})
-    venue_snapshot.add_action()
+    contact_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
 
-    venue.bookingEmail = None
+    changes: dict = {
+        "email": None,
+        "website": None,
+        "phone_number": None,
+        "social_medias": {},
+    }
 
-    if venue.contact:
-        contact_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+    contact_snapshot.trace_update(data=changes, target=venue.contact, field_name_template="contact.{}")
+    contact_snapshot.add_action()
 
-        changes: dict = {
-            "email": None,
-            "website": None,
-            "phone_number": None,
-            "social_medias": {},
-        }
-
-        contact_snapshot.trace_update(data=changes, target=venue.contact, field_name_template="contact.{}")
-        contact_snapshot.add_action()
-
-        db.session.query(models.VenueContact).filter_by(venueId=venue.id).delete()
-
+    db.session.query(models.VenueContact).filter_by(venueId=venue.id).delete()
     db.session.flush()
 
 
