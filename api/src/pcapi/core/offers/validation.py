@@ -3,7 +3,6 @@ import decimal
 import json
 import logging
 import re
-import typing
 import warnings
 from io import BytesIO
 
@@ -47,8 +46,8 @@ from pcapi.utils.string import to_camelcase
 
 MAX_EXTRA_DATA_SIZE_BYTES = 64 * 1024
 
-HTML_INJECTION_REGEX = re.compile(r"<[^>]*>|on\w+\s*=", re.IGNORECASE)
 # '<[^>]*>' to match <...> , 'on\w+\s*=' to match classic JS actions (onerror=, onload=...)
+HTML_INJECTION_REGEX = re.compile(r"<[^>]*>|on\w+\s*=", re.IGNORECASE)
 
 logger = logging.getLogger(__name__)
 
@@ -967,14 +966,11 @@ def check_artist_offer_links(
             )
 
 
-def validate_extra_data_size(extra_data: typing.Any) -> typing.Any:
+def validate_extra_data_size(extra_data: models.OfferExtraData | None) -> None:
     if len(json.dumps(extra_data).encode("utf-8")) > MAX_EXTRA_DATA_SIZE_BYTES:
         raise ValueError("extraData field is too big (maximum 64 Ko).")
 
-    return extra_data
 
-
-def validate_extra_data_content(extra_data: typing.Any) -> typing.Any:
+def validate_extra_data_content(extra_data: models.OfferExtraData | None) -> None:
     if HTML_INJECTION_REGEX.search(json.dumps(extra_data)):
         raise ValueError("extraData field includes forbidden caracters or scripts")
-    return extra_data

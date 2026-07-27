@@ -145,6 +145,8 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         formated_extra_data: dict[str, typing.Any] = {}
         for key, value in extra_data.items():
             if not isinstance(key, str):
+                # will raise during OfferExtraData validation
+                formated_extra_data[key] = value
                 continue
 
             field_name = to_camelcase(key)
@@ -153,7 +155,9 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return formated_extra_data
 
     @validator("extraData")
-    def validate_extra_data(cls, extra_data: typing.Any) -> offers_models.OfferExtraData | None:
+    def validate_extra_data(
+        cls, extra_data: offers_models.OfferExtraData | None
+    ) -> offers_models.OfferExtraData | None:
         if extra_data is None:
             return None
 
@@ -520,7 +524,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingAllowedDatetime: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: Any
+    extraData: offers_models.OfferExtraData | None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool

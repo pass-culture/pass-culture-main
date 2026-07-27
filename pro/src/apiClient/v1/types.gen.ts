@@ -2570,10 +2570,7 @@ export type GetIndividualOfferResponseModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -2737,10 +2734,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -4681,17 +4675,17 @@ export type OfferExtraData = {
      */
     certificate?: string;
     /**
-     * Codeclil
+     * Code Clil
      */
-    codeClil?: string;
+    code_clil?: string;
     /**
      * Collection
      */
     collection?: string;
     /**
-     * Comicseries
+     * Comic Series
      */
-    comicSeries?: string;
+    comic_series?: string;
     /**
      * Comment
      */
@@ -4703,9 +4697,9 @@ export type OfferExtraData = {
         [key: string]: unknown;
     }>;
     /**
-     * Contenuexplicite
+     * Contenu Explicite
      */
-    contenuExplicite?: string;
+    contenu_explicite?: string;
     /**
      * Countries
      */
@@ -4717,13 +4711,13 @@ export type OfferExtraData = {
         [key: string]: unknown;
     }>;
     /**
-     * Csrid
+     * Csr Id
      */
-    csrId?: string;
+    csr_id?: string;
     /**
-     * Dateparution
+     * Date Parution
      */
-    dateParution?: string;
+    date_parution?: string;
     /**
      * Dewey
      */
@@ -4737,9 +4731,9 @@ export type OfferExtraData = {
      */
     dispo?: number;
     /**
-     * Dispolabel
+     * Dispo Label
      */
-    dispoLabel?: string;
+    dispo_label?: string;
     /**
      * Distributeur
      */
@@ -4761,9 +4755,9 @@ export type OfferExtraData = {
      */
     genres?: Array<string>;
     /**
-     * Gtlid
+     * Gtl Id
      */
-    gtlId?: string;
+    gtl_id?: string;
     /**
      * Langue
      */
@@ -4773,10 +4767,6 @@ export type OfferExtraData = {
      */
     langueiso?: string;
     /**
-     * Musiclabel
-     */
-    musicLabel?: string;
-    /**
      * Musicsubtype
      */
     musicSubType?: string;
@@ -4785,17 +4775,21 @@ export type OfferExtraData = {
      */
     musicType?: string;
     /**
-     * Nbgalettes
+     * Music Label
      */
-    nbGalettes?: string;
+    music_label?: string;
     /**
-     * Nbpages
+     * Nb Galettes
      */
-    nbPages?: string;
+    nb_galettes?: string;
     /**
-     * Numincollection
+     * Nb Pages
      */
-    numInCollection?: string;
+    nb_pages?: string;
+    /**
+     * Num In Collection
+     */
+    num_in_collection?: string;
     /**
      * Originaltitle
      */
@@ -4809,13 +4803,13 @@ export type OfferExtraData = {
      */
     posterUrl?: string;
     /**
-     * Prixlivre
+     * Prix Livre
      */
-    prixLivre?: string;
+    prix_livre?: string;
     /**
-     * Prixmusique
+     * Prix Musique
      */
-    prixMusique?: string;
+    prix_musique?: string;
     /**
      * Productionyear
      */
@@ -4869,9 +4863,9 @@ export type OfferExtraData = {
         [key: string]: unknown;
     };
     /**
-     * Titeliveregroup
+     * Titelive Regroup
      */
-    titeliveRegroup?: string;
+    titelive_regroup?: string;
     /**
      * Title
      */
