@@ -979,8 +979,10 @@ class GetCappedOffersForFiltersTest:
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert len(offers) == 1
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_STATUS_FILTER=True)
-    class StatusFiltersWithFFTest(StatusFiltersTest):
+    # FF is ON by default, test that the filter works when OFF
+    # remove this test when the FF is deleted
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_STATUS_FILTER=False)
+    class StatusFiltersWithoutFFTest(StatusFiltersTest):
         pass
 
 

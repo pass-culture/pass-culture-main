@@ -221,9 +221,10 @@ def get_offers_for_homepage(*, venue_id: int, offers_limit: int) -> list[models.
         db.session.query(models.Offer)
         .filter(
             models.Offer.venueId == venue_id,
-            # set a publication date lower  bound to limit the number of rows
+            # set a publication date lower bound to limit the number of rows
             models.Offer.publicationDatetime > date_filter,
-            # TODO (jcicurel-pass, 2026-03-17): check if this filter works on a large dataset, if not apply the filter after limiting the result
+            # this status filter is applied on a limited number of rows, after the index scan on ix_offer_venueId_publicationDatetime
+            # if this becomes too slow, first get the query result and then apply the filter
             models.Offer.status.in_(status_values),
         )
         .order_by(models.Offer.publicationDatetime)
