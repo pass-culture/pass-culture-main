@@ -63,8 +63,11 @@
   {% if allowed_actions.actions.SUSPEND in allowed_actions.inline_actions %}
     {{ action_bar_button("x-circle", "Suspendre le compte", modal_id="#suspend-public-account-modal") }}
   {% endif %}
+  {% if allowed_actions.actions.CLEAR_EMAIL in allowed_actions.inline_actions %}
+    {{ action_bar_button("envelope-x", "Supprimer l'adresse email", modal_id="#clear-email-modal") }}
+  {% endif %}
   {% if allowed_actions.actions.UNSUSPEND in allowed_actions.inline_actions %}
-    {{ action_bar_button("check-circle", "Réactiver le compte", modal_id="#unsuspend-public-account-modal") }}
+    {{ action_bar_button("arrow-counterclockwise", "Réactiver le compte", modal_id="#unsuspend-public-account-modal") }}
   {% endif %}
   {% if allowed_actions.actions.REVIEW in allowed_actions.inline_actions %}
     {{ action_bar_button("cash-stack", "Revue manuelle", modal_id="#review-public-account-modal") }}
@@ -114,8 +117,11 @@
       {% if allowed_actions.actions.SUSPEND in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("x-circle", "Suspendre le compte", modal_id="#suspend-public-account-modal") }}</li>
       {% endif %}
+      {% if allowed_actions.actions.CLEAR_EMAIL in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("envelope-x", "Supprimer l'adresse email", modal_id="#clear-email-modal") }}</li>
+      {% endif %}
       {% if allowed_actions.actions.UNSUSPEND in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("check-circle", "Réactiver le compte", modal_id="#unsuspend-public-account-modal") }}</li>
+        <li>{{ action_bar_additional_button("arrow-counterclockwise", "Réactiver le compte", modal_id="#unsuspend-public-account-modal") }}</li>
       {% endif %}
       {% if allowed_actions.actions.REVIEW in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("cash-stack", "Revue manuelle", modal_id="#review-public-account-modal") }}</li>
@@ -339,6 +345,9 @@
   {% endif %}
   {% if allowed_actions.actions.SUSPEND in allowed_actions %}
     {{ build_simple_modal_form("suspend-public-account", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+  {% endif %}
+  {% if allowed_actions.actions.CLEAR_EMAIL in allowed_actions %}
+    {{ build_simple_modal_form("clear-email", clear_email_dst, clear_email_form, "Supprimer l'adresse email", "Confirmer la suppression", "La suppression permet de libérer l'adresse email dans les cas de doublons, afin de la réutiliser sur un autre compte.") }}
   {% endif %}
   {% if allowed_actions.actions.UNSUSPEND in allowed_actions %}
     {{ build_simple_modal_form("unsuspend-public-account", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}

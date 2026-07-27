@@ -100,6 +100,7 @@ class AccountDetailsActionType(enum.StrEnum):
     DISABILITY_BONUS = enum.auto()
     EXTRACT = enum.auto()
     DISCONNECT = enum.auto()
+    CLEAR_EMAIL = enum.auto()
     SUSPEND = enum.auto()
     UNSUSPEND = enum.auto()
     REVIEW = enum.auto()
@@ -138,8 +139,11 @@ def _get_account_details_actions(user: users_models.User) -> DetailsActions:
         account_details_actions.add_action(AccountDetailsActionType.DISCONNECT)
     if user.isActive and access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
         account_details_actions.add_action(AccountDetailsActionType.SUSPEND)
-    if not user.isActive and access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
-        account_details_actions.add_action(AccountDetailsActionType.UNSUSPEND)
+    if not user.isActive:
+        if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+            account_details_actions.add_action(AccountDetailsActionType.CLEAR_EMAIL)
+        if access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+            account_details_actions.add_action(AccountDetailsActionType.UNSUSPEND)
     if access_control.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
         account_details_actions.add_action(AccountDetailsActionType.REVIEW)
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
@@ -592,6 +596,14 @@ def render_public_account_details(
         )
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
+
+    if AccountDetailsActionType.CLEAR_EMAIL in allowed_actions:
+        kwargs.update(
+            {
+                "clear_email_form": empty_forms.EmptyForm(),
+                "clear_email_dst": url_for(".clear_email", user_id=user.id),
+            },
+        )
 
     id_check_histories_desc = _get_id_check_histories_desc(eligibility_history)
     tunnel = _get_tunnel(user, eligibility_history)
@@ -2295,6 +2307,26 @@ def disconnect_public_account(user_id: int) -> response_utils.BackofficeResponse
     else:
         flash("Aucune session n'a été trouvée pour être déconnectée", "warning")
 
+    return redirect(get_public_account_link(user_id), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/clear-email", methods=["POST"])
+@access_control.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def clear_email(user_id: int) -> response_utils.BackofficeResponse:
+    user = (
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not user or user.isActive:
+        raise NotFound()
+
+    original_email = user.email
+    email_update.clear_email_by_admin(user)
+
+    flash(Markup("L'adresse email <strong>{email}</strong> a été libérée.").format(email=original_email), "success")
     return redirect(get_public_account_link(user_id), code=303)
 
 
