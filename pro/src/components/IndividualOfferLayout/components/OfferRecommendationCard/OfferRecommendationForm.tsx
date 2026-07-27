@@ -45,7 +45,7 @@ const validationSchema = yup.object().shape({
   content: yup
     .string()
     .required('La recommandation est obligatoire')
-    .max(800, 'La recommandation ne doit pas dépasser 800 caractères'),
+    .max(500, 'La recommandation ne doit pas dépasser 500 caractères'),
   author: yup
     .string()
     .max(20, 'Le nom ne doit pas dépasser 20 caractères')
@@ -105,7 +105,9 @@ export function OfferRecommendationForm({
         offerId,
         action: 'validated',
       })
-      snackBar.success('Votre recommandation a bien été ajoutée')
+      snackBar.success(
+        `Votre recommandation a bien été ${proAdvice ? 'modifiée' : 'ajoutée'}`
+      )
       onSuccess()
     } catch {
       snackBar.error('Une erreur est survenue lors de l’enregistrement')
@@ -147,20 +149,20 @@ export function OfferRecommendationForm({
             <div className={styles['recommandation-header']}>
               <img
                 src={phoneImg}
-                alt="Téléphone affichant un example de recommandation sur l'application jeunes"
+                alt="Téléphone affichant un exemple de recommandation sur l'application jeunes"
               />
               <div className={styles['recommandation-header-side']}>
                 <p className={styles['recommandation-header-title']}>
                   Exemples issus d’autres offres de la même catégorie :
                 </p>
-                <cite className={styles['recommandation-header-citation']}>
-                  “Une aventure mystérieuse qui va vous émerveiller. Les
-                  illustrations sont à couper le souffle. Plongez !”
-                </cite>
-                <cite className={styles['recommandation-header-citation']}>
-                  “Bluffant de maîtrise et de drôlerie, aussi fin que juste,
-                  sensible que mordant.”
-                </cite>
+                <q className={styles['recommandation-header-citation']}>
+                  Une aventure mystérieuse qui va vous émerveiller. Les
+                  illustrations sont à couper le souffle. Plongez !
+                </q>
+                <q className={styles['recommandation-header-citation']}>
+                  Bluffant de maîtrise et de drôlerie, aussi fin que juste,
+                  sensible que mordant.
+                </q>
               </div>
             </div>
             <div className={styles['form-content']}>

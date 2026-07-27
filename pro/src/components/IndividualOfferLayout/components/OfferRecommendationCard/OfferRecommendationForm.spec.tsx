@@ -67,7 +67,7 @@ describe('OfferRecommendationForm', () => {
     renderOfferRecommendationForm({ offerId: 1 })
     expect(
       screen.getByText(
-        /Les jeunes sont sensibles aux recommandations de professionnels/i
+        /La recommandation écrite est un gage de réassurance pour les jeunes./i
       )
     ).toBeInTheDocument()
   })
@@ -132,7 +132,7 @@ describe('OfferRecommendationForm', () => {
       body: { content: 'Nouveau contenu', author: 'Jean-Mi' },
     })
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Votre recommandation a bien été ajoutée'
+      'Votre recommandation a bien été modifiée'
     )
   })
 

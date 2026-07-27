@@ -327,5 +327,76 @@ describe('getIndividualOfferColumns', () => {
 
       expect(deleteMock).toHaveBeenCalled()
     })
+
+    it('should add a pro advice', async () => {
+      const createMock = vi.fn()
+      vi.spyOn(api, 'createOfferProAdvice').mockImplementation(createMock)
+      renderTableWithOffer(
+        { ...baseOffer, isEvent: false, id: headlineOffer.id },
+        {},
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(await screen.findByLabelText('Recommander'))
+
+      expect(
+        await screen.findByText('Ajouter votre recommandation')
+      ).toBeVisible()
+
+      await userEvent.type(
+        await screen.findByLabelText(/Recommandation/),
+        'Recommandation 111'
+      )
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer la recommandation',
+        })
+      )
+
+      expect(createMock).toHaveBeenCalled()
+    })
+
+    it('should update a pro advice', async () => {
+      const updateMock = vi.fn()
+      vi.spyOn(api, 'updateOfferProAdvice').mockImplementation(updateMock)
+      vi.spyOn(api, 'getOfferProAdvice').mockResolvedValueOnce({
+        proAdvice: {
+          author: 'tata',
+          content: 'toto',
+          updatedAt: '',
+        },
+      })
+      renderTableWithOffer(
+        {
+          ...baseOffer,
+          isEvent: false,
+          id: headlineOffer.id,
+          hasProAdvice: true,
+        },
+        {},
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(
+        await screen.findByLabelText('Modifier la recommandation')
+      )
+
+      expect(
+        await screen.findByText('Ajouter votre recommandation')
+      ).toBeVisible()
+
+      await userEvent.type(
+        await screen.findByLabelText(/Recommandation/),
+        'Recommandation 111'
+      )
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer la recommandation',
+        })
+      )
+      expect(updateMock).toHaveBeenCalled()
+    })
   })
 })

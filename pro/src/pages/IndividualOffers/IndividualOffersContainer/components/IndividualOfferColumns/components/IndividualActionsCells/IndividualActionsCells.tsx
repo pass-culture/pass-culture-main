@@ -6,7 +6,6 @@ import {
   ButtonSize,
   ButtonVariant,
 } from 'design-system/Button/types'
-import fullEditIcon from 'icons/full-edit.svg'
 import { useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -214,7 +213,7 @@ export const IndividualActionsCells = ({
                 variant={ButtonVariant.SECONDARY}
                 size={ButtonSize.SMALL}
                 icon={offer.hasProAdvice ? fullMessageIcon : strokeMessageIcon}
-                onClick={() => setIsProAdviceOpen(true)}
+                onClick={onClickAddProAdvice}
                 tooltip={
                   offer.hasProAdvice
                     ? 'Modifier la recommandation'

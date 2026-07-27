@@ -39,7 +39,6 @@ export function OfferRecommendationDialogBuilder({
 
   const advice = proAdvice || proAdviceResponse?.proAdvice
 
-  console.log('proAdviceResponse', proAdviceResponse?.proAdvice)
   return (
     <DialogBuilder
       open={isOpen}
