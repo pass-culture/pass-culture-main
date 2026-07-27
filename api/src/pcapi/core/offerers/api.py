@@ -3542,7 +3542,7 @@ def nullify_venue_emails(venue: models.Venue, author: users_models.User) -> None
             "social_medias": {},
         }
 
-        contact_snapshot.trace_update(data=changes, target=venue.contact, field_name_template="venue.contact.{}")
+        contact_snapshot.trace_update(data=changes, target=venue.contact, field_name_template="contact.{}")
         contact_snapshot.add_action()
 
         db.session.query(models.VenueContact).filter_by(venueId=venue.id).delete()

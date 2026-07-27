@@ -4346,10 +4346,10 @@ class NullifyVenueEmailsTest:
                 "bookingEmail": {"new_info": None, "old_info": old_booking_email},
             },
             {
-                "venue.contact.email": {"new_info": None, "old_info": old_contact_email},
-                "venue.contact.phone_number": {"new_info": None, "old_info": old_phone_number},
-                "venue.contact.website": {"new_info": None, "old_info": old_website},
-                "venue.contact.social_medias": {"new_info": None, "old_info": old_social_medias},
+                "contact.email": {"new_info": None, "old_info": old_contact_email},
+                "contact.phone_number": {"new_info": None, "old_info": old_phone_number},
+                "contact.website": {"new_info": None, "old_info": old_website},
+                "contact.social_medias": {"new_info": None, "old_info": old_social_medias},
             },
         ]
 
