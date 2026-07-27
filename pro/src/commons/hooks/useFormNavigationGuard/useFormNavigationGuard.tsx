@@ -58,14 +58,37 @@ export const useFormNavigationGuard = <
     setPendingNavigationPath(null)
   }
 
+  const getBlockedPath = () =>
+    blocker.location
+      ? `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`
+      : null
+
+  const proceedBlockedNavigationSafely = () => {
+    if (blocker.state !== 'blocked') {
+      return false
+    }
+
+    try {
+      blocker.proceed()
+      return true
+    } catch {
+      // `blocker.state` may have changed since render (async submit), fallback to explicit navigation.
+      const blockedPath = getBlockedPath()
+      blocker.reset()
+      if (blockedPath) {
+        navigate(blockedPath)
+        return true
+      }
+      return false
+    }
+  }
+
   const navigationGuardedSubmitHandler = form.handleSubmit(
     async (transformedFormValues: TTransformedValues) => {
       const canProceed = await onSubmit(transformedFormValues)
       if (!canProceed) {
         if (blocker.state === 'blocked') {
-          const blockedPath = blocker.location
-            ? `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`
-            : null
+          const blockedPath = getBlockedPath()
 
           if (blockedPath) {
             setPendingNavigationPath(blockedPath)
@@ -82,9 +105,11 @@ export const useFormNavigationGuard = <
           ? afterSubmitPath()
           : afterSubmitPath
 
-      if (blocker.state === 'blocked') {
-        blocker.proceed()
-      } else if (resolvedAfterSubmitPath) {
+      if (proceedBlockedNavigationSafely()) {
+        return
+      }
+
+      if (resolvedAfterSubmitPath) {
         navigate(resolvedAfterSubmitPath)
       } else {
         form.reset(transformedFormValues)
@@ -105,9 +130,8 @@ export const useFormNavigationGuard = <
   }
 
   const leaveWithoutSubmitting = () => {
-    if (blocker.state === 'blocked') {
+    if (proceedBlockedNavigationSafely()) {
       setPendingNavigationPath(null)
-      blocker.proceed()
     }
   }
 

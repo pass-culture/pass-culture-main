@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
+  fireEvent,
   type RenderHookResult,
   renderHook,
   screen,
@@ -402,11 +403,10 @@ describe('useFormNavigationGuard', () => {
   })
 
   describe('when submitting the form directly (without navigating away)', () => {
-    const dirtyTheForm = async (user: UserEvent) => {
-      await user.type(
-        await screen.findByRole('textbox', { name: 'A Field' }),
-        'new value'
-      )
+    const dirtyTheForm = async () => {
+      await fireEvent.change(screen.getByLabelText('A Field'), {
+        target: { value: 'new value' },
+      })
     }
 
     describe('when onSubmit returns true', () => {
@@ -419,7 +419,7 @@ describe('useFormNavigationGuard', () => {
           onSubmit: onSubmitMock,
         })
 
-        await dirtyTheForm(user)
+        await dirtyTheForm()
 
         await user.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
@@ -438,7 +438,7 @@ describe('useFormNavigationGuard', () => {
           onSubmit: onSubmitMock,
         })
 
-        await dirtyTheForm(user)
+        await dirtyTheForm()
 
         await user.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
@@ -456,7 +456,7 @@ describe('useFormNavigationGuard', () => {
           onSubmit: onSubmitMock,
         })
 
-        await dirtyTheForm(user)
+        await dirtyTheForm()
 
         await user.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
@@ -489,7 +489,7 @@ describe('useFormNavigationGuard', () => {
           onSubmit: onSubmitMock,
         })
 
-        await dirtyTheForm(user)
+        await dirtyTheForm()
 
         await user.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
@@ -503,6 +503,59 @@ describe('useFormNavigationGuard', () => {
           })
         ).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when the blocker state becomes stale during async submit', () => {
+    it('should fallback to explicit navigate when blocker.proceed throws', async () => {
+      const user = userEvent.setup()
+      const blocker = {
+        location: {
+          hash: '#hash',
+          pathname: '/another-page',
+          search: '?foo=bar',
+        },
+        proceed: vi.fn(() => {
+          throw new Error(
+            'Invalid blocker state transition: unblocked -> proceeding'
+          )
+        }),
+        reset: vi.fn(),
+        state: 'blocked',
+      }
+
+      const useBlockerSpy = vi
+        .spyOn(await import('react-router'), 'useBlocker')
+        .mockReturnValue(blocker as never)
+
+      onSubmitMock.mockResolvedValueOnce(true)
+
+      const { result } = renderNavigationGuardedFakeForm({
+        afterSubmitPath: '/after-submit-page',
+        onSubmit: onSubmitMock,
+      })
+
+      fireEvent.change(screen.getByLabelText('A Field'), {
+        target: { value: 'new value' },
+      })
+
+      await user.click(
+        await screen.findByRole('button', {
+          name: 'Enregistrer et quitter',
+        })
+      )
+
+      await waitFor(() => {
+        expect(onSubmitMock).toHaveBeenCalledOnce()
+      })
+
+      expect(blocker.proceed).toHaveBeenCalledOnce()
+      expect(blocker.reset).toHaveBeenCalledOnce()
+      expect(result.current.location.pathname).toBe('/another-page')
+      expect(result.current.location.search).toBe('?foo=bar')
+      expect(result.current.location.hash).toBe('#hash')
+
+      useBlockerSpy.mockRestore()
     })
   })
 })
