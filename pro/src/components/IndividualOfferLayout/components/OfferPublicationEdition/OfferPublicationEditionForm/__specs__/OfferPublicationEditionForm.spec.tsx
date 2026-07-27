@@ -111,10 +111,8 @@ describe('OfferPublicationEditionForm', () => {
 
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
-        publicationDatetime: bookingAllowedDateFormatted,
-        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-        // @ts-expect-error
-        bookingAllowedDatetime: null,
+        publicationDatetime: new Date().toISOString(),
+        bookingAllowedDatetime: bookingAllowedDateFormatted,
       }),
       onSubmit: () => {},
     })
