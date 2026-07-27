@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
+import { ConfirmDialog } from 'ui-kit/ConfirmDialog/ConfirmDialog'
 
 import { usePrevious } from '@/commons/hooks/usePrevious'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -22,13 +23,16 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import strokeWarningIcon from '@/icons/stroke-warning.svg'
 
 import styles from './ImageDragAndDropUploader.module.scss'
+
 export interface ImageDragAndDropUploaderProps {
   className?: string
   dragAndDropClassName?: string
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
+  warnBeforeDeleting?: boolean
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onImageDropOrSelected?: () => void
@@ -41,6 +45,7 @@ export const ImageDragAndDropUploader = ({
   dragAndDropClassName,
   onImageUpload,
   onImageDelete,
+  warnBeforeDeleting = false,
   initialValues = {},
   mode,
   onImageDropOrSelected,
@@ -53,6 +58,7 @@ export const ImageDragAndDropUploader = ({
 
   const { croppedImageUrl, originalImageUrl, credit } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
+  const [isDeleteImageOpen, setIsDeleteImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
   const previousDraftImage = usePrevious(draftImage)
@@ -75,6 +81,11 @@ export const ImageDragAndDropUploader = ({
   }, [draftImage, previousDraftImage])
 
   const onImageDeleteHandler = () => {
+    if (warnBeforeDeleting && !isDeleteImageOpen) {
+      setIsDeleteImageOpen(true)
+      return
+    }
+    setIsDeleteImageOpen(false)
     setIsModalImageOpen(false)
     setDraftImage(undefined)
     setDraftCredit(undefined)
@@ -188,6 +199,22 @@ export const ImageDragAndDropUploader = ({
             : {})}
         />
       )}
+      <ConfirmDialog
+        onCancel={() => setIsDeleteImageOpen(false)}
+        title="Votre offre ne sera plus à la une"
+        open={isDeleteImageOpen}
+        cancelText="Annuler"
+        confirmText="Supprimer l'image"
+        confirmColor={ButtonColor.DANGER}
+        icon={strokeWarningIcon}
+        onConfirm={onImageDeleteHandler}
+      >
+        <p>
+          Sans image d'illustration, cette offre ne pourra plus être mise à la
+          une de votre catalogue.
+        </p>
+        <p>Souhaitez-vous réellement supprimer cette image ?</p>
+      </ConfirmDialog>
     </div>
   )
 }

@@ -256,4 +256,35 @@ describe('ImageDragAndDropUploader', () => {
     expect(mockDelete).toHaveBeenCalled()
     expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
   })
+
+  it('should display a warning dialog if needed', async () => {
+    const mockDelete = vi.fn()
+
+    renderImageUploader({
+      onImageUpload: () => {},
+      onImageDelete: mockDelete,
+      mode: UploaderModeEnum.OFFER,
+      initialValues: {
+        croppedImageUrl: 'noimage.jpg',
+        originalImageUrl: 'noimage.jpg',
+        credit: 'John Do',
+        cropParams: {
+          xCropPercent: 100,
+          yCropPercent: 100,
+          heightCropPercent: 1,
+          widthCropPercent: 1,
+        },
+      },
+      warnBeforeDeleting: true,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
+    expect(mockDelete).not.toHaveBeenCalled()
+    expect(screen.getByText('Votre offre ne sera plus à la une')).toBeVisible()
+    await userEvent.click(
+      screen.getByRole('button', { name: "Supprimer l'image" })
+    )
+    expect(mockDelete).toHaveBeenCalled()
+    expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
+  })
 })

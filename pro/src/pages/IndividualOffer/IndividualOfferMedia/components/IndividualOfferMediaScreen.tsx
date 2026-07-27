@@ -221,6 +221,7 @@ export const IndividualOfferMediaScreen = ({
                     mode={UploaderModeEnum.OFFER}
                     onImageDropOrSelected={logOnImageDropOrSelected}
                     hideActionButtons={isProductBased || isVenueClosed}
+                    warnBeforeDeleting={offer.isHeadlineOffer}
                     disabled={isProductBased || isVenueClosed}
                   />
                 </FormLayout.SubSection>
