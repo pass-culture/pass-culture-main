@@ -168,7 +168,7 @@ describe('IndividualOfferContextProvider', () => {
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to true when there is one', async () => {
       vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
-        extraData: { ean: 2 },
+        extraData: { ean: '2' },
         productId: 3,
         venue: getOfferVenueFactory({ id: 4 }),
       })
@@ -183,7 +183,7 @@ describe('IndividualOfferContextProvider', () => {
         path: { offer_id: 1 },
       })
       expect(api.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith({
-        path: { venue_id: 4, ean: 2 },
+        path: { venue_id: 4, ean: '2' },
       })
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(true)
@@ -192,7 +192,7 @@ describe('IndividualOfferContextProvider', () => {
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to false when there is none', async () => {
       vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
         ...offerBase,
-        extraData: { ean: 2 },
+        extraData: { ean: '2' },
         productId: 3,
         venue: getOfferVenueFactory({ id: 4 }),
       })
@@ -206,7 +206,7 @@ describe('IndividualOfferContextProvider', () => {
         path: { offer_id: 1 },
       })
       expect(api.getActiveVenueOfferByEan).toHaveBeenCalledWith({
-        path: { venue_id: 4, ean: 2 },
+        path: { venue_id: 4, ean: '2' },
       })
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)

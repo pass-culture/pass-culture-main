@@ -2570,10 +2570,7 @@ export type GetIndividualOfferResponseModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -2737,10 +2734,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -4649,6 +4643,248 @@ export type OfferDomain = {
 };
 
 /**
+ * OfferExtraData
+ */
+export type OfferExtraData = {
+    /**
+     * Allocineid
+     */
+    allocineId?: number;
+    /**
+     * Artist
+     */
+    artist?: string;
+    /**
+     * Author
+     */
+    author?: string;
+    /**
+     * Backlink
+     */
+    backlink?: string;
+    /**
+     * Bookformat
+     */
+    bookFormat?: string;
+    /**
+     * Cast
+     */
+    cast?: Array<string>;
+    /**
+     * Certificate
+     */
+    certificate?: string;
+    /**
+     * Code Clil
+     */
+    code_clil?: string;
+    /**
+     * Collection
+     */
+    collection?: string;
+    /**
+     * Comic Series
+     */
+    comic_series?: string;
+    /**
+     * Comment
+     */
+    comment?: string;
+    /**
+     * Companies
+     */
+    companies?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Contenu Explicite
+     */
+    contenu_explicite?: string;
+    /**
+     * Countries
+     */
+    countries?: Array<string>;
+    /**
+     * Credits
+     */
+    credits?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Csr Id
+     */
+    csr_id?: string;
+    /**
+     * Date Parution
+     */
+    date_parution?: string;
+    /**
+     * Dewey
+     */
+    dewey?: string;
+    /**
+     * Diffusionversion
+     */
+    diffusionVersion?: string;
+    /**
+     * Dispo
+     */
+    dispo?: number;
+    /**
+     * Dispo Label
+     */
+    dispo_label?: string;
+    /**
+     * Distributeur
+     */
+    distributeur?: string;
+    /**
+     * Ean
+     */
+    ean?: string;
+    /**
+     * Editeur
+     */
+    editeur?: string;
+    /**
+     * Eidr
+     */
+    eidr?: string;
+    /**
+     * Genres
+     */
+    genres?: Array<string>;
+    /**
+     * Gtl Id
+     */
+    gtl_id?: string;
+    /**
+     * Langue
+     */
+    langue?: string;
+    /**
+     * Langueiso
+     */
+    langueiso?: string;
+    /**
+     * Musicsubtype
+     */
+    musicSubType?: string;
+    /**
+     * Musictype
+     */
+    musicType?: string;
+    /**
+     * Music Label
+     */
+    music_label?: string;
+    /**
+     * Nb Galettes
+     */
+    nb_galettes?: string;
+    /**
+     * Nb Pages
+     */
+    nb_pages?: string;
+    /**
+     * Num In Collection
+     */
+    num_in_collection?: string;
+    /**
+     * Originaltitle
+     */
+    originalTitle?: string;
+    /**
+     * Performer
+     */
+    performer?: string;
+    /**
+     * Posterurl
+     */
+    posterUrl?: string;
+    /**
+     * Prix Livre
+     */
+    prix_livre?: string;
+    /**
+     * Prix Musique
+     */
+    prix_musique?: string;
+    /**
+     * Productionyear
+     */
+    productionYear?: number;
+    /**
+     * Rayon
+     */
+    rayon?: string;
+    /**
+     * Releasedate
+     */
+    releaseDate?: string;
+    /**
+     * Releases
+     */
+    releases?: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Runtime
+     */
+    runtime?: number;
+    /**
+     * Schoolbook
+     */
+    schoolbook?: boolean;
+    /**
+     * Showsubtype
+     */
+    showSubType?: string;
+    /**
+     * Showtype
+     */
+    showType?: string;
+    /**
+     * Speaker
+     */
+    speaker?: string;
+    /**
+     * Stagedirector
+     */
+    stageDirector?: string;
+    /**
+     * Synopsis
+     */
+    synopsis?: string;
+    /**
+     * Theater
+     */
+    theater?: {
+        [key: string]: unknown;
+    };
+    /**
+     * Titelive Regroup
+     */
+    titelive_regroup?: string;
+    /**
+     * Title
+     */
+    title?: string;
+    /**
+     * Top
+     */
+    top?: string;
+    /**
+     * Type
+     */
+    type?: string;
+    /**
+     * Visa
+     */
+    visa?: string;
+};
+
+/**
  * OfferHomeResponseModel
  */
 export type OfferHomeResponseModel = {
@@ -5033,10 +5269,7 @@ export type PatchOfferBodyModel = {
      * Externalticketofficeurl
      */
     externalTicketOfficeUrl?: string;
-    /**
-     * Extradata
-     */
-    extraData?: unknown;
+    extraData?: OfferExtraData;
     /**
      * Hasculturaloutreachclaim
      */

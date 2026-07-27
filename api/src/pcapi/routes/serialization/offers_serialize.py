@@ -35,6 +35,7 @@ from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.serialization.utils import validate_url
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.string import to_camelcase
 
 
 class SubcategoryGetterDict(GetterDict):
@@ -88,7 +89,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     isNational: bool | None
     name: str | None
-    extraData: Any
+    extraData: offers_models.OfferExtraData | None
     externalTicketOfficeUrl: HttpUrl | None
     url: HttpUrl | None
     withdrawalDetails: str | None
@@ -135,6 +136,34 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
         check_offer_subcategory_is_valid(subcategory_id)
         return subcategory_id
+
+    @validator("extraData", pre=True)
+    def format_extra_data(cls, extra_data: typing.Any) -> typing.Any:
+        if not isinstance(extra_data, dict):
+            return extra_data
+
+        formated_extra_data: dict[str, typing.Any] = {}
+        for key, value in extra_data.items():
+            if not isinstance(key, str):
+                # will raise during OfferExtraData validation
+                formated_extra_data[key] = value
+                continue
+
+            field_name = to_camelcase(key)
+            formated_extra_data[field_name] = value
+
+        return formated_extra_data
+
+    @validator("extraData")
+    def validate_extra_data(
+        cls, extra_data: offers_models.OfferExtraData | None
+    ) -> offers_models.OfferExtraData | None:
+        if extra_data is None:
+            return None
+
+        offers_validation.validate_extra_data_size(extra_data)
+        offers_validation.validate_extra_data_content(extra_data)
+        return extra_data
 
     class Config:
         alias_generator = to_camel
@@ -495,7 +524,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingAllowedDatetime: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: Any
+    extraData: offers_models.OfferExtraData | None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
