@@ -4935,7 +4935,7 @@ class MoveEventOfferTest:
         assert offer.venue == new_venue
 
         assert not headline_offer.isActive
-        assert headline_offer.venue == new_venue
+        assert headline_offer.venue == venue
         assert headline_offer.timespan.upper is not None
 
 

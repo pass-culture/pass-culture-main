@@ -2050,7 +2050,6 @@ def move_event_offer(
 
         # End active headline offer before changing venue
         for headline_offer in offer.headlineOffers:
-            headline_offer.venue = destination_venue
             if headline_offer.isActive:
                 remove_headline_offer(headline_offer)
                 logger.info(
