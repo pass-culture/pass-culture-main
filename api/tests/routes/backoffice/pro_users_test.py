@@ -942,9 +942,9 @@ class DisconnectProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_disconnect_user(self, authenticated_client):
-        old_session_count = db.session.query(users_models.UserSession).count()
         user = offerers_factories.UserOffererFactory(user__isActive=False).user
         users_factories.UserSessionFactory(user=user)
+        users_factories.NativeUserSessionFactory(user=user)
         user_id = user.id
 
         db.session.flush()
@@ -952,7 +952,15 @@ class DisconnectProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id)
 
         assert response.status_code == 303
-        assert db.session.query(users_models.UserSession).count() == old_session_count
+        assert (
+            db.session.query(users_models.UserSession).filter(users_models.UserSession.userId == user_id).count() == 0
+        )
+        assert (
+            db.session.query(users_models.NativeUserSession)
+            .filter(users_models.NativeUserSession.userId == user_id)
+            .count()
+            == 0
+        )
 
         action_history = (
             db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
@@ -961,7 +969,6 @@ class DisconnectProUserTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.USER_DISCONNECTED
 
     def test_disconnect_user_with_comment(self, authenticated_client, legit_user):
-        old_session_count = db.session.query(users_models.UserSession).count()
         user = offerers_factories.UserOffererFactory(user__isActive=False).user
         users_factories.UserSessionFactory(user=user)
         user_id = user.id
@@ -969,7 +976,9 @@ class DisconnectProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form={"comment": "because"})
 
         assert response.status_code == 303
-        assert db.session.query(users_models.UserSession).count() == old_session_count
+        assert (
+            db.session.query(users_models.UserSession).filter(users_models.UserSession.userId == user_id).count() == 0
+        )
 
         action_history = (
             db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id.desc()).first()
@@ -980,13 +989,14 @@ class DisconnectProUserTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
 
     def test_no_sessions(self, authenticated_client):
-        old_session_count = db.session.query(users_models.UserSession).count()
         user = offerers_factories.UserOffererFactory(user__isActive=False).user
         user_id = user.id
 
         response = self.post_to_endpoint(authenticated_client, user_id=user_id)
 
         assert response.status_code == 303
-        assert db.session.query(users_models.UserSession).count() == old_session_count
+        assert (
+            db.session.query(users_models.UserSession).filter(users_models.UserSession.userId == user_id).count() == 0
+        )
 
         assert db.session.query(history_models.ActionHistory).count() == 0

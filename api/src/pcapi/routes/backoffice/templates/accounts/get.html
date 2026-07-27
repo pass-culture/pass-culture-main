@@ -57,6 +57,9 @@
   {% if allowed_actions.actions.EXTRACT in allowed_actions.inline_actions %}
     {{ action_bar_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}
   {% endif %}
+  {% if allowed_actions.actions.DISCONNECT in allowed_actions.inline_actions %}
+    {{ action_bar_button("ban", "Déconnecter les sessions", modal_id="#disconnect-public-account-modal") }}
+  {% endif %}
   {% if allowed_actions.actions.SUSPEND in allowed_actions.inline_actions %}
     {{ action_bar_button("x-circle", "Suspendre le compte", modal_id="#suspend-public-account-modal") }}
   {% endif %}
@@ -104,6 +107,9 @@
       {% endif %}
       {% if allowed_actions.actions.EXTRACT in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("clipboard-data", "Extraire les données", submit_form="extract-user-data-form") }}</li>
+      {% endif %}
+      {% if allowed_actions.actions.DISCONNECT in allowed_actions.additional_actions %}
+        <li>{{ action_bar_additional_button("ban", "Déconnecter les sessions", modal_id="#disconnect-public-account-modal") }}</li>
       {% endif %}
       {% if allowed_actions.actions.SUSPEND in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("x-circle", "Suspendre le compte", modal_id="#suspend-public-account-modal") }}</li>
@@ -324,6 +330,12 @@
           method="post">
       {{ extract_user_form.csrf_token }}
     </form>
+  {% endif %}
+  {% if allowed_actions.actions.DISCONNECT in allowed_actions %}
+    {{ build_simple_modal_form("disconnect-public-account", disconnect_user_dst, disconnect_user_form,
+        "Déconnecter l'utilisateur",
+        "Confirmer la déconnexion",
+        "⚠️ Seules les sessions créées après le 01/05/2026 seront déconnectées.") }}
   {% endif %}
   {% if allowed_actions.actions.SUSPEND in allowed_actions %}
     {{ build_simple_modal_form("suspend-public-account", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}

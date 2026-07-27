@@ -24,8 +24,8 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.core.users import sessions
 from pcapi.core.users.email import update as email_update
-from pcapi.core.users.sessions import disconnect_user_session
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
@@ -365,7 +365,8 @@ def disconnect_pro_user(user_id: int) -> response_utils.BackofficeResponse:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
-    count = disconnect_user_session(user_id=user_id)
+    count = sessions.disconnect_user_session(user_id=user_id)
+    count += sessions.disconnect_native_user_sessions(user_id=user_id)
 
     if count:
         history_api.add_action(
