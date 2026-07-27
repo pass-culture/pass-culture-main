@@ -4120,9 +4120,7 @@ class CloseVenueTest:
     """
 
     def test_open_venue_becomes_closed(self):
-        venue = offerers_factories.VenueBankAccountLinkFactory(
-            venue__state=None, venue__bookingEmail="some.email@test.com"
-        ).venue
+        venue = offerers_factories.VenueBankAccountLinkFactory(venue__state=None).venue
         author = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4130,7 +4128,6 @@ class CloseVenueTest:
 
         db.session.refresh(venue)
 
-        assert not venue.bookingEmail
         assert not venue.contact
 
         assert not venue.current_bank_account_link
@@ -4146,7 +4143,6 @@ class CloseVenueTest:
             offerers_api.close_venue(venue, author)
 
         db.session.refresh(venue)
-        assert not venue.bookingEmail
         assert not venue.contact
         assert venue.state == offerers_models.VenueState.CLOSED
 
@@ -4307,20 +4303,15 @@ class DeactivateVenueOffersTest:
 
 
 class NullifyVenueEmailsTest:
-    def test_emails_all_venue_emails_are_nullified(self):
-        """Check that all venue's emails are nullified:
-
-        1. booking and contact's email are None;
-        2. the old emails are saved using the history api.
-        """
-        old_booking_email = "booking@test.com"
+    def test_contact_email_and_other_contact_data_are_nullified(self):
+        booking_email = "booking.email@test.com"
         old_contact_email = "hey@test.com"
         old_phone_number = "+33112233445"
         old_website = "https://test.com"
         old_social_medias = {"instagram": "https://instagram.com/@test.com"}
 
         venue = offerers_factories.VenueFactory(
-            bookingEmail=old_booking_email,
+            bookingEmail=booking_email,
             contact__email=old_contact_email,
             contact__phone_number=old_phone_number,
             contact__website=old_website,
@@ -4333,18 +4324,16 @@ class NullifyVenueEmailsTest:
 
         db.session.refresh(venue)
 
-        # check 1. emails are nullified
-        assert not venue.bookingEmail
+        # check 1. contact email has been nullified
         assert not venue.contact
+        # but booking email should not
+        assert venue.bookingEmail == booking_email
 
-        # check 2. old emails have been saved
-        assert len(venue.action_history) == 2
+        # check 2. old email have been saved
+        assert len(venue.action_history) == 1
 
         modified_info = [item.extraData["modified_info"] for item in venue.action_history]
-        assert sorted(modified_info, key=lambda info: len(info)) == [
-            {
-                "bookingEmail": {"new_info": None, "old_info": old_booking_email},
-            },
+        assert modified_info == [
             {
                 "contact.email": {"new_info": None, "old_info": old_contact_email},
                 "contact.phone_number": {"new_info": None, "old_info": old_phone_number},
@@ -4354,7 +4343,8 @@ class NullifyVenueEmailsTest:
         ]
 
     def test_nothings_changes_when_venue_already_has_no_emails_set(self):
-        venue = offerers_factories.VenueFactory(bookingEmail=None, contact=None)
+        booking_email = "booking.emai@test.com"
+        venue = offerers_factories.VenueFactory(bookingEmail=booking_email, contact=None)
         user = users_factories.BaseUserFactory()
 
         with atomic():
@@ -4362,7 +4352,9 @@ class NullifyVenueEmailsTest:
 
         db.session.refresh(venue)
 
-        assert not venue.bookingEmail
+        # booking email should never change
+        assert venue.bookingEmail == booking_email
+
         assert not venue.contact
 
         # no update to track
