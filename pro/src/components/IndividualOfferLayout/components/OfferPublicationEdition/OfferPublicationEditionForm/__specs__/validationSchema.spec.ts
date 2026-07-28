@@ -95,7 +95,7 @@ describe('OfferPublicationEditionForm validationSchema', () => {
       formValues,
       {
         context: {
-          firstBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
+          nextBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
         },
       }
     )
@@ -122,7 +122,7 @@ describe('OfferPublicationEditionForm validationSchema', () => {
       formValues,
       {
         context: {
-          firstBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
+          nextBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
         },
       }
     )

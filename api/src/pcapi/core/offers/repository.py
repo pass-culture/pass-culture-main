@@ -1416,6 +1416,7 @@ def get_filtered_stocks(
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
+    only_future_stocks: bool = False,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
 ) -> sa_orm.Query:
@@ -1430,6 +1431,9 @@ def get_filtered_stocks(
             models.Stock.isSoftDeleted == False,
         )
     )
+    if only_future_stocks:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        query = query.filter(models.Stock.bookingLimitDatetime > now)
     if price_category_id is not None:
         query = query.filter(models.Stock.priceCategoryId == price_category_id)
     if date is not None:

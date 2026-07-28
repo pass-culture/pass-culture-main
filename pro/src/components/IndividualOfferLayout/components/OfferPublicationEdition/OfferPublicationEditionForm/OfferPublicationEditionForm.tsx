@@ -43,12 +43,13 @@ export function OfferPublicationEditionForm({
           page: 1,
           order_by_desc: false,
           order_by: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+          only_future_stocks: true,
         },
       })
   )
 
   const publicationHoursOptions = getPublicationHoursOptions()
-  const firstBookingLimitDatetime =
+  const nextBookingLimitDatetime =
     getStocksQuery.data?.stocks[0]?.bookingLimitDatetime ?? ''
 
   const form = useForm<EventPublicationEditionFormValues>({
@@ -57,7 +58,7 @@ export function OfferPublicationEditionForm({
       validationSchema
     ),
     context: {
-      firstBookingLimitDatetime,
+      nextBookingLimitDatetime,
     },
     mode: 'onBlur',
   })
@@ -94,7 +95,7 @@ export function OfferPublicationEditionForm({
 
           <PublicationAndBookingFields
             disabled={isPaused}
-            maxDate={firstBookingLimitDatetime}
+            maxDate={nextBookingLimitDatetime}
           />
         </div>
 

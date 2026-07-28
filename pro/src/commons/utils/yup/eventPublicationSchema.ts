@@ -27,25 +27,25 @@ function isDateTimeInFuture(value: string, date: string) {
   return !isBefore(dateTime, now) || !isSameDay(dateTime, now)
 }
 
-function isDateBeforeFirstBookingLimit(
+function isDateBeforeNextBookingLimit(
   value: string,
-  firstBookingLimitDatetime: string
+  nextBookingLimitDatetime: string
 ) {
   if (!value || !isDateValid(value)) {
     return false
   }
-  if (!firstBookingLimitDatetime) {
+  if (!nextBookingLimitDatetime) {
     return true
   }
   const dateTime = buildDateTime(value, '00:00')
-  const firstBookingLimitDate = new Date(firstBookingLimitDatetime)
-  if (Number.isNaN(firstBookingLimitDate.getTime())) {
+  const nextBookingLimitDate = new Date(nextBookingLimitDatetime)
+  if (Number.isNaN(nextBookingLimitDate.getTime())) {
     return true
   }
 
   return (
-    isBefore(dateTime, firstBookingLimitDate) ||
-    isSameDay(dateTime, firstBookingLimitDate)
+    isBefore(dateTime, nextBookingLimitDate) ||
+    isSameDay(dateTime, nextBookingLimitDate)
   )
 }
 
@@ -66,12 +66,12 @@ export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
           isDateWithinTwoYears
         )
         .test(
-          'is-before-first-booking-limit',
+          'is-before-next-booking-limit',
           'Veuillez indiquer une date avant la date limite de réservation',
           (value, context) =>
-            isDateBeforeFirstBookingLimit(
+            isDateBeforeNextBookingLimit(
               value,
-              context.options.context?.firstBookingLimitDatetime
+              context.options.context?.nextBookingLimitDatetime
             )
         ),
   })
@@ -107,12 +107,12 @@ export const bookingAllowedDateValidationSchema = (schema: yup.StringSchema) =>
           isDateWithinTwoYears
         )
         .test(
-          'is-before-first-booking-limit',
+          'is-before-next-booking-limit',
           'Veuillez indiquer une date avant la date limite de réservation',
           (value, context) =>
-            isDateBeforeFirstBookingLimit(
+            isDateBeforeNextBookingLimit(
               value,
-              context.options.context?.firstBookingLimitDatetime
+              context.options.context?.nextBookingLimitDatetime
             )
         ),
   })

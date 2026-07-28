@@ -5975,6 +5975,10 @@ export type StocksQueryModel = {
      * Date
      */
     date?: string;
+    /**
+     * Only Future Stocks
+     */
+    only_future_stocks?: boolean;
     order_by?: StocksOrderedBy;
     /**
      * Order By Desc
@@ -9719,6 +9723,10 @@ export type getOffersByOfferIdStocksData = {
          * Stocks Limit Per Page
          */
         stocks_limit_per_page?: number;
+        /**
+         * Only Future Stocks
+         */
+        only_future_stocks?: boolean;
     };
     url: '/offers/{offer_id}/stocks/';
 };

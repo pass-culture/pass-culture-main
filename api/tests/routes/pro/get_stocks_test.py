@@ -294,3 +294,37 @@ class Returns200Test:
 
         assert response.json["totalStockCount"] == 3
         assert len(response.json["stocks"]) == 3
+
+    def test_should_return_only_next_stocks_when_only_next_stocks_is_true(self, client):
+        now = date_utils.get_naive_utc_now()
+        past_stock_creation = now - timedelta(days=1)
+        past_booking_limit = now - timedelta(hours=1)
+        future_booking_limit = now + timedelta(hours=1)
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+
+        # past_stock
+        offers_factories.EventStockFactory(
+            dateCreated=past_stock_creation,
+            dateModified=past_stock_creation,
+            beginningDatetime=past_booking_limit,
+            bookingLimitDatetime=past_booking_limit,
+            offer=offer,
+        )
+        future_stock = offers_factories.EventStockFactory(
+            dateCreated=now,
+            dateModified=now,
+            beginningDatetime=future_booking_limit,
+            bookingLimitDatetime=future_booking_limit,
+            offer=offer,
+        )
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        response = client.get(f"/offers/{offer_id}/stocks?only_future_stocks=true")
+        assert response.status_code == 200
+
+        assert response.json["totalStockCount"] == 1
+        assert len(response.json["stocks"]) == 1
+        assert response.json["stocks"][0]["id"] == future_stock.id
