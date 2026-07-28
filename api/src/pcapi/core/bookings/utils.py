@@ -5,6 +5,7 @@ from datetime import timedelta
 from decimal import Decimal
 from hashlib import sha256
 
+from cryptography.hazmat.primitives import serialization
 from dateutil import tz
 
 import pcapi.utils.date as date_utils
@@ -13,6 +14,8 @@ from pcapi.core.categories import subcategories
 
 
 if typing.TYPE_CHECKING:
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
     from pcapi.core.bookings import schemas
 
 QR_CODE_PASS_CULTURE_VERSION = "v3"
@@ -44,6 +47,26 @@ def generate_hmac_signature(
     Generate the signature of the notification data using the hmac_key.
     """
     return hmac.new(hmac_key.encode(), data.encode(), sha256).hexdigest()
+
+
+def generate_ed25519_signature(data: str, private_key: str, password: str | None = None) -> str:
+    """
+    Generate the signature of the notification data using the the given ed25519 private key.
+
+    private_key must be provided as a PEM encoded PKCS8 format.
+    """
+    if not private_key:
+        return ""
+    deserialized_key = serialization.load_pem_private_key(
+        data=private_key.encode("utf-8"),
+        password=password.encode("utf-8") if password else None,
+    )
+    # cannot use isinstance due to binding problems
+    if not type(deserialized_key).__name__ == "Ed25519PrivateKey":
+        raise ValueError("the provided key is not a valid ed25519 private key")
+    deserialized_key = typing.cast("Ed25519PrivateKey", deserialized_key)
+
+    return deserialized_key.sign(data.encode("utf-8")).hex()
 
 
 def _apply_departement_timezone(naive_datetime: datetime | None, departement_code: str | None) -> datetime | None:

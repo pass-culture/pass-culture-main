@@ -4,6 +4,8 @@ import json
 from unittest.mock import patch
 
 import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
@@ -14,6 +16,7 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.tasks as providers_tasks
 import pcapi.core.users.factories as user_factories
+from pcapi.core.bookings.utils import generate_ed25519_signature
 from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.external_bookings.api import EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
 from pcapi.core.external_bookings.api import _instantiate_cinema_api_client
@@ -24,6 +27,18 @@ from pcapi.core.external_bookings.api import send_booking_notification_to_extern
 from pcapi.core.offers.constants import DEFAULT_PRICE_LABEL
 from pcapi.core.providers.clients.cine_office_client import CineOfficeAPIClient
 from pcapi.core.providers.repository import get_provider_by_local_class
+
+
+# generate a private key for this session
+PRIVATE_ED25519_KEY = (
+    Ed25519PrivateKey.generate()
+    .private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    .decode("utf-8")
+)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -116,6 +131,7 @@ class BookEventTicketTest:
         with pytest.raises(providers_exceptions.InactiveProvider):
             book_event_ticket(booking, stock, user)
 
+    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -165,6 +181,10 @@ class BookEventTicketTest:
             }
         )
         expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+        expected_ed25519_signature = generate_ed25519_signature(
+            data=expected_json_string,
+            private_key=PRIVATE_ED25519_KEY,
+        )
 
         # mocks
         requests_post.return_value.status_code = 200
@@ -183,8 +203,11 @@ class BookEventTicketTest:
         requests_post.assert_called_with(
             provider.bookingExternalUrl,
             json=expected_json_string,
-            hmac=expected_hmac_signature,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "PassCulture-Signature": expected_hmac_signature,
+                "PassCulture-ed25519-Signature": expected_ed25519_signature,
+            },
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             record_metrics=True,
             metric_name_suffix="external_booking_create",
@@ -246,6 +269,7 @@ class BookEventTicketTest:
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
             book_event_ticket(booking, booking.stock, booking.user)
 
+    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket_using_venue_external_url(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -305,6 +329,10 @@ class BookEventTicketTest:
             }
         )
         expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+        expected_ed25519_signature = generate_ed25519_signature(
+            data=expected_json_string,
+            private_key=PRIVATE_ED25519_KEY,
+        )
 
         # mocks
         requests_post.return_value.status_code = 200
@@ -323,8 +351,11 @@ class BookEventTicketTest:
         requests_post.assert_called_with(
             "https://coucou.com",
             json=expected_json_string,
-            hmac=expected_hmac_signature,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "PassCulture-Signature": expected_hmac_signature,
+                "PassCulture-ed25519-Signature": expected_ed25519_signature,
+            },
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             record_metrics=True,
             metric_name_suffix="external_booking_create",
@@ -480,6 +511,7 @@ class CancelEventTicketTest:
                 venue_provider=None,
             )
 
+    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_cancel_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -496,6 +528,10 @@ class CancelEventTicketTest:
         # expected data
         expected_json_string = json.dumps({"barcodes": ["ABCDEF"]})
         expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+        expected_ed25519_signature = generate_ed25519_signature(
+            data=expected_json_string,
+            private_key=PRIVATE_ED25519_KEY,
+        )
 
         # mocks
         requests_post.return_value.status_code = 200
@@ -516,13 +552,17 @@ class CancelEventTicketTest:
         requests_post.assert_called_with(
             provider.bookingExternalUrl,
             json=expected_json_string,
-            hmac=expected_hmac_signature,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "PassCulture-Signature": expected_hmac_signature,
+                "PassCulture-ed25519-Signature": expected_ed25519_signature,
+            },
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             record_metrics=True,
             metric_name_suffix="external_booking_cancel",
         )
 
+    @pytest.mark.settings(WEBHOOK_AUTH_PRIVATE_KEY=PRIVATE_ED25519_KEY)
     @pytest.mark.parametrize("return_value", [{"remainingQuantity": 10}, {}])
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_cancel_an_event_ticket_using_venue_cancel_url(self, requests_post, return_value):
@@ -547,6 +587,10 @@ class CancelEventTicketTest:
         # expected data
         expected_json_string = json.dumps({"barcodes": ["ABCDEF"]})
         expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+        expected_ed25519_signature = generate_ed25519_signature(
+            private_key=PRIVATE_ED25519_KEY,
+            data=expected_json_string,
+        )
 
         # mocks
         requests_post.return_value.status_code = 200
@@ -565,8 +609,11 @@ class CancelEventTicketTest:
         requests_post.assert_called_with(
             "https://bye.co",
             json=expected_json_string,
-            hmac=expected_hmac_signature,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "PassCulture-Signature": expected_hmac_signature,
+                "PassCulture-ed25519-Signature": expected_ed25519_signature,
+            },
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             record_metrics=True,
             metric_name_suffix="external_booking_cancel",

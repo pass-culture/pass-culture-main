@@ -37,8 +37,10 @@ def test_send_notification_task(requests_mock):
                 action=tasks.BookingAction.BOOK, booking=BookingFactory()
             ),
             signature="M0ckS1gn@TuR3",
+            ed25519_signature="S3cuR3",
             notificationUrl="https://example.com/notify",
         )
     )
 
     assert requests_mock.last_request.headers["PassCulture-Signature"] == "M0ckS1gn@TuR3"
+    assert requests_mock.last_request.headers["PassCulture-ed25519-Signature"] == "S3cuR3"
