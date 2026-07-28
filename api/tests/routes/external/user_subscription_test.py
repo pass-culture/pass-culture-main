@@ -43,13 +43,15 @@ from tests.test_utils import json_default
 
 @pytest.mark.usefixtures("db_session")
 class DmsWebhookApplicationTest:
+    token = settings.DMS_WEBHOOK_TOKEN_LIST[0]
+
     def test_dms_request_no_token(self, client):
         response = client.post("/webhooks/dms/application_status")
         assert response.status_code == 401
 
     def test_dms_request_no_params_with_token(self, client):
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
@@ -68,7 +70,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -102,7 +104,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -133,7 +135,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -287,7 +289,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2022-03-17 08:00:00 +0100",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -349,7 +351,7 @@ class DmsWebhookApplicationTest:
             "updated_at": updated_at.strftime("%Y-%m-%d %H:%M:%S %z"),
         }
         client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -383,7 +385,7 @@ class DmsWebhookApplicationTest:
             "updated_at": updated_at.strftime("%Y-%m-%d %H:%M:%S %z"),
         }
         client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -418,7 +420,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -459,7 +461,7 @@ class DmsWebhookApplicationTest:
             id_piece_number="error_identity_piece_number",
         )
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -523,7 +525,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -554,7 +556,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -578,7 +580,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -605,7 +607,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -653,7 +655,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -701,7 +703,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -753,7 +755,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -802,7 +804,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -853,7 +855,7 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -897,7 +899,7 @@ class DmsWebhookApplicationTest:
         }
 
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -934,7 +936,7 @@ class DmsWebhookApplicationTest:
 
         # First DMS webhook call: draft with value errors
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -955,7 +957,7 @@ class DmsWebhookApplicationTest:
             last_modification_date=datetime.datetime(2021, 9, 30, 18, 00, 00),
         )
         response = client.post(
-            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            f"/webhooks/dms/application_status?token={self.token}",
             form=form_data,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
