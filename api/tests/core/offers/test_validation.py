@@ -974,7 +974,7 @@ class CheckBookingLimitDatetimeTest:
             assert False, f"Should not raise exception {e}"
 
     @pytest.mark.parametrize(
-        "time_zone_expected,",
+        "time_zone_expected",
         [
             ZoneInfo("Indian/Reunion"),  # "offer.offerer_address.address.timezone",
             ZoneInfo("America/Guadeloupe"),  #  "offer.venue.offererAddress.address.timezone",
