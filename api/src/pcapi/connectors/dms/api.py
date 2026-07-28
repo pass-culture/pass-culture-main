@@ -180,7 +180,9 @@ class DMSGraphQLClient:
         data = response[key]
         errors = data["errors"]
         if errors:
-            logger.error(
+            is_already_expected_state = errors[0].get("message", "").startswith("Le dossier est déjà")
+            logger.log(
+                logging.WARNING if is_already_expected_state else logging.ERROR,
                 "[DMS] Error while marking application %s %s",
                 log_state,
                 errors,
