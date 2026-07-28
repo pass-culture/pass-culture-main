@@ -638,7 +638,7 @@ def attach_offer_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     try:
         offer = repository.get_collective_offer_by_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
+    except exceptions.CollectiveOfferNotFound:
         raise resource_not_found_error()
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
@@ -679,7 +679,7 @@ def attach_offer_template_image(
 ) -> collective_offers_serialize.AttachImageResponseModel:
     try:
         offer = repository.get_collective_offer_template_by_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
+    except exceptions.CollectiveOfferTemplateNotFound:
         raise resource_not_found_error()
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)

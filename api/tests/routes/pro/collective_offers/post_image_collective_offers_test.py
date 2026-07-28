@@ -130,3 +130,12 @@ class AttachCollectiveOfferImageTest:
         assert response.status_code == 403
         assert response.json == {"global": ["Cette action n'est pas autorisée sur cette offre"]}
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists() is False
+
+    @pytest.mark.parametrize("Factory, url", factories_urls)
+    def test_attach_offer_image_not_found(self, Factory, url, client):
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
+
+        auth_client = client.with_session_auth(email="user@example.com")
+        response = auth_client.post(f"{url}/999999999/image", form=get_image_data())
+
+        assert response.status_code == 404
