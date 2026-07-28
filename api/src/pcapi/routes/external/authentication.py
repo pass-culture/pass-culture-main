@@ -21,7 +21,7 @@ def require_dms_token(route_function: Callable[..., Any]) -> Callable:
         if not token:
             raise UnauthorizedError()
 
-        if token != settings.DMS_WEBHOOK_TOKEN:
+        if token not in settings.DMS_WEBHOOK_TOKEN_LIST:
             errors = ForbiddenError()
             errors.add_error("token", "Invalid token")
             raise errors
