@@ -23,9 +23,9 @@ import { api } from 'apiClient/api'
 import {
   type ActivityNotOpenToPublic,
   type ActivityOpenToPublic,
-  ImportanceLevelMessageSignupSimulation,
   OffererTarget,
-  type SignupSimulationMessages,
+  SignupSimulationMessageLevel,
+  type SignupSimulationMessageModel,
   type SignupSimulationResponseModel,
 } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
@@ -109,15 +109,14 @@ export const SimulatorResults = (): JSX.Element => {
             </InfoPanel>
           )
         })}
-        {result?.messages.map((message: SignupSimulationMessages) => {
-          const content = getAlertContent(message.content)
+        {result?.messages.map((message: SignupSimulationMessageModel) => {
+          const content = getAlertContent(message.type)
           return (
             <Banner
               title={content.title}
-              key={message.content}
+              key={message.type}
               variant={
-                message.importanceLevel ===
-                ImportanceLevelMessageSignupSimulation.ALERT
+                message.level === SignupSimulationMessageLevel.ALERT
                   ? BannerVariants.WARNING
                   : BannerVariants.DEFAULT
               }

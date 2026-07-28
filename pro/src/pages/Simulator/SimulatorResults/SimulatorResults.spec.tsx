@@ -8,9 +8,9 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   ActivityNotOpenToPublic,
-  ContentMessageSignupSimulation,
   EligibilityDocument,
-  ImportanceLevelMessageSignupSimulation,
+  SignupSimulationMessageLevel,
+  SignupSimulationMessageType,
 } from 'apiClient/v1'
 import { SimulatorResults } from './SimulatorResults'
 
@@ -49,8 +49,8 @@ describe('<SimulatorResults />', () => {
       eligibilityDocuments: [EligibilityDocument.PRICES],
       messages: [
         {
-          content: ContentMessageSignupSimulation.BOOKSTORE,
-          importanceLevel: ImportanceLevelMessageSignupSimulation.ALERT,
+          type: SignupSimulationMessageType.BOOKSTORE,
+          level: SignupSimulationMessageLevel.ALERT,
         },
       ],
     })

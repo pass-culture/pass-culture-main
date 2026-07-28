@@ -1023,15 +1023,6 @@ export type Consent = {
 };
 
 /**
- * ContentMessageSignupSimulation
- */
-export enum ContentMessageSignupSimulation {
-    COLLECTIVE = 'COLLECTIVE',
-    BOOKSTORE = 'BOOKSTORE',
-    UNUSUAL_APE_CODE = 'UNUSUAL_APE_CODE'
-}
-
-/**
  * CookieConsentRequest
  */
 export type CookieConsentRequest = {
@@ -3846,14 +3837,6 @@ export type HistoryStep = {
 };
 
 /**
- * ImportanceLevelMessageSignupSimulation
- */
-export enum ImportanceLevelMessageSignupSimulation {
-    INFO = 'INFO',
-    ALERT = 'ALERT'
-}
-
-/**
  * IndividualRevenue
  */
 export type IndividualRevenue = {
@@ -6157,12 +6140,29 @@ export type ShortHighlightResponseModel = {
 };
 
 /**
- * SignupSimulationMessages
+ * SignupSimulationMessageLevel
  */
-export type SignupSimulationMessages = {
-    content: ContentMessageSignupSimulation;
-    importanceLevel: ImportanceLevelMessageSignupSimulation;
+export enum SignupSimulationMessageLevel {
+    INFO = 'INFO',
+    ALERT = 'ALERT'
+}
+
+/**
+ * SignupSimulationMessageModel
+ */
+export type SignupSimulationMessageModel = {
+    level: SignupSimulationMessageLevel;
+    type: SignupSimulationMessageType;
 };
+
+/**
+ * SignupSimulationMessageType
+ */
+export enum SignupSimulationMessageType {
+    COLLECTIVE = 'COLLECTIVE',
+    BOOKSTORE = 'BOOKSTORE',
+    UNUSUAL_APE_CODE = 'UNUSUAL_APE_CODE'
+}
 
 /**
  * SignupSimulationPayload
@@ -6197,7 +6197,7 @@ export type SignupSimulationResponseModel = {
     /**
      * Messages
      */
-    messages: Array<SignupSimulationMessages>;
+    messages: Array<SignupSimulationMessageModel>;
 };
 
 /**

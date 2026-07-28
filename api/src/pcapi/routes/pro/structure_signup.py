@@ -136,19 +136,25 @@ def simulate_signup(
 
     try:
         data = offerers_api.find_structure_data(body.siret)
-        # TODO: what do we do in this case?
-        if data.ape_code is None:
-            raise ApiErrors()
-
-        response = structure_signup_api.get_signup_documents(
-            ape_code=data.ape_code,
-            legal_category_code=data.legal_category_code,
-            targets=body.targets,
-            activity=offerers_models.Activity[body.activity.name],
-        )
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
+    # TODO: what do we do in this case?
+    if data.ape_code is None:
+        raise ApiErrors()
+
+    eligibility_documents, messages = structure_signup_api.get_signup_documents_and_messages(
+        ape_code=data.ape_code,
+        legal_category_code=data.legal_category_code,
+        is_open_to_public=body.isOpenToPublic,
+        targets=body.targets,
+        activity=offerers_models.Activity[body.activity.name],
+    )
+
     return sirene_serializers.SignupSimulationResponseModel(
-        eligibility_documents=response["documents"], messages=response["messages"]
+        eligibility_documents=eligibility_documents,
+        messages=[
+            sirene_serializers.SignupSimulationMessageModel(level=message.level, type=message.type)
+            for message in messages
+        ],
     )

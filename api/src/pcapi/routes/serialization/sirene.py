@@ -8,17 +8,17 @@ import pcapi.core.offerers.structure_signup_api as structure_signup_api
 from pcapi.routes.serialization import HttpBodyModel
 
 
-CleanSiret = typing.Annotated[str, pydantic_v2.BeforeValidator(lambda value: value.replace(" ", ""))]
+CleanSiret = typing.Annotated[str, pydantic_v2.AfterValidator(lambda value: value.replace(" ", ""))]
 
 
-class SignupSimulationMessages(HttpBodyModel):
-    importance_level: structure_signup_api.ImportanceLevelMessageSignupSimulation
-    content: structure_signup_api.ContentMessageSignupSimulation
+class SignupSimulationMessageModel(HttpBodyModel):
+    level: structure_signup_api.SignupSimulationMessageLevel
+    type: structure_signup_api.SignupSimulationMessageType
 
 
 class SignupSimulationResponseModel(HttpBodyModel):
     eligibility_documents: list[structure_signup_api.EligibilityDocument]
-    messages: list[SignupSimulationMessages]
+    messages: list[SignupSimulationMessageModel]
 
 
 class SignupSimulationPayload(HttpBodyModel):

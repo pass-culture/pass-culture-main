@@ -3,10 +3,7 @@
 
 import type { BannerLink } from 'design-system/Banner/Banner'
 
-import {
-  ContentMessageSignupSimulation,
-  EligibilityDocument,
-} from 'apiClient/v1'
+import { EligibilityDocument, SignupSimulationMessageType } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
 
 export const getDocumentCardContent = (
@@ -75,10 +72,10 @@ export const getDocumentCardContent = (
 }
 
 export const getAlertContent = (
-  message: ContentMessageSignupSimulation
+  message: SignupSimulationMessageType
 ): { title: string; description?: JSX.Element; link?: BannerLink[] } => {
   switch (message) {
-    case ContentMessageSignupSimulation.COLLECTIVE:
+    case SignupSimulationMessageType.COLLECTIVE:
       return {
         title:
           'En plus de ces éléments, il vous sera demandé lors de votre dépôt de dossier ADAGE : ',
@@ -92,13 +89,13 @@ export const getAlertContent = (
         ),
       }
 
-    case ContentMessageSignupSimulation.BOOKSTORE:
+    case SignupSimulationMessageType.BOOKSTORE:
       return {
         title:
           "Vous devez obligatoirement disposer d'un point de vente physique pour proposer vos offres de livres sur le pass Culture.",
       }
 
-    case ContentMessageSignupSimulation.UNUSUAL_APE_CODE:
+    case SignupSimulationMessageType.UNUSUAL_APE_CODE:
       return {
         title:
           'Attention, seules certaines activités fixées par arrêté sont éligibles au pass Culture',

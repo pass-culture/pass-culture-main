@@ -1,46 +1,34 @@
 import pytest
-import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.structure_signup_api import ContentMessageSignupSimulation
+from pcapi.core.offerers.structure_signup_api import BOOKSTORE_MESSAGE
+from pcapi.core.offerers.structure_signup_api import COLLECTIVE_MESSAGE
+from pcapi.core.offerers.structure_signup_api import UNUSUAL_APE_CODE_MESSAGE
 from pcapi.core.offerers.structure_signup_api import EligibilityDocument
-from pcapi.core.offerers.structure_signup_api import ImportanceLevelMessageSignupSimulation
-from pcapi.core.offerers.structure_signup_api import get_signup_documents
+from pcapi.core.offerers.structure_signup_api import get_signup_documents_and_messages
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SignupSimulationTest:
-    collective_message = {
-        "importance_level": ImportanceLevelMessageSignupSimulation.INFO,
-        "content": ContentMessageSignupSimulation.COLLECTIVE,
-    }
-    unusual_ape_code = {
-        "importance_level": ImportanceLevelMessageSignupSimulation.ALERT,
-        "content": ContentMessageSignupSimulation.UNUSUAL_APE_CODE,
-    }
-    bookstore_message = {
-        "importance_level": ImportanceLevelMessageSignupSimulation.ALERT,
-        "content": ContentMessageSignupSimulation.BOOKSTORE,
-    }
-
-    def test_eligibility_documents_standard_case(self, db_session: sa_orm.Session):
+    def test_eligibility_documents_standard_case(self):
         """structure non-entreprise-individuelle qui n'est ni un libraire ni un studio d'enregistrement, qui ne fait pas d'accompagnement"""
-        response = get_signup_documents(
+        response = get_signup_documents_and_messages(
             ape_code="AAAAA",
             legal_category_code="BBBBB",
             isOpenToPublic=True,
             targets=[offerers_models.OffererTarget.INDIVIDUAL],
             activity=offerers_models.Activity.OTHER,
         )
+
         assert response["documents"] == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
         ]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "8411Z",
@@ -93,24 +81,25 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_state_mandated_structures(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """Commune ou collectivité territoriale (Administration publique générale) OU Enseignement supérieur OU Etablissement Public National"""
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
         assert response["documents"] == [EligibilityDocument.WEBSITE]
+
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
+            assert COLLECTIVE_MESSAGE in response["messages"]
         else:
             assert not response["messages"]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "5920Z",
@@ -133,16 +122,17 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_sound_studio(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """studio d'enregistrement"""
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
+
         assert response["documents"] == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
@@ -151,13 +141,14 @@ class SignupSimulationTest:
             EligibilityDocument.SOUND_DESIGN_DIPLOMAS,
             EligibilityDocument.SOUND_STUDIO_PICTURES,
         ]
+
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
+            assert COLLECTIVE_MESSAGE in response["messages"]
         else:
             assert not response["messages"]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "5920Z",
@@ -186,16 +177,17 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_uninomial_sound_studio(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """studio d'enregistrement uninomial"""
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
+
         assert response["documents"] == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
@@ -205,13 +197,14 @@ class SignupSimulationTest:
             EligibilityDocument.SOUND_STUDIO_PICTURES,
             EligibilityDocument.CRIMINAL_RECORDS,
         ]
+
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
+            assert COLLECTIVE_MESSAGE in response["messages"]
         else:
             assert not response["messages"]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "94000",
@@ -246,29 +239,33 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_bookstore(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """point de vente de livres"""
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
+
         assert response["documents"] == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
             EligibilityDocument.SHOP_PICTURES,
         ]
+
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
-        if apeCode.startswith("44"):
-            assert self.unusual_ape_code in response["messages"]
-        assert self.bookstore_message in response["messages"]
+            assert COLLECTIVE_MESSAGE in response["messages"]
+
+        if ape_code.startswith("44"):
+            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+
+        assert BOOKSTORE_MESSAGE in response["messages"]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "5810Z",
@@ -315,16 +312,17 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_uninomial_bookstore(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """point de vente de livres"""
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
+
         if activity == offerers_models.Activity.OTHER:
             assert response["documents"] == [
                 EligibilityDocument.WEBSITE,
@@ -344,13 +342,15 @@ class SignupSimulationTest:
             ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
-        if apeCode.startswith("44"):
-            assert self.unusual_ape_code in response["messages"]
-        assert self.bookstore_message in response["messages"]
+            assert COLLECTIVE_MESSAGE in response["messages"]
+
+        if ape_code.startswith("44"):
+            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+
+        assert BOOKSTORE_MESSAGE in response["messages"]
 
     @pytest.mark.parametrize(
-        "apeCode, legal_category_code, activity, targets",
+        "ape_code, legal_category_code, activity, targets",
         [
             (
                 "1810Z",
@@ -379,15 +379,16 @@ class SignupSimulationTest:
         ],
     )
     def test_eligibility_documents_uninomial_company(
-        self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
+        self, ape_code: str, legal_category_code: str, activity: str, targets: list[str]
     ):
-        response = get_signup_documents(
-            ape_code=apeCode,
+        response = get_signup_documents_and_messages(
+            ape_code=ape_code,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
+
         assert response["documents"] == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
@@ -395,10 +396,12 @@ class SignupSimulationTest:
             EligibilityDocument.DIPLOMAS,
             EligibilityDocument.CRIMINAL_RECORDS,
         ]
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert self.collective_message in response["messages"]
 
-        if apeCode.startswith("17"):
-            assert self.unusual_ape_code in response["messages"]
-        if targets != [offerers_models.OffererTarget.COLLECTIVE] and apeCode.startswith("18"):
+        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+            assert COLLECTIVE_MESSAGE in response["messages"]
+
+        if ape_code.startswith("17"):
+            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+
+        if targets != [offerers_models.OffererTarget.COLLECTIVE] and ape_code.startswith("18"):
             assert not response["messages"]
