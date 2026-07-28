@@ -4,7 +4,9 @@ from werkzeug.exceptions import BadRequest
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Product
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
+from pcapi.core.users.young_status import Eligible
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -87,8 +89,12 @@ def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> 
         bookings_repository.get_bookings_from_deposit(current_user.deposit.id) if current_user.deposit else []
     )
     booked_offers = [booking.stock.offer.id for booking in user_bookings]
+    booked_stocks = [booking.stock.id for booking in user_bookings]
     user_domains_credit = users_api.get_domains_credit(current_user, user_bookings)
     remaining_credit = user_domains_credit.all.remaining if user_domains_credit else 0
+    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
+    young_status = user_subscription_state.young_status
+
     raw_screenings = [
         serializers.RawScreening(
             beginning_datetime=row["beginning_datetime"],
@@ -100,9 +106,11 @@ def get_movie_screenings_for_user(query: serializers.MovieScreeningsRequest) -> 
             stock_id=row["stock_id"],
             thumb_url=row["thumb_url"],
             user_data=serializers.ScreeningUserData(
-                has_already_booked_offer=row["offer_id"] in booked_offers,
+                has_already_booked_offer=row["stock_id"] in booked_stocks,
+                has_already_booked_related_offer=row["offer_id"] in booked_offers,
                 has_enough_credit=row["price"] <= remaining_credit,
                 is_allowed_to_book=current_user.is_beneficiary,
+                subscription_status=young_status.subscription_status if type(young_status) is Eligible else None,
             ),
             venue_data=serializers.ScreeningVenueData(
                 city=row["city"],
@@ -172,8 +180,11 @@ def get_movie_screenings_by_venue_for_user(
         bookings_repository.get_bookings_from_deposit(current_user.deposit.id) if current_user.deposit else []
     )
     booked_offers = [booking.stock.offer.id for booking in user_bookings]
+    booked_stocks = [booking.stock.id for booking in user_bookings]
     user_domains_credit = users_api.get_domains_credit(current_user, user_bookings)
     remaining_credit = user_domains_credit.all.remaining if user_domains_credit else 0
+    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
+    young_status = user_subscription_state.young_status
 
     raw_screenings = [
         serializers.RawScreening(
@@ -192,9 +203,11 @@ def get_movie_screenings_by_venue_for_user(
                 movie_name=offer.name,
             ),
             user_data=serializers.ScreeningUserData(
-                has_already_booked_offer=offer.id in booked_offers,
+                has_already_booked_offer=stock.id in booked_stocks,
+                has_already_booked_related_offer=offer.id in booked_offers,
                 has_enough_credit=stock.price <= remaining_credit,
                 is_allowed_to_book=current_user.is_beneficiary,
+                subscription_status=young_status.subscription_status if type(young_status) is Eligible else None,
             ),
         )
         for offer in offers

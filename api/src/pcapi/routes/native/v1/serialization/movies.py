@@ -12,6 +12,7 @@ import pydantic as pydantic_v2
 
 from pcapi.core.categories.genres.movie import get_movie_label
 from pcapi.core.providers import api as providers_api
+from pcapi.core.users.young_status import SubscriptionStatus
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.utils import date as date_utils
@@ -57,8 +58,12 @@ class Bookability(enum.Enum):
     STOCK_IS_SOLD_OUT = "STOCK_IS_SOLD_OUT"
     USER_CANNOT_BOOK = "USER_CANNOT_BOOK"
     USER_HAS_ALREADY_BOOKED_OFFER = "USER_HAS_ALREADY_BOOKED_OFFER"
+    USER_HAS_ALREADY_BOOKED_RELATED_OFFER = "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
     USER_HAS_INSUFFICIENT_CREDIT = "USER_HAS_INSUFFICIENT_CREDIT"
     AUTHENTICATION_REQUIRED = "AUTHENTICATION_REQUIRED"
+    FINISH_SUBSCRIPTION_REQUIRED = "FINISH_SUBSCRIPTION_REQUIRED"
+    USER_APPLICATION_STILL_PROCESSING = "USER_APPLICATION_STILL_PROCESSING"
+    USER_HAS_APPLICATION_ERROR = "USER_HAS_APPLICATION_ERROR"
 
 
 @dataclass
@@ -82,8 +87,10 @@ class ScreeningVenueData:
 @dataclass
 class ScreeningUserData:
     has_already_booked_offer: bool
+    has_already_booked_related_offer: bool
     has_enough_credit: bool
     is_allowed_to_book: bool
+    subscription_status: SubscriptionStatus | None
 
 
 @dataclass
@@ -116,8 +123,16 @@ class Screening(HttpBodyModel):
         if raw_screening.is_sold_out:
             return Bookability.STOCK_IS_SOLD_OUT
         if raw_screening.user_data:
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_TO_COMPLETE_SUBSCRIPTION:
+                return Bookability.FINISH_SUBSCRIPTION_REQUIRED
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_SUBSCRIPTION_PENDING:
+                return Bookability.USER_APPLICATION_STILL_PROCESSING
+            if raw_screening.user_data.subscription_status == SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES:
+                return Bookability.USER_HAS_APPLICATION_ERROR
             if raw_screening.user_data.has_already_booked_offer:
                 return Bookability.USER_HAS_ALREADY_BOOKED_OFFER
+            if raw_screening.user_data.has_already_booked_related_offer:
+                return Bookability.USER_HAS_ALREADY_BOOKED_RELATED_OFFER
             if not raw_screening.user_data.is_allowed_to_book:
                 return Bookability.USER_CANNOT_BOOK
             if not raw_screening.user_data.has_enough_credit:
