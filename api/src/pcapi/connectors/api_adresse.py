@@ -365,7 +365,7 @@ class ApiAdresseBackend(BaseBackend):
     ) -> requests.Response:
         methods = {"GET": requests.get, "POST": requests.post}
         try:
-            response = methods[method](url, params=params, files=files, timeout=timeout)  # type: ignore[operator]
+            response = methods[method](url, params=params, files=files, timeout=timeout)
         except requests.exceptions.RequestException as exc:
             msg = "Network error on Adresse API"
             logger.exception(msg, extra={"exc": exc, "url": url})

@@ -52,6 +52,7 @@ class ExternalApiBookingNotificationRequest(ExternalEventBookingRequest):
 class ExternalApiBookingNotificationTaskPayload(BaseModelV2):
     data: ExternalApiBookingNotificationRequest
     signature: str
+    ed25519_signature: str | None = None
     notificationUrl: str
 
 
@@ -63,12 +64,16 @@ class ExternalApiBookingNotificationTaskPayload(BaseModelV2):
 def external_api_booking_notification_task(
     payload: ExternalApiBookingNotificationTaskPayload,
 ) -> None:
+    headers = {"Content-Type": "application/json"}
+    if payload.signature:
+        headers["PassCulture-Signature"] = payload.signature
+    if payload.ed25519_signature:
+        headers["PassCulture-ed25519-Signature"] = payload.ed25519_signature
     try:
         response = requests.post(
             payload.notificationUrl,
             json=payload.data.model_dump_json(),
-            hmac=payload.signature,
-            headers={"Content-Type": "application/json"},
+            headers=headers,
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
