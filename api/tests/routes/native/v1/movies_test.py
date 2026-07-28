@@ -4,6 +4,7 @@ from datetime import time
 from datetime import timedelta
 
 import pytest
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.bookings.factories import BookingFactory
@@ -11,8 +12,11 @@ from pcapi.core.categories import subcategories
 from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.utils import date as date_utils
 
 
@@ -655,6 +659,41 @@ class MovieCalendarForUserTest:
             offer__venue__offererAddress__label="Cinéma Parisien",
             beginningDatetime=datetime.now() + timedelta(hours=1),
         )
+        offers_factories.StockFactory(offer=stock.offer)
+        _user_booking = BookingFactory(user=user, stock=stock)
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        params = {
+            "allocineId": "12345",
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": today,
+            "to": tomorrow,
+        }
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/movie/calendar/me", params=params)
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
+
+    def test_when_user_has_already_booked_related_offer(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
         another_stock = offers_factories.StockFactory(offer=stock.offer)
         _user_booking = BookingFactory(user=user, stock=another_stock)
         today = date.today()
@@ -678,7 +717,150 @@ class MovieCalendarForUserTest:
             assert response.status_code == 200
 
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
-        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"
+
+    def test_bookability_finish_subscription_required(self, client):
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18))
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                "/native/v1/movie/calendar/me",
+                params={
+                    "allocineId": "12345",
+                    "latitude": 48.85,
+                    "longitude": 2.35,
+                    "from": today,
+                    "to": today + timedelta(days=1),
+                },
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "FINISH_SUBSCRIPTION_REQUIRED"
+
+    def test_bookability_user_application_still_processing(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.PENDING,
+            type=subscription_models.FraudCheckType.DMS,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+        )
+
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action_history
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                "/native/v1/movie/calendar/me",
+                params={
+                    "allocineId": "12345",
+                    "latitude": 48.85,
+                    "longitude": 2.35,
+                    "from": today,
+                    "to": today + timedelta(days=1),
+                },
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_APPLICATION_STILL_PROCESSING"
+
+    def test_bookability_user_application_has_error(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
+            type=subscription_models.FraudCheckType.UBBLE,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+        )
+
+        product = offers_factories.ProductFactory(extraData={"allocineId": 12345})
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # product
+        expected_num_queries += 1  # product stocks
+        expected_num_queries += 1  # screenings
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action_history
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                "/native/v1/movie/calendar/me",
+                params={
+                    "allocineId": "12345",
+                    "latitude": 48.85,
+                    "longitude": 2.35,
+                    "from": today,
+                    "to": today + timedelta(days=1),
+                },
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_APPLICATION_ERROR"
 
 
 class VenueMovieCalendarTest:
@@ -1068,3 +1250,170 @@ class VenueMovieCalendarForUserTest:
         today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_CANNOT_BOOK"
         assert today_screenings[0]["nextScreening"]["bookability"] == "USER_CANNOT_BOOK"
+
+    def test_bookability_finish_subscription_required(self, client):
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18))
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        today_screenings = [e["screenings"] for e in calendar if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "FINISH_SUBSCRIPTION_REQUIRED"
+
+    def test_bookability_user_application_still_processing(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.PENDING,
+            type=subscription_models.FraudCheckType.DMS,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+        )
+
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action_history
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_APPLICATION_STILL_PROCESSING"
+
+    def test_bookability_user_application_has_error(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
+            type=subscription_models.FraudCheckType.UBBLE,
+            user=user,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+        )
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # beneficiary_fraud_review
+        expected_num_queries += 1  # beneficiary_fraud_check
+        expected_num_queries += 1  # action_history
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_APPLICATION_ERROR"
+
+    def test_bookability_user_has_already_booked_offer(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        offers_factories.EventStockFactory(offer=stock.offer)
+        _user_booking = BookingFactory(user=user, stock=stock)
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_OFFER"
+
+    def test_bookability_user_has_already_booked_related_offer(self, client):
+        user = users_factories.BeneficiaryFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        another_stock = offers_factories.EventStockFactory(offer=stock.offer)
+        _user_booking = BookingFactory(user=user, stock=another_stock)
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # offers
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # user bookings
+        client.with_token(user)
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar/me", params={"from": today, "to": tomorrow}
+            )
+            assert response.status_code == 200
+
+        today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
+        assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_ALREADY_BOOKED_RELATED_OFFER"

@@ -699,8 +699,12 @@
                     "STOCK_IS_SOLD_OUT",
                     "USER_CANNOT_BOOK",
                     "USER_HAS_ALREADY_BOOKED_OFFER",
+                    "USER_HAS_ALREADY_BOOKED_RELATED_OFFER",
                     "USER_HAS_INSUFFICIENT_CREDIT",
-                    "AUTHENTICATION_REQUIRED"
+                    "AUTHENTICATION_REQUIRED",
+                    "FINISH_SUBSCRIPTION_REQUIRED",
+                    "USER_APPLICATION_STILL_PROCESSING",
+                    "USER_HAS_APPLICATION_ERROR"
                 ],
                 "title": "Bookability",
                 "type": "string"
