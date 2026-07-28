@@ -1,4 +1,5 @@
 import logging
+import typing
 from dataclasses import dataclass
 from enum import Enum
 
@@ -11,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 API_URL = "https://api.batch.com"
+
+# Increase timeout instead of default 10s for DELETE operations which sometimes fail (Read timeout)
+DELETE_TIMEOUT = 30
 
 
 @dataclass
@@ -37,15 +41,20 @@ class BatchBackend:
         api_name: str,
         payload: dict | list | None = None,
         can_be_asynchronously_retried: bool = False,
+        **kwargs: typing.Any,
     ) -> None:
         try:
             if method == "POST":
                 response = requests.post(
-                    url, disable_synchronous_retry=can_be_asynchronously_retried, json=payload, headers=self.headers
+                    url,
+                    disable_synchronous_retry=can_be_asynchronously_retried,
+                    json=payload,
+                    headers=self.headers,
+                    **kwargs,
                 )
             elif method == "DELETE":
                 response = requests.delete(
-                    url, disable_synchronous_retry=can_be_asynchronously_retried, headers=self.headers
+                    url, disable_synchronous_retry=can_be_asynchronously_retried, headers=self.headers, **kwargs
                 )
             else:
                 raise ValueError(f"Invalid method {method}")
@@ -154,6 +163,7 @@ class BatchBackend:
                 url,
                 api_name="delete_user_attributes",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
+                timeout=DELETE_TIMEOUT,
             )
 
     def track_event(
