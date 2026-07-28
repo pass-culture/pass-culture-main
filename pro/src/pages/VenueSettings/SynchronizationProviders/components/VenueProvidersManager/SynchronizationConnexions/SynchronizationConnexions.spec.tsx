@@ -1,7 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import type { VenueProviderResponse } from '@/apiClient/v1'
+import {
+  type GetVenueResponseModel,
+  type VenueProviderResponse,
+  VenueState,
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -25,11 +29,12 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderSynchronizationConnexions = async (
-  venueProviders: VenueProviderResponse[] = []
+  venueProviders: VenueProviderResponse[] = [],
+  venueOverrides: Partial<GetVenueResponseModel> = {}
 ) => {
   renderWithProviders(
     <SynchronizationConnexions
-      venue={defaultGetVenue}
+      venue={{ ...defaultGetVenue, ...venueOverrides }}
       venueProviders={venueProviders}
     />
   )
@@ -91,6 +96,16 @@ describe('SynchronizationConnexions', () => {
       expect(
         screen.queryByText(/Vous pouvez donner les accès à vos logiciels tiers/)
       ).not.toBeInTheDocument()
+    })
+
+    it('should disable the button when the venue is closed', async () => {
+      await renderSynchronizationConnexions([defaultVenueProvider], {
+        state: VenueState.CLOSED,
+      })
+
+      expect(
+        await screen.findByRole('button', { name: 'Sélectionner un logiciel' })
+      ).toBeDisabled()
     })
   })
 })

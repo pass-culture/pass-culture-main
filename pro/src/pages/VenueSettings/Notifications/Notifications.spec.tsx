@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { type GetVenueResponseModel, VenueState } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -101,5 +101,11 @@ describe('Notifications', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
     expect(emailField).toHaveValue('initial@test.com')
+  })
+
+  it('should disable the email field when the venue is closed', async () => {
+    renderNotifications({ state: VenueState.CLOSED })
+
+    expect(await screen.findByLabelText('Adresse email')).toBeDisabled()
   })
 })
