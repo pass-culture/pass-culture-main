@@ -134,4 +134,16 @@ describe('translate', () => {
       )
     ).toEqual(expect.objectContaining({ nameOrIsbn: 'remboursements' }))
   })
+
+  it("should not return filters that can't be empty", () => {
+    expect(
+      translateQueryParamsToApiParams(
+        {
+          nom: 'en-attente',
+          status: '',
+        },
+        Audience.COLLECTIVE
+      )
+    ).toEqual(expect.objectContaining({ name: 'en-attente' }))
+  })
 })
