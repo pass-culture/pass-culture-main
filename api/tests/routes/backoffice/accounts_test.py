@@ -1669,24 +1669,55 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert history_rows[8]["Auteur"] == legit_user.full_name
 
     @pytest.mark.parametrize(
-        "bo_role, expected_bonus_code, has_bonus_details",
+        "fraud_check_factory, fraud_check_type, reason_code, expected_reason_text",
         [
-            (perm_models.Roles.SUPPORT_N2, subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH.value, True),
-            (perm_models.Roles.SUPPORT_N1, "", False),
-            (perm_models.Roles.LECTURE_SEULE, "", False),
+            (
+                subscription_factories.QFBonusCreditFraudCheckFactory,
+                subscription_models.FraudCheckType.QF_BONUS_CREDIT.value,
+                subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH,
+                "Quotient familial trop élevé",
+            ),
+            (
+                subscription_factories.AAHBonusCreditFraudCheckFactory,
+                subscription_models.FraudCheckType.AAH_BONUS_CREDIT.value,
+                subscription_models.FraudReasonCode.NOT_RECIPIENT,
+                "Non allocataire",
+            ),
+            (
+                subscription_factories.AEEHBonusCreditFraudCheckFactory,
+                subscription_models.FraudCheckType.AEEH_BONUS_CREDIT.value,
+                subscription_models.FraudReasonCode.NOT_RECIPIENT,
+                "Non allocataire",
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "bo_role, has_bonus_details",
+        [
+            (perm_models.Roles.SUPPORT_N2, True),
+            (perm_models.Roles.SUPPORT_N1, False),
+            (perm_models.Roles.LECTURE_SEULE, False),
         ],
     )
     def test_get_public_account_subscription_table(
-        self, legit_user, client, bo_role, expected_bonus_code, has_bonus_details
+        self,
+        legit_user,
+        client,
+        bo_role,
+        has_bonus_details,
+        fraud_check_factory,
+        fraud_check_type,
+        reason_code,
+        expected_reason_text,
     ):
         bo_user = users_factories.AdminFactory()
         backoffice_api.upsert_roles(bo_user, [bo_role])
 
         user = users_factories.BeneficiaryFactory(dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=40))
-        subscription_factories.QFBonusCreditFraudCheckFactory(
+        fraud_check_factory(
             user=user,
             status=subscription_models.FraudCheckStatus.KO,
-            reasonCodes=[subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH],
+            reasonCodes=[reason_code],
         )
         user_id = user.id
 
@@ -1699,10 +1730,10 @@ class GetPublicAccountTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data, parent_class="registration-workflow-tab-pane")
         assert len(rows) == 5
 
-        assert rows[0]["Type"] == subscription_models.FraudCheckType.QF_BONUS_CREDIT.value
+        assert rows[0]["Type"] == fraud_check_type
         assert rows[0]["Statut"] == "KO"
         assert rows[0]["Explication"] == ""
-        assert rows[0]["Code d'erreur"] == expected_bonus_code
+        assert rows[0]["Code d'erreur"] == (expected_reason_text if has_bonus_details else "")
         assert bool(rows[0]["Détails techniques"]) is has_bonus_details
 
         assert rows[2]["Type"] == subscription_models.FraudCheckType.UBBLE.value
@@ -3081,14 +3112,16 @@ class GetPublicAccountHistoryTest:
         assert history[1] == suspension_action
 
     @pytest.mark.parametrize(
-        "bo_role, expected_bonus_reason",
+        "bo_role, expected_qf_bonus_reason, expected_disability_bonus_reason",
         [
-            (perm_models.Roles.SUPPORT_N2, subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD.value),
-            (perm_models.Roles.SUPPORT_N1, "raison confidentielle"),
-            (perm_models.Roles.SUPPORT_PRO, "raison confidentielle"),
+            (perm_models.Roles.SUPPORT_N2, "Non associé au foyer fiscal", "Identification impossible"),
+            (perm_models.Roles.SUPPORT_N1, "raison confidentielle", "raison confidentielle"),
+            (perm_models.Roles.SUPPORT_PRO, "raison confidentielle", "raison confidentielle"),
         ],
     )
-    def test_history_contains_fraud_checks(self, roles_with_permissions, bo_role, expected_bonus_reason):
+    def test_history_contains_fraud_checks(
+        self, roles_with_permissions, bo_role, expected_qf_bonus_reason, expected_disability_bonus_reason
+    ):
         bo_user = users_factories.AdminFactory()
         backoffice_api.upsert_roles(bo_user, [bo_role])
 
@@ -3097,56 +3130,82 @@ class GetPublicAccountHistoryTest:
         dms = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.DMS,
-            dateCreated=now - datetime.timedelta(minutes=20),
+            dateCreated=now - datetime.timedelta(minutes=30),
         )
         phone = subscription_factories.PhoneValidationFraudCheckFactory(
             user=user,
-            dateCreated=now - datetime.timedelta(minutes=15),
+            dateCreated=now - datetime.timedelta(minutes=25),
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED],
         )
         honor = subscription_factories.HonorStatementFraudCheckFactory(
             user=user,
-            dateCreated=now - datetime.timedelta(minutes=10),
+            dateCreated=now - datetime.timedelta(minutes=20),
             status=None,
         )
-        bonus = subscription_factories.QFBonusCreditFraudCheckFactory(
+        qf_bonus = subscription_factories.QFBonusCreditFraudCheckFactory(
+            user=user,
+            dateCreated=now - datetime.timedelta(minutes=15),
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
+        )
+        aah_bonus = subscription_factories.AAHBonusCreditFraudCheckFactory(
+            user=user,
+            dateCreated=now - datetime.timedelta(minutes=10),
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.PERSON_NOT_FOUND],
+        )
+        aeeh_bonus = subscription_factories.AEEHBonusCreditFraudCheckFactory(
             user=user,
             dateCreated=now - datetime.timedelta(minutes=5),
             status=subscription_models.FraudCheckStatus.KO,
-            reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
+            reasonCodes=[subscription_models.FraudReasonCode.PERSON_NOT_FOUND],
         )
 
         history = get_public_account_history(user, bo_user)
 
-        assert len(history) >= 4
+        assert len(history) >= 6
 
-        assert history[3].actionType == "Étape de vérification"
-        assert history[3].actionDate == dms.dateCreated
+        assert history[5].actionType == "Étape de vérification"
+        assert history[5].actionDate == dms.dateCreated
         assert (
-            history[3].comment
+            history[5].comment
             == f"{dms.type.value}, {dms.eligibilityType.value}, {dms.status.value}, raison inconnue, {dms.reason}"
         )
 
-        assert history[2].actionType == "Étape de vérification"
-        assert history[2].actionDate == phone.dateCreated
+        assert history[4].actionType == "Étape de vérification"
+        assert history[4].actionDate == phone.dateCreated
         assert (
-            history[2].comment
+            history[4].comment
             == f"{phone.type.value}, {phone.eligibilityType.value}, {phone.status.value}, {subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED.value}, {phone.reason}"
         )
 
-        assert history[1].actionType == "Étape de vérification"
-        assert history[1].actionDate == honor.dateCreated
+        assert history[3].actionType == "Étape de vérification"
+        assert history[3].actionDate == honor.dateCreated
         assert (
-            history[1].comment
+            history[3].comment
             == f"{honor.type.value}, {honor.eligibilityType.value}, Statut inconnu, raison inconnue, {honor.reason}"
         )
 
+        assert history[2].actionType == "Étape de vérification"
+        assert history[2].actionDate == qf_bonus.dateCreated
+        assert (
+            history[2].comment
+            == f"{qf_bonus.type.value}, {honor.eligibilityType.value}, ko, {expected_qf_bonus_reason}, {qf_bonus.reason}"
+        )
+
+        assert history[1].actionType == "Étape de vérification"
+        assert history[1].actionDate == aah_bonus.dateCreated
+        assert (
+            history[1].comment
+            == f"{aah_bonus.type.value}, {honor.eligibilityType.value}, ko, {expected_disability_bonus_reason}, {aah_bonus.reason}"
+        )
+
         assert history[0].actionType == "Étape de vérification"
-        assert history[0].actionDate == bonus.dateCreated
+        assert history[0].actionDate == aeeh_bonus.dateCreated
         assert (
             history[0].comment
-            == f"{bonus.type.value}, {honor.eligibilityType.value}, ko, {expected_bonus_reason}, {bonus.reason}"
+            == f"{aeeh_bonus.type.value}, {honor.eligibilityType.value}, ko, {expected_disability_bonus_reason}, {aeeh_bonus.reason}"
         )
 
     def test_history_contains_reviews(self):
