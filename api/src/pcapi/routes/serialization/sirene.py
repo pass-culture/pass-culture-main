@@ -17,7 +17,7 @@ class SignupSimulationMessages(HttpBodyModel):
 
 
 class SignupSimulationResponseModel(HttpBodyModel):
-    eligibility_documents: list[structure_signup_api.EligibilityDocuments]
+    eligibility_documents: list[structure_signup_api.EligibilityDocument]
     messages: list[SignupSimulationMessages]
 
 

@@ -156,7 +156,7 @@ export const Validation = (): JSX.Element | undefined => {
           token,
         },
       }
-      const createdOfferer = await api.structureSignup(data)
+      const createdOfferer = await api.signupStructure(data)
 
       cleanSignupJourneyStorage()
 

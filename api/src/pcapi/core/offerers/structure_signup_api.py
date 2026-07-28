@@ -3,6 +3,7 @@ import enum
 import pcapi.core.offerers.models as offerers_models
 
 
+# structures with an APE not in this list will have an additional warning
 APE_CODE_WHITELIST = (
     "18",
     "23",
@@ -23,7 +24,7 @@ APE_CODE_WHITELIST = (
 )
 
 
-class EligibilityDocuments(enum.Enum):
+class EligibilityDocument(enum.Enum):
     WEBSITE = "WEBSITE"
     RESUME_OR_PORTFOLIO = "RESUME_OR_PORTFOLIO"
     DIPLOMAS = "DIPLOMAS"
@@ -46,18 +47,19 @@ class ContentMessageSignupSimulation(enum.Enum):
     UNUSUAL_APE_CODE = "UNUSUAL_APE_CODE"
 
 
-def create_signup_documents_list(
-    apeCode: str,
+def get_signup_documents(
+    ape_code: str,
     legal_category_code: str,
-    isOpenToPublic: bool,
     targets: list[offerers_models.OffererTarget],
     activity: offerers_models.Activity,
 ) -> dict[str, list]:
     """Determine les documents necessaires a l homologation ainsi que les warnings a afficher en fonction du code ape, de la categorie jusridique et de l activite d'un siret"""
-    # Everyone has to provide a website
-    eligibility_documents = [EligibilityDocuments.WEBSITE]
+
+    # everyone must provide a website
+    eligibility_documents = [EligibilityDocument.WEBSITE]
     messages = []
-    # if target is educationnal/school/collective offers, display warning for adage inscription
+
+    # if target is collective, display warning for adage inscription
     if offerers_models.OffererTarget.COLLECTIVE in targets:
         messages.append(
             {
@@ -66,13 +68,14 @@ def create_signup_documents_list(
             }
         )
     # Commune ou collectivité territoriale (Administration publique générale) OR Enseignement supérieur OR Etablissement Public National
-    if apeCode == "8411Z" or apeCode == "8542Z" or legal_category_code.startswith("73"):
+    if ape_code == "8411Z" or ape_code == "8542Z" or legal_category_code.startswith("73"):
         return {"documents": eligibility_documents, "messages": messages}
 
     # from here, all structures need to provide an offer description
-    eligibility_documents.append(EligibilityDocuments.DESCRIPTION)
+    eligibility_documents.append(EligibilityDocument.DESCRIPTION)
+
     # from here, display warning if ape code is unusual
-    if not apeCode.startswith(APE_CODE_WHITELIST):
+    if not ape_code.startswith(APE_CODE_WHITELIST):
         messages.append(
             {
                 "importance_level": ImportanceLevelMessageSignupSimulation.ALERT,
@@ -81,21 +84,21 @@ def create_signup_documents_list(
         )
 
     # studio d'enregistrement
-    if apeCode == "5920Z":
+    if ape_code == "5920Z":
         eligibility_documents += [
-            EligibilityDocuments.RESUME_OR_PORTFOLIO,
-            EligibilityDocuments.PRICES,
-            EligibilityDocuments.SOUND_DESIGN_DIPLOMAS,
-            EligibilityDocuments.SOUND_STUDIO_PICTURES,
+            EligibilityDocument.RESUME_OR_PORTFOLIO,
+            EligibilityDocument.PRICES,
+            EligibilityDocument.SOUND_DESIGN_DIPLOMAS,
+            EligibilityDocument.SOUND_STUDIO_PICTURES,
         ]
         # studio d'enregistrement en entreprise uninomiale
         if legal_category_code.startswith("1"):
-            eligibility_documents.append(EligibilityDocuments.CRIMINAL_RECORDS)
+            eligibility_documents.append(EligibilityDocument.CRIMINAL_RECORDS)
         return {"documents": eligibility_documents, "messages": messages}
 
     # entreprise "uninomiale"
     if legal_category_code.startswith("1"):
-        eligibility_documents += [EligibilityDocuments.RESUME_OR_PORTFOLIO, EligibilityDocuments.DIPLOMAS]
+        eligibility_documents += [EligibilityDocument.RESUME_OR_PORTFOLIO, EligibilityDocument.DIPLOMAS]
         # Entreprise uninomiale en contact avec des mineurs
         if activity in [
             offerers_models.Activity.ARTISTIC_PRACTICE,
@@ -108,15 +111,15 @@ def create_signup_documents_list(
             offerers_models.Activity.OTHER,
         ]:
             eligibility_documents += [
-                EligibilityDocuments.CRIMINAL_RECORDS,
+                EligibilityDocument.CRIMINAL_RECORDS,
             ]
 
     # point de vente de livres
-    if apeCode.startswith("581") or activity.value in (
+    if ape_code.startswith("581") or activity.value in (
         offerers_models.Activity.BOOKSTORE.value,
         offerers_models.Activity.PUBLISHING_HOUSE.value,
     ):
-        eligibility_documents.append(EligibilityDocuments.SHOP_PICTURES)
+        eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
         messages.append(
             {
                 "importance_level": ImportanceLevelMessageSignupSimulation.ALERT,

@@ -65,7 +65,7 @@ export const SimulatorResults = (): JSX.Element => {
         return
       }
 
-      const simulationResponse = await api.signupSimulation({
+      const simulationResponse = await api.simulateSignup({
         body: {
           activity: finalActivity,
           isOpenToPublic: finalOpenToPublic === 'true',

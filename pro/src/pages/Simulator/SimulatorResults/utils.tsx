@@ -5,51 +5,51 @@ import type { BannerLink } from 'design-system/Banner/Banner'
 
 import {
   ContentMessageSignupSimulation,
-  EligibilityDocuments,
+  EligibilityDocument,
 } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
 
 export const getDocumentCardContent = (
-  document: EligibilityDocuments
+  document: EligibilityDocument
 ): { title: string; description: string | JSX.Element } => {
   switch (document) {
-    case EligibilityDocuments.WEBSITE:
+    case EligibilityDocument.WEBSITE:
       return {
         title: 'Un site internet ou page de réseau social',
         description: 'Pour présenter votre activité',
       }
-    case EligibilityDocuments.RESUME_OR_PORTFOLIO:
+    case EligibilityDocument.RESUME_OR_PORTFOLIO:
       return {
         title: 'CV et/ou portfolio',
         description: 'Pour présenter vos expériences passées',
       }
-    case EligibilityDocuments.DIPLOMAS:
+    case EligibilityDocument.DIPLOMAS:
       return {
         title: 'Diplôme(s)',
         description: 'Lié(s) à l’activité que vous souhaitez proposer',
       }
-    case EligibilityDocuments.SOUND_DESIGN_DIPLOMAS:
+    case EligibilityDocument.SOUND_DESIGN_DIPLOMAS:
       return {
         title: 'Diplôme et/ou attestation dans les métiers du son',
         description: 'Pour valider votre expertise technique',
       }
-    case EligibilityDocuments.PRICES:
+    case EligibilityDocument.PRICES:
       return {
         title: 'Grille tarifaire',
         description: 'Document listant le prix standard de vos prestations',
       }
-    case EligibilityDocuments.SHOP_PICTURES:
+    case EligibilityDocument.SHOP_PICTURES:
       return {
         title: 'Photos du point de vente',
         description: 'Inclure des rayons de livres et la devanture',
       }
-    case EligibilityDocuments.SOUND_STUDIO_PICTURES:
+    case EligibilityDocument.SOUND_STUDIO_PICTURES:
       return {
         title: 'Photos des locaux et du matériel',
         description:
           'Photos intérieures et extérieures avec le nom de l’enseigne visible',
       }
-    case EligibilityDocuments.CRIMINAL_RECORDS:
+    case EligibilityDocument.CRIMINAL_RECORDS:
       return {
         title: 'Extrait de casier judiciaire (bulletin n°3)',
         description: (
@@ -66,7 +66,7 @@ export const getDocumentCardContent = (
           </>
         ),
       }
-    case EligibilityDocuments.DESCRIPTION:
+    case EligibilityDocument.DESCRIPTION:
       return {
         title: 'Une description détaillée de vos offres',
         description: 'Pour expliquer ce que vous souhaitez proposer',

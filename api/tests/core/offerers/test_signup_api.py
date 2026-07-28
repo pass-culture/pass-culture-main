@@ -3,9 +3,9 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.structure_signup_api import ContentMessageSignupSimulation
-from pcapi.core.offerers.structure_signup_api import EligibilityDocuments
+from pcapi.core.offerers.structure_signup_api import EligibilityDocument
 from pcapi.core.offerers.structure_signup_api import ImportanceLevelMessageSignupSimulation
-from pcapi.core.offerers.structure_signup_api import create_signup_documents_list
+from pcapi.core.offerers.structure_signup_api import get_signup_documents
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -27,16 +27,16 @@ class SignupSimulationTest:
 
     def test_eligibility_documents_standard_case(self, db_session: sa_orm.Session):
         """structure non-entreprise-individuelle qui n'est ni un libraire ni un studio d'enregistrement, qui ne fait pas d'accompagnement"""
-        response = create_signup_documents_list(
-            apeCode="AAAAA",
+        response = get_signup_documents(
+            ape_code="AAAAA",
             legal_category_code="BBBBB",
             isOpenToPublic=True,
             targets=[offerers_models.OffererTarget.INDIVIDUAL],
             activity=offerers_models.Activity.OTHER,
         )
         assert response["documents"] == [
-            EligibilityDocuments.WEBSITE,
-            EligibilityDocuments.DESCRIPTION,
+            EligibilityDocument.WEBSITE,
+            EligibilityDocument.DESCRIPTION,
         ]
 
     @pytest.mark.parametrize(
@@ -96,14 +96,14 @@ class SignupSimulationTest:
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """Commune ou collectivité territoriale (Administration publique générale) OU Enseignement supérieur OU Etablissement Public National"""
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
-        assert response["documents"] == [EligibilityDocuments.WEBSITE]
+        assert response["documents"] == [EligibilityDocument.WEBSITE]
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
             assert self.collective_message in response["messages"]
         else:
@@ -136,20 +136,20 @@ class SignupSimulationTest:
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """studio d'enregistrement"""
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
         assert response["documents"] == [
-            EligibilityDocuments.WEBSITE,
-            EligibilityDocuments.DESCRIPTION,
-            EligibilityDocuments.RESUME_OR_PORTFOLIO,
-            EligibilityDocuments.PRICES,
-            EligibilityDocuments.SOUND_DESIGN_DIPLOMAS,
-            EligibilityDocuments.SOUND_STUDIO_PICTURES,
+            EligibilityDocument.WEBSITE,
+            EligibilityDocument.DESCRIPTION,
+            EligibilityDocument.RESUME_OR_PORTFOLIO,
+            EligibilityDocument.PRICES,
+            EligibilityDocument.SOUND_DESIGN_DIPLOMAS,
+            EligibilityDocument.SOUND_STUDIO_PICTURES,
         ]
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
             assert self.collective_message in response["messages"]
@@ -189,21 +189,21 @@ class SignupSimulationTest:
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """studio d'enregistrement uninomial"""
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
         assert response["documents"] == [
-            EligibilityDocuments.WEBSITE,
-            EligibilityDocuments.DESCRIPTION,
-            EligibilityDocuments.RESUME_OR_PORTFOLIO,
-            EligibilityDocuments.PRICES,
-            EligibilityDocuments.SOUND_DESIGN_DIPLOMAS,
-            EligibilityDocuments.SOUND_STUDIO_PICTURES,
-            EligibilityDocuments.CRIMINAL_RECORDS,
+            EligibilityDocument.WEBSITE,
+            EligibilityDocument.DESCRIPTION,
+            EligibilityDocument.RESUME_OR_PORTFOLIO,
+            EligibilityDocument.PRICES,
+            EligibilityDocument.SOUND_DESIGN_DIPLOMAS,
+            EligibilityDocument.SOUND_STUDIO_PICTURES,
+            EligibilityDocument.CRIMINAL_RECORDS,
         ]
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
             assert self.collective_message in response["messages"]
@@ -249,17 +249,17 @@ class SignupSimulationTest:
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """point de vente de livres"""
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
         assert response["documents"] == [
-            EligibilityDocuments.WEBSITE,
-            EligibilityDocuments.DESCRIPTION,
-            EligibilityDocuments.SHOP_PICTURES,
+            EligibilityDocument.WEBSITE,
+            EligibilityDocument.DESCRIPTION,
+            EligibilityDocument.SHOP_PICTURES,
         ]
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
             assert self.collective_message in response["messages"]
@@ -318,8 +318,8 @@ class SignupSimulationTest:
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
         """point de vente de livres"""
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
@@ -327,20 +327,20 @@ class SignupSimulationTest:
         )
         if activity == offerers_models.Activity.OTHER:
             assert response["documents"] == [
-                EligibilityDocuments.WEBSITE,
-                EligibilityDocuments.DESCRIPTION,
-                EligibilityDocuments.RESUME_OR_PORTFOLIO,
-                EligibilityDocuments.DIPLOMAS,
-                EligibilityDocuments.CRIMINAL_RECORDS,
-                EligibilityDocuments.SHOP_PICTURES,
+                EligibilityDocument.WEBSITE,
+                EligibilityDocument.DESCRIPTION,
+                EligibilityDocument.RESUME_OR_PORTFOLIO,
+                EligibilityDocument.DIPLOMAS,
+                EligibilityDocument.CRIMINAL_RECORDS,
+                EligibilityDocument.SHOP_PICTURES,
             ]
         else:
             assert response["documents"] == [
-                EligibilityDocuments.WEBSITE,
-                EligibilityDocuments.DESCRIPTION,
-                EligibilityDocuments.RESUME_OR_PORTFOLIO,
-                EligibilityDocuments.DIPLOMAS,
-                EligibilityDocuments.SHOP_PICTURES,
+                EligibilityDocument.WEBSITE,
+                EligibilityDocument.DESCRIPTION,
+                EligibilityDocument.RESUME_OR_PORTFOLIO,
+                EligibilityDocument.DIPLOMAS,
+                EligibilityDocument.SHOP_PICTURES,
             ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
@@ -381,19 +381,19 @@ class SignupSimulationTest:
     def test_eligibility_documents_uninomial_company(
         self, db_session: sa_orm.Session, apeCode: str, legal_category_code: str, activity: str, targets: list[str]
     ):
-        response = create_signup_documents_list(
-            apeCode=apeCode,
+        response = get_signup_documents(
+            ape_code=apeCode,
             legal_category_code=legal_category_code,
             isOpenToPublic=True,
             targets=targets,
             activity=activity,
         )
         assert response["documents"] == [
-            EligibilityDocuments.WEBSITE,
-            EligibilityDocuments.DESCRIPTION,
-            EligibilityDocuments.RESUME_OR_PORTFOLIO,
-            EligibilityDocuments.DIPLOMAS,
-            EligibilityDocuments.CRIMINAL_RECORDS,
+            EligibilityDocument.WEBSITE,
+            EligibilityDocument.DESCRIPTION,
+            EligibilityDocument.RESUME_OR_PORTFOLIO,
+            EligibilityDocument.DIPLOMAS,
+            EligibilityDocument.CRIMINAL_RECORDS,
         ]
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
             assert self.collective_message in response["messages"]

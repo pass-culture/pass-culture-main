@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
     response_model=public_information_serialize.PostOffererResponseModel,
     api=blueprint.pro_private_schema,
 )
-def structure_signup(
+def signup_structure(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> public_information_serialize.PostOffererResponseModel:
     try:
@@ -122,32 +122,33 @@ def check_structure(search_input: str) -> None:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
 
-@private_api.route("/structure/signup_simulation", methods=["POST"])
+@private_api.route("/structure/simulate-signup", methods=["POST"])
 @atomic()
 @spectree_serialize(
     response_model=sirene_serializers.SignupSimulationResponseModel,
     api=blueprint.pro_private_schema,
 )
-def signup_simulation(
+def simulate_signup(
     body: sirene_serializers.SignupSimulationPayload,
 ) -> sirene_serializers.SignupSimulationResponseModel:
     if not api_entreprise.is_valid_siret(body.siret):
         raise sirene_exceptions.InvalidFormatException()
+
     try:
         data = offerers_api.find_structure_data(body.siret)
-        assert data.ape_code
-        response = structure_signup_api.create_signup_documents_list(
-            data.ape_code,
-            data.legal_category_code,
-            body.isOpenToPublic,
-            body.targets,
-            offerers_models.Activity[body.activity.name],
+        # TODO: what do we do in this case?
+        if data.ape_code is None:
+            raise ApiErrors()
+
+        response = structure_signup_api.get_signup_documents(
+            ape_code=data.ape_code,
+            legal_category_code=data.legal_category_code,
+            targets=body.targets,
+            activity=offerers_models.Activity[body.activity.name],
         )
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
-    except ApiErrors:
-        raise ApiErrors({"global": ["Une erreur est survenue lors de la simulation d'inscription."]})
-    reponse = sirene_serializers.SignupSimulationResponseModel(
+
+    return sirene_serializers.SignupSimulationResponseModel(
         eligibility_documents=response["documents"], messages=response["messages"]
     )
-    return reponse

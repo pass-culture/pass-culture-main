@@ -26,8 +26,8 @@ class Returns200Test:
         }
         response = client.post("/structure/signup_simulation", json=data)
         assert response.json["eligibilityDocuments"] == [
-            structure_signup.EligibilityDocuments.WEBSITE.name,
-            structure_signup.EligibilityDocuments.DESCRIPTION.name,
+            structure_signup.EligibilityDocument.WEBSITE.name,
+            structure_signup.EligibilityDocument.DESCRIPTION.name,
         ]
         assert response.json["messages"] == []
 
@@ -41,11 +41,11 @@ class Returns200Test:
         }
         response = client.post("/structure/signup_simulation", json=data)
         assert response.json["eligibilityDocuments"] == [
-            structure_signup.EligibilityDocuments.WEBSITE.name,
-            structure_signup.EligibilityDocuments.DESCRIPTION.name,
-            structure_signup.EligibilityDocuments.RESUME_OR_PORTFOLIO.name,
-            structure_signup.EligibilityDocuments.DIPLOMAS.name,
-            structure_signup.EligibilityDocuments.SHOP_PICTURES.name,
+            structure_signup.EligibilityDocument.WEBSITE.name,
+            structure_signup.EligibilityDocument.DESCRIPTION.name,
+            structure_signup.EligibilityDocument.RESUME_OR_PORTFOLIO.name,
+            structure_signup.EligibilityDocument.DIPLOMAS.name,
+            structure_signup.EligibilityDocument.SHOP_PICTURES.name,
         ]
         assert self.bookstore_message in response.json["messages"]
         assert self.unusual_ape_code in response.json["messages"]

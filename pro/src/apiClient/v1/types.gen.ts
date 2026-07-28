@@ -1661,9 +1661,9 @@ export type EducationalRedactorResponseModel = {
 export type EducationalRedactors = Array<EducationalRedactor>;
 
 /**
- * EligibilityDocuments
+ * EligibilityDocument
  */
-export enum EligibilityDocuments {
+export enum EligibilityDocument {
     WEBSITE = 'WEBSITE',
     RESUME_OR_PORTFOLIO = 'RESUME_OR_PORTFOLIO',
     DIPLOMAS = 'DIPLOMAS',
@@ -6193,7 +6193,7 @@ export type SignupSimulationResponseModel = {
     /**
      * Eligibilitydocuments
      */
-    eligibilityDocuments: Array<EligibilityDocuments>;
+    eligibilityDocuments: Array<EligibilityDocument>;
     /**
      * Messages
      */
@@ -10313,14 +10313,14 @@ export type getStructureSearchBySearchInputResponses = {
 
 export type getStructureSearchBySearchInputResponse = getStructureSearchBySearchInputResponses[keyof getStructureSearchBySearchInputResponses];
 
-export type postStructureSignupSimulationData = {
+export type postStructureSimulateSignupData = {
     body: SignupSimulationPayload;
     path?: never;
     query?: never;
-    url: '/structure/signup_simulation';
+    url: '/structure/simulate-signup';
 };
 
-export type postStructureSignupSimulationErrors = {
+export type postStructureSimulateSignupErrors = {
     /**
      * Forbidden
      */
@@ -10331,16 +10331,16 @@ export type postStructureSignupSimulationErrors = {
     422: ValidationError;
 };
 
-export type postStructureSignupSimulationError = postStructureSignupSimulationErrors[keyof postStructureSignupSimulationErrors];
+export type postStructureSimulateSignupError = postStructureSimulateSignupErrors[keyof postStructureSimulateSignupErrors];
 
-export type postStructureSignupSimulationResponses = {
+export type postStructureSimulateSignupResponses = {
     /**
      * OK
      */
     200: SignupSimulationResponseModel;
 };
 
-export type postStructureSignupSimulationResponse = postStructureSignupSimulationResponses[keyof postStructureSignupSimulationResponses];
+export type postStructureSimulateSignupResponse = postStructureSimulateSignupResponses[keyof postStructureSimulateSignupResponses];
 
 export type postUsersAnonymizeData = {
     body?: never;

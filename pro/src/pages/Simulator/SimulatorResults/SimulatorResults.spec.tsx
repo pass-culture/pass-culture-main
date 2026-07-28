@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   ActivityNotOpenToPublic,
   ContentMessageSignupSimulation,
-  EligibilityDocuments,
+  EligibilityDocument,
   ImportanceLevelMessageSignupSimulation,
 } from 'apiClient/v1'
 import { SimulatorResults } from './SimulatorResults'
@@ -45,8 +45,8 @@ describe('<SimulatorResults />', () => {
   })
 
   it('should render with document and message', async () => {
-    vi.spyOn(api, 'signupSimulation').mockResolvedValueOnce({
-      eligibilityDocuments: [EligibilityDocuments.PRICES],
+    vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
+      eligibilityDocuments: [EligibilityDocument.PRICES],
       messages: [
         {
           content: ContentMessageSignupSimulation.BOOKSTORE,
