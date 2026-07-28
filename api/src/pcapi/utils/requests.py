@@ -133,6 +133,7 @@ def _wrapper(
 
 def get(
     url: str,
+    *,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
     record_metrics: bool = False,
@@ -152,7 +153,9 @@ def get(
 
 def post(
     url: str,
+    *,
     hmac: str | None = None,
+    ed25519_signature: str | None = None,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
     record_metrics: bool = False,
@@ -161,6 +164,8 @@ def post(
 ) -> requests.Response:
     if hmac:
         kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
+    if ed25519_signature:
+        kwargs.setdefault("headers", {}).update({"PassCulture-ed25519-Signature": ed25519_signature})
     return request(
         "POST",
         url,
@@ -174,6 +179,7 @@ def post(
 
 def put(
     url: str,
+    *,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
     record_metrics: bool = False,
@@ -193,6 +199,7 @@ def put(
 
 def delete(
     url: str,
+    *,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
     record_metrics: bool = False,
@@ -213,6 +220,7 @@ def delete(
 def request(
     method: str,
     url: str,
+    *,
     disable_synchronous_retry: bool = False,
     log_info: bool = True,
     record_metrics: bool = False,
