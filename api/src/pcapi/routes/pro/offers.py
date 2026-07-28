@@ -172,6 +172,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         date=query.date,
         time=query.time,
         price_category_id=query.price_category_id,
+        only_future_stocks=query.only_future_stocks,
         order_by=query.order_by,
         order_by_desc=query.order_by_desc,
         venue=offer.venue,

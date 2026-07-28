@@ -62,7 +62,7 @@ export const IndividualOfferSummaryScreen = ({
   const { syncVenue } = useSyncVenueCache()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
@@ -77,12 +77,13 @@ export const IndividualOfferSummaryScreen = ({
           page: 1,
           order_by_desc: false,
           order_by: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+          only_future_stocks: true,
         },
       })
   )
 
-  const firstBookingLimitDatetime =
-    getStocksQuery.data?.stocks[0].bookingLimitDatetime ?? ''
+  const nextBookingLimitDatetime =
+    getStocksQuery.data?.stocks[0]?.bookingLimitDatetime ?? ''
 
   const onPublish = async (values: EventPublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
@@ -145,7 +146,7 @@ export const IndividualOfferSummaryScreen = ({
     mode: 'onBlur',
     resolver: yupResolver(validationSchema),
     context: {
-      firstBookingLimitDatetime,
+      nextBookingLimitDatetime,
     },
   })
 
@@ -202,7 +203,7 @@ export const IndividualOfferSummaryScreen = ({
             description="Vérifiez les informations ci-dessous avant de publier votre offre."
           />
 
-          <EventPublicationForm maxDate={firstBookingLimitDatetime} />
+          <EventPublicationForm maxDate={nextBookingLimitDatetime} />
         </div>
 
         <SummaryLayout>

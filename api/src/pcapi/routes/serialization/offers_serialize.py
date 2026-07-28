@@ -620,6 +620,8 @@ class StocksQueryModel(BaseModel):
     order_by_desc: bool = False
     page: int = Field(1, ge=1)
     stocks_limit_per_page: int = offers_repository.LIMIT_STOCKS_PER_PAGE
+    # based on booking_limit_datetime, if True, will only return stocks whose booking limit datetime are after today
+    only_future_stocks: bool = False
 
 
 class DeleteStockListBody(BaseModel):
