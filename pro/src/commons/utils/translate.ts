@@ -11,6 +11,7 @@ const translateObjectKeysAndValues = (
   translationsMap: Record<string, string>
 ) => {
   const nonTranlatedKeys = new Set(['nom-ou-isbn', 'nameOrIsbn', 'nom', 'name']) //  These keys should not have their values translated since it's user inputs
+  const keyShouldNotHaveEmptyValue = ['status']
 
   const result: Record<string, string> = {}
   Object.entries(originalObject).forEach(([originalKey, originalValue]) => {
@@ -22,10 +23,16 @@ const translateObjectKeysAndValues = (
         ? translationsMap[originalValue]
         : originalValue
 
-    result[translatedKey] = Array.isArray(translatedValue)
-      ? translatedValue.map((value) => translationsMap[value])
-      : translatedValue
+    if (
+      !keyShouldNotHaveEmptyValue.includes(translatedKey) ||
+      translatedValue
+    ) {
+      result[translatedKey] = Array.isArray(translatedValue)
+        ? translatedValue.map((value) => translationsMap[value])
+        : translatedValue
+    }
   })
+
   return result
 }
 
