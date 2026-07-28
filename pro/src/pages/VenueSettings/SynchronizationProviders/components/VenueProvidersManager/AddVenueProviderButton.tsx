@@ -41,7 +41,7 @@ export const AddVenueProviderButton = ({
       api.getProvidersByVenue({ path: { venue_id: venueIdParam } })
   )
   const providers = providersQuery.data
-
+  const isVenueClosed = withVenueHelpers(venue).isClosed
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(
@@ -114,7 +114,7 @@ export const AddVenueProviderButton = ({
       icon={fullMoreIcon}
       ref={selectSoftwareButtonRef}
       label="Sélectionner un logiciel"
-      disabled={withVenueHelpers(venue).isClosed}
+      disabled={isVenueClosed}
     />
   )
 
@@ -128,6 +128,7 @@ export const AddVenueProviderButton = ({
         options={providersOptions}
         value={String(selectedProviderId)}
         ref={providerSelectRef}
+        disabled={isVenueClosed}
       />
 
       {selectedProvider && (

@@ -5,6 +5,8 @@ import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
 import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ActivityDetails } from './ActivityDetails'
@@ -25,6 +27,8 @@ const renderActivityDetails = ({
   activity?: string | null
   culturalDomains?: string[]
 } = {}) => {
+  const user = sharedCurrentUserFactory()
+
   const Wrapper = () => {
     const form = useForm<FormValues>({
       defaultValues: {
@@ -40,7 +44,15 @@ const renderActivityDetails = ({
       </FormProvider>
     )
   }
-  return renderWithProviders(<Wrapper />)
+  return renderWithProviders(<Wrapper />, {
+    user,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedPartnerVenue: defaultGetVenue,
+      },
+    },
+  })
 }
 
 describe('ActivityDetails', () => {

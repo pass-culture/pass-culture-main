@@ -20,6 +20,7 @@ import {
 
 const Notifications = () => {
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+  const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
 
   const form = useForm<VenueSettingsNotificationsFormValues>({
     defaultValues: {
@@ -71,6 +72,7 @@ const Notifications = () => {
                   type="email"
                   description="Format : email@exemple.com"
                   error={errors.bookingEmail?.message}
+                  disabled={isVenueClosed}
                 />
               </FormLayout.Row>
               <FormLayout.Row>
@@ -82,9 +84,7 @@ const Notifications = () => {
             </FormLayout.Section>
           </FormLayout>
           <VenueFormActionBar
-            disableFormSubmission={
-              withVenueHelpers(selectedPartnerVenue).isClosed
-            }
+            disableFormSubmission={isVenueClosed}
             isSubmitting={isSubmitting}
             onCancel={onCancel}
           />

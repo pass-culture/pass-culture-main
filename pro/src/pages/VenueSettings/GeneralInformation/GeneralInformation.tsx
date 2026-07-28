@@ -43,6 +43,7 @@ import { SiretOrCommentFields } from './components/SiretOrCommentFields/SiretOrC
 
 const GeneralInformation = () => {
   const venue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosedVenue = withVenueHelpers(venue).isClosed
   const addressFieldKey = useKey()
 
   const formContext: VenueSettingsFormContext = {
@@ -209,6 +210,7 @@ const GeneralInformation = () => {
                 <SiretOrCommentFields
                   formContext={formContext}
                   onAddressUpdate={addressFieldKey.update}
+                  disabled={isClosedVenue}
                 />
               </FormLayout.Row>
 
@@ -226,6 +228,7 @@ const GeneralInformation = () => {
                   {...register('publicName')}
                   label="Nom public"
                   description="À remplir si différent de la raison sociale. En le remplissant, c'est ce dernier qui sera visible du public."
+                  disabled={isClosedVenue}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -235,6 +238,7 @@ const GeneralInformation = () => {
                 <OpenToPublicToggle
                   onChange={toggleOpenToPublic}
                   isOpenToPublic={isOpenToPublic}
+                  disabled={isClosedVenue}
                 />
               </FormLayout.Row>
               {isOpenToPublic === 'true' && (
@@ -242,7 +246,7 @@ const GeneralInformation = () => {
                   key={addressFieldKey.value}
                   description="Indiquez ici l'adresse où vous recevez votre public."
                   addressRegister={register('addressAutocomplete')}
-                  disabled={disabled}
+                  disabled={disabled || isClosedVenue}
                   onAddressChosen={onAddressSelect}
                   error={errors.addressAutocomplete?.message}
                   renderManual={() => <AddressManual />}
@@ -265,7 +269,7 @@ const GeneralInformation = () => {
             )}
           </FormLayout>
           <VenueFormActionBar
-            disableFormSubmission={withVenueHelpers(venue).isClosed}
+            disableFormSubmission={isClosedVenue}
             isSubmitting={isSubmitting}
             onCancel={onCancel}
           />

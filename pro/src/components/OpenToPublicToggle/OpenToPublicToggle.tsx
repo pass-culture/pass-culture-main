@@ -6,6 +6,7 @@ export interface OpenToPublicToggleProps {
   error?: string
   showDescription?: boolean
   overrideDescription?: string
+  disabled?: boolean
 }
 
 export const OpenToPublicToggle = ({
@@ -13,6 +14,7 @@ export const OpenToPublicToggle = ({
   isOpenToPublic,
   error,
   overrideDescription,
+  disabled = false,
 }: OpenToPublicToggleProps): JSX.Element => {
   return (
     <RadioButtonGroup
@@ -37,6 +39,7 @@ export const OpenToPublicToggle = ({
       ]}
       onChange={onChange}
       checkedOption={isOpenToPublic?.toString()}
+      disabled={disabled}
     />
   )
 }

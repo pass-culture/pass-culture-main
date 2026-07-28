@@ -24,11 +24,13 @@ import type {
 export type SiretOrCommentFieldsProps = {
   onAddressUpdate: () => void
   formContext: VenueSettingsFormContext
+  disabled?: boolean
 }
 
 export const SiretOrCommentFields = ({
   onAddressUpdate,
   formContext,
+  disabled = false,
 }: SiretOrCommentFieldsProps): JSX.Element => {
   const {
     setValue,
@@ -102,6 +104,7 @@ export const SiretOrCommentFields = ({
         onChange={(e) => onRidetChange(e.target.value)}
         error={errors.siret?.message}
         required
+        disabled={disabled}
       />
     ) : (
       <TextInput
@@ -110,6 +113,7 @@ export const SiretOrCommentFields = ({
         onChange={async (e) => await onSiretChange(e.target.value)}
         error={errors.siret?.message}
         required
+        disabled={disabled}
       />
     )
   }
@@ -126,6 +130,7 @@ export const SiretOrCommentFields = ({
             maxLength={500}
             initialRows={6}
             error={errors.comment?.message}
+            disabled={disabled}
           />
         ) : (
           siretOrRidet()

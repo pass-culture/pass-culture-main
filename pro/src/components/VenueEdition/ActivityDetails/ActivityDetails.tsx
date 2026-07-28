@@ -5,10 +5,13 @@ import type {
   ActivityOpenToPublic,
 } from '@/apiClient/v1'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ActivityNotOpenToPublicMap } from '@/commons/mappings/ActivityNotOpenToPublic'
 import { ActivityOpenToPublicMap } from '@/commons/mappings/ActivityOpenToPublic'
 import { toSelectOptions } from '@/commons/mappings/helpers'
+import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -23,6 +26,8 @@ interface ActivityFormFields {
 }
 
 export const ActivityDetails = () => {
+  const venue = useAppSelector(ensureSelectedPartnerVenue)
+  const isClosedVenue = withVenueHelpers(venue).isClosed
   const { register, watch, setValue, formState } =
     useFormContext<ActivityFormFields>()
 
@@ -59,6 +64,7 @@ export const ActivityDetails = () => {
           label="Activité principale"
           error={formState.errors.activity?.message}
           required
+          disabled={isClosedVenue}
         />
       </FormLayout.Row>
       {!isLoadingEducationalDomains && (
@@ -89,6 +95,7 @@ export const ActivityDetails = () => {
                   )
                 : "Sélectionnez un ou plusieurs domaines d'activité"
             }
+            disabled={isClosedVenue}
           />
         </FormLayout.Row>
       )}

@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { DisplayableActivity } from '@/apiClient/v1'
+import { DisplayableActivity, VenueState } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -32,10 +32,12 @@ vi.mock('@/commons/core/Venue/utils/getSiretData', () => ({
 vi.mock('@/components/AddressFields/AddressFields', () => ({
   AddressFields: ({
     addressRegister,
+    disabled,
     onManualChange,
     onAddressChosen,
   }: {
     addressRegister: UseFormRegisterReturn
+    disabled?: boolean
     onManualChange: () => void
     onAddressChosen: (
       data: import('@/apiClient/adresse/types').AdresseData
@@ -43,12 +45,17 @@ vi.mock('@/components/AddressFields/AddressFields', () => ({
   }) => (
     <div data-testid="address-fields">
       <label htmlFor="addressAutocomplete">Adresse postale</label>
-      <input id="addressAutocomplete" {...addressRegister} />
-      <button type="button" onClick={onManualChange}>
+      <input
+        id="addressAutocomplete"
+        {...addressRegister}
+        disabled={disabled}
+      />
+      <button type="button" onClick={onManualChange} disabled={disabled}>
         Entrer l'adresse manuellement
       </button>
       <button
         type="button"
+        disabled={disabled}
         onClick={() => {
           const addressData = {
             address: '1 Rue de la Paix',
@@ -144,6 +151,24 @@ describe('GeneralInformation', () => {
     expect(
       await screen.findByRole('button', { name: /Enregistrer/ })
     ).toBeInTheDocument()
+  })
+
+  it('should disable form fields when the venue is closed', async () => {
+    renderGeneralInformation({
+      id: 1,
+      state: VenueState.CLOSED,
+      isOpenToPublic: true,
+      siret: '12345678901234',
+    })
+
+    expect(await screen.findByLabelText(/SIRET de la structure/)).toBeDisabled()
+    expect(screen.getByLabelText('Nom public')).toBeDisabled()
+    expect(screen.getByLabelText('Adresse postale')).toBeDisabled()
+    expect(screen.getByRole('radio', { name: /Oui/ })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: /Non/ })).toBeDisabled()
+    expect(
+      screen.getByRole('combobox', { name: /Activité principale/ })
+    ).toBeDisabled()
   })
 
   describe('when the venue is not virtual', () => {
