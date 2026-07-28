@@ -11,11 +11,13 @@ type DateAndTimePickerProps = {
   timeName: string
   disabled?: boolean
   minDate?: Date
+  maxDate?: Date
 }
 
 export const DateAndTimePicker = ({
   dateName,
   timeName,
+  maxDate,
   disabled = false,
   minDate = new Date(),
 }: DateAndTimePickerProps) => {
@@ -30,6 +32,7 @@ export const DateAndTimePicker = ({
       <DatePicker
         label="Date"
         minDate={minDate}
+        maxDate={maxDate}
         className={styles['date-picker']}
         disabled={disabled}
         required

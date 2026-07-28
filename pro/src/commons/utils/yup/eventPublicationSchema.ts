@@ -27,6 +27,28 @@ function isDateTimeInFuture(value: string, date: string) {
   return !isBefore(dateTime, now) || !isSameDay(dateTime, now)
 }
 
+function isDateBeforeFirstBookingLimit(
+  value: string,
+  firstBookingLimitDatetime: string
+) {
+  if (!value || !isDateValid(value)) {
+    return false
+  }
+  if (!firstBookingLimitDatetime) {
+    return true
+  }
+  const dateTime = buildDateTime(value, '00:00')
+  const firstBookingLimitDate = new Date(firstBookingLimitDatetime)
+  if (Number.isNaN(firstBookingLimitDate.getTime())) {
+    return true
+  }
+
+  return (
+    isBefore(dateTime, firstBookingLimitDate) ||
+    isSameDay(dateTime, firstBookingLimitDate)
+  )
+}
+
 export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
   schema.when('publicationMode', {
     is: (publicationMode: string) => publicationMode === 'later',
@@ -42,6 +64,15 @@ export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
           'is-within-two-years',
           'Veuillez indiquer une date dans les 2 ans à venir',
           isDateWithinTwoYears
+        )
+        .test(
+          'is-before-first-booking-limit',
+          'Veuillez indiquer une date avant la date limite de réservation',
+          (value, context) =>
+            isDateBeforeFirstBookingLimit(
+              value,
+              context.options.context?.firstBookingLimitDatetime
+            )
         ),
   })
 
@@ -74,6 +105,15 @@ export const bookingAllowedDateValidationSchema = (schema: yup.StringSchema) =>
           'is-within-two-years',
           'Veuillez indiquer une date dans les 2 ans à venir',
           isDateWithinTwoYears
+        )
+        .test(
+          'is-before-first-booking-limit',
+          'Veuillez indiquer une date avant la date limite de réservation',
+          (value, context) =>
+            isDateBeforeFirstBookingLimit(
+              value,
+              context.options.context?.firstBookingLimitDatetime
+            )
         ),
   })
 

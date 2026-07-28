@@ -4,7 +4,10 @@ import { addDays, subDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
@@ -19,6 +22,7 @@ import type { EventPublicationEditionFormValues } from './OfferPublicationEditio
 vi.mock('@/apiClient/api', () => ({
   api: {
     patchOffer: vi.fn(),
+    getStocks: vi.fn(),
   },
 }))
 
@@ -39,6 +43,14 @@ function renderOfferPublicationEdition(props: OfferPublicationEditionProps) {
 }
 
 describe('OfferPublicationEdition', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [getOfferStockFactory()],
+      totalStockCount: 1,
+      editedStockCount: 1,
+    })
+  })
+
   it('should open and close the drawer', async () => {
     renderOfferPublicationEdition({ offer: getIndividualOfferFactory() })
 
@@ -78,7 +90,9 @@ describe('OfferPublicationEdition', () => {
       screen.getByRole('button', { name: 'Gérer la publication' })
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Enregistrer' })
+    )
 
     expect(
       screen.getByText(

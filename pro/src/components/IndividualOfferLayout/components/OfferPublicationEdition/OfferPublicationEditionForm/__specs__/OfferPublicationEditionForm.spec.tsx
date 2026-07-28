@@ -1,7 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import { addDays } from 'date-fns'
 
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { api } from '@/apiClient/api'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
@@ -21,6 +25,14 @@ function renderOfferPublicationEditionForm(
 }
 
 describe('OfferPublicationEditionForm', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [getOfferStockFactory()],
+      totalStockCount: 1,
+      editedStockCount: 1,
+    })
+  })
+
   it('should render the form', async () => {
     renderOfferPublicationEditionForm({
       offer: getIndividualOfferFactory({
@@ -35,10 +47,10 @@ describe('OfferPublicationEditionForm', () => {
     })
 
     expect(
-      screen.getAllByRole('group', {
+      await screen.findAllByRole('group', {
         name: /Quand votre offre doit-elle être publiée/,
-      })[0]
-    ).toBeInTheDocument()
+      })
+    ).toHaveLength(1)
 
     await waitFor(() => {
       expect(

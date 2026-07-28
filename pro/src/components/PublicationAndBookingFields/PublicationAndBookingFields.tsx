@@ -7,10 +7,12 @@ import styles from './PublicationAndBookingFields.module.css'
 
 type PublicationAndBookingFieldsProps = {
   disabled?: boolean
+  maxDate?: string
 }
 
 export const PublicationAndBookingFields = ({
   disabled = false,
+  maxDate,
 }: PublicationAndBookingFieldsProps) => {
   const { watch, setValue } = useFormContext()
 
@@ -39,6 +41,7 @@ export const PublicationAndBookingFields = ({
                   dateName="publicationDate"
                   timeName="publicationTime"
                   disabled={disabled}
+                  maxDate={maxDate ? new Date(maxDate) : undefined}
                 />
               ),
             },
@@ -68,6 +71,7 @@ export const PublicationAndBookingFields = ({
                   dateName="bookingAllowedDate"
                   timeName="bookingAllowedTime"
                   disabled={disabled}
+                  maxDate={maxDate ? new Date(maxDate) : undefined}
                 />
               ),
             },
