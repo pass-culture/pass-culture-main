@@ -10,7 +10,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Button } from '@/design-system/Button/Button'
 import {
@@ -134,9 +133,13 @@ const generateNavItems = (): NavItem[] => {
 }
 
 export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
-
   const [isOpen, setIsOpen] = useState(false)
+  const selectedPartnerVenue = useAppSelector(
+    (state) => state.user.selectedPartnerVenue
+  )
+  if (!selectedPartnerVenue) {
+    return null
+  }
 
   const navItems = generateNavItems()
 
