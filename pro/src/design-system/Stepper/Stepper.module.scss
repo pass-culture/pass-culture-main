@@ -1,0 +1,244 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_outline.scss" as outline;
+
+$indicator-size: var(--size-spacing-xxxl);
+$connector-width: rem.torem(2px);
+
+.stepper {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  box-sizing: border-box;
+
+  .button,
+  .link,
+  .wrapper {
+    display: flex;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .button,
+  .link {
+    cursor: pointer;
+    border-radius: var(--size-border-radius-m);
+
+    &:focus-visible {
+      @include outline.focus-outline;
+    }
+  }
+
+  .wrapper {
+    cursor: default;
+  }
+
+  .visually-hidden {
+    @include a11y.visually-hidden;
+  }
+
+  .step-item {
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .step-content {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .indicator {
+    @include fonts.body-accent;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $indicator-size;
+    height: $indicator-size;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  .number {
+    font-size: var(--typography-body-s-font-size);
+    line-height: 1;
+  }
+
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+
+  .label {
+    @include fonts.body-s;
+
+    color: var(--color-text-default);
+  }
+
+  .sublabel {
+    @include fonts.body-xs;
+
+    color: var(--color-text-subtle);
+    margin-top: var(--size-spacing-xxs);
+  }
+
+  .connector {
+    position: absolute;
+    background-color: var(--color-border-disabled);
+    z-index: 1;
+  }
+
+  // =============================================================================
+  // HORIZONTAL LAYOUT
+  // =============================================================================
+  &.horizontal {
+    flex-direction: row;
+
+    .step-item {
+      flex: 1;
+      min-width: 0; // Prevent flex item overflow
+    }
+
+    .step-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .text-container {
+      margin-top: var(--size-spacing-s);
+      padding-right: var(--size-spacing-m);
+    }
+
+    .connector {
+      top: calc($indicator-size / 2 - $connector-width / 2);
+      left: calc($indicator-size + var(--size-spacing-s));
+      right: var(--size-spacing-s);
+      height: $connector-width;
+    }
+  }
+
+  // =============================================================================
+  // VERTICAL LAYOUT
+  // =============================================================================
+  &.vertical {
+    flex-direction: column;
+
+    .step-item {
+      width: 100%;
+      padding-bottom: var(--size-spacing-xl);
+
+      // Hide padding on the last step to prevent trailing space
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+
+    .step-content {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--size-spacing-m);
+    }
+
+    .text-container {
+      padding-top: var(--size-spacing-xxs);
+    }
+
+    .connector {
+      top: calc($indicator-size + var(--size-spacing-s));
+      bottom: var(--size-spacing-s);
+      left: calc($indicator-size / 2 - $connector-width / 2);
+      width: $connector-width;
+    }
+  }
+
+  // =============================================================================
+  // STATES
+  // =============================================================================
+
+  .disabled {
+    .indicator {
+      background-color: transparent;
+      border: rem.torem(1px) solid var(--color-border-disabled);
+      color: var(--color-text-disabled);
+    }
+
+    .label,
+    .sublabel {
+      color: var(--color-text-disabled);
+    }
+
+    .connector {
+      background-color: var(--color-border-disabled);
+    }
+  }
+
+  .current {
+    .indicator {
+      @include fonts.body-accent;
+
+      background-color: var(--color-background-default);
+      border: rem.torem(2px) solid var(--color-background-brand-primary);
+      color: var(--color-text-brand-primary);
+    }
+
+    .label {
+      @include fonts.body-accent-s;
+    }
+
+    .sublabel {
+      @include fonts.body-accent-xs;
+    }
+  }
+
+  .done {
+    .indicator {
+      background-color: var(--color-background-brand-primary);
+      border: rem.torem(1px) solid var(--color-background-brand-primary);
+      color: var(--color-text-inverted);
+    }
+
+    .connector {
+      &.active {
+        background-color: var(--color-background-brand-primary);
+      }
+    }
+  }
+
+  .clickable {
+    &:hover {
+      &.done {
+        .indicator {
+          background-color: var(--color-background-brand-primary-hover);
+          border-color: var(--color-background-brand-primary-hover);
+        }
+
+        .connector {
+          &.active {
+            background-color: var(--color-background-brand-primary-hover);
+          }
+        }
+      }
+
+      .label {
+        @include fonts.link-s;
+
+        text-decoration: underline;
+      }
+    }
+  }
+}
