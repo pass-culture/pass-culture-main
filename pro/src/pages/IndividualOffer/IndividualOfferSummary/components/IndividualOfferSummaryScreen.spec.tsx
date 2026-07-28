@@ -35,6 +35,7 @@ import { getLocationResponseModel } from '@/commons/utils/factories/commonOffers
 import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
+  getOfferStockFactory,
   getOfferVenueFactory,
   getStocksResponseFactory,
   subcategoryFactory,
@@ -196,6 +197,16 @@ const stocksStats: StockStatsResponseModel = {
   newestStock: '2021-01-01T00:00:00+01:00',
 }
 
+const inOneMonth = set(add(new Date(), { months: 1 }), {
+  hours: 10,
+  minutes: 0,
+})
+
+const inTwoMonths = set(add(new Date(), { months: 2 }), {
+  hours: 10,
+  minutes: 0,
+})
+
 describe('IndividualOfferSummaryScreen', () => {
   const offerBase = getIndividualOfferFactory({
     audioDisabilityCompliant: false,
@@ -266,6 +277,15 @@ describe('IndividualOfferSummaryScreen', () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 1 })
     )
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [
+        getOfferStockFactory({
+          bookingLimitDatetime: inTwoMonths.toISOString(),
+        }),
+      ],
+      totalStockCount: 1,
+      editedStockCount: 1,
+    })
   })
 
   const expectOfferFields = async () => {
@@ -361,7 +381,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       expect(
@@ -408,7 +428,7 @@ describe('IndividualOfferSummaryScreen', () => {
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      await userEvent.click(screen.getByLabelText(/Publier plus tard/))
+      await userEvent.click(await screen.findByLabelText(/Publier plus tard/))
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Programmer l’offre' })
@@ -461,7 +481,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByLabelText(/Rendre réservable plus tard/)
+        await screen.findByLabelText(/Rendre réservable plus tard/)
       )
 
       await userEvent.click(
@@ -523,7 +543,7 @@ describe('IndividualOfferSummaryScreen', () => {
       )
 
       await userEvent.click(
-        screen.getByRole('button', {
+        await screen.findByRole('button', {
           name: /Publier l’offre/,
         })
       )
@@ -560,7 +580,7 @@ describe('IndividualOfferSummaryScreen', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       await waitFor(() => {
@@ -590,7 +610,7 @@ describe('IndividualOfferSummaryScreen', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       expect(
@@ -612,7 +632,7 @@ describe('IndividualOfferSummaryScreen', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       expect(
@@ -635,7 +655,7 @@ describe('IndividualOfferSummaryScreen', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       expect(
@@ -667,7 +687,7 @@ describe('IndividualOfferSummaryScreen', () => {
       })
 
       await userEvent.click(
-        screen.getByRole('button', { name: /Publier l’offre/ })
+        await screen.findByRole('button', { name: /Publier l’offre/ })
       )
 
       expect(
@@ -762,16 +782,11 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByText('Sauvegarder le brouillon et quitter')
+        await screen.findByText('Sauvegarder le brouillon et quitter')
       )
       expect(
         screen.getByText('Brouillon sauvegardé dans la liste des offres')
       ).toBeInTheDocument()
-    })
-
-    const inOneMonth = set(add(new Date(), { months: 1 }), {
-      hours: 10,
-      minutes: 0,
     })
 
     it("should validate publication date and time when it's a scheduled publication", async () => {
@@ -784,7 +799,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+        await screen.findByLabelText(LABELS.publicationModeLaterRadio)
       )
       await userEvent.click(
         screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
@@ -849,7 +864,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+        await screen.findByLabelText(LABELS.publicationModeLaterRadio)
       )
 
       const publicationDateInput = screen.getByLabelText(
@@ -1019,7 +1034,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
-        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+        await screen.findByLabelText(LABELS.publicationModeLaterRadio)
       )
 
       const publicationDateInput = screen.getByLabelText(

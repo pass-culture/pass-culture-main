@@ -5,7 +5,7 @@ import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import styles from './EventPublicationForm.module.scss'
 
-export const EventPublicationForm = () => {
+export const EventPublicationForm = ({ maxDate }: { maxDate: string }) => {
   const sectionTitle = (
     <div className={styles['title-container']}>
       <span className={styles['title']}>Publication et réservation</span>
@@ -27,7 +27,7 @@ export const EventPublicationForm = () => {
               </TipsBanner>
             }
           >
-            <PublicationAndBookingFields />
+            <PublicationAndBookingFields maxDate={maxDate} />
           </FormLayout.Row>
         </FormLayout.Section>
       </FormLayout>

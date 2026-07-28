@@ -2,12 +2,18 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  type GetIndividualOfferWithAddressResponseModel,
+  StocksOrderedBy,
+} from '@/apiClient/v1'
+import {
+  GET_NEXT_STOCK_QUERY_KEY,
+  GET_OFFER_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -31,6 +37,7 @@ import { getOfferConditionalFields } from '@/pages/IndividualOffer/commons/getOf
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSection/MediaSection'
 import { PriceCategoriesSection } from '@/pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SummaryAside } from '@/ui-kit/SummaryLayout/SummaryAside'
 import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
@@ -59,6 +66,23 @@ export const IndividualOfferSummaryScreen = ({
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const selectedPartnerVenue = useAppSelector(ensureSelectedPartnerVenue)
+
+  const getStocksQuery = useSWR(
+    offer.id ? [GET_NEXT_STOCK_QUERY_KEY, offer.id] : null,
+    ([, offerId]) =>
+      api.getStocks({
+        path: { offer_id: offerId },
+        query: {
+          stocks_limit_per_page: 1,
+          page: 1,
+          order_by_desc: false,
+          order_by: StocksOrderedBy.BOOKING_LIMIT_DATETIME,
+        },
+      })
+  )
+
+  const firstBookingLimitDatetime =
+    getStocksQuery.data?.stocks[0].bookingLimitDatetime ?? ''
 
   const onPublish = async (values: EventPublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
@@ -120,6 +144,9 @@ export const IndividualOfferSummaryScreen = ({
     },
     mode: 'onBlur',
     resolver: yupResolver(validationSchema),
+    context: {
+      firstBookingLimitDatetime,
+    },
   })
 
   const canBeDuo = subCategories.find(
@@ -162,6 +189,10 @@ export const IndividualOfferSummaryScreen = ({
     ...offerSubCategory.conditionalFields,
     ...offerConditionalFields,
   ]
+  if (!getStocksQuery.data) {
+    return <Spinner />
+  }
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onPublish)} noValidate>
@@ -171,7 +202,7 @@ export const IndividualOfferSummaryScreen = ({
             description="Vérifiez les informations ci-dessous avant de publier votre offre."
           />
 
-          <EventPublicationForm />
+          <EventPublicationForm maxDate={firstBookingLimitDatetime} />
         </div>
 
         <SummaryLayout>

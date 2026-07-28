@@ -77,4 +77,58 @@ describe('OfferPublicationEditionForm validationSchema', () => {
       expect(errors).toEqual(expectedErrors)
     })
   })
+
+  it('should pass when publication date is on first booking limit date from context', async () => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowDate = tomorrow.toISOString().split('T')[0]
+
+    const formValues: EventPublicationEditionFormValues = {
+      ...defaultValues,
+      publicationMode: 'later',
+      publicationDate: tomorrowDate,
+      publicationTime: '12:00',
+    }
+
+    const errors = await getYupValidationSchemaErrors(
+      validationSchema,
+      formValues,
+      {
+        context: {
+          firstBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
+        },
+      }
+    )
+
+    expect(errors).not.toContain(
+      'Veuillez indiquer une date avant la date limite de réservation'
+    )
+  })
+
+  it('should pass when booking allowed date is on first booking limit date from context', async () => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowDate = tomorrow.toISOString().split('T')[0]
+
+    const formValues: EventPublicationEditionFormValues = {
+      ...defaultValues,
+      bookingAllowedMode: 'later',
+      bookingAllowedDate: tomorrowDate,
+      bookingAllowedTime: '12:00',
+    }
+
+    const errors = await getYupValidationSchemaErrors(
+      validationSchema,
+      formValues,
+      {
+        context: {
+          firstBookingLimitDatetime: `${tomorrowDate}T00:00:00.000Z`,
+        },
+      }
+    )
+
+    expect(errors).not.toContain(
+      'Veuillez indiquer une date avant la date limite de réservation'
+    )
+  })
 })
