@@ -8,10 +8,10 @@ const HTTP_STATUS = {
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
 }
-const NOT_JSON_BODY_RESPONSE_STATUS = [
+const NOT_JSON_BODY_RESPONSE_STATUS = new Set([
   HTTP_STATUS.NO_CONTENT,
   HTTP_STATUS.SERVICE_UNAVAILABLE,
-]
+])
 const GET_HTTP_METHOD = 'GET'
 const DELETE_HTTP_METHOD = 'DELETE'
 
@@ -34,7 +34,7 @@ const buildUrl = (path: string) => `${API_URL}${path}`
 const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
   try {
     const response = await fetch(buildUrl(path), options)
-    const results = NOT_JSON_BODY_RESPONSE_STATUS.includes(response.status)
+    const results = NOT_JSON_BODY_RESPONSE_STATUS.has(response.status)
       ? null
       : await response.json()
     if (!response.ok) {

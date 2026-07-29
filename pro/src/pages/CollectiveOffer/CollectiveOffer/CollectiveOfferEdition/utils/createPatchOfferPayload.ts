@@ -202,7 +202,7 @@ export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
   initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferTemplateBodyModel => {
-  const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
+  const keysToOmmit: Set<keyof OfferEducationalFormValues> = new Set([
     'imageUrl',
     'imageCredit',
     'beginningDate',
@@ -213,7 +213,7 @@ export const createPatchOfferTemplatePayload = (
     'contactFormType',
     'contactOptions',
     'addressAutocomplete',
-  ]
+  ])
 
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 
@@ -221,7 +221,7 @@ export const createPatchOfferTemplatePayload = (
 
   offerKeys.forEach((key) => {
     if (
-      !keysToOmmit.includes(key) &&
+      !keysToOmmit.has(key) &&
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-')
     ) {
