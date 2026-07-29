@@ -111,17 +111,15 @@ describe('CollectiveOfferConfirmation', () => {
 
     vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
-    await waitFor(() =>
-      expect(
-        screen.getByText('Les dernières offres vitrines créées')
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Les dernières offres vitrines créées')
+    ).toBeInTheDocument()
 
     expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
 
-    const inputOffer = await waitFor(() =>
-      screen.getByRole('button', { name: offers[0].name })
-    )
+    const inputOffer = await screen.findByRole('button', {
+      name: offers[0].name,
+    })
     await userEvent.click(inputOffer)
 
     expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
@@ -132,11 +130,9 @@ describe('CollectiveOfferConfirmation', () => {
 
     renderCollectiveOfferSelectionDuplication()
 
-    await waitFor(() =>
-      expect(
-        screen.getByText('Les dernières offres vitrines créées')
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Les dernières offres vitrines créées')
+    ).toBeInTheDocument()
 
     expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
 
@@ -160,11 +156,9 @@ describe('CollectiveOfferConfirmation', () => {
 
     renderCollectiveOfferSelectionDuplication()
 
-    await waitFor(() =>
-      expect(
-        screen.getByText(/Les dernières offres vitrines créées/)
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText(/Les dernières offres vitrines créées/)
+    ).toBeInTheDocument()
 
     const searchField = screen.getByRole('searchbox', {
       name: 'Rechercher l’offre vitrine à dupliquer',

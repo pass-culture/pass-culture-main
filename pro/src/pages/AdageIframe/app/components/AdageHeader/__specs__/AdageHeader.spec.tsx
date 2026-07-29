@@ -98,9 +98,7 @@ describe('AdageHeader', () => {
 
   it('should display the number of offers for the user institution', async () => {
     renderAdageHeader({ ...user, offersCount: 12 })
-    await waitFor(() =>
-      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-    )
+    expect(await screen.findByText('Solde prévisionnel')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 12' })
     ).toBeInTheDocument()
@@ -108,9 +106,7 @@ describe('AdageHeader', () => {
 
   it('should display 0 in case the user institution offer count is not available', async () => {
     renderAdageHeader({ ...user, offersCount: undefined })
-    await waitFor(() =>
-      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-    )
+    expect(await screen.findByText('Solde prévisionnel')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 0' })
     ).toBeInTheDocument()
@@ -118,9 +114,7 @@ describe('AdageHeader', () => {
 
   it('should display the institution budget', async () => {
     renderAdageHeader(user)
-    await waitFor(() =>
-      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-    )
+    expect(await screen.findByText('Solde prévisionnel')).toBeInTheDocument()
 
     expect(screen.getByText('1 000 €')).toBeInTheDocument()
   })
@@ -140,9 +134,7 @@ describe('AdageHeader', () => {
     'should log click on header link',
     async (headerLink: HeaderLinkProps) => {
       renderAdageHeader(user)
-      await waitFor(() =>
-        expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-      )
+      expect(await screen.findByText('Solde prévisionnel')).toBeInTheDocument()
 
       await userEvent.click(
         screen.getByRole('link', { name: headerLink.headerLinkLabel })

@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import {
   IndividualOfferContext,
@@ -103,11 +103,9 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
 
     renderIndividualOfferPriceTable({ offer })
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', { name: LABELS.headings.priceTable })
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByRole('heading', { name: LABELS.headings.priceTable })
+    ).toBeInTheDocument()
     expect(api.getStocks).toHaveBeenCalledWith({
       path: { offer_id: offer.id },
     })
@@ -129,11 +127,9 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
 
     renderIndividualOfferPriceTable({ offer })
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', { name: LABELS.headings.priceTable })
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByRole('heading', { name: LABELS.headings.priceTable })
+    ).toBeInTheDocument()
 
     expect(api.getStocks).not.toHaveBeenCalled()
   })

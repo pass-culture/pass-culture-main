@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -169,11 +169,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       await userEvent.click(titleInput)
       await userEvent.tab()
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('Veuillez renseigner un titre')
-        ).toBeInTheDocument()
-      )
+      expect(
+        await screen.findByText('Veuillez renseigner un titre')
+      ).toBeInTheDocument()
 
       const title = `a valid title ${Array.from({ length: 50 }).map(() => 'test ')}`
       await userEvent.type(titleInput, title)
