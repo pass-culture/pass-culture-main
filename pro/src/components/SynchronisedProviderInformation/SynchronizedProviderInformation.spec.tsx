@@ -19,7 +19,7 @@ describe('SynchronizedProviderInformation', () => {
       props: { providerName: 'unknown provider id' },
     })
     expect(
-      screen.queryByText('unknown provider id', { exact: false })
+      screen.getByText('unknown provider id', { exact: false })
     ).toBeInTheDocument()
   })
 

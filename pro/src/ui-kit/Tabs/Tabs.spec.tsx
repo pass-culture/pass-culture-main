@@ -32,7 +32,7 @@ describe('Tabs', () => {
       />
     )
 
-    expect(screen.queryByText(/NavLinkItems/)).toBeInTheDocument()
+    expect(screen.getByText(/NavLinkItems/)).toBeInTheDocument()
     expect(screen.queryByText(/TabItems/)).not.toBeInTheDocument()
   })
 
@@ -56,7 +56,7 @@ describe('Tabs', () => {
       />
     )
 
-    expect(screen.queryByText(/TabItems/)).toBeInTheDocument()
+    expect(screen.getByText(/TabItems/)).toBeInTheDocument()
     expect(screen.queryByText(/NavLinkItems/)).not.toBeInTheDocument()
   })
 })

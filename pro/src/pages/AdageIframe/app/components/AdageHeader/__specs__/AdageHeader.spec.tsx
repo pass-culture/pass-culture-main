@@ -79,10 +79,10 @@ describe('AdageHeader', () => {
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 0' })
     ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: 'Découvrir' })
+      screen.getByRole('link', { name: /Solde prévisionnel/ })
     ).toBeInTheDocument()
-    screen.queryByRole('link', { name: /Solde prévisionnel/ })
   })
 
   it('should render adage header with link for discovery', async () => {
@@ -193,7 +193,7 @@ describe('AdageHeader', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('link', { name: /Mes Favoris/ })
+        screen.getByRole('link', { name: /Mes Favoris/ })
       ).toBeInTheDocument()
     })
   })
@@ -205,7 +205,7 @@ describe('AdageHeader', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('link', { name: /Mes Favoris (10)/ })
+        screen.getByRole('link', { name: /Mes Favoris (10)/ })
       ).toBeInTheDocument()
     })
   })

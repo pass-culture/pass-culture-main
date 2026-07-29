@@ -28,19 +28,19 @@ describe('ActionsBarSticky', () => {
   it('should render contents', () => {
     renderActionsBar({ dirtyForm: undefined, mode: Mode.EDITION })
 
-    expect(screen.queryByText('left content')).toBeInTheDocument()
-    expect(screen.queryByText('right content')).toBeInTheDocument()
+    expect(screen.getByText('left content')).toBeInTheDocument()
+    expect(screen.getByText('right content')).toBeInTheDocument()
   })
 
   it('should display the saved draft message', () => {
     renderActionsBar({ dirtyForm: false, mode: Mode.CREATION })
 
-    expect(screen.queryByText('Brouillon enregistré')).toBeInTheDocument()
+    expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
   })
 
   it('should display draft unsaved information message', () => {
     renderActionsBar({ dirtyForm: true, mode: Mode.CREATION })
 
-    expect(screen.queryByText('Brouillon non enregistré')).toBeInTheDocument()
+    expect(screen.getByText('Brouillon non enregistré')).toBeInTheDocument()
   })
 })

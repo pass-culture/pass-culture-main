@@ -107,7 +107,7 @@ describe('filter bookings by bookings period', () => {
     await user.click(bookingStatusFilterInput)
     await user.click(screen.getByText('Période de validation'))
 
-    expect(screen.queryByText('Période de validation')).toBeInTheDocument()
+    expect(screen.getByText('Période de validation')).toBeInTheDocument()
   })
 
   it('should filter with a combination of filters', async () => {

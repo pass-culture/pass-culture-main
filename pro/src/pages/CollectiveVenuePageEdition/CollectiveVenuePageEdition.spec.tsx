@@ -163,17 +163,17 @@ describe('CollectiveVenuePageEdition', () => {
       await userEvent.click(title)
 
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Veuillez renseigner un numéro de téléphone valide, exemple : 6 12 34 56 78'
         )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Veuillez renseigner une URL valide. Ex : https://exemple.com'
         )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Veuillez renseigner un email valide, exemple : mail@exemple.com'
         )
       ).toBeInTheDocument()

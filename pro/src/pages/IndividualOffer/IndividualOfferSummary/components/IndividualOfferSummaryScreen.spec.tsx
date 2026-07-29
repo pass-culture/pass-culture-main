@@ -313,7 +313,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await expectOfferFields()
-      expect(screen.queryByText('Visualiser dans l’app')).toBeInTheDocument()
+      expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
     })
 
     it('should render a media section', async () => {

@@ -192,7 +192,7 @@ describe('CollectiveOfferSummary', () => {
       offerEditLink: '123',
     })
 
-    expect(screen.queryByRole('link', { name: 'Modifier' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument()
   })
 
   it('should display two edition buttons when the offer description and price are editable', () => {
@@ -341,7 +341,7 @@ describe('CollectiveOfferSummary', () => {
         ffOverrides
       )
       expect(
-        screen.queryByRole('heading', { name: 'Dates et prix' })
+        screen.getByRole('heading', { name: 'Dates et prix' })
       ).toBeVisible()
       expect(screen.getByText('test-booking-email@example.com')).toBeVisible()
     })

@@ -74,7 +74,7 @@ describe('SelectedValuesTags', () => {
     render(<SelectedValuesTags {...defaultProps} />)
 
     // Check that the ellipsis tag is not displayed
-    expect(screen.queryByText('+')).toBeDefined()
+    expect(screen.queryByText('+')).not.toBeInTheDocument()
   })
 
   it('should disable the remove buttons when disabled prop is true', () => {

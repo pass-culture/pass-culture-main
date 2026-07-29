@@ -59,7 +59,7 @@ const renderApp = ({
 describe('SkipLinks', () => {
   it('should render', () => {
     renderApp()
-    expect(screen.queryByText('Aller au contenu')).toBeInTheDocument()
+    expect(screen.getByText('Aller au contenu')).toBeInTheDocument()
     expect(screen.queryByText('Menu')).not.toBeInTheDocument()
   })
 
