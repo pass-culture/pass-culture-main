@@ -114,9 +114,6 @@ class ArtistMusicPlatform(PcObject, Model):
 
 class Artist(Model):
     __tablename__ = "artist"
-    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
-        "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
-    )
     app_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     # URL of the most popular product image linked to the artist, used as a fallback when image is NULL
@@ -191,41 +188,3 @@ class Artist(Model):
         if self.mediation_uuid:
             return f"{settings.GCP_BUCKET_NAME}/{settings.ARTIST_THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
         return None
-
-
-class ArtistAlias(PcObject, Model):
-    """
-    The data in this table is used by the data team
-    to reconcile artists across different sources (e.g. Wikidata)
-    Some field may seem incongruous, but they are useful to have
-    in order to be able to compare the data from different sources
-    """
-
-    __tablename__ = "artist_alias"
-    artist_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    artist: sa_orm.Mapped[Artist] = sa_orm.relationship(Artist, foreign_keys=[artist_id], back_populates="aliases")
-    artist_alias_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    artist_cluster_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(
-        MagicEnum(ArtistType, use_values=True), nullable=True
-    )
-    artist_wiki_data_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    offer_category_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now()
-    )
-    date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, onupdate=sa.func.now()
-    )
-    __table_args__ = (
-        sa.Index(
-            "ix_artist_alias_trgm_unaccent_name",
-            sa.func.immutable_unaccent("artist_alias_name"),
-            postgresql_using="gin",
-            postgresql_ops={
-                "description": "gin_trgm_ops",
-            },
-        ),
-    )

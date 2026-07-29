@@ -114,7 +114,9 @@
       <table class="table table-borderless table-hover">
         <thead class="table-light">
           <tr class="table-secondary fs-7">
-            {% if allowed_actions[action.UNLINK_PRODUCT] %}<th></th>{% endif %}
+            {% if allowed_actions[action.UNLINK_PRODUCT] %}
+              <th></th>
+            {% endif %}
             <th>ID Produit</th>
             <th>Nom du produit</th>
             <th>Catégorie</th>
@@ -184,24 +186,6 @@
     {% endcall %}
     {% call description_detail_vertical("Nombre de produits") %}
       {{ artist.products | length | format_count }}
-    {% endcall %}
-    {% call description_detail_vertical("Alias") %}
-      {% if artist.aliases %}
-        <div class="d-flex flex-wrap">
-          {% call badges.badges_container() %}
-            {% for alias in artist.aliases | sort(attribute='artist_alias_name') %}
-              {{ alias.artist_alias_name | format_badge("secondary") }}
-            {% endfor %}
-          {% endcall %}
-          {% set alias_count = artist.aliases | length %}
-          {% if alias_count > 10 %}
-            <span class="ms-1 mb-1 text-muted"
-                  title="{{ alias_count - 10 }} alias supplémentaires">...</span>
-          {% endif %}
-        </div>
-      {% else %}
-        <span class="text-muted">Aucun alias enregistré.</span>
-      {% endif %}
     {% endcall %}
   </div>
 {% endblock side_column %}

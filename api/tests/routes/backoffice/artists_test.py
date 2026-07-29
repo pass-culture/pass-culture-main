@@ -35,8 +35,7 @@ class GetArtistDetailsTest(GetEndpointHelper):
     # 1. Session + user
     # 2. Artist with joinedload on products
     # 3. selectinload on offers
-    # 4. selectinload on aliases
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_artist_details_success(self, authenticated_client):
         product1 = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -51,7 +50,6 @@ class GetArtistDetailsTest(GetEndpointHelper):
         artist_factories.ArtistOfferLinkFactory(
             artist_type=artist_models.ArtistType.PERFORMER, artist_id=artist.id, offer_id=offer.id
         )
-        artist_factories.ArtistAliasFactory.create(artist=artist, artist_alias_name="Alias 1")
 
         url = url_for(self.endpoint, artist_id=artist.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -60,7 +58,6 @@ class GetArtistDetailsTest(GetEndpointHelper):
         assert response.status_code == 200
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Artist ID"] == artist.id
-        assert "Alias 1" in descriptions["Alias"]
         assert "Born in a small town." in descriptions["Biographie Contenu généré par IA à partir de Wikipédia"]
         assert "Q12345" in descriptions["ID Wikidata"]
         assert "https://fr.wikipedia.org/wiki/Artist" in descriptions["URL Wikipédia"]
@@ -403,7 +400,7 @@ class GetMergeArtistFormTest(GetEndpointHelper):
         html_content = html_parser.content_as_text(response.data)
         assert f"Fusionner l'artiste {artist.name}" in html_content
         assert (
-            f"L'artiste {artist.name} sera conservé. Tous les produits et alias de l'artiste sélectionné seront transférés, puis cet artiste sera supprimé."
+            f"L'artiste {artist.name} sera conservé. Tous les produits de l'artiste sélectionné seront transférés, puis cet artiste sera supprimé."
             in html_content
         )
 
@@ -423,9 +420,6 @@ class PostMergeArtistsTest(PostEndpointHelper):
         product2 = offers_factories.ProductFactory.create()
         artist_to_delete = artist_factories.ArtistFactory.create(products=[product1, product2])
         artist_to_delete_id = artist_to_delete.id
-
-        alias1 = artist_factories.ArtistAliasFactory.create(artist=artist_to_delete)
-        alias2 = artist_factories.ArtistAliasFactory.create(artist=artist_to_delete)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -449,8 +443,6 @@ class PostMergeArtistsTest(PostEndpointHelper):
         assert deleted_artist_query is None
         assert product1 in artist_to_keep.products
         assert product2 in artist_to_keep.products
-        assert alias1 in artist_to_keep.aliases
-        assert alias2 in artist_to_keep.aliases
 
 
 class SplitArtistButtonTest(button_helpers.ButtonHelper):
@@ -484,7 +476,6 @@ class GetSplitArtistFormTest(GetEndpointHelper):
         assert f"Séparer l'artiste {artist.name}" in html_content
         assert "Nom du nouvel artiste" in html_content
         assert "Description du nouvel artiste" in html_content
-        assert "Alias du nouvel artiste" in html_content
         assert "Produits à transférer au nouvel artiste" in html_content
 
 
@@ -543,9 +534,6 @@ class ListArtistsTest(GetEndpointHelper):
             is_blacklisted=False,
             date_created=now - datetime.timedelta(days=1),
         )
-        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Balavoine Daniel")
-        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Daniel B.")
-        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Balavoine D.")
 
         offers_factories.ProductFactory(artists=[artist1], name="Je ne suis pas un héros")
 
@@ -588,7 +576,6 @@ class ListArtistsTest(GetEndpointHelper):
         assert row["Nom"] == "Daniel Balavoine"
         assert row["Statut"] == "Visible"
         assert row["Produits associés"] == "1"
-        assert row["Alias"] == "3"
 
         soup = html_parser.get_soup(response.data)
         img_div = soup.find("div", style=f"background-image: url('{artist_to_find.image}')")
@@ -597,7 +584,7 @@ class ListArtistsTest(GetEndpointHelper):
     def test_list_artists_by_name(self, authenticated_client, artists):
         artist_to_find = artists[0]
         query_args = {
-            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-search_field": "NAME",
             "search-0-operator": "EQUALS",
             "search-0-string": artist_to_find.name.lower(),
         }
@@ -610,20 +597,6 @@ class ListArtistsTest(GetEndpointHelper):
         assert len(rows) == 1
         row = rows[0]
         assert row["Nom"] == artist_to_find.name
-
-    def test_list_artists_by_alias_name(self, authenticated_client, artists):
-        query_args = {
-            "search-0-search_field": "NAME_OR_ALIAS",
-            "search-0-operator": "EQUALS",
-            "search-0-string": "Balavoine Daniel",
-        }
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-        assert rows[0]["Nom"] == "Daniel Balavoine"
 
     @pytest.mark.parametrize(
         "is_visible, expected_names",
@@ -681,7 +654,7 @@ class ListArtistsTest(GetEndpointHelper):
             "search-0-search_field": "IS_VISIBLE",
             "search-0-operator": "EQUALS",
             "search-0-boolean": "true",
-            "search-1-search_field": "NAME_OR_ALIAS",
+            "search-1-search_field": "NAME",
             "search-1-operator": "CONTAINS",
             "search-1-string": "Balavoine",
         }
@@ -695,7 +668,7 @@ class ListArtistsTest(GetEndpointHelper):
 
     def test_list_artists_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, artists):
         query_args = {
-            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-search_field": "NAME",
             "search-0-operator": "CONTAINS",
             "search-0-string": "Balavoine",
         }
@@ -729,7 +702,7 @@ class ListArtistsTest(GetEndpointHelper):
 
     def test_list_artists_by_unsupported_operator_returns_400(self, authenticated_client):
         query_args = {
-            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-search_field": "NAME",
             "search-0-operator": "GREATER_THAN",
             "search-0-string": "test",
         }
@@ -737,4 +710,4 @@ class ListArtistsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
-        assert "n'est pas supporté par le filtre Nom ou alias." in html_parser.extract_alert(response.data)
+        assert "n'est pas supporté par le filtre Nom." in html_parser.extract_alert(response.data)

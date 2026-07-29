@@ -16,16 +16,13 @@
   {% call sortable_column(activate_sortable_columns, comparator="int", class="text-center") %}
     Produits associés
   {% endcall %}
-  {% call sortable_column(activate_sortable_columns, comparator="int", class="text-center") %}
-    Alias
-  {% endcall %}
   {% if date_created_sort_url %}
     <th scope="col">
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
-         title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'date_created' and request.args.get('order') == 'desc' else 'décroissant' }}">
+         title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'date_created' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
-        <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'date_created' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+        <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'date_created' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
     </th>
   {% else %}

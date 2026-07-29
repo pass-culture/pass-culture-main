@@ -46,64 +46,20 @@ ARTIST_SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "string",
         "column": artist_models.Artist.id,
     },
-    "NAME_OR_ALIAS": {
+    "NAME": {
         "field": "string",
         "custom_filters": {
-            "EQUALS": lambda value: artist_models.Artist.id.in_(
-                sa.select(artist_models.Artist.id)
-                .where(
-                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"{value}"))
-                )
-                .union(
-                    sa.select(artist_models.ArtistAlias.artist_id).where(
-                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
-                            sa.func.immutable_unaccent(f"{value}")
-                        )
-                    )
-                )
+            "EQUALS": lambda value: sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
+                sa.func.immutable_unaccent(f"{value}")
             ),
-            "NOT_EQUALS": lambda value: artist_models.Artist.id.not_in(
-                sa.select(artist_models.Artist.id)
-                .where(
-                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"{value}"))
-                )
-                .union(
-                    sa.select(artist_models.ArtistAlias.artist_id).where(
-                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
-                            sa.func.immutable_unaccent(f"{value}")
-                        )
-                    )
-                )
+            "NOT_EQUALS": lambda value: sa.not_(
+                sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"{value}"))
             ),
-            "CONTAINS": lambda value: artist_models.Artist.id.in_(
-                sa.select(artist_models.Artist.id)
-                .where(
-                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
-                        sa.func.immutable_unaccent(f"%{value}%")
-                    )
-                )
-                .union(
-                    sa.select(artist_models.ArtistAlias.artist_id).where(
-                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
-                            sa.func.immutable_unaccent(f"%{value}%")
-                        )
-                    )
-                )
+            "CONTAINS": lambda value: sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
+                sa.func.immutable_unaccent(f"%{value}%")
             ),
-            "NO_CONTAINS": lambda value: artist_models.Artist.id.not_in(
-                sa.select(artist_models.Artist.id)
-                .where(
-                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
-                        sa.func.immutable_unaccent(f"%{value}%")
-                    )
-                )
-                .union(
-                    sa.select(artist_models.ArtistAlias.artist_id).where(
-                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
-                            sa.func.immutable_unaccent(f"%{value}%")
-                        )
-                    )
-                )
+            "NO_CONTAINS": lambda value: sa.not_(
+                sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"%{value}%"))
             ),
         },
     },
@@ -124,12 +80,6 @@ ARTIST_SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
 }
 
 ARTIST_JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
-    "alias": [
-        {
-            "name": "alias",
-            "args": (artist_models.ArtistAlias, artist_models.Artist.aliases),
-        },
-    ],
     "product": [
         {
             "name": "artist_product_link",
@@ -170,18 +120,10 @@ def _get_artists_by_ids(
         .scalar_subquery()
     )
 
-    aliases_count_subquery = (
-        sa.select(sa.func.count(artist_models.ArtistAlias.id))
-        .where(artist_models.ArtistAlias.artist_id == artist_models.Artist.id)
-        .correlate(artist_models.Artist)
-        .scalar_subquery()
-    )
-
     query = (
         db.session.query(
             artist_models.Artist,
             products_count_subquery.label("products_count"),
-            aliases_count_subquery.label("aliases_count"),
         )
         .filter(artist_models.Artist.id.in_(artist_ids))
         .options(
@@ -216,7 +158,7 @@ def _render_artist_list(
         advanced_form = forms.GetArtistAdvancedSearchForm(
             formdata=MultiDict(
                 (
-                    ("search-0-search_field", "NAME_OR_ALIAS"),
+                    ("search-0-search_field", "NAME"),
                     ("search-0-operator", "CONTAINS"),
                 ),
             ),
@@ -246,7 +188,7 @@ def list_artists() -> response_utils.BackofficeResponse:
 
     if form.is_empty():
         form_data = MultiDict(request_utils.get_query_params())
-        form_data.update({"search-0-search_field": "NAME_OR_ALIAS", "search-0-operator": "CONTAINS"})
+        form_data.update({"search-0-search_field": "NAME", "search-0-operator": "CONTAINS"})
         form = forms.GetArtistAdvancedSearchForm(formdata=form_data)
         return _render_artist_list(advanced_form=form)
 
@@ -308,9 +250,6 @@ def get_artist_details(artist_id: str) -> response_utils.BackofficeResponse:
                     offers_models.Offer.name,
                     offers_models.Offer.subcategoryId,
                 )
-            ),
-            sa_orm.selectinload(artist_models.Artist.aliases).options(
-                sa_orm.load_only(artist_models.ArtistAlias.artist_alias_name)
             ),
         )
         .one_or_none()
@@ -613,7 +552,7 @@ def get_merge_artist_form(artist_id: str) -> response_utils.BackofficeResponse:
         title=f"Fusionner l'artiste {artist.name}",
         form=form,
         information=Markup(
-            "L'artiste <b>{name}</b> sera conservé. Tous les produits et alias de l'artiste sélectionné seront transférés, puis cet artiste sera supprimé."
+            "L'artiste <b>{name}</b> sera conservé. Tous les produits de l'artiste sélectionné seront transférés, puis cet artiste sera supprimé."
         ).format(name=artist.name),
         button_text="Confirmer la fusion",
         ajax_submit=False,
@@ -641,9 +580,6 @@ def post_merge_artists(artist_id: str) -> response_utils.BackofficeResponse:
 
     artist_to_delete_name = artist_to_delete.name
     try:
-        db.session.query(artist_models.ArtistAlias).filter_by(artist_id=artist_to_delete_id).update(
-            {"artist_id": artist_to_keep_id}
-        )
         db.session.query(artist_models.ArtistProductLink).filter_by(artist_id=artist_to_delete_id).update(
             {"artist_id": artist_to_keep_id}
         )
@@ -727,12 +663,6 @@ def post_split_artist(artist_id: str) -> response_utils.BackofficeResponse:
         new_artist = artist_models.Artist(name=form.new_artist_name.data, description=form.new_artist_description.data)
         db.session.add(new_artist)
         db.session.flush()
-
-        if form.new_artist_aliases.data:
-            aliases_names = [name.strip() for name in form.new_artist_aliases.data.split(",") if name.strip()]
-            for alias_name in aliases_names:
-                new_alias = artist_models.ArtistAlias(artist_id=new_artist.id, artist_alias_name=alias_name)
-                db.session.add(new_alias)
 
         product_ids_to_move = form.products_to_move.data
         db.session.query(artist_models.ArtistProductLink).filter(
