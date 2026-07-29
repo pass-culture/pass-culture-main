@@ -38,23 +38,23 @@ describe('OfferExposureCards', () => {
   it.each([
     { bookingsCount: 0, expectedLabel: '0 réservation' },
     { bookingsCount: 2, expectedLabel: '2 réservations' },
-  ])('should display booking count with correct pluralization', async ({
-    bookingsCount,
-    expectedLabel,
-  }) => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      getOfferExposureFactory()
-    )
+  ])(
+    'should display booking count with correct pluralization',
+    async ({ bookingsCount, expectedLabel }) => {
+      vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+        getOfferExposureFactory()
+      )
 
-    renderOfferExposureCards({ bookingsCount })
+      renderOfferExposureCards({ bookingsCount })
 
-    expect(
-      await screen.findByRole('heading', {
-        name: 'Statistiques de votre offre',
-      })
-    ).toBeInTheDocument()
-    expect(screen.getByText(expectedLabel)).toBeInTheDocument()
-  })
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Statistiques de votre offre',
+        })
+      ).toBeInTheDocument()
+      expect(screen.getByText(expectedLabel)).toBeInTheDocument()
+    }
+  )
 
   it('should display the six-month subtitle for old offers', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
@@ -71,18 +71,18 @@ describe('OfferExposureCards', () => {
   it.each([
     { views: 0, expectedLabel: '0 consultation' },
     { views: 2, expectedLabel: '2 consultations' },
-  ])('should display consultations count with correct pluralization', async ({
-    views,
-    expectedLabel,
-  }) => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      getOfferExposureFactory({ views })
-    )
+  ])(
+    'should display consultations count with correct pluralization',
+    async ({ views, expectedLabel }) => {
+      vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+        getOfferExposureFactory({ views })
+      )
 
-    renderOfferExposureCards()
+      renderOfferExposureCards()
 
-    expect(await screen.findByText(expectedLabel)).toBeInTheDocument()
-  })
+      expect(await screen.findByText(expectedLabel)).toBeInTheDocument()
+    }
+  )
 
   it.each([
     {
@@ -97,28 +97,28 @@ describe('OfferExposureCards', () => {
       eventType: ExposureEventType.PRO_ADVICE,
       expectedLabel: '+3 depuis l’ajout d’une recommandation',
     },
-  ])('should display boosted views with the right event label', async ({
-    eventType,
-    expectedLabel,
-  }) => {
-    vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
-      getOfferExposureFactory({
-        events: [
-          {
-            type: eventType,
-            name: null,
-            startDate: daysFromNowToIso(-22),
-            endDate: daysFromNowToIso(161),
-            viewsOnPeriod: 3,
-          },
-        ],
-      })
-    )
+  ])(
+    'should display boosted views with the right event label',
+    async ({ eventType, expectedLabel }) => {
+      vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(
+        getOfferExposureFactory({
+          events: [
+            {
+              type: eventType,
+              name: null,
+              startDate: daysFromNowToIso(-22),
+              endDate: daysFromNowToIso(161),
+              viewsOnPeriod: 3,
+            },
+          ],
+        })
+      )
 
-    renderOfferExposureCards()
+      renderOfferExposureCards()
 
-    expect(await screen.findByText(expectedLabel)).toBeInTheDocument()
-  })
+      expect(await screen.findByText(expectedLabel)).toBeInTheDocument()
+    }
+  )
 
   it('should not display boosted views when enhancement is not ongoing', async () => {
     vi.spyOn(api, 'getOfferExposure').mockResolvedValueOnce(

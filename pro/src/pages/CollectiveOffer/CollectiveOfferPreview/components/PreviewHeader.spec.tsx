@@ -49,13 +49,16 @@ describe('PreviewHeader', () => {
     [CollectiveOfferDisplayedStatus.REIMBURSED, 'terminée'],
     [CollectiveOfferDisplayedStatus.ARCHIVED, 'archivée'],
     [CollectiveOfferDisplayedStatus.HIDDEN, 'en pause'],
-  ])('should show not visible preview callout for status %s', (status, expectedLabel) => {
-    renderPreviewHeader(status)
+  ])(
+    'should show not visible preview callout for status %s',
+    (status, expectedLabel) => {
+      renderPreviewHeader(status)
 
-    expect(screen.getByText(`Offre ${expectedLabel}`)).toBeInTheDocument()
+      expect(screen.getByText(`Offre ${expectedLabel}`)).toBeInTheDocument()
 
-    expect(
-      screen.getByText("L’aperçu n'est pas visible par l'enseignant.")
-    ).toBeInTheDocument()
-  })
+      expect(
+        screen.getByText("L’aperçu n'est pas visible par l'enseignant.")
+      ).toBeInTheDocument()
+    }
+  )
 })

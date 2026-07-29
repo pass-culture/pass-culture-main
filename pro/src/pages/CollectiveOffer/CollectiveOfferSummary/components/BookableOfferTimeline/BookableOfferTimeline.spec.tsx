@@ -86,40 +86,40 @@ describe('BookableOfferTimeline', () => {
       status: CollectiveOfferDisplayedStatus.REIMBURSED,
       expectedText: 'Remboursée',
     },
-  ])('should render the correct label for past step with status $status', ({
-    status,
-    expectedText,
-  }) => {
-    renderBookableOfferTimeline(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          booking: getCollectiveOfferBookingFactory(),
-          history: {
-            past:
-              status === CollectiveOfferDisplayedStatus.EXPIRED
-                ? [
-                    {
-                      status: CollectiveOfferDisplayedStatus.PREBOOKED,
-                      datetime: '2025-07-04T13:38:12.020421Z',
-                    },
-                    {
-                      status: CollectiveOfferDisplayedStatus.EXPIRED,
-                      datetime: '2025-07-05T13:38:12.020421Z',
-                    },
-                  ]
-                : [
-                    {
-                      status,
-                      datetime: '2025-07-05T13:38:12.020421Z',
-                    },
-                  ],
-            future: [],
-          },
-        })}
-      />
-    )
-    expect(screen.getByText(expectedText)).toBeInTheDocument()
-  })
+  ])(
+    'should render the correct label for past step with status $status',
+    ({ status, expectedText }) => {
+      renderBookableOfferTimeline(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            booking: getCollectiveOfferBookingFactory(),
+            history: {
+              past:
+                status === CollectiveOfferDisplayedStatus.EXPIRED
+                  ? [
+                      {
+                        status: CollectiveOfferDisplayedStatus.PREBOOKED,
+                        datetime: '2025-07-04T13:38:12.020421Z',
+                      },
+                      {
+                        status: CollectiveOfferDisplayedStatus.EXPIRED,
+                        datetime: '2025-07-05T13:38:12.020421Z',
+                      },
+                    ]
+                  : [
+                      {
+                        status,
+                        datetime: '2025-07-05T13:38:12.020421Z',
+                      },
+                    ],
+              future: [],
+            },
+          })}
+        />
+      )
+      expect(screen.getByText(expectedText)).toBeInTheDocument()
+    }
+  )
 
   it.each([
     {
@@ -134,27 +134,27 @@ describe('BookableOfferTimeline', () => {
       lastStatus: CollectiveOfferDisplayedStatus.ENDED,
       expectedWaiting: 'En attente de remboursement',
     },
-  ])('should render a waiting step after $lastStatus if applicable', ({
-    lastStatus,
-    expectedWaiting,
-  }) => {
-    renderBookableOfferTimeline(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          history: {
-            past: [
-              {
-                status: lastStatus,
-                datetime: '2025-07-05T13:38:12.020421Z',
-              },
-            ],
-            future: [],
-          },
-        })}
-      />
-    )
-    expect(screen.getByText(expectedWaiting)).toBeInTheDocument()
-  })
+  ])(
+    'should render a waiting step after $lastStatus if applicable',
+    ({ lastStatus, expectedWaiting }) => {
+      renderBookableOfferTimeline(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: lastStatus,
+                  datetime: '2025-07-05T13:38:12.020421Z',
+                },
+              ],
+              future: [],
+            },
+          })}
+        />
+      )
+      expect(screen.getByText(expectedWaiting)).toBeInTheDocument()
+    }
+  )
 
   it('should not render a waiting step for statuses that do not require it', () => {
     renderBookableOfferTimeline(

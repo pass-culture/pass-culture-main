@@ -143,29 +143,29 @@ describe('CollectiveOfferStockCreation', () => {
       partialRequest: { totalTeachers: 5 },
       expectedStock: { numberOfTickets: 5 },
     },
-  ])('should initialize stock with $expectedStock when a requested offer has $partialRequest', async ({
-    partialRequest,
-    expectedStock,
-  }) => {
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValue({
-      ...defaultGetCollectiveOfferRequest,
-      ...partialRequest,
-    })
+  ])(
+    'should initialize stock with $expectedStock when a requested offer has $partialRequest',
+    async ({ partialRequest, expectedStock }) => {
+      vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValue({
+        ...defaultGetCollectiveOfferRequest,
+        ...partialRequest,
+      })
 
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks?requete=1', {
-      offer: getCollectiveOfferFactory({ collectiveStock: null }),
-    })
-    await waitFor(() => {
-      expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
-    })
-    expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
-    expect(OfferEducationalStock).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        initialStock: expectedStock,
-      }),
-      undefined
-    )
-  })
+      renderCollectiveStockCreation('/offre/A1/collectif/stocks?requete=1', {
+        offer: getCollectiveOfferFactory({ collectiveStock: null }),
+      })
+      await waitFor(() => {
+        expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
+      })
+      expect(OfferEducationalStock).toHaveBeenCalledTimes(2) // first render before api request resolves
+      expect(OfferEducationalStock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          initialStock: expectedStock,
+        }),
+        undefined
+      )
+    }
+  )
 
   it('on submit : should call creation endpoint if no stock exists yet on offer', async () => {
     const user = userEvent.setup()

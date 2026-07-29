@@ -357,35 +357,38 @@ describe('validationSchema', () => {
         'Vous ne pouvez augmenter le prix total de cette offre.',
       ],
     },
-  ])(`$description`, async ({
-    initialState: {
-      canEditDetails = true,
-      canEditDates = true,
-      canEditDiscount = true,
-      initialPrice = null,
-    },
-    formValues,
-    expectedErrors,
-  }: {
-    description: string
-    initialState: {
-      canEditDetails?: boolean
-      canEditDates?: boolean
-      canEditDiscount?: boolean
-      initialPrice?: number | null
+  ])(
+    `$description`,
+    async ({
+      initialState: {
+        canEditDetails = true,
+        canEditDates = true,
+        canEditDiscount = true,
+        initialPrice = null,
+      },
+      formValues,
+      expectedErrors,
+    }: {
+      description: string
+      initialState: {
+        canEditDetails?: boolean
+        canEditDates?: boolean
+        canEditDiscount?: boolean
+        initialPrice?: number | null
+      }
+      formValues: Partial<CollectiveOfferStockFormValues>
+      expectedErrors: string[]
+    }) => {
+      const errors = await getYupValidationSchemaErrors(
+        generateValidationSchema(
+          canEditDetails,
+          canEditDates,
+          canEditDiscount,
+          initialPrice
+        ),
+        formValues
+      )
+      expect(errors).toEqual(expectedErrors)
     }
-    formValues: Partial<CollectiveOfferStockFormValues>
-    expectedErrors: string[]
-  }) => {
-    const errors = await getYupValidationSchemaErrors(
-      generateValidationSchema(
-        canEditDetails,
-        canEditDates,
-        canEditDiscount,
-        initialPrice
-      ),
-      formValues
-    )
-    expect(errors).toEqual(expectedErrors)
-  })
+  )
 })

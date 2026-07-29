@@ -25,21 +25,20 @@ describe('getOfferEnhancementCardsVisibility', () => {
     expect(result.shouldDisplayHeadlineCard).toBe(true)
   })
 
-  describe.each([
-    OfferStatus.PENDING,
-    OfferStatus.REJECTED,
-    OfferStatus.DRAFT,
-  ])('when status is %s', (status) => {
-    it('hides all cards', () => {
-      const offer = getIndividualOfferFactory({ status, isEvent: true })
+  describe.each([OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT])(
+    'when status is %s',
+    (status) => {
+      it('hides all cards', () => {
+        const offer = getIndividualOfferFactory({ status, isEvent: true })
 
-      const result = getOfferEnhancementCardsVisibility(offer)
+        const result = getOfferEnhancementCardsVisibility(offer)
 
-      expect(result.shouldDisplayRecommendationCard).toBe(false)
-      expect(result.shouldDisplayHighlightCard).toBe(false)
-      expect(result.shouldDisplayHeadlineCard).toBe(false)
-    })
-  })
+        expect(result.shouldDisplayRecommendationCard).toBe(false)
+        expect(result.shouldDisplayHighlightCard).toBe(false)
+        expect(result.shouldDisplayHeadlineCard).toBe(false)
+      })
+    }
+  )
 
   it('hide headline card when offer is not active', () => {
     const offer = getIndividualOfferFactory({

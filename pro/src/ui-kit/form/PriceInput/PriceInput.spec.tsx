@@ -129,26 +129,24 @@ describe('PriceInput', () => {
       { value: '20.504', expected: '20.504' },
       { value: '20.5.2', expected: '20.52' },
     ]
-    it.each(
-      setNumberPriceValue
-    )('should only type numbers for price input', async ({
-      value,
-      expected,
-    }) => {
-      renderPriceInput({})
+    it.each(setNumberPriceValue)(
+      'should only type numbers for price input',
+      async ({ value, expected }) => {
+        renderPriceInput({})
 
-      const input = screen.getByRole('spinbutton', { name: LABELS.input })
-      await userEvent.type(input, value)
-      await userEvent.tab()
-      const expectedValue = expected === '' ? null : Number(expected)
-      const actualValue = (input as HTMLInputElement).valueAsNumber
+        const input = screen.getByRole('spinbutton', { name: LABELS.input })
+        await userEvent.type(input, value)
+        await userEvent.tab()
+        const expectedValue = expected === '' ? null : Number(expected)
+        const actualValue = (input as HTMLInputElement).valueAsNumber
 
-      if (Number.isNaN(expectedValue as number)) {
-        expect(Number.isNaN(actualValue)).toBe(true)
-      } else {
-        expect(actualValue).toBe(expectedValue)
+        if (Number.isNaN(expectedValue as number)) {
+          expect(Number.isNaN(actualValue)).toBe(true)
+        } else {
+          expect(actualValue).toBe(expectedValue)
+        }
       }
-    })
+    )
   })
 
   describe('Currency', () => {
@@ -156,18 +154,18 @@ describe('PriceInput', () => {
       { currency: 'EUR', sign: '€' },
       { currency: 'XPF', sign: 'F' },
     ]
-    it.each(setCurrencyValue)(`should display the correct currency icon`, ({
-      currency,
-      sign,
-    }) => {
-      renderPriceInput({
-        showFreeCheckbox: false,
-        currency: currency,
-      })
+    it.each(setCurrencyValue)(
+      `should display the correct currency icon`,
+      ({ currency, sign }) => {
+        renderPriceInput({
+          showFreeCheckbox: false,
+          currency: currency,
+        })
 
-      expect(
-        screen.getByText(new RegExp(`Prix \\(en ${sign}\\)`))
-      ).toBeInTheDocument()
-    })
+        expect(
+          screen.getByText(new RegExp(`Prix \\(en ${sign}\\)`))
+        ).toBeInTheDocument()
+      }
+    )
   })
 })

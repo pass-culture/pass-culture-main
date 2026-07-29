@@ -1044,43 +1044,43 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       expect(screen.queryByText('Action de médiation')).not.toBeInTheDocument()
     })
 
-    it.each([
-      OfferStatus.PENDING,
-      OfferStatus.REJECTED,
-    ])('should disable the checkbox when offer status is %s', async (status) => {
-      const context = individualOfferContextValuesFactory({
-        categories: MOCK_DATA.categories,
-        subCategories: MOCK_DATA.subCategories,
-        offer: getIndividualOfferFactory({
-          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
-          hasCulturalOutreachClaim: true,
-          status,
-        }),
-      })
+    it.each([OfferStatus.PENDING, OfferStatus.REJECTED])(
+      'should disable the checkbox when offer status is %s',
+      async (status) => {
+        const context = individualOfferContextValuesFactory({
+          categories: MOCK_DATA.categories,
+          subCategories: MOCK_DATA.subCategories,
+          offer: getIndividualOfferFactory({
+            subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+            hasCulturalOutreachClaim: true,
+            status,
+          }),
+        })
 
-      renderDetailsScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.EDITION,
-        options: {
-          features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
-          storeOverrides: {
-            user: {
-              currentUser: sharedCurrentUserFactory(),
-              selectedPartnerVenue: makeGetVenueResponseModel({
-                id: 1,
-                activity: DisplayableActivity.MUSEUM,
-              }),
+        renderDetailsScreen({
+          contextValue: context,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          options: {
+            features: ['WIP_ENABLE_CULTURAL_OUTREACH'],
+            storeOverrides: {
+              user: {
+                currentUser: sharedCurrentUserFactory(),
+                selectedPartnerVenue: makeGetVenueResponseModel({
+                  id: 1,
+                  activity: DisplayableActivity.MUSEUM,
+                }),
+              },
             },
           },
-        },
-      })
+        })
 
-      const checkbox = await screen.findByRole('checkbox', {
-        name: /L\u2019offre inclut une action de médiation spécifique/,
-      })
-      expect(checkbox).toBeDisabled()
-      expect(checkbox).toBeChecked()
-    })
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /L\u2019offre inclut une action de médiation spécifique/,
+        })
+        expect(checkbox).toBeDisabled()
+        expect(checkbox).toBeChecked()
+      }
+    )
   })
 
   describe('onboarding', () => {
