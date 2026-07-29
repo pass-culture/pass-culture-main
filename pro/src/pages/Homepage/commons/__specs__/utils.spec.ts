@@ -89,17 +89,16 @@ describe('getInitialTab', () => {
         hasCollective: false,
         expectedTab: 'individual',
       },
-    ])('should return tab $expectedTab if $scenario', ({
-      hasIndividual,
-      hasCollective,
-      expectedTab,
-    }) => {
-      getLocalStorageManagerMock(initialLocalStorageValue)
+    ])(
+      'should return tab $expectedTab if $scenario',
+      ({ hasIndividual, hasCollective, expectedTab }) => {
+        getLocalStorageManagerMock(initialLocalStorageValue)
 
-      expect(
-        getInitialTab(CURRENT_VENUE_ID, hasIndividual, hasCollective)
-      ).toBe(`tab-${expectedTab}`)
-    })
+        expect(
+          getInitialTab(CURRENT_VENUE_ID, hasIndividual, hasCollective)
+        ).toBe(`tab-${expectedTab}`)
+      }
+    )
   })
 })
 

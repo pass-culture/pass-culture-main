@@ -210,24 +210,27 @@ describe('validationSchema', () => {
       expectedErrors: [],
       initialPrice: 200,
     },
-  ])(`$description`, async ({
-    offerAllowedActions,
-    formValues,
-    expectedErrors,
-    initialPrice = null,
-  }: {
-    description: string
-    offerAllowedActions: CollectiveOfferAllowedAction[]
-    formValues: Partial<CollectiveOfferStockFormValues>
-    expectedErrors: string[]
-    isReadOnly?: boolean
-    preventPriceIncrease?: boolean
-    initialPrice?: number | null
-  }) => {
-    const errors = await getYupValidationSchemaErrors(
-      generateValidationSchema(offerAllowedActions, initialPrice),
-      formValues
-    )
-    expect(errors).toEqual(expectedErrors)
-  })
+  ])(
+    `$description`,
+    async ({
+      offerAllowedActions,
+      formValues,
+      expectedErrors,
+      initialPrice = null,
+    }: {
+      description: string
+      offerAllowedActions: CollectiveOfferAllowedAction[]
+      formValues: Partial<CollectiveOfferStockFormValues>
+      expectedErrors: string[]
+      isReadOnly?: boolean
+      preventPriceIncrease?: boolean
+      initialPrice?: number | null
+    }) => {
+      const errors = await getYupValidationSchemaErrors(
+        generateValidationSchema(offerAllowedActions, initialPrice),
+        formValues
+      )
+      expect(errors).toEqual(expectedErrors)
+    }
+  )
 })

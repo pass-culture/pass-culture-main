@@ -106,19 +106,22 @@ describe('CollectiveDmsTimeline', () => {
       expectedLabel: 'Votre demande de référencement a été classée sans suite',
     },
   ]
-  it.each(testCases)('should render %s status', ({
-    collectiveDmsApplication,
-    hasAdageId,
-    adageInscriptionDate,
-    expectedLabel,
-  }) => {
-    renderCollectiveDmsTimeline({
+  it.each(testCases)(
+    'should render %s status',
+    ({
       collectiveDmsApplication,
       hasAdageId,
       adageInscriptionDate,
-    })
-    expect(screen.getByText(expectedLabel)).toBeVisible()
-  })
+      expectedLabel,
+    }) => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication,
+        hasAdageId,
+        adageInscriptionDate,
+      })
+      expect(screen.getByText(expectedLabel)).toBeVisible()
+    }
+  )
 
   const dmsStates = [
     DMSApplicationstatus.EN_CONSTRUCTION,
@@ -127,28 +130,29 @@ describe('CollectiveDmsTimeline', () => {
     DMSApplicationstatus.REFUSE,
     DMSApplicationstatus.SANS_SUITE,
   ]
-  it.each(
-    dmsStates
-  )('should log event on click dms link', async (dmsState: DMSApplicationstatus) => {
-    renderCollectiveDmsTimeline({
-      collectiveDmsApplication: {
-        ...defaultDMSApplicationForEAC,
-        state: dmsState,
-      },
-    })
-    const dmsLink = screen.getByRole('link', {
-      name: /Consulter ma messagerie sur Démarche Numérique/,
-    })
+  it.each(dmsStates)(
+    'should log event on click dms link',
+    async (dmsState: DMSApplicationstatus) => {
+      renderCollectiveDmsTimeline({
+        collectiveDmsApplication: {
+          ...defaultDMSApplicationForEAC,
+          state: dmsState,
+        },
+      })
+      const dmsLink = screen.getByRole('link', {
+        name: /Consulter ma messagerie sur Démarche Numérique/,
+      })
 
-    dmsLink.addEventListener('click', (e) => {
-      e.preventDefault()
-    })
+      dmsLink.addEventListener('click', (e) => {
+        e.preventDefault()
+      })
 
-    await userEvent.click(dmsLink)
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
-      dmsApplicationStatus: dmsState,
-    })
-  })
+      await userEvent.click(dmsLink)
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
+        dmsApplicationStatus: dmsState,
+      })
+    }
+  )
 
   it('should display dates for status', () => {
     const collectiveDmsApplication = {

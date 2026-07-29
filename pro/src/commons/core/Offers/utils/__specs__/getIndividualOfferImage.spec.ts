@@ -35,18 +35,18 @@ describe('getIndividualOfferImage', () => {
     },
   ]
 
-  it.each(serializeOfferApiImageDataSet)('using image from mediation', ({
-    activeMediation,
-    expectedImage,
-  }) => {
-    const offerApi = getIndividualOfferFactory({
-      // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
-      // @ts-expect-error
-      activeMediation,
-    })
+  it.each(serializeOfferApiImageDataSet)(
+    'using image from mediation',
+    ({ activeMediation, expectedImage }) => {
+      const offerApi = getIndividualOfferFactory({
+        // TODO (tpommellet) to remove once GetIndividualOfferWithAddressResponseModel is migrated to Pydantic V2
+        // @ts-expect-error
+        activeMediation,
+      })
 
-    expect(getIndividualOfferImage(offerApi)).toEqual(expectedImage)
-  })
+      expect(getIndividualOfferImage(offerApi)).toEqual(expectedImage)
+    }
+  )
 
   it('using image from thumbUrl', () => {
     const offer = getIndividualOfferFactory({

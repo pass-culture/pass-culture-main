@@ -97,44 +97,41 @@ describe('screens | OfferEducational: edition', () => {
       event: Events.CLICKED_COLLECTIVE_TEMPLATE_OFFER_MODIFICATION,
       testName: 'collective template',
     },
-  ])('should log $testName modification on submit in edition mode', async ({
-    isTemplate,
-    offerId,
-    offerFactory,
-    allowedAction,
-    event,
-  }) => {
-    const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
+  ])(
+    'should log $testName modification on submit in edition mode',
+    async ({ isTemplate, offerId, offerFactory, allowedAction, event }) => {
+      const mockLogEvent = vi.fn()
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
 
-    props = {
-      ...props,
-      mode: Mode.EDITION,
-      isTemplate,
-      offer: offerFactory({
-        id: offerId,
-        allowedActions: [allowedAction] as any,
-      }),
-    }
-    renderWithProviders(<OfferEducational {...props} />, {
-      storeOverrides: {
-        user: {
-          selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+      props = {
+        ...props,
+        mode: Mode.EDITION,
+        isTemplate,
+        offer: offerFactory({
+          id: offerId,
+          allowedActions: [allowedAction] as any,
+        }),
+      }
+      renderWithProviders(<OfferEducational {...props} />, {
+        storeOverrides: {
+          user: {
+            selectedPartnerVenue: makeGetVenueResponseModel({ id: 1 }),
+          },
         },
-      },
-    })
+      })
 
-    const descriptionField = await screen.findByRole('textbox', {
-      name: /Décrivez ici votre projet/,
-    })
-    await userEvent.type(descriptionField, 'X')
+      const descriptionField = await screen.findByRole('textbox', {
+        name: /Décrivez ici votre projet/,
+      })
+      await userEvent.type(descriptionField, 'X')
 
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Enregistrer et continuer' })
-    )
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Enregistrer et continuer' })
+      )
 
-    expect(mockLogEvent).toHaveBeenCalledWith(event, { offerId })
-  })
+      expect(mockLogEvent).toHaveBeenCalledWith(event, { offerId })
+    }
+  )
 })
