@@ -44,7 +44,7 @@ def create_qf_bonus_credit_fraud_check(
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
         thirdPartyId=f"qf-bonus-credit-{user.id}",
-        resultContent=fraud_check_content.model_dump(exclude_unset=True),
+        resultContent=fraud_check_content.model_dump(mode="json", exclude_unset=True),
         eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)
@@ -73,7 +73,7 @@ def create_disability_bonus_credit_fraud_checks(
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
         thirdPartyId=f"aah-bonus-credit-{user.id}",
-        resultContent=aah_fraud_check_content.model_dump(exclude_unset=True),
+        resultContent=aah_fraud_check_content.model_dump(mode="json", exclude_unset=True),
         eligibilityType=eligibility,
     )
     db.session.add(aah_fraud_check)
@@ -87,7 +87,7 @@ def create_disability_bonus_credit_fraud_checks(
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
         thirdPartyId=f"aeeh-bonus-credit-{user.id}",
-        resultContent=aeeh_fraud_check_content.model_dump(exclude_unset=True),
+        resultContent=aeeh_fraud_check_content.model_dump(mode="json", exclude_unset=True),
         eligibilityType=eligibility,
     )
     db.session.add(aeeh_fraud_check)

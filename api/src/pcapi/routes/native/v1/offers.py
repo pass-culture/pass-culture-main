@@ -31,7 +31,7 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
     offer_ids = body.offer_ids
     query = repository.get_offers_details(offer_ids)
-    serialized_offers = [serializers.OfferResponseV2.from_orm(offer) for offer in query]
+    serialized_offers = [serializers.OfferResponseV2.build(offer) for offer in query]
     offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
     return offers_response
 
@@ -47,7 +47,7 @@ def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
     chronicles = chronicles_api.get_offer_published_chronicles(offer)
 
     return serializers.OfferChronicles(
-        chronicles=[serializers.OfferChronicle.from_orm(chronicle) for chronicle in chronicles]
+        chronicles=[serializers.OfferChronicle.build(chronicle) for chronicle in chronicles]
     )
 
 

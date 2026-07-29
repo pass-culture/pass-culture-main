@@ -1946,7 +1946,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             resultContent=subscription_factories.EduconnectContentFactory(
                 first_name="Léo",
                 last_name="Nard",
-                birth_date=self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
+                birth_date=self.UNDERAGE_ELIGIBLE_BIRTH_DATE.date(),
             ),
         )
         subscription_factories.BeneficiaryFraudCheckFactory(

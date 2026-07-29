@@ -4,7 +4,6 @@ import datetime
 import sqlalchemy as sa
 from flask import url_for
 from markupsafe import Markup
-from pydantic import BaseModel as BaseModelV2
 
 from pcapi import settings
 from pcapi.core.subscription import models as subscription_models
@@ -70,9 +69,7 @@ class IdCheckItemModel(BaseModel):
     def build(cls, fraud_check: subscription_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
         if fraud_check.resultContent:
             technical_data = fraud_check.source_data()
-            technical_details = (
-                technical_data.model_dump() if isinstance(technical_data, BaseModelV2) else technical_data.dict()
-            )
+            technical_details = technical_data.model_dump(mode="json")
         else:
             technical_details = None
 

@@ -106,7 +106,7 @@ def _update_fraud_check_with_new_content(
 ) -> None:
     fraud_check.reason = None
     fraud_check.reasonCodes = []
-    fraud_check.resultContent = new_content.dict()
+    fraud_check.resultContent = new_content.model_dump(mode="json")
     new_eligibility = eligibility_api.decide_eligibility(
         fraud_check.user, new_content.get_birth_date(), new_content.get_registration_datetime()
     )
@@ -281,7 +281,7 @@ def _update_application_annotations(
     fraud_check_content = fraud_check.source_data()
     assert isinstance(fraud_check_content, dms_schemas.DMSContent)
     fraud_check_content.annotation = new_annotation
-    fraud_check.resultContent = fraud_check_content.dict()
+    fraud_check.resultContent = fraud_check_content.model_dump(mode="json")
 
 
 def _compute_new_annotation(
@@ -910,7 +910,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
             assert isinstance(fraud_check_data, dms_schemas.DMSContent)
 
             fraud_check_data.deletion_datetime = dms_information.deletion_datetime
-            fraud_check.resultContent = fraud_check_data.dict()
+            fraud_check.resultContent = fraud_check_data.model_dump(mode="json")
         except ValueError:
             logger.warning(
                 "Could not write 'deletion_datetime' in fraud check resultContent: resultContent is empty",

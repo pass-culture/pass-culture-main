@@ -9,8 +9,6 @@ from pydantic_core import PydanticCustomError
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
-from pcapi.core.geography.constants import MAX_LATITUDE
-from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.constants import JE_VEUX_AIDER_GOUV_BASE_URL
@@ -21,6 +19,8 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
+from pcapi.serialization.common_models import LatitudeDecimal
+from pcapi.serialization.common_models import LongitudeDecimal
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import HttpUrlString
 from pcapi.utils import date as date_utils
@@ -255,12 +255,8 @@ class EditVenueBodyModel(HttpBodyModel):
     street: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_ADDRESS_MAX_LENGTH, default=None)
     banId: str | None = pydantic_v2.Field(max_length=offerers_schemas.VENUE_BAN_ID_MAX_LENGTH, default=None)
     siret: str | None = pydantic_v2.Field(min_length=SIRET_LENGTH, max_length=SIRET_LENGTH, default=None)
-    latitude: offerers_schemas.CoordinateField | None = pydantic_v2.Field(
-        gt=-MAX_LATITUDE, lt=MAX_LATITUDE, default=None
-    )
-    longitude: offerers_schemas.CoordinateField | None = pydantic_v2.Field(
-        gt=-MAX_LONGITUDE, lt=MAX_LONGITUDE, default=None
-    )
+    latitude: LatitudeDecimal | None = None
+    longitude: LongitudeDecimal | None = None
     bookingEmail: (
         typing.Annotated[
             pydantic_v2.EmailStr,

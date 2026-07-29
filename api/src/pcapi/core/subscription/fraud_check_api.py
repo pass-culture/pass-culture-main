@@ -654,7 +654,7 @@ def create_profile_completion_fraud_check(
     fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
         type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
-        resultContent=fraud_check_content.dict(),
+        resultContent=fraud_check_content.model_dump(mode="json"),
         status=subscription_models.FraudCheckStatus.OK,
         thirdPartyId=f"profile-completion-{user.id}",
         eligibilityType=eligibility,

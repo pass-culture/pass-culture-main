@@ -1200,7 +1200,8 @@ class UbbleWebhookTest:
         assert content.id_document_number is None
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
     def test_fraud_check_aborted(self, client, ubble_mocker):
@@ -1233,7 +1234,8 @@ class UbbleWebhookTest:
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number is None
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
     def test_fraud_check_processing(self, client, ubble_mocker):
@@ -1273,7 +1275,8 @@ class UbbleWebhookTest:
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
     def test_fraud_check_valid(self, client, ubble_mocker):
@@ -1316,7 +1319,8 @@ class UbbleWebhookTest:
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
         # Ensure that user information has been updated with Ubble extracted data
@@ -1367,7 +1371,8 @@ class UbbleWebhookTest:
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
     def test_fraud_check_unprocessable(self, client, ubble_mocker):
@@ -1412,7 +1417,8 @@ class UbbleWebhookTest:
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
-            content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
+            str(content.identification_url)
+            == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
     def test_fraud_check_already_finished(self, client, ubble_mocker):

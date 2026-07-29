@@ -64,7 +64,7 @@ class UbbleWorkflowV2Test:
             user, "Oriane", "Bertone", redirect_url="https://redirect.example.com"
         )
 
-        assert redirect_url == "https://verification.ubble.example.com/"
+        assert str(redirect_url) == "https://verification.ubble.example.com/"
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == subscription_models.FraudCheckType.UBBLE

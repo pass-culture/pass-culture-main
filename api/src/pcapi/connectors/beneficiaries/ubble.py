@@ -9,8 +9,7 @@ import logging
 import typing
 from contextlib import suppress
 
-from pydantic.v1 import networks as pydantic_networks
-from pydantic.v1 import parse_obj_as
+from pydantic import HttpUrl
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
@@ -122,7 +121,7 @@ def create_applicant(external_applicant_id: str, email: str) -> str:
     )
     response.raise_for_status()
 
-    ubble_applicant = parse_obj_as(ubble_serializers.UbbleV2ApplicantResponse, response.json())
+    ubble_applicant = ubble_serializers.UbbleV2ApplicantResponse.model_validate(response.json())
 
     logger.info(
         "Ubble applicant created",
@@ -153,7 +152,7 @@ def create_identity_verification(
     )
     response.raise_for_status()
 
-    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_identification = ubble_serializers.UbbleV2IdentificationResponse.model_validate(response.json())
     ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
     logger.info(
@@ -175,11 +174,11 @@ def create_identity_verification_attempt(identification_id: str, redirect_url: s
     )
     response.raise_for_status()
 
-    identification_attempt = parse_obj_as(ubble_serializers.UbbleV2AttemptResponse, response.json())
+    identification_attempt = ubble_serializers.UbbleV2AttemptResponse.model_validate(response.json())
 
     logger.info("Ubble identification attempted", extra={"identification_id": identification_attempt.id})
 
-    return identification_attempt.links.verification_url.href
+    return str(identification_attempt.links.verification_url.href)
 
 
 @log_and_handle_ubble_response("create-and-start-idv")
@@ -199,7 +198,7 @@ def create_and_start_identity_verification(
     )
     response.raise_for_status()
 
-    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_identification = ubble_serializers.UbbleV2IdentificationResponse.model_validate(response.json())
     ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
     logger.info(
@@ -220,7 +219,7 @@ def get_identity_verification(identification_id: str) -> ubble_schemas.UbbleCont
     )
     response.raise_for_status()
 
-    ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
+    ubble_identification = ubble_serializers.UbbleV2IdentificationResponse.model_validate(response.json())
     return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
 
@@ -271,9 +270,9 @@ def _configure_v2_session() -> requests.Session:
     return session
 
 
-def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
+def download_ubble_picture(http_url: HttpUrl) -> tuple[str | None, typing.Any]:
     try:
-        response = requests.get(http_url, stream=True)
+        response = requests.get(str(http_url), stream=True)
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         raise requests.ExternalAPIException(is_retryable=True) from e
 

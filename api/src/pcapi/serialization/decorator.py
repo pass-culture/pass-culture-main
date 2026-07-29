@@ -170,7 +170,7 @@ def spectree_serialize(
                     raise
                 try:
                     kwargs["body"] = body_in_kwargs(**(body_params or {}))
-                except pydantic.v1.ValidationError:
+                except (pydantic.v1.ValidationError, pydantic.ValidationError):
                     # If we end up here, it means that the client did
                     # not send the correct HTTP header. Otherwise, the
                     # validation error would have been caught by the

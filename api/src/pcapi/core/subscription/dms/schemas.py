@@ -1,16 +1,16 @@
 import datetime
 import enum
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.users import models as users_models
 
 
-class DmsAnnotation(pydantic_v1.BaseModel):
+class DmsAnnotation(pydantic.BaseModel):
     id: str
     label: str
-    text: str | None
+    text: str | None = None
 
 
 class DmsInstructorAnnotationEnum(enum.Enum):
@@ -30,10 +30,10 @@ class DmsInstructorAnnotationEnum(enum.Enum):
     CD = "CD"  # Couverture documentaire
 
 
-class DmsInstructorAnnotation(pydantic_v1.BaseModel):
+class DmsInstructorAnnotation(pydantic.BaseModel):
     # Support multiple choices and legacy single choice (when parsing DMSContent in saved applications)
     value: list[DmsInstructorAnnotationEnum] | DmsInstructorAnnotationEnum
-    updated_datetime: datetime.datetime | None
+    updated_datetime: datetime.datetime | None = None
 
 
 class DmsFieldErrorKeyEnum(enum.Enum):
@@ -44,39 +44,38 @@ class DmsFieldErrorKeyEnum(enum.Enum):
     postal_code = "postal_code"
 
 
-class DmsFieldErrorDetails(pydantic_v1.BaseModel):
+class DmsFieldErrorDetails(pydantic.BaseModel):
     key: DmsFieldErrorKeyEnum
-    value: str | None
+    value: str | None = None
 
 
 class DMSContent(subscription_schemas.IdentityCheckContent):
-    activity: str | None
-    address: str | None
-    annotation: DmsAnnotation | None
-    application_number: int = pydantic_v1.Field(..., alias="application_id")  # keep alias for old data
-    birth_date: datetime.date | None
-    birth_place: str | None
-    city: str | None
-    civility: users_models.GenderEnum | None
-    deletion_datetime: datetime.datetime | None
-    department: str | None  # this field is not filled anymore
+    activity: str | None = None
+    address: str | None = None
+    annotation: DmsAnnotation | None = None
+    application_number: int = pydantic.Field(alias="application_id")  # keep alias for old data
+    birth_date: datetime.date | None = None
+    birth_place: str | None = None
+    city: str | None = None
+    civility: users_models.GenderEnum | None = None
+    deletion_datetime: datetime.datetime | None = None
+    department: str | None = None  # this field is not filled anymore
     email: str
-    field_errors: list[DmsFieldErrorDetails] | None
+    field_errors: list[DmsFieldErrorDetails] | None = None
     first_name: str
-    id_piece_number: str | None
-    instructor_annotation: DmsInstructorAnnotation | None
+    id_piece_number: str | None = None
+    instructor_annotation: DmsInstructorAnnotation | None = None
     last_name: str
-    latest_modification_datetime: datetime.datetime | None
-    latest_user_fields_modification_datetime: datetime.datetime | None
-    phone: str | None
-    postal_code: str | None
-    procedure_number: int = pydantic_v1.Field(..., alias="procedure_id")  # keep alias for old data
-    processed_datetime: datetime.datetime | None
-    registration_datetime: datetime.datetime | None
-    state: str | None
+    latest_modification_datetime: datetime.datetime | None = None
+    latest_user_fields_modification_datetime: datetime.datetime | None = None
+    phone: str | None = None
+    postal_code: str | None = None
+    procedure_number: int = pydantic.Field(alias="procedure_id")  # keep alias for old data
+    processed_datetime: datetime.datetime | None = None
+    registration_datetime: datetime.datetime | None = None
+    state: str | None = None
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = pydantic.ConfigDict(validate_by_name=True)
 
     def get_activity(self) -> str | None:
         return self.activity

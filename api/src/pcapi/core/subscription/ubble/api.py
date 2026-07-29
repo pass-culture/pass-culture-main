@@ -14,7 +14,7 @@ from functools import partial
 import flask
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from pydantic.v1.networks import HttpUrl
+from pydantic import HttpUrl
 
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
@@ -273,9 +273,9 @@ def _update_identity_fraud_check(
     if is_v2_identification(content.identification_id):
         if not fraud_check.resultContent:
             fraud_check.resultContent = {}
-        fraud_check.resultContent.update(**content.dict(exclude_none=True))
+        fraud_check.resultContent.update(**content.model_dump(exclude_none=True, mode="json"))
     else:
-        fraud_check.resultContent = content.dict(exclude_none=True)
+        fraud_check.resultContent = content.model_dump(exclude_none=True, mode="json")
 
     db.session.add(fraud_check)
     if is_managed_transaction():

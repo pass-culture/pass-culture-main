@@ -4,50 +4,52 @@ import enum
 import logging
 import re
 
-import pydantic.v1 as pydantic_v1
-from pydantic import BaseModel as BaseModelV2
+from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import HttpUrl
+from pydantic import SerializeAsAny
+from pydantic import field_validator
 
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class UbbleDeclaredData(pydantic_v1.BaseModel):
+class UbbleDeclaredData(BaseModel):
     name: str
-    birth_date: datetime.date | None
+    birth_date: datetime.date | None = None
 
 
-class UbbleLink(pydantic_v1.BaseModel):
-    href: pydantic_v1.HttpUrl
+class UbbleLink(BaseModel):
+    href: HttpUrl
 
 
-class UbbleLinks(pydantic_v1.BaseModel):
+class UbbleLinks(BaseModel):
     self: UbbleLink
     verification_url: UbbleLink
 
 
-class UbbleDocument(pydantic_v1.BaseModel):
-    first_names: str | None
+class UbbleDocument(BaseModel):
+    first_names: str | None = None
     full_name: str
-    last_name: str | None
-    last_name_at_birth: str | None
-    birth_date: datetime.date | None
-    birth_place: str | None
-    nationality: str | None
-    document_type: str | None
-    document_issuing_country: str | None
-    document_number: str | None
-    gender: users_models.GenderEnum | None
-    front_image_signed_url: str | None
-    back_image_signed_url: str | None
+    last_name: str | None = None
+    last_name_at_birth: str | None = None
+    birth_date: datetime.date | None = None
+    birth_place: str | None = None
+    nationality: str | None = None
+    document_type: str | None = None
+    document_issuing_country: str | None = None
+    document_number: str | None = None
+    gender: users_models.GenderEnum | None = None
+    front_image_signed_url: str | None = None
+    back_image_signed_url: str | None = None
 
-    @pydantic_v1.validator("gender", pre=True)
+    @field_validator("gender", mode="before")
     def parse_gender(cls, gender: str | None) -> users_models.GenderEnum | None:
         if not gender:
             return None
@@ -56,24 +58,26 @@ class UbbleDocument(pydantic_v1.BaseModel):
         return None
 
 
-class UbbleResponseCode(pydantic_v1.BaseModel):
+class UbbleResponseCode(BaseModel):
     code: int
 
 
-class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
+class UbbleV2IdentificationResponse(BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_and_start_identity_verification
     id: str
     applicant_id: str
-    external_applicant_id: str | None
+    external_applicant_id: str | None = None
     user_journey_id: str
     status: ubble_schemas.UbbleIdentificationStatus
-    links: UbbleLinks = pydantic_v1.Field(alias="_links")
+    links: UbbleLinks = Field(alias="_links")
     documents: list[UbbleDocument]
     response_codes: list[UbbleResponseCode]
     webhook_url: str
     redirect_url: str
     created_on: datetime.datetime
     modified_on: datetime.datetime
+
+    model_config = ConfigDict(use_enum_values=True)
 
     @property
     def document(self) -> UbbleDocument | None:
@@ -88,9 +92,6 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
             for response_code in self.response_codes
             if response_code.code != ubble_schemas.UBBLE_OK_REASON_CODE
         ]
-
-    class Config:
-        use_enum_values = True
 
 
 def convert_identification_to_ubble_content(
@@ -146,16 +147,16 @@ def _get_first_and_last_name(document: UbbleDocument) -> tuple[str | None, str |
     return first_name, last_name
 
 
-class UbbleV2ApplicantResponse(pydantic_v1.BaseModel):
+class UbbleV2ApplicantResponse(BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_identity_verification
     id: str
-    external_applicant_id: str | None
+    external_applicant_id: str | None = None
 
 
-class UbbleV2AttemptResponse(pydantic_v1.BaseModel):
+class UbbleV2AttemptResponse(BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_attempt
     id: str
-    links: UbbleLinks = pydantic_v1.Field(alias="_links")
+    links: UbbleLinks = Field(alias="_links")
 
 
 class AttemptStatus(enum.StrEnum):
@@ -170,16 +171,16 @@ class AttemptStatus(enum.StrEnum):
     TERMINATED = enum.auto()
 
 
-class AttemptData(BaseModelV2):
+class AttemptData(BaseModel):
     id: str
     status: AttemptStatus
 
 
-class GetAttemptsResponse(BaseModelV2):
+class GetAttemptsResponse(BaseModel):
     data: list[AttemptData]
 
 
-class UbbleLinkV2(BaseModelV2):
+class UbbleLinkV2(BaseModel):
     href: HttpUrl
 
 
@@ -198,40 +199,41 @@ class AssetType(enum.StrEnum):
     SECONDARY_DOCUMENT_BACK_VIDEO = enum.auto()
 
 
-class AssetLink(BaseModelV2):
+class AssetLink(BaseModel):
     asset_url: UbbleLinkV2
 
 
-class AttemptAssetData(BaseModelV2):
+class AttemptAssetData(BaseModel):
     type: AssetType
     links: AssetLink = Field(validation_alias="_links")
 
 
-class GetAttemptAssetsResponse(BaseModelV2):
+class GetAttemptAssetsResponse(BaseModel):
     data: list[AttemptAssetData]
 
 
-class WebhookBodyData(pydantic_v1.BaseModel):
+class WebhookBodyData(HttpBodyModel):
     # https://docs.ubble.ai/#section/Webhooks/Body
     identity_verification_id: str
     status: ubble_schemas.UbbleIdentificationStatus
 
+    model_config = ConfigDict(extra="ignore")
 
-class WebhookBodyV2(pydantic_v1.BaseModel):
+
+class WebhookBodyV2(HttpBodyModel):
     data: WebhookBodyData
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True, extra="ignore")
 
 
 # Ubble only consider HTTP status 200 and 201 as success
 # but we are not able to respond with empty body unless we return a 204 HTTP status
 # so we need a dummy reponse_model to be used for the webhook response
-class WebhookDummyReponse(BaseModel):
+class WebhookDummyReponse(HttpBodyModel):
     status: str = "ok"
 
 
-class WebhookStoreIdPicturesRequest(pydantic_v1.BaseModel):
+class WebhookStoreIdPicturesRequest(BaseModel):
     identification_id: str
 
 
@@ -244,33 +246,33 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
-class UbbleIdentificationObject(pydantic_v1.BaseModel):
+class UbbleIdentificationObject(BaseModel):
     # Parent class for any object defined in https://ubbleai.github.io/developer-documentation/#objects-2
     pass
 
 
 class UbbleIdentificationAttributes(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#identifications
-    comment: str | None
-    created_at: datetime.datetime = pydantic_v1.Field(alias="created-at")
-    ended_at: datetime.datetime | None = pydantic_v1.Field(None, alias="ended-at")
-    identification_id: str = pydantic_v1.Field(alias="identification-id")
-    identification_url: str = pydantic_v1.Field(alias="identification-url")
-    number_of_attempts: int = pydantic_v1.Field(alias="number-of-attempts")
-    redirect_url: str = pydantic_v1.Field(alias="redirect-url")
-    score: float | None
-    started_at: datetime.datetime | None = pydantic_v1.Field(None, alias="started-at")
+    comment: str | None = None
+    created_at: datetime.datetime = Field(alias="created-at")
+    ended_at: datetime.datetime | None = Field(None, alias="ended-at")
+    identification_id: str = Field(alias="identification-id")
+    identification_url: str = Field(alias="identification-url")
+    number_of_attempts: int = Field(alias="number-of-attempts")
+    redirect_url: str = Field(alias="redirect-url")
+    score: float | None = None
+    started_at: datetime.datetime | None = Field(None, alias="started-at")
     status: ubble_schemas.UbbleIdentificationStatus
-    status_updated_at: datetime.datetime = pydantic_v1.Field(alias="status-updated-at")
-    updated_at: datetime.datetime = pydantic_v1.Field(alias="updated-at")
-    user_agent: str | None = pydantic_v1.Field(None, alias="user-agent")
-    user_ip_address: str | None = pydantic_v1.Field(None, alias="user-ip-address")
+    status_updated_at: datetime.datetime = Field(alias="status-updated-at")
+    updated_at: datetime.datetime = Field(alias="updated-at")
+    user_agent: str | None = Field(None, alias="user-agent")
+    user_ip_address: str | None = Field(None, alias="user-ip-address")
     webhook: str
 
 
 class UbbleReasonCode(UbbleIdentificationObject):
-    type: str = pydantic_v1.Field(alias="type")
-    id: int = pydantic_v1.Field(alias="id")
+    type: str = Field(alias="type")
+    id: int = Field(alias="id")
 
 
 class UbbleReasonCodes(UbbleIdentificationObject):
@@ -278,10 +280,10 @@ class UbbleReasonCodes(UbbleIdentificationObject):
 
 
 class UbbleIdentificationRelationships(UbbleIdentificationObject):
-    reason_codes: UbbleReasonCodes = pydantic_v1.Field(alias="reason-codes")
+    reason_codes: UbbleReasonCodes = Field(alias="reason-codes")
 
 
-class UbbleIdentificationData(pydantic_v1.BaseModel):
+class UbbleIdentificationData(BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationAttributes
@@ -290,40 +292,40 @@ class UbbleIdentificationData(pydantic_v1.BaseModel):
 
 class UbbleIdentificationDocuments(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#documents
-    birth_date: str | None = pydantic_v1.Field(None, alias="birth-date")
-    document_number: str | None = pydantic_v1.Field(None, alias="document-number")
-    document_type: str | None = pydantic_v1.Field(None, alias="document-type")
-    first_name: str | None = pydantic_v1.Field(None, alias="first-name")
-    gender: str | None = pydantic_v1.Field(None)
-    last_name: str | None = pydantic_v1.Field(None, alias="last-name")
-    married_name: str | None = pydantic_v1.Field(None, alias="married-name")
-    signed_image_front_url: str | None = pydantic_v1.Field(None, alias="signed-image-front-url")
-    signed_image_back_url: str | None = pydantic_v1.Field(None, alias="signed-image-back-url")
+    birth_date: str | None = Field(None, alias="birth-date")
+    document_number: str | None = Field(None, alias="document-number")
+    document_type: str | None = Field(None, alias="document-type")
+    first_name: str | None = Field(None, alias="first-name")
+    gender: str | None = Field(None)
+    last_name: str | None = Field(None, alias="last-name")
+    married_name: str | None = Field(None, alias="married-name")
+    signed_image_front_url: str | None = Field(None, alias="signed-image-front-url")
+    signed_image_back_url: str | None = Field(None, alias="signed-image-back-url")
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#document-checks
-    data_extracted_score: float | None = pydantic_v1.Field(None, alias="data-extracted-score")
-    expiry_date_score: float | None = pydantic_v1.Field(None, alias="expiry-date-score")
-    issue_date_score: float | None = pydantic_v1.Field(None, alias="issue-date-score")
-    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
-    mrz_validity_score: float | None = pydantic_v1.Field(None, alias="mrz-validity-score")
-    mrz_viz_score: float | None = pydantic_v1.Field(None, alias="mrz-viz-score")
-    ove_back_score: float | None = pydantic_v1.Field(None, alias="ove-back-score")
-    ove_front_score: float | None = pydantic_v1.Field(None, alias="ove-front-score")
-    ove_score: float | None = pydantic_v1.Field(None, alias="ove-score")
-    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
-    score: float | None = pydantic_v1.Field(None, alias="score")
+    data_extracted_score: float | None = Field(None, alias="data-extracted-score")
+    expiry_date_score: float | None = Field(None, alias="expiry-date-score")
+    issue_date_score: float | None = Field(None, alias="issue-date-score")
+    live_video_capture_score: float | None = Field(None, alias="live-video-capture-score")
+    mrz_validity_score: float | None = Field(None, alias="mrz-validity-score")
+    mrz_viz_score: float | None = Field(None, alias="mrz-viz-score")
+    ove_back_score: float | None = Field(None, alias="ove-back-score")
+    ove_front_score: float | None = Field(None, alias="ove-front-score")
+    ove_score: float | None = Field(None, alias="ove-score")
+    quality_score: float | None = Field(None, alias="quality-score")
+    score: float | None = Field(None, alias="score")
     supported: float | None = None
-    visual_back_score: float | None = pydantic_v1.Field(None, alias="visual-back-score")
-    visual_front_score: float | None = pydantic_v1.Field(None, alias="visual-front-score")
+    visual_back_score: float | None = Field(None, alias="visual-back-score")
+    visual_front_score: float | None = Field(None, alias="visual-front-score")
 
 
 class UbbleIdentificationFaceChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#face-checks
-    active_liveness_score: float | None = pydantic_v1.Field(None, alias="active-liveness-score")
-    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
-    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
+    active_liveness_score: float | None = Field(None, alias="active-liveness-score")
+    live_video_capture_score: float | None = Field(None, alias="live-video-capture-score")
+    quality_score: float | None = Field(None, alias="quality-score")
     score: float | None = None
 
 
@@ -337,11 +339,11 @@ class UbbleIdentificationDocFaceMatches(UbbleIdentificationObject):
     score: float | None = None
 
 
-class UbbleIdentificationIncluded(pydantic_v1.BaseModel):
+class UbbleIdentificationIncluded(BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationObject
-    relationships: dict | None
+    relationships: dict | None = None
 
 
 class UbbleIdentificationIncludedDocuments(UbbleIdentificationIncluded):
@@ -364,17 +366,17 @@ class UbbleIdentificationIncludedDocFaceMatches(UbbleIdentificationIncluded):
     attributes: UbbleIdentificationDocFaceMatches
 
 
-class UbbleIdentificationResponse(pydantic_v1.BaseModel):
+class UbbleIdentificationResponse(BaseModel):
     data: UbbleIdentificationData
-    included: list[UbbleIdentificationIncluded]
+    included: list[SerializeAsAny[UbbleIdentificationIncluded]]
 
 
-class Configuration(pydantic_v1.BaseModel):
+class Configuration(BaseModel):
     id: int
     name: str
 
 
-class WebhookRequest(pydantic_v1.BaseModel):
+class WebhookRequest(BaseModel):
     identification_id: str
     status: ubble_schemas.UbbleIdentificationStatus
     configuration: Configuration
@@ -383,8 +385,7 @@ class WebhookRequest(pydantic_v1.BaseModel):
 UBBLE_SIGNATURE_RE = re.compile(r"^ts=(?P<ts>\d+),v1=(?P<v1>\S{64})$")
 
 
-class WebhookRequestHeaders(pydantic_v1.BaseModel):
-    ubble_signature: str = pydantic_v1.Field(..., regex=UBBLE_SIGNATURE_RE.pattern, alias="Ubble-Signature")
+class WebhookRequestHeaders(BaseModel):
+    ubble_signature: str = Field(pattern=UBBLE_SIGNATURE_RE.pattern, alias="Ubble-Signature")
 
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")

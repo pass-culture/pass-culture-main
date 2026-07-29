@@ -5,11 +5,12 @@ from datetime import timedelta
 from textwrap import shorten
 from typing import Any
 from typing import Literal
+from typing import Self
 
 from dateutil import parser as date_parser
-from pydantic.v1 import Field
-from pydantic.v1 import root_validator
-from pydantic.v1 import validator
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_validator
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
@@ -20,7 +21,6 @@ from pcapi.core.finance.utils import format_raw_iban
 from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import models as users_models
-from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import without_timezone
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import FrenchParserInfo
@@ -173,7 +173,7 @@ def parse_beneficiary_information_graphql(
                         extra={"procedure_id": application_detail.procedure.number},
                     )
 
-    return dms_schemas.DMSContent(  # type: ignore[call-arg]
+    return dms_schemas.DMSContent(
         activity=activity,
         address=address,
         annotation=annotation,
@@ -225,8 +225,8 @@ class ApplicationDetail(BaseModel):
     status: finance_models.BankAccountApplicationStatus
     label: str | None = None
 
-    @validator("label")
-    def truncate_label(cls: "ApplicationDetail", label: str) -> str:
+    @field_validator("label")
+    def truncate_label(cls, label: str) -> str:
         return shorten(label, width=100, placeholder="...")
 
     @property
@@ -237,38 +237,41 @@ class ApplicationDetail(BaseModel):
     def is_refused(self) -> bool:
         return self.status == finance_models.BankAccountApplicationStatus.REFUSED
 
-    @root_validator(pre=True)
-    def to_representation(cls: "ApplicationDetail", obj: dict) -> dict:
-        to_representation: dict[str, Any] = {}
-        to_representation["procedure_version"] = obj["application_type"]
-        to_representation["application_id"] = obj["application_id"]
-        to_representation["dossier_id"] = obj["dossier_id"]
-        to_representation["siren"] = obj.get("siren")
-        to_representation["iban"] = format_raw_iban(obj["iban"])
-        to_representation["obfuscatedIban"] = f"""XXXX XXXX XXXX {to_representation["iban"][-4:]}"""
-        to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
-        to_representation["modification_date"] = (
-            datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
-        )
-        to_representation["error_annotation_id"] = obj["error_annotation_id"]
-        to_representation["error_annotation_value"] = obj.get("error_annotation_value")
-        to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
-        to_representation["venue_url_annotation_value"] = obj.get("venue_url_annotation_value")
-        to_representation["status"] = finance_models.BankAccountApplicationStatus(obj["status"])
-        if (
-            to_representation["status"] == finance_models.BankAccountApplicationStatus.DRAFT
-            and obj["last_pending_correction_date"]
-        ):
-            to_representation["status"] = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
-        if to_representation["procedure_version"] in (
+    @classmethod
+    def build(cls, **kwargs: Any) -> Self:
+        status = finance_models.BankAccountApplicationStatus(kwargs["status"])
+        if status == finance_models.BankAccountApplicationStatus.DRAFT and kwargs["last_pending_correction_date"]:
+            status = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
+
+        offerer_kwargs = {}
+        if kwargs["application_type"] in (
             finance_constants.DN_PROCEDURE_V5_VERSION,
             finance_constants.DN_PROCEDURE_NC_VERSION,
         ):
-            to_representation["siret"] = obj["siret"]
-            to_representation["siren"] = to_representation["siret"][:9]
-            to_representation["label"] = obj["label"]
+            offerer_kwargs["siret"] = kwargs["siret"]
+            offerer_kwargs["siren"] = kwargs["siret"][:9]
+            offerer_kwargs["label"] = kwargs["label"]
+        else:
+            offerer_kwargs["siren"] = kwargs["siren"]
 
-        return to_representation
+        iban = format_raw_iban(kwargs["iban"])
+        obfuscated_iban = f"""XXXX XXXX XXXX {iban[-4:]}"""
+
+        return cls(
+            procedure_version=kwargs["application_type"],
+            application_id=kwargs["application_id"],
+            dossier_id=kwargs["dossier_id"],
+            iban=iban,
+            obfuscatedIban=obfuscated_iban,
+            dms_token=kwargs.get("dms_token") if kwargs.get("application_type") == 4 else None,
+            modification_date=(datetime.fromisoformat(kwargs["updated_at"]).astimezone().replace(tzinfo=None)),
+            error_annotation_id=kwargs["error_annotation_id"],
+            error_annotation_value=kwargs.get("error_annotation_value"),
+            venue_url_annotation_id=kwargs["venue_url_annotation_id"],
+            venue_url_annotation_value=kwargs.get("venue_url_annotation_value"),
+            status=status,
+            **offerer_kwargs,
+        )
 
 
 class Annotation(BaseModel):
@@ -281,7 +284,7 @@ class Annotation(BaseModel):
     updated_at: datetime = Field(alias="updatedAt")
     string_value: str = Field(alias="stringValue")
 
-    @validator("updated_at", pre=False)
+    @field_validator("updated_at", mode="after")
     def strip_timezone(cls, value: datetime) -> datetime:
         return without_timezone(value)
 
@@ -303,7 +306,7 @@ class CheckBoxAnnotation(Annotation):
 class ProcessingErrorPassCulture(FieldAnnotation):
     label: Literal["Erreur traitement pass Culture"]
 
-    @validator("string_value")
+    @field_validator("string_value")
     def lower_string_value(cls, string_value: str) -> str:
         return string_value.lower()
 
@@ -322,45 +325,45 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     state: dms_models.GraphQLApplicationStates
     updated_at: datetime
     updated_by_user_at: datetime
-    last_message_sent_by_instructor_at: datetime | None
-    processing_error_pc: ProcessingErrorPassCulture | None
-    waiting_for_offerer_validation: WaitingForOffererValidation | None
-    waiting_for_adage_validation: WaitingForAdageValidation | None
+    last_message_sent_by_instructor_at: datetime | None = None
+    processing_error_pc: ProcessingErrorPassCulture | None = None
+    waiting_for_offerer_validation: WaitingForOffererValidation | None = None
+    waiting_for_adage_validation: WaitingForAdageValidation | None = None
 
-    @validator("updated_at", "updated_by_user_at", "last_message_sent_by_instructor_at", pre=False)
+    @field_validator("updated_at", "updated_by_user_at", "last_message_sent_by_instructor_at", mode="after")
     def strip_timezone(cls, value: datetime | None) -> datetime | None:
         return without_timezone(value) if value else None
 
-    @root_validator(pre=True)
-    def to_representation(cls: "MarkWithoutContinuationApplicationDetail", obj: dict) -> dict:
-        to_representation = {}
-        to_representation["id"] = obj["id"]
-        to_representation["number"] = obj["number"]
-        to_representation["state"] = obj["state"]
-        to_representation["updated_at"] = obj["dateDerniereModification"]
-
-        user_actions_dates = [obj["dateDerniereModificationChamps"]] + [
-            message["createdAt"] for message in obj.get("messages", []) if message["email"] == obj["usager"]["email"]
+    @classmethod
+    def build(cls, **kwargs: Any) -> Self:
+        user_actions_dates = [kwargs["dateDerniereModificationChamps"]] + [
+            message["createdAt"]
+            for message in kwargs.get("messages", [])
+            if message["email"] == kwargs["usager"]["email"]
         ]
-        to_representation["updated_by_user_at"] = max(user_actions_dates)
-
         instructor_messages_dates = [
-            message["createdAt"] for message in obj.get("messages", []) if message["email"].endswith("@passculture.app")
+            message["createdAt"]
+            for message in kwargs.get("messages", [])
+            if message["email"].endswith("@passculture.app")
         ]
-        to_representation["last_message_sent_by_instructor_at"] = (
-            max(instructor_messages_dates) if instructor_messages_dates else None
-        )
-
-        for annotation in obj["annotations"]:
+        annotation_kwargs: dict[str, Any] = {}
+        for annotation in kwargs["annotations"]:
             match annotation["label"]:
                 case "Erreur traitement pass Culture":
-                    to_representation["processing_error_pc"] = ProcessingErrorPassCulture(**annotation)
+                    annotation_kwargs["processing_error_pc"] = ProcessingErrorPassCulture(**annotation)
                 case "En attente de validation de structure":
-                    to_representation["waiting_for_offerer_validation"] = WaitingForOffererValidation(**annotation)
+                    annotation_kwargs["waiting_for_offerer_validation"] = WaitingForOffererValidation(**annotation)
                 case "En attente de validation ADAGE":
-                    to_representation["waiting_for_adage_validation"] = WaitingForAdageValidation(**annotation)
-
-        return to_representation
+                    annotation_kwargs["waiting_for_adage_validation"] = WaitingForAdageValidation(**annotation)
+        return cls(
+            id=kwargs["id"],
+            number=kwargs["number"],
+            state=kwargs["state"],
+            updated_at=kwargs["dateDerniereModification"],
+            updated_by_user_at=max(user_actions_dates),
+            last_message_sent_by_instructor_at=(max(instructor_messages_dates) if instructor_messages_dates else None),
+            **annotation_kwargs,
+        )
 
     @property
     def is_draft(self) -> bool:

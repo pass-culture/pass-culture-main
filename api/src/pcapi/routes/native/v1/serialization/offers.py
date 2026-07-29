@@ -1,14 +1,18 @@
 import logging
 import textwrap
+from collections.abc import Callable
 from datetime import date
 from datetime import datetime
+from typing import Annotated
 from typing import Any
-from typing import Callable
+from typing import Self
 
-import pydantic as pydantic_v2
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import Field
-from pydantic.v1.utils import GetterDict
+from pydantic import BaseModel
+from pydantic import BeforeValidator
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import field_validator
+from pydantic import model_validator
 
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
@@ -19,9 +23,9 @@ from pcapi.core.categories.genres.music import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles.api import get_offer_published_chronicles
+from pcapi.core.chronicles.models import Chronicle
 from pcapi.core.chronicles.models import ChronicleClubType
 from pcapi.core.finance.utils import to_cents
-from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
@@ -30,13 +34,11 @@ from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.serialization.common_models import LatitudeFloat
+from pcapi.serialization.common_models import LongitudeFloat
 from pcapi.utils import date as date_utils
-from pcapi.utils.date import format_into_utc_date
 
 
 logger = logging.getLogger(__name__)
@@ -45,104 +47,98 @@ logger = logging.getLogger(__name__)
 class OfferOffererResponseV2(BaseModel):
     name: str
 
-    class Config:
-        orm_mode = True
-
 
 class OfferStockActivationCodeResponseV2(BaseModel):
-    expirationDate: datetime | None
+    expirationDate: datetime | None = None
 
 
-class OfferStockResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        stock = self._obj
-        if key == "cancellation_limit_datetime":
-            return compute_booking_cancellation_limit_date(stock.beginningDatetime, date_utils.get_naive_utc_now())
-
-        if key == "activationCode":
-            if not stock.canHaveActivationCodes:
-                return None
-            # here we have N+1 requests (for each stock we query an activation code)
-            # but it should be more efficient than loading all activationCodes of all stocks
-            activation_code = offers_repository.get_available_activation_code(stock)
-            if not activation_code:
-                return None
-            return {"expirationDate": activation_code.expirationDate}
-
-        if key == "priceCategoryLabel":
-            if price_category := stock.priceCategory:
-                return price_category.label
-            return None
-
-        return super().get(key, default)
+def _none_if_unlimited(value: Any) -> Any:
+    if value == "unlimited":
+        return None
+    return value
 
 
-class OfferStockResponseV2(ConfiguredBaseModel):
+class OfferStockResponseV2(HttpBodyModel):
     id: int
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
-    cancellation_limit_datetime: datetime | None
+    beginningDatetime: datetime | None = None
+    bookingLimitDatetime: datetime | None = None
+    cancellation_limit_datetime: datetime | None = None
     features: list[str]
     isBookable: bool
     is_forbidden_to_underage: bool
     isSoldOut: bool
     isExpired: bool
-    price: int
-    activationCode: OfferStockActivationCodeResponseV2 | None
-    priceCategoryLabel: str | None
-    remainingQuantity: int | None
+    price: Annotated[int, BeforeValidator(to_cents)]
+    activationCode: OfferStockActivationCodeResponseV2 | None = None
+    priceCategoryLabel: str | None = None
+    remainingQuantity: Annotated[int | None, BeforeValidator(_none_if_unlimited)] = None
 
-    _convert_price = validator("price", pre=True, allow_reuse=True)(to_cents)
-    _convert_remainingQuantity = validator(
-        "remainingQuantity",
-        pre=True,
-        allow_reuse=True,
-    )(lambda quantity: quantity if quantity != "unlimited" else None)
+    @classmethod
+    def build(cls, stock: models.Stock) -> Self:
+        if not stock.canHaveActivationCodes:
+            activation_code = None
+        else:
+            # here we have N+1 requests (for each stock we query an activation code)
+            # but it should be more efficient than loading all activationCodes of all stocks
+            activation_code = offers_repository.get_available_activation_code(stock)
 
-    class Config:
-        getter_dict = OfferStockResponseGetterDict
-
-
-class OfferVenueResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        venue = self._obj
-        if key == "coordinates":
-            return {
-                "latitude": venue.offererAddress.address.latitude,
-                "longitude": venue.offererAddress.address.longitude,
-            }
-        if key == "address":
-            return venue.offererAddress.address.street
-        if key == "city":
-            return venue.offererAddress.address.city
-        if key == "postalCode":
-            return venue.offererAddress.address.postalCode
-        if key == "timezone":
-            return venue.offererAddress.address.timezone
-        if key == "name":
-            return venue.publicName
-
-        return super().get(key, default)
+        return cls(
+            id=stock.id,
+            beginningDatetime=stock.beginningDatetime,
+            bookingLimitDatetime=stock.bookingLimitDatetime,
+            cancellation_limit_datetime=compute_booking_cancellation_limit_date(
+                stock.beginningDatetime, date_utils.get_naive_utc_now()
+            ),
+            features=stock.features,
+            isBookable=stock.isBookable,
+            is_forbidden_to_underage=stock.is_forbidden_to_underage,
+            isSoldOut=stock.isSoldOut,
+            isExpired=stock.isExpired,
+            price=stock.price,
+            activationCode=OfferStockActivationCodeResponseV2(expirationDate=activation_code.expirationDate)
+            if activation_code
+            else None,
+            priceCategoryLabel=stock.priceCategory.label if stock.priceCategory else None,
+            remainingQuantity=stock.remainingQuantity,
+        )
 
 
-class OfferVenueResponseV2(BaseModel):
+class AddressCoordinates(BaseModel):
+    latitude: LatitudeFloat | None = None
+    longitude: LongitudeFloat | None = None
+
+
+class OfferVenueResponseV2(HttpBodyModel):
     id: int
-    address: str | None
-    city: str | None
-    managingOfferer: OfferOffererResponseV2 = Field(..., alias="offerer")
+    address: str | None = None
+    city: str | None = None
+    managingOfferer: OfferOffererResponseV2 = Field(alias="offerer")
     name: str
-    postalCode: str | None
+    postalCode: str | None = None
     publicName: str
-    coordinates: Coordinates
+    coordinates: AddressCoordinates
     isPermanent: bool
     isOpenToPublic: bool
     timezone: str
-    bannerUrl: str | None
+    bannerUrl: str | None = None
 
-    class Config:
-        orm_mode = True
-        getter_dict = OfferVenueResponseGetterDict
-        allow_population_by_field_name = True
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> Self:
+        address = venue.offererAddress.address
+        return cls(
+            id=venue.id,
+            address=address.street,
+            city=address.city,
+            managingOfferer=OfferOffererResponseV2(name=venue.managingOfferer.name),
+            name=venue.publicName,
+            postalCode=address.postalCode,
+            publicName=venue.publicName,
+            coordinates=AddressCoordinates(latitude=address.latitude, longitude=address.longitude),
+            isPermanent=venue.isPermanent,
+            isOpenToPublic=venue.isOpenToPublic,
+            timezone=address.timezone,
+            bannerUrl=venue.bannerUrl,
+        )
 
 
 def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | None], str | None]:
@@ -160,34 +156,40 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | Non
 
 class GtlLabelsV2(BaseModel):
     label: str
-    level01Label: str | None
-    level02Label: str | None
-    level03Label: str | None
-    level04Label: str | None
+    level01Label: str | None = None
+    level02Label: str | None = None
+    level03Label: str | None = None
+    level04Label: str | None = None
 
 
-class OfferExtraDataResponseV2(BaseModel):
-    allocineId: int | None
-    author: str | None
-    durationMinutes: int | None
-    ean: str | None
-    musicSubType: str | None
-    musicType: str | None
-    performer: str | None
-    showSubType: str | None
-    showType: str | None
-    stageDirector: str | None
-    speaker: str | None
-    visa: str | None
-    releaseDate: date | None
-    certificate: str | None
-    bookFormat: str | None
-    cast: list[str] | None
-    editeur: str | None
-    gtlLabels: GtlLabelsV2 | None
-    genres: list[str] | None
+class OfferExtraDataResponseV2(HttpBodyModel):
+    allocineId: int | None = None
+    author: str | None = None
+    durationMinutes: int | None = None
+    ean: str | None = None
+    musicSubType: Annotated[
+        str | None, BeforeValidator(get_id_converter(MUSIC_SUB_TYPES_LABEL_BY_CODE, "musicSubType"))
+    ] = None
+    musicType: Annotated[str | None, BeforeValidator(get_id_converter(MUSIC_TYPES_LABEL_BY_CODE, "musicType"))] = None
+    performer: str | None = None
+    showSubType: Annotated[
+        str | None, BeforeValidator(get_id_converter(SHOW_SUB_TYPES_LABEL_BY_CODE, "showSubType"))
+    ] = None
+    showType: Annotated[str | None, BeforeValidator(get_id_converter(SHOW_TYPES_LABEL_BY_CODE, "showType"))] = None
+    stageDirector: str | None = None
+    speaker: str | None = None
+    visa: str | None = None
+    releaseDate: date | None = None
+    certificate: str | None = None
+    bookFormat: str | None = None
+    cast: list[str] | None = None
+    editeur: str | None = None
+    gtlLabels: GtlLabelsV2 | None = None
+    genres: list[str] | None = None
 
-    @validator("genres", pre=True, allow_reuse=True)
+    model_config = ConfigDict(extra="ignore")
+
+    @field_validator("genres", mode="after")
     def convert_movie_types(cls, genres: list[str] | None) -> list[str] | None:
         if not genres:
             return None
@@ -198,33 +200,17 @@ class OfferExtraDataResponseV2(BaseModel):
                 movie_types.append(movie_type)
         return movie_types
 
-    _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
-        get_id_converter(MUSIC_SUB_TYPES_LABEL_BY_CODE, "musicSubType")
-    )
-    _convert_music_type = validator("musicType", pre=True, allow_reuse=True)(
-        get_id_converter(MUSIC_TYPES_LABEL_BY_CODE, "musicType")
-    )
-    _convert_show_sub_type = validator("showSubType", pre=True, allow_reuse=True)(
-        get_id_converter(SHOW_SUB_TYPES_LABEL_BY_CODE, "showSubType")
-    )
-    _convert_show_type = validator("showType", pre=True, allow_reuse=True)(
-        get_id_converter(SHOW_TYPES_LABEL_BY_CODE, "showType")
-    )
+
+class OfferAccessibilityResponseV2(HttpBodyModel):
+    audioDisability: bool | None = None
+    mentalDisability: bool | None = None
+    motorDisability: bool | None = None
+    visualDisability: bool | None = None
 
 
-class OfferAccessibilityResponseV2(BaseModel):
-    audioDisability: bool | None
-    mentalDisability: bool | None
-    motorDisability: bool | None
-    visualDisability: bool | None
-
-
-class OfferImageResponseV2(BaseModel):
+class OfferImageResponseV2(HttpBodyModel):
     url: str
-    credit: str | None
-
-    class Config:
-        orm_mode = True
+    credit: str | None = None
 
 
 def get_gtl_labels(gtl_id: str) -> GtlLabelsV2 | None:
@@ -251,240 +237,108 @@ class ReactionCountV2(BaseModel):
 MAX_PREVIEW_CHRONICLES = 5
 
 
-class OfferResponseV2GetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        offer: models.Offer = self._obj
-        product: models.Product | None = offer.product
-
-        if key == "reactions_count":
-            if product:
-                likes = product.likesCount or 0
-            else:
-                likes = offer.likesCount or 0
-            return ReactionCountV2(likes=likes)
-
-        if key == "accessibility":
-            return {
-                "audioDisability": offer.audioDisabilityCompliant,
-                "mentalDisability": offer.mentalDisabilityCompliant,
-                "motorDisability": offer.motorDisabilityCompliant,
-                "visualDisability": offer.visualDisabilityCompliant,
-            }
-
-        if key == "artists":
-            if not product:
-                return []
-
-            return [
-                OfferArtistV2(
-                    id=artist_link.artist.id,
-                    image=artist_link.artist.image,
-                    name=artist_link.artist.name,
-                    role=artist_link.artist_type if artist_link.artist_type else None,
-                )
-                for artist_link in product.artistLinks
-                if not artist_link.artist.is_blacklisted
-            ]
-        if key == "expense_domains":
-            return get_expense_domains(offer)
-
-        if key == "isExpired":
-            return offer.hasBookingLimitDatetimesPassed
-
-        if key == "isHeadline":
-            return offer.is_headline_offer
-
-        if key == "metadata":
-            return offer_metadata.get_metadata_from_offer(offer)
-
-        if key == "isExternalBookingsDisabled":
-            if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
-                return provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[offer.lastProvider.localClass].is_active()
-
-            return False
-
-        if key == "last30DaysBookings":
-            return offer.product.last_30_days_booking if offer.product else None
-
-        if key == "stocks":
-            return [OfferStockResponseV2.from_orm(stock) for stock in offer.activeStocks]
-
-        if key == "extraData":
-            raw_extra_data = (product.extraData if product else offer.extraData) or {}
-            extra_data = OfferExtraDataResponseV2.parse_obj(raw_extra_data)
-
-            extra_data.durationMinutes = offer.durationMinutes
-
-            gtl_id = raw_extra_data.get("gtl_id")
-            if gtl_id is not None:
-                extra_data.gtlLabels = get_gtl_labels(gtl_id)
-            if self._obj.ean:
-                extra_data.ean = self._obj.ean
-
-            return extra_data
-
-        if key == "address":
-            offerer_address: offerers_models.OffererAddress | None
-            if self._obj.offererAddress:
-                offerer_address = self._obj.offererAddress
-            else:
-                offerer_address = self._obj.venue.offererAddress
-
-            if not offerer_address:
-                return None
-
-            address: Address = offerer_address.address
-            label = offerer_address.label
-
-            return OfferAddressResponseV2(
-                street=address.street,
-                postalCode=address.postalCode,
-                city=address.city,
-                label=label,
-                coordinates=Coordinates(latitude=address.latitude, longitude=address.longitude),
-                timezone=address.timezone,
-            )
-
-        if key == "chronicles":
-            published_chronicles = get_offer_published_chronicles(offer)
-            return published_chronicles[:MAX_PREVIEW_CHRONICLES]
-
-        if key == "chroniclesCount":
-            return product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount
-
-        if key == "publicationDate":
-            return (
-                offer.bookingAllowedDatetime
-            )  # FIXME (bpeyrou): to be removed when min app version stop using publicationDate
-
-        if key == "video":
-            if offer.metaData and offer.metaData.videoUrl and not offer.metaData.videoExternalId:
-                logger.error(
-                    "This offer has a video URL but no videoExternalId in its metaData, and this should not happen",
-                    extra={"offer_id": offer.id},
-                )  # we want to see this in sentry if ever it happens
-
-            if not (offer.metaData and offer.metaData.videoExternalId):
-                return None
-
-            return OfferVideoV2(
-                id=offer.metaData.videoExternalId,
-                title=offer.metaData.videoTitle,
-                thumbUrl=offer.metaData.videoThumbnailUrl,
-                durationSeconds=offer.metaData.videoDuration,
-            )
-
-        return super().get(key, default)
+class ChroniclePreviewAuthorV2(HttpBodyModel):
+    first_name: str | None = None
+    age: int | None = None
+    city: str | None = None
 
 
-class OfferAddressResponseV2(ConfiguredBaseModel):
-    street: str | None
-    postalCode: str
-    city: str
-    label: str | None
-    coordinates: Coordinates
-    timezone: str
-
-    class Config:
-        orm_mode = True
-
-
-class ChroniclePreviewGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        chronicle = self._obj
-        if key == "author":
-            if chronicle.isIdentityDiffusible:
-                return ChroniclePreviewAuthorV2(
-                    first_name=chronicle.firstName,
-                    age=chronicle.age,
-                    city=chronicle.city,
-                )
-            return None
-        if key == "content_preview":
-            return textwrap.shorten(chronicle.content, width=255, placeholder="…")
-
-        return super().get(key, default)
-
-
-class ChroniclePreviewAuthorV2(ConfiguredBaseModel):
-    first_name: str | None
-    age: int | None
-    city: str | None
-
-
-class ChroniclePreviewV2(ConfiguredBaseModel):
+class ChroniclePreviewV2(HttpBodyModel):
     id: int
-    author: ChroniclePreviewAuthorV2 | None
+    author: ChroniclePreviewAuthorV2 | None = None
     content_preview: str
     date_created: datetime
 
-    class Config:
-        getter_dict = ChroniclePreviewGetterDict
+    @classmethod
+    def build(cls, chronicle: Chronicle) -> Self:
+        if chronicle.isIdentityDiffusible:
+            author = ChroniclePreviewAuthorV2(
+                first_name=chronicle.firstName,
+                age=chronicle.age,
+                city=chronicle.city,
+            )
+        else:
+            author = None
+
+        return cls(
+            id=chronicle.id,
+            author=author,
+            content_preview=textwrap.shorten(chronicle.content, width=255, placeholder="…"),
+            date_created=chronicle.dateCreated,
+        )
 
 
-class OfferChronicleGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        chronicle = self._obj
-        if key == "author":
-            if chronicle.isIdentityDiffusible:
-                return OfferChronicleAuthor(
-                    first_name=chronicle.firstName,
-                    age=chronicle.age,
-                    city=chronicle.city,
-                )
-            return None
-        if key == "content_preview":
-            return textwrap.shorten(chronicle.content, width=255, placeholder="…")
-
-        return super().get(key, default)
+class OfferChronicleAuthor(HttpBodyModel):
+    first_name: str | None = None
+    age: int | None = None
+    city: str | None = None
 
 
-class OfferChronicleAuthor(ConfiguredBaseModel):
-    first_name: str | None
-    age: int | None
-    city: str | None
-
-
-class OfferChronicle(ConfiguredBaseModel):
+class OfferChronicle(HttpBodyModel):
     id: int
-    author: OfferChronicleAuthor | None
+    author: OfferChronicleAuthor | None = None
     club_type: ChronicleClubType
     content: str
     date_created: datetime
 
-    class Config:
-        getter_dict = OfferChronicleGetterDict
+    @classmethod
+    def build(cls, chronicle: Chronicle) -> Self:
+        if chronicle.isIdentityDiffusible:
+            author = OfferChronicleAuthor(
+                first_name=chronicle.firstName,
+                age=chronicle.age,
+                city=chronicle.city,
+            )
+        else:
+            author = None
+
+        return cls(
+            id=chronicle.id,
+            author=author,
+            club_type=chronicle.clubType,
+            content=chronicle.content,
+            date_created=chronicle.dateCreated,
+        )
 
 
-class OfferChronicles(ConfiguredBaseModel):
+class OfferChronicles(HttpBodyModel):
     chronicles: list[OfferChronicle]
 
 
-class OfferArtistV2(ConfiguredBaseModel):
+class OfferArtistV2(HttpBodyModel):
     id: str
-    image: str | None
+    image: str | None = None
     name: str
-    role: ArtistType | None
+    role: ArtistType | None = None
 
 
-class OfferVideoV2(ConfiguredBaseModel):
+class OfferVideoV2(HttpBodyModel):
     id: str
-    title: str | None
-    thumbUrl: str | None
-    durationSeconds: int | None
+    title: str | None = None
+    thumbUrl: str | None = None
+    durationSeconds: int | None = None
 
 
-class OfferResponseV2(ConfiguredBaseModel):
+class OfferAddressResponseV2(HttpBodyModel):
+    street: str | None = None
+    postalCode: str
+    city: str
+    label: str | None = None
+    coordinates: AddressCoordinates
+    timezone: str
+
+
+class OfferResponseV2(HttpBodyModel):
     id: int
     accessibility: OfferAccessibilityResponseV2
-    address: OfferAddressResponseV2 | None
+    address: OfferAddressResponseV2 | None = None
     artists: list[OfferArtistV2]
     chronicles: list[ChroniclePreviewV2]
-    chronicles_count: int | None
-    description: str | None
+    chronicles_count: int | None = None
+    description: str | None = None
     expense_domains: list[ExpenseDomain]
-    externalTicketOfficeUrl: str | None
-    extraData: OfferExtraDataResponseV2 | None
+    externalTicketOfficeUrl: str | None = None
+    extraData: OfferExtraDataResponseV2 | None = None
     isExpired: bool
     isExternalBookingsDisabled: bool
     isEvent: bool
@@ -495,42 +349,151 @@ class OfferResponseV2(ConfiguredBaseModel):
     isDigital: bool
     isDuo: bool
     isEducational: bool
-    images: dict[str, OfferImageResponseV2] | None
-    last30DaysBookings: int | None
+    images: dict[str, OfferImageResponseV2] | None = None
+    last30DaysBookings: int | None = None
     metadata: offer_metadata.Metadata
     name: str
-    publicationDate: datetime | None
-    bookingAllowedDatetime: datetime | None
+    publicationDate: datetime | None = None
+    bookingAllowedDatetime: datetime | None = None
     reactions_count: ReactionCountV2
     stocks: list[OfferStockResponseV2]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponseV2
-    video: OfferVideoV2 | None
-    withdrawalDetails: str | None
+    video: OfferVideoV2 | None = None
+    withdrawalDetails: str | None = None
 
-    class Config:
-        getter_dict = OfferResponseV2GetterDict
+    @classmethod
+    def build(cls, offer: models.Offer) -> Self:
+        product: models.Product | None = offer.product
+        if product:
+            likes = product.likesCount or 0
+            artists = [
+                OfferArtistV2(
+                    id=artist_link.artist.id,
+                    image=artist_link.artist.image,
+                    name=artist_link.artist.name,
+                    role=artist_link.artist_type if artist_link.artist_type else None,
+                )
+                for artist_link in product.artistLinks
+                if not artist_link.artist.is_blacklisted
+            ]
+            last_30_days_bookings = product.last_30_days_booking
+            raw_extra_data = product.extraData or {}
+            chronicles_count = product.chroniclesCount or offer.chroniclesCount
+        else:
+            likes = offer.likesCount or 0
+            artists = []
+            last_30_days_bookings = None
+            raw_extra_data = offer.extraData or {}
+            chronicles_count = offer.chroniclesCount
+
+        if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
+            is_external_bookings_disabled = provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[
+                offer.lastProvider.localClass
+            ].is_active()
+        else:
+            is_external_bookings_disabled = False
+
+        extra_data = OfferExtraDataResponseV2.model_validate(raw_extra_data)
+        extra_data.durationMinutes = offer.durationMinutes
+        gtl_id = raw_extra_data.get("gtl_id")
+        if gtl_id is not None:
+            extra_data.gtlLabels = get_gtl_labels(gtl_id)
+        if offer.ean:
+            extra_data.ean = offer.ean
+
+        offerer_address = offer.offererAddress or offer.venue.offererAddress
+        address = offerer_address.address
+        address_response = OfferAddressResponseV2(
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            label=offerer_address.label,
+            coordinates=AddressCoordinates(latitude=address.latitude, longitude=address.longitude),
+            timezone=address.timezone,
+        )
+
+        if offer.metaData and offer.metaData.videoUrl and not offer.metaData.videoExternalId:
+            logger.error(
+                "This offer has a video URL but no videoExternalId in its metaData, and this should not happen",
+                extra={"offer_id": offer.id},
+            )
+
+        if offer.metaData and offer.metaData.videoExternalId:
+            video = OfferVideoV2(
+                id=offer.metaData.videoExternalId,
+                title=offer.metaData.videoTitle,
+                thumbUrl=offer.metaData.videoThumbnailUrl,
+                durationSeconds=offer.metaData.videoDuration,
+            )
+        else:
+            video = None
+
+        return cls(
+            id=offer.id,
+            accessibility=OfferAccessibilityResponseV2(
+                audioDisability=offer.audioDisabilityCompliant,
+                mentalDisability=offer.mentalDisabilityCompliant,
+                motorDisability=offer.motorDisabilityCompliant,
+                visualDisability=offer.visualDisabilityCompliant,
+            ),
+            address=address_response,
+            artists=artists,
+            chronicles=[
+                ChroniclePreviewV2.build(chronicle)
+                for chronicle in get_offer_published_chronicles(offer)[:MAX_PREVIEW_CHRONICLES]
+            ],
+            chronicles_count=chronicles_count,
+            description=offer.description,
+            expense_domains=get_expense_domains(offer),
+            externalTicketOfficeUrl=offer.externalTicketOfficeUrl,
+            extraData=extra_data,
+            isExpired=offer.hasBookingLimitDatetimesPassed,
+            isExternalBookingsDisabled=is_external_bookings_disabled,
+            isEvent=offer.isEvent,
+            isHeadline=offer.is_headline_offer,
+            is_forbidden_to_underage=offer.is_forbidden_to_underage,
+            isReleased=offer.isReleased,
+            isSoldOut=offer.isSoldOut,
+            isDigital=offer.isDigital,
+            isDuo=offer.isDuo,
+            isEducational=offer.isEducational,
+            images={
+                image_type: OfferImageResponseV2(url=image.url, credit=image.credit)
+                for image_type, image in offer.images.items()
+            }
+            if offer.images
+            else None,
+            last30DaysBookings=last_30_days_bookings,
+            metadata=offer_metadata.get_metadata_from_offer(offer),
+            name=offer.name,
+            publicationDate=offer.bookingAllowedDatetime,  # FIXME (bpeyrou): to be removed when min app version stop using publicationDate
+            bookingAllowedDatetime=offer.bookingAllowedDatetime,
+            reactions_count=ReactionCountV2(likes=likes),
+            stocks=[OfferStockResponseV2.build(stock) for stock in offer.activeStocks],
+            subcategoryId=offer.subcategoryId,
+            venue=OfferVenueResponseV2.build(offer.venue),
+            video=video,
+            withdrawalDetails=offer.withdrawalDetails,
+        )
 
 
-class OffersStocksResponseV2(BaseModel):
+class OffersStocksResponseV2(HttpBodyModel):
     offers: list[OfferResponseV2]
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
-
-class OffersStocksRequest(BaseModel):
+class OffersStocksRequest(HttpBodyModel):
     offer_ids: list[int]
 
 
 class OfferProAdviceQuery(HttpQueryParamsModel):
     max_content_length: int | None = None
-    page: int = pydantic_v2.Field(default=1, ge=1, le=20)
-    results_per_page: int = pydantic_v2.Field(default=20, ge=1, le=50)
-    latitude: float | None = pydantic_v2.Field(default=None, ge=-90, le=90)
-    longitude: float | None = pydantic_v2.Field(default=None, ge=-180, le=180)
+    page: int = Field(default=1, ge=1, le=20)
+    results_per_page: int = Field(default=20, ge=1, le=50)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
 
-    @pydantic_v2.model_validator(mode="after")
+    @model_validator(mode="after")
     def validate_params(self) -> "OfferProAdviceQuery":
         if (self.latitude and not self.longitude) or (not self.latitude and self.longitude):
             raise ValueError("Latitude and longitude must be provided together")

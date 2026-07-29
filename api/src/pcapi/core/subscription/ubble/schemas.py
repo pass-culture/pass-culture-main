@@ -1,9 +1,10 @@
 import datetime
 import enum
 
-import pydantic.v1 as pydantic_v1
 import pytz
 from pydantic import BaseModel as BaseModelV2
+from pydantic import HttpUrl
+from pydantic import field_validator
 
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -79,7 +80,7 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
     gender: users_models.GenderEnum | None = None
     id_document_number: str | None = None
     identification_id: str | None = None
-    identification_url: pydantic_v1.HttpUrl | None = None
+    identification_url: HttpUrl | None = None
     last_name: str | None = None
     last_name_at_birth: str | None = None
     married_name: str | None = None
@@ -90,13 +91,13 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
     reference_data_check_score: float | None = None
     registration_datetime: datetime.datetime | None = None
     score: float | None = None
-    signed_image_back_url: pydantic_v1.HttpUrl | None = None
-    signed_image_front_url: pydantic_v1.HttpUrl | None = None
+    signed_image_back_url: HttpUrl | None = None
+    signed_image_front_url: HttpUrl | None = None
     status: UbbleIdentificationStatus | None = None
     status_updated_at: datetime.datetime | None = None
     supported: float | None = None
 
-    @pydantic_v1.validator("birth_date", pre=True)
+    @field_validator("birth_date", mode="before")
     def parse_birth_date(cls, birth_date: datetime.date | str | None) -> datetime.date | None:
         if isinstance(birth_date, datetime.date):
             return birth_date

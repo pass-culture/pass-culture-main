@@ -20,7 +20,7 @@ def similar_offers(
         raw_response = recommendation_api.get_similar_offers(
             offer_id,
             user,
-            params=query.dict(),
+            params=query.model_dump(mode="json"),
         )
     except recommendation_api.RecommendationApiTimeoutException:
         raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
