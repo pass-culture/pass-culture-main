@@ -42,7 +42,7 @@ def make_graphql_application(
     has_next_page: bool = False,
     id_piece_number: str | None = "123123123",
     last_name: str = "Doe",
-    postal_code: int = 67200,
+    postal_code: str = "67200",
     processed_datetime: str | None = "2020-05-13T10:41:21+02:00",
     messages: list | None = None,
     application_techid: str | None = None,

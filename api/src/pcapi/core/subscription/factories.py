@@ -249,7 +249,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             kwargs.update(birth_date=user.birth_date.isoformat())
         if date_created:
             kwargs.update(registration_datetime=date_created.isoformat())
-        return factory_class.create(**kwargs).dict(by_alias=True)
+        return factory_class.create(**kwargs).model_dump(by_alias=True, mode="json")
 
     @classmethod
     def _create(
@@ -277,12 +277,12 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
             content = (
                 cls.generate_content_from_user(factory_class, kwargs["user"], first_registration_datetime)
                 if "user" in kwargs
-                else factory_class.create().dict(by_alias=True)
+                else factory_class.create().model_dump(by_alias=True, mode="json")
             )
         elif isinstance(kwargs.get("resultContent"), dict):
-            content = factory_class.create(**kwargs["resultContent"]).dict(by_alias=True)
+            content = factory_class.create(**kwargs["resultContent"]).model_dump(by_alias=True, mode="json")
         elif isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
-            content = kwargs["resultContent"].dict(by_alias=True)
+            content = kwargs["resultContent"].model_dump(by_alias=True, mode="json")
 
         kwargs["resultContent"] = content
         return super()._create(model_class, *args, **kwargs)

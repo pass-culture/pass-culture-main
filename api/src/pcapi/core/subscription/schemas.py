@@ -3,8 +3,7 @@ import datetime
 import enum
 import typing
 
-import pydantic as pydantic_v2
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi.core.subscription.models import BeneficiaryFraudCheck
 from pcapi.core.subscription.models import FraudReasonCode
@@ -164,22 +163,22 @@ class FraudItem:
         return self.extra_data.get("duplicate_id")
 
 
-class ProfileCompletionContent(pydantic_v2.BaseModel):
-    activity: (
-        users_models.ActivityEnum | str | None
-    )  # str for backward compatibility. All new data should be ActivityEnum
+class ProfileCompletionContent(pydantic.BaseModel):
+    activity: users_models.ActivityEnum | str | None = (
+        None  # str for backward compatibility. All new data should be ActivityEnum
+    )
     address: str | None = None  # Optional because it was not saved up until now
     city: str | None = None  # Optional because it was not saved up until now
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postal_code: str | None = pydantic_v2.Field(
+    postal_code: str | None = pydantic.Field(
         None, validation_alias="postalCode"
     )  # Optional because it was not saved up until now
     phone_number: str | None = None
     school_type: users_models.SchoolTypeEnum | None = None
 
-    @pydantic_v2.field_validator("activity", mode="before")
+    @pydantic.field_validator("activity", mode="before")
     @classmethod
     def validate_activity(cls, value: users_models.ActivityEnum | str | None) -> users_models.ActivityEnum | str | None:
         # Avoid validation error for old data because of rewording
@@ -187,13 +186,13 @@ class ProfileCompletionContent(pydantic_v2.BaseModel):
             return users_models.ActivityEnum.UNEMPLOYED.value
         return value
 
-    model_config = pydantic_v2.ConfigDict(
+    model_config = pydantic.ConfigDict(
         use_enum_values=True,
         validate_by_name=True,  # Needed for legacy profile completion fraud checks with `postalCode` field
     )
 
 
-class IdentityCheckContent(pydantic_v1.BaseModel):
+class IdentityCheckContent(pydantic.BaseModel):
     def get_birth_date(self) -> datetime.date | None:
         raise NotImplementedError()
 
@@ -248,13 +247,13 @@ class InternalReviewSource(enum.Enum):
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
 
-class PhoneValidationFraudData(pydantic_v1.BaseModel):
+class PhoneValidationFraudData(pydantic.BaseModel):
     message: str | None = None  # legacy field, still present in database
     phone_number: str | None = None
     source: InternalReviewSource | None = None  # legacy field, still present in database
 
 
-class HonorStatementContent(pydantic_v1.BaseModel):
+class HonorStatementContent(pydantic.BaseModel):
     pass
 
 
@@ -267,7 +266,7 @@ class UserProfilingRiskRating(enum.Enum):
     TRUSTED = "trusted"
 
 
-class UserProfilingFraudData(pydantic_v1.BaseModel):
+class UserProfilingFraudData(pydantic.BaseModel):
     account_email_first_seen: datetime.date | None
     account_email_result: str
     account_email_score: int | None

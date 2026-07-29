@@ -490,8 +490,7 @@ class OfferChroniclesTest:
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
 
-        long_text = """
-        Vesper is a world built on the ruins of older ones: in the dark of that colossal cavern no one has ever known the edges of, empires rise and fall like flickering candles.
+        long_text = """Vesper is a world built on the ruins of older ones: in the dark of that colossal cavern no one has ever known the edges of, empires rise and fall like flickering candles.
 
         Civilization huddles around pits of the light that falls through the cracks in firmament, known by men as the Glare.
         It is the unblinking stare of the never-setting sun that destroyed the Old World, the cruel mortar that allows survival far below.

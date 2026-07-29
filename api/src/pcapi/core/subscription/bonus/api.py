@@ -187,18 +187,20 @@ def _update_quotient_familial_fraud_check_content(
     quotient_familial_content = bonus_schemas.QuotientFamilialContent.from_api_particulier_quotient_familial(
         quotient_familial_data.quotient_familial
     )
-    fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
+    fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump(mode="json"))
 
     tax_household_children = [
         bonus_schemas.BonusCreditPerson.from_api_particulier_person(child) for child in quotient_familial_data.enfants
     ]
-    fraud_check.resultContent["children"] = [child.model_dump() for child in tax_household_children]
+    fraud_check.resultContent["children"] = [child.model_dump(mode="json") for child in tax_household_children]
 
     tax_householders = [
         bonus_schemas.BonusCreditPerson.from_api_particulier_person(householder)
         for householder in quotient_familial_data.allocataires
     ]
-    fraud_check.resultContent["householders"] = [householder.model_dump() for householder in tax_householders]
+    fraud_check.resultContent["householders"] = [
+        householder.model_dump(mode="json") for householder in tax_householders
+    ]
 
 
 def apply_for_adult_disability_bonus(aah_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:

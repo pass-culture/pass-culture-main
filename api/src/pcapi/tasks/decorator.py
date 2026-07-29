@@ -3,6 +3,7 @@ import logging
 import typing
 from functools import wraps
 
+import pydantic
 import pydantic.v1 as pydantic_v1
 from flask.blueprints import Blueprint
 from flask.globals import request
@@ -32,17 +33,22 @@ def task(
 ) -> typing.Callable:
     def decorator(f: typing.Callable) -> typing.Callable:
         payload_type = f.__annotations__["payload"]
-        assert issubclass(payload_type, pydantic_v1.BaseModel)
+        assert issubclass(payload_type, pydantic_v1.BaseModel) or issubclass(payload_type, pydantic.BaseModel)
 
         _define_handler(f, path, payload_type)
 
         @wraps(f)
-        def delay(payload: pydantic_v1.BaseModel) -> None:
+        def delay(payload: pydantic_v1.BaseModel | pydantic.BaseModel) -> None:
             if settings.IS_JOB_SYNCHRONOUS:
                 f(payload)
                 return
 
-            payload = json.loads(payload.json())
+            if isinstance(payload, pydantic_v1.BaseModel):
+                payload = json.loads(payload.json())
+            elif isinstance(payload, pydantic.BaseModel):
+                payload = json.loads(payload.model_dump_json())
+            else:
+                raise TypeError("a pydantic payload was expected")
 
             cloud_task.enqueue_internal_task(
                 queue,
@@ -62,7 +68,7 @@ def task(
 def _define_handler(
     f: typing.Callable,
     path: str,
-    payload_type: type[pydantic_v1.BaseModel],
+    payload_type: type[pydantic_v1.BaseModel] | type[pydantic.BaseModel],
 ) -> None:
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)

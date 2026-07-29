@@ -500,7 +500,7 @@ class EduconnectFraudTest:
         fraud_api.on_educonnect_result(
             user,
             educonnect_schemas.EduconnectContent(
-                birth_date=sixteen_years_ago,
+                birth_date=sixteen_years_ago.date(),
                 civility=users_models.GenderEnum.F,
                 educonnect_id="id-1",
                 first_name="Lucy",

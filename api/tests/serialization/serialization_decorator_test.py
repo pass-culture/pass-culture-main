@@ -2,10 +2,10 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from flask.blueprints import Blueprint
+from pydantic import BaseModel
 from werkzeug.datastructures import MultiDict
 
 from pcapi.routes.public.documentation_constants import http_responses
-from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import _transform_query_args_to_dict
 from pcapi.serialization.decorator import feature_flag_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -14,17 +14,17 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 class TestBodyModel(BaseModel):
     compulsory_int_body: int
-    optional_string_body: str | None
+    optional_string_body: str | None = None
 
 
 class TestQueryModel(BaseModel):
     compulsory_int_query: int
-    optinal_string_query: str | None
+    optional_string_query: str | None = None
 
 
 class TestResponseModel(BaseModel):
     compulsory_int_response: int
-    optional_string_response: str | None
+    optional_string_response: str | None = None
 
 
 endpoint_method = Mock()

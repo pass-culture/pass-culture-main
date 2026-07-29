@@ -2,9 +2,9 @@ from unittest import mock
 
 import pytest
 from google.cloud import tasks_v2
+from pydantic import BaseModel
 
 from pcapi import settings
-from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import requests
 
@@ -129,7 +129,7 @@ class CloudTaskDecoratorTest:
             json={"number": "not a number"},
         )
         assert response.status_code == 400
-        assert response.json == {"number": ["Saisissez un nombre valide"]}
+        assert response.json == {"number": ["Saisissez un entier valide"]}
 
     def test_route_unauthorized(self, client):
         # When using the `task` decorator, a route is defined and

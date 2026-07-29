@@ -74,7 +74,7 @@ def update_ds_applications_for_procedure(
     for node in ds_client.get_pro_bank_nodes_states(procedure_number=procedure_number, since=since):
         data = parse_raw_bank_info_data(node, procedure_version)
         try:
-            application_details = ApplicationDetail(**{"application_type": procedure_version, **data})
+            application_details = ApplicationDetail.build(**{"application_type": procedure_version, **data})
             ImportBankAccountV5(application_details).execute()
         except Exception as exc:
             logger.exception(
@@ -133,7 +133,7 @@ def mark_without_continuation_applications() -> None:
     for procedure in procedures:
         for state in states:
             for raw_node in ds_client.get_pro_bank_nodes_states(procedure_number=int(procedure), state=state):
-                application = MarkWithoutContinuationApplicationDetail(**raw_node)
+                application = MarkWithoutContinuationApplicationDetail.build(**raw_node)
 
                 try:
                     if application.should_be_marked_without_continuation:

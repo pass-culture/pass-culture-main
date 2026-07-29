@@ -746,7 +746,7 @@ def initialize_identity_fraud_check(
         user=user,
         type=fraud_check_type,
         thirdPartyId=third_party_id,
-        resultContent=identity_content.dict() if identity_content else None,
+        resultContent=identity_content.model_dump(mode="json") if identity_content else None,
         status=subscription_models.FraudCheckStatus.STARTED,
         eligibilityType=eligibility_type,
     )

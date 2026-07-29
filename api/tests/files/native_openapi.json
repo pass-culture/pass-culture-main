@@ -389,6 +389,40 @@
                 "title": "ActivityTypesResponse",
                 "type": "object"
             },
+            "AddressCoordinates": {
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "gt": -90,
+                                "lt": 90,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "gt": -180,
+                                "lt": 180,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
+                    }
+                },
+                "title": "AddressCoordinates",
+                "type": "object"
+            },
             "ArtistResponse": {
                 "additionalProperties": false,
                 "properties": {
@@ -465,7 +499,8 @@
                     "performer",
                     "stage_director"
                 ],
-                "title": "ArtistType"
+                "title": "ArtistType",
+                "type": "string"
             },
             "AudioDisability": {
                 "additionalProperties": false,
@@ -2371,7 +2406,6 @@
                 "type": "object"
             },
             "ChronicleClubType": {
-                "description": "An enumeration.",
                 "enum": [
                     "CINE",
                     "BOOK",
@@ -2379,7 +2413,8 @@
                     "CONCERT",
                     "SCENE"
                 ],
-                "title": "ChronicleClubType"
+                "title": "ChronicleClubType",
+                "type": "string"
             },
             "ChroniclePreview": {
                 "additionalProperties": false,
@@ -2422,36 +2457,61 @@
                 "type": "object"
             },
             "ChroniclePreviewAuthorV2": {
+                "additionalProperties": false,
                 "properties": {
                     "age": {
-                        "nullable": true,
-                        "title": "Age",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Age"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "firstName": {
-                        "nullable": true,
-                        "title": "Firstname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firstname"
                     }
                 },
                 "title": "ChroniclePreviewAuthorV2",
                 "type": "object"
             },
             "ChroniclePreviewV2": {
+                "additionalProperties": false,
                 "properties": {
                     "author": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ChroniclePreviewAuthorV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "ChroniclePreviewAuthorV2"
+                        "default": null
                     },
                     "contentPreview": {
                         "title": "Contentpreview",
@@ -2540,22 +2600,6 @@
                     "deviceId"
                 ],
                 "title": "CookieConsentRequest",
-                "type": "object"
-            },
-            "Coordinates": {
-                "properties": {
-                    "latitude": {
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
-                    }
-                },
-                "title": "Coordinates",
                 "type": "object"
             },
             "CoordinatesV2": {
@@ -3807,24 +3851,52 @@
                         "type": "string"
                     },
                     "level01Label": {
-                        "nullable": true,
-                        "title": "Level01Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Level01Label"
                     },
                     "level02Label": {
-                        "nullable": true,
-                        "title": "Level02Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Level02Label"
                     },
                     "level03Label": {
-                        "nullable": true,
-                        "title": "Level03Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Level03Label"
                     },
                     "level04Label": {
-                        "nullable": true,
-                        "title": "Level04Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Level04Label"
                     }
                 },
                 "required": [
@@ -4428,26 +4500,55 @@
                 "type": "object"
             },
             "OfferAccessibilityResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "audioDisability": {
-                        "nullable": true,
-                        "title": "Audiodisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Audiodisability"
                     },
                     "mentalDisability": {
-                        "nullable": true,
-                        "title": "Mentaldisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Mentaldisability"
                     },
                     "motorDisability": {
-                        "nullable": true,
-                        "title": "Motordisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Motordisability"
                     },
                     "visualDisability": {
-                        "nullable": true,
-                        "title": "Visualdisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Visualdisability"
                     }
                 },
                 "title": "OfferAccessibilityResponseV2",
@@ -4506,27 +4607,42 @@
                 "type": "object"
             },
             "OfferAddressResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "city": {
                         "title": "City",
                         "type": "string"
                     },
                     "coordinates": {
-                        "$ref": "#/components/schemas/Coordinates"
+                        "$ref": "#/components/schemas/AddressCoordinates"
                     },
                     "label": {
-                        "nullable": true,
-                        "title": "Label",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Label"
                     },
                     "postalCode": {
                         "title": "Postalcode",
                         "type": "string"
                     },
                     "street": {
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Street"
                     },
                     "timezone": {
                         "title": "Timezone",
@@ -4592,15 +4708,23 @@
                 "type": "object"
             },
             "OfferArtistV2": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "title": "Id",
                         "type": "string"
                     },
                     "image": {
-                        "nullable": true,
-                        "title": "Image",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
                     },
                     "name": {
                         "title": "Name",
@@ -4610,9 +4734,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ArtistType"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -4623,15 +4750,18 @@
                 "type": "object"
             },
             "OfferChronicle": {
+                "additionalProperties": false,
                 "properties": {
                     "author": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferChronicleAuthor"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferChronicleAuthor"
+                        "default": null
                     },
                     "clubType": {
                         "$ref": "#/components/schemas/ChronicleClubType"
@@ -4660,27 +4790,50 @@
                 "type": "object"
             },
             "OfferChronicleAuthor": {
+                "additionalProperties": false,
                 "properties": {
                     "age": {
-                        "nullable": true,
-                        "title": "Age",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Age"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "firstName": {
-                        "nullable": true,
-                        "title": "Firstname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Firstname"
                     }
                 },
                 "title": "OfferChronicleAuthor",
                 "type": "object"
             },
             "OfferChronicles": {
+                "additionalProperties": false,
                 "properties": {
                     "chronicles": {
                         "items": {
@@ -4970,110 +5123,238 @@
             "OfferExtraDataResponseV2": {
                 "properties": {
                     "allocineId": {
-                        "nullable": true,
-                        "title": "Allocineid",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Allocineid"
                     },
                     "author": {
-                        "nullable": true,
-                        "title": "Author",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Author"
                     },
                     "bookFormat": {
-                        "nullable": true,
-                        "title": "Bookformat",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookformat"
                     },
                     "cast": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Cast",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cast"
                     },
                     "certificate": {
-                        "nullable": true,
-                        "title": "Certificate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Certificate"
                     },
                     "durationMinutes": {
-                        "nullable": true,
-                        "title": "Durationminutes",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Durationminutes"
                     },
                     "ean": {
-                        "nullable": true,
-                        "title": "Ean",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Ean"
                     },
                     "editeur": {
-                        "nullable": true,
-                        "title": "Editeur",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Editeur"
                     },
                     "genres": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Genres",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Genres"
                     },
                     "gtlLabels": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/GtlLabelsV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "GtlLabelsV2"
+                        "default": null
                     },
                     "musicSubType": {
-                        "nullable": true,
-                        "title": "Musicsubtype",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Musicsubtype"
                     },
                     "musicType": {
-                        "nullable": true,
-                        "title": "Musictype",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Musictype"
                     },
                     "performer": {
-                        "nullable": true,
-                        "title": "Performer",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Performer"
                     },
                     "releaseDate": {
-                        "format": "date",
-                        "nullable": true,
-                        "title": "Releasedate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Releasedate"
                     },
                     "showSubType": {
-                        "nullable": true,
-                        "title": "Showsubtype",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Showsubtype"
                     },
                     "showType": {
-                        "nullable": true,
-                        "title": "Showtype",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Showtype"
                     },
                     "speaker": {
-                        "nullable": true,
-                        "title": "Speaker",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Speaker"
                     },
                     "stageDirector": {
-                        "nullable": true,
-                        "title": "Stagedirector",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Stagedirector"
                     },
                     "visa": {
-                        "nullable": true,
-                        "title": "Visa",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Visa"
                     }
                 },
                 "title": "OfferExtraDataResponseV2",
@@ -5106,11 +5387,19 @@
                 "type": "object"
             },
             "OfferImageResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "credit": {
-                        "nullable": true,
-                        "title": "Credit",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Credit"
                     },
                     "url": {
                         "title": "Url",
@@ -5588,6 +5877,7 @@
                 "type": "object"
             },
             "OfferResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "accessibility": {
                         "$ref": "#/components/schemas/OfferAccessibilityResponseV2"
@@ -5596,10 +5886,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferAddressResponseV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferAddressResponseV2"
+                        "default": null
                     },
                     "artists": {
                         "items": {
@@ -5609,10 +5901,17 @@
                         "type": "array"
                     },
                     "bookingAllowedDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookingalloweddatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookingalloweddatetime"
                     },
                     "chronicles": {
                         "items": {
@@ -5622,46 +5921,77 @@
                         "type": "array"
                     },
                     "chroniclesCount": {
-                        "nullable": true,
-                        "title": "Chroniclescount",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Chroniclescount"
                     },
                     "description": {
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
                     },
                     "expenseDomains": {
                         "items": {
                             "$ref": "#/components/schemas/ExpenseDomain"
                         },
+                        "title": "Expensedomains",
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
-                        "nullable": true,
-                        "title": "Externalticketofficeurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
                     },
                     "extraData": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferExtraDataResponseV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferExtraDataResponseV2"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
                     "images": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/OfferImageResponseV2"
-                        },
-                        "nullable": true,
-                        "title": "Images",
-                        "type": "object"
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/OfferImageResponseV2"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Images"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -5704,11 +6034,19 @@
                         "type": "boolean"
                     },
                     "last30DaysBookings": {
-                        "nullable": true,
-                        "title": "Last30Daysbookings",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Last30Daysbookings"
                     },
                     "metadata": {
+                        "additionalProperties": true,
                         "title": "Metadata",
                         "type": "object"
                     },
@@ -5717,10 +6055,17 @@
                         "type": "string"
                     },
                     "publicationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Publicationdate"
                     },
                     "reactionsCount": {
                         "$ref": "#/components/schemas/ReactionCountV2"
@@ -5742,15 +6087,24 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferVideoV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferVideoV2"
+                        "default": null
                     },
                     "withdrawalDetails": {
-                        "nullable": true,
-                        "title": "Withdrawaldetails",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldetails"
                     }
                 },
                 "required": [
@@ -5802,10 +6156,17 @@
             "OfferStockActivationCodeResponseV2": {
                 "properties": {
                     "expirationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Expirationdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expirationdate"
                     }
                 },
                 "title": "OfferStockActivationCodeResponseV2",
@@ -5933,33 +6294,57 @@
                 "type": "object"
             },
             "OfferStockResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferStockActivationCodeResponseV2"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferStockActivationCodeResponseV2"
+                        "default": null
                     },
                     "beginningDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Beginningdatetime"
                     },
                     "bookingLimitDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookinglimitdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookinglimitdatetime"
                     },
                     "cancellationLimitDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Cancellationlimitdatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cancellationlimitdatetime"
                     },
                     "features": {
                         "items": {
@@ -5993,14 +6378,28 @@
                         "type": "integer"
                     },
                     "priceCategoryLabel": {
-                        "nullable": true,
-                        "title": "Pricecategorylabel",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricecategorylabel"
                     },
                     "remainingQuantity": {
-                        "nullable": true,
-                        "title": "Remainingquantity",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Remainingquantity"
                     }
                 },
                 "required": [
@@ -6142,24 +6541,46 @@
                 "type": "object"
             },
             "OfferVenueResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "address": {
-                        "nullable": true,
-                        "title": "Address",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Address"
                     },
                     "bannerUrl": {
-                        "nullable": true,
-                        "title": "Bannerurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bannerurl"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "City"
                     },
                     "coordinates": {
-                        "$ref": "#/components/schemas/Coordinates"
+                        "$ref": "#/components/schemas/AddressCoordinates"
                     },
                     "id": {
                         "title": "Id",
@@ -6181,9 +6602,16 @@
                         "$ref": "#/components/schemas/OfferOffererResponseV2"
                     },
                     "postalCode": {
-                        "nullable": true,
-                        "title": "Postalcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Postalcode"
                     },
                     "publicName": {
                         "title": "Publicname",
@@ -6258,25 +6686,47 @@
                 "type": "object"
             },
             "OfferVideoV2": {
+                "additionalProperties": false,
                 "properties": {
                     "durationSeconds": {
-                        "nullable": true,
-                        "title": "Durationseconds",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Durationseconds"
                     },
                     "id": {
                         "title": "Id",
                         "type": "string"
                     },
                     "thumbUrl": {
-                        "nullable": true,
-                        "title": "Thumburl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Thumburl"
                     },
                     "title": {
-                        "nullable": true,
-                        "title": "Title",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Title"
                     }
                 },
                 "required": [
@@ -6286,22 +6736,24 @@
                 "type": "object"
             },
             "OffersStocksRequest": {
+                "additionalProperties": false,
                 "properties": {
-                    "offer_ids": {
+                    "offerIds": {
                         "items": {
                             "type": "integer"
                         },
-                        "title": "Offer Ids",
+                        "title": "Offerids",
                         "type": "array"
                     }
                 },
                 "required": [
-                    "offer_ids"
+                    "offerIds"
                 ],
                 "title": "OffersStocksRequest",
                 "type": "object"
             },
             "OffersStocksResponseV2": {
+                "additionalProperties": false,
                 "properties": {
                     "offers": {
                         "items": {

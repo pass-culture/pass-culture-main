@@ -1,7 +1,9 @@
 import datetime
+from typing import Annotated
 
-import pydantic.v1 as pydantic_v1
-from pydantic.v1.class_validators import validator
+from pydantic import BeforeValidator
+from pydantic import TypeAdapter
+from pydantic import ValidationError
 
 from pcapi.core.subscription import schemas as subscription_schemas
 
@@ -22,8 +24,8 @@ def _parse_jouve_date(date: str | None) -> datetime.datetime | None:
     # 1. the "classical" format such as "year/month/day" which is expressed when calling .dict()
     # 2. jouve format, when parsing incoming data
     try:
-        return pydantic_v1.datetime_parse.parse_datetime(date)
-    except pydantic_v1.DateTimeError:
+        return TypeAdapter(datetime.datetime).validate_python(date)
+    except ValidationError:
         pass
 
     try:
@@ -41,8 +43,8 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
     if not date:
         return None
     try:
-        return pydantic_v1.datetime_parse.parse_datetime(date)
-    except pydantic_v1.DateTimeError:
+        return TypeAdapter(datetime.datetime).validate_python(date)
+    except ValidationError:
         pass
     try:
         return datetime.datetime.strptime(date, "%m/%d/%Y %H:%M %p")  # production format
@@ -55,40 +57,33 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
 
 
 class JouveContent(subscription_schemas.IdentityCheckContent):
-    activity: str | None
-    address: str | None
-    birthDateTxt: datetime.datetime | None
-    birthLocationCtrl: str | None
-    bodyBirthDateCtrl: str | None
-    bodyBirthDateLevel: int | None
-    bodyFirstnameCtrl: str | None
-    bodyFirstnameLevel: int | None
-    bodyNameCtrl: str | None
-    bodyNameLevel: int | None
-    bodyPieceNumber: str | None
-    bodyPieceNumberCtrl: str | None
-    bodyPieceNumberLevel: int | None
-    city: str | None
-    creatorCtrl: str | None
-    email: str | None
-    firstName: str | None
-    gender: str | None
+    activity: str | None = None
+    address: str | None = None
+    birthDateTxt: Annotated[datetime.datetime, BeforeValidator(_parse_jouve_date)] | None = None
+    birthLocationCtrl: str | None = None
+    bodyBirthDateCtrl: str | None = None
+    bodyBirthDateLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyFirstnameCtrl: str | None = None
+    bodyFirstnameLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyNameCtrl: str | None = None
+    bodyNameLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    bodyPieceNumber: str | None = None
+    bodyPieceNumberCtrl: str | None = None
+    bodyPieceNumberLevel: Annotated[int, BeforeValidator(_parse_level)] | None = None
+    city: str | None = None
+    creatorCtrl: str | None = None
+    email: str | None = None
+    firstName: str | None = None
+    gender: str | None = None
     id: int
-    initialNumberCtrl: str | None
-    initialSizeCtrl: str | None
-    lastName: str | None
-    phoneNumber: str | None
-    postalCode: str | None
-    posteCodeCtrl: str | None
-    registrationDate: datetime.datetime | None
-    serviceCodeCtrl: str | None
-
-    _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_jouve_date)
-    _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_first_name_level = validator("bodyFirstnameLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_registration_date = validator("registrationDate", pre=True, allow_reuse=True)(_parse_jouve_datetime)
+    initialNumberCtrl: str | None = None
+    initialSizeCtrl: str | None = None
+    lastName: str | None = None
+    phoneNumber: str | None = None
+    postalCode: str | None = None
+    posteCodeCtrl: str | None = None
+    registrationDate: Annotated[datetime.datetime, BeforeValidator(_parse_jouve_datetime)] | None = None
+    serviceCodeCtrl: str | None = None
 
     def get_birth_date(self) -> datetime.date | None:
         return self.birthDateTxt.date() if self.birthDateTxt else None

@@ -1,8 +1,6 @@
 import datetime
 import enum
 import typing
-from decimal import Decimal
-from decimal import InvalidOperation
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
@@ -11,35 +9,16 @@ from pydantic import alias_generators
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization import common_models
 from pcapi.serialization import utils as serialization_utils
-from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
-
-
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 SocialMediasV2 = dict[SocialMedia, serialization_utils.HttpUrlString]
-
-
-def format_coordinate(value: typing.Any) -> Decimal:
-    if not isinstance(value, (int, str, float, Decimal)):
-        raise PydanticError("Format incorrect")
-
-    try:
-        decimal_value = Decimal(value).quantize(Decimal("1.00000"))
-    except InvalidOperation:
-        raise PydanticError("Format incorrect")
-
-    return decimal_value
-
-
-CoordinateField = typing.Annotated[Decimal, pydantic_v2.BeforeValidator(format_coordinate)]
 
 
 class CoreLocationModelV2(BaseModelV2):
@@ -49,8 +28,8 @@ class CoreLocationModelV2(BaseModelV2):
     city: str = pydantic_v2.Field(min_length=1, max_length=200)
     inseeCode: str | None = pydantic_v2.Field(min_length=5, max_length=5, default=None)
     label: str | None = None
-    latitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LATITUDE, lt=MAX_LATITUDE)
-    longitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LONGITUDE, lt=MAX_LONGITUDE)
+    latitude: common_models.LatitudeDecimal
+    longitude: common_models.LongitudeDecimal
     postalCode: str = pydantic_v2.Field(min_length=5, max_length=5)
     street: str = pydantic_v2.Field(min_length=1, max_length=200)
 
@@ -215,28 +194,6 @@ class LocationModel(BaseModel):
         if values["isManualEdition"] is True:
             return city.title()
         return city
-
-    @validator("latitude", pre=True)
-    @classmethod
-    def validate_latitude(cls, raw_latitude: str) -> str:
-        try:
-            latitude = Decimal(raw_latitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise ValueError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
-        return raw_latitude
-
-    @validator("longitude", pre=True)
-    @classmethod
-    def validate_longitude(cls, raw_longitude: str) -> str:
-        try:
-            longitude = Decimal(raw_longitude)
-        except InvalidOperation:
-            raise ValueError("Format incorrect")
-        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise ValueError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
-        return raw_longitude
 
 
 class BannerMetaModel(typing.TypedDict, total=False):

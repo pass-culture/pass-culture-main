@@ -1,4 +1,4 @@
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 
 dossier_default_passage_en_construction = "2020-03-24T12:35:51+01:00"
@@ -6,7 +6,7 @@ dossier_default_date_depot = "2020-03-25T12:35:51+01:00"
 demarche_default_date_creation = "2020-03-25T12:35:51+01:00"
 
 
-class Address(pydantic_v1.BaseModel):
+class Address(pydantic.BaseModel):
     cityCode: str = "75001"
     cityName: str = "Paris"
     departmentCode: str | None = None
@@ -22,15 +22,15 @@ class Address(pydantic_v1.BaseModel):
     type: str = "housenumber"
 
 
-class File(pydantic_v1.BaseModel):
+class File(pydantic.BaseModel):
     filename: str = "file.pdf"
     url: str = "https://example.com/file.pdf"
 
 
-class Champ(pydantic_v1.BaseModel):
+class Champ(pydantic.BaseModel):
     id: int
     label: str
-    stringValue: str | None
+    stringValue: str | None = None
 
 
 class AddressChamp(Champ):
@@ -46,8 +46,8 @@ class DossierLinkChamp(Champ):
 
 
 class LinkedDropDownListChamp(Champ):
-    primaryValue: str | None
-    secondaryValue: str | None
+    primaryValue: str | None = None
+    secondaryValue: str | None = None
 
 
 class MultipleDropDownListChamp(Champ):
@@ -58,7 +58,7 @@ class PieceJustificativeChamp(Champ):
     file: str
 
 
-class Demandeur(pydantic_v1.BaseModel):
+class Demandeur(pydantic.BaseModel):
     id: str = "demandeur_id"
 
 
@@ -70,7 +70,7 @@ class PersonnePhysique(Demandeur):
     prenom: str
 
 
-class Revision(pydantic_v1.BaseModel):
+class Revision(pydantic.BaseModel):
     annotation_descriptors: list[Champ] = []
     champ_descriptors: list[Champ] = []
     date_creation: str = demarche_default_date_creation
@@ -78,24 +78,24 @@ class Revision(pydantic_v1.BaseModel):
     id: str = "revision_id"
 
 
-class Service(pydantic_v1.BaseModel):
+class Service(pydantic.BaseModel):
     id: str
 
 
-class PageInfo(pydantic_v1.BaseModel):
-    endCursor: str | None
+class PageInfo(pydantic.BaseModel):
+    endCursor: str | None = None
     hasNextPage: bool = False
     hasPreviousPage: bool = False
-    startCursor: str | None
+    startCursor: str | None = None
 
 
-class DossierConnection(pydantic_v1.BaseModel):
+class DossierConnection(pydantic.BaseModel):
     pageInfo: PageInfo = PageInfo()
     edges: list[dict] = []
     nodes: list[dict] = []
 
 
-class Demarche(pydantic_v1.BaseModel):
+class Demarche(pydantic.BaseModel):
     annotationDescriptors: list = []
     champDescriptors: list = []
     dateCreation: str = demarche_default_date_creation
@@ -118,28 +118,28 @@ class Demarche(pydantic_v1.BaseModel):
     title: str = "titre de la démarche"
 
 
-class GroupeInstructeur(pydantic_v1.BaseModel):
+class GroupeInstructeur(pydantic.BaseModel):
     id: str
     number: int
     label: str
 
 
-class Profile(pydantic_v1.BaseModel):
+class Profile(pydantic.BaseModel):
     id: str = "profile_id"
     email: str = "default_email@example.com"
 
 
-class Message(pydantic_v1.BaseModel):
+class Message(pydantic.BaseModel):
     createdAt: str = dossier_default_date_depot
     email: str = "message_email@example.com"
 
 
-class Label(pydantic_v1.BaseModel):
+class Label(pydantic.BaseModel):
     id: str = "label_id"
     name: str = "Label Name"
 
 
-class Dossier(pydantic_v1.BaseModel):
+class Dossier(pydantic.BaseModel):
     annotations: list = []
     archived: bool = False
     attestation: File = File()
@@ -180,4 +180,6 @@ class Dossier(pydantic_v1.BaseModel):
 dossier_1 = Dossier(dossier_id="RandomGeneratedId", number=1)
 
 
-demarche_1 = Demarche(id="RandomGeneratedId", number=1, dossiers=DossierConnection(nodes=[dossier_1]))
+demarche_1 = Demarche(
+    id="RandomGeneratedId", number=1, dossiers=DossierConnection(nodes=[dossier_1.model_dump(serialize_as_any=True)])
+)

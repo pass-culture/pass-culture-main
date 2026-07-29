@@ -6,14 +6,14 @@ from pcapi.core.users import models as users_models
 
 class EduconnectContent(subscription_schemas.IdentityCheckContent):
     birth_date: datetime.date
-    civility: users_models.GenderEnum | None
+    civility: users_models.GenderEnum | None = None
     educonnect_id: str
     first_name: str
     ine_hash: str
     last_name: str
-    registration_datetime: datetime.datetime | None
-    school_uai: str | None
-    student_level: str | None
+    registration_datetime: datetime.datetime | None = None
+    school_uai: str | None = None
+    student_level: str | None = None
 
     def get_birth_date(self) -> datetime.date:
         return self.birth_date

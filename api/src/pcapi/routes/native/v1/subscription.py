@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 def get_profile() -> serializers.ProfileResponse | None:
     if (profile_data := subscription_api.get_profile_data(current_user)) is not None:
-        profile_data_dict = profile_data.dict()
+        profile_data_dict = profile_data.model_dump(mode="json")
         profile_data_dict.pop("origin", None)
         try:
             return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data_dict))
@@ -147,7 +147,7 @@ def start_identification_session(
     if fraud_check:
         source_data = typing.cast(ubble_schemas.UbbleContent, fraud_check.source_data())
         if source_data.identification_url:
-            return serializers.IdentificationSessionResponse(identificationUrl=source_data.identification_url)
+            return serializers.IdentificationSessionResponse(identificationUrl=str(source_data.identification_url))
 
     declared_names = subscription_api.get_declared_names(current_user)
 
@@ -159,7 +159,7 @@ def start_identification_session(
         identification_url = ubble_subscription_api.start_ubble_workflow(
             current_user, declared_names[0], declared_names[1], body.redirectUrl
         )
-        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
+        return serializers.IdentificationSessionResponse(identificationUrl=str(identification_url))
 
     except ubble_connector.UbbleHttpError as exception:
         if isinstance(exception, ubble_connector.UbbleServerError):
