@@ -146,9 +146,9 @@ export const Commitment = () => {
           retours au sujet de notre traitement, n’hésitez pas à écrire à {''}
           <Link
             isExternalLink
-            to="mailto:support@passculture.app"
+            to="mailto:accessibilite@passculture.app"
             color={LinkColor.NEUTRAL}
-            label="support@passculture.app"
+            label="accessibilite@passculture.app"
           />
         </p>
         <p className={styles['paragraph']}>
