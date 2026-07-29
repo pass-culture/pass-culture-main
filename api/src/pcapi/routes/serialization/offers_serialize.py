@@ -1,6 +1,7 @@
 import datetime
 import typing
 from typing import Any
+from typing import Self
 
 import pydantic as pydantic_v2
 from pydantic.v1 import EmailStr
@@ -11,6 +12,7 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
@@ -25,14 +27,11 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
+from pcapi.routes.serialization.address_serialize import LocationResponseModelV2
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
+from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import NOW_LITERAL
-from pcapi.serialization.utils import DecimalField
-from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_timezoned_datetime
-from pcapi.serialization.utils import validate_url
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.string import to_camelcase
@@ -63,7 +62,7 @@ class SubcategoryResponseModel(BaseModel):
     can_have_opening_hours: bool
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         getter_dict = SubcategoryGetterDict
         orm_mode = True
@@ -75,7 +74,7 @@ class CategoryResponseModel(BaseModel):
     is_selectable: bool
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
 
@@ -98,7 +97,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None
-    publicationDatetime: datetime.datetime | NOW_LITERAL | None
+    publicationDatetime: datetime.datetime | serialization_utils.NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
     subcategory_id: str | None
     video_url: HttpUrl | None
@@ -107,11 +106,11 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     motor_disability_compliant: bool | None
     visual_disability_compliant: bool | None
 
-    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
-    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
-    _validation_external_ticket_office_url = validate_url("externalTicketOfficeUrl")
-    _validation_url = validate_url("url")
-    _validation_video_url = validate_url("video_url")
+    _validation_bookings_allowed_datetime = serialization_utils.validate_timezoned_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = serialization_utils.validate_timezoned_datetime("publicationDatetime")
+    _validation_external_ticket_office_url = serialization_utils.validate_url("externalTicketOfficeUrl")
+    _validation_url = serialization_utils.validate_url("url")
+    _validation_video_url = serialization_utils.validate_url("video_url")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -166,7 +165,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return extra_data
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
@@ -175,8 +174,8 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
-    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = serialization_utils.validate_timezoned_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = serialization_utils.validate_timezoned_datetime("bookingAllowedDatetime")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
@@ -184,7 +183,7 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
     ids: list[int]
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
 
 
 class PatchAllOffersActiveStatusBodyModel(BaseModel):
@@ -203,7 +202,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     offerer_address_id: int | None
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
 
 
 class PatchAllOffersActiveStatusResponseModel(BaseModel):
@@ -319,7 +318,7 @@ class ListOffersQueryModel(BaseModel):
     offerer_address_id: int | None
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
 
@@ -411,47 +410,60 @@ class GetOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetOfferManagingOffererResponseModelV2(HttpBodyModel):
+    id: int
+    name: str
+
+
+class GetOfferVenueResponseModelV2(HttpBodyModel):
     street: str | None
     bookingEmail: str | None
     city: str | None
     departementCode: str | None
     id: int
-    managingOfferer: GetOfferManagingOffererResponseModel
+    managingOfferer: GetOfferManagingOffererResponseModelV2
     name: str
     postalCode: str | None
     publicName: str
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        getter_dict = VenueAddressInfoGetter
+    @classmethod
+    def build(cls, venue: offerers_models.Venue) -> Self:
+        return cls(
+            bookingEmail=venue.bookingEmail,
+            city=venue.offererAddress.address.city,
+            departementCode=venue.offererAddress.address.departmentCode,
+            id=venue.id,
+            managingOfferer=venue.managingOfferer,
+            name=venue.name,
+            postalCode=venue.offererAddress.address.postalCode,
+            publicName=venue.publicName,
+            street=venue.offererAddress.address.street,
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
+        )
 
 
-class GetOfferLastProviderResponseModel(BaseModel):
+class GetOfferLastProviderResponseModelV2(HttpBodyModel):
     name: str
 
-    class Config:
-        orm_mode = True
 
-
-class GetOfferMediationResponseModel(BaseModel):
+class GetOfferMediationResponseModelV2(HttpBodyModel):
     authorId: str | None
     credit: str | None
     thumbUrl: str | None
 
-    class Config:
-        orm_mode = True
 
-
-class PriceCategoryResponseModel(BaseModel):
+class PriceCategoryResponseModelV2(HttpBodyModel):
     id: int
     hasStocks: bool
     label: str
     price: float
-
-    class Config:
-        orm_mode = True
 
     @classmethod
     def build(cls, price_category: offers_models.PriceCategory, has_stocks: bool) -> typing.Self:
@@ -467,43 +479,6 @@ def _format_time(time_to_format: datetime.time) -> str:
     return time_to_format.strftime("%H:%M")
 
 
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "videoData":
-            meta_data = self._obj.metaData
-            return VideoData.from_orm(meta_data)
-        if key == "extraData" and self._obj.product:
-            self._obj.ean = self._obj.product.ean
-        if key == "extraData" and self._obj.ean:
-            extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
-            extra_data_copy["ean"] = self._obj.ean
-            return extra_data_copy
-        if key == "highlightRequests":
-            return [
-                highlight_request.highlight
-                for highlight_request in self._obj.highlight_requests
-                if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
-            ]
-        if key == "priceCategories":
-            price_category_ids_with_stocks = {
-                stock.priceCategoryId for stock in self._obj.stocks if stock.priceCategoryId
-            }
-            return [
-                PriceCategoryResponseModel.build(price_category, price_category.id in price_category_ids_with_stocks)
-                for price_category in self._obj.priceCategories
-            ]
-        return super().get(key, default)
-
-
-class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "location":
-            return offer_location_getter_dict_helper(self._obj)
-        if key == "isHeadlineOffer":
-            return self._obj.is_headline_offer
-        return super().get(key, default)
-
-
 class VideoData(ConfiguredBaseModel):
     videoDuration: int | None
     videoExternalId: str | None
@@ -512,9 +487,20 @@ class VideoData(ConfiguredBaseModel):
     videoUrl: HttpUrl | None
 
 
-class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
-    activeMediation: GetOfferMediationResponseModel | None
-    artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModel]
+class VideoDataV2(HttpBodyModel):
+    videoDuration: int | None = None
+    videoExternalId: str | None = None
+    videoTitle: str | None = None
+    videoThumbnailUrl: str | None = None
+    videoUrl: serialization_utils.HttpUrlString | None = None
+
+
+class OfferExtraDataV2(offers_models.OfferExtraData): ...
+
+
+class GetIndividualOfferResponseModelV2(HttpBodyModel):
+    activeMediation: GetOfferMediationResponseModelV2 | None
+    artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModelV2]
     bookingContact: str | None
     bookingsCount: int | None
     bookingEmail: str | None
@@ -524,7 +510,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingAllowedDatetime: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
-    extraData: offers_models.OfferExtraData | None
+    extraData: OfferExtraDataV2 | None
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
@@ -536,29 +522,106 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNational: bool
     isThing: bool
     id: int
-    lastProvider: GetOfferLastProviderResponseModel | None
+    lastProvider: GetOfferLastProviderResponseModelV2 | None
     name: str
-    priceCategories: list[PriceCategoryResponseModel] | None
+    priceCategories: list[PriceCategoryResponseModelV2] | None
     subcategoryId: SubcategoryIdEnum
     productId: int | None
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None
-    venue: GetOfferVenueResponseModel
+    venue: GetOfferVenueResponseModelV2
     withdrawalDelay: int | None
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
-    videoData: VideoData
-    highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    videoData: VideoDataV2
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModelV2]
     hasCulturalOutreachClaim: bool
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
+    location: LocationResponseModelV2 | None
+    hasPendingBookings: bool
+    isHeadlineOffer: bool
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+    @classmethod
+    def build(cls, offer: offers_models.Offer) -> Self:
+        extra_data = offer.extraData.copy() if offer.extraData else {}
+        extra_data["ean"] = offer.product.ean if offer.product else offer.ean
+
+        highlight_requests = [
+            highlight_request.highlight
+            for highlight_request in offer.highlight_requests
+            if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
+        ]
+
+        # TODO(xordoquy): remove the stock loop in favor of another DB query
+        price_category_ids_with_stocks = {stock.priceCategoryId for stock in offer.stocks if stock.priceCategoryId}
+        price_categories = [
+            PriceCategoryResponseModelV2.build(price_category, price_category.id in price_category_ids_with_stocks)
+            for price_category in offer.priceCategories
+        ]
+
+        serialized_location = None
+        if offer.offererAddress:
+            is_venue_location = is_venue_address(offer.offererAddress, offer.venue)
+            location_label = offer.venue.publicName if is_venue_location else offer.offererAddress.label
+            serialized_location = LocationResponseModelV2.build(
+                offer.offererAddress, label=location_label, is_venue_location=is_venue_location
+            )
+
+        return cls(
+            activeMediation=offer.activeMediation,
+            artistOfferLinks=offer.artistOfferLinks,
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            bookingAllowedDatetime=offer.bookingAllowedDatetime,
+            bookingContact=offer.bookingContact,
+            bookingsCount=offer.bookingsCount,
+            bookingEmail=offer.bookingEmail,
+            canBeEvent=offer.canBeEvent,
+            dateCreated=offer.dateCreated,
+            description=offer.description,
+            durationMinutes=offer.durationMinutes,
+            externalTicketOfficeUrl=offer.externalTicketOfficeUrl,
+            extraData=extra_data,
+            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
+            hasCulturalOutreachClaim=offer.hasCulturalOutreachClaim,
+            hasPendingBookings=offer.hasPendingBookings or False,
+            hasStocks=offer.hasStocks,
+            highlightRequests=highlight_requests,
+            id=offer.id,
+            isActive=offer.isActive,
+            isDigital=offer.isDigital,
+            isDuo=offer.isDuo,
+            isEditable=offer.isEditable,
+            isEvent=offer.isEvent,
+            isHeadlineOffer=offer.is_headline_offer,
+            isNational=offer.isNational,
+            isNonFreeOffer=offer.isNonFreeOffer,
+            isThing=offer.isThing,
+            lastProvider=offer.lastProvider,
+            location=serialized_location,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            name=offer.name,
+            priceCategories=price_categories,
+            productId=offer.productId,
+            publicationDate=offer.publicationDate,
+            publicationDatetime=offer.publicationDatetime,
+            subcategoryId=offer.subcategoryId,
+            status=offer.status,
+            thumbUrl=offer.thumbUrl,
+            url=offer.url,
+            venue=GetOfferVenueResponseModelV2.build(offer.venue),
+            videoData=offer.metaData or {},
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            withdrawalDelay=offer.withdrawalDelay,
+            withdrawalDetails=offer.withdrawalDetails,
+            withdrawalType=offer.withdrawalType,
+        )
 
 
 class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -574,18 +637,6 @@ class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    location: LocationResponseModel | None
-    hasPendingBookings: bool
-    isHeadlineOffer: bool
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferWithAddressResponseGetterDict
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):
@@ -647,7 +698,7 @@ class UpsertPriceCategoryModel(HttpBodyModel):
     # None -> creation of price category, not None -> updating price category
     id: int | None
     label: str = pydantic_v2.Field(min_length=1, max_length=50)
-    price: DecimalField = pydantic_v2.Field(
+    price: serialization_utils.DecimalField = pydantic_v2.Field(
         max_digits=12,
         decimal_places=2,
         ge=0.00,
@@ -700,7 +751,7 @@ class GetProductInformations(BaseModel):
         return super().from_orm(product)
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
 
@@ -709,7 +760,7 @@ class VideoMetatdataQueryModel(BaseModel):
     video_url: HttpUrl
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
@@ -741,7 +792,7 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
         return name
 
     class Config:
-        alias_generator = to_camel
+        alias_generator = serialization_utils.to_camel
         extra = "forbid"
 
 
@@ -764,8 +815,8 @@ class PostOfferBodyModel(MinimalPostOfferBodyModel):
             raise ValueError("Withdrawal type cannot be in_app for manually created offers")
         return value
 
-    _validation_external_ticket_office_url = validate_url("external_ticket_office_url")
-    _validation_url = validate_url("url")
+    _validation_external_ticket_office_url = serialization_utils.validate_url("external_ticket_office_url")
+    _validation_url = serialization_utils.validate_url("url")
 
 
 class ProAdviceModel(HttpBodyModel):

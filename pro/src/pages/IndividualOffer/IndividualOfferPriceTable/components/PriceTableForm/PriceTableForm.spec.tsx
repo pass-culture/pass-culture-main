@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
 
 import {
-  type GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModelV2,
   OfferStatus,
   VenueState,
 } from '@/apiClient/v1'
@@ -47,7 +47,7 @@ const renderPriceTableForm: RenderComponentFunction<
   PriceTableFormProps,
   PriceTableFormContext,
   {
-    offer: GetIndividualOfferWithAddressResponseModel
+    offer: GetIndividualOfferResponseModelV2
     defaultValues?: PriceTableFormValues
     isVenueClosed?: boolean
   }
@@ -539,7 +539,7 @@ describe('PriceTableForm', () => {
             <PriceTableForm
               isCaledonian={false}
               mode={OFFER_WIZARD_MODE.CREATION}
-              offer={offer as GetIndividualOfferWithAddressResponseModel}
+              offer={offer as GetIndividualOfferResponseModelV2}
               schemaValidationContext={{
                 isCaledonian: false,
                 mode: OFFER_WIZARD_MODE.CREATION,

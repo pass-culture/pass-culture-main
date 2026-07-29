@@ -6,7 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModelV2 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -44,7 +44,7 @@ import { OfferSection } from './OfferSection/OfferSection'
 import { StockSection } from './StockSection/StockSection'
 
 interface IndividualOfferSummaryScreenProps {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferResponseModelV2
 }
 export const IndividualOfferSummaryScreen = ({
   offer,

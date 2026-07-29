@@ -7,7 +7,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
-import type { PriceCategoryResponseModel } from '@/apiClient/v1'
+import type { PriceCategoryResponseModelV2 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
@@ -45,7 +45,7 @@ import { getValidationSchema } from '../form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 export interface RecurrenceFormProps {
-  priceCategories: PriceCategoryResponseModel[]
+  priceCategories: PriceCategoryResponseModelV2[]
   handleSubmit: (values: RecurrenceFormValues) => Promise<void>
 }
 

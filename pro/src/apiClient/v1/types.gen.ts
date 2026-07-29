@@ -73,7 +73,7 @@ export type ArtistOfferLinkBodyModel = {
     /**
      * Artistid
      */
-    artistId: string;
+    artistId?: string;
     /**
      * Artistname
      */
@@ -82,13 +82,13 @@ export type ArtistOfferLinkBodyModel = {
 };
 
 /**
- * ArtistOfferLinkResponseModel
+ * ArtistOfferLinkResponseModelV2
  */
-export type ArtistOfferLinkResponseModel = {
+export type ArtistOfferLinkResponseModelV2 = {
     /**
      * Artistid
      */
-    artistId: string;
+    artistId?: string | null;
     /**
      * Artistname
      */
@@ -2519,37 +2519,34 @@ export type GetEducationalOfferersResponseModel = {
 };
 
 /**
- * GetIndividualOfferResponseModel
+ * GetIndividualOfferResponseModelV2
  */
-export type GetIndividualOfferResponseModel = {
-    /**
-     * GetOfferMediationResponseModel
-     */
-    activeMediation?: GetOfferMediationResponseModel;
+export type GetIndividualOfferResponseModelV2 = {
+    activeMediation: GetOfferMediationResponseModelV2 | null;
     /**
      * Artistofferlinks
      */
-    artistOfferLinks: Array<ArtistOfferLinkResponseModel>;
+    artistOfferLinks: Array<ArtistOfferLinkResponseModelV2>;
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant: boolean | null;
     /**
      * Bookingalloweddatetime
      */
-    bookingAllowedDatetime?: string;
+    bookingAllowedDatetime: string | null;
     /**
      * Bookingcontact
      */
-    bookingContact?: string;
+    bookingContact: string | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail: string | null;
     /**
      * Bookingscount
      */
-    bookingsCount?: number;
+    bookingsCount: number | null;
     /**
      * Canbeevent
      */
@@ -2561,180 +2558,16 @@ export type GetIndividualOfferResponseModel = {
     /**
      * Description
      */
-    description?: string;
+    description: string | null;
     /**
      * Durationminutes
      */
-    durationMinutes?: number;
+    durationMinutes: number | null;
     /**
      * Externalticketofficeurl
      */
-    externalTicketOfficeUrl?: string;
-    extraData?: OfferExtraData;
-    /**
-     * Hasbookinglimitdatetimespassed
-     */
-    hasBookingLimitDatetimesPassed: boolean;
-    /**
-     * Hasculturaloutreachclaim
-     */
-    hasCulturalOutreachClaim: boolean;
-    /**
-     * Hasstocks
-     */
-    hasStocks: boolean;
-    /**
-     * Highlightrequests
-     */
-    highlightRequests: Array<ShortHighlightResponseModel>;
-    /**
-     * Id
-     */
-    id: number;
-    /**
-     * Isactive
-     */
-    isActive: boolean;
-    /**
-     * Isdigital
-     */
-    isDigital: boolean;
-    /**
-     * Isduo
-     */
-    isDuo: boolean;
-    /**
-     * Iseditable
-     */
-    isEditable: boolean;
-    /**
-     * Isevent
-     */
-    isEvent: boolean;
-    /**
-     * Isnational
-     */
-    isNational: boolean;
-    /**
-     * Isnonfreeoffer
-     */
-    isNonFreeOffer?: boolean;
-    /**
-     * Isthing
-     */
-    isThing: boolean;
-    /**
-     * GetOfferLastProviderResponseModel
-     */
-    lastProvider?: GetOfferLastProviderResponseModel;
-    /**
-     * Mentaldisabilitycompliant
-     */
-    mentalDisabilityCompliant?: boolean;
-    /**
-     * Motordisabilitycompliant
-     */
-    motorDisabilityCompliant?: boolean;
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Pricecategories
-     */
-    priceCategories?: Array<PriceCategoryResponseModel>;
-    /**
-     * Productid
-     */
-    productId?: number;
-    /**
-     * Publicationdate
-     */
-    publicationDate?: string;
-    /**
-     * Publicationdatetime
-     */
-    publicationDatetime?: string;
-    status: OfferStatus;
-    subcategoryId: SubcategoryIdEnum;
-    /**
-     * Thumburl
-     */
-    thumbUrl?: string;
-    /**
-     * Url
-     */
-    url?: string;
-    venue: GetOfferVenueResponseModel;
-    videoData: VideoData;
-    /**
-     * Visualdisabilitycompliant
-     */
-    visualDisabilityCompliant?: boolean;
-    /**
-     * Withdrawaldelay
-     */
-    withdrawalDelay?: number;
-    /**
-     * Withdrawaldetails
-     */
-    withdrawalDetails?: string;
-    withdrawalType?: WithdrawalTypeEnum;
-};
-
-/**
- * GetIndividualOfferWithAddressResponseModel
- */
-export type GetIndividualOfferWithAddressResponseModel = {
-    /**
-     * GetOfferMediationResponseModel
-     */
-    activeMediation?: GetOfferMediationResponseModel;
-    /**
-     * Artistofferlinks
-     */
-    artistOfferLinks: Array<ArtistOfferLinkResponseModel>;
-    /**
-     * Audiodisabilitycompliant
-     */
-    audioDisabilityCompliant?: boolean;
-    /**
-     * Bookingalloweddatetime
-     */
-    bookingAllowedDatetime?: string;
-    /**
-     * Bookingcontact
-     */
-    bookingContact?: string;
-    /**
-     * Bookingemail
-     */
-    bookingEmail?: string;
-    /**
-     * Bookingscount
-     */
-    bookingsCount?: number;
-    /**
-     * Canbeevent
-     */
-    canBeEvent: boolean;
-    /**
-     * Datecreated
-     */
-    dateCreated: string;
-    /**
-     * Description
-     */
-    description?: string;
-    /**
-     * Durationminutes
-     */
-    durationMinutes?: number;
-    /**
-     * Externalticketofficeurl
-     */
-    externalTicketOfficeUrl?: string;
-    extraData?: OfferExtraData;
+    externalTicketOfficeUrl: string | null;
+    extraData: OfferExtraDataV2 | null;
     /**
      * Hasbookinglimitdatetimespassed
      */
@@ -2754,7 +2587,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
     /**
      * Highlightrequests
      */
-    highlightRequests: Array<ShortHighlightResponseModel>;
+    highlightRequests: Array<ShortHighlightResponseModelV2>;
     /**
      * Id
      */
@@ -2790,27 +2623,21 @@ export type GetIndividualOfferWithAddressResponseModel = {
     /**
      * Isnonfreeoffer
      */
-    isNonFreeOffer?: boolean;
+    isNonFreeOffer: boolean | null;
     /**
      * Isthing
      */
     isThing: boolean;
-    /**
-     * GetOfferLastProviderResponseModel
-     */
-    lastProvider?: GetOfferLastProviderResponseModel;
-    /**
-     * LocationResponseModel
-     */
-    location?: LocationResponseModel;
+    lastProvider: GetOfferLastProviderResponseModelV2 | null;
+    location: LocationResponseModelV2 | null;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
@@ -2818,44 +2645,44 @@ export type GetIndividualOfferWithAddressResponseModel = {
     /**
      * Pricecategories
      */
-    priceCategories?: Array<PriceCategoryResponseModel>;
+    priceCategories: Array<PriceCategoryResponseModelV2> | null;
     /**
      * Productid
      */
-    productId?: number;
+    productId: number | null;
     /**
      * Publicationdate
      */
-    publicationDate?: string;
+    publicationDate: string | null;
     /**
      * Publicationdatetime
      */
-    publicationDatetime?: string;
+    publicationDatetime: string | null;
     status: OfferStatus;
     subcategoryId: SubcategoryIdEnum;
     /**
      * Thumburl
      */
-    thumbUrl?: string;
+    thumbUrl: string | null;
     /**
      * Url
      */
-    url?: string;
-    venue: GetOfferVenueResponseModel;
-    videoData: VideoData;
+    url: string | null;
+    venue: GetOfferVenueResponseModelV2;
+    videoData: VideoDataV2;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant: boolean | null;
     /**
      * Withdrawaldelay
      */
-    withdrawalDelay?: number;
+    withdrawalDelay: number | null;
     /**
      * Withdrawaldetails
      */
-    withdrawalDetails?: string;
-    withdrawalType?: WithdrawalTypeEnum;
+    withdrawalDetails: string | null;
+    withdrawalType: WithdrawalTypeEnum | null;
 };
 
 /**
@@ -2878,9 +2705,9 @@ export type GetOfferExposureResponseModel = {
 };
 
 /**
- * GetOfferLastProviderResponseModel
+ * GetOfferLastProviderResponseModelV2
  */
-export type GetOfferLastProviderResponseModel = {
+export type GetOfferLastProviderResponseModelV2 = {
     /**
      * Name
      */
@@ -2888,9 +2715,9 @@ export type GetOfferLastProviderResponseModel = {
 };
 
 /**
- * GetOfferManagingOffererResponseModel
+ * GetOfferManagingOffererResponseModelV2
  */
-export type GetOfferManagingOffererResponseModel = {
+export type GetOfferManagingOffererResponseModelV2 = {
     /**
      * Id
      */
@@ -2902,21 +2729,21 @@ export type GetOfferManagingOffererResponseModel = {
 };
 
 /**
- * GetOfferMediationResponseModel
+ * GetOfferMediationResponseModelV2
  */
-export type GetOfferMediationResponseModel = {
+export type GetOfferMediationResponseModelV2 = {
     /**
      * Authorid
      */
-    authorId?: string;
+    authorId: string | null;
     /**
      * Credit
      */
-    credit?: string;
+    credit: string | null;
     /**
      * Thumburl
      */
-    thumbUrl?: string;
+    thumbUrl: string | null;
 };
 
 /**
@@ -2970,38 +2797,38 @@ export type GetOfferStockResponseModel = {
 };
 
 /**
- * GetOfferVenueResponseModel
+ * GetOfferVenueResponseModelV2
  */
-export type GetOfferVenueResponseModel = {
+export type GetOfferVenueResponseModelV2 = {
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant: boolean | null;
     /**
      * Bookingemail
      */
-    bookingEmail?: string;
+    bookingEmail: string | null;
     /**
      * City
      */
-    city?: string;
+    city: string | null;
     /**
      * Departementcode
      */
-    departementCode?: string;
+    departementCode: string | null;
     /**
      * Id
      */
     id: number;
-    managingOfferer: GetOfferManagingOffererResponseModel;
+    managingOfferer: GetOfferManagingOffererResponseModelV2;
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant: boolean | null;
     /**
      * Name
      */
@@ -3009,7 +2836,7 @@ export type GetOfferVenueResponseModel = {
     /**
      * Postalcode
      */
-    postalCode?: string;
+    postalCode: string | null;
     /**
      * Publicname
      */
@@ -3017,11 +2844,11 @@ export type GetOfferVenueResponseModel = {
     /**
      * Street
      */
-    street?: string;
+    street: string | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant: boolean | null;
 };
 
 /**
@@ -4675,17 +4502,17 @@ export type OfferExtraData = {
      */
     certificate?: string;
     /**
-     * Code Clil
+     * Codeclil
      */
-    code_clil?: string;
+    codeClil?: string;
     /**
      * Collection
      */
     collection?: string;
     /**
-     * Comic Series
+     * Comicseries
      */
-    comic_series?: string;
+    comicSeries?: string;
     /**
      * Comment
      */
@@ -4697,9 +4524,9 @@ export type OfferExtraData = {
         [key: string]: unknown;
     }>;
     /**
-     * Contenu Explicite
+     * Contenuexplicite
      */
-    contenu_explicite?: string;
+    contenuExplicite?: string;
     /**
      * Countries
      */
@@ -4711,13 +4538,13 @@ export type OfferExtraData = {
         [key: string]: unknown;
     }>;
     /**
-     * Csr Id
+     * Csrid
      */
-    csr_id?: string;
+    csrId?: string;
     /**
-     * Date Parution
+     * Dateparution
      */
-    date_parution?: string;
+    dateParution?: string;
     /**
      * Dewey
      */
@@ -4731,9 +4558,9 @@ export type OfferExtraData = {
      */
     dispo?: number;
     /**
-     * Dispo Label
+     * Dispolabel
      */
-    dispo_label?: string;
+    dispoLabel?: string;
     /**
      * Distributeur
      */
@@ -4755,9 +4582,9 @@ export type OfferExtraData = {
      */
     genres?: Array<string>;
     /**
-     * Gtl Id
+     * Gtlid
      */
-    gtl_id?: string;
+    gtlId?: string;
     /**
      * Langue
      */
@@ -4767,6 +4594,10 @@ export type OfferExtraData = {
      */
     langueiso?: string;
     /**
+     * Musiclabel
+     */
+    musicLabel?: string;
+    /**
      * Musicsubtype
      */
     musicSubType?: string;
@@ -4775,21 +4606,17 @@ export type OfferExtraData = {
      */
     musicType?: string;
     /**
-     * Music Label
+     * Nbgalettes
      */
-    music_label?: string;
+    nbGalettes?: string;
     /**
-     * Nb Galettes
+     * Nbpages
      */
-    nb_galettes?: string;
+    nbPages?: string;
     /**
-     * Nb Pages
+     * Numincollection
      */
-    nb_pages?: string;
-    /**
-     * Num In Collection
-     */
-    num_in_collection?: string;
+    numInCollection?: string;
     /**
      * Originaltitle
      */
@@ -4803,13 +4630,13 @@ export type OfferExtraData = {
      */
     posterUrl?: string;
     /**
-     * Prix Livre
+     * Prixlivre
      */
-    prix_livre?: string;
+    prixLivre?: string;
     /**
-     * Prix Musique
+     * Prixmusique
      */
-    prix_musique?: string;
+    prixMusique?: string;
     /**
      * Productionyear
      */
@@ -4863,9 +4690,9 @@ export type OfferExtraData = {
         [key: string]: unknown;
     };
     /**
-     * Titelive Regroup
+     * Titeliveregroup
      */
-    titelive_regroup?: string;
+    titeliveRegroup?: string;
     /**
      * Title
      */
@@ -4882,6 +4709,248 @@ export type OfferExtraData = {
      * Visa
      */
     visa?: string;
+};
+
+/**
+ * OfferExtraDataV2
+ */
+export type OfferExtraDataV2 = {
+    /**
+     * Allocineid
+     */
+    allocineId?: number | null;
+    /**
+     * Artist
+     */
+    artist?: string | null;
+    /**
+     * Author
+     */
+    author?: string | null;
+    /**
+     * Backlink
+     */
+    backlink?: string | null;
+    /**
+     * Bookformat
+     */
+    bookFormat?: string | null;
+    /**
+     * Cast
+     */
+    cast?: Array<string> | null;
+    /**
+     * Certificate
+     */
+    certificate?: string | null;
+    /**
+     * Codeclil
+     */
+    codeClil?: string | null;
+    /**
+     * Collection
+     */
+    collection?: string | null;
+    /**
+     * Comicseries
+     */
+    comicSeries?: string | null;
+    /**
+     * Comment
+     */
+    comment?: string | null;
+    /**
+     * Companies
+     */
+    companies?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Contenuexplicite
+     */
+    contenuExplicite?: string | null;
+    /**
+     * Countries
+     */
+    countries?: Array<string> | null;
+    /**
+     * Credits
+     */
+    credits?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Csrid
+     */
+    csrId?: string | null;
+    /**
+     * Dateparution
+     */
+    dateParution?: string | null;
+    /**
+     * Dewey
+     */
+    dewey?: string | null;
+    /**
+     * Diffusionversion
+     */
+    diffusionVersion?: string | null;
+    /**
+     * Dispo
+     */
+    dispo?: number | null;
+    /**
+     * Dispolabel
+     */
+    dispoLabel?: string | null;
+    /**
+     * Distributeur
+     */
+    distributeur?: string | null;
+    /**
+     * Ean
+     */
+    ean?: string | null;
+    /**
+     * Editeur
+     */
+    editeur?: string | null;
+    /**
+     * Eidr
+     */
+    eidr?: string | null;
+    /**
+     * Genres
+     */
+    genres?: Array<string> | null;
+    /**
+     * Gtlid
+     */
+    gtlId?: string | null;
+    /**
+     * Langue
+     */
+    langue?: string | null;
+    /**
+     * Langueiso
+     */
+    langueiso?: string | null;
+    /**
+     * Musiclabel
+     */
+    musicLabel?: string | null;
+    /**
+     * Musicsubtype
+     */
+    musicSubType?: string | null;
+    /**
+     * Musictype
+     */
+    musicType?: string | null;
+    /**
+     * Nbgalettes
+     */
+    nbGalettes?: string | null;
+    /**
+     * Nbpages
+     */
+    nbPages?: string | null;
+    /**
+     * Numincollection
+     */
+    numInCollection?: string | null;
+    /**
+     * Originaltitle
+     */
+    originalTitle?: string | null;
+    /**
+     * Performer
+     */
+    performer?: string | null;
+    /**
+     * Posterurl
+     */
+    posterUrl?: string | null;
+    /**
+     * Prixlivre
+     */
+    prixLivre?: string | null;
+    /**
+     * Prixmusique
+     */
+    prixMusique?: string | null;
+    /**
+     * Productionyear
+     */
+    productionYear?: number | null;
+    /**
+     * Rayon
+     */
+    rayon?: string | null;
+    /**
+     * Releasedate
+     */
+    releaseDate?: string | null;
+    /**
+     * Releases
+     */
+    releases?: Array<{
+        [key: string]: unknown;
+    }> | null;
+    /**
+     * Runtime
+     */
+    runtime?: number | null;
+    /**
+     * Schoolbook
+     */
+    schoolbook?: boolean | null;
+    /**
+     * Showsubtype
+     */
+    showSubType?: string | null;
+    /**
+     * Showtype
+     */
+    showType?: string | null;
+    /**
+     * Speaker
+     */
+    speaker?: string | null;
+    /**
+     * Stagedirector
+     */
+    stageDirector?: string | null;
+    /**
+     * Synopsis
+     */
+    synopsis?: string | null;
+    /**
+     * Theater
+     */
+    theater?: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Titeliveregroup
+     */
+    titeliveRegroup?: string | null;
+    /**
+     * Title
+     */
+    title?: string | null;
+    /**
+     * Top
+     */
+    top?: string | null;
+    /**
+     * Type
+     */
+    type?: string | null;
+    /**
+     * Visa
+     */
+    visa?: string | null;
 };
 
 /**
@@ -5708,9 +5777,9 @@ export type PriceCategoryBody = {
 };
 
 /**
- * PriceCategoryResponseModel
+ * PriceCategoryResponseModelV2
  */
-export type PriceCategoryResponseModel = {
+export type PriceCategoryResponseModelV2 = {
     /**
      * Hasstocks
      */
@@ -6110,6 +6179,20 @@ export type SharedLoginUserResponseModel = {
  * ShortHighlightResponseModel
  */
 export type ShortHighlightResponseModel = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * ShortHighlightResponseModelV2
+ */
+export type ShortHighlightResponseModelV2 = {
     /**
      * Id
      */
@@ -6917,6 +7000,32 @@ export type VideoData = {
 };
 
 /**
+ * VideoDataV2
+ */
+export type VideoDataV2 = {
+    /**
+     * Videoduration
+     */
+    videoDuration?: number | null;
+    /**
+     * Videoexternalid
+     */
+    videoExternalId?: string | null;
+    /**
+     * Videothumbnailurl
+     */
+    videoThumbnailUrl?: string | null;
+    /**
+     * Videotitle
+     */
+    videoTitle?: string | null;
+    /**
+     * Videourl
+     */
+    videoUrl?: string | null;
+};
+
+/**
  * VideoMetatdataQueryModel
  */
 export type VideoMetatdataQueryModel = {
@@ -6976,8 +7085,6 @@ export type WeekdayOpeningHoursTimespans = {
 
 /**
  * WithdrawalTypeEnum
- *
- * An enumeration.
  */
 export enum WithdrawalTypeEnum {
     BY_EMAIL = 'by_email',
@@ -9278,7 +9385,7 @@ export type postOffersResponses = {
     /**
      * Created
      */
-    201: GetIndividualOfferResponseModel;
+    201: GetIndividualOfferResponseModelV2;
 };
 
 export type postOffersResponse = postOffersResponses[keyof postOffersResponses];
@@ -9517,7 +9624,7 @@ export type patchOffersPublishResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferResponseModel;
+    200: GetIndividualOfferResponseModelV2;
 };
 
 export type patchOffersPublishResponse = patchOffersPublishResponses[keyof patchOffersPublishResponses];
@@ -9637,7 +9744,7 @@ export type getOffersByOfferIdResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModelV2;
 };
 
 export type getOffersByOfferIdResponse = getOffersByOfferIdResponses[keyof getOffersByOfferIdResponses];
@@ -9668,7 +9775,7 @@ export type patchOffersByOfferIdResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModelV2;
 };
 
 export type patchOffersByOfferIdResponse = patchOffersByOfferIdResponses[keyof patchOffersByOfferIdResponses];
@@ -9730,7 +9837,7 @@ export type postOffersByOfferIdHighlightRequestsResponses = {
     /**
      * Created
      */
-    201: GetIndividualOfferWithAddressResponseModel;
+    201: GetIndividualOfferResponseModelV2;
 };
 
 export type postOffersByOfferIdHighlightRequestsResponse = postOffersByOfferIdHighlightRequestsResponses[keyof postOffersByOfferIdHighlightRequestsResponses];
@@ -9761,7 +9868,7 @@ export type putOffersByOfferIdPriceCategoriesResponses = {
     /**
      * OK
      */
-    200: GetIndividualOfferWithAddressResponseModel;
+    200: GetIndividualOfferResponseModelV2;
 };
 
 export type putOffersByOfferIdPriceCategoriesResponse = putOffersByOfferIdPriceCategoriesResponses[keyof putOffersByOfferIdPriceCategoriesResponses];
@@ -10873,7 +10980,7 @@ export type postV2OffersResponses = {
     /**
      * Created
      */
-    201: GetIndividualOfferResponseModel;
+    201: GetIndividualOfferResponseModelV2;
 };
 
 export type postV2OffersResponse = postV2OffersResponses[keyof postV2OffersResponses];
