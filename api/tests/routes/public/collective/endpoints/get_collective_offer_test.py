@@ -240,10 +240,7 @@ def expected_serialized_offer(offer: models.CollectiveOffer):
         "students": [student.name for student in offer.students],
         "totalPrice": float(offer.collectiveStock.price),
         "price": float(offer.collectiveStock.price),
-        # TODO (jcicurel-pass, 2026-06-19): remove fallback when servicePrice is not nullable
-        "servicePrice": float(offer.collectiveStock.servicePrice)
-        if offer.collectiveStock.servicePrice is not None
-        else float(offer.collectiveStock.price),
+        "servicePrice": float(offer.collectiveStock.servicePrice),
         "additionalFees": fees,
         "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed,
         "mentalDisabilityCompliant": offer.mentalDisabilityCompliant,

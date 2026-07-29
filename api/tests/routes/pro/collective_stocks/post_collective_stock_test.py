@@ -49,7 +49,7 @@ class Return200Test:
     @pytest.mark.features(WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS=False)
     def test_create_valid_stock_for_collective_offer(self, client):
         _create_educational_year()
-        offer = factories.DraftCollectiveOfferFactory()
+        offer = factories.DraftCollectiveOfferFactory(additionalDetails=None)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {**BASE_PAYLOAD, "offerId": offer.id}
