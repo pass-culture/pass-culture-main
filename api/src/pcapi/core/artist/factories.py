@@ -28,16 +28,6 @@ class ArtistFactory(BaseFactory[models.Artist]):
     wikidata_id = factory.Sequence(lambda n: f"Q{n + 1:05d}")
 
 
-class ArtistAliasFactory(BaseFactory):
-    class Meta:
-        model = models.ArtistAlias
-
-    artist_alias_name = factory.Faker("name")
-    artist_cluster_id = factory.Faker("pystr", max_chars=10)
-    artist_wiki_data_id = factory.Faker("pystr", max_chars=10)
-    offer_category_id = factory.Faker("pystr", max_chars=10)
-
-
 class ArtistProductLinkFactory(BaseFactory):
     class Meta:
         model = models.ArtistProductLink

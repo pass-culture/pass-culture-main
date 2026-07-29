@@ -76,7 +76,6 @@ tables_to_clean: list[type[Model]] = [
     achievements_models.Achievement,
     artist_models.ArtistMusicPlatform,
     artist_models.Artist,
-    artist_models.ArtistAlias,
     artist_models.ArtistProductLink,
     artist_models.ArtistOfferLink,
     event_series_models.EventSeries,

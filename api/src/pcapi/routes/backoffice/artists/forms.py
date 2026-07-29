@@ -17,7 +17,7 @@ from pcapi.routes.backoffice.utils import advanced_search
 
 class ArtistAdvancedSearchAttributes(enum.Enum):
     ID = "ID"
-    NAME_OR_ALIAS = "Nom ou alias"
+    NAME = "Nom"
     IS_VISIBLE = "Visible"
     CREATION_DATE = "Date de création"
     PRODUCT_NAME = "Nom du produit associé"
@@ -27,7 +27,7 @@ operator_no_require_value = ["NOT_EXIST"]
 
 artist_form_field_configuration = {
     "ID": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
-    "NAME_OR_ALIAS": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "EQUALS", "NOT_EQUALS"]},
+    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "EQUALS", "NOT_EQUALS"]},
     "IS_VISIBLE": {"field": "boolean", "operator": ["EQUALS"]},
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "PRODUCT_NAME": {"field": "string", "operator": ["CONTAINS", "EQUALS"]},
@@ -280,12 +280,6 @@ class SplitArtistForm(FlaskForm):
     )
     new_artist_description = fields.PCTextareaField(
         "Description du nouvel artiste", validators=[wtforms.validators.Optional()]
-    )
-
-    new_artist_aliases = fields.PCTextareaField(
-        "Alias du nouvel artiste",
-        description="Séparez les alias par des virgules (,)",
-        validators=[wtforms.validators.Optional()],
     )
 
     products_to_move = fields.PCSelectMultipleField(
