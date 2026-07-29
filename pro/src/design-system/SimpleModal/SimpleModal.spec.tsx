@@ -63,7 +63,7 @@ describe('SimpleModal', () => {
       onClose: onCloseMock,
     })
 
-    const closeButton = screen.getByLabelText('Fermer la modale')
+    const closeButton = screen.getByLabelText('Fermer la boite de dialogue')
     closeButton.click()
 
     expect(onCloseMock).toHaveBeenCalled()
