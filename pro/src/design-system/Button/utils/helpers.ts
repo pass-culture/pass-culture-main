@@ -5,19 +5,15 @@ import type { ButtonProps, ButtonTypeAttribute } from '../types'
 export const getComponentType = ({
   as,
   disabled,
-  isExternal,
-  isSectionLink,
 }: {
-  as: 'button' | 'a'
+  as: 'button' | 'a' | 'router-link'
   disabled: boolean | undefined
-  isExternal: boolean
-  isSectionLink: boolean
 }): React.ElementType => {
   if (as === 'button') {
     return 'button'
   }
   // A disabled <Link> is treated as an <a> to remove its `href` and inherit proper a11y from `getAnchorProps`.
-  if (isExternal || isSectionLink || disabled) {
+  if (as === 'a' || disabled) {
     return 'a'
   }
 

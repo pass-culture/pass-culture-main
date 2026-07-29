@@ -44,8 +44,6 @@ export const Button = forwardRef<
       /***** Link props *****/
       opensInNewTab = false,
       to = '',
-      isExternal = false,
-      isSectionLink = false,
       ...props
     }: ButtonProps,
     ref
@@ -67,14 +65,10 @@ export const Button = forwardRef<
     )
 
     const absoluteUrl =
-      isSectionLink || isExternal || to.startsWith('/') ? to : `/${to}`
+      as !== 'router-link' || to.startsWith('/') ? to : `/${to}`
 
-    const Component = getComponentType({
-      as,
-      disabled,
-      isExternal,
-      isSectionLink,
-    })
+    const Component = getComponentType({ as, disabled })
+
     const componentProps = getComponentProps({
       Component,
       type,

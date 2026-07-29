@@ -105,23 +105,33 @@ type ButtonAsButtonProps = ButtonBaseProps & {
   type?: NonNullable<ButtonTypeAttribute>
   to?: never
   opensInNewTab?: never
-  isExternal?: never
-  isSectionLink?: never
 } & Omit<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     'className' | 'disabled' | 'style'
   >
 
 /**
- * ******************* Link props *******************
+ * ******************* Anchor props *******************
  */
-export type ButtonAsLinkProps = ButtonBaseProps & {
+type ButtonAsAnchorProps = ButtonBaseProps & {
   as: 'a'
   type?: never
   to: string
   opensInNewTab?: boolean
-  isExternal?: boolean
-  isSectionLink?: boolean
+} & Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    'className' | 'href' | 'style'
+  >
+
+/**
+ * ******************* Link props *******************
+ */
+
+type ButtonAsRouterLinkProps = ButtonBaseProps & {
+  as: 'router-link'
+  type?: never
+  to: string
+  opensInNewTab?: boolean
 } & Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     'className' | 'href' | 'style'
@@ -131,4 +141,7 @@ export type ButtonTypeAttribute = NonNullable<
   React.ButtonHTMLAttributes<HTMLButtonElement>['type']
 >
 
-export type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps
+export type ButtonProps =
+  | ButtonAsButtonProps
+  | ButtonAsAnchorProps
+  | ButtonAsRouterLinkProps
