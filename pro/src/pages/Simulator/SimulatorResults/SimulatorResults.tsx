@@ -55,12 +55,23 @@ export const SimulatorResults = (): JSX.Element => {
         tryRestoreActivityFromStorage(setActivity)
       const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
       const finalTargetCustomer =
-        targetCustomer ?? tryRestoreTargetCustomerFromStorage(setTargetCustomer)
+        targetCustomer?.individual !== undefined
+          ? targetCustomer
+          : tryRestoreTargetCustomerFromStorage(setTargetCustomer)
+
+      const targets = []
+      if (finalTargetCustomer?.individual) {
+        targets.push(OffererTarget.INDIVIDUAL)
+      }
+      if (finalTargetCustomer?.educational) {
+        targets.push(OffererTarget.COLLECTIVE)
+      }
+
       if (
         !finalActivity ||
         !finalOpenToPublic ||
         !finalSiret ||
-        !finalTargetCustomer
+        targets.length === 0
       ) {
         return
       }
@@ -70,17 +81,22 @@ export const SimulatorResults = (): JSX.Element => {
           activity: finalActivity,
           isOpenToPublic: finalOpenToPublic === 'true',
           siret: finalSiret.replaceAll(' ', '') ?? '',
-          targets: finalTargetCustomer?.individual
-            ? finalTargetCustomer?.educational
-              ? [OffererTarget.INDIVIDUAL, OffererTarget.COLLECTIVE]
-              : [OffererTarget.INDIVIDUAL]
-            : [OffererTarget.COLLECTIVE],
+          targets,
         },
       })
       setResult(simulationResponse)
     }
     doCall()
-  }, [openToPublic, activity, siret, targetCustomer])
+  }, [
+    activity,
+    openToPublic,
+    setActivity,
+    setOpenToPublic,
+    setSiret,
+    setTargetCustomer,
+    siret,
+    targetCustomer,
+  ])
 
   if (!result) {
     return <Spinner />
