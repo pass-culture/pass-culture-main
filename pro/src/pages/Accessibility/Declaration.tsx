@@ -35,8 +35,8 @@ export const Declaration = () => {
           <li className={styles['list-item']}>
             <Link
               color={LinkColor.NEUTRAL}
-              to="/schema-pluriannuel-2025-2027"
-              label="Schéma pluriannuel d’accessibilité 2024 - 2025"
+              to="https://pass.culture.fr/schema-pluriannuel-2025-2027"
+              label="Schéma pluriannuel d’accessibilité 2025 - 2027"
             />
           </li>
         </ul>
@@ -61,10 +61,16 @@ export const Declaration = () => {
           européenne.
         </p>
         <p className={styles['paragraph']}>
-          Le site Pass Culture – Portail Pro
-          (https://integration.passculture.pro/accueil) est partiellement
-          conforme avec le RAWeb version 1.1 et le RGAA version 4.1, en raison
-          des non-conformités énumérées dans la section « Résultats des tests ».
+          Le site Pass Culture – Portail Pro (
+          <Link
+            color={LinkColor.NEUTRAL}
+            to="https://passculture.pro/"
+            isExternalLink
+            label="https://passculture.pro/"
+          />
+          ) est partiellement conforme avec le RAWeb version 1.1 et le RGAA
+          version 4.1, en raison des non-conformités énumérées dans la section «
+          Résultats des tests ».
         </p>
         <h2 className={styles['heading2']}>Résultat des tests</h2>
         <p className={styles['paragraph']}>
