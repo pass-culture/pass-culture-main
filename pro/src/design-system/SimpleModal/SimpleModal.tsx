@@ -64,7 +64,7 @@ export const SimpleModal = ({
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             onClick={onClose}
-            aria-label={'Fermer la modale'}
+            aria-label={'Fermer la boite de dialogue'}
           />
         </span>
         <div className={styles['dialog-container']}>
