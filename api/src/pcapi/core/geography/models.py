@@ -87,9 +87,12 @@ class Address(PcObject, Model):
             postgresql_using="gist",
             unique=False,
         ),
-        sa.CheckConstraint('length("postalCode") = 5'),
-        sa.CheckConstraint('length("inseeCode") = 5'),
-        sa.CheckConstraint('length("city") <= 50'),
-        sa.CheckConstraint('length("departmentCode") = 2 OR length("departmentCode") = 3'),
-        sa.CheckConstraint('length("timezone") <= 50'),
+        sa.CheckConstraint('length("postalCode") = 5', name="address_postalCode_check"),
+        sa.CheckConstraint('length("inseeCode") = 5', name="address_inseeCode_check"),
+        sa.CheckConstraint('length("city") <= 50', name="address_city_check"),
+        sa.CheckConstraint(
+            'length("departmentCode") = 2 OR length("departmentCode") = 3',
+            name="address_departmentCode_check",
+        ),
+        sa.CheckConstraint('length("timezone") <= 50', name="address_timezone_check"),
     )

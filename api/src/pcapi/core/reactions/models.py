@@ -44,11 +44,13 @@ class Reaction(PcObject, Model):
     __table_args__ = (
         # A reaction is linked to either an offer or a product
         # but not both at the same time
+        # TODO(alembic): this constraint does not exist in DB (and some rows may not be valid)
         sa.CheckConstraint(
             sa.or_(
                 sa.and_(offerId.is_not(None), productId.is_(None)),
                 sa.and_(productId.is_not(None), offerId.is_(None)),
-            )
+            ),
+            name="reaction_offer_product_check",
         ),
         sa.Index("reaction_offer_product_user_unique_constraint", "userId", "offerId", "productId", unique=True),
         sa.Index(
