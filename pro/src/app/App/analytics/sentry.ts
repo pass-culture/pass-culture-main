@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/browser'
+import { extraErrorDataIntegration } from '@sentry/browser'
 import { reactRouterV7BrowserTracingIntegration } from '@sentry/react'
 import { useEffect } from 'react'
 import {
@@ -8,6 +9,7 @@ import {
   useNavigationType,
 } from 'react-router'
 
+import { ApiError, normalizeApiPath } from '@/apiClient/compat'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import {
@@ -23,6 +25,10 @@ export const initializeSentry = () => {
     environment: ENVIRONMENT_NAME,
     release: VITE_APP_VERSION,
     integrations: [
+      // Serialises the non-standard properties of custom errors (for ApiError:
+      // `url`, `status` and `body`, which holds the payload returned by the
+      // backend). Without it they are dropped from the event.
+      extraErrorDataIntegration({ depth: 3 }),
       reactRouterV7BrowserTracingIntegration({
         useEffect: useEffect,
         useLocation,
@@ -57,6 +63,20 @@ export const initializeSentry = () => {
         hint.originalException === 'Timeout (u)'
       ) {
         return null
+      }
+      // Group API errors by endpoint and by the screen they were called from.
+      // Their stack is unreliable for grouping: it holds only the generated
+      // client's frames, and it is shorter on Firefox — which drops async
+      // frames outside DevTools — than on Chrome, so one failing endpoint would
+      // otherwise be split across issues.
+      if (hint.originalException instanceof ApiError) {
+        const { status, url } = hint.originalException
+        event.fingerprint = [
+          'ApiError',
+          String(status),
+          normalizeApiPath(url),
+          apiErrorOrigin(event.transaction),
+        ]
       }
       return event
     },
@@ -168,6 +188,28 @@ export const useSentry = () => {
       Sentry.setUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])
+}
+
+/**
+ * Identifies the screen an API call was made from, so that the same endpoint
+ * failing on two different pages produces two issues instead of one.
+ *
+ * `event.transaction` is the parameterized route set by the React Router
+ * integration ("/offre/:offerId/individuel/horaires"): stable across releases
+ * and already stripped of its tokens earlier in `beforeSend`. The call site
+ * captured on the error is deliberately not used — `beforeSend` runs in the
+ * browser, before Sentry applies source maps server-side, so its frames still
+ * point at minified chunks whose content hash changes on every deploy, which
+ * would create a new issue at each release.
+ */
+function apiErrorOrigin(transaction: string | undefined): string {
+  if (transaction) {
+    return transaction
+  }
+  // No active route span: fall back to the current location, scrubbed the same
+  // way, rather than lumping every routeless error together.
+  const path = normalizeApiPath(window.location.href)
+  return removeTokenFromFrontURL(path) ?? path
 }
 
 function createURLRewriter(
