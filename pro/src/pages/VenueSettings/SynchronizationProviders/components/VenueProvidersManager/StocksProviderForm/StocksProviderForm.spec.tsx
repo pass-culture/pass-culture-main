@@ -37,7 +37,7 @@ describe('StocksProviderForm', () => {
     renderStocksProviderForm(props)
 
     expect(
-      screen.queryByRole('button', { name: 'Lancer la synchronisation' })
+      screen.getByRole('button', { name: 'Lancer la synchronisation' })
     ).toBeInTheDocument()
   })
 

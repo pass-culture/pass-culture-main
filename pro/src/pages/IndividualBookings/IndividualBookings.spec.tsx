@@ -326,7 +326,7 @@ describe('components | BookingsRecap | Pro user', () => {
       ).toBeDisabled()
     })
     expect(
-      screen.queryByText(
+      screen.getByText(
         'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Rechercher »'
       )
     ).toBeInTheDocument()
@@ -733,7 +733,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offerName)
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         'Télécharger vos réservations dans l’onglet “Données d’activité” de votre Espace administration accessible en haut à droite.'
       )
     ).toBeInTheDocument()

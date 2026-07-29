@@ -18,7 +18,7 @@ describe('Footer', () => {
     renderFooter(true)
 
     expect(
-      screen.queryByRole('link', { name: /CGU professionnels/ })
+      screen.getByRole('link', { name: /CGU professionnels/ })
     ).toBeInTheDocument()
   })
 
@@ -26,7 +26,7 @@ describe('Footer', () => {
     renderFooter(true)
 
     expect(
-      screen.queryByRole('link', {
+      screen.getByRole('link', {
         name: 'Accessibilité : partiellement conforme',
       })
     ).toBeInTheDocument()

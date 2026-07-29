@@ -126,7 +126,7 @@ describe('BankInformations page', () => {
     )
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         /Les informations non sauvegardées ne seront pas prises en compte/
       )
     ).toBeInTheDocument()
@@ -154,7 +154,7 @@ describe('BankInformations page', () => {
     )
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         /Attention : la ou les structures désélectionnées ne seront plus remboursées sur ce compte bancaire/
       )
     ).toBeInTheDocument()
@@ -253,7 +253,7 @@ describe('BankInformations page', () => {
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
+    expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
 
     expect(
       screen.queryByText(
@@ -280,7 +280,7 @@ describe('BankInformations page', () => {
     renderBankInformations()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
+    expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
 
     expect(
       screen.queryByText(

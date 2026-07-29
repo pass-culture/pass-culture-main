@@ -63,7 +63,7 @@ describe('PhoneNumberInput', () => {
         'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
     })
     expect(
-      screen.queryByText(
+      screen.getByText(
         'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678'
       )
     ).toBeInTheDocument()

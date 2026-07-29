@@ -176,7 +176,7 @@ describe('OfferType', () => {
     )
 
     expect(
-      screen.queryByRole('heading', {
+      screen.getByRole('heading', {
         name: 'Créer une nouvelle offre ou dupliquer une offre ?',
       })
     ).toBeInTheDocument()

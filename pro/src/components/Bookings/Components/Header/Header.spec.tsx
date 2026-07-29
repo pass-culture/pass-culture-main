@@ -14,7 +14,7 @@ describe("bookings recap table's header", () => {
   it('should display the appropriate message when there is one booking', () => {
     renderHeader(defaultProps)
 
-    expect(screen.queryByText('1 réservation')).toBeInTheDocument()
+    expect(screen.getByText('1 réservation')).toBeInTheDocument()
   })
 
   it('should display the appropriate message when there is several booking', () => {
@@ -25,7 +25,7 @@ describe("bookings recap table's header", () => {
 
     renderHeader(props)
 
-    expect(screen.queryByText('2 réservations')).toBeInTheDocument()
+    expect(screen.getByText('2 réservations')).toBeInTheDocument()
   })
 
   it('should only display a specific message when data are still loading', () => {
@@ -49,7 +49,7 @@ describe("bookings recap table's header", () => {
 
     expect(screen.queryByText('1 réservation')).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('button', { name: 'Voir toutes les réservations' })
+      screen.getByRole('button', { name: 'Voir toutes les réservations' })
     ).toBeInTheDocument()
   })
 })

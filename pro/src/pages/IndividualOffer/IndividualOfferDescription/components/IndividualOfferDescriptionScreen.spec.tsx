@@ -351,7 +351,7 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     renderDetailsScreen({ contextValue })
 
     expect(
-      screen.queryByRole('heading', { name: 'Modalités d’accessibilité' })
+      screen.getByRole('heading', { name: 'Modalités d’accessibilité' })
     ).toBeInTheDocument()
   })
 

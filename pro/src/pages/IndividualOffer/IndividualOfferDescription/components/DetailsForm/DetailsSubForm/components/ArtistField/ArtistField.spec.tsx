@@ -104,7 +104,7 @@ describe('ArtistField', () => {
 
     const props = apiSelectSpy.mock.calls[0][0]
 
-    expect(screen.queryByTestId('mock-api-select')).toBeInTheDocument()
+    expect(screen.getByTestId('mock-api-select')).toBeInTheDocument()
     expect(props.label).toBe('Auteur')
     expect(props.name).toBe('artistOfferLinks.0')
     expect(props.minSearchLength).toBe(2)

@@ -239,7 +239,7 @@ describe('DetailsEanSearch', () => {
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
 
-        expect(screen.queryByText(errorMessage)).toBeInTheDocument()
+        expect(screen.getByText(errorMessage)).toBeInTheDocument()
       })
 
       it('should disable the submit button', async () => {

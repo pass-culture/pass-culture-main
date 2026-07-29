@@ -120,7 +120,7 @@ describe('<OnboardingOfferIndividual />', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
-      screen.queryByRole('heading', {
+      screen.getByRole('heading', {
         name: /Reprendre une offre déjà commencée/,
       })
     ).toBeInTheDocument()

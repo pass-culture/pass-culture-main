@@ -105,13 +105,13 @@ describe('ActionsBar', () => {
 
     renderActionsBar(props)
 
-    expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
+    expect(screen.getByText('1 offre sélectionnée')).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when more than 1 offer are selected', () => {
     renderActionsBar(props)
 
-    expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
+    expect(screen.getByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
   it('should show a generic count when more than 500 offers are selected', () => {
@@ -121,7 +121,7 @@ describe('ActionsBar', () => {
 
     renderActionsBar(props)
 
-    expect(screen.queryByText('100+ offres sélectionnées')).toBeInTheDocument()
+    expect(screen.getByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
 
   it('should activate selected offers upon publication', async () => {

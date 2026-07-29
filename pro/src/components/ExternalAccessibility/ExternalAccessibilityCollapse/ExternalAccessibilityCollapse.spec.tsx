@@ -34,6 +34,6 @@ describe('ExternalAccessibilityCollapse', () => {
     await userEvent.click(
       screen.getByLabelText('Voir les détails pour Handicap moteur')
     )
-    expect(screen.queryByText('Content')).toBeInTheDocument()
+    expect(screen.getByText('Content')).toBeInTheDocument()
   })
 })

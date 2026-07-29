@@ -281,9 +281,9 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('button', { name: 'Continuer' })
+      screen.getByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retour' })).toBeInTheDocument()
 
     expect(
       screen.getByRole('heading', {
@@ -302,7 +302,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       await screen.findByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
 
-    expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retour' })).toBeInTheDocument()
   })
 
   it('should render component with empty adresss', async () => {
