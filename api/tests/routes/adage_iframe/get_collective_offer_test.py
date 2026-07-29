@@ -43,6 +43,7 @@ class CollectiveOfferTest:
             startDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
+            collectiveOffer__additionalDetails="offer details",
             price=10,
             servicePrice=10,
             collectiveOffer__students=[models.StudentLevels.GENERAL2],
@@ -142,7 +143,7 @@ class CollectiveOfferTest:
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "formats": [fmt.value for fmt in offer.formats],
             "isTemplate": False,
-            "additionalDetails": None,
+            "additionalDetails": "offer details",
         }
 
     def test_location_address_venue(self, eac_client, redactor):
