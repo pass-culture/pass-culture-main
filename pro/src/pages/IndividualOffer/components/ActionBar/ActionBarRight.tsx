@@ -38,7 +38,7 @@ export const ActionBarRight = ({
         <>
           {!isDisabled && (
             <Button
-              as="a"
+              as="router-link"
               to={isOnboarding ? '/accueil' : '/offres'}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {

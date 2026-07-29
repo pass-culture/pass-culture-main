@@ -80,7 +80,7 @@ export const SimulatorOpenToPublic = (): JSX.Element => {
 
             <div className={commonStyles['action-bar']}>
               <Button
-                as="a"
+                as="router-link"
                 to="/inscription/preparation/siret"
                 variant={ButtonVariant.SECONDARY}
                 label="Retour"

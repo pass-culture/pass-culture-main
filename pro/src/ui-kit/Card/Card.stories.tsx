@@ -62,7 +62,7 @@ export const InfoVariant: Story = {
         </p>
       </Card.Content>
       <Card.Footer>
-        <Button as="a" to="#" isExternal opensInNewTab label="En savoir plus" size={ButtonSize.SMALL} variant={ButtonVariant.SECONDARY} color={ButtonColor.NEUTRAL} transparent/>
+        <Button as="a" to="#" opensInNewTab label="En savoir plus" size={ButtonSize.SMALL} variant={ButtonVariant.SECONDARY} color={ButtonColor.NEUTRAL} transparent/>
       </Card.Footer>
     </Card>
   ),

@@ -60,7 +60,6 @@ export const WebinarCard = ({ variant }: Readonly<WebinarCardProps>) => {
           size={ButtonSize.SMALL}
           to={buttonLink}
           as="a"
-          isExternal
           opensInNewTab
           onClick={logWebinarClick}
         />

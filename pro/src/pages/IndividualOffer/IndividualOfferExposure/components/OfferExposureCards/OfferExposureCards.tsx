@@ -105,7 +105,7 @@ export const OfferExposureCards = ({
           <Card.Content>
             <div className={styles['bookings-button']}>
               <Button
-                as="a"
+                as="router-link"
                 to={`${getIndividualOfferUrl({
                   offerId: offer.id,
                   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,

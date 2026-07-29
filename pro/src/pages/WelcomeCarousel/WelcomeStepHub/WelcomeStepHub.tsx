@@ -57,7 +57,7 @@ export const WelcomeStepHub = (): JSX.Element => {
             <Button
               as="a"
               to="https://adage-pr.phm.education.gouv.fr/ds/?entityID=https%3A%2F%2Fadage-pr.phm.education.gouv.fr%2Fsp%2Fmdp&return=https%3A%2F%2Fadage-pr.phm.education.gouv.fr%2Fmdp%2FShibboleth.sso%2FLogin%3FSAMLDS%3D1%26target%3Dss%253Amem%253Af7ae5c254ceec3841749f8747ba4ff685aa80d7e05b232b3d8902796e9d36bab%26authnContextClassRef%3Durn%253Aoasis%253Anames%253Atc%253ASAML%253A2.0%253Aac%253Aclasses%253APasswordProtectedTransport%2520urn%253Aoasis%253Anames%253Atc%253ASAML%253A2.0%253Aac%253Aclasses%253ATimeSyncToken"
-              isExternal={true}
+              opensInNewTab
               variant={ButtonVariant.PRIMARY}
               label="Accéder à ADAGE"
               onClick={() =>

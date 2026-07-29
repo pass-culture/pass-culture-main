@@ -7,7 +7,7 @@ import styles from './Breadcrumb.module.scss'
 
 export type Crumb = {
   title: string
-  link: { to: string; isExternal: boolean }
+  link: { to: string; }
   icon?: string
 }
 
@@ -29,7 +29,7 @@ export const Breadcrumb = ({ crumbs }: BreadcrumbProps) => {
                 </span>
               ) : (
                 <Button
-                  as="a"
+                  as="router-link"
                   {...crumb.link}
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.BRAND}

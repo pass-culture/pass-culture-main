@@ -49,7 +49,6 @@ export const AddActivationCodeForm = ({
         <p className={styles['activation-codes-upload-gabarit']}>Gabarits</p>
         <Button
           as="a"
-          isExternal
           to="/csvtemplates/CodesActivations-Gabarit.csv"
           // type="text/csv" // TODO: jclery-pass: Refactor <Button as="a"> polymorphic component to accept "string | undefined"
           opensInNewTab

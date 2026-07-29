@@ -108,7 +108,7 @@ export const SimulatorTarget = (): JSX.Element => {
 
             <div className={commonStyles['action-bar']}>
               <Button
-                as="a"
+                as="router-link"
                 to="/inscription/preparation/activite"
                 variant={ButtonVariant.SECONDARY}
                 label="Retour"

@@ -71,7 +71,7 @@ export const OffersEmptyStateCard = ({
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           to={cardContent.to}
-          as="a"
+          as="router-link"
           onClick={logCreateOfferClick}
           disabled={isReadOnly}
         />

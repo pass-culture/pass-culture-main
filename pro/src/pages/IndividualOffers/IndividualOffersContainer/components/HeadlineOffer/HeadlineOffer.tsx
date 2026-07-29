@@ -62,7 +62,6 @@ export function HeadlineOffer() {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           to={venuePreviewLink}
-          isExternal
           opensInNewTab
           onClick={() => {
             logEvent(EngagementEvents.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {

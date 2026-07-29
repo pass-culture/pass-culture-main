@@ -46,7 +46,7 @@ export const SummarySection = ({
 
       {typeof editLink === 'string' ? (
         <Button
-          as="a"
+          as="router-link"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           size={ButtonSize.SMALL}

@@ -128,7 +128,7 @@ export const SignupForm = (): JSX.Element => {
           {isSignupSimulationEnabled ? (
             <>
               <Button
-                as="a"
+                as="router-link"
                 to="/inscription/preparation/resultats"
                 isLoading={isSubmitting}
                 disabled={isSubmitting}

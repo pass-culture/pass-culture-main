@@ -103,7 +103,6 @@ export const StocksProviderForm = ({
         </p>
         <Button
           as="a"
-          isExternal
           to="https://aide.passculture.app/hc/fr/articles/10616916478236"
           opensInNewTab
           aria-label="Nouvelle fenêtre"

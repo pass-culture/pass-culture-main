@@ -34,7 +34,7 @@ export const SimulatorSiret = (): JSX.Element => {
   const submitElement = (isSubmitting: boolean): JSX.Element => (
     <div className={commonStyles['action-bar']}>
       <Button
-        as="a"
+        as="router-link"
         to="/bienvenue/prochaines-etapes"
         variant={ButtonVariant.SECONDARY}
         label="Retour"

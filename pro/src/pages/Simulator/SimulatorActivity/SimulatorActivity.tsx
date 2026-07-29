@@ -91,7 +91,7 @@ export const SimulatorActivity = (): JSX.Element => {
           </FormLayout.Row>
           <div className={commonStyles['action-bar']}>
             <Button
-              as="a"
+              as="router-link"
               to="/inscription/preparation/accueil-public"
               variant={ButtonVariant.SECONDARY}
               label="Retour"

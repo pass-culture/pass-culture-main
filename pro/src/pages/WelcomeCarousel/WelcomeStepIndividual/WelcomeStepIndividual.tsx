@@ -45,7 +45,6 @@ const WelcomeStepIndividual = (): JSX.Element => {
             }}
             variant={ButtonVariant.TERTIARY}
             size={ButtonSize.SMALL}
-            isExternal
             opensInNewTab
           />
         </div>
@@ -53,7 +52,7 @@ const WelcomeStepIndividual = (): JSX.Element => {
 
       <div className={commonStyles['actionbar-container']}>
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/publics"
           variant={ButtonVariant.SECONDARY}
           label="Précédent"
@@ -64,7 +63,7 @@ const WelcomeStepIndividual = (): JSX.Element => {
           className={commonStyles['actionbar-container-stepper']}
         />
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/offres-scolaires"
           variant={ButtonVariant.PRIMARY}
           label="Suivant"

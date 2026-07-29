@@ -28,7 +28,6 @@ export const UserAnonymizationUneligibility = ({
         <Button
           as="a"
           to={PERSONAL_DATA_CHARTER_URL}
-          isExternal
           opensInNewTab
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}

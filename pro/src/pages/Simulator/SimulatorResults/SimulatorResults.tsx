@@ -145,12 +145,12 @@ export const SimulatorResults = (): JSX.Element => {
       </div>
       <div className={commonStyles['action-bar']}>
         <Button
-          as="a"
+          as="router-link"
           to="/inscription/preparation/publics"
           variant={ButtonVariant.SECONDARY}
           label="Retour"
         />
-        <Button as="a" to="/inscription/compte/creation" label="Continuer" />
+        <Button as="router-link" to="/inscription/compte/creation" label="Continuer" />
       </div>
     </>
   )

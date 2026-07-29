@@ -52,7 +52,7 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
       </div>
       <div className={commonStyles['actionbar-container']}>
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/offres-scolaires"
           variant={ButtonVariant.SECONDARY}
           label="Précédent"
@@ -63,7 +63,7 @@ export const WelcomeStepAdvantages = (): JSX.Element => {
           className={commonStyles['actionbar-container-stepper']}
         />
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/prochaines-etapes"
           variant={ButtonVariant.PRIMARY}
           label="Suivant"

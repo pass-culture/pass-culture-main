@@ -133,14 +133,13 @@ export const IndividualOfferConfirmationScreen = ({
         )}
         <div className={styles['preview-actions']}>
           <Button
-            as="a"
+            as="router-link"
             to={offerCreationUrl}
-            isExternal
             variant={ButtonVariant.SECONDARY}
             label="Créer une nouvelle offre"
           />
 
-          <Button as="a" to="/offres" label="Accéder à la liste des offres" />
+          <Button as="router-link" to="/offres" label="Accéder à la liste des offres" />
         </div>
       </div>
 

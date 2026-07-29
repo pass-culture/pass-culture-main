@@ -63,14 +63,14 @@ export const OffersRetentionCard = ({
           label={'Voir toutes les offres'}
           variant={ButtonVariant.PRIMARY}
           to={config.toOffersList}
-          as="a"
+          as="router-link"
           onClick={logSeeAllOffersClick}
         />
         <Button
           label={config.buttonLabel}
           variant={ButtonVariant.SECONDARY}
           to={config.to}
-          as="a"
+          as="router-link"
           onClick={logCreateOfferClick}
           disabled={isReadOnly}
         />

@@ -41,7 +41,6 @@ export const AddBankInformationsDialog = ({
               ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
               : DS_BANK_ACCOUNT_PROCEDURE_ID
           }
-          isExternal={true}
           opensInNewTab={true}
           variant={ButtonVariant.PRIMARY}
           onClick={() => {

@@ -65,7 +65,7 @@ export const ActionBarLeft = ({
     const backOfferUrl = computeIndividualOffersUrl({})
 
     return (
-      <Button as="a" to={backOfferUrl} label="Retour à la liste des offres" />
+      <Button as="router-link" to={backOfferUrl} label="Retour à la liste des offres" />
     )
   }
 

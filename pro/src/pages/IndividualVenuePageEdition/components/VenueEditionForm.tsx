@@ -230,7 +230,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     <Button
                       as="a"
                       variant={ButtonVariant.TERTIARY}
-                      isExternal
                       opensInNewTab
                       to="https://www.jeveuxaider.gouv.fr/"
                       color={ButtonColor.NEUTRAL}
