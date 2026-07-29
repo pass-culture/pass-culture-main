@@ -30,7 +30,6 @@ export const CumulatedViewsEmptyState = () => {
       <Button
         as="a"
         to={BEST_PRACTICES_URL}
-        isExternal
         opensInNewTab
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}

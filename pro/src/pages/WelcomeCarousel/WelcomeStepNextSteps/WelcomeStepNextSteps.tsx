@@ -81,7 +81,7 @@ const WelcomeStepNextSteps = (): JSX.Element => {
         )}
       >
         <Button
-          as="a"
+          as="router-link"
           to={
             isPreSignupSimulatorFeatureActive
               ? '/inscription/preparation/siret'

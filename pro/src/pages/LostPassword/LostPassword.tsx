@@ -102,7 +102,7 @@ export const LostPassword = (): JSX.Element => {
               </FormLayout.Row>
               <FormLayout.Row>
                 <Button
-                  as="a"
+                  as="router-link"
                   to="/connexion"
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}

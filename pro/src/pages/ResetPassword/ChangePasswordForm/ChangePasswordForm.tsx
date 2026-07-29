@@ -60,7 +60,7 @@ export const ChangePasswordForm = ({
             Vous n’êtes pas à l’origine de cette demande ?
           </p>
           <Button
-            as="a"
+            as="router-link"
             to="/connexion"
             icon={iconFullNext}
             variant={ButtonVariant.TERTIARY}

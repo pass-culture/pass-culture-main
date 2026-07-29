@@ -29,7 +29,7 @@ export const IndividualOffersCTA = ({
       <Button
         variant={ButtonVariant.SECONDARY}
         label="Ajouter du stock"
-        as="a"
+        as="router-link"
         to={offerLink}
       />
     )
@@ -48,7 +48,7 @@ export const IndividualOffersCTA = ({
     <Button
       variant={ButtonVariant.SECONDARY}
       label="Voir l'offre"
-      as="a"
+      as="router-link"
       to={offerLink}
     />
   )

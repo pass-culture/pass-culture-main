@@ -43,7 +43,6 @@ const WelcomeStepCollective = (): JSX.Element => {
             label="Exemple d’offres pour les groupes scolaires"
             variant={ButtonVariant.TERTIARY}
             size={ButtonSize.SMALL}
-            isExternal
             onClick={() => {
               logEvent(WelcomeCarouselEvents.CLICKED_SEE_COLLECTIVE_OFFERS)
             }}
@@ -54,7 +53,7 @@ const WelcomeStepCollective = (): JSX.Element => {
       </div>
       <div className={commonStyles['actionbar-container']}>
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/offres-jeunes"
           variant={ButtonVariant.SECONDARY}
           label="Précédent"
@@ -65,7 +64,7 @@ const WelcomeStepCollective = (): JSX.Element => {
           className={commonStyles['actionbar-container-stepper']}
         />
         <Button
-          as="a"
+          as="router-link"
           to="/bienvenue/avantages"
           variant={ButtonVariant.PRIMARY}
           label="Suivant"

@@ -89,7 +89,7 @@ export const PartnerPageCard = ({
           color={ButtonColor.NEUTRAL}
           size={ButtonSize.SMALL}
           to={venueEditionLink}
-          as="a"
+          as="router-link"
           onClick={logFillPartnerPageClick}
           disabled={isReadOnly}
         />
@@ -99,7 +99,6 @@ export const PartnerPageCard = ({
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
-            isExternal
             to={venuePreviewLink}
             as="a"
             opensInNewTab

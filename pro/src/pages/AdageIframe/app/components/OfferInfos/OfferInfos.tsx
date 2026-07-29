@@ -64,7 +64,6 @@ export const OfferInfos = () => {
     recherche: {
       title: 'Recherche',
       link: {
-        isExternal: false,
         to: `/adage-iframe/recherche?token=${adageAuthToken}`,
       },
       icon: strokeSearchIcon,
@@ -72,7 +71,6 @@ export const OfferInfos = () => {
     decouverte: {
       title: 'Découvrir',
       link: {
-        isExternal: false,
         to: `/adage-iframe/decouverte?token=${adageAuthToken}`,
       },
       icon: strokePassIcon,
@@ -80,7 +78,6 @@ export const OfferInfos = () => {
     ['mes-favoris']: {
       title: 'Mes favoris',
       link: {
-        isExternal: false,
         to: `/adage-iframe/mes-favoris?token=${adageAuthToken}`,
       },
       icon: strokeStarIcon,
@@ -88,7 +85,6 @@ export const OfferInfos = () => {
     ['mon-etablissement']: {
       title: 'Pour mon établissement',
       link: {
-        isExternal: false,
         to: `/adage-iframe/mon-etablissement?token=${adageAuthToken}`,
       },
       icon: strokeVenueIcon,
@@ -119,7 +115,6 @@ export const OfferInfos = () => {
                 {
                   title: offer.name,
                   link: {
-                    isExternal: true,
                     to: '#',
                   },
                 },
@@ -150,7 +145,7 @@ export const OfferInfos = () => {
             Cette offre est introuvable
           </h1>
           <Button
-            as="a"
+            as="router-link"
             to={`/adage-iframe/recherche?token=${adageAuthToken}`}
             variant={ButtonVariant.PRIMARY}
             label="Explorer le catalogue"

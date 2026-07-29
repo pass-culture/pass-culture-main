@@ -34,7 +34,6 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
               >
                 <Button
                   as="a"
-                  isExternal
                   opensInNewTab
                   to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
                   variant={ButtonVariant.TERTIARY}

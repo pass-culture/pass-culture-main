@@ -61,7 +61,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
           />
         </div>
         <Button
-          as="a"
+          as="router-link"
           icon={fullKeyIcon}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
@@ -81,7 +81,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             Vous n’avez pas encore de compte ?
           </p>
           <Button
-            as="a"
+            as="router-link"
             to={accountCreationUrl}
             icon={iconFullNext}
             variant={ButtonVariant.TERTIARY}

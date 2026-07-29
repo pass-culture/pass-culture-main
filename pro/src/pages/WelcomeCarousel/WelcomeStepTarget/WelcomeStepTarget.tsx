@@ -55,7 +55,7 @@ const WelcomeStepTarget = (): JSX.Element => {
 
         <div className={commonStyles['actionbar-container']}>
           <Button
-            as="a"
+            as="router-link"
             to="/bienvenue"
             variant={ButtonVariant.SECONDARY}
             label="Précédent"
@@ -66,7 +66,7 @@ const WelcomeStepTarget = (): JSX.Element => {
             className={commonStyles['actionbar-container-stepper']}
           />
           <Button
-            as="a"
+            as="router-link"
             to="/bienvenue/offres-jeunes"
             variant={ButtonVariant.PRIMARY}
             label="Suivant"

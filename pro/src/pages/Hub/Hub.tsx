@@ -140,7 +140,7 @@ export const Hub = () => {
 
       <div className={styles['venue-actions']}>
         <Button
-          as="a"
+          as="router-link"
           icon={fullMoreIcon}
           to="/inscription/structure/recherche"
           variant={ButtonVariant.SECONDARY}
