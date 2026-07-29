@@ -132,12 +132,10 @@ describe('HeadlineOfferContext', () => {
   it('should fetch headline offer and make it available', async () => {
     renderIndividualOffersContext()
 
-    await waitFor(async () => {
-      const display = await screen.findByText(
-        new RegExp(LABELS.display.headlineOffer)
-      )
-      expect(display.textContent).toContain(MOCK_DATA.headlineOffer.id)
-    })
+    const display = await screen.findByText(
+      new RegExp(LABELS.display.headlineOffer)
+    )
+    expect(display.textContent).toContain(MOCK_DATA.headlineOffer.id)
   })
 
   describe('upsertHeadlineOffer', () => {
