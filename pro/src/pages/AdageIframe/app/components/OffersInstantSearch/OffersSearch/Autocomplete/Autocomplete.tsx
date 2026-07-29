@@ -130,6 +130,17 @@ export const Autocomplete = ({
     })
   }
 
+  const handleBlurClosePanel = () => {
+    // Close panel if focus leaves the entire form
+    const focusedElement = document.activeElement
+    if (
+      !formRef.current?.contains(focusedElement) &&
+      !panelRef.current?.contains(focusedElement)
+    ) {
+      autocomplete.setIsOpen(false)
+    }
+  }
+
   // retrieves recent searches made in the search input
   const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
     key: 'RECENT_SEARCH',
@@ -365,20 +376,6 @@ export const Autocomplete = ({
           {...autocomplete.getFormProps({
             inputElement: inputRef.current,
           })}
-          onFocus={(e) => {
-            // Accessibility : if the focus element is part of the form and there are results, leave the panel open, otherwise close it
-            if (
-              formRef.current?.contains(e.target) &&
-              instantSearchUiState.collections.length > 0
-            ) {
-              autocomplete.setIsOpen(true)
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.code === 'Escape') {
-              autocomplete.setIsOpen(false)
-            }
-          }}
         >
           <div className={styles['form-container']}>
             <div className={styles['form-container-wrapper']}>
@@ -389,6 +386,7 @@ export const Autocomplete = ({
                   {...autocomplete.getInputProps({
                     inputElement: inputRef.current,
                   })}
+                  onBlur={handleBlurClosePanel}
                   placeholder="Rechercher par mot-clé, par partenaire culturel, par nom d’offre..."
                 />
                 <span
@@ -401,11 +399,16 @@ export const Autocomplete = ({
 
               <Button
                 type="submit"
-                onBlur={() => {
-                  if (shouldDisplayRecentSearch) {
-                    return
+                onFocus={() => {
+                  // Keep panel open when focusing the button
+                  if (instantSearchUiState.query || shouldDisplayRecentSearch) {
+                    autocomplete.setIsOpen(true)
                   }
-                  autocomplete.setIsOpen(false)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    autocomplete.setIsOpen(false)
+                  }
                 }}
                 onMouseDown={(e) => {
                   // avoids onfocus code when "Rechercher" is clicked
@@ -447,9 +450,12 @@ export const Autocomplete = ({
                             }
                             autocomplete.setIsOpen(false)
                           }}
-                          onBlur={() => {
-                            autocomplete.setIsOpen(false)
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              autocomplete.setIsOpen(false)
+                            }
                           }}
+                          onBlur={handleBlurClosePanel}
                           label="Effacer"
                         />
                       </div>
