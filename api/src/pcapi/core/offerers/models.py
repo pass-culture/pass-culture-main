@@ -997,16 +997,7 @@ class OpeningHours(PcObject, Model):
         sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True
     )
 
-    __table_args__ = (
-        (sa.CheckConstraint(sa.func.cardinality(timespan) <= 2, name="max_timespan_is_2")),
-        (
-            sa.CheckConstraint(
-                sa.text(
-                    '("venueId" IS NULL AND "offerId" IS NOT NULL) OR ("venueId" IS NOT NULL AND "offerId" IS NULL)'
-                )
-            )
-        ),
-    )
+    __table_args__ = (sa.CheckConstraint(sa.func.cardinality(timespan) <= 2, name="max_timespan_is_2"),)
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:
@@ -1646,7 +1637,9 @@ class OffererConfidenceRule(PcObject, Model):
         db_utils.MagicEnum(OffererConfidenceLevel, use_values=True), nullable=False
     )
 
-    __table_args__ = (sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1'),)
+    __table_args__ = (
+        sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1', name="offerer_confidence_rule_check"),
+    )
 
 
 class NoticeType(enum.Enum):

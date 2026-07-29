@@ -48,7 +48,8 @@ class Reaction(PcObject, Model):
             sa.or_(
                 sa.and_(offerId.is_not(None), productId.is_(None)),
                 sa.and_(productId.is_not(None), offerId.is_(None)),
-            )
+            ),
+            name="reaction_offer_product_check",
         ),
         sa.Index("reaction_offer_product_user_unique_constraint", "userId", "offerId", "productId", unique=True),
         sa.Index(
