@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { SuggestionType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -157,6 +158,12 @@ const renderAutocomplete = (
 }
 
 describe('Autocomplete', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAutocomplete()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should renders the Autocomplete component with placeholder and search button', async () => {
     renderAutocomplete()
 

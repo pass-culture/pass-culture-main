@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
@@ -1046,13 +1046,11 @@ describe('IndividualOfferSummaryScreen', () => {
         )
       ).toBeVisible()
 
-      await act(() =>
-        fireEvent.input(publicationDateInput, {
-          target: {
-            value: format(inOneMonth, 'yyyy-MM-dd'),
-          },
-        })
-      )
+      await fireEvent.input(publicationDateInput, {
+        target: {
+          value: format(inOneMonth, 'yyyy-MM-dd'),
+        },
+      })
 
       expect(
         screen.queryByTestId('error-publicationDate')
