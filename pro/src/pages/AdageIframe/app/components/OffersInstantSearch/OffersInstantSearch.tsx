@@ -83,15 +83,18 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
   const hasQueryParams = venueParam || domainParam || filterOnMarseilleStudents
 
+  const defaultStudents = filterOnMarseilleStudents
+    ? DEFAULT_MARSEILLE_STUDENTS
+    : []
+  const students =
+    adageFilterFromSelector.students.length > 0
+      ? adageFilterFromSelector.students
+      : defaultStudents
+
   const filtersFromParams = {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
     domains: domainParam ? [domainParam] : adageFilterFromSelector.domains,
-    students:
-      adageFilterFromSelector.students.length > 0
-        ? adageFilterFromSelector.students
-        : filterOnMarseilleStudents
-          ? DEFAULT_MARSEILLE_STUDENTS
-          : [],
+    students,
     venue: adageFilterFromSelector.venue,
   }
 

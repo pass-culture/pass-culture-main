@@ -24,7 +24,7 @@ export const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
       variant={BannerVariants.ERROR}
       description={
         <>
-          Un lien de confirmation valable 24h a été envoyé à l’adresse :
+          Un lien de confirmation valable 24h a été envoyé à l'adresse :{' '}
           <span>{email}</span>
         </>
       }

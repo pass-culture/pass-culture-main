@@ -169,13 +169,11 @@ export function Table<
       if (valueA === valueB) {
         return 0
       }
-      return valueA < valueB
-        ? currentSortingMode === SortingMode.ASC
-          ? -1
-          : 1
-        : currentSortingMode === SortingMode.ASC
-          ? 1
-          : -1
+      const isAscending = currentSortingMode === SortingMode.ASC
+      if (valueA < valueB) {
+        return isAscending ? -1 : 1
+      }
+      return isAscending ? 1 : -1
     })
   }, [data, currentSortingColumn, currentSortingMode, columns, fullScope])
 

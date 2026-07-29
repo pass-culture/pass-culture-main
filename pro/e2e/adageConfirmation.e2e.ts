@@ -106,7 +106,8 @@ test.describe('Adage confirmation', () => {
 
     await page.getByRole('button', { name: 'Statut' }).click()
 
-    await page.getByText('Rechercher').click({ force: true })
+    await expect(page.getByRole('button', { name: 'Rechercher' })).toBeVisible()
+    await page.getByRole('button', { name: 'Rechercher' }).click()
 
     await page.waitForResponse(
       (response) =>
@@ -173,7 +174,8 @@ test.describe('Adage confirmation', () => {
 
     await page.getByRole('button', { name: 'Statut' }).click()
 
-    await page.getByText('Rechercher').click({ force: true })
+    await expect(page.getByRole('button', { name: 'Rechercher' })).toBeVisible()
+    await page.getByRole('button', { name: 'Rechercher' }).click()
 
     await page.waitForResponse(
       (response) =>

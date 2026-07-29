@@ -56,7 +56,7 @@ export const VenueProviderCard = ({
           <div className={style['venue-provider-account-info']}>
             Date d&apos;ajout :
             <span>
-              &nbsp;
+              {' '}
               {formatLocalTimeDateString(
                 dateCreated,
                 venueDepartmentCode,
@@ -74,7 +74,7 @@ export const VenueProviderCard = ({
             <div className={style['last-synchronisation']}>
               <span>Dernière synchronisation :</span>
               <span>
-                &nbsp;
+                {' '}
                 {formatLocalTimeDateString(
                   lastSyncDate,
                   venueDepartmentCode,

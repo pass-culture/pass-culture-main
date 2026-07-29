@@ -63,51 +63,55 @@ describe('toISOStringWithoutMilliseconds', () => {
 })
 
 describe('getRangeToFrenchText', () => {
-  it('should display only one day when the starting date and ending date are the same day', () => {
-    const from = new Date('2020-11-17T08:15:00Z')
-    const to = new Date('2020-11-17T23:59:00Z')
-
-    const formattedRange = getRangeToFrenchText(from, to, true)
-
-    expect(formattedRange).toBe('Le mardi 17 novembre 2020 à 08h15')
-  })
-
-  it('should format the months for both dates when the starting date and ending date are the same year', () => {
-    const from = new Date('2020-11-17T08:15:00Z')
-    const to = new Date('2020-12-10T23:59:00Z')
-
-    const formattedRange = getRangeToFrenchText(from, to, true)
-
-    expect(formattedRange).toBe('Du 17 novembre au 10 décembre 2020 à 08h15')
-  })
-
-  it('should format the months and years for both dates when the starting date and ending date are on different years', () => {
-    const from = new Date('2020-11-17T08:15:00Z')
-    const to = new Date('2021-01-10T23:59:00Z')
-
-    const formattedRange = getRangeToFrenchText(from, to, true)
-
-    expect(formattedRange).toBe(
-      'Du 17 novembre 2020 au 10 janvier 2021 à 08h15'
+  it.each([
+    {
+      description: 'same day',
+      from: '2020-11-17T08:15:00Z',
+      to: '2020-11-17T23:59:00Z',
+      withTime: true,
+      expected: 'Le mardi 17 novembre 2020 à 08h15',
+    },
+    {
+      description: 'same year, different months',
+      from: '2020-11-17T08:15:00Z',
+      to: '2020-12-10T23:59:00Z',
+      withTime: true,
+      expected: 'Du 17 novembre au 10 décembre 2020 à 08h15',
+    },
+    {
+      description: 'different years',
+      from: '2020-11-17T08:15:00Z',
+      to: '2021-01-10T23:59:00Z',
+      withTime: true,
+      expected: 'Du 17 novembre 2020 au 10 janvier 2021 à 08h15',
+    },
+    {
+      description: 'starting at midnight',
+      from: '2020-11-17T00:00:00Z',
+      to: '2021-01-10T23:59:00Z',
+      withTime: true,
+      expected: 'Du 17 novembre 2020 au 10 janvier 2021 à 00h',
+    },
+    {
+      description: 'starting minutes are 00',
+      from: '2020-11-17T08:00:00Z',
+      to: '2021-01-10T23:59:00Z',
+      withTime: true,
+      expected: 'Du 17 novembre 2020 au 10 janvier 2021 à 08h',
+    },
+  ])('should format range correctly when $description', ({
+    from,
+    to,
+    withTime,
+    expected,
+  }) => {
+    const formattedRange = getRangeToFrenchText(
+      new Date(from),
+      new Date(to),
+      withTime
     )
-  })
 
-  it('should not display the time when the starting date is at midnight', () => {
-    const from = new Date('2020-11-17T00:00:00Z')
-    const to = new Date('2021-01-10T23:59:00Z')
-
-    const formattedRange = getRangeToFrenchText(from, to, true)
-
-    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 00h')
-  })
-
-  it('should not display the time minutes when the starting date minutes are 00', () => {
-    const from = new Date('2020-11-17T08:00:00Z')
-    const to = new Date('2021-01-10T23:59:00Z')
-
-    const formattedRange = getRangeToFrenchText(from, to, true)
-
-    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 08h')
+    expect(formattedRange).toBe(expected)
   })
 
   it('should not display the time', () => {
