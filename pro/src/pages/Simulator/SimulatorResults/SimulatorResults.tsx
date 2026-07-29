@@ -150,7 +150,11 @@ export const SimulatorResults = (): JSX.Element => {
           variant={ButtonVariant.SECONDARY}
           label="Retour"
         />
-        <Button as="router-link" to="/inscription/compte/creation" label="Continuer" />
+        <Button
+          as="router-link"
+          to="/inscription/compte/creation"
+          label="Continuer"
+        />
       </div>
     </>
   )

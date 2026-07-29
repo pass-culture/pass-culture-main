@@ -13,7 +13,7 @@ export const DraftBanner = ({ offerId }: { offerId: number }) => {
             iconAlt: 'Modifier',
             href: `/offre/collectif/${offerId}/creation`,
             label: 'Reprendre mon brouillon',
-            type: 'button',
+            type: 'link',
           },
         ]}
         description="Finalisez et envoyez votre brouillon à un établissement quand vous le souhaitez."

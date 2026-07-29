@@ -62,7 +62,6 @@ export const PartnerPageCollectiveSection = () => {
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
-            isExternal
             opensInNewTab
             onClick={logDMSApplicationLinkClick}
             label="Déposer un dossier ADAGE"
@@ -119,7 +118,6 @@ export const PartnerPageCollectiveSection = () => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-          isExternal
           opensInNewTab
           onClick={logCollectiveHelpLinkClick}
           label="En savoir plus sur le pass Culture à destination des scolaires"

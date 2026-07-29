@@ -104,7 +104,6 @@ export const OnboardingCollectiveModal = ({
       <div className={styles['onboarding-collective-actions']}>
         <Button
           as="a"
-          isExternal
           opensInNewTab
           variant={ButtonVariant.PRIMARY}
           color={ButtonColor.BRAND}

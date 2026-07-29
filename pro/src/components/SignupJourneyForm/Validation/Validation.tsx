@@ -254,7 +254,7 @@ export const Validation = (): JSX.Element | undefined => {
                 : 'Vos informations'}
             </h2>
             <Button
-              as="a"
+              as="router-link"
               to="/inscription/structure/identification"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
@@ -281,7 +281,7 @@ export const Validation = (): JSX.Element | undefined => {
           <div className={styles['validation-screen-subtitle']}>
             <h2 className={styles['subtitle']}>Votre activité</h2>
             <Button
-              as="a"
+              as="router-link"
               to="/inscription/structure/activite"
               onClick={() => {
                 logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {

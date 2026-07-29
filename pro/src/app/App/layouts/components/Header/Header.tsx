@@ -124,7 +124,7 @@ export const Header = forwardRef(
               <>
                 {!hideAdminButton && (
                   <Button
-                    as="a"
+                    as="router-link"
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.BRAND}
                     size={ButtonSize.SMALL}
@@ -150,8 +150,7 @@ export const Header = forwardRef(
               <Button
                 as="a"
                 to="https://aide.passculture.app/hc/fr"
-                opensInNewTab={true}
-                isExternal={true}
+                opensInNewTab
                 color={ButtonColor.NEUTRAL}
                 variant={ButtonVariant.SECONDARY}
                 label="Besoin d’aide ?"

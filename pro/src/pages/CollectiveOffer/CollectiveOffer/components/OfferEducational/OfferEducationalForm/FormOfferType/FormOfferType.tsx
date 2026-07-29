@@ -219,7 +219,6 @@ export const FormOfferType = ({
                     label="Voir des exemples d’offres vitrines"
                     onClick={logHasClickedSeeTemplateOfferExample}
                     to="https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine"
-                    isExternal
                     opensInNewTab
                   />
                 </TipsBanner>

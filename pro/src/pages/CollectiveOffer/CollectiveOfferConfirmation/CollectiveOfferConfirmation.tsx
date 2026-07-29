@@ -177,13 +177,13 @@ const CollectiveOfferConfirmation = ({
           <div>{confirmationData.description}</div>
           <div className={styles['confirmation-actions']}>
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.SECONDARY}
               to={isShowcase ? '/offres/vitrines' : '/offres/collectives'}
               label="Voir mes offres"
             />
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.PRIMARY}
               to={creationUrl}
               label="Créer une nouvelle offre"

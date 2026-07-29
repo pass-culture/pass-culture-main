@@ -259,7 +259,7 @@ export const OffererAuthentication = (): JSX.Element => {
                   Informations
                 </h2>
                 <Button
-                  as="a"
+                  as="router-link"
                   to="/inscription/structure/recherche"
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}

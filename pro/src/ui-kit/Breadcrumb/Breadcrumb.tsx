@@ -7,7 +7,7 @@ import styles from './Breadcrumb.module.scss'
 
 export type Crumb = {
   title: string
-  link: { to: string; }
+  link: { to: string }
   icon?: string
 }
 

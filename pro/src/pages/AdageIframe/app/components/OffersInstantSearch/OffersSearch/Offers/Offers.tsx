@@ -289,7 +289,6 @@ export const Offers = ({
                         as="a"
                         variant={ButtonVariant.PRIMARY}
                         to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
-                        isExternal
                         opensInNewTab
                         onClick={() => logOpenHighlightBanner('TFD-2025')}
                         label="en savoir plus"

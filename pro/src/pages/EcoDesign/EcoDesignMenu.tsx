@@ -36,7 +36,7 @@ export const EcoDesignMenu = () => {
         />
         <div className={styles['pages-buttons-container']}>
           <Button
-            as="a"
+            as="router-link"
             to="/ecoconception/politique"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
@@ -45,7 +45,7 @@ export const EcoDesignMenu = () => {
             label="Politique d'écoconception au pass Culture"
           />
           <Button
-            as="a"
+            as="router-link"
             to="/ecoconception/declaration"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}

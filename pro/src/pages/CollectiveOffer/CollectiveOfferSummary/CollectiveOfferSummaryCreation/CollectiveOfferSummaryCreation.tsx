@@ -46,7 +46,7 @@ export const CollectiveOfferSummaryCreation = ({
         <ActionsBarSticky>
           <ActionsBarSticky.Left>
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.SECONDARY}
               to={backRedirectionUrl}
               label="Retour"
@@ -54,7 +54,7 @@ export const CollectiveOfferSummaryCreation = ({
           </ActionsBarSticky.Left>
           <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
             <Button
-              as="a"
+              as="router-link"
               to={nextRedirectionUrl}
               label="Enregistrer et continuer"
             />

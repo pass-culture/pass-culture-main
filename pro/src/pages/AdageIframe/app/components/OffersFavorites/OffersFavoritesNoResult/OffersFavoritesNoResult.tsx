@@ -27,7 +27,7 @@ export const OffersFavoritesNoResult = () => {
           retrouver facilement !
         </p>
         <Button
-          as="a"
+          as="router-link"
           to={`/adage-iframe/recherche?token=${adageAuthToken}`}
           variant={ButtonVariant.PRIMARY}
           label="Explorer le catalogue"

@@ -364,7 +364,7 @@ describe('Button', () => {
   describe('Link rendering', () => {
     it('should render as Link component when to is provided', () => {
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Link Button',
         to: '/test-path',
       })
@@ -379,7 +379,6 @@ describe('Button', () => {
         as: 'a',
         label: 'External Link',
         to: 'https://example.com',
-        isExternal: true,
       })
 
       const link = screen.getByRole('link', { name: 'External Link' })
@@ -394,7 +393,6 @@ describe('Button', () => {
         as: 'a',
         label: 'Section Link',
         to: '#section',
-        isSectionLink: true,
       })
 
       const link = screen.getByRole('link', { name: 'Section Link' })
@@ -409,7 +407,6 @@ describe('Button', () => {
         as: 'a',
         label: 'New Tab Link',
         to: 'https://example.com',
-        isExternal: true,
         opensInNewTab: true,
       })
 
@@ -422,7 +419,6 @@ describe('Button', () => {
         as: 'a',
         label: 'Same Tab Link',
         to: 'https://example.com',
-        isExternal: true,
         opensInNewTab: false,
       })
 
@@ -433,7 +429,7 @@ describe('Button', () => {
     it('should handle onClick on link', async () => {
       const handleClick = vi.fn()
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Clickable Link',
         to: '/test',
         onClick: handleClick,
@@ -446,7 +442,7 @@ describe('Button', () => {
 
     it('should render a disabled link as an anchor without href', () => {
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Disabled Link',
         to: '/test',
         disabled: true,
@@ -461,7 +457,7 @@ describe('Button', () => {
     it('should not call onClick on a disabled link', async () => {
       const handleClick = vi.fn()
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Disabled Clickable Link',
         to: '/test',
         disabled: true,
@@ -476,7 +472,7 @@ describe('Button', () => {
     it('should handle onBlur on link', () => {
       const handleBlur = vi.fn()
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Blur Link',
         to: '/test',
         onBlur: handleBlur,
@@ -490,7 +486,7 @@ describe('Button', () => {
 
     it('should pass aria-label to link', () => {
       renderButton({
-        as: 'a',
+        as: 'router-link',
         label: 'Aria Link',
         to: '/test',
         'aria-label': 'Custom aria label',

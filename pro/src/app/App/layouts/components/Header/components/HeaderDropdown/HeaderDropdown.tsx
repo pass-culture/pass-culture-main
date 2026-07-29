@@ -62,7 +62,7 @@ export const HeaderDropdown = () => {
           {!IN_STRUCTURE_CREATION_FUNNEL && (
             <DropdownMenu.Item className={styles['menu-item']}>
               <Button
-                as="a"
+                as="router-link"
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 icon={fullProfilIcon}

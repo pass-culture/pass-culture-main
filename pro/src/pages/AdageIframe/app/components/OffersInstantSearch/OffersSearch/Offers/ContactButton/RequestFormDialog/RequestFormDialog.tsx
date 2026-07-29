@@ -211,7 +211,6 @@ export const RequestFormDialog = ({
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.BRAND}
                   to={contactUrl}
-                  isExternal
                   opensInNewTab
                   label="Aller sur le site"
                 />
@@ -261,7 +260,6 @@ export const RequestFormDialog = ({
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.BRAND}
           to={contactUrl}
-          isExternal
           opensInNewTab
           label="Aller sur le site"
         />

@@ -194,7 +194,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 <ActionsBarSticky>
                   <ActionsBarSticky.Left>
                     <Button
-                      as="a"
+                      as="router-link"
                       variant={ButtonVariant.SECONDARY}
                       to={computeCollectiveOffersUrl({})}
                       label="Retour à la liste des offres"

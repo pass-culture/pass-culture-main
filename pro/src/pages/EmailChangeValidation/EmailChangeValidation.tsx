@@ -60,7 +60,7 @@ export const EmailChangeValidation = () => {
           <p className={styles['subtitle']}>
             Connectez-vous avec votre ancienne adresse email.
           </p>
-          <Button as="a" to="/" label="Se connecter" />
+          <Button as="router-link" to="/" label="Se connecter" />
         </>
       )}
     </LoggedOutLayout>

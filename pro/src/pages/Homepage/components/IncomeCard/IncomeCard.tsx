@@ -194,7 +194,7 @@ export const IncomeCard = ({
       {bankAccountStatus === SimplifiedBankAccountStatus.VALID && total > 0 && (
         <Card.Footer>
           <Button
-            as="a"
+            as="router-link"
             to="/administration/remboursements/revenus"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}

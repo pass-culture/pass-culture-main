@@ -32,7 +32,7 @@ export const CollectiveOffersBookableCTA = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           label="Modifier la date limite"
-          as="a"
+          as="router-link"
           to={stockEditionLink}
           disabled={isReadOnly}
         />
@@ -44,7 +44,7 @@ export const CollectiveOffersBookableCTA = ({
     <Button
       variant={ButtonVariant.SECONDARY}
       label="Voir l'offre"
-      as="a"
+      as="router-link"
       to={offerLink}
     />
   )

@@ -65,7 +65,7 @@ export const Button = forwardRef<
     )
 
     const absoluteUrl =
-      as !== 'router-link' || to.startsWith('/') ? to : `/${to}`
+      as === 'router-link' && !to.startsWith('/') ? `/${to}` : to
 
     const Component = getComponentType({ as, disabled })
 

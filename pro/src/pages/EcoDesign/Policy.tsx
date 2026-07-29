@@ -11,7 +11,7 @@ export const EcoDesignPolicy = () => {
       <div className={styles['page-content']}>
         <div className={styles['back-link']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="/ecoconception"
@@ -27,7 +27,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           s'inscrit dans une démarche d'écoconception visant à réduire ses
@@ -44,7 +43,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://www.arcep.fr/demarches-et-services/professionnels/referentiel-general-ecoconception-services-numeriques.html"
-            isExternal
             label="site web de l’Arcep"
           />
         </p>
@@ -79,7 +77,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           s'inscrit dans la continuité de tout le travail qui a été fait et qui
@@ -91,7 +88,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro/accessibilite/declaration"
-            isExternal
             label="https://passculture.pro/accessibilite/declaration"
           />
           .
@@ -105,7 +101,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="mailto:eco-conception@passculture.app"
-            isExternal
             label="eco-conception@passculture.app"
           />
           .
@@ -122,7 +117,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           vise une amélioration de ce score sur les prochaines années. Pour ce
@@ -197,7 +191,6 @@ export const EcoDesignPolicy = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="mailto:eco-conception@passculture.app"
-            isExternal
             label="eco-conception@passculture.app"
           />
         </p>

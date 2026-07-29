@@ -94,7 +94,11 @@ export const Banner = ({
                   <li key={a.label} className={styles.link}>
                     {a.type === 'link' ? (
                       <Button
-                        as="a"
+                        as={
+                          a.isExternal || a.href.startsWith('#')
+                            ? 'a'
+                            : 'router-link'
+                        }
                         variant={ButtonVariant.TERTIARY}
                         color={ButtonColor.NEUTRAL}
                         size={
@@ -106,9 +110,7 @@ export const Banner = ({
                         icon={a.icon}
                         iconAlt={a.iconAlt}
                         opensInNewTab={a.isExternal}
-                        isExternal={a.isExternal}
                         onClick={() => a.onClick?.()}
-                        isSectionLink={a.href.startsWith('#')}
                         label={a.label}
                       />
                     ) : (

@@ -113,7 +113,7 @@ type ButtonAsButtonProps = ButtonBaseProps & {
 /**
  * ******************* Anchor props *******************
  */
-type ButtonAsAnchorProps = ButtonBaseProps & {
+export type ButtonAsAnchorProps = ButtonBaseProps & {
   as: 'a'
   type?: never
   to: string

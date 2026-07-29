@@ -80,7 +80,6 @@ export function AdageOfferPartnerPanel({
           {venue.adageId && !isPreview && (
             <Button
               as="a"
-              isExternal
               to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
               opensInNewTab
               variant={ButtonVariant.TERTIARY}

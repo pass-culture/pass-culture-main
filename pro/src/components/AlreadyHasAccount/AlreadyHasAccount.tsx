@@ -12,7 +12,7 @@ export const AlreadyHasAccount = (): JSX.Element => {
       </p>
 
       <Button
-        as="a"
+        as="router-link"
         to="/connexion"
         icon={iconFullNext}
         variant={ButtonVariant.TERTIARY}

@@ -194,7 +194,6 @@ export function OfferRecommendationForm({
                   <Button
                     as="a"
                     variant={ButtonVariant.TERTIARY}
-                    isExternal
                     opensInNewTab
                     to={CGU_LINK}
                     color={ButtonColor.NEUTRAL}

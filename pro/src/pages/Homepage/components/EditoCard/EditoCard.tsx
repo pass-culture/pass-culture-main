@@ -56,7 +56,7 @@ export const EditoCard = ({
               color={ButtonColor.NEUTRAL}
               disabled={isReadOnly}
               size={ButtonSize.SMALL}
-              fullWidth={true}
+              fullWidth
               onClick={() =>
                 logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
                   action: 'discover',
@@ -81,9 +81,8 @@ export const EditoCard = ({
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           size={ButtonSize.SMALL}
-          isExternal={true}
-          opensInNewTab={true}
-          fullWidth={true}
+          opensInNewTab
+          fullWidth
           as="a"
           to="https://pass.culture.fr/ressources/references-culturelles-best-of-2025"
           onClick={logCulturalSurveyClick}
@@ -104,9 +103,9 @@ export const EditoCard = ({
           color={ButtonColor.NEUTRAL}
           disabled={isReadOnly}
           size={ButtonSize.SMALL}
-          fullWidth={true}
+          fullWidth
           to="/offres"
-          as="a"
+          as="router-link"
           onClick={logHeadlineOfferClick}
         />
       }
@@ -125,9 +124,9 @@ export const EditoCard = ({
           color={ButtonColor.NEUTRAL}
           disabled={isReadOnly}
           size={ButtonSize.SMALL}
-          fullWidth={true}
+          fullWidth
           to="/offres"
-          as="a"
+          as="router-link"
           onClick={logRecommendationClick}
         />
       }

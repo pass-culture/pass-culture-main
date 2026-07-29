@@ -21,7 +21,6 @@ export const AdageHeaderBudget = ({
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           to={`${document.referrer}adage/passculture/index`}
-          isExternal
           opensInNewTab
           onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
           label="Solde prévisionnel"

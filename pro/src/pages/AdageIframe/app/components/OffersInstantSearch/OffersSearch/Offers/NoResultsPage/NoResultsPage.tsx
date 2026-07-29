@@ -37,7 +37,6 @@ export const NoResultsPage = ({
       {venue?.adageId && (
         <Button
           as="a"
-          isExternal
           to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
           opensInNewTab
           variant={ButtonVariant.TERTIARY}

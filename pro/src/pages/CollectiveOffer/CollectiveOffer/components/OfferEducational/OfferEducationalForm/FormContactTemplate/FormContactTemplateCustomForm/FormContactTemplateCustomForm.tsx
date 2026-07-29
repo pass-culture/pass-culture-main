@@ -34,7 +34,6 @@ export const FormContactTemplateCustomForm = ({
                   as="a"
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}
-                  isExternal
                   to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
                   opensInNewTab
                   label="FAQ : À quoi ressemble le formulaire standard ?"

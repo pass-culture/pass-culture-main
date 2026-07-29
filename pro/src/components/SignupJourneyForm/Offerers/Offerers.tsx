@@ -234,7 +234,7 @@ export const Offerers = (): JSX.Element => {
       <div className={styles['next-actions']}>
         {isSignupSimulationEnabled && (
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.SECONDARY}
             onClick={() => {
               setOfferer(null)

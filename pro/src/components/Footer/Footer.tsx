@@ -44,7 +44,6 @@ export const Footer = ({ layout }: FooterProps) => {
           <Button
             as="a"
             to="#pied-de-page"
-            isExternal
             icon={fullNextIcon}
             label="Aller au pied de page"
             size={ButtonSize.SMALL}
@@ -61,7 +60,6 @@ export const Footer = ({ layout }: FooterProps) => {
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             to="https://pass.culture.fr/cgu-professionnels/"
-            isExternal
             opensInNewTab
             label="CGU professionnels"
           />
@@ -73,14 +71,13 @@ export const Footer = ({ layout }: FooterProps) => {
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
             to="https://pass.culture.fr/donnees-personnelles/"
-            isExternal
             opensInNewTab
             label="Charte des Données Personnelles"
           />
         </li>
         <li className={styles['footer-list-item']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
@@ -90,7 +87,7 @@ export const Footer = ({ layout }: FooterProps) => {
         </li>
         <li className={styles['footer-list-item']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             size={ButtonSize.SMALL}
@@ -101,7 +98,7 @@ export const Footer = ({ layout }: FooterProps) => {
         {currentUser && (
           <li className={styles['footer-list-item']}>
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
               size={ButtonSize.SMALL}

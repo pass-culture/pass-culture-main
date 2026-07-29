@@ -101,7 +101,7 @@ export const CollectiveOffersTemplateLine = ({
         <Button
           variant={ButtonVariant.SECONDARY}
           label="Voir l'offre"
-          as="a"
+          as="router-link"
           to={offerLink}
         />
       )}

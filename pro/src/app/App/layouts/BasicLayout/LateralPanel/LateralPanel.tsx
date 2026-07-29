@@ -103,7 +103,6 @@ export const LateralPanel = ({
           <Button
             as="a"
             to={skipLinkTarget}
-            isExternal
             icon={fullNextIcon}
             label="Aller au menu"
             size={ButtonSize.SMALL}
@@ -146,7 +145,7 @@ export const LateralPanel = ({
         {isHubPage && (
           <div className={styles['back-to-admin']}>
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.SECONDARY}
               to="/administration/remboursements"
               iconPosition={IconPositionEnum.LEFT}

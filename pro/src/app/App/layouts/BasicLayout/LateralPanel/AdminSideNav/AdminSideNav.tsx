@@ -55,7 +55,7 @@ export const AdminSideNavLinks = () => {
     <nav className={styles['nav-links']}>
       <div className={styles['back-to-admin']}>
         <Button
-          as="a"
+          as="router-link"
           variant={ButtonVariant.SECONDARY}
           to="/accueil"
           iconPosition={IconPositionEnum.LEFT}

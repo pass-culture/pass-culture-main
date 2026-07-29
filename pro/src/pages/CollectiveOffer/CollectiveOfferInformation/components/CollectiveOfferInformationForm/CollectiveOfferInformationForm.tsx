@@ -257,7 +257,7 @@ export const CollectiveOfferInformationForm = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             to={stepUrls.previous}
