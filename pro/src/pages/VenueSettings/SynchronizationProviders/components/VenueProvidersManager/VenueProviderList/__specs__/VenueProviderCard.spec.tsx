@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { createRef } from 'react'
 
@@ -14,7 +14,7 @@ import {
 const renderVenueProviderCard = async (props: VenueProviderCardProps) => {
   renderWithProviders(<VenueProviderCard {...props} />)
 
-  await waitFor(() => screen.getByText('Supprimer'))
+  await screen.findByText('Supprimer')
 }
 
 describe('VenueProviderCard', () => {

@@ -36,11 +36,9 @@ describe('GenericCinemaProviderEdit', () => {
     const paramButton = screen.getByRole('button', { name: 'Paramétrer' })
     expect(paramButton).toBeInTheDocument()
     await userEvent.click(paramButton)
-    await waitFor(() =>
-      expect(
-        screen.getByText('Modifier les paramètres de vos offres')
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Modifier les paramètres de vos offres')
+    ).toBeInTheDocument()
   }
 
   it('should open dialog and display form with isDuo checkbox checked', async () => {

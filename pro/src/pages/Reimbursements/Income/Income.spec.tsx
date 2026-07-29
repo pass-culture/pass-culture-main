@@ -97,9 +97,7 @@ describe('Income', () => {
       })
       renderIncome([])
 
-      await waitFor(() =>
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
-      )
+      expect(await screen.findByText(LABELS.emptyScreen)).toBeInTheDocument()
     })
 
     it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', async () => {
@@ -120,18 +118,14 @@ describe('Income', () => {
       vi.spyOn(api, 'getStatistics').mockRejectedValue(new Error('error'))
       renderIncome()
 
-      await waitFor(() =>
-        expect(screen.getByText(LABELS.error)).toBeInTheDocument()
-      )
+      expect(await screen.findByText(LABELS.error)).toBeInTheDocument()
     })
 
     it('should display an empty screen if no income data was found', async () => {
       vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: {} })
       renderIncome()
 
-      await waitFor(() =>
-        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
-      )
+      expect(await screen.findByText(LABELS.emptyScreen)).toBeInTheDocument()
     })
 
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
@@ -142,13 +136,10 @@ describe('Income', () => {
 
       // This is a check to avoid a false positive by testing existence
       // of element to prove conjoined non-existence of another.
-      await waitFor(() => {
-        expect(
-          screen.getAllByRole('button', {
-            name: /Afficher les revenus de l'année/,
-          }).length
-        ).toBeGreaterThan(0)
+      const showIncomeButtons = await screen.findAllByRole('button', {
+        name: /Afficher les revenus de l'année/,
       })
+      expect(showIncomeButtons.length).toBeGreaterThan(0)
 
       expect(
         screen.queryByRole('button', {
@@ -166,13 +157,11 @@ describe('Income', () => {
       renderIncome()
 
       const years = Object.keys(MOCK_DATA.incomeByYear)
-      await waitFor(() => {
-        expect(
-          screen.getAllByRole('button', {
-            name: /Afficher les revenus de l'année/,
-          }).length
-        ).toBe(years.length)
+
+      const showIncomeButtons = await screen.findAllByRole('button', {
+        name: /Afficher les revenus de l'année/,
       })
+      expect(showIncomeButtons).toHaveLength(years.length)
 
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
@@ -192,13 +181,10 @@ describe('Income', () => {
       })
       renderIncome([MOCK_DATA.venues[0]])
 
-      await waitFor(() => {
-        expect(
-          screen.getAllByRole('button', {
-            name: /Afficher les revenus de l'année/,
-          }).length
-        ).toBeGreaterThan(0)
+      const showIncomeButtons = await screen.findAllByRole('button', {
+        name: /Afficher les revenus de l'année/,
       })
+      expect(showIncomeButtons.length).toBeGreaterThan(0)
 
       const years = Object.keys(MOCK_DATA.incomeByYear)
       // Years are sorted in descending order, so the last/most recent year
@@ -219,11 +205,10 @@ describe('Income', () => {
       })
       renderIncome()
 
-      await waitFor(() =>
-        expect(
-          screen.getAllByText(LABELS.incomeResultsLabel).length
-        ).toBeGreaterThan(0)
+      const incomeResults = await screen.findAllByText(
+        LABELS.incomeResultsLabel
       )
+      expect(incomeResults.length).toBeGreaterThan(0)
     })
   })
 
@@ -242,13 +227,11 @@ describe('Income', () => {
 
       renderIncome()
 
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {
-            name: LABELS.secondVenueSelector,
-          })
-        ).toBeInTheDocument()
-      })
+      expect(
+        await screen.findByRole('button', {
+          name: LABELS.secondVenueSelector,
+        })
+      ).toBeInTheDocument()
 
       const deleteVenueButtons = screen.getAllByRole('button', {
         name: /Supprimer/,
@@ -258,15 +241,9 @@ describe('Income', () => {
         await userEvent.click(button)
       }
 
-      await waitFor(
-        () =>
-          expect(
-            screen.getByText(LABELS.venuesSelectorError)
-          ).toBeInTheDocument(),
-        {
-          timeout: 3000,
-        }
-      )
+      expect(
+        await screen.findByText(LABELS.venuesSelectorError)
+      ).toBeInTheDocument()
 
       // It should not attempt to fetch income data if no venues are selected.
       expect(api.getStatistics).toHaveBeenCalledTimes(1)
@@ -279,13 +256,11 @@ describe('Income', () => {
 
       renderIncome()
 
-      await waitFor(() => {
-        expect(
-          screen.getByRole('button', {
-            name: LABELS.secondVenueSelector,
-          })
-        ).toBeInTheDocument()
-      })
+      expect(
+        await screen.findByRole('button', {
+          name: LABELS.secondVenueSelector,
+        })
+      ).toBeInTheDocument()
 
       const deleteVenueButtons = screen.getAllByRole('button', {
         name: /Supprimer/,
@@ -318,7 +293,7 @@ describe('Income', () => {
       const toLocalEur = (number: number): string =>
         number.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
 
-      await waitFor(() => screen.getAllByText(LABELS.incomeResultsLabel))
+      await screen.findAllByText(LABELS.incomeResultsLabel)
       const yearsWithData = Object.keys(MOCK_DATA.incomeByYear).filter(
         (year) => Object.keys(MOCK_DATA.incomeByYear[year]).length > 0
       )
@@ -338,13 +313,11 @@ describe('Income', () => {
           const incomeResults = income[t]
           if (incomeResults) {
             if (isCollectiveAndIndividualRevenue(incomeResults)) {
-              await waitFor(() =>
-                expect(
-                  screen.getByText(toLocalEur(incomeResults.total), {
-                    collapseWhitespace: false,
-                  })
-                ).toBeInTheDocument()
-              )
+              expect(
+                await screen.findByText(toLocalEur(incomeResults.total), {
+                  collapseWhitespace: false,
+                })
+              ).toBeInTheDocument()
               expect(
                 screen.getByText(toLocalEur(incomeResults.individual), {
                   collapseWhitespace: false,
@@ -356,21 +329,17 @@ describe('Income', () => {
                 })
               ).toBeInTheDocument()
             } else if (isCollectiveRevenue(incomeResults)) {
-              await waitFor(() =>
-                expect(
-                  screen.getByText(toLocalEur(incomeResults.collective), {
-                    collapseWhitespace: false,
-                  })
-                ).toBeInTheDocument()
-              )
+              expect(
+                await screen.findByText(toLocalEur(incomeResults.collective), {
+                  collapseWhitespace: false,
+                })
+              ).toBeInTheDocument()
             } else {
-              await waitFor(() =>
-                expect(
-                  screen.getByText(toLocalEur(incomeResults.individual), {
-                    collapseWhitespace: false,
-                  })
-                ).toBeInTheDocument()
-              )
+              expect(
+                await screen.findByText(toLocalEur(incomeResults.individual), {
+                  collapseWhitespace: false,
+                })
+              ).toBeInTheDocument()
             }
           }
         }
@@ -396,9 +365,9 @@ describe('Income', () => {
         })
       )
 
-      await waitFor(() =>
-        expect(screen.getByText(LABELS.emptyYearScreen)).toBeInTheDocument()
-      )
+      expect(
+        await screen.findByText(LABELS.emptyYearScreen)
+      ).toBeInTheDocument()
     })
 
     it('should display previsionnal income only for current year', async () => {

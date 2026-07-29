@@ -116,11 +116,9 @@ describe('<MultiSelectPanel />', () => {
 
     await userEvent.type(searchInput, 'Non-matching option')
 
-    await waitFor(() =>
-      expect(
-        screen.getByText('Aucun résultat trouvé pour votre recherche.')
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Aucun résultat trouvé pour votre recherche.')
+    ).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {

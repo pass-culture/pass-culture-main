@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -65,9 +65,9 @@ describe('AdageButtonFilter', () => {
 
     await userEvent.click(filterButton)
 
-    await waitFor(() =>
-      expect(screen.getByText('Test adagebuttonfilter')).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Test adagebuttonfilter')
+    ).toBeInTheDocument()
   })
 
   it('should close dialog when the user focuses outside of the field', async () => {
@@ -79,9 +79,9 @@ describe('AdageButtonFilter', () => {
     await userEvent.click(filterButton)
     await userEvent.click(screen.getByText('Test adagebuttonfilter'))
 
-    await waitFor(() =>
-      expect(screen.queryByText('Test adagebuttonfilter')).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Test adagebuttonfilter')
+    ).toBeInTheDocument()
 
     await userEvent.click(outsideDiv)
 

@@ -26,7 +26,7 @@ const renderCinemaProviderForm = async (
     </Dialog.Root>
   )
 
-  await waitFor(() => screen.getByText('Accepter les réservations “Duo“'))
+  await screen.findByText('Accepter les réservations “Duo“')
 }
 
 describe('GenericCinemaProviderForm', () => {
