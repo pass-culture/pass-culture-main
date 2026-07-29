@@ -39,7 +39,6 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
       to={`mailto:?subject=Partage d’offre sur ADAGE - ${encodeURIComponent(offer.name)}&body=${encodeURIComponent(mailBody)}`}
       icon={strokeShareIcon}
       onClick={handleShareButtonClicked}
-      isExternal
       tooltip={'Partager par email'}
     />
   )

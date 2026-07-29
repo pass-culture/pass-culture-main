@@ -14,30 +14,15 @@ describe('getComponentType', () => {
       getComponentType({
         as: 'button',
         disabled: undefined,
-        isExternal: false,
-        isSectionLink: false,
       })
     ).toBe('button')
   })
 
-  it('should return "a" when as is "a" and isExternal is true', () => {
+  it('should return "a" when as is "a"', () => {
     expect(
       getComponentType({
         as: 'a',
         disabled: undefined,
-        isExternal: true,
-        isSectionLink: false,
-      })
-    ).toBe('a')
-  })
-
-  it('should return "a" when as is "a" and isSectionLink is true', () => {
-    expect(
-      getComponentType({
-        as: 'a',
-        disabled: undefined,
-        isExternal: false,
-        isSectionLink: true,
       })
     ).toBe('a')
   })
@@ -47,19 +32,24 @@ describe('getComponentType', () => {
       getComponentType({
         as: 'a',
         disabled: true,
-        isExternal: false,
-        isSectionLink: false,
       })
     ).toBe('a')
   })
 
-  it('should return Link when as is "a" and neither isExternal nor isSectionLink', () => {
+  it('should return "a" when as is "router-link" and disabled is true', () => {
     expect(
       getComponentType({
-        as: 'a',
+        as: 'router-link',
+        disabled: true,
+      })
+    ).toBe('a')
+  })
+
+  it('should return Link when as is "router-link" and not disabled', () => {
+    expect(
+      getComponentType({
+        as: 'router-link',
         disabled: undefined,
-        isExternal: false,
-        isSectionLink: false,
       })
     ).toBe(Link)
   })

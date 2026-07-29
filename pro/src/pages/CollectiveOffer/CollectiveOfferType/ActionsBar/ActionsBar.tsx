@@ -27,7 +27,7 @@ export const ActionsBar = ({
     <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>
         <Button
-          as="a"
+          as="router-link"
           to={
             isOnboarding
               ? '/onboarding/individuel'

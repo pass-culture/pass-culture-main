@@ -49,7 +49,6 @@ export const EducationalRedactorDetails = ({
           <Button
             as="a"
             to={`mailto:${contact.email}`}
-            isExternal
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             label={contact.email ?? ''}

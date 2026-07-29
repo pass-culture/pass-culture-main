@@ -6,13 +6,9 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Breadcrumb, type Crumb } from '../Breadcrumb'
 
 const crumbs: Crumb[] = [
-  { title: 'Link 1', link: { to: './link1', isExternal: false } },
-  {
-    title: 'Link 2',
-    link: { to: './link2', isExternal: false },
-    icon: 'icon_url',
-  },
-  { title: 'Link 3', link: { to: './link3', isExternal: false } },
+  { title: 'Link 1', link: { to: './link1' } },
+  { title: 'Link 2', link: { to: './link2' }, icon: 'icon_url' },
+  { title: 'Link 3', link: { to: './link3' } },
 ]
 
 describe('Breadcrumb', () => {

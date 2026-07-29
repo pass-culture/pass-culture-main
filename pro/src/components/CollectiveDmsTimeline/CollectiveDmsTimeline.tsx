@@ -97,7 +97,6 @@ export const CollectiveDmsTimeline = ({
           color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
-          isExternal
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
@@ -109,7 +108,6 @@ export const CollectiveDmsTimeline = ({
           color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
           to={collectiveDmsContactSupport}
-          isExternal
           label="Contacter les services des ministères de l’Éducation nationale et de la Culture"
         />
       </>
@@ -138,7 +136,6 @@ export const CollectiveDmsTimeline = ({
           color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
-          isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
           label="Consulter ma messagerie sur Démarche Numérique"
         />
@@ -180,7 +177,6 @@ export const CollectiveDmsTimeline = ({
           color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
           to={collectiveDmsApplicationLink}
-          isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
           label="Consulter ma messagerie sur Démarche Numérique"
         />

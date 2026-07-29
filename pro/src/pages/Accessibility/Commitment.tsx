@@ -14,7 +14,7 @@ export const Commitment = () => {
         <div className={styles['back-link']}>
           <Button
             to="/accessibilite/"
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             icon={fullBackIcon}
@@ -99,7 +99,6 @@ export const Commitment = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://acceslibre.beta.gouv.fr/"
-            isExternal
             label="acceslibre"
           />{' '}
           afin d’enrichir plus largement les informations d’accessibilité des

@@ -4,10 +4,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { Button } from '@/design-system/Button/Button'
-import type { ButtonAsLinkProps } from '@/design-system/Button/types'
+import type { ButtonAsAnchorProps } from '@/design-system/Button/types'
 
 interface DisplayOfferInAppLinkProps
-  extends Partial<Omit<ButtonAsLinkProps, 'id'>> {
+  extends Partial<Omit<ButtonAsAnchorProps, 'id'>> {
   id: number
   onClick?: () => void
 }
@@ -23,7 +23,6 @@ export const DisplayOfferInAppLink: FunctionComponent<
       {...originalProps}
       as="a"
       to={offerPreviewUrl}
-      isExternal
       onClick={() => {
         logEvent(Events.CLICKED_VIEW_APP_OFFER, {
           offerId: id,

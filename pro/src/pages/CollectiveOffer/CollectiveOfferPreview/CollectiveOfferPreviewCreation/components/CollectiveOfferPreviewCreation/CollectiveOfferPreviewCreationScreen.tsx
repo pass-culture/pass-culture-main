@@ -130,7 +130,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.SECONDARY}
             to={backRedirectionUrl}
             label="Retour"
@@ -138,7 +138,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
           <Button
-            as="a"
+            as="router-link"
             to="/offres/collectives"
             variant={ButtonVariant.SECONDARY}
             onClick={() => {

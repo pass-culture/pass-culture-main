@@ -87,7 +87,6 @@ export const SurveySatisfaction = ({
             as="a"
             variant={ButtonVariant.PRIMARY}
             to={VITE_ADAGE_SURVEY_SATISFACTION_URL}
-            isExternal
             opensInNewTab
             onClick={logOpenSatisfactionSurvey}
             label="Je donne mon avis"

@@ -73,7 +73,6 @@ export const AdageHeader = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
-            isExternal
             download
             icon={fullDownloadIcon}
             target="_top"

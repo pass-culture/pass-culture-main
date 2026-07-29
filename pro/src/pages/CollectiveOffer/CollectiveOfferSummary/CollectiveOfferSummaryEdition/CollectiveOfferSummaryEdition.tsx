@@ -69,7 +69,7 @@ export const CollectiveOfferSummaryEdition = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
-            as="a"
+            as="router-link"
             to={computeCollectiveOffersUrl({}, undefined, offer.isTemplate)}
             label="Retour à la liste des offres"
           />

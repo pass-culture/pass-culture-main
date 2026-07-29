@@ -45,7 +45,7 @@ export const ErrorLayout = ({
           {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
           rendered once per page, so there cannot be id duplications.> */}
           <Button
-            as="a"
+            as="router-link"
             id="error-return-link"
             variant={ButtonVariant.SECONDARY}
             to={redirect}

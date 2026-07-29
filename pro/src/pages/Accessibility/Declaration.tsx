@@ -13,7 +13,7 @@ export const Declaration = () => {
       <div className={styles['page-content']}>
         <div className={styles['back-link']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="/accessibilite/"

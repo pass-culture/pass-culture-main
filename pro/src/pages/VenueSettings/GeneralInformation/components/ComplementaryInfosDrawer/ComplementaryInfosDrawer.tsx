@@ -153,7 +153,7 @@ export const ComplementaryInfosDrawer = ({
                   variant={BannerVariants.WARNING}
                   title="Vos offres existantes ne sont pas mises à jour"
                   description="La modification de cette adresse ne change pas automatiquement la localisation de vos offres déjà créées. Pensez à les modifier individuellement."
-                ></Banner>
+                />
               )}
             </FormLayout.Section>
           </FormLayout>

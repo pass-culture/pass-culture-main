@@ -85,7 +85,7 @@ export function IndividualOfferPracticalInfosForm({
                 title="Validation obligatoire"
                 variant={BannerVariants.WARNING}
                 description={`Sans validation de la contremarque, la réservation sera annulée et remise en vente après ${reimbursmentDelay} jours. ${offerWillBeReimbursed ? 'Vous ne serez pas remboursé.' : ''}`}
-              ></Banner>
+              />
             </FormLayout.Row>
           )}
           <FormLayout.Row mdSpaceAfter>

@@ -356,7 +356,7 @@ export const CollectiveOfferStockForm = ({
           <ActionsBarSticky>
             <ActionsBarSticky.Left>
               <Button
-                as="a"
+                as="router-link"
                 color={
                   mode === Mode.CREATION
                     ? ButtonColor.BRAND

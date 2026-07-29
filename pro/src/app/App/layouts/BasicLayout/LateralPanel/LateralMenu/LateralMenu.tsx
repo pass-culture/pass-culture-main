@@ -151,7 +151,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     >
       <div className={styles['back-to-admin']}>
         <Button
-          as="a"
+          as="router-link"
           variant={ButtonVariant.SECONDARY}
           to="/remboursements"
           iconPosition={IconPositionEnum.LEFT}
@@ -164,7 +164,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       <div className={styles['nav-links-group-switch-venue']}>
         <div className={styles['nav-links-switch-venue-button']}>
           <Button
-            as="a"
+            as="router-link"
             aria-label={`Changer de structure (actuellement sélectionnée : ${selectedPartnerVenue.publicName})`}
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}

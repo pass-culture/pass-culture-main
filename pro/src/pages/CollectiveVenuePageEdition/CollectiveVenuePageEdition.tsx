@@ -281,7 +281,7 @@ export const CollectiveVenuePageEdition = (): JSX.Element | null => {
 
         <div className={styles['action-bar']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             to={`/partenaire/page-collective`}

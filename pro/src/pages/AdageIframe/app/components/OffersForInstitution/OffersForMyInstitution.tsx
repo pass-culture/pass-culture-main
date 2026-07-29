@@ -84,7 +84,7 @@ export const OffersForMyInstitution = () => {
               Vous n’avez pas d’offre à préréserver
             </h2>
             <Button
-              as="a"
+              as="router-link"
               to={`/adage-iframe/recherche?token=${adageAuthToken}`}
               variant={ButtonVariant.PRIMARY}
               label="Explorer le catalogue"

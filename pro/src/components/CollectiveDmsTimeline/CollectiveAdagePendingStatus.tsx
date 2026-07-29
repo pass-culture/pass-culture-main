@@ -22,7 +22,6 @@ export const CollectiveAdagePendingStatus = () => {
           color={ButtonColor.NEUTRAL}
           icon={fullInfoIcon}
           to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-          isExternal
           opensInNewTab
           label="En savoir plus sur le pass Culture à destination des scolaires"
         />

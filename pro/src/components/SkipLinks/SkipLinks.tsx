@@ -26,7 +26,6 @@ export const SkipLinks = (): JSX.Element => {
               as="a"
               id="go-to-content"
               to="#content"
-              isExternal
               icon={fullNextIcon}
               label="Aller au contenu"
               size={ButtonSize.SMALL}

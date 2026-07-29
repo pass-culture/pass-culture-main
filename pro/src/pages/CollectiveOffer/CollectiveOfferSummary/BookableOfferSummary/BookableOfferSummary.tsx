@@ -269,7 +269,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               {canEditOffer && !isVenueClosed && (
                 <li className={styles['header-actions-item']}>
                   <Button
-                    as="a"
+                    as="router-link"
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
                     size={ButtonSize.SMALL}
@@ -284,7 +284,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               {canPreviewOffer && (
                 <li className={styles['header-actions-item']}>
                   <Button
-                    as="a"
+                    as="router-link"
                     variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
                     size={ButtonSize.SMALL}
@@ -393,7 +393,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button
-            as="a"
+            as="router-link"
             to={computeCollectiveOffersUrl({})}
             label="Retour à la liste des offres"
           />

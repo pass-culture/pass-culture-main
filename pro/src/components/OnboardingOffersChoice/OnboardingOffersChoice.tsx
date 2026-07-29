@@ -56,7 +56,7 @@ export const OnboardingOffersChoice = ({
           </Card.Content>
           <Card.Footer>
             <Button
-              as="a"
+              as="router-link"
               variant={ButtonVariant.PRIMARY}
               to="/onboarding/individuel"
               aria-label="Commencer la création d’offre sur l’application mobile"

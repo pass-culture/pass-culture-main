@@ -139,7 +139,7 @@ export const CollectiveOfferTemplateEditionNavigation = ({
     <div className={styles['actions-container']}>
       {canPreviewOffer && (
         <Button
-          as="a"
+          as="router-link"
           variant={ButtonVariant.SECONDARY}
           color={ButtonColor.NEUTRAL}
           size={ButtonSize.SMALL}

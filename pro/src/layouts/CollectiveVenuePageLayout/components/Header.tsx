@@ -102,7 +102,6 @@ export const Header = ({ context }: Readonly<HeaderProps>) => {
                 color={ButtonColor.NEUTRAL}
                 size={ButtonSize.SMALL}
                 to={`${WEBAPP_URL}/lieu/${selectedPartnerVenue.id}`}
-                isExternal
                 opensInNewTab
                 label="Visualiser votre page"
               />

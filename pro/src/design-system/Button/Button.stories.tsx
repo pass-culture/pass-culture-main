@@ -46,7 +46,7 @@ const meta: Meta<typeof ButtonComponent> = {
   argTypes: {
     as: {
       control: 'select',
-      options: ['button', 'a'],
+      options: ['button', 'a', 'router-link'],
     },
     type: {
       control: 'select',
@@ -100,15 +100,7 @@ const meta: Meta<typeof ButtonComponent> = {
     opensInNewTab: {
       control: 'boolean',
       if: { arg: 'as', eq: 'a' },
-    },
-    isExternal: {
-      control: 'boolean',
-      if: { arg: 'as', eq: 'a' },
-    },
-    isSectionLink: {
-      control: 'boolean',
-      if: { arg: 'as', eq: 'a' },
-    },
+    }
   },
 }
 
@@ -283,7 +275,7 @@ export const ButtonTransparent: Story = {
 export const ButtonWithExternalLink: Story = {
   render: () => (
     <div style={styles}>
-      <Button as='a' to="https://pass-culture.github.io/pass-culture-main/" label="Lien externe" isExternal />
+      <Button as='a' to="https://pass-culture.github.io/pass-culture-main/" label="Lien externe" />
     </div>
   ),
 }
@@ -294,7 +286,7 @@ export const ButtonWithExternalLink: Story = {
 export const ButtonWithExternalLinkAndTargetBlank: Story = {
   render: () => (
     <div style={styles}>
-      <Button as="a" to="https://pass-culture.github.io/pass-culture-main/" label="Lien externe avec nouvelle fenêtre" isExternal opensInNewTab />
+      <Button as="a" to="https://pass-culture.github.io/pass-culture-main/" label="Lien externe avec nouvelle fenêtre" opensInNewTab />
     </div>
   ),
 }
@@ -327,7 +319,7 @@ export const ButtonVariants: Story = {
           <Button label="Secondary" variant={ButtonVariant.SECONDARY} />
           <Button label="Secondary Hovered" variant={ButtonVariant.SECONDARY} hovered />
           <Button label="Secondary Disabled" variant={ButtonVariant.SECONDARY} disabled />
-          
+
         </div>
         <div style={columnStyles}>
           <Button label="Tertiary" variant={ButtonVariant.TERTIARY} />

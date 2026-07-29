@@ -36,7 +36,7 @@ export function AccessibilityMenu() {
         />
         <div className={styles['pages-buttons-container']}>
           <Button
-            as="a"
+            as="router-link"
             to="/accessibilite/engagements"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
@@ -45,7 +45,7 @@ export function AccessibilityMenu() {
             label="Les engagements du pass Culture"
           />
           <Button
-            as="a"
+            as="router-link"
             to="/accessibilite/declaration"
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}

@@ -95,7 +95,6 @@ export const ModalHighlight = ({
         <Button
           as="a"
           to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
-          isExternal
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
@@ -109,7 +108,6 @@ export const ModalHighlight = ({
         <Button
           as="a"
           to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
-          isExternal
           opensInNewTab
           onClick={() =>
             logEvent(EngagementEvents.HAS_REQUESTED_HIGHLIGHTS, {
@@ -131,7 +129,7 @@ export const ModalHighlight = ({
             />
           </Dialog.Close>
           <Button
-            as="a"
+            as="router-link"
             to="/offres"
             variant={ButtonVariant.PRIMARY}
             onClick={() =>

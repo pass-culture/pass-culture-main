@@ -40,7 +40,7 @@ export const CollectiveOffersTemplateCard = ({
       </Card.Content>
       <Card.Footer>
         <Button
-          as="a"
+          as="router-link"
           to="/offres/vitrines"
           label="Voir toutes les offres"
           variant={ButtonVariant.SECONDARY}

@@ -139,7 +139,11 @@ export const IndividualOfferConfirmationScreen = ({
             label="Créer une nouvelle offre"
           />
 
-          <Button as="router-link" to="/offres" label="Accéder à la liste des offres" />
+          <Button
+            as="router-link"
+            to="/offres"
+            label="Accéder à la liste des offres"
+          />
         </div>
       </div>
 

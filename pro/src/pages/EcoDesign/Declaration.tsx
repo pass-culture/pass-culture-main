@@ -23,7 +23,7 @@ export const EcoDesignDeclaration = () => {
       <div className={styles['page-content']}>
         <div className={styles['back-link']}>
           <Button
-            as="a"
+            as="router-link"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="/ecoconception"
@@ -43,7 +43,6 @@ export const EcoDesignDeclaration = () => {
             to={`${ASSETS_BUCKET_URL}/assets/declaration-rgesn-pass-culture.pdf`}
             icon={fullDownloadIcon}
             label="Télécharger la déclaration RGESN de l'espace partenaire"
-            isExternal
             opensInNewTab
           />
         </div>
@@ -159,7 +158,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="mailto:eco-conception@passculture.app"
-            isExternal
             label="eco-conception@passculture.app"
           />
         </p>
@@ -200,7 +198,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://github.com/pass-culture/pass-culture-main"
-            isExternal
             opensInNewTab
             label="https://github.com/pass-culture/pass-culture-main"
           />
@@ -272,7 +269,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           n'a pas procédé à une revue de code et de conception pour réduire le
@@ -520,7 +516,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           à raison de 2 ou 3 informations mensuelles.
@@ -697,7 +692,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://sustainability.google/intl/fr_fr/operations/net-zero-carbon/"
-            isExternal
             opensInNewTab
             label="https://sustainability.google/intl/fr_fr/operations/net-zero-carbon/"
           />
@@ -885,7 +879,6 @@ export const EcoDesignDeclaration = () => {
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             to="https://passculture.pro"
-            isExternal
             label="passculture.pro"
           />{' '}
           a été envisagée et n'a pas été jugée nécessaire.
