@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pcapi.core.offerers import models as offerers_models
 
 
+# APE is "Activité Principale Exercée"
 # structures with an APE not in this list will have an additional warning
 APE_CODE_WHITELIST: typing.Final = (
     "18",
@@ -70,6 +71,12 @@ BOOKSTORE_MESSAGE = SignupSimulationMessage(
 )
 
 
+@dataclass
+class SignupSimulationResult:
+    documents: list[EligibilityDocument]
+    messages: list[SignupSimulationMessage]
+
+
 def _is_national_public_institution(legal_category_code: str) -> bool:
     # 73xxx is "Etablissement Public National"
     return legal_category_code.startswith("73")
@@ -89,7 +96,7 @@ def get_signup_documents_and_messages(
     is_open_to_public: bool,
     targets: list[offerers_models.OffererTarget],
     activity: offerers_models.Activity,
-) -> tuple[list[EligibilityDocument], list[SignupSimulationMessage]]:
+) -> SignupSimulationResult:
     """List the necessary documents for homologation and warnings depending on signup inputs and siret data"""
 
     # all structures must provide a website
@@ -105,7 +112,7 @@ def get_signup_documents_and_messages(
         or ape_code == APE_ENSEIGNEMENT_SUPERIEUR
         or _is_national_public_institution(legal_category_code)
     ):
-        return eligibility_documents, messages
+        return SignupSimulationResult(documents=eligibility_documents, messages=messages)
 
     # all other structures need to provide an offer description
     eligibility_documents.append(EligibilityDocument.DESCRIPTION)
@@ -126,7 +133,7 @@ def get_signup_documents_and_messages(
         if _is_single_member_structure(legal_category_code):
             eligibility_documents.append(EligibilityDocument.CRIMINAL_RECORDS)
 
-        return eligibility_documents, messages
+        return SignupSimulationResult(documents=eligibility_documents, messages=messages)
 
     if _is_single_member_structure(legal_category_code):
         eligibility_documents += [EligibilityDocument.RESUME_OR_PORTFOLIO, EligibilityDocument.DIPLOMAS]
@@ -151,4 +158,4 @@ def get_signup_documents_and_messages(
         eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
         messages.append(BOOKSTORE_MESSAGE)
 
-    return eligibility_documents, messages
+    return SignupSimulationResult(documents=eligibility_documents, messages=messages)

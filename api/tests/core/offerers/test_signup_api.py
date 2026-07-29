@@ -17,12 +17,12 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code="AAAAA",
             legal_category_code="BBBBB",
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=[offerers_models.OffererTarget.INDIVIDUAL],
             activity=offerers_models.Activity.OTHER,
         )
 
-        assert response["documents"] == [
+        assert response.documents == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
         ]
@@ -87,16 +87,16 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
-        assert response["documents"] == [EligibilityDocument.WEBSITE]
+        assert response.documents == [EligibilityDocument.WEBSITE]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
         else:
-            assert not response["messages"]
+            assert not response.messages
 
     @pytest.mark.parametrize(
         "ape_code, legal_category_code, activity, targets",
@@ -128,12 +128,12 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
 
-        assert response["documents"] == [
+        assert response.documents == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
             EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -143,9 +143,9 @@ class SignupSimulationTest:
         ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
         else:
-            assert not response["messages"]
+            assert not response.messages
 
     @pytest.mark.parametrize(
         "ape_code, legal_category_code, activity, targets",
@@ -183,12 +183,12 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
 
-        assert response["documents"] == [
+        assert response.documents == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
             EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -199,9 +199,9 @@ class SignupSimulationTest:
         ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
         else:
-            assert not response["messages"]
+            assert not response.messages
 
     @pytest.mark.parametrize(
         "ape_code, legal_category_code, activity, targets",
@@ -245,24 +245,24 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
 
-        assert response["documents"] == [
+        assert response.documents == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
             EligibilityDocument.SHOP_PICTURES,
         ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("44"):
-            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+            assert UNUSUAL_APE_CODE_MESSAGE in response.messages
 
-        assert BOOKSTORE_MESSAGE in response["messages"]
+        assert BOOKSTORE_MESSAGE in response.messages
 
     @pytest.mark.parametrize(
         "ape_code, legal_category_code, activity, targets",
@@ -318,13 +318,13 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
 
         if activity == offerers_models.Activity.OTHER:
-            assert response["documents"] == [
+            assert response.documents == [
                 EligibilityDocument.WEBSITE,
                 EligibilityDocument.DESCRIPTION,
                 EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -333,7 +333,7 @@ class SignupSimulationTest:
                 EligibilityDocument.SHOP_PICTURES,
             ]
         else:
-            assert response["documents"] == [
+            assert response.documents == [
                 EligibilityDocument.WEBSITE,
                 EligibilityDocument.DESCRIPTION,
                 EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -342,12 +342,12 @@ class SignupSimulationTest:
             ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("44"):
-            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+            assert UNUSUAL_APE_CODE_MESSAGE in response.messages
 
-        assert BOOKSTORE_MESSAGE in response["messages"]
+        assert BOOKSTORE_MESSAGE in response.messages
 
     @pytest.mark.parametrize(
         "ape_code, legal_category_code, activity, targets",
@@ -384,12 +384,12 @@ class SignupSimulationTest:
         response = get_signup_documents_and_messages(
             ape_code=ape_code,
             legal_category_code=legal_category_code,
-            isOpenToPublic=True,
+            is_open_to_public=True,
             targets=targets,
             activity=activity,
         )
 
-        assert response["documents"] == [
+        assert response.documents == [
             EligibilityDocument.WEBSITE,
             EligibilityDocument.DESCRIPTION,
             EligibilityDocument.RESUME_OR_PORTFOLIO,
@@ -398,10 +398,10 @@ class SignupSimulationTest:
         ]
 
         if targets == [offerers_models.OffererTarget.COLLECTIVE]:
-            assert COLLECTIVE_MESSAGE in response["messages"]
+            assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("17"):
-            assert UNUSUAL_APE_CODE_MESSAGE in response["messages"]
+            assert UNUSUAL_APE_CODE_MESSAGE in response.messages
 
         if targets != [offerers_models.OffererTarget.COLLECTIVE] and ape_code.startswith("18"):
-            assert not response["messages"]
+            assert not response.messages

@@ -61,8 +61,8 @@ def signup_structure(
 
 
 @private_api.route("/structure/search/<search_input>", methods=["GET"])
-@login_required
 @atomic()
+@login_required
 @spectree_serialize(
     response_model=sirene_serializers.StructureDataBodyModel,
     api=blueprint.pro_private_schema,
@@ -143,18 +143,18 @@ def simulate_signup(
     if data.ape_code is None:
         raise ApiErrors()
 
-    eligibility_documents, messages = structure_signup_api.get_signup_documents_and_messages(
+    result = structure_signup_api.get_signup_documents_and_messages(
         ape_code=data.ape_code,
         legal_category_code=data.legal_category_code,
-        is_open_to_public=body.isOpenToPublic,
+        is_open_to_public=body.is_open_to_public,
         targets=body.targets,
         activity=offerers_models.Activity[body.activity.name],
     )
 
     return sirene_serializers.SignupSimulationResponseModel(
-        eligibility_documents=eligibility_documents,
+        eligibility_documents=result.documents,
         messages=[
             sirene_serializers.SignupSimulationMessageModel(level=message.level, type=message.type)
-            for message in messages
+            for message in result.messages
         ],
     )

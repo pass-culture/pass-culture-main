@@ -23,7 +23,7 @@ class SignupSimulationResponseModel(HttpBodyModel):
 
 class SignupSimulationPayload(HttpBodyModel):
     siret: CleanSiret
-    isOpenToPublic: bool
+    is_open_to_public: bool
     targets: list[offerers_models.OffererTarget] = pydantic_v2.Field(min_length=1, max_length=2)
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
 
