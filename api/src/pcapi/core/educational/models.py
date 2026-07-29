@@ -1089,7 +1089,7 @@ class CollectiveOfferTemplate(
         ),
         sa.CheckConstraint(
             '("contactUrl" IS NULL OR "contactForm" IS NULL)',
-            name="collective_offer_tmpl_contact_form_switch_constraint",
+            name="collective_offer_tmpl_contact_request_form_switch_constraint",
         ),
         sa.CheckConstraint(
             f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",

@@ -305,6 +305,7 @@ class AllocineVenueProvider(VenueProvider):
     )
     quantity: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
     internalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    # TODO(alembic): this constraint does not exist in DB (and some rows may not be valid)
     price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
