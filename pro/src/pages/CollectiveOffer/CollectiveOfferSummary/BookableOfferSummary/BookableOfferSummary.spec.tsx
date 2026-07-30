@@ -93,14 +93,26 @@ describe('BookableOfferSummary', () => {
     props = { offer }
   })
 
-  it('should render the offer name', () => {
-    renderBookableOfferSummary(props)
-    expect(screen.getByText('Test Offer')).toBeInTheDocument()
-  })
-
-  it('should render the venue public name', () => {
-    renderBookableOfferSummary(props)
-    expect(screen.getByText('Proposé par Test Venue')).toBeInTheDocument()
+  describe('offer details', () => {
+    it.each([
+      { description: 'the offer name', expectedText: 'Test Offer' },
+      {
+        description: 'the venue public name',
+        expectedText: 'Proposé par Test Venue',
+      },
+      {
+        description: 'the number of participants',
+        expectedText: '55 participants',
+      },
+      { description: 'the price', expectedText: '1000 euros' },
+      {
+        description: 'the booking limit date',
+        expectedText: 'Date limite de réservation : 31/12/2023',
+      },
+    ])('should render $description', ({ expectedText }) => {
+      renderBookableOfferSummary(props)
+      expect(screen.getByText(expectedText)).toBeInTheDocument()
+    })
   })
 
   it('should render the venue default name when venue has no public name', () => {
@@ -117,11 +129,6 @@ describe('BookableOfferSummary', () => {
     expect(screen.getByText('Proposé par Venue 1')).toBeInTheDocument()
   })
 
-  it('should render the number of participants', () => {
-    renderBookableOfferSummary(props)
-    expect(screen.getByText('55 participants')).toBeInTheDocument()
-  })
-
   it("should render default recap value when value doesn't exist", () => {
     const testProps = {
       offer: getCollectiveOfferFactory({
@@ -131,11 +138,6 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(testProps)
     expect(screen.getAllByText('-')).toHaveLength(4)
-  })
-
-  it('should render the price', () => {
-    renderBookableOfferSummary(props)
-    expect(screen.getByText('1000 euros')).toBeInTheDocument()
   })
 
   it('should render "0 euro" price when offer is free', () => {
@@ -158,13 +160,6 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(testProps)
     expect(screen.getByText('0 euro')).toBeInTheDocument()
-  })
-
-  it('should render the booking limit date', () => {
-    renderBookableOfferSummary(props)
-    expect(
-      screen.getByText('Date limite de réservation : 31/12/2023')
-    ).toBeInTheDocument()
   })
 
   it('should render the location when location type is school', () => {

@@ -132,44 +132,46 @@ export const DetailsEanSearch = ({
     : errors.eanSearch?.message || ''
 
   return (
-    <form onSubmit={handleSubmit(onSearch)}>
-      <FormLayout fullWidthActions>
-        <div className={styles['details-ean-search']}>
-          <div>
-            <TextInput
-              label="Scanner ou rechercher un produit par EAN"
-              error={cumulativeError}
-              disabled={shouldInputBeDisabled}
-              required={shouldInputBeRequired}
-              description="Format : EAN à 13 chiffres"
-              {...(displayClearButton
-                ? {
-                    iconButton: {
-                      icon: fullCloseIcon,
-                      label: 'Effacer',
-                      onClick: onEanClear,
-                      disabled: isLoading,
-                    },
-                  }
-                : {
-                    icon: strokeBarcodeIcon,
-                  })}
-              {...register('eanSearch')}
-              maxCharactersCount={13}
-              extension={
-                <Button
-                  type="submit"
-                  disabled={shouldButtonBeDisabled}
-                  label="Rechercher"
-                />
-              }
-            />
+    <>
+      <form onSubmit={handleSubmit(onSearch)}>
+        <FormLayout fullWidthActions>
+          <div className={styles['details-ean-search']}>
+            <div>
+              <TextInput
+                label="Scanner ou rechercher un produit par EAN"
+                error={cumulativeError}
+                disabled={shouldInputBeDisabled}
+                required={shouldInputBeRequired}
+                description="Format : EAN à 13 chiffres"
+                {...(displayClearButton
+                  ? {
+                      iconButton: {
+                        icon: fullCloseIcon,
+                        label: 'Effacer',
+                        onClick: onEanClear,
+                        disabled: isLoading,
+                      },
+                    }
+                  : {
+                      icon: strokeBarcodeIcon,
+                    })}
+                {...register('eanSearch')}
+                maxCharactersCount={13}
+                extension={
+                  <Button
+                    type="submit"
+                    disabled={shouldButtonBeDisabled}
+                    label="Rechercher"
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
-        <div role="status" className={styles['details-ean-search-callout']}>
-          {isProductBased && <EanSearchCallout />}
-        </div>
-      </FormLayout>
-    </form>
+        </FormLayout>
+      </form>
+      <output className={styles['details-ean-search-callout']}>
+        {isProductBased && <EanSearchCallout />}
+      </output>
+    </>
   )
 }

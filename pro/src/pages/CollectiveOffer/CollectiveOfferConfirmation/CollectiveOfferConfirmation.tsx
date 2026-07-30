@@ -147,6 +147,10 @@ const CollectiveOfferConfirmation = ({
   const offerStatus = offer.displayedStatus
   const offererId = offer.venue.managingOfferer.id
 
+  const creationUrl = offererId
+    ? `/offre/creation?structure=${offererId}`
+    : '/offre/creation'
+
   const canShareOffer =
     isCollectiveOfferTemplate(offer) &&
     offer.allowedActions.includes(
@@ -181,7 +185,7 @@ const CollectiveOfferConfirmation = ({
             <Button
               as="a"
               variant={ButtonVariant.PRIMARY}
-              to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
+              to={creationUrl}
               label="Créer une nouvelle offre"
             />
           </div>

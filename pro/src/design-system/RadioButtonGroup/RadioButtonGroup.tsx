@@ -59,7 +59,9 @@ export const RadioButtonGroup = ({
 }: RadioButtonGroupProps): JSX.Element => {
   const errorId = useId()
   const descriptionId = useId()
-  const describedBy = `${error ? errorId : ''}${description ? ` ${descriptionId}` : ''}`
+  const describedBy = [error && errorId, description && descriptionId]
+    .filter(Boolean)
+    .join(' ')
 
   const isStringLabel = typeof label === 'string'
 

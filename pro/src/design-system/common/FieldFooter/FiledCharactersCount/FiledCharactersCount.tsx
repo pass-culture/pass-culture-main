@@ -19,13 +19,9 @@ export function FiledCharactersCount({
 
   return (
     <span className={styles['characters-count']}>
-      <span
-        role="status"
-        className={styles['visually-hidden']}
-        id={describeById}
-      >
+      <output className={styles['visually-hidden']} id={describeById}>
         {debouncedCount} caractères sur {max}
-      </span>
+      </output>
       <span aria-hidden="true">
         {current}/{max}
       </span>

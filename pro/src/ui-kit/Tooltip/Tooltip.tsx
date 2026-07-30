@@ -55,15 +55,30 @@ export function Tooltip({ children, content, className }: TooltipProps) {
   const tooltipContentRect = panelRef.current?.getBoundingClientRect()
 
   //  Prevent the panel from being outlide the screen
-  const offsetLeft =
-    // document.body may be null in some rare cases.
-    tooltipContentRect && document.body
-      ? tooltipContentWidth + tooltipContentRect.x > document.body.clientWidth
-        ? document.body.clientWidth - tooltipContentWidth - tooltipContentRect.x
-        : tooltipContentRect.x < 0
-          ? -tooltipContentRect.x
-          : 0
-      : 0
+  const calculateOffsetLeft = (): number => {
+    if (!tooltipContentRect || !document.body) {
+      return 0
+    }
+
+    // Check if tooltip exceeds right edge
+    if (
+      tooltipContentWidth + tooltipContentRect.x >
+      document.body.clientWidth
+    ) {
+      return (
+        document.body.clientWidth - tooltipContentWidth - tooltipContentRect.x
+      )
+    }
+
+    // Check if tooltip exceeds left edge
+    if (tooltipContentRect.x < 0) {
+      return -tooltipContentRect.x
+    }
+
+    return 0
+  }
+
+  const offsetLeft = calculateOffsetLeft()
 
   //  Position the tooltip above its trigger
   const offsetTop = tooltipContentRect ? -tooltipContentRect.height : 0

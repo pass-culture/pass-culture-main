@@ -63,28 +63,17 @@ describe('formatLocalTimeDateString', () => {
 })
 
 describe('getDepartmentTimezone', () => {
-  it('should return Paris timezone for Paris', () => {
-    const departementCode = '75'
-
+  it.each([
+    { departementCode: '75', expected: 'Europe/Paris' },
+    { departementCode: '973', expected: 'America/Cayenne' },
+    { departementCode: '974', expected: 'Indian/Reunion' },
+  ])('should return $expected timezone for department $departementCode', ({
+    departementCode,
+    expected,
+  }) => {
     const timezone = getDepartmentTimezone(departementCode)
 
-    expect(timezone).toBe('Europe/Paris')
-  })
-
-  it('should return Cayenne timezone for 973', () => {
-    const departementCode = '973'
-
-    const timezone = getDepartmentTimezone(departementCode)
-
-    expect(timezone).toBe('America/Cayenne')
-  })
-
-  it('should return Reunion timezone for 974', () => {
-    const departementCode = '974'
-
-    const timezone = getDepartmentTimezone(departementCode)
-
-    expect(timezone).toBe('Indian/Reunion')
+    expect(timezone).toBe(expected)
   })
 })
 

@@ -22,7 +22,8 @@ const computeDurationString = (durationMinutes?: number | null) => {
     return `${minutes}min`
   }
 
-  return `${hours}h${minutes > 0 ? `${minutes}min` : ''}`
+  const minutesString = minutes > 0 ? `${minutes}min` : ''
+  return `${hours}h${minutesString}`
 }
 
 export function AdageOfferDetailsSection({

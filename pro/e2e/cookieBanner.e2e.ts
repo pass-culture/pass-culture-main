@@ -32,9 +32,10 @@ test.describe('Cookie banner', () => {
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
 
-      await page
-        .getByText('Accessibilité : partiellement conforme')
-        .click({ force: true })
+      await expect(
+        page.getByText('Accessibilité : partiellement conforme')
+      ).toBeVisible()
+      await page.getByText('Accessibilité : partiellement conforme').click()
 
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
     })

@@ -38,6 +38,16 @@ import { Table, TableVariant } from '@/ui-kit/Table/Table'
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
 
+const getCollectiveOfferFullRowContent = (
+  offer: CollectiveOfferResponseModel
+): JSX.Element | null => {
+  const hasExpirationRow =
+    isCollectiveOfferBookable(offer) &&
+    canExpire(offer) &&
+    !!offer.stock?.bookingLimitDatetime
+  return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
+}
+
 export type CollectiveOffersScreenProps = {
   currentPageNumber: number
   isLoading: boolean
@@ -227,13 +237,7 @@ export const CollectiveOffersScreen = ({
               scrollToContentWrapper()
             },
           }}
-          getFullRowContent={(offer: CollectiveOfferResponseModel) => {
-            const hasExpirationRow =
-              isCollectiveOfferBookable(offer) &&
-              canExpire(offer) &&
-              !!offer.stock?.bookingLimitDatetime
-            return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
-          }}
+          getFullRowContent={getCollectiveOfferFullRowContent}
         />
       </AccessibleScrollContainer>
       <output>

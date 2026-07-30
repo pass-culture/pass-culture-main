@@ -25,9 +25,12 @@ export const SnackBarContainer = (): JSX.Element => {
   const snackBars = useAppSelector(listSelector)
   const dispatch = useAppDispatch()
   const isStickyBarOpen = useAppSelector(isStickyBarOpenSelector)
-  const snackBarsToDisplay = snackBars.sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  )
+  const sortedSnackBars = snackBars
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
 
   return (
     <div
@@ -36,7 +39,7 @@ export const SnackBarContainer = (): JSX.Element => {
         isStickyBarOpen && styles['with-sticky-action-bar']
       )}
     >
-      {snackBarsToDisplay.map((snackBar, index) => (
+      {sortedSnackBars.map((snackBar, index) => (
         <SnackBar
           key={snackBar.id}
           variant={snackBar.variant}
