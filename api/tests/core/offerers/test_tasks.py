@@ -207,6 +207,21 @@ class FinalizeClosingVenueTaskTest:
 
         assert venue.state == offerers_models.VenueState.CLOSED
 
+    def test_close_venue_history_action_has_author_user(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.BaseUserFactory()
+        self.create_synced_offers_with_bookings(venue)
+
+        payload = offerers_tasks.FinalizeClosingVenuePayload(venue_id=venue.id, author_id=author.id)
+        offerers_tasks.finalize_closing_venue_task(payload.model_dump())
+
+        venue_closed_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(venueId=venue.id, actionType=history_models.ActionType.VENUE_CLOSED)
+            .one()
+        )
+        assert venue_closed_action.authorUserId == author.id
+
     def test_pivots_have_been_deleted(self):
         venue = offerers_factories.VenueFactory()
         author = users_factories.BaseUserFactory()

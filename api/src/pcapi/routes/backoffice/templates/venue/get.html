@@ -51,6 +51,9 @@
             {% if allowed_actions.actions.DELETE_SIRET in allowed_actions.inline_actions %}
               {{ action_bar_button("trash", "Supprimer le SIRET", modal_id="#remove-venue-siret") }}
             {% endif %}
+            {% if allowed_actions.actions.CLOSE in allowed_actions.inline_actions %}
+              {{ action_bar_button("door-closed", "Fermer le partenaire culturel", modal_id="#close-modal-"~venue.id) }}
+            {% endif %}
             {% if allowed_actions.actions.BLOCK_REIMBURSEMENTS in allowed_actions.inline_actions %}
               {{ action_bar_button("lock", "Bloquer les remboursements", modal_id="#suspend-reimbursement-modal") }}
             {% endif %}
@@ -77,6 +80,9 @@
                 {% endif %}
                 {% if allowed_actions.actions.DELETE_SIRET in allowed_actions.additional_actions %}
                   <li>{{ action_bar_additional_button("trash", "Supprimer le SIRET", modal_id="#remove-venue-siret") }}</li>
+                {% endif %}
+                {% if allowed_actions.actions.CLOSE in allowed_actions.additional_actions %}
+                  <li>{{ action_bar_additional_button("door-closed", "Fermer le partenaire culturel", modal_id="#close-modal-"~venue.id) }}</li>
                 {% endif %}
                 {% if allowed_actions.actions.BLOCK_REIMBURSEMENTS in allowed_actions.additional_actions %}
                   <li>{{ action_bar_additional_button("lock", "Bloquer les remboursements", modal_id="#suspend-reimbursement-modal") }}</li>
@@ -396,6 +402,9 @@
   {% endif %}
   {% if allowed_actions.actions.DELETE_SIRET in allowed_actions %}
     {{ build_dynamic_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id) , "remove-venue-siret") }}
+  {% endif %}
+  {% if allowed_actions.actions.CLOSE in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.venue.get_close_venue_form', venue_id=venue.id) , "close-modal-" ~ venue.id) }}
   {% endif %}
   {% if allowed_actions.actions.BLOCK_REIMBURSEMENTS in allowed_actions %}
     {% set form_description = "Les remboursements vers le partenaire culturel <strong>"|safe + venue.publicName + "</strong> ("|safe + venue.id|string + ") seront gelés jusqu'à rétablissement. Les réservations pourront se poursuivre. Veuillez confirmer ce choix." %}
