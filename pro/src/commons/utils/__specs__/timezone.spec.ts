@@ -67,14 +67,14 @@ describe('getDepartmentTimezone', () => {
     { departementCode: '75', expected: 'Europe/Paris' },
     { departementCode: '973', expected: 'America/Cayenne' },
     { departementCode: '974', expected: 'Indian/Reunion' },
-  ])('should return $expected timezone for department $departementCode', ({
-    departementCode,
-    expected,
-  }) => {
-    const timezone = getDepartmentTimezone(departementCode)
+  ])(
+    'should return $expected timezone for department $departementCode',
+    ({ departementCode, expected }) => {
+      const timezone = getDepartmentTimezone(departementCode)
 
-    expect(timezone).toBe(expected)
-  })
+      expect(timezone).toBe(expected)
+    }
+  )
 })
 
 // I don't find a way to change the timezone used in the test

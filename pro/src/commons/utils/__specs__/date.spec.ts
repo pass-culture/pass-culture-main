@@ -99,20 +99,18 @@ describe('getRangeToFrenchText', () => {
       withTime: true,
       expected: 'Du 17 novembre 2020 au 10 janvier 2021 à 08h',
     },
-  ])('should format range correctly when $description', ({
-    from,
-    to,
-    withTime,
-    expected,
-  }) => {
-    const formattedRange = getRangeToFrenchText(
-      new Date(from),
-      new Date(to),
-      withTime
-    )
+  ])(
+    'should format range correctly when $description',
+    ({ from, to, withTime, expected }) => {
+      const formattedRange = getRangeToFrenchText(
+        new Date(from),
+        new Date(to),
+        withTime
+      )
 
-    expect(formattedRange).toBe(expected)
-  })
+      expect(formattedRange).toBe(expected)
+    }
+  )
 
   it('should not display the time', () => {
     const from = new Date('2020-11-17T08:00:00Z')

@@ -17,10 +17,10 @@ describe('removeQuotes', () => {
       original: 'Place de la “Belle Épine“',
       expected: 'Place de la Belle Épine',
     },
-  ])('should trim and remove $description from a string', ({
-    original,
-    expected,
-  }) => {
-    expect(removeQuotes(original)).toBe(expected)
-  })
+  ])(
+    'should trim and remove $description from a string',
+    ({ original, expected }) => {
+      expect(removeQuotes(original)).toBe(expected)
+    }
+  )
 })

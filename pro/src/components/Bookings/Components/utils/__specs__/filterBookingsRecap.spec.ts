@@ -50,23 +50,27 @@ describe('filterBookingsRecap', () => {
         description: 'matching keywords with uppercase letters',
         offerName: "LE NOM DE L'OFFRE",
       },
-    ])('should return list containing only BookingRecap $description', ({
-      offerName,
-    }) => {
-      const bookingsRecap = [
-        bookingRecapFactory({
-          stock: bookingRecapStockFactory({ offerName: "Le nom de l'offre" }),
-        }),
-        bookingRecapFactory({
-          stock: bookingRecapStockFactory({ offerName: "Le nom de l'offre" }),
-        }),
-      ]
-      const filters = filtersBuilder({ offerName })
+    ])(
+      'should return list containing only BookingRecap $description',
+      ({ offerName }) => {
+        const bookingsRecap = [
+          bookingRecapFactory({
+            stock: bookingRecapStockFactory({ offerName: "Le nom de l'offre" }),
+          }),
+          bookingRecapFactory({
+            stock: bookingRecapStockFactory({ offerName: "Le nom de l'offre" }),
+          }),
+        ]
+        const filters = filtersBuilder({ offerName })
 
-      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+        const filteredBookingsRecap = filterBookingsRecap(
+          bookingsRecap,
+          filters
+        )
 
-      expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
-    })
+        expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
+      }
+    )
   })
 
   describe('by booking token', () => {
@@ -80,25 +84,29 @@ describe('filterBookingsRecap', () => {
         description: 'matching keywords with different case',
         bookingToken: 'aBc',
       },
-    ])('should return list containing only BookingRecap $description', ({
-      bookingToken,
-    }) => {
-      const bookingRecap1 = bookingRecapFactory({ bookingToken: 'ABCDEF' })
-      const bookingRecap2 = bookingRecapFactory({ bookingToken: 'ZACBGQ' })
-      const bookingRecapWithNoToken = bookingRecapFactory({
-        bookingToken: null,
-      })
-      const bookingsRecap = [
-        bookingRecap1,
-        bookingRecap2,
-        bookingRecapWithNoToken,
-      ]
-      const filters = filtersBuilder({ bookingToken })
+    ])(
+      'should return list containing only BookingRecap $description',
+      ({ bookingToken }) => {
+        const bookingRecap1 = bookingRecapFactory({ bookingToken: 'ABCDEF' })
+        const bookingRecap2 = bookingRecapFactory({ bookingToken: 'ZACBGQ' })
+        const bookingRecapWithNoToken = bookingRecapFactory({
+          bookingToken: null,
+        })
+        const bookingsRecap = [
+          bookingRecap1,
+          bookingRecap2,
+          bookingRecapWithNoToken,
+        ]
+        const filters = filtersBuilder({ bookingToken })
 
-      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+        const filteredBookingsRecap = filterBookingsRecap(
+          bookingsRecap,
+          filters
+        )
 
-      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
-    })
+        expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+      }
+    )
   })
 
   describe('by ISBN', () => {
@@ -108,16 +116,20 @@ describe('filterBookingsRecap', () => {
         description: 'matching keywords with surrounding space',
         offerISBN: '123456789  ',
       },
-    ])('should return list containing only BookingRecap $description', ({
-      offerISBN,
-    }) => {
-      const bookingsRecap = [bookingRecapFactory()]
-      const filters = filtersBuilder({ offerISBN })
+    ])(
+      'should return list containing only BookingRecap $description',
+      ({ offerISBN }) => {
+        const bookingsRecap = [bookingRecapFactory()]
+        const filters = filtersBuilder({ offerISBN })
 
-      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+        const filteredBookingsRecap = filterBookingsRecap(
+          bookingsRecap,
+          filters
+        )
 
-      expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
-    })
+        expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
+      }
+    )
   })
 
   describe('by beneficiary', () => {
@@ -153,15 +165,19 @@ describe('filterBookingsRecap', () => {
       },
       { description: 'escaping accents', bookingBeneficiary: 'Fïrst Làst' },
       { description: 'trimming input', bookingBeneficiary: ' First Last ' },
-    ])('should return list containing only BookingRecap $description', ({
-      bookingBeneficiary,
-    }) => {
-      const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
-      const filters = filtersBuilder({ bookingBeneficiary })
+    ])(
+      'should return list containing only BookingRecap $description',
+      ({ bookingBeneficiary }) => {
+        const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
+        const filters = filtersBuilder({ bookingBeneficiary })
 
-      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+        const filteredBookingsRecap = filterBookingsRecap(
+          bookingsRecap,
+          filters
+        )
 
-      expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
-    })
+        expect(filteredBookingsRecap).toStrictEqual(bookingsRecap)
+      }
+    )
   })
 })
