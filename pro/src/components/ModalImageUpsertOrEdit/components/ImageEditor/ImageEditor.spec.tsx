@@ -29,21 +29,21 @@ describe('ImageEditor', () => {
   it('renders correctly', () => {
     render(<ImageEditor {...defaultProps} />)
 
-    expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
+    expect(
+      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
+    ).toBeInTheDocument()
     expect(screen.getByTestId('slider')).toBeInTheDocument()
   })
 
   it('handles window resize and adjusts canvas size', () => {
     render(<ImageEditor {...defaultProps} />)
 
-    expect(screen.getByLabelText("Editeur d'image")).toHaveAttribute(
-      'width',
-      '540'
-    )
-    expect(screen.getByLabelText("Editeur d'image")).toHaveAttribute(
-      'height',
-      '540'
-    )
+    expect(
+      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
+    ).toHaveAttribute('width', '540')
+    expect(
+      screen.getByLabelText("Editeur de cadrage et de zoom de l'image")
+    ).toHaveAttribute('height', '540')
   })
 
   it('handles zoom slider change correctly', () => {
@@ -93,7 +93,9 @@ describe('ImageEditor', () => {
         />
       )
 
-      const canvas = screen.getByLabelText("Editeur d'image")
+      const canvas = screen.getByLabelText(
+        "Editeur de cadrage et de zoom de l'image"
+      )
       const width = Number(canvas.getAttribute('width'))
       const height = Number(canvas.getAttribute('height'))
 

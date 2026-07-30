@@ -15,7 +15,7 @@ describe('VideoPreview', () => {
     )
 
     expect(
-      screen.getByRole('img', { name: 'Prévisualisation de l’image' })
+      screen.getByRole('img', { name: 'Prévisualisation de la vidéo' })
     ).toBeInTheDocument()
     expect(screen.getByText('Ma super vidéo')).toBeInTheDocument()
     expect(screen.getByText('3 min')).toBeInTheDocument()

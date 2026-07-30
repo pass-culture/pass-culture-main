@@ -24,7 +24,7 @@ export const VideoPreview = ({
 }: VideoPreviewProps) => (
   <div className={styles['video-preview']}>
     <SafeImage
-      alt={'Prévisualisation de l’image'}
+      alt={'Prévisualisation de la vidéo'}
       className={styles['video-image']}
       src={videoThumbnailUrl}
       placeholder={<ImagePlaceholder />}
