@@ -252,8 +252,8 @@ export const MultiyearScheme = () => {
           <Link
             color={LinkColor.NEUTRAL}
             isExternalLink
-            to="mailto:support@passculture.app"
-            label="support@passculture.app"
+            to="mailto:accessibilite@passculture.app"
+            label="accessibilite@passculture.app"
           />
           ),
         </p>

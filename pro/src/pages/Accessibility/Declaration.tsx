@@ -455,8 +455,8 @@ export const Declaration = () => {
           <Link
             color={LinkColor.NEUTRAL}
             isExternalLink
-            to="mailto:support@passculture.app"
-            label="support@passculture.app"
+            to="mailto:accessibilite@passculture.app"
+            label="accessibilite@passculture.app"
           />
           &nbsp;afin qu’une assistance puisse être apportée (alternative
           accessible, information et contenu donnés sous une autre forme).
