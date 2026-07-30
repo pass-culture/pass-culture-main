@@ -28,7 +28,7 @@ APE_CODE_WHITELIST: typing.Final = (
 
 APE_CODES_ADMINISTRATION_PUBLIQUE_GENERALE: typing.Final = {"8411Z", "8411Y"}
 APE_CODES_ENSEIGNEMENT_SUPERIEUR: typing.Final = {"8542Z", "8540Y"}
-APE_CODES_RECORDING_STUDIO: typing.Final = {"5920Z", "5920Y"}
+APE_CODES_STUDIO_ENREGISTREMENT: typing.Final = {"5920Z", "5920Y"}
 
 
 class EligibilityDocument(enum.Enum):
@@ -123,7 +123,7 @@ def get_signup_documents_and_messages(
     if not ape_code.startswith(APE_CODE_WHITELIST):
         messages.append(UNUSUAL_APE_CODE_MESSAGE)
 
-    if ape_code in APE_CODES_RECORDING_STUDIO:
+    if ape_code in APE_CODES_STUDIO_ENREGISTREMENT:
         eligibility_documents += [
             EligibilityDocument.RESUME_OR_PORTFOLIO,
             EligibilityDocument.PRICES,

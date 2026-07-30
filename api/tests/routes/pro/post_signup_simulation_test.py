@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi import settings
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers.structure_signup_api import EligibilityDocument
 from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageLevel
@@ -15,7 +14,7 @@ from tests.connectors import api_entreprise_test_data
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-VALID_SIRET = settings.PASS_CULTURE_SIRET
+VALID_SIRET = "44265836100021"
 
 
 class Returns200Test:
@@ -39,7 +38,7 @@ class Returns200Test:
         }
 
     def test_complex_case(self, client):
-        """single member library with ape code not in whitelist, and collective target"""
+        """single member bookstore with ape code not in whitelist, and collective target"""
         data = {
             "siret": "11141111122213",
             "isOpenToPublic": True,
@@ -58,9 +57,12 @@ class Returns200Test:
                 EligibilityDocument.SHOP_PICTURES.name,
             ],
             "messages": [
-                {"level": SignupSimulationMessageLevel.INFO, "type": SignupSimulationMessageType.COLLECTIVE},
-                {"level": SignupSimulationMessageLevel.ALERT, "type": SignupSimulationMessageType.UNUSUAL_APE_CODE},
-                {"level": SignupSimulationMessageLevel.ALERT, "type": SignupSimulationMessageType.BOOKSTORE},
+                {"level": SignupSimulationMessageLevel.INFO.name, "type": SignupSimulationMessageType.COLLECTIVE.name},
+                {
+                    "level": SignupSimulationMessageLevel.ALERT.name,
+                    "type": SignupSimulationMessageType.UNUSUAL_APE_CODE.name,
+                },
+                {"level": SignupSimulationMessageLevel.ALERT.name, "type": SignupSimulationMessageType.BOOKSTORE.name},
             ],
         }
 

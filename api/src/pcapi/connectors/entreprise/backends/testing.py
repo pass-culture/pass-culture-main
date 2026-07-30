@@ -1,7 +1,6 @@
 import datetime
 from collections import defaultdict
 
-from pcapi import settings
 from pcapi.connectors.entreprise import exceptions
 from pcapi.connectors.entreprise import models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
@@ -68,9 +67,6 @@ class TestingBackend(BaseBackend):
 
     @classmethod
     def _legal_category_code(cls, siren_or_siret: str) -> str:
-        if siren_or_siret == settings.PASS_CULTURE_SIRET:
-            return "5710"  # SAS, société par actions simplifiée
-
         match siren_or_siret[3]:
             case "5":
                 return "5499"  # Société à responsabilité limitée (sans autre indication)
