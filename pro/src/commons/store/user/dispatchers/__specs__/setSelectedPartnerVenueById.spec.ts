@@ -24,7 +24,6 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getVenue: vi.fn(),
     signout: vi.fn(),
-    getOfferer: vi.fn(),
   },
 }))
 vi.mock('@/commons/errors/handleError', () => ({
@@ -89,25 +88,19 @@ describe('setSelectedPartnerVenueById', () => {
       .unwrap()
 
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getOfferer).not.toHaveBeenCalled()
-
-    const state = store.getState()
-    expect(state.user.selectedPartnerVenue?.id).toBe(201)
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
       '201'
     )
   })
 
-  it('should compute nextSelectedPartnerVenue, fetch its offerer, and persist it', async () => {
+  it('should compute nextSelectedPartnerVenue and persist it', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
-      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
+      })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
 
     const store = configureTestStore(storeDataBase)
 
@@ -121,7 +114,6 @@ describe('setSelectedPartnerVenueById', () => {
       .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.selectedPartnerVenue?.id).toBe(101)
@@ -131,7 +123,7 @@ describe('setSelectedPartnerVenueById', () => {
     )
   })
 
-  it('should not call getVenue and getOfferer when offerer is not attached', async () => {
+  it('should not call getVenue when offerer is not attached', async () => {
     const store = configureTestStore(storeDataBase)
 
     await store
@@ -144,7 +136,6 @@ describe('setSelectedPartnerVenueById', () => {
       .unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(0)
-    expect(api.getOfferer).toHaveBeenCalledTimes(0)
 
     const state = store.getState()
     expect(state.user.selectedPartnerVenue?.id).toBe(301)
@@ -184,22 +175,19 @@ describe('setSelectedPartnerVenueById', () => {
     expect(logoutSpy).toHaveBeenCalledTimes(1)
 
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getOfferer).not.toHaveBeenCalled()
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
   it('should throw when nextSelectedOffererName is undefined', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    // The selected venue belongs to offerer 999, which is not in offererNames
     vi.spyOn(api, 'getVenue').mockResolvedValue(
-      makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
+      makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 999 }),
+      })
     )
-    // The selected venue belongs to offerer 999, which is not validated in offererNames
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 999,
-      isOnboarded: true,
-    })
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
@@ -248,7 +236,6 @@ describe('setSelectedPartnerVenueById', () => {
     expect(logoutSpy).toHaveBeenCalledTimes(1)
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
@@ -260,11 +247,6 @@ describe('setSelectedPartnerVenueById', () => {
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
     const setSelectedAdminOffererByIdSpy = vi.spyOn(
       setSelectedAdminOffererByIdModule,
       'setSelectedAdminOffererById'
@@ -291,11 +273,6 @@ describe('setSelectedPartnerVenueById', () => {
         managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
       })
     )
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
     const setSelectedAdminOffererByIdSpy = vi.spyOn(
       setSelectedAdminOffererByIdModule,
       'setSelectedAdminOffererById'
@@ -333,7 +310,6 @@ describe('setSelectedPartnerVenueById', () => {
       .unwrap()
 
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getOfferer).not.toHaveBeenCalled()
     expect(setSelectedAdminOffererByIdSpy).toHaveBeenCalledExactlyOnceWith(300)
   })
 
@@ -358,7 +334,7 @@ describe('setSelectedPartnerVenueById', () => {
   })
 
   describe('shouldRefresh', () => {
-    it('should bypass the same-venue early-return and refetch venue + offerer when shouldRefresh is true', async () => {
+    it('should bypass the same-venue early-return and refetch venue when shouldRefresh is true', async () => {
       vi.spyOn(api, 'getVenue').mockResolvedValue(
         makeGetVenueResponseModel({
           id: 201,
@@ -368,11 +344,6 @@ describe('setSelectedPartnerVenueById', () => {
           isOnboarded: true,
         })
       )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
 
       const store = configureTestStore(storeDataBase)
 
@@ -389,9 +360,6 @@ describe('setSelectedPartnerVenueById', () => {
       expect(api.getVenue).toHaveBeenCalledExactlyOnceWith({
         path: { venue_id: 201 },
       })
-      expect(api.getOfferer).toHaveBeenCalledExactlyOnceWith({
-        path: { offerer_id: 200 },
-      })
 
       const state = store.getState()
       expect(state.user.selectedPartnerVenue?.id).toBe(201)
@@ -407,11 +375,6 @@ describe('setSelectedPartnerVenueById', () => {
           }),
         })
       )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
       const setSelectedAdminOffererByIdSpy = vi.spyOn(
         setSelectedAdminOffererByIdModule,
         'setSelectedAdminOffererById'
@@ -452,11 +415,6 @@ describe('setSelectedPartnerVenueById', () => {
           }),
         })
       )
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        id: 200,
-        isOnboarded: true,
-      })
       const setSelectedAdminOffererByIdSpy = vi.spyOn(
         setSelectedAdminOffererByIdModule,
         'setSelectedAdminOffererById'
