@@ -17,14 +17,12 @@ from pcapi.core.offerers.constants import JE_VEUX_AIDER_GOUV_BASE_URL
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import venue_banners_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization import venue_finance_serialize
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import HttpUrlString
-from pcapi.serialization.utils import string_to_boolean
 from pcapi.utils import date as date_utils
 from pcapi.utils.siren import SIRET_LENGTH
 
@@ -348,12 +346,6 @@ class GetVenueListLiteResponseModel(HttpBodyModel):
                 VenueListItemLiteResponseModel.build(venue) for venue in with_pending_validation
             ],
         )
-
-
-class VenueListQueryModel(HttpQueryParamsModel):
-    validated: typing.Annotated[bool, pydantic_v2.BeforeValidator(string_to_boolean)] | None = None
-    active_offerers_only: typing.Annotated[bool, pydantic_v2.BeforeValidator(string_to_boolean)] | None = None
-    offerer_id: int | None = None
 
 
 class GetOffersStatsResponseModel(HttpBodyModel):

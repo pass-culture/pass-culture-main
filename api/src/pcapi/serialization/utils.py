@@ -114,17 +114,6 @@ def public_api_before_handler(
         raise api_errors
 
 
-def string_to_boolean(string: str) -> bool | None:
-    try:
-        return {"true": True, "false": False}[string]
-    except KeyError:
-        raise ValueError("La valeur reçu doit être soit 'true' soit 'false'")
-
-
-def string_to_boolean_field(field_name: str) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
-
-
 def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     # We need this ugly workaround because
     # the api users send us datetimes like "2020-12-03T14:00:00Z"
