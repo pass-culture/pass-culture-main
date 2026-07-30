@@ -66,7 +66,6 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
-from pcapi.core.videos import api as videos_api
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
@@ -350,19 +349,6 @@ def update_offer(
 
     if offerer_address:
         fields["offererAddress"] = offerer_address
-
-    if "videoUrl" in fields:
-        if new_video_url := fields.pop("videoUrl", None):
-            videos_api.upsert_video_and_metadata(new_video_url, offer)
-        elif offer.metaData and offer.metaData.videoUrl:
-            videos_api.remove_video_data_from_offer_metadata(
-                offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
-            )
-            logger.info(
-                "Video has been deleted from offer",
-                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
-                technical_message_id="offer.video.deleted",
-            )
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)

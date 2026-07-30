@@ -535,6 +535,50 @@ def patch_offer(
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
+@private_api.route("/offers/<int:offer_id>/video", methods=["PUT"])
+@atomic()
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.VideoData,
+    api=blueprint.pro_private_schema,
+)
+def update_offer_video(offer_id: int, body: offers_serialize.UpdateOfferVideoBodyModel) -> offers_serialize.VideoData:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["meta_data", "venue"])
+    except exceptions.OfferNotFound:
+        raise api_errors.resource_not_found_error()
+
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    video_url = str(body.video_url) if body.video_url else None
+
+    try:
+        if video_url:
+            videos_api.upsert_video_and_metadata(video_url, offer)
+        elif offer.metaData and offer.metaData.videoUrl:
+            videos_api.remove_video_data_from_offer_metadata(
+                offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
+            )
+    except requests.ExternalAPIException:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["Nous rencontrons des problèmes de serveur, veuillez réessayer plus tard"]}
+        )
+    except videos_exceptions.YoutubeVideoNotFound:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
+        )
+
+    if offer.metaData is None:
+        return offers_serialize.VideoData(
+            videoDuration=None,
+            videoExternalId=None,
+            videoTitle=None,
+            videoThumbnailUrl=None,
+            videoUrl=None,
+        )
+    return offers_serialize.VideoData.from_orm(offer.metaData)
+
+
 @private_api.route("/offers/thumbnails", methods=["POST"])
 @login_required
 @spectree_serialize(
