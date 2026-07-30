@@ -58,27 +58,27 @@ describe('<SimulatorResults />', () => {
       inputTargets: { individual: false, collective: true },
       expectedTargets: [TargetAudience.COLLECTIVE],
     },
-  ])('should call the simulateSignup endpoint with the following targets: $expectedTargets', async ({
-    inputTargets,
-    expectedTargets,
-  }) => {
-    vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
-      eligibilityDocuments: [EligibilityDocument.PRICES],
-      messages: [],
-    })
-    renderSimulatorResult({ targetAudiences: inputTargets })
-
-    await waitFor(() => {
-      expect(api.simulateSignup).toHaveBeenCalledExactlyOnceWith({
-        body: {
-          activity: ActivityNotOpenToPublic.ARTISTIC_COMPANY,
-          isOpenToPublic: true,
-          siret: '12345678901234',
-          targets: expectedTargets,
-        },
+  ])(
+    'should call the simulateSignup endpoint with the following targets: $expectedTargets',
+    async ({ inputTargets, expectedTargets }) => {
+      vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
+        eligibilityDocuments: [EligibilityDocument.PRICES],
+        messages: [],
       })
-    })
-  })
+      renderSimulatorResult({ targetAudiences: inputTargets })
+
+      await waitFor(() => {
+        expect(api.simulateSignup).toHaveBeenCalledExactlyOnceWith({
+          body: {
+            activity: ActivityNotOpenToPublic.ARTISTIC_COMPANY,
+            isOpenToPublic: true,
+            siret: '12345678901234',
+            targets: expectedTargets,
+          },
+        })
+      })
+    }
+  )
 
   it.each([
     {
@@ -201,24 +201,27 @@ describe('<SimulatorResults />', () => {
         bannerTitle: /disposer d'un point de vente physique/,
       },
     },
-  ])('should render with document $input.doc and message $input.msgType with level $input.msgLevel', async ({
-    input: { doc, msgLevel, msgType },
-    expected: { documentTitle, bannerRole, bannerTitle },
-  }) => {
-    vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
-      eligibilityDocuments: [doc],
-      messages: [{ type: msgType, level: msgLevel }],
-    })
-    renderSimulatorResult()
+  ])(
+    'should render with document $input.doc and message $input.msgType with level $input.msgLevel',
+    async ({
+      input: { doc, msgLevel, msgType },
+      expected: { documentTitle, bannerRole, bannerTitle },
+    }) => {
+      vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
+        eligibilityDocuments: [doc],
+        messages: [{ type: msgType, level: msgLevel }],
+      })
+      renderSimulatorResult()
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { level: 2, name: documentTitle })
-      ).toBeVisible()
-    })
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { level: 2, name: documentTitle })
+        ).toBeVisible()
+      })
 
-    const messageBanner = screen.getByRole(bannerRole)
-    expect(messageBanner).toBeVisible()
-    expect(within(messageBanner).getByText(bannerTitle)).toBeVisible()
-  })
+      const messageBanner = screen.getByRole(bannerRole)
+      expect(messageBanner).toBeVisible()
+      expect(within(messageBanner).getByText(bannerTitle)).toBeVisible()
+    }
+  )
 })
