@@ -85,8 +85,11 @@ def _is_single_member_structure(legal_category_code: str) -> bool:
     return legal_category_code.startswith("1")
 
 
-def _is_bookstore_ape(ape_code: str) -> bool:
-    return ape_code.startswith("581")
+def _is_bookstore(ape_code: str, activity: offerers_models.Activity) -> bool:
+    return ape_code.startswith("581") or activity in {
+        offerers_models.Activity.BOOKSTORE,
+        offerers_models.Activity.PUBLISHING_HOUSE,
+    }
 
 
 def get_signup_documents_and_messages(
@@ -150,10 +153,7 @@ def get_signup_documents_and_messages(
         }:
             eligibility_documents.append(EligibilityDocument.CRIMINAL_RECORDS)
 
-    if _is_bookstore_ape(ape_code) or activity in {
-        offerers_models.Activity.BOOKSTORE,
-        offerers_models.Activity.PUBLISHING_HOUSE,
-    }:
+    if _is_bookstore(ape_code, activity):
         messages.append(BOOKSTORE_MESSAGE)
 
         if is_open_to_public:
