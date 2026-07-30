@@ -139,9 +139,8 @@ def simulate_signup(
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
 
-    # TODO: what do we do in this case?
     if data.ape_code is None:
-        raise ApiErrors()
+        raise ApiErrors(errors={"global": ["Impossible d'effectuer une simulation pour ce SIRET."]})
 
     result = structure_signup_api.get_signup_documents_and_messages(
         ape_code=data.ape_code,

@@ -15,6 +15,7 @@ from typing_extensions import Annotated
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import siren as siren_utils
 
 from .exceptions import PydanticError
 
@@ -282,3 +283,15 @@ def format_price(value: decimal.Decimal) -> decimal.Decimal:
 
 
 DecimalPrice = typing.Annotated[DecimalField, pydantic_v2.AfterValidator(format_price)]
+
+
+def validate_siret(value: str) -> str:
+    value = value.replace(" ", "")
+
+    if not siren_utils.is_valid_siret(value):
+        raise PydanticError("Le SIRET est invalide")
+
+    return value
+
+
+SiretField = typing.Annotated[str, pydantic_v2.AfterValidator(validate_siret)]

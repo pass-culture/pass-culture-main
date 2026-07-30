@@ -78,7 +78,6 @@ class SignupSimulationResult:
 
 
 def _is_national_public_institution(legal_category_code: str) -> bool:
-    # 73xxx is "Etablissement Public National"
     return legal_category_code.startswith("73")
 
 

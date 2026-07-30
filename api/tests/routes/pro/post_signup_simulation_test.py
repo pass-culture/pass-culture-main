@@ -1,9 +1,13 @@
+import copy
 from unittest.mock import patch
 
 import pytest
 
-import pcapi.core.offerers.structure_signup_api as structure_signup
+from pcapi import settings
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.core.offerers.structure_signup_api import EligibilityDocument
+from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageLevel
+from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageType
 
 from tests.connectors import api_entreprise_test_data
 
@@ -11,45 +15,54 @@ from tests.connectors import api_entreprise_test_data
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
-    collective_message = {"importanceLevel": "INFO", "content": "COLLECTIVE"}
-    unusual_ape_code = {"importanceLevel": "ALERT", "content": "UNUSUAL_APE_CODE"}
-    bookstore_message = {"importanceLevel": "ALERT", "content": "BOOKSTORE"}
+VALID_SIRET = settings.PASS_CULTURE_SIRET
 
+
+class Returns200Test:
     def test_standard_case(self, client):
-        """structure sans message specifique et sans document supplementaire"""
+        """structure with default documents and no messages"""
         data = {
-            "siret": "11151111111111",
+            "siret": VALID_SIRET,
             "isOpenToPublic": True,
             "targets": ["INDIVIDUAL"],
             "activity": "MUSEUM",
         }
-        response = client.post("/structure/signup_simulation", json=data)
-        assert response.json["eligibilityDocuments"] == [
-            structure_signup.EligibilityDocument.WEBSITE.name,
-            structure_signup.EligibilityDocument.DESCRIPTION.name,
-        ]
-        assert response.json["messages"] == []
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "eligibilityDocuments": [
+                EligibilityDocument.WEBSITE.name,
+                EligibilityDocument.DESCRIPTION.name,
+            ],
+            "messages": [],
+        }
 
     def test_complex_case(self, client):
-        """librairie uninomiale a code ape suspect, qui fait du collectf"""
+        """single member library with ape code not in whitelist, and collective target"""
         data = {
-            "siret": "11111111111111",
+            "siret": "11141111122213",
             "isOpenToPublic": True,
             "targets": ["COLLECTIVE", "INDIVIDUAL"],
             "activity": "BOOKSTORE",
         }
-        response = client.post("/structure/signup_simulation", json=data)
-        assert response.json["eligibilityDocuments"] == [
-            structure_signup.EligibilityDocument.WEBSITE.name,
-            structure_signup.EligibilityDocument.DESCRIPTION.name,
-            structure_signup.EligibilityDocument.RESUME_OR_PORTFOLIO.name,
-            structure_signup.EligibilityDocument.DIPLOMAS.name,
-            structure_signup.EligibilityDocument.SHOP_PICTURES.name,
-        ]
-        assert self.bookstore_message in response.json["messages"]
-        assert self.unusual_ape_code in response.json["messages"]
-        assert self.collective_message in response.json["messages"]
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 200
+        assert response.json == {
+            "eligibilityDocuments": [
+                EligibilityDocument.WEBSITE.name,
+                EligibilityDocument.DESCRIPTION.name,
+                EligibilityDocument.RESUME_OR_PORTFOLIO.name,
+                EligibilityDocument.DIPLOMAS.name,
+                EligibilityDocument.SHOP_PICTURES.name,
+            ],
+            "messages": [
+                {"level": SignupSimulationMessageLevel.INFO, "type": SignupSimulationMessageType.COLLECTIVE},
+                {"level": SignupSimulationMessageLevel.ALERT, "type": SignupSimulationMessageType.UNUSUAL_APE_CODE},
+                {"level": SignupSimulationMessageLevel.ALERT, "type": SignupSimulationMessageType.BOOKSTORE},
+            ],
+        }
 
 
 class Returns400Test:
@@ -58,14 +71,15 @@ class Returns400Test:
     )
     def test_siret_unknown(self, _get_siret_open_data_mock, client):
         data = {
-            "siret": "11111111111111",
+            "siret": VALID_SIRET,
             "isOpenToPublic": True,
             "targets": ["COLLECTIVE", "INDIVIDUAL"],
             "activity": "BOOKSTORE",
         }
-        response = client.post("/structure/signup_simulation", json=data)
+        response = client.post("/structure/simulate-signup", json=data)
 
         assert response.status_code == 400
+        assert response.json == {"global": ["Le SIREN n’existe pas."]}
 
     @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
     def test_inactive_siret(self, requests_mock, client):
@@ -81,40 +95,75 @@ class Returns400Test:
             "targets": ["COLLECTIVE", "INDIVIDUAL"],
             "activity": "BOOKSTORE",
         }
-        response = client.post("/structure/signup_simulation", json=data)
+        response = client.post("/structure/simulate-signup", json=data)
 
         assert response.status_code == 400
         assert response.json == {"global": ["Ce SIRET n'est pas actif."]}
 
+    @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+    def test_siret_with_no_ape(self, requests_mock, client):
+        siret = "77789988100026"
+        json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
+        json["data"]["activite_principale"]["code"] = None
+
+        requests_mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}", json=json
+        )
+        data = {
+            "siret": siret,
+            "isOpenToPublic": True,
+            "targets": ["COLLECTIVE", "INDIVIDUAL"],
+            "activity": "BOOKSTORE",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
+
+    def test_invalid_siret(self, client):
+        data = {
+            "siret": "12345678912345",
+            "isOpenToPublic": True,
+            "targets": ["COLLECTIVE", "INDIVIDUAL"],
+            "activity": "BOOKSTORE",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"siret": ["Le SIRET est invalide"]}
+
     def test_no_open_to_public(self, client):
         data = {
-            "siret": "11111111111111",
+            "siret": VALID_SIRET,
             "targets": ["INDIVIDUAL"],
             "activity": "BOOKSTORE",
         }
-        response = client.post("/structure/signup_simulation", json=data)
+        response = client.post("/structure/simulate-signup", json=data)
+
         assert response.status_code == 400
         assert response.json == {"isOpenToPublic": ["Ce champ est obligatoire"]}
 
     def test_no_target(self, client):
         data = {
-            "siret": "11111111111111",
+            "siret": VALID_SIRET,
             "isOpenToPublic": True,
             "targets": [],
             "activity": "BOOKSTORE",
         }
-        response = client.post("/structure/signup_simulation", json=data)
+        response = client.post("/structure/simulate-signup", json=data)
+
         assert response.status_code == 400
         assert response.json == {"targets": ["Cette liste doit avoir une taille minimum de 1"]}
 
     def test_no_activity(self, client):
         data = {
-            "siret": "11111111111111",
+            "siret": VALID_SIRET,
             "isOpenToPublic": True,
             "targets": ["COLLECTIVE", "INDIVIDUAL"],
             "activity": None,
         }
-        response = client.post("/structure/signup_simulation", json=data)
+        response = client.post("/structure/simulate-signup", json=data)
+
         assert response.status_code == 400
         assert response.json == {
             "activity.enum[ActivityNotOpenToPublic]": [
@@ -132,17 +181,3 @@ class Returns400Test:
                 "'TOURIST_INFORMATION_CENTRE'",
             ],
         }
-
-
-class Returns500Test:
-    @patch("pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.ApiException())
-    def test_sirene_api_ko(self, _get_siret_open_data_mock, client):
-        data = {
-            "siret": "11151111111111",
-            "isOpenToPublic": True,
-            "targets": ["INDIVIDUAL"],
-            "activity": "MUSEUM",
-        }
-        response = client.post("/structure/signup_simulation", json=data)
-
-        assert response.status_code == 500
