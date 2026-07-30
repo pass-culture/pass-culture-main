@@ -131,9 +131,6 @@ def check_structure(search_input: str) -> None:
 def simulate_signup(
     body: sirene_serializers.SignupSimulationPayload,
 ) -> sirene_serializers.SignupSimulationResponseModel:
-    if not api_entreprise.is_valid_siret(body.siret):
-        raise sirene_exceptions.InvalidFormatException()
-
     try:
         data = offerers_api.find_structure_data(body.siret)
     except offerers_exceptions.InactiveSirenException:
