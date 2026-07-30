@@ -4992,14 +4992,6 @@ export enum OffererMemberStatus {
 }
 
 /**
- * OffererTarget
- */
-export enum OffererTarget {
-    COLLECTIVE = 'COLLECTIVE',
-    INDIVIDUAL = 'INDIVIDUAL'
-}
-
-/**
  * PatchAllOffersActiveStatusBodyModel
  */
 export type PatchAllOffersActiveStatusBodyModel = {
@@ -6183,7 +6175,7 @@ export type SignupSimulationPayload = {
     /**
      * Targets
      */
-    targets: Array<OffererTarget>;
+    targets: Array<TargetAudience>;
 };
 
 /**
@@ -6535,6 +6527,14 @@ export type SubmitReviewRequestModel = {
 export enum Target {
     EDUCATIONAL = 'EDUCATIONAL',
     INDIVIDUAL_AND_EDUCATIONAL = 'INDIVIDUAL_AND_EDUCATIONAL',
+    INDIVIDUAL = 'INDIVIDUAL'
+}
+
+/**
+ * TargetAudience
+ */
+export enum TargetAudience {
+    COLLECTIVE = 'COLLECTIVE',
     INDIVIDUAL = 'INDIVIDUAL'
 }
 

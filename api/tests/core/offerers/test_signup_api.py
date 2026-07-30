@@ -18,7 +18,7 @@ class SignupSimulationTest:
             ape_code="AAAAA",
             legal_category_code="BBBBB",
             is_open_to_public=True,
-            targets=[offerers_models.OffererTarget.INDIVIDUAL],
+            targets=[offerers_models.TargetAudience.INDIVIDUAL],
             activity=offerers_models.Activity.OTHER,
         )
 
@@ -34,49 +34,49 @@ class SignupSimulationTest:
                 "8411Z",
                 "AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Commune ou collectivité territoriale (Administration publique générale)
             (
                 "8411Z",
                 "AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # Commune ou collectivité territoriale (Administration publique générale) avec collectif
             (
                 "8542Z",
                 "BBBBB",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Enseignement supérieur
             (
                 "CCCCC",
                 "73AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Etablissement Public National
             (
                 "8411Z",
                 "73AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Collectivité + Etablissement Public National
             (
                 "8411Z",
                 "AAAAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Collectivité + activité librairie > ne doit pas faire les checks librairie
             (
                 "8411Z",
                 "13AAAAA",
                 offerers_models.Activity.ARTISTIC_PRACTICE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Commune ou collectivité territoriale + activité avec warning
             (
                 "1911Z",
                 "73AAAAA",
                 offerers_models.Activity.RADIO_OR_MUSIC_STREAMING,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # Etablissement public national + code ape hors whitelist + activité avec warning
         ],
     )
@@ -93,7 +93,7 @@ class SignupSimulationTest:
         )
         assert response.documents == [EligibilityDocument.WEBSITE]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
         else:
             assert not response.messages
@@ -105,19 +105,19 @@ class SignupSimulationTest:
                 "5920Z",
                 "AAAAA",
                 offerers_models.Activity.RECORD_STORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # studio d'enregistrement
             (
                 "5920Z",
                 "88888",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # studio avec activité qui n'a rien a voir
             (
                 "5920Z",
                 "AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # studio d'enregistrement avec warning collectif
         ],
     )
@@ -142,7 +142,7 @@ class SignupSimulationTest:
             EligibilityDocument.SOUND_STUDIO_PICTURES,
         ]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
         else:
             assert not response.messages
@@ -154,25 +154,25 @@ class SignupSimulationTest:
                 "5920Z",
                 "111111",
                 offerers_models.Activity.RECORD_STORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # studio uninomial
             (
                 "5920Z",
                 "111111",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # studio uninomial avec activité qui n'a rien a voir
             (
                 "5920Z",
                 "111111",
                 offerers_models.Activity.ARTISTIC_PRACTICE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # studio uninomial avec activité avec warning
             (
                 "5920Z",
                 "111111",
                 offerers_models.Activity.RECORD_STORE,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # studio uninomial avec warning collectif
         ],
     )
@@ -198,7 +198,7 @@ class SignupSimulationTest:
             EligibilityDocument.CRIMINAL_RECORDS,
         ]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
         else:
             assert not response.messages
@@ -210,31 +210,31 @@ class SignupSimulationTest:
                 "94000",
                 "AAAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # librairie
             (
                 "94000",
                 "AAAAAA",
                 offerers_models.Activity.PUBLISHING_HOUSE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # maison d edition
             (
                 "5810Z",
                 "AA11111",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape de librairie avec autre activité
             (
                 "4420Z",
                 "AA11111",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape suspect avec activité librairie
             (
                 "5810Z",
                 "AAAAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # librairie avec volonté d offre collective
         ],
     )
@@ -256,7 +256,7 @@ class SignupSimulationTest:
             EligibilityDocument.SHOP_PICTURES,
         ]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("44"):
@@ -271,43 +271,43 @@ class SignupSimulationTest:
                 "5810Z",
                 "1AAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # librairie
             (
                 "5810Z",
                 "1AAAAA",
                 offerers_models.Activity.PUBLISHING_HOUSE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # maison d edition
             (
                 "5810Z",
                 "111111",
                 offerers_models.Activity.MUSEUM,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape de librairie avec autre activité
             (
                 "5810Z",
                 "111111",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape de librairie avec autre activité avecx warning
             (
                 "4420Z",
                 "111111",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape suspect avec activité librairie
             (
                 "5810Z",
                 "1AAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # librairie avec volonté d offre collective
             (
                 "4410Z",
                 "1AAAAA",
                 offerers_models.Activity.BOOKSTORE,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),
         ],
     )
@@ -341,7 +341,7 @@ class SignupSimulationTest:
                 EligibilityDocument.SHOP_PICTURES,
             ]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("44"):
@@ -356,25 +356,25 @@ class SignupSimulationTest:
                 "1810Z",
                 "1AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape whitelist avec warning activite
             (
                 "1810Z",
                 "1AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # code ape whitelist avec warning activite et collectif
             (
                 "1710Z",
                 "1AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.INDIVIDUAL],
+                [offerers_models.TargetAudience.INDIVIDUAL],
             ),  # code ape not whitelist avec warning activite
             (
                 "1710Z",
                 "1AAAAA",
                 offerers_models.Activity.OTHER,
-                [offerers_models.OffererTarget.COLLECTIVE],
+                [offerers_models.TargetAudience.COLLECTIVE],
             ),  # code ape not whitelist avec warning activite et collectif
         ],
     )
@@ -397,11 +397,11 @@ class SignupSimulationTest:
             EligibilityDocument.CRIMINAL_RECORDS,
         ]
 
-        if targets == [offerers_models.OffererTarget.COLLECTIVE]:
+        if targets == [offerers_models.TargetAudience.COLLECTIVE]:
             assert COLLECTIVE_MESSAGE in response.messages
 
         if ape_code.startswith("17"):
             assert UNUSUAL_APE_CODE_MESSAGE in response.messages
 
-        if targets != [offerers_models.OffererTarget.COLLECTIVE] and ape_code.startswith("18"):
+        if targets != [offerers_models.TargetAudience.COLLECTIVE] and ape_code.startswith("18"):
             assert not response.messages

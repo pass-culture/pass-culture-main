@@ -11,11 +11,11 @@ const mockSetOpenToPublic = vi.fn()
 const contextValue = {
   siret: undefined,
   setSiret: noop,
-  targetCustomer: {
+  targetAudiences: {
     individual: undefined,
     collective: undefined,
   },
-  setTargetCustomer: vi.fn(),
+  setTargetAudiences: vi.fn(),
   openToPublic: null,
   setOpenToPublic: mockSetOpenToPublic,
   activity: undefined,

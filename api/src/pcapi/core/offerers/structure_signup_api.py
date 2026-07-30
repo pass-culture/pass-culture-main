@@ -96,7 +96,7 @@ def get_signup_documents_and_messages(
     ape_code: str,
     legal_category_code: str,
     is_open_to_public: bool,
-    targets: list[offerers_models.OffererTarget],
+    targets: list[offerers_models.TargetAudience],
     activity: offerers_models.Activity,
 ) -> SignupSimulationResult:
     """List the necessary documents for homologation and warnings depending on signup inputs and siret data"""
@@ -106,7 +106,7 @@ def get_signup_documents_and_messages(
     messages = []
 
     # if "collective" is a target, display a warning for adage inscription
-    if offerers_models.OffererTarget.COLLECTIVE in targets:
+    if offerers_models.TargetAudience.COLLECTIVE in targets:
         messages.append(COLLECTIVE_MESSAGE)
 
     if (

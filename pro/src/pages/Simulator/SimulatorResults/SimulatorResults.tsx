@@ -8,7 +8,7 @@ import {
   tryRestoreActivityFromStorage,
   tryRestoreOpenToPublicFromStorage,
   tryRestoreSiretFromStorage,
-  tryRestoreTargetCustomerFromStorage,
+  tryRestoreTargetAudienceFromStorage,
 } from 'pages/Simulator/storage'
 import { useEffect, useState } from 'react'
 import { InfoPanel } from 'ui-kit/InfoPanel/InfoPanel'
@@ -23,10 +23,10 @@ import { api } from 'apiClient/api'
 import {
   type ActivityNotOpenToPublic,
   type ActivityOpenToPublic,
-  OffererTarget,
   SignupSimulationMessageLevel,
   type SignupSimulationMessageModel,
   type SignupSimulationResponseModel,
+  TargetAudience,
 } from 'apiClient/v1'
 import styles from './SimulatorResults.module.scss'
 
@@ -38,8 +38,8 @@ export const SimulatorResults = (): JSX.Element => {
     setActivity,
     siret,
     setSiret,
-    targetCustomer,
-    setTargetCustomer,
+    targetAudiences,
+    setTargetAudiences,
   } = useSimulatorContext()
 
   const [result, setResult] = useState<
@@ -54,17 +54,17 @@ export const SimulatorResults = (): JSX.Element => {
         (activity as ActivityOpenToPublic | ActivityNotOpenToPublic) ||
         tryRestoreActivityFromStorage(setActivity)
       const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
-      const finalTargetCustomer =
-        targetCustomer?.individual !== undefined
-          ? targetCustomer
-          : tryRestoreTargetCustomerFromStorage(setTargetCustomer)
+      const finalTargetAudience =
+        targetAudiences?.individual !== undefined
+          ? targetAudiences
+          : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
 
       const targets = []
-      if (finalTargetCustomer?.individual) {
-        targets.push(OffererTarget.INDIVIDUAL)
+      if (finalTargetAudience?.individual) {
+        targets.push(TargetAudience.INDIVIDUAL)
       }
-      if (finalTargetCustomer?.collective) {
-        targets.push(OffererTarget.COLLECTIVE)
+      if (finalTargetAudience?.collective) {
+        targets.push(TargetAudience.COLLECTIVE)
       }
 
       if (
@@ -93,9 +93,9 @@ export const SimulatorResults = (): JSX.Element => {
     setActivity,
     setOpenToPublic,
     setSiret,
-    setTargetCustomer,
+    setTargetAudiences,
     siret,
-    targetCustomer,
+    targetAudiences,
   ])
 
   if (!result) {

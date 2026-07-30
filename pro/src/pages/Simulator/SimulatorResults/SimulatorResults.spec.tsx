@@ -9,20 +9,20 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   ActivityNotOpenToPublic,
   EligibilityDocument,
-  OffererTarget,
   SignupSimulationMessageLevel,
   SignupSimulationMessageType,
+  TargetAudience,
 } from 'apiClient/v1'
 import { SimulatorResults } from './SimulatorResults'
 
 const contextValue = {
   siret: '123 456 789 01234',
   setSiret: vi.fn(),
-  targetCustomer: {
+  targetAudiences: {
     individual: true,
     collective: true,
   },
-  setTargetCustomer: vi.fn(),
+  setTargetAudiences: vi.fn(),
   openToPublic: 'true',
   setOpenToPublic: noop,
   activity: ActivityNotOpenToPublic.ARTISTIC_COMPANY,
@@ -48,15 +48,15 @@ describe('<SimulatorResults />', () => {
   it.each([
     {
       inputTargets: { individual: true, collective: true },
-      expectedTargets: [OffererTarget.INDIVIDUAL, OffererTarget.COLLECTIVE],
+      expectedTargets: [TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
     },
     {
       inputTargets: { individual: true, collective: false },
-      expectedTargets: [OffererTarget.INDIVIDUAL],
+      expectedTargets: [TargetAudience.INDIVIDUAL],
     },
     {
       inputTargets: { individual: false, collective: true },
-      expectedTargets: [OffererTarget.COLLECTIVE],
+      expectedTargets: [TargetAudience.COLLECTIVE],
     },
   ])('should call the simulateSignup endpoint with the following targets: $expectedTargets', async ({
     inputTargets,
@@ -66,7 +66,7 @@ describe('<SimulatorResults />', () => {
       eligibilityDocuments: [EligibilityDocument.PRICES],
       messages: [],
     })
-    renderSimulatorResult({ targetCustomer: inputTargets })
+    renderSimulatorResult({ targetAudiences: inputTargets })
 
     await waitFor(() => {
       expect(api.simulateSignup).toHaveBeenCalledExactlyOnceWith({

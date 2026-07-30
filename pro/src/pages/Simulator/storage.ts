@@ -7,7 +7,7 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import type { TargetCustomerObject } from './SimulatorContext'
+import type { TargetAudienceObject } from './SimulatorContext'
 
 export const saveSiretToStorage = (siret: string) => {
   localStorageManager.setItem(LOCAL_STORAGE_KEY.SIMULATOR_SIRET, siret)
@@ -70,27 +70,27 @@ export const tryRestoreOpenToPublicFromStorage = (
   return openToPublicStoredData
 }
 
-export const saveTargetCustomerToStorage = (
-  targetCustomer: TargetCustomerObject
+export const saveTargetAudienceToStorage = (
+  targetAudiences: TargetAudienceObject
 ) => {
   localStorageManager.setItem(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER,
-    JSON.stringify(targetCustomer)
+    JSON.stringify(targetAudiences)
   )
 }
 
-export const tryRestoreTargetCustomerFromStorage = (
-  setTargetCustomer: (targetCustomerData: TargetCustomerObject) => void
-): TargetCustomerObject | undefined => {
-  const targetCustomerStoredData = localStorageManager.getItem(
+export const tryRestoreTargetAudienceFromStorage = (
+  setTargetAudiences: (targetAudienceData: TargetAudienceObject) => void
+): TargetAudienceObject | undefined => {
+  const targetAudienceStoredData = localStorageManager.getItem(
     LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER
   )
-  if (targetCustomerStoredData === null) {
+  if (targetAudienceStoredData === null) {
     return
   }
-  const targetCustomer = JSON.parse(
-    targetCustomerStoredData
-  ) as TargetCustomerObject
-  setTargetCustomer(targetCustomer)
-  return targetCustomer
+  const targetAudiences = JSON.parse(
+    targetAudienceStoredData
+  ) as TargetAudienceObject
+  setTargetAudiences(targetAudiences)
+  return targetAudiences
 }

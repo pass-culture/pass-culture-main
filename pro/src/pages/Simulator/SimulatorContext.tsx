@@ -7,16 +7,16 @@ import type {
 } from '@/apiClient/v1'
 import { noop } from '@/commons/utils/noop'
 
-import type { SimulatorTargetCustomerFormValues } from './SimulatorTarget/validationSchema'
+import type { SimulatorTargetAudienceFormValues } from './SimulatorTarget/validationSchema'
 
-export type TargetCustomerObject =
-  SimulatorTargetCustomerFormValues['targetCustomer']
+export type TargetAudienceObject =
+  SimulatorTargetAudienceFormValues['targetAudiences']
 
 interface SimulatorContextValues {
   siret: string | undefined
   setSiret: (siret: string) => void
-  targetCustomer: TargetCustomerObject | null
-  setTargetCustomer: (targetCustomer: TargetCustomerObject) => void
+  targetAudiences: TargetAudienceObject | null
+  setTargetAudiences: (targetAudiences: TargetAudienceObject) => void
   openToPublic: string | null
   setOpenToPublic: (openToPublic: string) => void
   activity?: ActivityOpenToPublic | ActivityNotOpenToPublic
@@ -28,11 +28,11 @@ interface SimulatorContextValues {
 export const SimulatorContext = createContext<SimulatorContextValues>({
   siret: undefined,
   setSiret: () => noop,
-  targetCustomer: {
+  targetAudiences: {
     individual: undefined,
     collective: undefined,
   },
-  setTargetCustomer: () => noop,
+  setTargetAudiences: () => noop,
   openToPublic: null,
   setOpenToPublic: () => noop,
   activity: undefined,
@@ -55,7 +55,7 @@ export function SimulatorContextProvider({
   const [activity, setActivity] = useState<
     ActivityOpenToPublic | ActivityNotOpenToPublic
   >()
-  const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
+  const [targetAudiences, setTargetAudiences] = useState<TargetAudienceObject>({
     individual: undefined,
     collective: undefined,
   })
@@ -64,14 +64,14 @@ export function SimulatorContextProvider({
     () => ({
       siret,
       setSiret,
-      targetCustomer,
-      setTargetCustomer,
+      targetAudiences,
+      setTargetAudiences,
       openToPublic,
       setOpenToPublic,
       activity,
       setActivity,
     }),
-    [siret, targetCustomer, openToPublic]
+    [siret, targetAudiences, openToPublic]
   )
 
   return (
