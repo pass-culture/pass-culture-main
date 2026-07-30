@@ -65,7 +65,10 @@ export const setSelectedAdminOffererById = createAsyncThunk<
         err,
         "Une erreur est survenue lors du chargement de l'entité juridique."
       )
-      if (isErrorAPIError(err) || err instanceof FrontendError) {
+      if (
+        (isErrorAPIError(err) && err.status !== 0) ||
+        err instanceof FrontendError
+      ) {
         logout()
       }
     }

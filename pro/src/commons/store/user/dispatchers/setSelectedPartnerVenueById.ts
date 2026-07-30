@@ -1,10 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { handleError } from '@/commons/errors/handleError'
 import {
@@ -58,7 +55,6 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       const venuesWithPendingValidationIds =
         state.user.venuesWithPendingValidation?.map((v) => v.id)
       let nextSelectedPartnerVenue: GetVenueResponseModel
-      let nextSelectedOfferer: GetOffererResponseModel | undefined
       if (
         venuesWithPendingValidationIds?.length &&
         venuesWithPendingValidationIds.includes(nextSelectedPartnerVenueId)
@@ -70,15 +66,9 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
           id: nextSelectedPartnerVenueId,
           managingOfferer: { id: venue?.managingOffererId },
         } as GetVenueResponseModel
-        nextSelectedOfferer = {
-          id: venue?.managingOffererId,
-        } as GetOffererResponseModel
       } else {
         nextSelectedPartnerVenue = await api.getVenue({
           path: { venue_id: nextSelectedPartnerVenueId },
-        })
-        nextSelectedOfferer = await api.getOfferer({
-          path: { offerer_id: nextSelectedPartnerVenue.managingOfferer.id },
         })
       }
 
@@ -98,7 +88,7 @@ export const setSelectedPartnerVenueById = createAsyncThunk<
       }
 
       const nextSelectedOffererName = offererNames.find(
-        (offerer) => offerer.id === nextSelectedOfferer.id
+        (offerer) => offerer.id === nextSelectedPartnerVenue.managingOfferer.id
       )
       assertOrFrontendError(
         nextSelectedOffererName,
