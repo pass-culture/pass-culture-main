@@ -75,7 +75,7 @@ dependencies = [
   "semver ==3.0.4",
   "sentry-sdk[flask,celery]==2.65.0",
   "shapely ==2.1.2",
-  "slack-sdk==3.42.0",
+  "slack-sdk==3.43.0",
   "spectree ==1.5.8",
   "sqlalchemy-easy-softdelete @ git+https://github.com/pass-culture/sqlalchemy-easy-softdelete.git",
   "sqlalchemy[mypy]==2.0.51",
