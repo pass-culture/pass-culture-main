@@ -26,9 +26,9 @@ APE_CODE_WHITELIST: typing.Final = (
     "94",
 )
 
-APE_ADMINISTRATION_PUBLIQUE_GENERALE: typing.Final = "8411Z"
-APE_ENSEIGNEMENT_SUPERIEUR: typing.Final = "8542Z"
-APE_RECORDING_STUDIO: typing.Final = "5920Z"
+APE_CODES_ADMINISTRATION_PUBLIQUE_GENERALE: typing.Final = {"8411Z", "8411Y"}
+APE_CODES_ENSEIGNEMENT_SUPERIEUR: typing.Final = {"8542Z", "8540Y"}
+APE_CODES_RECORDING_STUDIO: typing.Final = {"5920Z", "5920Y"}
 
 
 class EligibilityDocument(enum.Enum):
@@ -107,8 +107,8 @@ def get_signup_documents_and_messages(
         messages.append(COLLECTIVE_MESSAGE)
 
     if (
-        ape_code == APE_ADMINISTRATION_PUBLIQUE_GENERALE
-        or ape_code == APE_ENSEIGNEMENT_SUPERIEUR
+        ape_code in APE_CODES_ADMINISTRATION_PUBLIQUE_GENERALE
+        or ape_code in APE_CODES_ENSEIGNEMENT_SUPERIEUR
         or _is_national_public_institution(legal_category_code)
     ):
         return SignupSimulationResult(documents=eligibility_documents, messages=messages)
@@ -120,7 +120,7 @@ def get_signup_documents_and_messages(
     if not ape_code.startswith(APE_CODE_WHITELIST):
         messages.append(UNUSUAL_APE_CODE_MESSAGE)
 
-    if ape_code == APE_RECORDING_STUDIO:
+    if ape_code in APE_CODES_RECORDING_STUDIO:
         eligibility_documents += [
             EligibilityDocument.RESUME_OR_PORTFOLIO,
             EligibilityDocument.PRICES,
@@ -154,7 +154,9 @@ def get_signup_documents_and_messages(
         offerers_models.Activity.BOOKSTORE,
         offerers_models.Activity.PUBLISHING_HOUSE,
     }:
-        eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
         messages.append(BOOKSTORE_MESSAGE)
+
+        if is_open_to_public:
+            eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
 
     return SignupSimulationResult(documents=eligibility_documents, messages=messages)
