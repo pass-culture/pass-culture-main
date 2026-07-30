@@ -19,7 +19,7 @@ const contextValue = {
   setSiret: vi.fn(),
   targetCustomer: {
     individual: true,
-    educational: true,
+    collective: true,
   },
   setTargetCustomer: vi.fn(),
   openToPublic: 'true',

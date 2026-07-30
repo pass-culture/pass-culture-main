@@ -14,7 +14,7 @@ const contextValue = {
   setSiret: noop,
   targetCustomer: {
     individual: undefined,
-    educational: undefined,
+    collective: undefined,
   },
   setTargetCustomer: noop,
   openToPublic: 'true',

@@ -30,7 +30,7 @@ export const SimulatorContext = createContext<SimulatorContextValues>({
   setSiret: () => noop,
   targetCustomer: {
     individual: undefined,
-    educational: undefined,
+    collective: undefined,
   },
   setTargetCustomer: () => noop,
   openToPublic: null,
@@ -57,7 +57,7 @@ export function SimulatorContextProvider({
   >()
   const [targetCustomer, setTargetCustomer] = useState<TargetCustomerObject>({
     individual: undefined,
-    educational: undefined,
+    collective: undefined,
   })
 
   const contextValues: SimulatorContextValues = useMemo(

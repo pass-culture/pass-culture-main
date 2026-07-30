@@ -24,7 +24,7 @@ import {
 const defaultFormValues = {
   targetCustomer: {
     individual: false,
-    educational: false,
+    collective: false,
   },
 }
 
@@ -37,7 +37,7 @@ export const SimulatorTarget = (): JSX.Element => {
       ? {
           targetCustomer: {
             individual: targetCustomer.individual ?? false,
-            educational: targetCustomer.educational ?? false,
+            collective: targetCustomer.collective ?? false,
           },
         }
       : defaultFormValues,
@@ -94,9 +94,9 @@ export const SimulatorTarget = (): JSX.Element => {
                   {
                     label: 'Les groupes scolaires via ADAGE',
                     sizing: 'fill',
-                    checked: watch('targetCustomer.educational') ?? false,
+                    checked: watch('targetCustomer.collective') ?? false,
                     onChange: async (e) => {
-                      setValue('targetCustomer.educational', e.target.checked)
+                      setValue('targetCustomer.collective', e.target.checked)
                       await trigger('targetCustomer')
                     },
                   },

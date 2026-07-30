@@ -14,7 +14,7 @@ const contextValue = {
   setSiret: setSiretMock,
   targetCustomer: {
     individual: undefined,
-    educational: undefined,
+    collective: undefined,
   },
   setTargetCustomer: vi.fn(),
   openToPublic: null,

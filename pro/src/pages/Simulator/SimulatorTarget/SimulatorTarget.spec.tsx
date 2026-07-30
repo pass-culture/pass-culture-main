@@ -103,7 +103,7 @@ describe('<SimulatorTarget />', () => {
     })
   })
 
-  it('should navigate to results page when submitting with "educational" checked', async () => {
+  it('should navigate to results page when submitting with "collective" checked', async () => {
     renderSimulatorTarget()
 
     await userEvent.click(
@@ -163,7 +163,7 @@ describe('<SimulatorTarget />', () => {
   it('should restore checkboxes state from localStorage', async () => {
     localStorageManager.setItem(
       LOCAL_STORAGE_KEY.SIMULATOR_TARGET_CUSTOMER,
-      JSON.stringify({ individual: true, educational: false })
+      JSON.stringify({ individual: true, collective: false })
     )
 
     renderSimulatorTarget()

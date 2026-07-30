@@ -13,7 +13,7 @@ const contextValue = {
   setSiret: noop,
   targetCustomer: {
     individual: undefined,
-    educational: undefined,
+    collective: undefined,
   },
   setTargetCustomer: vi.fn(),
   openToPublic: null,

@@ -63,7 +63,7 @@ export const SimulatorResults = (): JSX.Element => {
       if (finalTargetCustomer?.individual) {
         targets.push(OffererTarget.INDIVIDUAL)
       }
-      if (finalTargetCustomer?.educational) {
+      if (finalTargetCustomer?.collective) {
         targets.push(OffererTarget.COLLECTIVE)
       }
 

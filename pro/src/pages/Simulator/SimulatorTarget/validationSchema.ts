@@ -11,7 +11,7 @@ export const validationSchema = yup.object().shape({
     })
     .shape({
       individual: yup.boolean(),
-      educational: yup.boolean(),
+      collective: yup.boolean(),
     })
     .required('Veuillez sélectionner au moins une option'),
 })
