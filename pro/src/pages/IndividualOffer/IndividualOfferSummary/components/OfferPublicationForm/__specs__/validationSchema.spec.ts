@@ -2,18 +2,18 @@ import { subDays } from 'date-fns'
 
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
-import type { EventPublicationFormValues } from '../types'
+import type { PublicationFormValues } from '../types'
 import { validationSchema } from '../validationSchema'
 
 describe('EventPublicationForm validationSchema', () => {
-  const defaultValues: EventPublicationFormValues = {
+  const defaultValues: PublicationFormValues = {
     bookingAllowedMode: 'now',
     publicationMode: 'now',
   }
 
   const cases: {
     description: string
-    formValues: EventPublicationFormValues
+    formValues: PublicationFormValues
     expectedErrors: string[]
   }[] = [
     {

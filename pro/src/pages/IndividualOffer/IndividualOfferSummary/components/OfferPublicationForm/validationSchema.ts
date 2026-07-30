@@ -6,11 +6,11 @@ import {
   bookingAllowedTimeValidationSchema,
   publicationDateValidationSchema,
   publicationTimeValidationSchema,
-} from '@/commons/utils/yup/eventPublicationSchema'
+} from '@/commons/utils/yup/offerPublicationSchema'
 
-import type { EventPublicationFormValues } from './types'
+import type { PublicationFormValues } from './types'
 
-export const validationSchema: ObjectSchema<EventPublicationFormValues> = yup
+export const validationSchema: ObjectSchema<PublicationFormValues> = yup
   .object()
   .shape({
     publicationMode: yup.string<'now' | 'later'>().required(),

@@ -1,4 +1,4 @@
-export type EventPublicationFormValues = {
+export type PublicationFormValues = {
   publicationMode: 'now' | 'later'
   publicationDate?: string
   publicationTime?: string
