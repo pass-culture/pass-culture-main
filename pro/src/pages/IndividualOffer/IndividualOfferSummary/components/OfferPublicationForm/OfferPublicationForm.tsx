@@ -3,9 +3,9 @@ import { PublicationAndBookingFields } from '@/components/PublicationAndBookingF
 import { Divider } from '@/ui-kit/Divider/Divider'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-import styles from './EventPublicationForm.module.scss'
+import styles from './OfferPublicationForm.module.scss'
 
-export const EventPublicationForm = ({ maxDate }: { maxDate: string }) => {
+export const OfferPublicationForm = ({ maxDate }: { maxDate: string }) => {
   const sectionTitle = (
     <div className={styles['title-container']}>
       <span className={styles['title']}>Publication et réservation</span>

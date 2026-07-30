@@ -43,10 +43,10 @@ import { SummaryContent } from '@/ui-kit/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/ui-kit/SummaryLayout/SummaryLayout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
-import type { EventPublicationFormValues } from './EventPublicationForm/types'
-import { validationSchema } from './EventPublicationForm/validationSchema'
 import styles from './IndividualOfferSummaryScreen.module.scss'
+import { OfferPublicationForm } from './OfferPublicationForm/OfferPublicationForm'
+import type { PublicationFormValues } from './OfferPublicationForm/types'
+import { validationSchema } from './OfferPublicationForm/validationSchema'
 import { OfferSection } from './OfferSection/OfferSection'
 import { StockSection } from './StockSection/StockSection'
 
@@ -85,7 +85,7 @@ export const IndividualOfferSummaryScreen = ({
   const nextBookingLimitDatetime =
     getStocksQuery.data?.stocks[0]?.bookingLimitDatetime ?? ''
 
-  const onPublish = async (values: EventPublicationFormValues) => {
+  const onPublish = async (values: PublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer, selectedPartnerVenue)
 
     try {
@@ -134,7 +134,7 @@ export const IndividualOfferSummaryScreen = ({
       snackBar.error(getHumanReadableApiError(error))
     }
   }
-  const methods = useForm<EventPublicationFormValues>({
+  const methods = useForm<PublicationFormValues>({
     defaultValues: {
       publicationMode: 'now',
       publicationDate: '',
@@ -203,7 +203,7 @@ export const IndividualOfferSummaryScreen = ({
             description="Vérifiez les informations ci-dessous avant de publier votre offre."
           />
 
-          <EventPublicationForm maxDate={nextBookingLimitDatetime} />
+          <OfferPublicationForm maxDate={nextBookingLimitDatetime} />
         </div>
 
         <SummaryLayout>
