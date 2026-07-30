@@ -31,7 +31,7 @@ To be able to start the development server, you need to have the pass Culture lo
 ### Command
 
 ```shell
-npm run start
+pnpm start
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
