@@ -1,0 +1,41 @@
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_rem.scss" as rem;
+
+.dialog-container {
+  display: flex;
+  gap: var(--size-spacing-xl);
+  flex-direction: column;
+  align-items: center;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-l);
+  align-items: center;
+}
+
+.dialog-content-title {
+  @include fonts.title4;
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--size-spacing-l);
+  margin-top: auto;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+  }
+}
+
+@keyframes simple-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-25px);
+  }
+}

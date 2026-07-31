@@ -7,7 +7,6 @@ import fullCloseIcon from '@/icons/full-close.svg'
 
 import styles from './BaseDialog.module.scss'
 
-/** @lintignore Will be used later in future <ModalSimple> and <ModalDetailed> components */
 export interface BaseDialogProps {
   /**
    * Determines whether the modal is open or closed.
