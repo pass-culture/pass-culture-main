@@ -7,12 +7,14 @@ from dataclasses import dataclass
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql as sa_sql
+from cryptography.fernet import InvalidToken
 
 import pcapi.core.providers.constants as provider_constants
 from pcapi.core.offerers.models import Venue
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import crypto as crypto_utils
 from pcapi.utils import date as date_utils
 
 
@@ -277,9 +279,21 @@ class CDSCinemaDetails(PcObject, Model):
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], back_populates="CDSCinemaDetails", uselist=False
     )
 
-    cinemaApiToken: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    _cinemaApiToken: sa_orm.Mapped[str] = sa_orm.mapped_column("cinemaApiToken", sa.Text, nullable=False)
 
     accountId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+
+    @property
+    def cinemaApiToken(self) -> str:
+        try:
+            return crypto_utils.decrypt(self._cinemaApiToken)
+        except InvalidToken:
+            # the token was not encrypted
+            return self._cinemaApiToken
+
+    @cinemaApiToken.setter
+    def cinemaApiToken(self, value: str) -> None:
+        self._cinemaApiToken = crypto_utils.encrypt(value)
 
 
 class AllocineVenueProvider(VenueProvider):
@@ -362,8 +376,22 @@ class BoostCinemaDetails(PcObject, Model):
     cinemaUrl: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text, nullable=False
     )  # including http:// or https:// and trailing /
-    token: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    _token: sa_orm.Mapped[str | None] = sa_orm.mapped_column("token", sa.Text, nullable=True)
     tokenExpirationDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+
+    @property
+    def token(self) -> str | None:
+        if not self._token or "." in self._token:
+            return self._token
+        return crypto_utils.decrypt(self._token)
+
+    @token.setter
+    def token(self, value: str | None) -> None:
+        self._token = value and crypto_utils.encrypt(value)
+
+    @token.deleter
+    def token(self) -> None:
+        del self._token
 
 
 class CGRCinemaDetails(PcObject, Model):
