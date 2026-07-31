@@ -13,6 +13,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
+import pcapi.utils.date as date_utils
 from pcapi.core.categories import subcategories
 from pcapi.core.providers.clients import boost_client
 from pcapi.core.providers.clients import boost_serializers
@@ -531,6 +532,9 @@ class BoostExtractTransformLoadProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
+        venue_provider.lastSyncDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        db.session.flush()
+
         file_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
             poster_mission_impossible = thumb_file.read()
@@ -620,6 +624,12 @@ class BoostExtractTransformLoadProcessTest:
                 "venue_id": venue_provider.venueId,
                 "provider_id": venue_provider.providerId,
             },
+        )
+
+        db.session.refresh(venue_provider)
+        assert venue_provider.lastSyncDate.timestamp() == pytest.approx(
+            date_utils.get_naive_utc_now().timestamp(),
+            rel=1,
         )
 
     def test_should_reuse_price_category(self, requests_mock):
