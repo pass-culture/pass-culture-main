@@ -58,7 +58,7 @@ describe('VideoUploader', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('img', { name: 'Prévisualisation de l\u2019image' })
+      screen.getByRole('img', { name: 'Prévisualisation de la vidéo' })
     ).toBeInTheDocument()
     expect(screen.getByText('Ma super vidéo')).toBeInTheDocument()
     expect(screen.getByText('3 min')).toBeInTheDocument()
