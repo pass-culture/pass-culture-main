@@ -7,7 +7,6 @@ import {
 import { checkAccessibility } from './helpers/accessibility'
 import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL } from './helpers/sandbox'
-import { mockSiretCheck } from './helpers/structureCheck'
 
 async function carouselNavigation(page: Page) {
   await page.goto('/inscription')
@@ -140,9 +139,7 @@ test.describe('Pre signup pages', () => {
         .filter({ hasText: 'Veuillez renseigner un SIRET' })
     ).toBeVisible()
 
-    await mockSiretCheck(page)
-
-    await page.getByLabel(/Numéro de SIRET/).fill('11111111111111')
+    await page.getByLabel(/Numéro de SIRET/).fill('85331845900056')
 
     await page.getByRole('button', { name: 'Continuer' }).click()
 
