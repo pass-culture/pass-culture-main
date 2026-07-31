@@ -29,7 +29,7 @@ class LocationModelV2(HttpBodyModel, offerers_schemas.CoreLocationModelV2):
 
 
 class StructureDataBodyModel(HttpBodyModel):
-    siret: SiretField
+    siret: str
     siren: str | None
     name: str | None
     apeCode: str | None
