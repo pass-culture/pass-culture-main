@@ -195,6 +195,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             >
               <DropdownItem icon={strokePhoneIcon}>
                 <Link
+                  onClick={() => setIsOpen(false)}
                   to={getIndividualOfferUrl({
                     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
                     mode: OFFER_WIZARD_MODE.CREATION,
@@ -205,7 +206,9 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 </Link>
               </DropdownItem>
               <DropdownItem icon={strokeBagIcon}>
-                <Link to="/offre/creation">Pour les groupes scolaires</Link>
+                <Link onClick={() => setIsOpen(false)} to="/offre/creation">
+                  Pour les groupes scolaires
+                </Link>
               </DropdownItem>
             </Dropdown>
           )}

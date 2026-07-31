@@ -49,6 +49,30 @@ describe('LateralMenu', () => {
     ).toBeInTheDocument()
   })
 
+  describe.each(['Pour le grand public', 'Pour les groupes scolaires'])(
+    'should close create offer dropdown when clicking %s link',
+    (menuItemName) => {
+      it('should close dropdown', async () => {
+        renderSideNavLinks()
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Créer une offre' })
+        )
+
+        await userEvent.click(
+          screen.getByRole('menuitem', { name: menuItemName })
+        )
+
+        expect(
+          screen.queryByRole('menuitem', { name: 'Pour le grand public' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('menuitem', { name: 'Pour les groupes scolaires' })
+        ).not.toBeInTheDocument()
+      })
+    }
+  )
+
   it('should show a disabled create offer button instead of the dropdown when the selected venue is closed', () => {
     renderSideNavLinks({
       storeOverrides: {

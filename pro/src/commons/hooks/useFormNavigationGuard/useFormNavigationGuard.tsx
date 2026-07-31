@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
-import { useBlocker, useNavigate } from 'react-router'
+import { useBlocker, useLocation, useNavigate } from 'react-router'
 
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
@@ -40,7 +40,7 @@ export const useFormNavigationGuard = <
   //
   // => `isDirty` and `isSubmitting` MUST be read here, during render, to keep them in sync with the form state.
   const { isDirty, isSubmitting } = form.formState
-
+  const location = useLocation()
   const blocker = useBlocker(
     () => !isSubmitting && (isDirty || isExternallyDirty)
   )
@@ -63,13 +63,25 @@ export const useFormNavigationGuard = <
       ? `${blocker.location.pathname}${blocker.location.search}${blocker.location.hash}`
       : null
 
+  const isTargetSameAsCurrentPath = () => {
+    if (!blocker.location) return false
+    const blockedPath = `${blocker.location.pathname}${blocker.location.search}`
+    const currentPath = `${location.pathname}${location.search}`
+    return blockedPath === currentPath
+  }
+
   const proceedBlockedNavigationSafely = () => {
     if (blocker.state !== 'blocked') {
       return false
     }
 
+    const isSamePath = isTargetSameAsCurrentPath()
+
     try {
       blocker.proceed()
+      if (isSamePath) {
+        form.reset()
+      }
       return true
     } catch {
       // `blocker.state` may have changed since render (async submit), fallback to explicit navigation.
@@ -86,6 +98,7 @@ export const useFormNavigationGuard = <
   const navigationGuardedSubmitHandler = form.handleSubmit(
     async (transformedFormValues: TTransformedValues) => {
       const canProceed = await onSubmit(transformedFormValues)
+      const isSamePath = isTargetSameAsCurrentPath()
       if (!canProceed) {
         if (blocker.state === 'blocked') {
           const blockedPath = getBlockedPath()
@@ -112,7 +125,7 @@ export const useFormNavigationGuard = <
       if (resolvedAfterSubmitPath) {
         navigate(resolvedAfterSubmitPath)
       } else {
-        form.reset(transformedFormValues)
+        isSamePath ? form.reset() : form.reset(transformedFormValues)
       }
     },
     () => {
