@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .base-dialog {
   // Reset the browser's default styles on the <dialog> tag
@@ -17,4 +18,24 @@
     background-color: var(--color-background-overlay);
     backdrop-filter: blur(4px); // Modern blur effect
   }
+
+  &-simple {
+    background-color: #fff;
+    display: flex;
+    padding: var(--size-spacing-xxl);
+    border-radius: var(--size-border-radius-m);
+    flex-direction: column;
+    will-change: transform, opacity;
+    max-width: rem.torem(512px);
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      animation: simple-appear 100ms;
+    }
+  }
+}
+
+.close-button {
+  display: flex;
+  align-self: flex-end;
+  margin-bottom: rem.torem(10px);
 }
