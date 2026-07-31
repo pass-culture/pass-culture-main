@@ -48,12 +48,13 @@ def signup_structure(
         )
     except ReCaptchaException:
         raise ApiErrors({"token": "The given token is invalid"})
+
     try:
         user_offerer = offerers_api.create_from_onboarding_data(current_user, body)
     except offerers_exceptions.InactiveSirenException:
-        raise ApiErrors({"siret": "SIRET is no longer active"})
+        raise ApiErrors({"siret": "Le SIRET n'est pas actif"})
     except offerers_exceptions.NotACollectivity:
-        raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
+        raise ApiErrors({"siret": "Le SIRET n'appartient pas à une collectivité"})
     except offerers_exceptions.publicNameRequiredException:
         raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
 
