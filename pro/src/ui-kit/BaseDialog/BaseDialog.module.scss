@@ -5,8 +5,11 @@
   // Reset the browser's default styles on the <dialog> tag
   border: none;
   background: transparent;
-  margin: auto;
   overflow: visible;
+
+  @media (min-width: size.$tablet) {
+    margin: auto;
+  }
 
   // Remove the browser's default outline (the outline will be handled by inner focusable elements)
   &:focus-visible {
@@ -26,10 +29,31 @@
     border-radius: var(--size-border-radius-m);
     flex-direction: column;
     will-change: transform, opacity;
-    max-width: rem.torem(512px);
+    width: 100vw;
+    position: fixed;
+    bottom: 0;
 
-    @media screen and (prefers-reduced-motion: no-preference) {
-      animation: simple-appear 100ms;
+    @media screen and (prefers-reduced-motion: no-preference) and (max-width: size.$tablet) {
+      animation: slide-in-up 500ms;
+    }
+
+    @media (min-width: size.$tablet) {
+      max-width: rem.torem(512px);
+      margin: 0;
+      bottom: unset;
+      position: unset;
+    }
+
+    @keyframes slide-in-up {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
   }
 }

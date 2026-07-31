@@ -27,7 +27,8 @@
     "scripts/format_generated_index_exports.js",
     "scripts/sanitize_enum_keys.js",
     "src/design-system/Dropdown/Dropdown.tsx",
-    "src/ui-kit/BaseDialog/BaseDialog.tsx"
+    "src/ui-kit/BaseDialog/BaseDialog.tsx",
+    "src/design-system/SimpleModal/SimpleModal.tsx"
   ],
   "ignoreDependencies": ["openapi-typescript-codegen"],
   "ignoreUnresolved": ["typescript-plugin-css-modules"],
