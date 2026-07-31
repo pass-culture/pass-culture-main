@@ -132,6 +132,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         self._post_load_product_poster_update(products_with_poster)
         self._post_load_provider_specific_hook(extract_result=result)
 
+        self.venue_provider.lastSyncDate = get_naive_utc_now()
         self._log(logging.INFO, "ETL process ended successfully")
 
     def _extract(self) -> ExtractResult:
