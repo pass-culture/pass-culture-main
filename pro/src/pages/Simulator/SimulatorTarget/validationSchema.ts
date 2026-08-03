@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 export const validationSchema = yup.object().shape({
-  targetCustomer: yup
+  targetAudiences: yup
     .object()
     .test({
       name: 'is-one-true',
@@ -11,11 +11,11 @@ export const validationSchema = yup.object().shape({
     })
     .shape({
       individual: yup.boolean(),
-      educational: yup.boolean(),
+      collective: yup.boolean(),
     })
     .required('Veuillez sélectionner au moins une option'),
 })
 
-export type SimulatorTargetCustomerFormValues = yup.InferType<
+export type SimulatorTargetAudienceFormValues = yup.InferType<
   typeof validationSchema
 >

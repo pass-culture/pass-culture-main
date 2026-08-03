@@ -10,6 +10,7 @@ export enum InfoPanelSize {
 
 type BaseProps = {
   title: string
+  titleLevel?: '2' | '3'
   children: string | JSX.Element
   surface: InfoPanelSurface.FLAT | InfoPanelSurface.ELEVATED
   size?: InfoPanelSize

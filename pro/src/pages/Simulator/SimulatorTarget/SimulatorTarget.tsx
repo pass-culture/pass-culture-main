@@ -12,32 +12,32 @@ import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
 import { useSimulatorContext } from '../SimulatorContext'
 import {
-  saveTargetCustomerToStorage,
-  tryRestoreTargetCustomerFromStorage,
+  saveTargetAudienceToStorage,
+  tryRestoreTargetAudienceFromStorage,
 } from '../storage'
 import styles from './SimulatorTarget.module.scss'
 import {
-  type SimulatorTargetCustomerFormValues,
+  type SimulatorTargetAudienceFormValues,
   validationSchema,
 } from './validationSchema'
 
 const defaultFormValues = {
-  targetCustomer: {
+  targetAudiences: {
     individual: false,
-    educational: false,
+    collective: false,
   },
 }
 
 export const SimulatorTarget = (): JSX.Element => {
   const navigate = useNavigate()
-  const { targetCustomer, setTargetCustomer } = useSimulatorContext()
+  const { targetAudiences, setTargetAudiences } = useSimulatorContext()
 
   const { formState, reset, watch, setValue, trigger, handleSubmit } = useForm({
-    defaultValues: targetCustomer
+    defaultValues: targetAudiences
       ? {
-          targetCustomer: {
-            individual: targetCustomer.individual ?? false,
-            educational: targetCustomer.educational ?? false,
+          targetAudiences: {
+            individual: targetAudiences.individual ?? false,
+            collective: targetAudiences.collective ?? false,
           },
         }
       : defaultFormValues,
@@ -46,19 +46,19 @@ export const SimulatorTarget = (): JSX.Element => {
 
   useEffect(() => {
     try {
-      const targetCustomerStoredData =
-        tryRestoreTargetCustomerFromStorage(setTargetCustomer)
-      if (targetCustomerStoredData) {
-        reset({ targetCustomer: targetCustomerStoredData })
+      const targetAudienceStoredData =
+        tryRestoreTargetAudienceFromStorage(setTargetAudiences)
+      if (targetAudienceStoredData) {
+        reset({ targetAudiences: targetAudienceStoredData })
       }
     } catch {
       // Nothing to do
     }
-  }, [setTargetCustomer, reset])
+  }, [setTargetAudiences, reset])
 
-  const onSubmit = (formValues: SimulatorTargetCustomerFormValues) => {
-    saveTargetCustomerToStorage(formValues.targetCustomer)
-    setTargetCustomer(formValues.targetCustomer)
+  const onSubmit = (formValues: SimulatorTargetAudienceFormValues) => {
+    saveTargetAudienceToStorage(formValues.targetAudiences)
+    setTargetAudiences(formValues.targetAudiences)
     navigate('/inscription/preparation/resultats')
   }
 
@@ -85,24 +85,24 @@ export const SimulatorTarget = (): JSX.Element => {
                   {
                     label: 'Les jeunes via l’application pass Culture',
                     sizing: 'fill',
-                    checked: watch('targetCustomer.individual') ?? false,
+                    checked: watch('targetAudiences.individual') ?? false,
                     onChange: async (e) => {
-                      setValue('targetCustomer.individual', e.target.checked)
-                      await trigger('targetCustomer')
+                      setValue('targetAudiences.individual', e.target.checked)
+                      await trigger('targetAudiences')
                     },
                   },
                   {
                     label: 'Les groupes scolaires via ADAGE',
                     sizing: 'fill',
-                    checked: watch('targetCustomer.educational') ?? false,
+                    checked: watch('targetAudiences.collective') ?? false,
                     onChange: async (e) => {
-                      setValue('targetCustomer.educational', e.target.checked)
-                      await trigger('targetCustomer')
+                      setValue('targetAudiences.collective', e.target.checked)
+                      await trigger('targetAudiences')
                     },
                   },
                 ]}
                 variant="detailed"
-                error={formState.errors.targetCustomer?.message}
+                error={formState.errors.targetAudiences?.message}
               />
             </FormLayout.Row>
 

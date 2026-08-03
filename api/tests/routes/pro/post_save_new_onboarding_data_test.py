@@ -321,7 +321,7 @@ class Returns400Test:
         response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
-        assert response.json == {"siret": "SIRET is no longer active"}
+        assert response.json == {"siret": "Le SIRET n'est pas actif"}
         assert db.session.query(offerers_models.Offerer).count() == 0
         assert db.session.query(offerers_models.UserOfferer).count() == 0
         assert db.session.query(offerers_models.Venue).count() == 0

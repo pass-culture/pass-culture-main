@@ -1652,6 +1652,21 @@ export type EducationalRedactorResponseModel = {
 export type EducationalRedactors = Array<EducationalRedactor>;
 
 /**
+ * EligibilityDocument
+ */
+export enum EligibilityDocument {
+    WEBSITE = 'WEBSITE',
+    RESUME_OR_PORTFOLIO = 'RESUME_OR_PORTFOLIO',
+    DIPLOMAS = 'DIPLOMAS',
+    SOUND_DESIGN_DIPLOMAS = 'SOUND_DESIGN_DIPLOMAS',
+    PRICES = 'PRICES',
+    SHOP_PICTURES = 'SHOP_PICTURES',
+    SOUND_STUDIO_PICTURES = 'SOUND_STUDIO_PICTURES',
+    CRIMINAL_RECORDS = 'CRIMINAL_RECORDS',
+    DESCRIPTION = 'DESCRIPTION'
+}
+
+/**
  * EventDateScheduleAndPriceCategoriesCountModel
  */
 export type EventDateScheduleAndPriceCategoriesCountModel = {
@@ -6117,6 +6132,67 @@ export type ShortHighlightResponseModel = {
 };
 
 /**
+ * SignupSimulationMessageLevel
+ */
+export enum SignupSimulationMessageLevel {
+    INFO = 'INFO',
+    ALERT = 'ALERT'
+}
+
+/**
+ * SignupSimulationMessageModel
+ */
+export type SignupSimulationMessageModel = {
+    level: SignupSimulationMessageLevel;
+    type: SignupSimulationMessageType;
+};
+
+/**
+ * SignupSimulationMessageType
+ */
+export enum SignupSimulationMessageType {
+    COLLECTIVE = 'COLLECTIVE',
+    BOOKSTORE = 'BOOKSTORE',
+    UNUSUAL_APE_CODE = 'UNUSUAL_APE_CODE'
+}
+
+/**
+ * SignupSimulationPayload
+ */
+export type SignupSimulationPayload = {
+    /**
+     * Activity
+     */
+    activity: ActivityOpenToPublic | ActivityNotOpenToPublic;
+    /**
+     * Isopentopublic
+     */
+    isOpenToPublic: boolean;
+    /**
+     * Siret
+     */
+    siret: string;
+    /**
+     * Targets
+     */
+    targets: Array<TargetAudience>;
+};
+
+/**
+ * SignupSimulationResponseModel
+ */
+export type SignupSimulationResponseModel = {
+    /**
+     * Eligibilitydocuments
+     */
+    eligibilityDocuments: Array<EligibilityDocument>;
+    /**
+     * Messages
+     */
+    messages: Array<SignupSimulationMessageModel>;
+};
+
+/**
  * SimplifiedBankAccountStatus
  */
 export enum SimplifiedBankAccountStatus {
@@ -6455,6 +6531,14 @@ export type SubmitReviewRequestModel = {
 export enum Target {
     EDUCATIONAL = 'EDUCATIONAL',
     INDIVIDUAL_AND_EDUCATIONAL = 'INDIVIDUAL_AND_EDUCATIONAL',
+    INDIVIDUAL = 'INDIVIDUAL'
+}
+
+/**
+ * TargetAudience
+ */
+export enum TargetAudience {
+    COLLECTIVE = 'COLLECTIVE',
     INDIVIDUAL = 'INDIVIDUAL'
 }
 
@@ -10236,6 +10320,35 @@ export type getStructureSearchBySearchInputResponses = {
 };
 
 export type getStructureSearchBySearchInputResponse = getStructureSearchBySearchInputResponses[keyof getStructureSearchBySearchInputResponses];
+
+export type postStructureSimulateSignupData = {
+    body: SignupSimulationPayload;
+    path?: never;
+    query?: never;
+    url: '/structure/simulate-signup';
+};
+
+export type postStructureSimulateSignupErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postStructureSimulateSignupError = postStructureSimulateSignupErrors[keyof postStructureSimulateSignupErrors];
+
+export type postStructureSimulateSignupResponses = {
+    /**
+     * OK
+     */
+    200: SignupSimulationResponseModel;
+};
+
+export type postStructureSimulateSignupResponse = postStructureSimulateSignupResponses[keyof postStructureSimulateSignupResponses];
 
 export type postUsersAnonymizeData = {
     body?: never;

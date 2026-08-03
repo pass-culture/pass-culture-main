@@ -3,11 +3,11 @@ import {
   saveActivityToStorage,
   saveOpenToPublicToStorage,
   saveSiretToStorage,
-  saveTargetCustomerToStorage,
+  saveTargetAudienceToStorage,
   tryRestoreActivityFromStorage,
   tryRestoreOpenToPublicFromStorage,
   tryRestoreSiretFromStorage,
-  tryRestoreTargetCustomerFromStorage,
+  tryRestoreTargetAudienceFromStorage,
 } from 'pages/Simulator/storage'
 import { vi } from 'vitest'
 
@@ -32,7 +32,7 @@ vi.mock('@/commons/utils/localStorageManager', async () => {
 })
 const mockSetSiret = vi.fn()
 const mockSetOpenToPublic = vi.fn()
-const mockSetTargetCustomer = vi.fn()
+const mockSetTargetAudience = vi.fn()
 const mockSetActivity = vi.fn()
 
 describe('storage', () => {
@@ -69,16 +69,16 @@ describe('storage', () => {
   })
 
   it('should save and retrieve target customer', () => {
-    const initialValue = tryRestoreTargetCustomerFromStorage(
-      mockSetTargetCustomer
+    const initialValue = tryRestoreTargetAudienceFromStorage(
+      mockSetTargetAudience
     )
     expect(initialValue).toBeUndefined()
-    expect(mockSetTargetCustomer).not.toHaveBeenCalled()
-    saveTargetCustomerToStorage({ individual: true })
-    const storedValue = tryRestoreTargetCustomerFromStorage(
-      mockSetTargetCustomer
+    expect(mockSetTargetAudience).not.toHaveBeenCalled()
+    saveTargetAudienceToStorage({ individual: true })
+    const storedValue = tryRestoreTargetAudienceFromStorage(
+      mockSetTargetAudience
     )
     expect(storedValue).toEqual({ individual: true })
-    expect(mockSetTargetCustomer).toHaveBeenCalledWith({ individual: true })
+    expect(mockSetTargetAudience).toHaveBeenCalledWith({ individual: true })
   })
 })
