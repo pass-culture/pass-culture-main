@@ -131,7 +131,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const charactersCountId = useId()
     const errorId = useId()
 
-    const countValue = textValue?.length ?? 0
+    const countValue =
+      textAreaRef.current?.value?.length ?? textValue?.length ?? 0
 
     useImperativeHandle(ref, () => textAreaRef.current as HTMLTextAreaElement)
 
