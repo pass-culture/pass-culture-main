@@ -7,7 +7,9 @@ from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers.structure_signup_api import EligibilityDocument
 from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageLevel
 from pcapi.core.offerers.structure_signup_api import SignupSimulationMessageType
+from pcapi.models.api_errors import OBJECT_NOT_FOUND_ERROR_MESSAGE
 
+from tests.conftest import TestClient
 from tests.connectors import api_entreprise_test_data
 
 
@@ -17,8 +19,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 VALID_SIRET = "44265836100021"
 
 
+@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns200Test:
-    def test_standard_case(self, client):
+    def test_standard_case(self, client: TestClient):
         """structure with default documents and no messages"""
         data = {
             "siret": VALID_SIRET,
@@ -37,7 +40,7 @@ class Returns200Test:
             "messages": [],
         }
 
-    def test_complex_case(self, client):
+    def test_complex_case(self, client: TestClient):
         """single member bookstore with ape code not in whitelist, and collective target"""
         data = {
             "siret": "11141111122213",
@@ -67,11 +70,12 @@ class Returns200Test:
         }
 
 
+@pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=True)
 class Returns400Test:
     @patch(
         "pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.UnknownEntityException()
     )
-    def test_siret_unknown(self, _get_siret_open_data_mock, client):
+    def test_siret_unknown(self, _get_siret_open_data_mock, client: TestClient):
         data = {
             "siret": VALID_SIRET,
             "isOpenToPublic": True,
@@ -84,7 +88,7 @@ class Returns400Test:
         assert response.json == {"global": ["Le SIREN n’existe pas."]}
 
     @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
-    def test_inactive_siret(self, requests_mock, client):
+    def test_inactive_siret(self, requests_mock, client: TestClient):
         siret = "77789988100026"
 
         requests_mock.get(
@@ -103,7 +107,7 @@ class Returns400Test:
         assert response.json == {"global": ["Ce SIRET n'est pas actif."]}
 
     @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
-    def test_siret_with_no_ape(self, requests_mock, client):
+    def test_siret_with_no_ape(self, requests_mock, client: TestClient):
         siret = "77789988100026"
         json = copy.deepcopy(api_entreprise_test_data.RESPONSE_SIRET_COMPANY)
         json["data"]["activite_principale"]["code"] = None
@@ -122,7 +126,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Impossible d'effectuer une simulation pour ce SIRET."]}
 
-    def test_invalid_siret(self, client):
+    def test_invalid_siret(self, client: TestClient):
         data = {
             "siret": "12345678912345",
             "isOpenToPublic": True,
@@ -134,7 +138,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"siret": ["Le SIRET est invalide"]}
 
-    def test_no_open_to_public(self, client):
+    def test_no_open_to_public(self, client: TestClient):
         data = {
             "siret": VALID_SIRET,
             "targets": ["INDIVIDUAL"],
@@ -145,7 +149,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"isOpenToPublic": ["Ce champ est obligatoire"]}
 
-    def test_no_target(self, client):
+    def test_no_target(self, client: TestClient):
         data = {
             "siret": VALID_SIRET,
             "isOpenToPublic": True,
@@ -157,7 +161,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"targets": ["Cette liste doit avoir une taille minimum de 1"]}
 
-    def test_no_activity(self, client):
+    def test_no_activity(self, client: TestClient):
         data = {
             "siret": VALID_SIRET,
             "isOpenToPublic": True,
@@ -183,3 +187,42 @@ class Returns400Test:
                 "'TOURIST_INFORMATION_CENTRE'",
             ],
         }
+
+    def test_duplicate_target(self, client: TestClient):
+        data = {
+            "siret": VALID_SIRET,
+            "isOpenToPublic": True,
+            "targets": ["COLLECTIVE", "COLLECTIVE"],
+            "activity": "OTHER",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"targets": ["Une valeur est en doublon"]}
+
+    def test_invalid_target(self, client: TestClient):
+        data = {
+            "siret": VALID_SIRET,
+            "isOpenToPublic": True,
+            "targets": ["bloup"],
+            "activity": "OTHER",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"targets.0": ["Input should be 'COLLECTIVE' or 'INDIVIDUAL'"]}
+
+
+class Returns404Test:
+    @pytest.mark.features(WIP_PRE_SIGNUP_SIMULATION=False)
+    def test_with_ff_off(self, client: TestClient):
+        data = {
+            "siret": VALID_SIRET,
+            "isOpenToPublic": True,
+            "targets": ["INDIVIDUAL"],
+            "activity": "MUSEUM",
+        }
+        response = client.post("/structure/simulate-signup", json=data)
+
+        assert response.status_code == 404
+        assert response.json == {"global": [OBJECT_NOT_FOUND_ERROR_MESSAGE]}

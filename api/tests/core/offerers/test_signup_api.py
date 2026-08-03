@@ -1,11 +1,13 @@
 import pytest
 
+from pcapi import settings
 from pcapi.core.offerers.models import Activity
 from pcapi.core.offerers.models import TargetAudience
 from pcapi.core.offerers.structure_signup_api import BOOKSTORE_MESSAGE
 from pcapi.core.offerers.structure_signup_api import COLLECTIVE_MESSAGE
 from pcapi.core.offerers.structure_signup_api import UNUSUAL_APE_CODE_MESSAGE
 from pcapi.core.offerers.structure_signup_api import EligibilityDocument
+from pcapi.core.offerers.structure_signup_api import build_signup_link
 from pcapi.core.offerers.structure_signup_api import get_signup_documents_and_messages
 
 
@@ -329,3 +331,31 @@ class SignupSimulationTest:
 
         assert response.documents == documents
         assert response.messages == [COLLECTIVE_MESSAGE, *messages]
+
+
+class BuildSignupLinkTest:
+    def test_build(self):
+        link = build_signup_link(
+            siret="44285836100029",
+            is_open_to_public=True,
+            targets=[TargetAudience.INDIVIDUAL],
+            activity=Activity.LIBRARY,
+        )
+
+        assert (
+            link
+            == f"{settings.PRO_URL}/inscription/compte/creation?siret=44285836100029&isOpenToPublic=true&targets=INDIVIDUAL&activity=LIBRARY"
+        )
+
+    def test_build_multiple_targets(self):
+        link = build_signup_link(
+            siret="44285836100029",
+            is_open_to_public=False,
+            targets=[TargetAudience.INDIVIDUAL, TargetAudience.COLLECTIVE],
+            activity=Activity.OTHER,
+        )
+
+        assert (
+            link
+            == f"{settings.PRO_URL}/inscription/compte/creation?siret=44285836100029&isOpenToPublic=false&targets=INDIVIDUAL&targets=COLLECTIVE&activity=OTHER"
+        )

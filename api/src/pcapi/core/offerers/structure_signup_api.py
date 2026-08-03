@@ -1,7 +1,10 @@
 import enum
 import typing
+from collections import OrderedDict
 from dataclasses import dataclass
+from urllib.parse import urlencode
 
+from pcapi import settings
 from pcapi.core.offerers import models as offerers_models
 
 
@@ -160,3 +163,22 @@ def get_signup_documents_and_messages(
             eligibility_documents.append(EligibilityDocument.SHOP_PICTURES)
 
     return SignupSimulationResult(documents=eligibility_documents, messages=messages)
+
+
+def build_signup_link(
+    siret: str,
+    is_open_to_public: bool,
+    targets: list[offerers_models.TargetAudience],
+    activity: offerers_models.Activity,
+) -> str:
+    # use an OrderedDict to get a deterministic output
+    params = OrderedDict(
+        {
+            "siret": siret,
+            "isOpenToPublic": "true" if is_open_to_public else "false",
+            "targets": [target.name for target in targets],
+            "activity": activity.name,
+        }
+    )
+    encoded_params = urlencode(params, doseq=True)
+    return f"{settings.PRO_URL}/inscription/compte/creation?{encoded_params}"
