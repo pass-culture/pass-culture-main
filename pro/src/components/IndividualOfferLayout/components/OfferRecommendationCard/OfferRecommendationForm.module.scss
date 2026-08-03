@@ -81,4 +81,8 @@
       margin-bottom: rem.torem(36px);
     }
   }
+
+  &-image-desc {
+    @include fonts.body-accent-s;
+  }
 }

@@ -70,6 +70,7 @@ export function OfferRecommendationForm({
 
   const form = useForm<OfferRecommendationFormValues>({
     defaultValues,
+    values: defaultValues,
     resolver: yupResolver(validationSchema),
     mode: 'onChange',
   })
@@ -147,10 +148,15 @@ export function OfferRecommendationForm({
               sur l’application.
             </p>
             <div className={styles['recommandation-header']}>
-              <img
-                src={phoneImg}
-                alt="Téléphone affichant un exemple de recommandation sur l'application jeunes"
-              />
+              <div>
+                <img src={phoneImg} alt="Affichage sur l’offre" />
+                <span
+                  aria-hidden={true}
+                  className={styles['recommandation-header-image-desc']}
+                >
+                  Affichage sur l’offre
+                </span>
+              </div>
               <div className={styles['recommandation-header-side']}>
                 <p className={styles['recommandation-header-title']}>
                   Exemples issus d’autres offres de la même catégorie :
