@@ -89,6 +89,7 @@ export function getIndividualOfferColumns({
     columns.push({
       id: 'actions',
       label: 'Actions',
+      centerHeader: true,
       render: (offer) => {
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,

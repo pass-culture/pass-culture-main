@@ -1,3 +1,4 @@
+import { getOfferEnhancementCardsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OfferRecommendationDialogBuilder } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationDialogBuilder'
 import { Button } from 'design-system/Button/Button'
@@ -99,6 +100,9 @@ export const IndividualActionsCells = ({
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }, [])
 
+  const { shouldDisplayRecommendationCard, shouldDisplayHeadlineCard } =
+    getOfferEnhancementCardsVisibility(offer)
+
   const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
     selectedVenueId: selectedPartnerVenue.id,
@@ -135,6 +139,12 @@ export const IndividualActionsCells = ({
   }
 
   async function onClickAddHeadlineOffer() {
+    if (!shouldDisplayHeadlineCard) {
+      snackBar.error(
+        'Seules les offres au statut « Publié » peuvent être mises à la une.'
+      )
+      return
+    }
     if (isHeadline) {
       await removeHeadlineOffer({ offerId: offer.id })
     } else if (offer.thumbUrl) {
@@ -152,11 +162,24 @@ export const IndividualActionsCells = ({
   }
 
   function onClickAddProAdvice() {
-    logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
-      offerId: offer.id,
-      action: offer.hasProAdvice ? 'edited' : 'started',
-    })
-    setIsProAdviceOpen(true)
+    if (!shouldDisplayRecommendationCard) {
+      let errorMessage =
+        'Votre offre doit être publiée pour faire cette action.'
+      if (offer.status === OfferStatus.REJECTED) {
+        errorMessage =
+          "Offre non-conforme : aucune modification n'est possible dans ce cas. Veuillez créer une nouvelle offre."
+      } else if (offer.status === OfferStatus.PENDING) {
+        errorMessage =
+          "Offre en cours de vérification : aucune modification n'est possible durant la vérification d’éligibilité."
+      }
+      snackBar.error(errorMessage)
+    } else {
+      logEvent(EngagementEvents.HAS_MADE_RECOMMENDATION, {
+        offerId: offer.id,
+        action: offer.hasProAdvice ? 'edited' : 'started',
+      })
+      setIsProAdviceOpen(true)
+    }
   }
 
   const isActive = offer.status === OfferStatus.ACTIVE
@@ -186,7 +209,11 @@ export const IndividualActionsCells = ({
               color={isHeadline ? ButtonColor.BRAND : ButtonColor.NEUTRAL}
               variant={ButtonVariant.SECONDARY}
               size={ButtonSize.SMALL}
-              icon={isHeadline ? fullStarIcon : strokeStarIcon}
+              icon={
+                isHeadline && shouldDisplayHeadlineCard
+                  ? fullStarIcon
+                  : strokeStarIcon
+              }
               onClick={onClickAddHeadlineOffer}
               tooltip={
                 isHeadline ? 'Ne plus mettre à la une' : 'Mettre à la une'
@@ -195,7 +222,11 @@ export const IndividualActionsCells = ({
             />
 
             <OfferRecommendationDialogBuilder
-              onOpenChange={setIsProAdviceOpen}
+              onOpenChange={() => {
+                if (shouldDisplayRecommendationCard) {
+                  setIsProAdviceOpen(!isProAdviceOpen)
+                }
+              }}
               offerId={offer.id}
               isOpen={isProAdviceOpen}
               proAdvice={null}
@@ -212,7 +243,11 @@ export const IndividualActionsCells = ({
                 }
                 variant={ButtonVariant.SECONDARY}
                 size={ButtonSize.SMALL}
-                icon={offer.hasProAdvice ? fullMessageIcon : strokeMessageIcon}
+                icon={
+                  offer.hasProAdvice && shouldDisplayRecommendationCard
+                    ? fullMessageIcon
+                    : strokeMessageIcon
+                }
                 onClick={onClickAddProAdvice}
                 tooltip={
                   offer.hasProAdvice

@@ -39,6 +39,7 @@ export interface Column<T> {
   id: string
   label: string
   sortable?: boolean
+  centerHeader?: boolean
   ordererField?: keyof T | ((row: T) => React.ReactNode)
   render?: (row: T) => React.ReactNode
   headerColSpan?: number
@@ -244,6 +245,7 @@ export function Table<
                   key={`col-${col.id}`}
                   className={classNames(styles['table-header-th'], {
                     [styles['table-header-sortable-th']]: col.sortable,
+                    [styles['table-header-center-th']]: col.centerHeader,
                   })}
                 >
                   {col.sortable ? (
