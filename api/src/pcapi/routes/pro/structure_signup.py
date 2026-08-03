@@ -8,6 +8,7 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.core.mails.transactional import send_signup_simulation_summary_email
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -18,7 +19,7 @@ from pcapi.models.api_errors import resource_not_found_error
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import public_information_serialize
-from pcapi.routes.serialization import sirene as sirene_serializers
+from pcapi.routes.serialization import sirene_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -65,10 +66,10 @@ def signup_structure(
 @atomic()
 @login_required
 @spectree_serialize(
-    response_model=sirene_serializers.StructureDataBodyModel,
+    response_model=sirene_serialize.StructureDataBodyModel,
     api=blueprint.pro_private_schema,
 )
-def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBodyModel:
+def get_structure_data(search_input: str) -> sirene_serialize.StructureDataBodyModel:
     if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
     try:
@@ -83,10 +84,10 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
     logger.info(
         "Searching for structure",
         extra={"user_id": current_user.id, "siret": data.siret, "is_diffusible": data.diffusible},
-        technical_message_id="structure_identification",
+        technical_message_id="structure_signup.search",
     )
 
-    return sirene_serializers.StructureDataBodyModel(
+    return sirene_serialize.StructureDataBodyModel(
         siret=data.siret,
         siren=data.siren,
         name=data.name if data.diffusible else None,
@@ -105,33 +106,39 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
 def check_structure(search_input: str) -> None:
     if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
         raise resource_not_found_error()
+
     if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
+
     try:
         data = offerers_api.find_structure_data(search_input)
-        logger.info(
-            "Searching for structure in signup simulation",
-            extra={
-                "siret": data.siret,
-                "is_diffusible": data.diffusible,
-                "legal_category": data.legal_category_code,
-                "ape_code": data.ape_code,
-            },
-            technical_message_id="structure_check",
-        )
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
+
+    logger.info(
+        "Searching for structure in signup simulation",
+        extra={
+            "siret": data.siret,
+            "is_diffusible": data.diffusible,
+            "legal_category": data.legal_category_code,
+            "ape_code": data.ape_code,
+        },
+        technical_message_id="structure_signup.check",
+    )
 
 
 @private_api.route("/structure/simulate-signup", methods=["POST"])
 @atomic()
 @spectree_serialize(
-    response_model=sirene_serializers.SignupSimulationResponseModel,
+    response_model=sirene_serialize.SignupSimulationResponseModel,
     api=blueprint.pro_private_schema,
 )
 def simulate_signup(
-    body: sirene_serializers.SignupSimulationPayload,
-) -> sirene_serializers.SignupSimulationResponseModel:
+    body: sirene_serialize.SignupSimulationPayload,
+) -> sirene_serialize.SignupSimulationResponseModel:
+    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
+        raise resource_not_found_error()
+
     try:
         data = offerers_api.find_structure_data(body.siret)
     except offerers_exceptions.InactiveSirenException:
@@ -148,10 +155,60 @@ def simulate_signup(
         activity=offerers_models.Activity[body.activity.name],
     )
 
-    return sirene_serializers.SignupSimulationResponseModel(
+    return sirene_serialize.SignupSimulationResponseModel(
         eligibility_documents=result.documents,
         messages=[
-            sirene_serializers.SignupSimulationMessageModel(level=message.level, type=message.type)
+            sirene_serialize.SignupSimulationMessageModel(level=message.level, type=message.type)
             for message in result.messages
         ],
+    )
+
+
+@private_api.route("/structure/summarise-signup", methods=["POST"])
+@atomic()
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummaryPayload) -> None:
+    if not feature.FeatureToggle.WIP_PRE_SIGNUP_SIMULATION.is_active():
+        raise resource_not_found_error()
+
+    try:
+        data = offerers_api.find_structure_data(body.siret)
+    except offerers_exceptions.InactiveSirenException:
+        raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
+
+    if data.ape_code is None:
+        raise ApiErrors(errors={"global": ["Impossible d'effectuer une simulation pour ce SIRET."]})
+
+    activity = offerers_models.Activity[body.activity.name]
+    signup_link = structure_signup_api.build_signup_link(
+        siret=body.siret,
+        is_open_to_public=body.is_open_to_public,
+        targets=body.targets,
+        activity=activity,
+    )
+    eligibility_documents = structure_signup_api.get_signup_documents_and_messages(
+        ape_code=data.ape_code,
+        legal_category_code=data.legal_category_code,
+        is_open_to_public=body.is_open_to_public,
+        targets=body.targets,
+        activity=activity,
+    ).documents
+
+    send_signup_simulation_summary_email(
+        email=body.email, signup_link=signup_link, eligibility_documents=eligibility_documents
+    )
+
+    logger.info(
+        "Sending signup simluation summary",
+        extra={
+            "siret": body.siret,
+            "is_open_to_public": body.is_open_to_public,
+            "targets": body.targets,
+            "activity": body.activity,
+            "number_of_documents": len(eligibility_documents),
+        },
+        technical_message_id="structure_signup.sending_summary",
     )

@@ -6193,6 +6193,32 @@ export type SignupSimulationResponseModel = {
 };
 
 /**
+ * SignupSimulationSummaryPayload
+ */
+export type SignupSimulationSummaryPayload = {
+    /**
+     * Activity
+     */
+    activity: ActivityOpenToPublic | ActivityNotOpenToPublic;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Isopentopublic
+     */
+    isOpenToPublic: boolean;
+    /**
+     * Siret
+     */
+    siret: string;
+    /**
+     * Targets
+     */
+    targets: Array<TargetAudience>;
+};
+
+/**
  * SimplifiedBankAccountStatus
  */
 export enum SimplifiedBankAccountStatus {
@@ -10349,6 +10375,35 @@ export type postStructureSimulateSignupResponses = {
 };
 
 export type postStructureSimulateSignupResponse = postStructureSimulateSignupResponses[keyof postStructureSimulateSignupResponses];
+
+export type postStructureSummariseSignupData = {
+    body: SignupSimulationSummaryPayload;
+    path?: never;
+    query?: never;
+    url: '/structure/summarise-signup';
+};
+
+export type postStructureSummariseSignupErrors = {
+    /**
+     * Forbidden
+     */
+    403: unknown;
+    /**
+     * Unprocessable Content
+     */
+    422: ValidationError;
+};
+
+export type postStructureSummariseSignupError = postStructureSummariseSignupErrors[keyof postStructureSummariseSignupErrors];
+
+export type postStructureSummariseSignupResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type postStructureSummariseSignupResponse = postStructureSummariseSignupResponses[keyof postStructureSummariseSignupResponses];
 
 export type postUsersAnonymizeData = {
     body?: never;

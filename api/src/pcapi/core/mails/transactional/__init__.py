@@ -52,6 +52,7 @@ from .pro.reminder_offer_creation import send_reminder_offer_creation_j5_to_pro
 from .pro.reminder_offer_creation import send_reminder_offer_creation_j10_to_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_pro
+from .pro.signup_simulation_summary import send_signup_simulation_summary_email
 from .pro.venue_bank_account_link_deprecated import send_venue_bank_account_link_deprecated
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
 from .pro.venue_provider_disabled import send_venue_provider_disabled_email

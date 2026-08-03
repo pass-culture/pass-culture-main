@@ -1,10 +1,27 @@
+import typing
+
 import pydantic as pydantic_v2
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers import structure_signup_api
 from pcapi.routes.serialization import HttpBodyModel
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import SiretField
+
+
+def _validate_no_duplicate(value: list) -> list:
+    if len(value) != len(set(value)):
+        raise PydanticError("Une valeur est en doublon")
+
+    return value
+
+
+TargetsField = typing.Annotated[
+    list[offerers_models.TargetAudience],
+    pydantic_v2.AfterValidator(_validate_no_duplicate),
+    pydantic_v2.Field(min_length=1, max_length=2),
+]
 
 
 class SignupSimulationMessageModel(HttpBodyModel):
@@ -20,7 +37,15 @@ class SignupSimulationResponseModel(HttpBodyModel):
 class SignupSimulationPayload(HttpBodyModel):
     siret: SiretField
     is_open_to_public: bool
-    targets: list[offerers_models.TargetAudience] = pydantic_v2.Field(min_length=1, max_length=2)
+    targets: TargetsField
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
+
+
+class SignupSimulationSummaryPayload(HttpBodyModel):
+    email: pydantic_v2.EmailStr
+    siret: SiretField
+    is_open_to_public: bool
+    targets: TargetsField
     activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
 
 
