@@ -5,6 +5,7 @@ import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 import {
   ActivityNotOpenToPublic,
@@ -14,6 +15,16 @@ import {
   TargetAudience,
 } from 'apiClient/v1'
 import { SimulatorResults } from './SimulatorResults'
+
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    simulateSignup: vi.fn(),
+  },
+}))
+
+vi.mock('@/commons/utils/sendSentryCustomError', () => ({
+  sendSentryCustomError: vi.fn(),
+}))
 
 const contextValue = {
   siret: '123 456 789 01234',
@@ -39,9 +50,18 @@ const renderSimulatorResult = (contextOverride = {}) => {
 }
 
 describe('<SimulatorResults />', () => {
-  it('should render without accessibility violations', async () => {
-    const { container } = renderWithProviders(<SimulatorResults />)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
+  it('should render without accessibility violations', async () => {
+    vi.mocked(api.simulateSignup).mockResolvedValueOnce({
+      eligibilityDocuments: [],
+      messages: [],
+    })
+    const { container } = renderSimulatorResult()
+
+    await waitFor(() => expect(api.simulateSignup).toHaveBeenCalled())
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -61,7 +81,7 @@ describe('<SimulatorResults />', () => {
   ])(
     'should call the simulateSignup endpoint with the following targets: $expectedTargets',
     async ({ inputTargets, expectedTargets }) => {
-      vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
+      vi.mocked(api.simulateSignup).mockResolvedValueOnce({
         eligibilityDocuments: [EligibilityDocument.PRICES],
         messages: [],
       })
@@ -207,7 +227,7 @@ describe('<SimulatorResults />', () => {
       input: { doc, msgLevel, msgType },
       expected: { documentTitle, bannerRole, bannerTitle },
     }) => {
-      vi.spyOn(api, 'simulateSignup').mockResolvedValueOnce({
+      vi.mocked(api.simulateSignup).mockResolvedValueOnce({
         eligibilityDocuments: [doc],
         messages: [{ type: msgType, level: msgLevel }],
       })
@@ -224,4 +244,92 @@ describe('<SimulatorResults />', () => {
       expect(within(messageBanner).getByText(bannerTitle)).toBeVisible()
     }
   )
+
+  it('should propose to delay the inscription and send a mail', async () => {
+    vi.mocked(api.simulateSignup).mockResolvedValueOnce({
+      eligibilityDocuments: [],
+      messages: [],
+    })
+    renderSimulatorResult()
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Vous souhaitez vous inscrire plus tard ?')
+      ).toBeVisible()
+    )
+    expect(await screen.findByRole('link', { name: 'Retour' })).toHaveAttribute(
+      'href',
+      '/inscription/preparation/publics'
+    )
+    expect(
+      screen.getByRole('link', { name: 'Recevoir la liste par email' })
+    ).toBeVisible()
+  })
+
+  it('reports the error to Sentry and displays the error banner when the call fails', async () => {
+    vi.mocked(api.simulateSignup).mockRejectedValueOnce(
+      new Error('network error')
+    )
+
+    renderSimulatorResult()
+
+    await waitFor(() => {
+      expect(sendSentryCustomError).toHaveBeenCalledTimes(1)
+    })
+    expect(
+      screen.getByText("Impossible d'afficher vos documents justificatifs")
+    ).toBeVisible()
+  })
+
+  it('does not get stuck on the spinner when the call fails', async () => {
+    vi.mocked(api.simulateSignup).mockRejectedValueOnce(
+      new Error('network error')
+    )
+
+    renderSimulatorResult()
+
+    expect(screen.queryByRole('status')).toBeVisible()
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+  })
+
+  it('points the back link to the siret step and relabels it when the call fails', async () => {
+    vi.mocked(api.simulateSignup).mockRejectedValueOnce(
+      new Error('network error')
+    )
+
+    renderSimulatorResult()
+
+    const backLink = await screen.findByRole('link', { name: 'Recommencer' })
+    expect(backLink).toHaveAttribute('href', '/inscription/preparation/siret')
+  })
+
+  it('hides the "sign up later" block when the error banner is shown', async () => {
+    vi.mocked(api.simulateSignup).mockRejectedValueOnce(
+      new Error('network error')
+    )
+
+    renderSimulatorResult()
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Vous souhaitez vous inscrire plus tard ?')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('shows the "sign up later" block when the call succeeds', async () => {
+    vi.mocked(api.simulateSignup).mockResolvedValueOnce({
+      eligibilityDocuments: [],
+      messages: [],
+    } as never)
+
+    renderSimulatorResult()
+
+    expect(
+      await screen.findByText('Vous souhaitez vous inscrire plus tard ?')
+    ).toBeInTheDocument()
+  })
 })

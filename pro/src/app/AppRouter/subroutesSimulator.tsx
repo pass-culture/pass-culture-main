@@ -57,6 +57,25 @@ export const routesSimulator: CustomRouteGroupChild[] = [
     featureName: 'WIP_PRE_SIGNUP_SIMULATION',
   },
   {
+    lazy: () => import('@/pages/Simulator/SimulatorEmail/SimulatorEmail'),
+    loader: noop,
+    path: '/inscription/preparation/email',
+    handle: {
+      title: 'Recevez votre liste de justificatifs par email',
+    },
+    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
+  },
+  {
+    lazy: () =>
+      import('@/pages/Simulator/SimulatorEmail/SimulatorEmailConfirmation'),
+    loader: noop,
+    path: '/inscription/preparation/email-confirmation',
+    handle: {
+      title: 'La liste de justificatifs a bien été envoyée par mail',
+    },
+    featureName: 'WIP_PRE_SIGNUP_SIMULATION',
+  },
+  {
     element: <Navigate to="/inscription/preparation/siret" />,
     loader: noop,
     path: '/inscription/preparation',
