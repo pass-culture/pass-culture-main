@@ -239,7 +239,9 @@ export const IndividualActionsCells = ({
             >
               <Button
                 color={
-                  offer.hasProAdvice ? ButtonColor.BRAND : ButtonColor.NEUTRAL
+                  offer.hasProAdvice && shouldDisplayRecommendationCard
+                    ? ButtonColor.BRAND
+                    : ButtonColor.NEUTRAL
                 }
                 variant={ButtonVariant.SECONDARY}
                 size={ButtonSize.SMALL}
@@ -265,6 +267,7 @@ export const IndividualActionsCells = ({
         >
           <DropdownItem icon={penIcon}>
             <Link
+              className={styles['action-item']}
               to={editionOfferLink}
               onClick={() =>
                 logOfferNavigation(
@@ -277,6 +280,7 @@ export const IndividualActionsCells = ({
           </DropdownItem>
           {offer.status === OfferStatus.DRAFT ? (
             <DropdownItem
+              className={styles['action-item']}
               onSelect={() =>
                 setIsConfirmDialogDeleteDraftOpen(
                   !isConfirmDialogDeleteDraftOpen
@@ -288,6 +292,7 @@ export const IndividualActionsCells = ({
           ) : (
             <DropdownItem icon={fullStockIcon}>
               <Link
+                className={styles['action-item']}
                 to={editionStockLink}
                 onClick={() =>
                   logOfferNavigation(
