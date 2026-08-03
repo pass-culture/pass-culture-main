@@ -17,7 +17,8 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import nextIcon from '@/icons/full-next.svg'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
 
 import { api } from 'apiClient/api'
@@ -175,6 +176,22 @@ export const SimulatorResults = (): JSX.Element => {
           label="Continuer"
         />
       </div>
+
+      {!showErrorBanner && (
+        <aside className={styles['signup-later']}>
+          <p className={styles['signup-later-text']}>
+            Vous souhaitez vous inscrire plus tard ?
+          </p>
+          <Button
+            as="a"
+            to="/inscription/preparation/email"
+            icon={nextIcon}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            label="Recevoir la liste par email"
+          />
+        </aside>
+      )}
     </>
   )
 }
