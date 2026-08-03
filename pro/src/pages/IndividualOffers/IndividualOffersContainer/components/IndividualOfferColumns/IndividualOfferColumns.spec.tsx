@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { beforeEach } from 'vitest'
 
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -7,6 +8,7 @@ import {
   Events,
   INDIVIDUAL_OFFERS_NAVIGATION_SOURCE,
 } from '@/commons/core/FirebaseEvents/constants'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
@@ -280,6 +282,16 @@ describe('getIndividualOfferColumns', () => {
   })
 
   describe('With WIP_NEW_PRO_ADVICE_ACCESS FF', () => {
+    const snackBarSuccess = vi.fn()
+    const snackBarError = vi.fn()
+
+    beforeEach(() => {
+      vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+        success: snackBarSuccess,
+        error: snackBarError,
+      }))
+    })
+
     it('should omit the headline button in the dropdown with the FF', async () => {
       renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, [
         'WIP_NEW_PRO_ADVICE_ACCESS',
@@ -355,6 +367,66 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(createMock).toHaveBeenCalled()
+    })
+
+    it('should display error when adding a pro advice for a rejected error', async () => {
+      renderTableWithOffer(
+        {
+          ...baseOffer,
+          isEvent: false,
+          id: headlineOffer.id,
+          status: OfferStatus.REJECTED,
+        },
+        {},
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(await screen.findByLabelText('Recommander'))
+
+      expect(snackBarError).toHaveBeenCalledWith(
+        "Offre non-conforme : aucune modification n'est possible dans ce cas. Veuillez créer une nouvelle offre."
+      )
+    })
+
+    it('should display error when adding a pro advice for a pending error', async () => {
+      renderTableWithOffer(
+        {
+          ...baseOffer,
+          isEvent: false,
+          id: headlineOffer.id,
+          status: OfferStatus.PENDING,
+        },
+        {},
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(await screen.findByLabelText('Recommander'))
+
+      expect(snackBarError).toHaveBeenCalledWith(
+        "Offre en cours de vérification : aucune modification n'est possible durant la vérification d’éligibilité."
+      )
+    })
+
+    it('should display error when adding a pro advice for a draft error', async () => {
+      renderTableWithOffer(
+        {
+          ...baseOffer,
+          isEvent: false,
+          id: headlineOffer.id,
+          status: OfferStatus.DRAFT,
+        },
+        {},
+        ['WIP_NEW_PRO_ADVICE_ACCESS']
+      )
+
+      expect(await screen.findByText('My Offer')).toBeVisible()
+      await userEvent.click(await screen.findByLabelText('Recommander'))
+
+      expect(snackBarError).toHaveBeenCalledWith(
+        'Votre offre doit être publiée pour faire cette action.'
+      )
     })
 
     it('should update a pro advice', async () => {
