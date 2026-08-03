@@ -15,7 +15,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import { computeAddressDisplayName } from '@/commons/format/venuesService'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  listOffersOfferFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   makeGetVenueResponseModel,
@@ -92,6 +95,7 @@ vi.mock('@/commons/utils/date', async () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
+    getOffer: vi.fn(),
     getVenueHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),
     deleteHeadlineOffer: vi.fn(),
@@ -657,6 +661,9 @@ describe('IndividualOffersScreen', () => {
       name: 'My offer',
       venueId: 1,
     })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      getIndividualOfferFactory({ id: 42 })
+    )
 
     renderOffers(props)
 

@@ -70,6 +70,7 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
 }
 
 export enum INDIVIDUAL_OFFERS_NAVIGATION_SOURCE {
+  HEADLINE_OFFER = 'HeadlineOffer',
   TITLE_LINK = 'IndividualOffersTitleLink',
   ACTIONS_MENU_VIEW_OFFER = 'IndividualOffersActionsMenuViewOffer',
   ACTIONS_MENU_EDIT_OFFER_STOCK = 'IndividualOffersActionsMenuEditOfferStock',
