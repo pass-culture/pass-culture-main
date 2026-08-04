@@ -1,7 +1,41 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
+
+.dialog-wrapper {
+  background-color: var(--color-background-default);
+  display: flex;
+  padding: var(--size-spacing-xxl);
+  border-radius: var(--size-border-radius-m);
+  flex-direction: column;
+  will-change: transform, opacity;
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+
+  @media screen and (prefers-reduced-motion: no-preference) and (max-width: size.$tablet) {
+    animation: slide-in-up 500ms;
+  }
+
+  @media (min-width: size.$tablet) {
+    max-width: rem.torem(512px);
+    margin: 0;
+    bottom: unset;
+    position: unset;
+  }
+
+  @keyframes slide-in-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
 
 .dialog-container {
   display: flex;
@@ -38,4 +72,10 @@
     opacity: 0;
     transform: scale(0.95) translateY(-25px);
   }
+}
+
+.close-button {
+  display: flex;
+  align-self: flex-end;
+  margin-bottom: rem.torem(10px);
 }
