@@ -20,11 +20,11 @@ export type AdageBaseModel = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
 };
 
 /**
@@ -39,8 +39,6 @@ export enum AdageFrontRoles {
 
 /**
  * AdageHeaderLink
- *
- * An enumeration.
  */
 export enum AdageHeaderLink {
     SEARCH = 'search',
@@ -62,17 +60,15 @@ export type AdageHeaderLogBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
 };
 
 /**
  * AdagePlaylistType
- *
- * An enumeration.
  */
 export enum AdagePlaylistType {
     OFFER = 'offer',
@@ -167,11 +163,11 @@ export type CatalogViewBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Source
      */
@@ -434,27 +430,27 @@ export type CollectiveRequestBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Phonenumber
      */
-    phoneNumber?: string;
+    phoneNumber?: string | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Requesteddate
      */
-    requestedDate?: string;
+    requestedDate?: string | null;
     /**
      * Totalstudents
      */
-    totalStudents?: number;
+    totalStudents?: number | null;
     /**
      * Totalteachers
      */
-    totalTeachers?: number;
+    totalTeachers?: number | null;
 };
 
 /**
@@ -478,7 +474,7 @@ export type ConsultOfferBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Offerid
      */
@@ -486,15 +482,15 @@ export type ConsultOfferBody = {
     /**
      * Playlistid
      */
-    playlistId?: number;
+    playlistId?: number | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Source
      */
-    source?: string;
+    source?: string | null;
 };
 
 /**
@@ -663,11 +659,11 @@ export type HighlightBannerBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
 };
 
 /**
@@ -828,7 +824,7 @@ export type OfferBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Offerid
      */
@@ -836,15 +832,15 @@ export type OfferBody = {
     /**
      * Playlistid
      */
-    playlistId?: number;
+    playlistId?: number | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Vuetype
      */
-    vueType?: string;
+    vueType?: string | null;
 };
 
 /**
@@ -885,7 +881,7 @@ export type OfferFavoriteBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Offerid
      */
@@ -893,15 +889,15 @@ export type OfferFavoriteBody = {
     /**
      * Playlistid
      */
-    playlistId?: number;
+    playlistId?: number | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Vuetype
      */
-    vueType?: string;
+    vueType?: string | null;
 };
 
 /**
@@ -915,7 +911,7 @@ export type OfferIdBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Offerid
      */
@@ -923,11 +919,11 @@ export type OfferIdBody = {
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Vuetype
      */
-    vueType?: string;
+    vueType?: string | null;
 };
 
 /**
@@ -941,15 +937,15 @@ export type OfferListSwitch = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Ismobile
      */
-    isMobile?: boolean;
+    isMobile?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Source
      */
@@ -1058,8 +1054,6 @@ export type OfferVenueResponse = {
 
 /**
  * PaginationType
- *
- * An enumeration.
  */
 export enum PaginationType {
     NEXT = 'next',
@@ -1073,7 +1067,7 @@ export type PlaylistBody = {
     /**
      * Domainid
      */
-    domainId?: number;
+    domainId?: number | null;
     /**
      * Iframefrom
      */
@@ -1081,19 +1075,19 @@ export type PlaylistBody = {
     /**
      * Index
      */
-    index?: number;
+    index?: number | null;
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Numberoftiles
      */
-    numberOfTiles?: number;
+    numberOfTiles?: number | null;
     /**
      * Offerid
      */
-    offerId?: number;
+    offerId?: number | null;
     /**
      * Playlistid
      */
@@ -1102,11 +1096,11 @@ export type PlaylistBody = {
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Venueid
      */
-    venueId?: number;
+    venueId?: number | null;
 };
 
 /**
@@ -1164,11 +1158,11 @@ export type SearchBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Resultscount
      */
@@ -1186,11 +1180,11 @@ export type StockIdBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Stockid
      */
@@ -1198,7 +1192,7 @@ export type StockIdBody = {
     /**
      * Vuetype
      */
-    vueType?: string;
+    vueType?: string | null;
 };
 
 /**
@@ -1223,8 +1217,6 @@ export enum StudentLevels {
 
 /**
  * SuggestionType
- *
- * An enumeration.
  */
 export enum SuggestionType {
     VENUE = 'venue',
@@ -1243,11 +1235,11 @@ export type TrackingAutocompleteSuggestionBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     suggestionType: SuggestionType;
     /**
      * Suggestionvalue
@@ -1266,7 +1258,7 @@ export type TrackingCTAShareBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Offerid
      */
@@ -1274,7 +1266,7 @@ export type TrackingCTAShareBody = {
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Source
      */
@@ -1282,7 +1274,7 @@ export type TrackingCTAShareBody = {
     /**
      * Vuetype
      */
-    vueType?: string;
+    vueType?: string | null;
 };
 
 /**
@@ -1302,11 +1294,11 @@ export type TrackingFilterBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Resultnumber
      */
@@ -1324,11 +1316,11 @@ export type TrackingShowMoreBody = {
     /**
      * Isfromnoresult
      */
-    isFromNoResult?: boolean;
+    isFromNoResult?: boolean | null;
     /**
      * Queryid
      */
-    queryId?: string;
+    queryId?: string | null;
     /**
      * Source
      */
