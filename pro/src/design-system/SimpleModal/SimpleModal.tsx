@@ -1,8 +1,11 @@
 import { useId } from 'react'
 
+import fullCloseIcon from '@/icons/full-close.svg'
 import { BaseDialog } from '@/ui-kit/BaseDialog/BaseDialog'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { Button } from '../Button/Button'
+import { ButtonColor, ButtonVariant } from '../Button/types'
 import styles from './SimpleModal.module.scss'
 
 export interface SimpleModalProps {
@@ -53,19 +56,34 @@ export const SimpleModal = ({
       onClose={onClose}
       ariaLabelledBy={dialogTitleId}
       ariaDescribedBy={ariaDescribedBy}
-      variant="simple"
     >
-      <div className={styles['dialog-container']}>
-        {iconPath && (
-          <SvgIcon alt="" src={iconPath} width="88" data-testid="modal-icon" />
-        )}
-        <div className={styles['dialog-content']}>
-          <h1 className={styles['dialog-content-title']} id={dialogTitleId}>
-            {title}
-          </h1>
-          <div>{children}</div>
+      <div className={styles['dialog-wrapper']}>
+        <span className={styles['close-button']}>
+          <Button
+            icon={fullCloseIcon}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={onClose}
+            aria-label={'Fermer la modale'}
+          />
+        </span>
+        <div className={styles['dialog-container']}>
+          {iconPath && (
+            <SvgIcon
+              alt=""
+              src={iconPath}
+              width="88"
+              data-testid="modal-icon"
+            />
+          )}
+          <div className={styles['dialog-content']}>
+            <h1 className={styles['dialog-content-title']} id={dialogTitleId}>
+              {title}
+            </h1>
+            <div>{children}</div>
+          </div>
+          <div className={styles['action-buttons']}>{actionButtons}</div>
         </div>
-        <div className={styles['action-buttons']}>{actionButtons}</div>
       </div>
     </BaseDialog>
   )

@@ -1,10 +1,6 @@
 import type React from 'react'
 import { useEffect, useRef } from 'react'
 
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import fullCloseIcon from '@/icons/full-close.svg'
-
 import styles from './BaseDialog.module.scss'
 
 export interface BaseDialogProps {
@@ -29,10 +25,6 @@ export interface BaseDialogProps {
    * Modal content.
    */
   children: React.ReactNode
-  /**
-   * Variant of the modale : simple or detailed.
-   */
-  variant: 'simple' | 'detailed'
 }
 
 /**
@@ -49,7 +41,6 @@ export const BaseDialog = ({
   ariaLabelledBy,
   ariaDescribedBy,
   children,
-  variant,
 }: BaseDialogProps): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
@@ -101,18 +92,7 @@ export const BaseDialog = ({
       aria-describedby={ariaDescribedBy}
       className={styles['base-dialog']}
     >
-      <div className={styles[`base-dialog-${variant}`]}>
-        <span className={styles['close-button']}>
-          <Button
-            icon={fullCloseIcon}
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            onClick={onClose}
-            aria-label={'Fermer la modale'}
-          />
-        </span>
-        {children}
-      </div>
+      {children}
     </dialog>
   )
 }
