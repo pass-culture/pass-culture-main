@@ -1,8 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
-.stepper {
-  margin: var(--size-spacing-xxl) 0 rem.torem(48px);
+.stepper-wrapper {
+  margin: var(--size-spacing-xxl) 0;
 }
 
 .tabs {

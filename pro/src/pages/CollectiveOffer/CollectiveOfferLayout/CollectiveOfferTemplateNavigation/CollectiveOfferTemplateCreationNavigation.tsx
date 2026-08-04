@@ -1,5 +1,5 @@
 import type { GetCollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
-import { type Step, Stepper } from '@/components/Stepper/Stepper'
+import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 
 import styles from './CollectiveOfferTemplateNavigation.module.scss'
 import { CollectiveOfferTemplateStep } from './constants'
@@ -15,7 +15,7 @@ export const CollectiveOfferTemplateCreationNavigation = ({
 }: CollectiveOfferTemplateCreationNavigationProps): JSX.Element => {
   const isOfferTemplateCreated = !!offer
 
-  const stepList: Step[] = [
+  const stepList: StepItem[] = [
     {
       id: CollectiveOfferTemplateStep.DETAILS,
       label: 'Détails de l’offre',
@@ -42,10 +42,8 @@ export const CollectiveOfferTemplateCreationNavigation = ({
   const steps = Object.values(stepList)
 
   return (
-    <Stepper
-      activeStep={activeStep}
-      className={styles['eac-stepper']}
-      steps={steps}
-    />
+    <div className={styles['eac-stepper-wrapper']}>
+      <Stepper activeStep={activeStep} steps={steps} />
+    </div>
   )
 }

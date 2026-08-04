@@ -1,7 +1,7 @@
 import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { type Step, Stepper } from '@/components/Stepper/Stepper'
+import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 
 import styles from './CollectiveOfferNavigation.module.scss'
 import { CollectiveOfferStep } from './constants'
@@ -32,7 +32,7 @@ export const CollectiveOfferCreationNavigation = ({
       !!offer.additionalDetails ||
       !!hasPassedInstitutionStep)
 
-  let steps: Step[] = [
+  let steps: StepItem[] = [
     {
       id: CollectiveOfferStep.DETAILS,
       label: "Détails de l'offre",
@@ -83,10 +83,8 @@ export const CollectiveOfferCreationNavigation = ({
   }
 
   return (
-    <Stepper
-      activeStep={activeStep}
-      className={styles['eac-stepper']}
-      steps={steps}
-    />
+    <div className={styles['eac-stepper-wrapper']}>
+      <Stepper activeStep={activeStep} steps={steps} />
+    </div>
   )
 }

@@ -9,7 +9,7 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { type Step, Stepper } from '@/components/Stepper/Stepper'
+import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './IndividualOfferNavigation.module.scss'
@@ -42,8 +42,8 @@ export const IndividualOfferNavigation = () => {
   })
 
   const stepList = steps.map(
-    ({ id, label }: StepPattern, stepIndex: number): Step => {
-      const step: Step = { id, label }
+    ({ id, label }: StepPattern, stepIndex: number): StepItem => {
+      const step: StepItem = { id, label }
       // In edition or read-only, offer has been published,
       // so any step can be accessed. In creation, offer can
       // be left as draft - all steps that have been submitted once,
@@ -73,11 +73,9 @@ export const IndividualOfferNavigation = () => {
   return (
     <>
       {mode === OFFER_WIZARD_MODE.CREATION ? (
-        <Stepper
-          activeStep={activeStep}
-          steps={stepList}
-          className={styles.stepper}
-        />
+        <div className={styles['stepper-wrapper']}>
+          <Stepper activeStep={activeStep} steps={stepList} />
+        </div>
       ) : (
         <div className={styles.tabs}>
           <Tabs

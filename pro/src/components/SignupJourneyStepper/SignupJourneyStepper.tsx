@@ -4,11 +4,10 @@ import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { type Step, Stepper } from '@/components/Stepper/Stepper'
+import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
-import styles from './SignupJourneyStepper.module.scss'
 
 export const SignupJourneyStepper = () => {
   const { activity, offerer } = useSignupJourneyContext()
@@ -34,7 +33,7 @@ export const SignupJourneyStepper = () => {
     }
   }
 
-  const signupJourneyBreadcrumbSteps: Step[] = [
+  const signupJourneyBreadcrumbSteps: StepItem[] = [
     {
       id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       label: 'Vos informations',
@@ -84,10 +83,6 @@ export const SignupJourneyStepper = () => {
   }
 
   return (
-    <Stepper
-      activeStep={activeStep}
-      steps={signupJourneyBreadcrumbSteps}
-      className={styles['signup-stepper']}
-    />
+    <Stepper activeStep={activeStep} steps={signupJourneyBreadcrumbSteps} />
   )
 }
