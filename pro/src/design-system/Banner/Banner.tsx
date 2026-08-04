@@ -3,6 +3,7 @@ import cx from 'classnames'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
+  type ButtonProps,
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
@@ -63,6 +64,26 @@ export const Banner = ({
   closable = false,
   onClose,
 }: BannerProps): JSX.Element => {
+  const actionButtonProps: ButtonProps[] = actions.map((a) => {
+    const { type, href, isExternal, ...btnProps } = a
+    const baseProps = {
+      ...btnProps,
+      onClick: () => btnProps.onClick?.(),
+      size: size === 'default' ? ButtonSize.SMALL : ButtonSize.DEFAULT,
+      variant: ButtonVariant.TERTIARY,
+      color: ButtonColor.NEUTRAL,
+    }
+
+    if (type !== 'link') {
+      return { ...baseProps }
+    }
+
+    if (isExternal || href.startsWith('#')) {
+      return { ...baseProps, as: 'a', to: href, opensInNewTab: isExternal }
+    }
+
+    return { ...baseProps, as: 'router-link', to: href }
+  })
   return (
     <div
       className={cx(styles.banner, styles[variant])}
@@ -90,43 +111,9 @@ export const Banner = ({
             )}
             {actions.length > 0 && (
               <ul className={styles['actions-list']}>
-                {actions.map((a) => (
-                  <li key={a.label} className={styles.link}>
-                    {a.type === 'link' ? (
-                      <Button
-                        as={
-                          a.isExternal || a.href.startsWith('#')
-                            ? 'a'
-                            : 'router-link'
-                        }
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                        size={
-                          size === 'default'
-                            ? ButtonSize.SMALL
-                            : ButtonSize.DEFAULT
-                        }
-                        to={a.href}
-                        icon={a.icon}
-                        iconAlt={a.iconAlt}
-                        opensInNewTab={a.isExternal}
-                        onClick={() => a.onClick?.()}
-                        label={a.label}
-                      />
-                    ) : (
-                      <Button
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                        icon={a.icon}
-                        onClick={() => a.onClick?.()}
-                        label={a.label}
-                        size={
-                          size === 'default'
-                            ? ButtonSize.SMALL
-                            : ButtonSize.DEFAULT
-                        }
-                      />
-                    )}
+                {actionButtonProps.map((btnProps) => (
+                  <li key={btnProps.label} className={styles.link}>
+                    <Button {...btnProps} />
                   </li>
                 ))}
               </ul>

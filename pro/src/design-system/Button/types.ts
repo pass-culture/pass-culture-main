@@ -131,7 +131,7 @@ type ButtonAsRouterLinkProps = ButtonBaseProps & {
   as: 'router-link'
   type?: never
   to: string
-  opensInNewTab?: boolean
+  opensInNewTab?: never
 } & Omit<
     React.AnchorHTMLAttributes<HTMLAnchorElement>,
     'className' | 'href' | 'style'
