@@ -325,7 +325,39 @@ test.describe('Create collective offers', () => {
     ])
 
     await page.getByRole('link', { name: `${newOfferName}` }).click()
-    await page.getByRole('link', { name: '6 Aperçu' }).click()
+
+    // Resuming a draft always lands on its first step and the stepper only
+    // links the steps already passed, so the preview is reached form by form.
+    await expect(page.getByLabel(/Titre de l’offre/)).toBeVisible()
+    await page.getByText('Enregistrer et continuer').click()
+
+    await expect(
+      page.getByRole('heading', { name: 'Date de votre offre' })
+    ).toBeVisible()
+    await page.getByText('Enregistrer et continuer').click()
+
+    await expect(
+      page.getByRole('heading', {
+        name: 'À quel email le pass Culture peut-il vous envoyer des notifications ?',
+      })
+    ).toBeVisible()
+    await page.getByText('Enregistrer et continuer').click()
+
+    await expect(
+      page.getByLabel(/Nom de l’établissement scolaire ou code UAI/)
+    ).toBeVisible()
+    await page.getByText('Enregistrer et continuer').click()
+
+    await expect(
+      page.getByRole('heading', { name: 'Détails de l’offre' })
+    ).toBeVisible()
+    await page.getByText('Enregistrer et continuer').click()
+
+    await expect(
+      page.getByText(
+        'Voici un aperçu de votre offre à destination de l’établissement scolaire sur la plateforme ADAGE.'
+      )
+    ).toBeVisible()
     await page.getByText('Publier l’offre').click()
     await page.getByText('Voir mes offres').click()
     await page.getByText('Réinitialiser les filtres').click()
