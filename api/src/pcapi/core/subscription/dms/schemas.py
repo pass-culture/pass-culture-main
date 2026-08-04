@@ -74,6 +74,8 @@ class DMSContent(subscription_schemas.IdentityCheckContent):
     processed_datetime: datetime.datetime | None
     registration_datetime: datetime.datetime | None
     state: str | None
+    ubble_identification_id_annotation: DmsAnnotation | None  # example: idv_01kysqes3rz0qdjs7q0txy5a0x
+    ubble_status_annotation: DmsAnnotation | None
 
     class Config:
         allow_population_by_field_name = True

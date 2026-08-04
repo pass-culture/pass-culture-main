@@ -77,3 +77,18 @@ def build_dms_error_message_user_not_eligible(formatted_birth_date: str) -> str:
         "\n"
         "L’équipe du pass Culture"
     )
+
+
+# TODO *******************************************
+# TODO Quel est le contenu définitif du message ?
+# TODO *******************************************
+def build_dn_ubble_identification_message(first_name: str, ubble_identification_url: str) -> str:
+    return (
+        f"Bonjour {first_name},\n"
+        "\n"
+        f'Clique sur ce lien pour vérifier ton identité : <a href="{ubble_identification_url}">{ubble_identification_url}</a>\n'
+        "\n"
+        "Bonne journée,\n"
+        "\n"
+        "L’équipe du pass Culture"
+    )

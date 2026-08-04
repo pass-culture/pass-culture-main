@@ -2,7 +2,9 @@ import datetime
 import enum
 import hashlib
 import logging
+import urllib.parse
 
+import flask
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 from dateutil.relativedelta import relativedelta
@@ -10,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.utils.email as email_utils
 from pcapi import settings
+from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
@@ -25,6 +28,7 @@ from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import fraud_check_api as fraud_dms_api
 from pcapi.core.subscription.dms import messages
 from pcapi.core.subscription.dms import schemas as dms_schemas
+from pcapi.core.subscription.ubble.schemas import UbbleIdentificationStatus
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
@@ -61,6 +65,19 @@ Sous réserve d’être encore éligible, tu peux si tu le souhaites refaire une
 
 Tu trouveras toutes les informations dans notre FAQ pour t'accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
 """
+
+
+UBBLE_STATUS_TEXT = {
+    # V2 only - same French strings as in Ubble dashboard - MUST be consistent with the list in DN procedure settings
+    UbbleIdentificationStatus.PENDING: "En attente",
+    UbbleIdentificationStatus.CAPTURE_IN_PROGRESS: "Capture en cours",
+    UbbleIdentificationStatus.CHECKS_IN_PROGRESS: "Vérification en cours",
+    UbbleIdentificationStatus.APPROVED: "Approuvée",
+    UbbleIdentificationStatus.DECLINED: "Déclinée",
+    UbbleIdentificationStatus.RETRY_REQUIRED: "Capture redemandée",
+    UbbleIdentificationStatus.INCONCLUSIVE: "Non concluant",
+    UbbleIdentificationStatus.REFUSED: "Refusée",
+}
 
 
 class ApplicationLabel(enum.Enum):
@@ -375,6 +392,12 @@ def _process_in_progress_application(
     _update_fraud_check_with_field_errors(
         fraud_check, errors, fraud_check_status=fraud_check_status, reason_codes=reason_codes
     )
+
+    # TODO ************************************************
+    # TODO Quelles conditions pour envoyer le lien Ubble ?
+    # TODO ************************************************
+    if not errors and application_content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET:
+        create_ubble_identification(application_scalar_id, application_content)
 
 
 def _update_fraud_check_with_field_errors(
@@ -1041,3 +1064,74 @@ def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationRespo
     age_at_generalisation = users_utils.get_age_at_date(applicant_birth_date, datetime.datetime(2021, 5, 21))
 
     return age_at_generalisation >= 19 and applicant_department not in PRE_GENERALISATION_DEPARTMENTS
+
+
+def create_ubble_identification(application_scalar_id: str, application_content: dms_schemas.DMSContent) -> None:
+    if not application_content.ubble_identification_id_annotation:
+        return  # procedure not configured with this annotation
+
+    if application_content.ubble_identification_id_annotation.text:
+        return  # Ubble link already sent
+
+    redirect_url = f"https://demarche.numerique.gouv.fr/dossiers/{application_content.application_number}"
+
+    webhook_url = urllib.parse.urljoin(
+        settings.API_URL,
+        flask.url_for(
+            "Public API.ubble_webhook_for_demarche_numerique",
+            procedure_number=application_content.procedure_number,
+            application_number=application_content.application_number,
+            _external=False,
+        ),
+    )
+
+    ubble_content = ubble.create_and_start_identity_verification(
+        application_content.get_first_name(), application_content.get_last_name(), redirect_url, webhook_url
+    )
+
+    client = dms_connector_api.DMSGraphQLClient()
+    client.update_text_annotation(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        application_content.ubble_identification_id_annotation.id,
+        ubble_content.identification_id,
+    )
+    if application_content.ubble_status_annotation:
+        client.update_dropdown_annotation(
+            application_scalar_id,
+            settings.DMS_INSTRUCTOR_ID,
+            application_content.ubble_status_annotation.id,
+            UBBLE_STATUS_TEXT.get(ubble_content.status, ubble_content.status.value),
+        )
+    client.send_user_message(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        dms_internal_mailing.build_dn_ubble_identification_message(
+            application_content.get_first_name(), ubble_content.identification_url
+        ),
+    )
+
+
+def on_ubble_identification_update(
+    procedure_number: int, application_number: int, ubble_identification_id: str, status: UbbleIdentificationStatus
+) -> None:
+    client = dms_connector_api.DMSGraphQLClient()
+    dn_application = client.get_single_application_details(application_number)
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dn_application)
+
+    if application_content.procedure_number != procedure_number:
+        raise ValueError("Procedure number does not match")
+
+    if not application_content.ubble_identification_id_annotation:
+        raise ValueError("Ubble ID annotation field is missing in application")
+
+    if application_content.ubble_identification_id_annotation.text != ubble_identification_id:
+        raise ValueError("Ubble ID does not match")
+
+    if application_content.ubble_status_annotation:
+        client.update_dropdown_annotation(
+            dn_application.id,
+            settings.DMS_INSTRUCTOR_ID,
+            application_content.ubble_status_annotation.id,
+            UBBLE_STATUS_TEXT.get(status, status.value),
+        )

@@ -25,6 +25,7 @@ from pcapi.core.subscription.api import get_user_subscription_state
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import schemas as dms_schemas
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -2429,3 +2430,182 @@ class HasInactivityDelayExpiredTest:
         )
 
         assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)
+
+
+class CreateUbbleIdentificationTest:
+    @patch("pcapi.connectors.beneficiaries.ubble.create_and_start_identity_verification")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_create_ubble_identification(self, execute_query, create_and_start_identity_verification):
+        create_and_start_identity_verification.return_value = subscription_factories.UbbleContentFactory(
+            identification_id="idv_azerty123",
+            identification_url="https://id.ubble.example.com/b4a67860-9a43-4095-9542-f547bd644fe3",
+            status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+        )
+
+        content = subscription_factories.DMSContentFactory(
+            procedure_number=123,
+            application_number=456,
+            ubble_identification_id_annotation=dms_schemas.DmsAnnotation(
+                id="Q2hhbXAtNjc5NzMyMg==",
+                label="AN_003: ID technique de vérification Ubble",
+                text="",
+            ),
+            ubble_status_annotation=dms_schemas.DmsAnnotation(
+                id="Q2hhbXAtNjc5NzMyNQ==",
+                label="AN_004: État de la vérification Ubble",
+                text="",
+            ),
+        )
+
+        dms_subscription_api.create_ubble_identification("AB1cd2efgh3iJKl4MnO5P6==", content)
+
+        create_and_start_identity_verification.assert_called_once_with(
+            content.first_name,
+            content.last_name,
+            "https://demarche.numerique.gouv.fr/dossiers/456",
+            f"{settings.API_URL}/webhooks/ubble/sync-dn/123/456",
+        )
+        execute_query.assert_called()
+        assert execute_query.call_count == 3
+        assert execute_query.call_args_list[0].args == (api_dms.UPDATE_TEXT_ANNOTATION_QUERY_NAME,)
+        assert execute_query.call_args_list[0].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "AB1cd2efgh3iJKl4MnO5P6==",
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
+                    "annotationId": "Q2hhbXAtNjc5NzMyMg==",
+                    "value": "idv_azerty123",
+                }
+            }
+        }
+        assert execute_query.call_args_list[1].args == (api_dms.UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME,)
+        assert execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "AB1cd2efgh3iJKl4MnO5P6==",
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
+                    "annotationId": "Q2hhbXAtNjc5NzMyNQ==",
+                    "value": "En attente",
+                }
+            }
+        }
+        assert execute_query.call_args_list[2].args == (
+            api_dms.SEND_USER_MESSAGE_QUERY_NAME,
+            {
+                "input": {
+                    "body": dms_internal_mailing.build_dn_ubble_identification_message(
+                        content.first_name, "https://id.ubble.example.com/b4a67860-9a43-4095-9542-f547bd644fe3"
+                    ),
+                    "dossierId": "AB1cd2efgh3iJKl4MnO5P6==",
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
+                }
+            },
+        )
+
+    @patch("pcapi.connectors.beneficiaries.ubble.create_and_start_identity_verification")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_create_ubble_identification_already_sent(self, execute_query, create_and_start_identity_verification):
+        content = subscription_factories.DMSContentFactory(
+            ubble_identification_id_annotation=dms_schemas.DmsAnnotation(
+                id="Q2hhbXAtNjc5NzMyMg==",
+                label="AN_003: ID technique de vérification Ubble",
+                text="idv_azerty123",
+            ),
+            ubble_status_annotation=dms_schemas.DmsAnnotation(
+                id="Q2hhbXAtNjc5NzMyNQ==",
+                label="AN_004: État de la vérification Ubble",
+                text="En attente",
+            ),
+        )
+
+        dms_subscription_api.create_ubble_identification("AB1cd2efgh3iJKl4MnO5P6==", content)
+
+        create_and_start_identity_verification.assert_not_called()
+        execute_query.assert_not_called()
+
+
+class OnUbbleIdentificationUpdateTest:
+    def _get_application_details(self):
+        return fixtures.make_single_application(
+            456,
+            state="en_construction",
+            procedure_number=123,
+            application_techid="AB1cd2efgh3iJKl4MnO5P6==",
+            annotations=[
+                {
+                    "id": "Q2hhbXAtMjc0NTEyMg==",
+                    "label": "AN_001: Statut du dossier côté passCulture",
+                    "stringValue": "Aucune erreur détectée. Le dossier peut être passé en instruction.",
+                },
+                {
+                    "id": "Q2hhbXAtNTAxMzg3OA==",
+                    "label": "AN_002: Code de l'annotation instructeur",
+                    "stringValue": "",
+                },
+                {
+                    "id": "Q2hhbXAtNjc5NzMyMg==",
+                    "label": "AN_003: ID technique de vérification Ubble",
+                    "stringValue": "idv_azerty123",
+                },
+                {
+                    "id": "Q2hhbXAtNjc5NzMyNQ==",
+                    "label": "AN_004: État de la vérification Ubble",
+                    "stringValue": "En attente",
+                },
+            ],
+        )
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_on_ubble_identification_update(self, execute_query, ubble_client):
+        execute_query.side_effect = [
+            self._get_application_details(),
+            {"dossierModifierAnnotationText": {"annotation": {"id": "Q2hhbXAtNjc5NzMyNQ=="}, "errors": None}},
+        ]
+
+        dms_subscription_api.on_ubble_identification_update(
+            123, 456, "idv_azerty123", ubble_schemas.UbbleIdentificationStatus.APPROVED
+        )
+
+        execute_query.assert_called()
+        assert execute_query.call_count == 2
+        assert execute_query.call_args_list[0].args == (api_dms.GET_SINGLE_APPLICATION_QUERY_NAME,)
+        assert execute_query.call_args_list[0].kwargs == {"variables": {"applicationNumber": 456}}
+        assert execute_query.call_args_list[1].args == (api_dms.UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME,)
+        assert execute_query.call_args_list[1].kwargs == {
+            "variables": {
+                "input": {
+                    "dossierId": "AB1cd2efgh3iJKl4MnO5P6==",
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
+                    "annotationId": "Q2hhbXAtNjc5NzMyNQ==",
+                    "value": "Approuvée",
+                }
+            }
+        }
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_on_ubble_identification_update_procedure_does_not_match(self, execute_query, ubble_client):
+        execute_query.return_value = self._get_application_details()
+
+        with pytest.raises(ValueError) as exc:
+            dms_subscription_api.on_ubble_identification_update(
+                789, 456, "idv_azerty123", ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS
+            )
+
+        assert exc.value.args == ("Procedure number does not match",)
+        execute_query.assert_called_once_with(
+            api_dms.GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": 456}
+        )
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_on_ubble_identification_update_id_does_not_match(self, execute_query, ubble_client):
+        execute_query.return_value = self._get_application_details()
+
+        with pytest.raises(ValueError) as exc:
+            dms_subscription_api.on_ubble_identification_update(
+                123, 456, "idv_qsdfgh123", ubble_schemas.UbbleIdentificationStatus.APPROVED
+            )
+
+        assert exc.value.args == ("Ubble ID does not match",)
+        execute_query.assert_called_once_with(
+            api_dms.GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": 456}
+        )

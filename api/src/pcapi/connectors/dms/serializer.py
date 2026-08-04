@@ -45,6 +45,8 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 
 DMS_BACKEND_ANNOTATION_SLUG = "AN_001"
 DMS_INSTRUCTOR_ANNOTATION_SLUG = "AN_002"
+UBBLE_ID_ANNOTATION_SLUG = "AN_003"
+UBBLE_STATUS_ANNOTATION_SLUG = "AN_004"
 
 
 def _sanitize_id_piece_number(id_piece_number: str) -> str:
@@ -78,6 +80,8 @@ def parse_beneficiary_information_graphql(
     postal_code = None
     annotation = None
     instructor_annotation = None
+    ubble_identification_id_annotation = None
+    ubble_status_annotation = None
 
     field_errors: list[dms_schemas.DmsFieldErrorDetails] = []
 
@@ -172,6 +176,14 @@ def parse_beneficiary_information_graphql(
                         remote_annotation_value,
                         extra={"procedure_id": application_detail.procedure.number},
                     )
+        elif remote_annotation.label.startswith(UBBLE_ID_ANNOTATION_SLUG):
+            ubble_identification_id_annotation = dms_schemas.DmsAnnotation(
+                id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
+            )
+        elif remote_annotation.label.startswith(UBBLE_STATUS_ANNOTATION_SLUG):
+            ubble_status_annotation = dms_schemas.DmsAnnotation(
+                id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
+            )
 
     return dms_schemas.DMSContent(  # type: ignore[call-arg]
         activity=activity,
@@ -197,6 +209,8 @@ def parse_beneficiary_information_graphql(
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
+        ubble_identification_id_annotation=ubble_identification_id_annotation,
+        ubble_status_annotation=ubble_status_annotation,
     )
 
 
