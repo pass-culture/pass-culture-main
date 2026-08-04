@@ -7,13 +7,13 @@ from pcapi.utils.health_checker import read_version_from_file
 
 @public_api.route("/health/api", methods=["GET"])
 def health_api() -> tuple[str, int]:
-    time.sleep(20)
     output = read_version_from_file()
     return output, 200
 
 
 @public_api.route("/health/database", methods=["GET"])
 def health_database() -> tuple[str, int]:
+    time.sleep(20)
     database_working = check_database_connection()
     return_code = 200 if database_working else 500
     output = read_version_from_file()
