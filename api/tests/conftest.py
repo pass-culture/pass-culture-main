@@ -10,7 +10,6 @@ import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from pprint import pprint
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import ecdsa
@@ -336,17 +335,6 @@ if os.environ.get("CHECK_DATA_LEAKS"):
         counts_after = {model: db.session.query(model).count() for model in models}
         leaked_models = ", ".join([model.__name__ for model in models if counts_after[model] != counts_before[model]])
         assert not leaked_models, f"LEAK: {request.function} leaks {leaked_models}"
-
-
-@pytest.fixture(name="cloud_task_client")
-def cloud_task_client_fixture():
-    """
-    Mock for google.cloud.tasks_v2.CloudTasksClient
-    """
-    with patch("pcapi.tasks.cloud_task.get_client") as mock_get_client:
-        cloud_task_client_mock = MagicMock()
-        mock_get_client.return_value = cloud_task_client_mock
-        yield cloud_task_client_mock
 
 
 class TestClient:
