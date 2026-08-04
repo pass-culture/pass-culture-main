@@ -15,6 +15,7 @@ import { InfoPanel } from 'ui-kit/InfoPanel/InfoPanel'
 import { InfoPanelSize, InfoPanelSurface } from 'ui-kit/InfoPanel/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import commonStyles from '@/pages/Simulator/CommonSimulator.module.scss'
@@ -45,46 +46,53 @@ export const SimulatorResults = (): JSX.Element => {
   const [result, setResult] = useState<
     SignupSimulationResponseModel | undefined
   >()
+  const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false)
 
   useEffect(() => {
     const doCall = async () => {
-      const finalOpenToPublic =
-        openToPublic ?? tryRestoreOpenToPublicFromStorage(setOpenToPublic)
-      const finalActivity =
-        (activity as ActivityOpenToPublic | ActivityNotOpenToPublic) ||
-        tryRestoreActivityFromStorage(setActivity)
-      const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
-      const finalTargetAudience =
-        targetAudiences?.individual !== undefined
-          ? targetAudiences
-          : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
+      try {
+        setShowErrorBanner(false)
+        const finalOpenToPublic =
+          openToPublic ?? tryRestoreOpenToPublicFromStorage(setOpenToPublic)
+        const finalActivity =
+          (activity as ActivityOpenToPublic | ActivityNotOpenToPublic) ||
+          tryRestoreActivityFromStorage(setActivity)
+        const finalSiret = siret ?? tryRestoreSiretFromStorage(setSiret)
+        const finalTargetAudience =
+          targetAudiences?.individual !== undefined
+            ? targetAudiences
+            : tryRestoreTargetAudienceFromStorage(setTargetAudiences)
 
-      const targets = []
-      if (finalTargetAudience?.individual) {
-        targets.push(TargetAudience.INDIVIDUAL)
-      }
-      if (finalTargetAudience?.collective) {
-        targets.push(TargetAudience.COLLECTIVE)
-      }
+        const targets = []
+        if (finalTargetAudience?.individual) {
+          targets.push(TargetAudience.INDIVIDUAL)
+        }
+        if (finalTargetAudience?.collective) {
+          targets.push(TargetAudience.COLLECTIVE)
+        }
 
-      if (
-        !finalActivity ||
-        !finalOpenToPublic ||
-        !finalSiret ||
-        targets.length === 0
-      ) {
-        return
-      }
+        if (
+          !finalActivity ||
+          !finalOpenToPublic ||
+          !finalSiret ||
+          targets.length === 0
+        ) {
+          return
+        }
 
-      const simulationResponse = await api.simulateSignup({
-        body: {
-          activity: finalActivity,
-          isOpenToPublic: finalOpenToPublic === 'true',
-          siret: finalSiret.replaceAll(' ', '') ?? '',
-          targets,
-        },
-      })
-      setResult(simulationResponse)
+        const simulationResponse = await api.simulateSignup({
+          body: {
+            activity: finalActivity,
+            isOpenToPublic: finalOpenToPublic === 'true',
+            siret: finalSiret.replaceAll(' ', '') ?? '',
+            targets,
+          },
+        })
+        setResult(simulationResponse)
+      } catch (e) {
+        sendSentryCustomError(e)
+        setShowErrorBanner(true)
+      }
     }
     doCall()
   }, [
@@ -98,7 +106,7 @@ export const SimulatorResults = (): JSX.Element => {
     targetAudiences,
   ])
 
-  if (!result) {
+  if (!result && !showErrorBanner) {
     return <Spinner />
   }
 
@@ -109,6 +117,13 @@ export const SimulatorResults = (): JSX.Element => {
           Voici les justificatifs à préparer pour votre inscription
         </h1>
       </div>
+      {showErrorBanner && (
+        <Banner
+          title="Impossible d'afficher vos documents justificatifs"
+          description="Une erreur est survenue de notre côté. Vous pourrez renseigner ces informations directement dans la suite de votre inscription."
+          variant={BannerVariants.ERROR}
+        />
+      )}
       <div className={styles['documents']}>
         {result?.eligibilityDocuments.map((document, index: number) => {
           const { title, description } = getDocumentCardContent(document)
@@ -146,9 +161,13 @@ export const SimulatorResults = (): JSX.Element => {
       <div className={commonStyles['action-bar']}>
         <Button
           as="router-link"
-          to="/inscription/preparation/publics"
+          to={
+            showErrorBanner
+              ? '/inscription/preparation/siret'
+              : '/inscription/preparation/publics'
+          }
           variant={ButtonVariant.SECONDARY}
-          label="Retour"
+          label={showErrorBanner ? 'Recommencer' : 'Retour'}
         />
         <Button
           as="router-link"
