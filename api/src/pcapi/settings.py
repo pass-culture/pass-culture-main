@@ -369,17 +369,6 @@ GCP_DATA_BUCKET_NAME = secrets_utils.get("GCP_DATA_BUCKET_NAME", "")
 GCP_DATA_PROJECT_ID = secrets_utils.get("GCP_DATA_PROJECT_ID", "")
 GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME = os.environ.get("GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME", "")
 GCP_PROJECT = os.environ.get("GCP_PROJECT", "")
-GCP_REGION_CLOUD_TASK = os.environ.get("GCP_REGION_CLOUD_TASK", "europe-west3")
-
-CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT = bool(int(os.environ.get("CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT", 0)))
-CLOUD_TASK_BEARER_TOKEN = secrets_utils.get("CLOUD_TASK_BEARER_TOKEN", "")
-assert not (IS_PROD and not CLOUD_TASK_BEARER_TOKEN), "CLOUD_TASK_BEARER_TOKEN is required in production"
-CLOUD_TASK_MAX_ATTEMPTS = int(os.environ.get("CLOUD_TASK_MAX_ATTEMPTS", 10))  # as 2022-8-8 in place for all cloud tasks
-
-CLOUD_TASK_RETRY_INITIAL_DELAY = float(os.environ.get("CLOUD_TASK_RETRY_INITIAL_DELAY", 1.0))
-CLOUD_TASK_RETRY_MAXIMUM_DELAY = float(os.environ.get("CLOUD_TASK_RETRY_MAXIMUM_DELAY", 60.0))
-CLOUD_TASK_RETRY_MULTIPLIER = float(os.environ.get("CLOUD_TASK_RETRY_MULTIPLIER", 2.0))
-CLOUD_TASK_RETRY_DEADLINE = float(os.environ.get("CLOUD_TASK_RETRY_DEADLINE", 60.0 * 2.0))
 
 GOOGLE_DRIVE_BACKEND = os.environ.get("GOOGLE_DRIVE_BACKEND")
 GOOGLE_DRIVE_SERVICE_ACCOUNT_INFO = os.environ.get("GOOGLE_DRIVE_SERVICE_ACCOUNT_INFO")  # only for dev/debug
@@ -390,10 +379,6 @@ GCP_GDPR_EXTRACT_FOLDER = os.environ.get("GCP_GDPR_EXTRACT_FOLDER", "gdpr-extrac
 # Backoffice Google SSO
 GOOGLE_CLIENT_ID = secrets_utils.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = secrets_utils.get("GOOGLE_CLIENT_SECRET")
-
-# JOBS
-IS_JOB_SYNCHRONOUS = bool(int(os.environ.get("IS_JOB_SYNCHRONOUS", 0)))
-
 
 # Native app Apple SSO
 APPLE_TEAM_ID = secrets_utils.get("APPLE_TEAM_ID", "")

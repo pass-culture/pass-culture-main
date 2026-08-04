@@ -38,7 +38,6 @@ dependencies = [
   "google-cloud-iam==2.24.1",
   "google-cloud-secret-manager>=2.30.0",
   "google-cloud-storage==3.13.1",
-  "google-cloud-tasks==2.24.0",
   "googleapis-common-protos==1.75.1",
   "googlemaps ==4.10.0",
   "gql[requests] ==4.0.0",
@@ -52,7 +51,6 @@ dependencies = [
   "phonenumberslite==9.0.36",
   "pillow==12.3.0",
   "prometheus-flask-exporter ==0.23.2",
-  "protobuf==7.35.1",
   "psycopg2==2.9.12",
   "py7zr==1.1.3",
   # required by schwifty, upgraded manually because of setuptools

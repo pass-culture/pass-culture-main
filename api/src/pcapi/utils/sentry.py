@@ -13,7 +13,6 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 import pcapi.routes.pro.blueprint as pro_blueprint
-import pcapi.tasks.decorator as tasks_decorator
 from pcapi import settings
 from pcapi.routes import UrlPrefix
 from pcapi.utils.health_checker import read_version_from_file
@@ -134,10 +133,6 @@ def custom_traces_sampler(sampling_context: dict) -> float:
         # static files for BO
         case _ if path.startswith("/static"):
             score = NO_SAMPLE_RATE
-
-        # cloud tasks
-        case _ if path.startswith(tasks_decorator.CLOUD_TASK_SUBPATH):
-            score = LOWEST_SAMPLE_RATE
 
         # All paths starting with "/public" are for public_api blueprint routes,
         # but not all of this blueprint routes start with "/public"
