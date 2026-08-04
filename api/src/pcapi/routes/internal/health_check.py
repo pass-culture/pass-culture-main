@@ -1,3 +1,5 @@
+import time
+
 from pcapi.routes.apis import public_api
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
@@ -5,6 +7,7 @@ from pcapi.utils.health_checker import read_version_from_file
 
 @public_api.route("/health/api", methods=["GET"])
 def health_api() -> tuple[str, int]:
+    time.sleep(20)
     output = read_version_from_file()
     return output, 200
 
