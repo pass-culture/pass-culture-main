@@ -1,16 +1,16 @@
 import enum
 
-from pcapi.routes.serialization import BaseModel
+from pydantic import BaseModel
 
 
 class AdageBaseModel(BaseModel):
     iframeFrom: str
-    queryId: str | None
-    isFromNoResult: bool | None
+    queryId: str | None = None
+    isFromNoResult: bool | None = None
 
 
 class VueTypeMixin(BaseModel):
-    vueType: str | None
+    vueType: str | None = None
 
 
 class AdagePlaylistType(enum.Enum):
@@ -21,7 +21,7 @@ class AdagePlaylistType(enum.Enum):
 
 class OfferListSwitch(AdageBaseModel):
     source: str
-    isMobile: bool | None
+    isMobile: bool | None = None
 
 
 class CatalogViewBody(AdageBaseModel):
@@ -38,23 +38,23 @@ class OfferIdBody(AdageBaseModel, VueTypeMixin):
 
 class OfferBody(AdageBaseModel, VueTypeMixin):
     offerId: int
-    playlistId: int | None
+    playlistId: int | None = None
 
 
 class OfferFavoriteBody(AdageBaseModel, VueTypeMixin):
     isFavorite: bool
     offerId: int
-    playlistId: int | None
+    playlistId: int | None = None
 
 
 class PlaylistBody(AdageBaseModel):
     playlistType: AdagePlaylistType
     playlistId: int
-    offerId: int | None
-    venueId: int | None
-    domainId: int | None
-    index: int | None
-    numberOfTiles: int | None
+    offerId: int | None = None
+    venueId: int | None = None
+    domainId: int | None = None
+    index: int | None = None
+    numberOfTiles: int | None = None
 
 
 class SearchBody(AdageBaseModel):
@@ -76,10 +76,10 @@ class AdageHeaderLogBody(AdageBaseModel):
 
 class CollectiveRequestBody(AdageBaseModel):
     collectiveOfferTemplateId: int
-    phoneNumber: str | None
-    requestedDate: str | None
-    totalStudents: int | None
-    totalTeachers: int | None
+    phoneNumber: str | None = None
+    requestedDate: str | None = None
+    totalStudents: int | None = None
+    totalTeachers: int | None = None
     comment: str
 
 
@@ -120,5 +120,5 @@ class HighlightBannerBody(AdageBaseModel):
 
 class ConsultOfferBody(AdageBaseModel):
     offerId: int
-    playlistId: int | None
-    source: str | None
+    playlistId: int | None = None
+    source: str | None = None

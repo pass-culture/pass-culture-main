@@ -23,7 +23,7 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.services.authentication import api_key_required
 from pcapi.routes.public.services.authentication import current_api_key
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import date as date_utils
@@ -33,7 +33,7 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-class BookedCollectiveOffer(ConfiguredBaseModel):
+class BookedCollectiveOffer(HttpBodyModel):
     booking_id: int
     booking_status: models.CollectiveBookingStatus
 
