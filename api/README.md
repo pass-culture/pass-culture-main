@@ -355,7 +355,7 @@ Spectree :
 
 - [App Native](https://backend.passculture.app/native/swagger)
 - [Adage](https://backend.passculture.app/adage-iframe/swagger)
-- [API webhooks et cloud tasks](https://backend.passculture.app/apidoc/swagger)
+- [API webhooks](https://backend.passculture.app/apidoc/swagger)
 - [API pro privée](https://backend.passculture.app/pro/swagger)
 - [API publique](https://developers.passculture.pro/rest-api)
 
