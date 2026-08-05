@@ -10,7 +10,7 @@ describe('<UpdateWarningDialog />', () => {
     const onCancel = vi.fn()
     const onConfirm = vi.fn()
     renderWithProviders(
-      <UpdateWarningDialog onCancel={onCancel} onConfirm={onConfirm} />
+      <UpdateWarningDialog isOpen onCancel={onCancel} onConfirm={onConfirm} />
     )
     return { onCancel, onConfirm }
   }

@@ -45,6 +45,7 @@ export const IndividualOfferPracticalInfosScreen = ({
   offer,
   stocks,
 }: IndividualOfferPracticalInfosScreenProps): JSX.Element => {
+  const [isSaving, setIsSaving] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
@@ -63,8 +64,6 @@ export const IndividualOfferPracticalInfosScreen = ({
 
   const [isUpdateWarningDialogOpen, setIsUpdateWarningDialogOpen] =
     useState(false)
-
-  const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
 
   const form = useForm<IndividualOfferPracticalInfosFormValues>({
     defaultValues: getInitialValuesFromOffer(offer, subCategory),
@@ -130,6 +129,10 @@ export const IndividualOfferPracticalInfosScreen = ({
     }
 
     try {
+      // This state is used to disable the action bar buttons while the save is in progress,
+      // we cannot use the form's isSubmitting state because it disables the button even when cancelling the dialog
+      // which conduct to loosing the focus on the button
+      setIsSaving(true)
       const requestBody = getPatchOfferBody(formValues, shouldSendMail)
 
       await mutate(
@@ -151,6 +154,8 @@ export const IndividualOfferPracticalInfosScreen = ({
       snackBar.error(SENT_DATA_ERROR_MESSAGE)
 
       return false
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -172,16 +177,14 @@ export const IndividualOfferPracticalInfosScreen = ({
 
   return (
     <>
-      {isUpdateWarningDialogOpen && (
-        <UpdateWarningDialog
-          onCancel={() => updateWarningDialogCallbackRef.current?.(null)}
-          onConfirm={(shouldSendMail) =>
-            updateWarningDialogCallbackRef.current?.(shouldSendMail)
-          }
-          refToFocusOnClose={saveEditionChangesButtonRef}
-          message="Vous avez modifié les modalités de retrait."
-        />
-      )}
+      <UpdateWarningDialog
+        onCancel={() => updateWarningDialogCallbackRef.current?.(null)}
+        onConfirm={(shouldSendMail) =>
+          updateWarningDialogCallbackRef.current?.(shouldSendMail)
+        }
+        isOpen={isUpdateWarningDialogOpen}
+        message="Vous avez modifié les modalités de retrait."
+      />
       <FormProvider {...form}>
         <form onSubmit={navigationGuardedSubmitHandler} noValidate>
           <ScrollToFirstHookFormErrorAfterSubmit />
@@ -194,13 +197,12 @@ export const IndividualOfferPracticalInfosScreen = ({
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS}
             isDisabled={
-              form.formState.isSubmitting ||
+              isSaving ||
               isOfferDisabled(offer) ||
               (!form.formState.isDirty &&
                 mode !== OFFER_WIZARD_MODE.CREATION) ||
               isVenueClosed
             }
-            saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           />
         </form>
       </FormProvider>
