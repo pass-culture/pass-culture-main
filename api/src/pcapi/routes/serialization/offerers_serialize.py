@@ -17,8 +17,8 @@ from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import venue_collective_serialize
 from pcapi.routes.serialization.venue_banners_serialize import BannerMetaModel
-from pcapi.routes.shared import validation
 from pcapi.serialization.exceptions import PydanticError
+from pcapi.serialization.utils import validate_phone_number_nullable
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.email import sanitize_email
 
@@ -279,7 +279,7 @@ class SaveNewOnboardingDataQueryModel(HttpBodyModel):
 
     @pydantic_v2.field_validator("phone_number", mode="after")
     def validate_phone_number(cls, phone_number: str | None) -> str | None:
-        return validation.validate_nullable_phone_number(phone_number)
+        return validate_phone_number_nullable(phone_number)
 
 
 class InviteMemberQueryModel(HttpQueryParamsModel):

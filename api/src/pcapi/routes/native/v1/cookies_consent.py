@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.routes.shared import cookies_consent as serializers
+from pcapi.routes.serialization import cookies_consent as cookies_consent_serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
     on_error_statuses=[400],
     api=blueprint.api,
 )
-def cookies_consent(body: serializers.CookieConsentRequest) -> None:
+def cookies_consent(body: cookies_consent_serializers.CookieConsentRequest) -> None:
     logger.info(
         "Cookies consent",
         extra={"analyticsSource": "app-native", **body.dict()},

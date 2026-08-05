@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.routes.shared import cookies_consent as serializers
+from pcapi.routes.serialization import cookies_consent as cookies_consent_serializers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -14,7 +14,7 @@ DEVICE_ID = str(uuid.uuid4())
 
 
 @pytest.fixture(name="body")
-def body_fixture() -> serializers.CookieConsentRequest:
+def body_fixture() -> cookies_consent_serializers.CookieConsentRequest:
     return {
         "consent": {
             "mandatory": [

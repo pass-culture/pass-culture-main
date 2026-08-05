@@ -10,6 +10,7 @@ from spectree.models import BaseFile
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import constants
 from pcapi.core.educational import models
+from pcapi.core.educational import validation
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.models import feature
@@ -21,7 +22,6 @@ from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.routes.serialization import educational_institutions
 from pcapi.routes.serialization import national_programs
 from pcapi.routes.serialization.utils import raise_error_from_location
-from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
 
@@ -517,7 +517,7 @@ def validate_students(students: list[models.StudentLevels]) -> list[models.Stude
     try:
         # TODO (jcicurel-pass, 2026-02-04): refactor validate_students to raise correct error
         # when all models using it are migrated to v2
-        shared_offers.validate_students(students)
+        validation.validate_students(students)
     except ValueError as ex:
         raise PydanticError(str(ex))
 

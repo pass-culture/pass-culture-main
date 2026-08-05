@@ -40,10 +40,10 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import users as users_serializers
+from pcapi.routes.serialization.cookies_consent import CookieConsentRequest
 from pcapi.routes.serialization.password_serialize import CheckTokenBodyModel
 from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
-from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic

@@ -37,7 +37,6 @@ def install_all_routes(app: Flask) -> None:
     from . import pro
     from . import public
     from . import saml
-    from . import shared
 
     adage.install_routes(app)
     external.install_routes(app)
@@ -47,7 +46,6 @@ def install_all_routes(app: Flask) -> None:
     pro.install_routes(app)
     public.install_routes(app)
     saml.install_routes(app)
-    shared.install_routes(app)
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
     institutional.install_routes(app)
