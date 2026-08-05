@@ -12,13 +12,13 @@ from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.price import convert_to_cent
 
 
 class CoordinatesV2(HttpBodyModel):
@@ -172,7 +172,7 @@ class BookingStockResponseV2(HttpBodyModel):
             features=stock.features,
             offer=stock.offer,
             price_category_label=stock.priceCategory.label if stock.priceCategory else None,
-            price=convert_to_cent(stock.price),
+            price=to_cents(stock.price),
         )
 
 
@@ -332,7 +332,7 @@ class BookingResponse(HttpBodyModel):
             expiration_date=booking.expirationDate,
             quantity=booking.quantity,
             stock=booking.stock,
-            total_amount=convert_to_cent(booking.total_amount),
+            total_amount=to_cents(booking.total_amount),
             enable_pop_up_reaction=booking.enable_pop_up_reaction,
             can_react=booking.can_react,
             user_reaction=booking.userReaction,
@@ -439,8 +439,8 @@ class BookingListItemResponse(HttpBodyModel):
 
     @field_validator("total_amount", mode="before")
     @classmethod
-    def _convert_total_amount(cls, v: Any) -> Any:
-        return convert_to_cent(v)
+    def _convert_total_amount(cls, total_amount: Any) -> Any:
+        return to_cents(total_amount)
 
 
 class BookingsListResponseV2(HttpBodyModel):

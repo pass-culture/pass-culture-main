@@ -3,10 +3,10 @@ import datetime
 import pytest
 
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 
 
@@ -33,14 +33,14 @@ class PlaylistTest:
                 "id": offer_with_image.id,
                 "image": {"credit": None, "url": mediation.thumbUrl},
                 "name": offer_with_image.name,
-                "stocks": [{"id": stock_with_image.id, "price": convert_to_cent(stock_with_image.price)}],
+                "stocks": [{"id": stock_with_image.id, "price": to_cents(stock_with_image.price)}],
                 "venue": {"id": offer_with_image.venue.id, "commonName": offer_with_image.venue.publicName},
             },
             {
                 "id": offer_without_image.id,
                 "image": None,
                 "name": offer_without_image.name,
-                "stocks": [{"id": stock_without_image.id, "price": convert_to_cent(stock_without_image.price)}],
+                "stocks": [{"id": stock_without_image.id, "price": to_cents(stock_without_image.price)}],
                 "venue": {"id": offer_without_image.venue.id, "commonName": offer_without_image.venue.publicName},
             },
         ]
@@ -103,7 +103,7 @@ class PlaylistTest:
                 "id": offer.id,
                 "image": None,
                 "name": offer.name,
-                "stocks": [{"id": bookable_stock.id, "price": convert_to_cent(bookable_stock.price)}],
+                "stocks": [{"id": bookable_stock.id, "price": to_cents(bookable_stock.price)}],
                 "venue": {"id": offer.venue.id, "commonName": offer.venue.publicName},
             }
         ]

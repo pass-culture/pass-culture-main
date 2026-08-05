@@ -4,13 +4,13 @@ import pydantic as pydantic_v2
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.price import convert_to_cent
 
 
 class OfferCoordinatesResponse(HttpBodyModel):
@@ -139,7 +139,7 @@ class BookingStockResponse(HttpBodyModel):
             beginning_datetime=stock.beginningDatetime,
             features=stock.features,
             offer=BookingOfferResponse.build(stock.offer),
-            price=convert_to_cent(stock.price),
+            price=to_cents(stock.price),
             price_category_label=price_category.label if price_category else None,
         )
 
@@ -190,7 +190,7 @@ class BookingReponse(HttpBodyModel):
             qr_code_data=getattr(booking, "qrCodeData", None),
             quantity=booking.quantity,
             stock=BookingStockResponse.build(booking.stock),
-            total_amount=convert_to_cent(booking.total_amount),
+            total_amount=to_cents(booking.total_amount),
             token=token,
             enable_pop_up_reaction=booking.enable_pop_up_reaction,
             can_react=booking.can_react,

@@ -1,11 +1,11 @@
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance.utils import XPF_TO_EUR_RATE
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.users import constants
 from pcapi.models import db
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
 from pcapi.utils import postal_code
@@ -41,7 +41,7 @@ def get_settings() -> serializers.SettingsResponse:
         app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
         bonification=serializers.Bonification(
             qf_threshold=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
-            bonus_amount=convert_to_cent(finance_conf.BONUS_CREDIT_AMOUNT) or 0,
+            bonus_amount=to_cents(finance_conf.BONUS_CREDIT_AMOUNT),
         ),
         deposit_amounts_by_age=serializers.get_deposit_amounts_by_age(),
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],

@@ -4,8 +4,8 @@ import pydantic as pydantic_v2
 
 import pcapi.core.finance.conf as finance_conf
 from pcapi.core.finance.utils import XPF_TO_EUR_RATE
+from pcapi.core.finance.utils import to_cents
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.price import convert_to_cent
 
 
 class DepositAmountsByAge(HttpBodyModel):
@@ -20,7 +20,7 @@ class DepositAmountsByAge(HttpBodyModel):
 def _convert_amount(amount: decimal.Decimal | None) -> int:
     if amount is None:
         return 0
-    converted_amount = convert_to_cent(amount)
+    converted_amount = to_cents(amount)
     return converted_amount if converted_amount is not None else 0
 
 

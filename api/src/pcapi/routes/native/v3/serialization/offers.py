@@ -16,6 +16,7 @@ from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles import models as chronicle_models
 from pcapi.core.chronicles.api import get_offer_published_chronicles
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
@@ -26,7 +27,6 @@ from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 
 
@@ -71,7 +71,7 @@ class OfferStockResponse(HttpBodyModel):
                     expiration_date=activation_code.expirationDate
                 )
 
-        price = convert_to_cent(stock.price)
+        price = to_cents(stock.price)
         price_category_label = None
         if price_category := stock.priceCategory:
             price_category_label = price_category.label

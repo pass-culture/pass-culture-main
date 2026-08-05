@@ -20,6 +20,7 @@ from pcapi.core.categories.genres.show import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles.api import get_offer_published_chronicles
 from pcapi.core.chronicles.models import ChronicleClubType
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
@@ -34,7 +35,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -92,7 +92,7 @@ class OfferStockResponseV2(ConfiguredBaseModel):
     priceCategoryLabel: str | None
     remainingQuantity: int | None
 
-    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_price = validator("price", pre=True, allow_reuse=True)(to_cents)
     _convert_remainingQuantity = validator(
         "remainingQuantity",
         pre=True,

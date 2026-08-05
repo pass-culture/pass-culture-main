@@ -4,11 +4,11 @@ from datetime import datetime
 from decimal import Decimal
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import Favorite
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.price import convert_to_cent
 
 
 @dataclass
@@ -72,9 +72,9 @@ class FavoriteOfferResponse(HttpBodyModel):
             is_released=offer.isReleased,
             is_sold_out=offer.isSoldOut,
             name=offer.name,
-            price=convert_to_cent(favorite_data.price),
+            price=to_cents(favorite_data.price) if favorite_data.price is not None else None,
             start_date=favorite_data.start_date,
-            start_price=convert_to_cent(favorite_data.start_price),
+            start_price=to_cents(favorite_data.start_price) if favorite_data.start_price is not None else None,
             subcategory_id=offer.subcategoryId,
             venue_name=venue_name,
         )

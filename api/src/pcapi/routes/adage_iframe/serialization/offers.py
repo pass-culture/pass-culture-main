@@ -1,4 +1,3 @@
-import decimal
 import logging
 import typing
 from datetime import date
@@ -9,6 +8,7 @@ from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.native.v1.serialization import common_models
@@ -18,7 +18,6 @@ from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -73,8 +72,8 @@ class CollectiveAdditionalFeeResponse(ConfiguredBaseModel):
     amount: int
 
     @validator("amount", pre=True)
-    def validate_amount(cls, value: decimal.Decimal | None) -> int | None:
-        return convert_to_cent(value)
+    def validate_amount(cls, value: typing.Any) -> int:
+        return to_cents(value)
 
 
 class OfferStockResponse(BaseModel):
@@ -90,8 +89,8 @@ class OfferStockResponse(BaseModel):
     priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     @validator("price", "servicePrice", pre=True)
-    def validate_price(cls, value: decimal.Decimal | None) -> int | None:
-        return convert_to_cent(value)
+    def validate_price(cls, value: typing.Any) -> int:
+        return to_cents(value)
 
     class Config:
         orm_mode = True
