@@ -10,11 +10,11 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullStarIcon from '@/icons/full-star.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import { HeadlineOfferImageDialogs } from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/HeadlineOfferImageDialogs'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import headlineImg from './assets/headline-img.svg'
@@ -139,17 +139,29 @@ export const OfferHeadlineCard = ({
         />
       </div>
 
-      <ConfirmDialog
-        icon={strokeStarIcon}
-        cancelText="Annuler"
-        confirmText="Confirmer"
-        onCancel={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
-        onConfirm={onConfirmReplaceHeadlineOffer}
-        title={
-          'Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre.'
+      <SimpleModal
+        iconPath={strokeStarIcon}
+        isOpen={isConfirmDialogReplaceHeadlineOfferOpen}
+        title="Vous êtes sur le point de remplacer votre offre à la une par une nouvelle offre."
+        onClose={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setIsConfirmDialogReplaceHeadlineOfferOpen(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button
+              onClick={onConfirmReplaceHeadlineOffer}
+              variant={ButtonVariant.PRIMARY}
+              color={ButtonColor.BRAND}
+              label="Confirmer"
+            />
+          </>
         }
-        open={isConfirmDialogReplaceHeadlineOfferOpen}
       />
+
       <HeadlineOfferImageDialogs
         offerId={offerId}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}

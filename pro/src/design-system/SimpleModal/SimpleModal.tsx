@@ -20,7 +20,7 @@ export interface SimpleModalProps {
   /**
    * The content to be displayed inside the dialog.
    */
-  children: React.ReactNode
+  children?: React.ReactNode
   /**
    * Function called to close the modal.
    */
@@ -80,7 +80,7 @@ export const SimpleModal = ({
             <h1 className={styles['dialog-content-title']} id={dialogTitleId}>
               {title}
             </h1>
-            <div>{children}</div>
+            {children && <div>{children}</div>}
           </div>
           <div className={styles['action-buttons']}>{actionButtons}</div>
         </div>

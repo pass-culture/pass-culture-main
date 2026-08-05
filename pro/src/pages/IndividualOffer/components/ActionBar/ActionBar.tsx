@@ -17,7 +17,6 @@ export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   publicationMode?: 'later' | 'now'
-  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement | null>
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
 }
 
@@ -28,7 +27,6 @@ export const ActionBar = ({
   isDisabled = false,
   isEvent = false,
   publicationMode = 'now',
-  saveEditionChangesButtonRef,
   step,
 }: ActionBarProps) => {
   const { pathname } = useLocation()
@@ -45,7 +43,6 @@ export const ActionBar = ({
           onClickNext={onClickNext}
           onClickPrevious={onClickPrevious}
           publicationMode={publicationMode}
-          saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           step={step}
         />
       </ActionsBarSticky.Left>
@@ -63,7 +60,6 @@ export const ActionBar = ({
             isOnboarding={isOnboarding}
             isDisabled={isDisabled}
             publicationMode={publicationMode}
-            saveEditionChangesButtonRef={saveEditionChangesButtonRef}
             step={step}
           />
         </ActionsBarSticky.Right>

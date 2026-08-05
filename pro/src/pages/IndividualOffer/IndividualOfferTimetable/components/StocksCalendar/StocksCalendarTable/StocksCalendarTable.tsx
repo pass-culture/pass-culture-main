@@ -25,11 +25,11 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
@@ -282,22 +282,34 @@ export function StocksCalendarTable({
         }}
         pagination={pagination}
       />
-      <ConfirmDialog
-        onCancel={() => {
-          setStockBeingDeleted(null)
-        }}
-        onConfirm={() => {
-          if (stockBeingDeleted) {
-            onDeleteStocks([stockBeingDeleted.id])
-          }
-          setStockBeingDeleted(null)
-        }}
+      <SimpleModal
+        iconPath={strokeWarningIcon}
         title="Vous êtes sur le point d'annuler toutes les réservations en cours pour cette date"
-        confirmText="Confirmer la suppression"
-        cancelText="Annuler"
-        icon={strokeWarningIcon}
-        open={Boolean(stockBeingDeleted)}
-        confirmColor={ButtonColor.DANGER}
+        isOpen={Boolean(stockBeingDeleted)}
+        onClose={() => setStockBeingDeleted(null)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => {
+                setStockBeingDeleted(null)
+              }}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label={'Annuler'}
+            />
+            <Button
+              onClick={() => {
+                if (stockBeingDeleted) {
+                  onDeleteStocks([stockBeingDeleted.id])
+                }
+                setStockBeingDeleted(null)
+              }}
+              variant={ButtonVariant.PRIMARY}
+              color={ButtonColor.DANGER}
+              label={'Confirmer la suppression'}
+            />
+          </>
+        }
       >
         {stockBeingDeleted?.bookingsQuantity &&
         stockBeingDeleted.bookingsQuantity > 0 ? (
@@ -307,7 +319,7 @@ export function StocksCalendarTable({
             concernés sera automatiquement averti par email.
           </>
         ) : null}
-      </ConfirmDialog>
+      </SimpleModal>
     </>
   )
 }

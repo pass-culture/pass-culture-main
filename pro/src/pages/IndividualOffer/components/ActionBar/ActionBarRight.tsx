@@ -13,7 +13,6 @@ interface ActionBarRightProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   publicationMode?: 'later' | 'now'
-  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement | null>
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
 }
 
@@ -23,7 +22,6 @@ export const ActionBarRight = ({
   isOnboarding,
   onClickNext,
   publicationMode,
-  saveEditionChangesButtonRef,
   step,
 }: Readonly<ActionBarRightProps>) => {
   const snackBar = useSnackBar()
@@ -67,7 +65,6 @@ export const ActionBarRight = ({
           iconPosition={IconPositionEnum.RIGHT}
           disabled={isDisabled}
           onClick={onClickNext}
-          ref={saveEditionChangesButtonRef}
           label="Enregistrer et continuer"
         />
       )}
