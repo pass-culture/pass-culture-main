@@ -55,7 +55,8 @@ export function AccessibilityMenu() {
           />
           <Button
             as="a"
-            to="/accessibilite/schema-pluriannuel"
+            to="https://pass.culture.fr/schema-pluriannuel-2025-2027"
+            opensInNewTab
             variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             icon={strokeRigthIcon}

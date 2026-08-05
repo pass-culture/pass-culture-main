@@ -474,14 +474,6 @@ export const routes: CustomRouteTree = [
     },
   },
   {
-    lazy: () => import('@/pages/Accessibility/MultiyearScheme'),
-    loader: noop,
-    path: '/accessibilite/schema-pluriannuel',
-    handle: {
-      title: 'Schéma pluriannuel',
-    },
-  },
-  {
     loader: noop,
     path: '/ecoconception',
     handle: {
