@@ -65,7 +65,7 @@ def update_all_offers_active_status_task(payload: UpdateAllOffersActiveStatusPay
     query = offers_repository.get_offers_by_filters(name_keywords_or_ean=name_or_ean, **payload_dict)
     query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
 
-    offers_api.batch_update_offers(query, activate=is_active)
+    offers_api.batch_activate_offers(query, activate=is_active)
 
 
 class UpdateVenueOffersActiveStatusPayload(BaseModelV2):
@@ -80,7 +80,7 @@ class UpdateVenueOffersActiveStatusPayload(BaseModelV2):
 )
 def update_venue_offers_active_status_task(payload: UpdateVenueOffersActiveStatusPayload) -> None:
     query = offers_repository.get_synchronized_offers_with_provider_for_venue(payload.venue_id, payload.provider_id)
-    offers_api.batch_update_offers(query, activate=payload.is_active)
+    offers_api.batch_activate_offers(query, activate=payload.is_active)
 
 
 class UpdateAllVenueOffersEmailPayload(BaseModelV2):

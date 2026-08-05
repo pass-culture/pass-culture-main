@@ -95,6 +95,8 @@ from . import validation
 logger = logging.getLogger(__name__)
 
 AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
+type OfferIds = tuple[int]
+type VenueIds = tuple[int]
 
 
 OFFER_LIKE_MODELS = {
@@ -537,40 +539,15 @@ def update_offer(
     return offer
 
 
-def batch_update_offers(
-    query: sa_orm.Query,
-    update_fields: dict | None = None,
-    activate: bool | None = None,
-    send_email_notification: bool = False,
+def batch_activate_offers(
+    query: sa_orm.Query[models.Offer],
+    activate: bool,
 ) -> set[int]:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
-    query = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
 
-    updated_offer_ids = set()
-    found_venue_ids = set()
+    update_fields = {"publicationDatetime": get_naive_utc_now() if activate else None}
 
-    if update_fields is None:
-        update_fields = {}
-
-    if activate is not None:
-        update_fields["publicationDatetime"] = None
-        if activate:
-            update_fields["publicationDatetime"] = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-
-    logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
-
-    for chunk in get_chunks(query, chunk_size=settings.BATCH_UPDATE_OFFERS_CHUNK_SIZE):
-        raw_offer_ids, raw_venue_ids = zip(*chunk)
-        offer_ids = set(raw_offer_ids)
-        venue_ids = set(raw_venue_ids)
-
-        updated_offer_ids |= offer_ids
-        found_venue_ids |= venue_ids
-
-        query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids))
-        query_to_update.update(update_fields, synchronize_session=False)
-        db.session.flush()
-
+    def log_processed_chunk(offer_ids: OfferIds, venue_ids: VenueIds) -> None:
         if activate is not None:
             on_commit(
                 partial(
@@ -581,26 +558,66 @@ def batch_update_offers(
                 )
             )
 
-        on_commit(
-            partial(
-                search.async_index_offer_ids,
-                offer_ids,
-                reason=IndexationReason.OFFER_BATCH_UPDATE,
-                log_extra={"changes": set(update_fields.keys())},
-            ),
-        )
+    return batch_update_offers(
+        query=query,
+        update_fields=update_fields,
+        chunk_processed_callback=log_processed_chunk,
+    )
 
-        withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
-            update_fields.keys()
-        )
-        if send_email_notification and withdrawal_updated:
-            for offer in query_to_update.all():
-                transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
+def batch_update_offers(
+    query: sa_orm.Query[models.Offer],
+    update_fields: dict,
+    send_email_notification: bool = False,
+    chunk_processed_callback: typing.Callable[[OfferIds, VenueIds], None] | None = None,
+    chunk_size: int = settings.BATCH_UPDATE_OFFERS_CHUNK_SIZE,
+) -> set[int]:
+    results = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500).tuples()
+
+    updated_offer_ids = set()
+    found_venue_ids = set()
+
+    logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
+
+    with atomic():
+        for chunk in get_chunks(results, chunk_size=chunk_size):
+            raw_offer_ids, raw_venue_ids = zip(*chunk)
+            offer_ids = set(raw_offer_ids)
+            venue_ids = set(raw_venue_ids)
+
+            updated_offer_ids |= offer_ids
+            found_venue_ids |= venue_ids
+
+            query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids))
+            try:
+                with atomic():
+                    query_to_update.update(update_fields, synchronize_session=False)
+                    db.session.flush()
+            except sa_exc.OperationalError:
+                # Batch failed, likely timeout. Let's fallback on a one by one basis.
+                for offer_id in offer_ids:
+                    db.session.query(models.Offer).filter(models.Offer.id == offer_id).update(
+                        update_fields, synchronize_session=False
+                    )
+
+            if chunk_processed_callback:
+                chunk_processed_callback(raw_offer_ids, raw_venue_ids)
+
+            on_commit(
+                partial(
+                    search.async_index_offer_ids,
+                    offer_ids,
+                    reason=IndexationReason.OFFER_BATCH_UPDATE,
+                    log_extra={"changes": set(update_fields.keys())},
+                ),
+            )
+
+            withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
+                update_fields.keys()
+            )
+            if send_email_notification and withdrawal_updated:
+                for offer in query_to_update.all():
+                    transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     log_extra = {
         "updated_fields": update_fields,

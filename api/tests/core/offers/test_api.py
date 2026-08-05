@@ -2355,7 +2355,7 @@ yesterday_datetime_without_tz = yesterday_datetime_with_tz.replace(tzinfo=None)
 
 
 @pytest.mark.usefixtures("db_session")
-class BatchUpdateOffersTest:
+class BatchActivateOffersTest:
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_empty_list(self, mocked_async_index_offer_ids, caplog):
@@ -2364,7 +2364,7 @@ class BatchUpdateOffersTest:
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({pending_offer.id}))
 
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, activate=True)
+            api.batch_activate_offers(query, activate=True)
 
         db.session.refresh(pending_offer)
         assert not pending_offer.isActive
@@ -2403,7 +2403,7 @@ class BatchUpdateOffersTest:
         )
 
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, activate=True)
+            api.batch_activate_offers(query, activate=True)
 
         db.session.refresh(offer1)
         db.session.refresh(offer2)
@@ -2442,7 +2442,7 @@ class BatchUpdateOffersTest:
         assert second_record.message == "Offers has been activated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
-        assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
+        assert set(second_record.extra["venue_ids"]) == {offer1.venueId, offer2.venueId}
 
         assert third_record.message == "Batch update of offers: end"
         assert third_record.extra == {
@@ -2464,7 +2464,7 @@ class BatchUpdateOffersTest:
 
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({offer1.id, offer2.id}))
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, activate=False)
+            api.batch_activate_offers(query, activate=False)
 
         db.session.refresh(offer1)
         db.session.refresh(offer2)
@@ -2493,7 +2493,7 @@ class BatchUpdateOffersTest:
         assert second_record.message == "Offers has been deactivated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
         assert set(second_record.extra["offer_ids"]) == {offer1.id, offer2.id}
-        assert second_record.extra["venue_ids"] == {offer1.venueId, offer2.venueId}
+        assert set(second_record.extra["venue_ids"]) == {offer1.venueId, offer2.venueId}
 
         assert last_record.message == "Batch update of offers: end"
         assert last_record.extra == {
@@ -2501,6 +2501,65 @@ class BatchUpdateOffersTest:
             "nb_offers": 2,
             "nb_venues": 2,
         }
+
+
+@pytest.mark.usefixtures("db_session")
+class BatchUpdateOffersTest:
+    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_update(self, mocked_async_index_offer_ids, caplog):
+        offer1 = factories.OfferFactory(publicationDatetime=None)
+        offer2 = factories.OfferFactory(publicationDatetime=None)
+        offer3 = factories.OfferFactory(publicationDatetime=None)
+
+        query = db.session.query(models.Offer).filter(models.Offer.id.in_({offer1.id, offer2.id}))
+
+        callback_called: int = 0
+
+        def callback(offer_ids, venue_ids):
+            nonlocal callback_called
+            callback_called = callback_called + 1
+            assert set(offer_ids) == set([offer1.id, offer2.id])
+            assert set(venue_ids) == set([offer1.venueId, offer2.venueId])
+
+        with caplog.at_level(logging.INFO):
+            api.batch_update_offers(
+                query, update_fields={"publicationDatetime": datetime.now()}, chunk_processed_callback=callback
+            )
+
+        db.session.refresh(offer1)
+        db.session.refresh(offer2)
+        db.session.refresh(offer3)
+
+        assert offer1.isActive
+        assert offer1.publicationDatetime == now_datetime_with_tz
+
+        assert offer2.isActive
+        assert offer2.publicationDatetime == now_datetime_with_tz
+
+        assert not offer3.isActive
+        assert not offer3.publicationDatetime
+
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
+
+        assert len(caplog.records) == 2
+        first_record = caplog.records[0]
+        second_record = caplog.records[1]
+
+        assert first_record.message == "Batch update of offers: start"
+        assert first_record.extra == {
+            "updated_fields": {"publicationDatetime": now_datetime_with_tz.replace(tzinfo=None)}
+        }
+
+        assert second_record.message == "Batch update of offers: end"
+        assert second_record.extra == {
+            "updated_fields": {"publicationDatetime": now_datetime_with_tz.replace(tzinfo=None)},
+            "nb_offers": 2,
+            "nb_venues": 2,
+        }
+
+        assert callback_called == 1
 
 
 @pytest.mark.usefixtures("db_session")
