@@ -1,6 +1,7 @@
-import { ButtonColor } from '@/design-system/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface PriceCategoryRemovalConfirmationModalProps {
   onCancel: () => void
@@ -11,22 +12,30 @@ export const PriceCategoryRemovalConfirmationModal = ({
   onCancel,
 }: Readonly<PriceCategoryRemovalConfirmationModalProps>) => {
   return (
-    <ConfirmDialog
-      cancelText="Annuler"
-      confirmColor={ButtonColor.DANGER}
-      confirmText="Confirmer la suppression"
-      icon={strokeTrashIcon}
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-      open
+    <SimpleModal
+      iconPath={strokeTrashIcon}
       title="Voulez-vous supprimer ce tarif ?"
+      isOpen
+      onClose={onCancel}
+      actionButtons={
+        <>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label={'Annuler'}
+          />
+          <Button
+            onClick={onConfirm}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.DANGER}
+            label={'Confirmer la suppression'}
+          />
+        </>
+      }
     >
-      <p>
-        <strong>
-          En supprimant ce tarif vous allez aussi supprimer l'ensemble des dates
-          qui lui sont associées
-        </strong>
-      </p>
-    </ConfirmDialog>
+      En supprimant ce tarif vous allez aussi supprimer l'ensemble des dates qui
+      lui sont associées.
+    </SimpleModal>
   )
 }

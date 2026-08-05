@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -55,7 +56,9 @@ describe('SimpleModal', () => {
     expect(screen.queryByRole('img')).toBeNull()
   })
 
-  it('should call onClose when the modal is closed', () => {
+  it('should call onClose when the modal is closed', async () => {
+    const user = userEvent.setup()
+
     const onCloseMock = vi.fn()
     renderModalSimple({
       ...props,
@@ -64,7 +67,7 @@ describe('SimpleModal', () => {
     })
 
     const closeButton = screen.getByLabelText('Fermer la boite de dialogue')
-    closeButton.click()
+    await user.click(closeButton)
 
     expect(onCloseMock).toHaveBeenCalled()
   })

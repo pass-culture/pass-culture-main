@@ -172,7 +172,7 @@ test.describe('Settings page', () => {
     await expect(guardDialog).toBeVisible()
 
     await guardDialog
-      .getByRole('button', { name: 'Fermer la fenêtre modale' })
+      .getByRole('button', { name: 'Fermer la boite de dialogue' })
       .click()
 
     await expect(page).toHaveURL(/\/parametres\/notifications$/)

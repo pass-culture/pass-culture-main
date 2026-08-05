@@ -162,8 +162,12 @@ const baseVenue: GetVenueResponseModel = {
   isPermanent: true,
 }
 
+let user: ReturnType<typeof userEvent.setup>
+
 describe('IndividualVenuePageEdition', () => {
   beforeEach(() => {
+    user = userEvent.setup()
+
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -269,9 +273,9 @@ describe('IndividualVenuePageEdition', () => {
         )
       )
       // This is necessary to trigger formik dirty state, and allow submitting the form
-      await userEvent.type(screen.getByLabelText('Description'), '…')
+      await user.type(screen.getByLabelText('Description'), '…')
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
 
       await waitFor(() => {
         expect(screen.getByText('ensure this is an email')).toBeInTheDocument()
@@ -281,8 +285,8 @@ describe('IndividualVenuePageEdition', () => {
     it('should display the navigation guard dialog when clicking Annuler with unsaved changes', async () => {
       renderForm(baseVenue)
 
-      await userEvent.type(screen.getByLabelText('Description'), 'test')
-      await userEvent.click(screen.getByText('Annuler'))
+      await user.type(screen.getByLabelText('Description'), 'test')
+      await user.click(screen.getByText('Annuler'))
 
       expect(
         await screen.findByRole('dialog', {
@@ -294,7 +298,7 @@ describe('IndividualVenuePageEdition', () => {
     it('should not display the navigation guard dialog when leaving without any change', async () => {
       renderForm(baseVenue)
 
-      await userEvent.click(screen.getByText('Annuler'))
+      await user.click(screen.getByText('Annuler'))
 
       await waitFor(() => {
         expect(
@@ -310,7 +314,7 @@ describe('IndividualVenuePageEdition', () => {
 
       renderForm({ ...baseVenue, openingHours: null })
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
 
       expect(editVenueSpy).toHaveBeenCalledWith({
         path: { venue_id: expect.anything() },
@@ -349,16 +353,16 @@ describe('IndividualVenuePageEdition', () => {
         'input[name="openingHours.MONDAY.1.1"]'
       )!
 
-      await userEvent.clear(morningOpen)
-      await userEvent.type(morningOpen, '08:00')
-      await userEvent.clear(morningClose)
-      await userEvent.type(morningClose, '12:00')
-      await userEvent.clear(afternoonOpen)
-      await userEvent.type(afternoonOpen, '13:00')
-      await userEvent.clear(afternoonClose)
-      await userEvent.type(afternoonClose, '19:00')
+      await user.clear(morningOpen)
+      await user.type(morningOpen, '08:00')
+      await user.clear(morningClose)
+      await user.type(morningClose, '12:00')
+      await user.clear(afternoonOpen)
+      await user.type(afternoonOpen, '13:00')
+      await user.clear(afternoonClose)
+      await user.type(afternoonClose, '19:00')
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
 
       expect(editVenueSpy).toHaveBeenCalledWith({
         path: { venue_id: expect.anything() },
@@ -384,7 +388,7 @@ describe('IndividualVenuePageEdition', () => {
         externalAccessibilityId: '666',
       })
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
 
       expect(editVenueSpy).toHaveBeenCalled()
     })
@@ -397,12 +401,12 @@ describe('IndividualVenuePageEdition', () => {
 
       expect(screen.getByText('Bénévolat')).toBeInTheDocument()
 
-      await userEvent.type(
+      await user.type(
         screen.getByLabelText(/URL de votre page JeVeuxAider.gouv.fr/),
         'https://www.jeveuxaider.gouv.fr/organisations/exemple'
       )
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
 
       expect(editVenueSpy).toHaveBeenCalledWith({
         path: { venue_id: 1 },
@@ -418,12 +422,12 @@ describe('IndividualVenuePageEdition', () => {
 
       renderForm({ ...baseVenue })
 
-      await userEvent.type(
+      await user.type(
         screen.getByLabelText(/URL de votre page JeVeuxAider.gouv.fr/),
         'any-url'
       )
 
-      await userEvent.tab()
+      await user.tab()
 
       expect(mockLogEvent).toHaveBeenCalledWith(
         Events.VENUE_FORM_VOLUNTEERING_URL_ERROR,
@@ -444,7 +448,7 @@ describe('IndividualVenuePageEdition', () => {
         externalAccessibilityId: null,
       })
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
+      await user.click(screen.getByText('Enregistrer'))
       expect(
         screen.getByText(
           'Veuillez sélectionner au moins un critère d’accessibilité'
@@ -519,8 +523,8 @@ describe('IndividualVenuePageEdition', () => {
 
         // If the user tries to submit the form without filling the accessibility section
         // no error should be displayed. We edit the description to trigger the form dirty state.
-        await userEvent.type(screen.getByLabelText('Description'), '…')
-        await userEvent.click(screen.getByText(/Enregistrer/))
+        await user.type(screen.getByLabelText('Description'), '…')
+        await user.click(screen.getByText('Enregistrer'))
 
         expect(editVenueSpy).toHaveBeenCalled()
       })
@@ -565,8 +569,8 @@ describe('IndividualVenuePageEdition', () => {
 
         // If the user tries to submit the form without filling the accessibility section
         // an error should be displayed. We edit the description to trigger the form dirty state.
-        await userEvent.type(screen.getByLabelText('Description'), '…')
-        await userEvent.click(screen.getByText(/Enregistrer/))
+        await user.type(screen.getByLabelText('Description'), '…')
+        await user.click(screen.getByText('Enregistrer'))
         await waitFor(() => {
           expect(
             screen.getByText(

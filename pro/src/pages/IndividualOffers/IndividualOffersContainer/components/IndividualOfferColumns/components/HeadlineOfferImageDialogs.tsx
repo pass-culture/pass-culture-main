@@ -18,10 +18,12 @@ import {
   type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
 import type { IndividualOffersFilters } from '@/pages/IndividualOffers/common/types'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean
@@ -108,19 +110,30 @@ export const HeadlineOfferImageDialogs = ({
 
   return (
     <>
-      <ConfirmDialog
-        icon={strokeVisualArtIcon}
-        cancelText="Annuler"
-        confirmText="Ajouter une image"
-        onCancel={() => {
-          setIsFirstDialogOpen(false)
-        }}
-        onConfirm={() => {
-          setIsFirstDialogOpen(false)
-          setIsImageUploaderOpen(true)
-        }}
+      <SimpleModal
+        iconPath={strokeVisualArtIcon}
+        isOpen={isFirstDialogOpen}
         title="Ajoutez une image pour mettre votre offre à la une"
-        open={isFirstDialogOpen}
+        onClose={() => setIsFirstDialogOpen(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setIsFirstDialogOpen(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label={'Annuler'}
+            />
+            <Button
+              onClick={() => {
+                setIsFirstDialogOpen(false)
+                setIsImageUploaderOpen(true)
+              }}
+              variant={ButtonVariant.PRIMARY}
+              color={ButtonColor.BRAND}
+              label={'Ajouter une image'}
+            />
+          </>
+        }
       />
       <ModalImageUpsertOrEdit
         mode={UploaderModeEnum.OFFER}

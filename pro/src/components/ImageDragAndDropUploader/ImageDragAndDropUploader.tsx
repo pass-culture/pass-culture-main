@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
-import { ConfirmDialog } from 'ui-kit/ConfirmDialog/ConfirmDialog'
 
 import { usePrevious } from '@/commons/hooks/usePrevious'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -21,6 +20,7 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
@@ -199,22 +199,33 @@ export const ImageDragAndDropUploader = ({
             : {})}
         />
       )}
-      <ConfirmDialog
-        onCancel={() => setIsDeleteImageOpen(false)}
+      <SimpleModal
         title="Votre offre ne sera plus à la une"
-        open={isDeleteImageOpen}
-        cancelText="Annuler"
-        confirmText="Supprimer l'image"
-        confirmColor={ButtonColor.DANGER}
-        icon={strokeWarningIcon}
-        onConfirm={onImageDeleteHandler}
+        iconPath={strokeWarningIcon}
+        isOpen={isDeleteImageOpen}
+        onClose={() => setIsDeleteImageOpen(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setIsDeleteImageOpen(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button
+              onClick={onImageDeleteHandler}
+              color={ButtonColor.DANGER}
+              label="Supprimer l'image"
+            />
+          </>
+        }
       >
         <p>
           Sans image d'illustration, cette offre ne pourra plus être mise à la
           une de votre catalogue.
         </p>
         <p>Souhaitez-vous réellement supprimer cette image ?</p>
-      </ConfirmDialog>
+      </SimpleModal>
     </div>
   )
 }

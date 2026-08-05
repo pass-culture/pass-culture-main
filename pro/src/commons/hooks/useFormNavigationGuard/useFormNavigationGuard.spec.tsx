@@ -342,14 +342,17 @@ describe('useFormNavigationGuard', () => {
               })
             ).toBeVisible()
 
-            await user.click(screen.getByTestId('dialog-builder-close-button'))
+            const closeButton = screen.getByLabelText(
+              'Fermer la boite de dialogue'
+            )
+            await user.click(closeButton)
 
             expect(result.result.current.location.pathname).toBe('/form-page')
             expect(
               screen.queryByRole('dialog', {
                 name: EXPECTATIONS.DIALOG_TITLE,
               })
-            ).not.toBeInTheDocument()
+            ).toBeNull()
             expect(onSubmitMock).not.toHaveBeenCalled()
           })
         })
@@ -475,7 +478,7 @@ describe('useFormNavigationGuard', () => {
           screen.queryByRole('dialog', {
             name: EXPECTATIONS.DIALOG_TITLE,
           })
-        ).not.toBeInTheDocument()
+        ).toBeNull()
       })
     })
 
@@ -501,7 +504,7 @@ describe('useFormNavigationGuard', () => {
           screen.queryByRole('dialog', {
             name: EXPECTATIONS.DIALOG_TITLE,
           })
-        ).not.toBeInTheDocument()
+        ).toBeNull()
       })
     })
   })

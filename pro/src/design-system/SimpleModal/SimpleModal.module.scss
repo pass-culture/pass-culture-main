@@ -49,10 +49,13 @@
   flex-direction: column;
   gap: var(--size-spacing-l);
   align-items: center;
+  text-align: center;
 }
 
 .dialog-content-title {
   @include fonts.title4;
+
+  text-align: center;
 }
 
 .action-buttons {

@@ -2,34 +2,48 @@ import { useState } from 'react'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 
 import styles from './UpdateWarningDialog.module.scss'
 
 interface UpdateWarningDialogProps {
   onCancel: () => void
   onConfirm: (shouldSendMail: boolean) => void
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
   message?: string
+  isOpen: boolean
 }
 export const UpdateWarningDialog = ({
   onCancel,
   onConfirm,
-  refToFocusOnClose,
   message,
+  isOpen,
 }: UpdateWarningDialogProps): JSX.Element => {
   const [shouldSendMail, setShouldSendMail] = useState(true)
 
   return (
-    <ConfirmDialog
-      cancelText="Annuler"
-      confirmText="Je confirme le changement"
-      onCancel={onCancel}
-      onConfirm={() => onConfirm(shouldSendMail)}
-      open
+    <SimpleModal
       title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
-      refToFocusOnClose={refToFocusOnClose}
+      isOpen={isOpen}
+      onClose={onCancel}
+      actionButtons={
+        <>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label={'Annuler'}
+          />
+          <Button
+            onClick={() => onConfirm(shouldSendMail)}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.BRAND}
+            label={'Je confirme le changement'}
+          />
+        </>
+      }
     >
       <div className={styles['update-oa-wrapper']}>
         <div>{message ?? 'Vous avez modifié la localisation.'}</div>
@@ -48,6 +62,6 @@ export const UpdateWarningDialog = ({
           />
         </FormLayout.Row>
       </div>
-    </ConfirmDialog>
+    </SimpleModal>
   )
 }

@@ -325,10 +325,10 @@ describe('<IndividualOfferLocationScreen />', () => {
           await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
           expect(
-            screen.queryByText(
+            screen.getByText(
               'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
             )
-          ).not.toBeInTheDocument()
+          ).not.toBeVisible()
           expect(api.patchOffer).not.toHaveBeenCalled()
         })
       })

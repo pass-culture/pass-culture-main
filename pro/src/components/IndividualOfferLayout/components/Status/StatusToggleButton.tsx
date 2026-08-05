@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -13,9 +13,9 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface StatusToggleButtonProps {
   offer: GetIndividualOfferResponseModel
@@ -25,8 +25,6 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
   const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
-
-  const toggleButtonRef = useRef<HTMLButtonElement>(null)
 
   const isPublicationDateInFuture =
     isDateValid(offer.publicationDate) &&
@@ -75,16 +73,27 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
 
   return (
     <>
-      <ConfirmDialog
+      <SimpleModal
         title={`Attention, vous allez publier une offre programmée pour le ${publicationDate} à ${publicationTime}.`}
-        secondTitle="Êtes-vous sûr de vouloir continuer ?"
-        cancelText="Annuler"
-        confirmText="Confirmer la publication"
-        onCancel={() => setIsPublicationConfirmationModalOpen(false)}
-        onConfirm={toggleOfferActiveStatus}
-        open={isPublicationConfirmationModalOpen}
-        refToFocusOnClose={toggleButtonRef}
-      />
+        isOpen={isPublicationConfirmationModalOpen}
+        onClose={() => setIsPublicationConfirmationModalOpen(false)}
+        actionButtons={
+          <>
+            <Button
+              onClick={() => setIsPublicationConfirmationModalOpen(false)}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+            <Button
+              onClick={toggleOfferActiveStatus}
+              label="Confirmer la publication"
+            />
+          </>
+        }
+      >
+        <p>Êtes-vous sûr de vouloir continuer ?</p>
+      </SimpleModal>
 
       <Button
         variant={ButtonVariant.TERTIARY}
@@ -96,7 +105,6 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         icon={
           offer.status === OfferStatus.INACTIVE ? strokeCheckIcon : fullHideIcon
         }
-        ref={toggleButtonRef}
         label={
           offer.status === OfferStatus.INACTIVE ? 'Publier' : 'Mettre en pause'
         }
