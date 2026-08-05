@@ -2239,7 +2239,7 @@ def get_batch_deactivate_offers_form() -> response_utils.BackofficeResponse:
 
 def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) -> None:
     query = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids))
-    offers_api.batch_update_offers(query, activate=is_active)
+    offers_api.batch_activate_offers(query, activate=is_active)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["POST"])

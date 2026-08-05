@@ -196,4 +196,4 @@ def deactivate_offer(offer: offers_models.Offer) -> None:
     from pcapi.core.offers import api as offers_api
 
     query = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_([offer.id]))
-    offers_api.batch_update_offers(query, activate=False)
+    offers_api.batch_activate_offers(query, activate=False)
