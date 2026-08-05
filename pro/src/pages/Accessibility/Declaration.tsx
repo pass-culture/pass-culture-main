@@ -35,6 +35,7 @@ export const Declaration = () => {
           <li className={styles['list-item']}>
             <Link
               color={LinkColor.NEUTRAL}
+              isExternalLink
               to="https://pass.culture.fr/schema-pluriannuel-2025-2027"
               label="Schéma pluriannuel d’accessibilité 2025 - 2027"
             />
