@@ -3,10 +3,8 @@ allowBuilds:
 
 overrides:
   dompurify@<3.4.9: '>=3.4.9'
-  joi@<17.13.4: '>=17.13.4'
+  joi@<17.13.4: '^17.13.4'
   serialize-javascript@<=7.0.2: '>=7.0.3'
   serialize-javascript@>=5.0.0 <7.0.5: '>=7.0.5'
   uuid@<11.1.1: '>=11.1.1'
-  # Pinned so every docusaurus package resolves the same @docusaurus/theme-common instance
-  postcss: 8.5.18
-  brace-expansion: 5.0.8
+  brace-expansion: ^5.0.9
