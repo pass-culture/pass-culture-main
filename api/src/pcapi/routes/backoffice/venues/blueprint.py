@@ -273,7 +273,6 @@ class VenueDetailsActionType(enum.StrEnum):
     UPDATE = enum.auto()
     ERP_SYNCHRONISATION = enum.auto()
     DELETE = enum.auto()
-    DELETE_SIRET = enum.auto()
     CLOSE = enum.auto()
     BLOCK_REIMBURSEMENTS = enum.auto()
     UNBLOCK_REIMBURSEMENTS = enum.auto()
@@ -290,8 +289,6 @@ def _get_venue_details_actions(venue: offerers_models.Venue) -> DetailsActions:
             venue_details_actions.add_action(VenueDetailsActionType.ERP_SYNCHRONISATION)
     if access_control.has_current_user_permission(perm_models.Permissions.DELETE_PRO_ENTITY):
         venue_details_actions.add_action(VenueDetailsActionType.DELETE)
-    if access_control.has_current_user_permission(perm_models.Permissions.MOVE_SIRET):
-        venue_details_actions.add_action(VenueDetailsActionType.DELETE_SIRET)
     if (
         access_control.has_current_user_permission(perm_models.Permissions.CLOSE_VENUE)
         and venue.managingOfferer.isValidated

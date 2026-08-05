@@ -48,9 +48,6 @@
             {% if allowed_actions.actions.DELETE in allowed_actions.inline_actions %}
               {{ action_bar_button("trash", "Supprimer le partenaire culturel", modal_id="#delete-venue-modal") }}
             {% endif %}
-            {% if allowed_actions.actions.DELETE_SIRET in allowed_actions.inline_actions %}
-              {{ action_bar_button("trash", "Supprimer le SIRET", modal_id="#remove-venue-siret") }}
-            {% endif %}
             {% if allowed_actions.actions.CLOSE in allowed_actions.inline_actions %}
               {{ action_bar_button("door-closed", "Fermer le partenaire culturel", modal_id="#close-modal-"~venue.id) }}
             {% endif %}
@@ -77,9 +74,6 @@
                 {% endif %}
                 {% if allowed_actions.actions.DELETE in allowed_actions.additional_actions %}
                   <li>{{ action_bar_additional_button("trash", "Supprimer le partenaire culturel", modal_id="#delete-venue-modal") }}</li>
-                {% endif %}
-                {% if allowed_actions.actions.DELETE_SIRET in allowed_actions.additional_actions %}
-                  <li>{{ action_bar_additional_button("trash", "Supprimer le SIRET", modal_id="#remove-venue-siret") }}</li>
                 {% endif %}
                 {% if allowed_actions.actions.CLOSE in allowed_actions.additional_actions %}
                   <li>{{ action_bar_additional_button("door-closed", "Fermer le partenaire culturel", modal_id="#close-modal-"~venue.id) }}</li>
@@ -116,6 +110,15 @@
                      data-bs-title="Visualiser dans l'Annuaire des Entreprises"
                      class="link-primary"><i class="bi bi-box-arrow-up-right btn btn-outline-primary-subtle-bg border-0 px-2 py-1"></i></a>
                   {{ clipboard.copy_to_clipboard(venue.siret, "Copier le SIRET du partenaire culturel") }}
+                {% endif %}
+                {% if has_permission("MOVE_SIRET") %}
+                  <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                          data-bs-toggle="modal"
+                          data-bs-target="#remove-venue-siret"
+                          type="button">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                  {{ build_dynamic_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id) , "remove-venue-siret") }}
                 {% endif %}
               </div>
             {% endif %}
@@ -399,9 +402,6 @@
   {% if allowed_actions.actions.DELETE in allowed_actions %}
     {% set form_description = "Le partenaire culturel <strong>"|safe + venue.publicName + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
     {{ build_simple_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le partenaire culturel " + venue.publicName, "Confirmer", form_description) }}
-  {% endif %}
-  {% if allowed_actions.actions.DELETE_SIRET in allowed_actions %}
-    {{ build_dynamic_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id) , "remove-venue-siret") }}
   {% endif %}
   {% if allowed_actions.actions.CLOSE in allowed_actions %}
     {{ build_lazy_modal(url_for('backoffice_web.venue.get_close_venue_form', venue_id=venue.id) , "close-modal-" ~ venue.id) }}
