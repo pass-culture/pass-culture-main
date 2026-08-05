@@ -20,8 +20,7 @@ from pcapi.core.offerers.utils import is_venue_address
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
-from pcapi.routes.shared.collective.serialization import offers as shared_offers
-from pcapi.routes.shared.validation import phone_number_validator
+from pcapi.serialization.utils import phone_number_validator
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
@@ -521,7 +520,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @validator("students")
     def validate_students(cls, students: list[str]) -> list[StudentLevels]:
-        return shared_offers.validate_students(students)
+        return educational_validation.validate_students(students)
 
     @validator("name")
     def validate_name(cls, name: str) -> str:
@@ -687,7 +686,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if not students:
             return None
 
-        return shared_offers.validate_students(students)
+        return educational_validation.validate_students(students)
 
     @validator("formats")
     def validate_formats(cls, formats: list[EacFormat] | None) -> list[EacFormat]:

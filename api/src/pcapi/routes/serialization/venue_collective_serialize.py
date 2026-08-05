@@ -6,10 +6,10 @@ import pydantic as pydantic_v2
 from pydantic import field_validator
 
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import check_url
@@ -93,7 +93,7 @@ class EditVenueCollectiveDataBodyModel(HttpBodyModel):
         try:
             # TODO (jcicurel-pass, 2026-02-04): refactor validate_students to raise correct error
             # when all models using it are migrated to v2
-            shared_offers.validate_students(students)
+            educational_validation.validate_students(students)
         except ValueError as ex:
             raise PydanticError(str(ex))
         return students

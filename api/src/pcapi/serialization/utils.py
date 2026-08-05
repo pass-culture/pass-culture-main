@@ -9,6 +9,7 @@ import flask
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 import pytz
+from pydantic.v1 import validator
 from pydantic_core import PydanticCustomError
 from typing_extensions import Annotated
 
@@ -295,3 +296,23 @@ def validate_siret(value: str) -> str:
 
 
 SiretField = typing.Annotated[str, pydantic_v2.AfterValidator(validate_siret)]
+
+
+# These three methods are used in legacy pydantic v1 models, do not use them for new code
+def _validate_phone_number(number: str | None) -> str:
+    try:
+        parsed = phone_number_utils.parse_phone_number(number)
+    except phone_number_utils.InvalidPhoneNumber:
+        raise ValueError("Ce numéro de telephone ne semble pas valide")
+    return phone_number_utils.get_formatted_phone_number(parsed)
+
+
+def _validate_nullable_phone_number(number: str | None) -> str | None:
+    if number is None:
+        return None
+    return _validate_phone_number(number)
+
+
+def phone_number_validator(field_name: str, nullable: bool = False) -> classmethod:
+    func = _validate_nullable_phone_number if nullable else _validate_phone_number
+    return validator(field_name, allow_reuse=True)(func)
