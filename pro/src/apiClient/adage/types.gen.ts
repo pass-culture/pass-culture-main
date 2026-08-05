@@ -722,11 +722,11 @@ export type LocalOfferersPlaylistOffer = {
     /**
      * City
      */
-    city?: string;
+    city: string | null;
     /**
      * Distance
      */
-    distance?: number;
+    distance: number | null;
     /**
      * Id
      */
@@ -734,7 +734,7 @@ export type LocalOfferersPlaylistOffer = {
     /**
      * Imgurl
      */
-    imgUrl?: string;
+    imgUrl: string | null;
     /**
      * Name
      */

@@ -1,22 +1,14 @@
-import typing
-from decimal import Decimal
-
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class LocalOfferersPlaylistOffer(BaseModel):
+class LocalOfferersPlaylistOffer(HttpBodyModel):
     id: int
     name: str
-    distance: Decimal | None
+    distance: float | None
     imgUrl: str | None
     publicName: str
     city: str | None
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class LocalOfferersPlaylist(BaseModel):
-    venues: typing.Sequence[LocalOfferersPlaylistOffer]
+class LocalOfferersPlaylist(HttpBodyModel):
+    venues: list[LocalOfferersPlaylistOffer]
