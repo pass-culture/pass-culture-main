@@ -62,3 +62,24 @@ L'adresse était inaccessible par le support - nous y avons maintenant l'accès.
 TBD
 
 </details>
+
+<br>
+
+<details>
+
+<summary> ⏳ Critère 10.9 - RAWeb - Le service d’assistance répond aux besoins de communication des personnes handicapées directement ou par l’intermédiaire d’un service de relais ?</summary>
+
+**RAWeb** : [Critère 10.9](https://accessibilite.public.lu/fr/raweb1.1/criteres.html#crit-10-9)
+**Ticket** : [PC-42915](https://passculture.atlassian.net/browse/PC-42915)  
+**PR** : [#23701](https://github.com/pass-culture/pass-culture-main/pull/23701)
+
+**Problème** 😱  
+Sur la page « Inscription structure», l'indication « étape en cours», positionnée hors écran, est placée en dehors de la balise `<a>`. Elle n'est donc pas associée au lien et risque de ne pas être restituée lors d'une navigation par les liens
+
+**Correction** 💡  
+Ajout de l'aria-label sur les liens du nouveau composant DS Stepper + un aria-current="step" sur la balise `<li>` contenant le lien.
+
+**Retours audit** 🔥  
+TBD
+
+</details>
