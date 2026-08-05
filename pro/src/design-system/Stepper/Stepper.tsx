@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
@@ -26,159 +26,160 @@ export interface StepperProps {
    * - 'vertical': forced vertical layout.
    */
   orientation?: 'horizontal' | 'vertical' | 'auto'
+  ref?: React.RefObject<HTMLOListElement>
 }
 
-export const Stepper = forwardRef<HTMLOListElement, StepperProps>(
-  (
-    { steps, activeStep, orientation = 'auto' }: StepperProps,
-    ref
-  ): JSX.Element => {
-    const fallbackRef = useRef<HTMLOListElement>(null)
-    const listRef = (ref ||
-      fallbackRef) as React.RefObject<HTMLOListElement | null>
-    const [isVertical, setIsVertical] = useState(orientation === 'vertical')
+export const Stepper = ({
+  steps,
+  activeStep,
+  orientation = 'auto',
+  ref,
+}: StepperProps): JSX.Element => {
+  const fallbackRef = useRef<HTMLOListElement>(null)
+  const listRef = (ref ||
+    fallbackRef) as React.RefObject<HTMLOListElement | null>
+  const [isVertical, setIsVertical] = useState(orientation === 'vertical')
 
-    const activeStepIndex = steps.findIndex((step) => step.id === activeStep)
+  const activeStepIndex = steps.findIndex((step) => step.id === activeStep)
 
-    // Bascule horizontal -> vertical based on width per step
-    useLayoutEffect(() => {
-      if (orientation !== 'auto') {
-        setIsVertical(orientation === 'vertical')
-        return noop
-      }
-
-      const listElement = listRef.current
-      if (!listElement) {
-        return noop
-      }
-
-      const checkResponsive = (width: number) => {
-        const minWidthNeeded = steps.length * STEPPER_MIN_WIDTH_PER_STEP
-        setIsVertical(width < minWidthNeeded)
-      }
-
-      // Check initially
-      const initialRect = listElement.getBoundingClientRect()
-      if (initialRect.width > 0) {
-        checkResponsive(initialRect.width)
-      }
-
-      if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
-        const resizeObserver = new window.ResizeObserver((entries) => {
-          for (const entry of entries) {
-            const width = entry.contentRect.width
-            if (width > 0) {
-              checkResponsive(width)
-            }
-          }
-        })
-
-        resizeObserver.observe(listElement)
-        return () => {
-          resizeObserver.disconnect()
-        }
-      }
-
+  // Bascule horizontal -> vertical based on width per step
+  useLayoutEffect(() => {
+    if (orientation !== 'auto') {
+      setIsVertical(orientation === 'vertical')
       return noop
-    }, [steps.length, orientation, listRef])
+    }
 
-    return (
-      <ol
-        ref={listRef}
-        className={cn(
-          styles.stepper,
-          isVertical ? styles.vertical : styles.horizontal
-        )}
-      >
-        {steps.map((step, index) => {
-          // Steps are disabled by default if they are not yet reached
-          let state: 'disabled' | 'current' | 'done' = 'disabled'
-          if (index < activeStepIndex) {
-            state = 'done'
-          } else if (index === activeStepIndex) {
-            state = 'current'
+    const listElement = listRef.current
+    if (!listElement) {
+      return noop
+    }
+
+    const checkResponsive = (width: number) => {
+      const minWidthNeeded = steps.length * STEPPER_MIN_WIDTH_PER_STEP
+      setIsVertical(width < minWidthNeeded)
+    }
+
+    // Check initially
+    const initialRect = listElement.getBoundingClientRect()
+    if (initialRect.width > 0) {
+      checkResponsive(initialRect.width)
+    }
+
+    if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
+      const resizeObserver = new window.ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const width = entry.contentRect.width
+          if (width > 0) {
+            checkResponsive(width)
           }
+        }
+      })
 
-          // Only completed steps are actionable:
-          // the current step already shows its own content, and upcoming ones
-          // are not reachable yet.
-          const isActionable = state === 'done'
-          const linkUrl = isActionable ? step.url : undefined
-          const hasButton = isActionable && !step.url && !!step.onClick
-          const isClickable = !!linkUrl || hasButton
+      resizeObserver.observe(listElement)
+      return () => {
+        resizeObserver.disconnect()
+      }
+    }
 
-          // Accessibility VoiceOver format
-          const stateTranslation = {
-            done: 'terminée',
-            current: 'active',
-            disabled: 'à venir',
-          }[state]
+    return noop
+  }, [steps.length, orientation, listRef])
 
-          const voiceOverText = `Étape ${index + 1} sur ${steps.length}, ${stateTranslation}, ${step.label}`
+  return (
+    <ol
+      ref={listRef}
+      className={cn(
+        styles.stepper,
+        isVertical ? styles.vertical : styles.horizontal
+      )}
+    >
+      {steps.map((step, index) => {
+        // Steps are disabled by default if they are not yet reached
+        let state: 'disabled' | 'current' | 'done' = 'disabled'
+        if (index < activeStepIndex) {
+          state = 'done'
+        } else if (index === activeStepIndex) {
+          state = 'current'
+        }
 
-          const visualContent = (
-            <div className={styles['step-content']} aria-hidden="true">
-              <div className={styles.indicator}>
-                <span className={styles.number}>
-                  {(index + 1).toString().padStart(2, '0')}
-                </span>
-                {
-                  <div
-                    className={cn(styles.connector, {
-                      [styles.active]: state === 'done',
-                    })}
-                  />
-                }
-              </div>
-              <div className={styles['text-container']}>
-                <span className={styles.label}>{step.label}</span>
-                {step.sublabel && (
-                  <span className={styles.sublabel}>{step.sublabel}</span>
-                )}
-              </div>
+        // Only completed steps are actionable:
+        // the current step already shows its own content, and upcoming ones
+        // are not reachable yet.
+        const isActionable = state === 'done'
+        const linkUrl = isActionable ? step.url : undefined
+        const hasButton = isActionable && !step.url && !!step.onClick
+        const isClickable = !!linkUrl || hasButton
+
+        // Accessibility VoiceOver format
+        const stateTranslation = {
+          done: 'terminée',
+          current: 'active',
+          disabled: 'à venir',
+        }[state]
+
+        const voiceOverText = `Étape ${index + 1} sur ${steps.length}, ${stateTranslation}, ${step.label}`
+
+        const visualContent = (
+          <div className={styles['step-content']} aria-hidden="true">
+            <div className={styles.indicator}>
+              <span className={styles.number}>
+                {(index + 1).toString().padStart(2, '0')}
+              </span>
+              {
+                <div
+                  className={cn(styles.connector, {
+                    [styles.active]: state === 'done',
+                  })}
+                />
+              }
             </div>
-          )
-
-          return (
-            <li
-              key={step.id}
-              aria-current={state === 'current' ? 'step' : undefined}
-              className={cn(styles['step-item'], styles[state], {
-                [styles.clickable]: isClickable,
-              })}
-            >
-              {linkUrl ? (
-                <Link
-                  to={linkUrl}
-                  onClick={step.onClick}
-                  className={styles.link}
-                  aria-label={voiceOverText}
-                >
-                  {visualContent}
-                </Link>
-              ) : hasButton ? (
-                <button
-                  type="button"
-                  onClick={step.onClick}
-                  className={styles.button}
-                  aria-label={voiceOverText}
-                >
-                  {visualContent}
-                </button>
-              ) : (
-                <div className={styles.wrapper}>
-                  <span className={styles['visually-hidden']}>
-                    {voiceOverText}
-                  </span>
-                  {visualContent}
-                </div>
+            <div className={styles['text-container']}>
+              <span className={styles.label}>{step.label}</span>
+              {step.sublabel && (
+                <span className={styles.sublabel}>{step.sublabel}</span>
               )}
-            </li>
-          )
-        })}
-      </ol>
-    )
-  }
-)
+            </div>
+          </div>
+        )
+
+        return (
+          <li
+            key={step.id}
+            aria-current={state === 'current' ? 'step' : undefined}
+            className={cn(styles['step-item'], styles[state], {
+              [styles.clickable]: isClickable,
+            })}
+          >
+            {linkUrl ? (
+              <Link
+                to={linkUrl}
+                onClick={step.onClick}
+                className={styles.link}
+                aria-label={voiceOverText}
+              >
+                {visualContent}
+              </Link>
+            ) : hasButton ? (
+              <button
+                type="button"
+                onClick={step.onClick}
+                className={styles.button}
+                aria-label={voiceOverText}
+              >
+                {visualContent}
+              </button>
+            ) : (
+              <div className={styles.wrapper}>
+                <span className={styles['visually-hidden']}>
+                  {voiceOverText}
+                </span>
+                {visualContent}
+              </div>
+            )}
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
 
 Stepper.displayName = 'Stepper'
