@@ -149,32 +149,14 @@ export const Stepper = ({
               [styles.clickable]: isClickable,
             })}
           >
-            {linkUrl ? (
-              <Link
-                to={linkUrl}
-                onClick={step.onClick}
-                className={styles.link}
-                aria-label={voiceOverText}
-              >
-                {visualContent}
-              </Link>
-            ) : hasButton ? (
-              <button
-                type="button"
-                onClick={step.onClick}
-                className={styles.button}
-                aria-label={voiceOverText}
-              >
-                {visualContent}
-              </button>
-            ) : (
-              <div className={styles.wrapper}>
-                <span className={styles['visually-hidden']}>
-                  {voiceOverText}
-                </span>
-                {visualContent}
-              </div>
-            )}
+            <StepTrigger
+              linkUrl={linkUrl}
+              hasButton={hasButton}
+              onClick={step.onClick}
+              voiceOverText={voiceOverText}
+            >
+              {visualContent}
+            </StepTrigger>
           </li>
         )
       })}
@@ -183,3 +165,50 @@ export const Stepper = ({
 }
 
 Stepper.displayName = 'Stepper'
+
+function StepTrigger({
+  linkUrl,
+  hasButton,
+  onClick,
+  voiceOverText,
+  children,
+}: {
+  linkUrl?: string
+  hasButton: boolean
+  onClick?: () => void
+  voiceOverText: string
+  children: React.ReactNode
+}): JSX.Element {
+  if (linkUrl) {
+    return (
+      <Link
+        to={linkUrl}
+        onClick={onClick}
+        className={styles.link}
+        aria-label={voiceOverText}
+      >
+        {children}
+      </Link>
+    )
+  }
+
+  if (hasButton) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={styles.button}
+        aria-label={voiceOverText}
+      >
+        {children}
+      </button>
+    )
+  }
+
+  return (
+    <div className={styles.wrapper}>
+      <span className={styles['visually-hidden']}>{voiceOverText}</span>
+      {children}
+    </div>
+  )
+}
