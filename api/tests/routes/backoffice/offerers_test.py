@@ -2043,701 +2043,682 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_to_validate"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    class ListOfferersToBeValidatedTest:
-        # - session + authenticated user (1 query)
-        # - validation status count (1 query)
-        # - offerer tags filter (1 query)
-        expected_num_queries_when_no_query = 3
-        # - get results (1 query)
-        # - get results count (1 query)
-        expected_num_queries = expected_num_queries_when_no_query + 2
+    # - session + authenticated user (1 query)
+    # - validation status count (1 query)
+    # - offerer tags filter (1 query)
+    expected_num_queries_when_no_query = 3
+    # - get results (1 query)
+    # - get results count (1 query)
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
-        @pytest.mark.parametrize(
-            "row_key,sort,order",
-            [
-                ("Date de la demande", None, None),
-                ("Date de la demande", "", ""),
-                ("Date de la demande", "dateCreated", "asc"),
-                ("Date de la demande", "dateCreated", "desc"),
-            ],
-        )
-        def test_list_offerers_to_be_validated(self, authenticated_client, row_key, sort, order):
-            _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
-            to_be_validated_offerers = []
-            for _ in range(4):
-                user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-                history_factories.ActionHistoryFactory(
-                    actionType=history_models.ActionType.OFFERER_NEW,
-                    authorUser=users_factories.AdminFactory(),
-                    offerer=user_offerer.offerer,
-                    user=user_offerer.user,
-                    comment=None,
-                )
-                to_be_validated_offerers.append(user_offerer.offerer)
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", order=order, sort=sort)
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            # Without sort, table is ordered by dateCreated desc
-            to_be_validated_offerers.sort(
-                key=attrgetter(sort or "dateCreated"), reverse=(order == "desc") if sort else True
-            )
-            assert [row[row_key] for row in rows] == [
-                offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
-            ]
-
-        def test_payload_content(self, authenticated_client, offerer_tags):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
-                offerer__validationStatus=ValidationStatus.NEW,
-                user__phoneNumber="+33610203040",
-            )
-            offerer = user_offerer.offerer
-            offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Marseille")
-            offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
-            tag = offerers_factories.OffererTagFactory(label="Magic Tag")
-            category = (
-                db.session.query(offerers_models.OffererTagCategory)
-                .filter(offerers_models.OffererTagCategory.name == "homologation")
-                .one()
-            )
-            offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
-            offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=offerer.id)
-
-            other_category_tag = offerers_factories.OffererTagFactory(label="Festival")
-            other_category = offerers_factories.OffererTagCategoryFactory(name="spectacle", label="Spectacles")
-            offerers_factories.OffererTagCategoryMappingFactory(
-                tagId=other_category_tag.id, categoryId=other_category.id
-            )
-            offerers_factories.OffererTagMappingFactory(tagId=other_category_tag.id, offererId=offerer.id)
-
-            commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
+    @pytest.mark.parametrize(
+        "row_key,sort,order",
+        [
+            ("Date de la demande", None, None),
+            ("Date de la demande", "", ""),
+            ("Date de la demande", "dateCreated", "asc"),
+            ("Date de la demande", "dateCreated", "desc"),
+        ],
+    )
+    def test_list_offerers_to_be_validated(self, authenticated_client, row_key, sort, order):
+        _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
+        to_be_validated_offerers = []
+        for _ in range(4):
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 12, 0),
                 actionType=history_models.ActionType.OFFERER_NEW,
-                authorUser=commenter,
-                offerer=offerer,
-                user=user_offerer.user,
-                comment=None,
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 13, 1),
-                actionType=history_models.ActionType.COMMENT,
-                authorUser=commenter,
-                offerer=offerer,
-                comment="Bla blabla",
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 14, 2),
-                actionType=history_models.ActionType.OFFERER_PENDING,
-                authorUser=commenter,
-                offerer=offerer,
-                comment="Houlala",
-            )
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 10, 3, 15, 3),
-                actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
-                authorUser=commenter,
-                offerer=offerer,
-                user=user_offerer.user,
-                comment=None,
-            )
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(offerer.id)
-            assert rows[0]["Nom"] == offerer.name
-            assert rows[0]["État"] == "Nouvelle"
-            assert tag.label in rows[0]["Tags"]
-            assert other_category_tag.label in rows[0]["Tags"]
-            assert rows[0]["Date de la demande"] == "03/10/2022"
-            assert rows[0]["Documents reçus"] == ""
-            assert rows[0]["Dernier commentaire"] == "Houlala"
-            assert rows[0]["SIREN"] == offerer.siren
-            assert rows[0]["Email"] == user_offerer.user.email
-            assert rows[0]["Responsable"] == user_offerer.user.full_name
-            assert rows[0]["Ville"] == "Lyon, Marseille"
-
-            dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
-            assert dms_adage_data == []
-
-        def test_payload_content_no_action(self, authenticated_client):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
-            )
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom"] == user_offerer.offerer.name
-            assert rows[0]["État"] == "Nouvelle"
-            assert rows[0]["Date de la demande"] == "03/10/2022"
-            assert rows[0]["Dernier commentaire"] == ""
-
-        def test_payload_content_ae_documents_not_received(self, authenticated_client):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-            offerers_factories.IndividualOffererSubscriptionFactory(
-                offerer=user_offerer.offerer, isEmailSent=True, isCriminalRecordReceived=True
-            )
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Documents reçus"] == "Non"
-
-        def test_payload_content_ae_documents_received(self, authenticated_client):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-            offerers_factories.IndividualOffererSubscriptionFactory(
+                authorUser=users_factories.AdminFactory(),
                 offerer=user_offerer.offerer,
-                isEmailSent=True,
-                isCriminalRecordReceived=True,
-                isExperienceReceived=True,
+                user=user_offerer.user,
+                comment=None,
             )
+            to_be_validated_offerers.append(user_offerer.offerer)
 
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", order=order, sort=sort)
+            )
+            assert response.status_code == 200
 
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Documents reçus"] == "Oui"
-
-        def test_dms_adage_additional_data(self, authenticated_client):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-            venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-            accepted_application = educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
-            other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-            other_accepted_application = educational_factories.CollectiveDmsApplicationFactory(
-                venue=other_venue, state="accepte"
-            )
-            other_rejected_application = educational_factories.CollectiveDmsApplicationFactory(
-                venue=other_venue, state="refuse"
-            )
-            venueless_application = educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
-                siret=user_offerer.offerer.siren + "12345", state="accepte"
-            )
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-
-            dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-            assert (
-                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
-                in dms_adage_data
-            )
-            assert (
-                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
-                in dms_adage_data
-            )
-            assert (
-                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DN ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
-                in dms_adage_data
-            )
-            assert (
-                f"Dossier sans partenaire culturel SIRET : {venueless_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
-                in dms_adage_data
-            )
-
-        @pytest.mark.parametrize(
-            "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
-            (
-                (31, {"limit": 10}, 4, 1, 10),
-                (31, {"limit": 10, "page": 1}, 4, 1, 10),
-                (31, {"limit": 10, "page": 3}, 4, 3, 10),
-                (31, {"limit": 10, "page": 4}, 4, 4, 1),
-                (20, {"limit": 10, "page": 1}, 2, 1, 10),
-                (27, {"page": 1}, 1, 1, 27),
-                (10, {"limit": 25, "page": 1}, 1, 1, 10),
-                (1, {"limit": None, "page": 1}, 1, 1, 1),
-                (1, {"limit": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
-            ),
+        rows = html_parser.extract_table_rows(response.data)
+        # Without sort, table is ordered by dateCreated desc
+        to_be_validated_offerers.sort(
+            key=attrgetter(sort or "dateCreated"), reverse=(order == "desc") if sort else True
         )
-        def test_list_pagination(
-            self,
-            authenticated_client,
-            total_items,
-            pagination_config,
-            expected_total_pages,
+        assert [row[row_key] for row in rows] == [
+            offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
+        ]
+
+    def test_payload_content(self, authenticated_client, offerer_tags):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
+            offerer__validationStatus=ValidationStatus.NEW,
+            user__phoneNumber="+33610203040",
+        )
+        offerer = user_offerer.offerer
+        offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Marseille")
+        offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
+        tag = offerers_factories.OffererTagFactory(label="Magic Tag")
+        category = (
+            db.session.query(offerers_models.OffererTagCategory)
+            .filter(offerers_models.OffererTagCategory.name == "homologation")
+            .one()
+        )
+        offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
+        offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=offerer.id)
+
+        other_category_tag = offerers_factories.OffererTagFactory(label="Festival")
+        other_category = offerers_factories.OffererTagCategoryFactory(name="spectacle", label="Spectacles")
+        offerers_factories.OffererTagCategoryMappingFactory(tagId=other_category_tag.id, categoryId=other_category.id)
+        offerers_factories.OffererTagMappingFactory(tagId=other_category_tag.id, offererId=offerer.id)
+
+        commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 12, 0),
+            actionType=history_models.ActionType.OFFERER_NEW,
+            authorUser=commenter,
+            offerer=offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 13, 1),
+            actionType=history_models.ActionType.COMMENT,
+            authorUser=commenter,
+            offerer=offerer,
+            comment="Bla blabla",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 14, 2),
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=commenter,
+            offerer=offerer,
+            comment="Houlala",
+        )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 10, 3, 15, 3),
+            actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
+            authorUser=commenter,
+            offerer=offerer,
+            user=user_offerer.user,
+            comment=None,
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offerer.id)
+        assert rows[0]["Nom"] == offerer.name
+        assert rows[0]["État"] == "Nouvelle"
+        assert tag.label in rows[0]["Tags"]
+        assert other_category_tag.label in rows[0]["Tags"]
+        assert rows[0]["Date de la demande"] == "03/10/2022"
+        assert rows[0]["Documents reçus"] == ""
+        assert rows[0]["Dernier commentaire"] == "Houlala"
+        assert rows[0]["SIREN"] == offerer.siren
+        assert rows[0]["Email"] == user_offerer.user.email
+        assert rows[0]["Responsable"] == user_offerer.user.full_name
+        assert rows[0]["Ville"] == "Lyon, Marseille"
+
+        dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
+        assert dms_adage_data == []
+
+    def test_payload_content_no_action(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_offerer.offerer.id)
+        assert rows[0]["Nom"] == user_offerer.offerer.name
+        assert rows[0]["État"] == "Nouvelle"
+        assert rows[0]["Date de la demande"] == "03/10/2022"
+        assert rows[0]["Dernier commentaire"] == ""
+
+    def test_payload_content_ae_documents_not_received(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer=user_offerer.offerer, isEmailSent=True, isCriminalRecordReceived=True
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_offerer.offerer.id)
+        assert rows[0]["Documents reçus"] == "Non"
+
+    def test_payload_content_ae_documents_received(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer=user_offerer.offerer,
+            isEmailSent=True,
+            isCriminalRecordReceived=True,
+            isExperienceReceived=True,
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_offerer.offerer.id)
+        assert rows[0]["Documents reçus"] == "Oui"
+
+    def test_dms_adage_additional_data(self, authenticated_client):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        accepted_application = educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
+        other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        other_accepted_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=other_venue, state="accepte"
+        )
+        other_rejected_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=other_venue, state="refuse"
+        )
+        venueless_application = educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+            siret=user_offerer.offerer.siren + "12345", state="accepte"
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_offerer.offerer.id)
+
+        dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert (
+            f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
+            in dms_adage_data
+        )
+        assert (
+            f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
+            in dms_adage_data
+        )
+        assert (
+            f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DN ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
+            in dms_adage_data
+        )
+        assert (
+            f"Dossier sans partenaire culturel SIRET : {venueless_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
+            in dms_adage_data
+        )
+
+    @pytest.mark.parametrize(
+        "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
+        (
+            (31, {"limit": 10}, 4, 1, 10),
+            (31, {"limit": 10, "page": 1}, 4, 1, 10),
+            (31, {"limit": 10, "page": 3}, 4, 3, 10),
+            (31, {"limit": 10, "page": 4}, 4, 4, 1),
+            (20, {"limit": 10, "page": 1}, 2, 1, 10),
+            (27, {"page": 1}, 1, 1, 27),
+            (10, {"limit": 25, "page": 1}, 1, 1, 10),
+            (1, {"limit": None, "page": 1}, 1, 1, 1),
+            (1, {"limit": "", "page": 1}, 1, 1, 1),  # ensure that it does not crash (fallbacks to default)
+        ),
+    )
+    def test_list_pagination(
+        self,
+        authenticated_client,
+        total_items,
+        pagination_config,
+        expected_total_pages,
+        expected_page,
+        expected_items,
+    ):
+        for _ in range(total_items):
+            offerers_factories.UserNotValidatedOffererFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", **pagination_config)
+            )
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == expected_items
+        assert html_parser.extract_pagination_info(response.data) == (
             expected_page,
-            expected_items,
-        ):
-            for _ in range(total_items):
-                offerers_factories.UserNotValidatedOffererFactory()
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", **pagination_config)
-                )
-                assert response.status_code == 200
-
-            assert html_parser.count_table_rows(response.data) == expected_items
-            assert html_parser.extract_pagination_info(response.data) == (
-                expected_page,
-                expected_total_pages,
-                total_items,
-            )
-
-        @pytest.mark.parametrize(
-            "region_filter, expected_offerer_names",
-            (
-                (["Bretagne"], {"A", "B", "D", "E"}),
-                (["Normandie", "Pays de la Loire"], {"C", "F"}),
-            ),
+            expected_total_pages,
+            total_items,
         )
-        def test_list_filtering_by_region(
-            self, authenticated_client, region_filter, expected_offerer_names, offerers_to_be_validated
-        ):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        regions=region_filter,
-                        status=["NEW", "PENDING"],
-                    )
-                )
-                assert response.status_code == 200
 
+    @pytest.mark.parametrize(
+        "region_filter, expected_offerer_names",
+        (
+            (["Bretagne"], {"A", "B", "D", "E"}),
+            (["Normandie", "Pays de la Loire"], {"C", "F"}),
+        ),
+    )
+    def test_list_filtering_by_region(
+        self, authenticated_client, region_filter, expected_offerer_names, offerers_to_be_validated
+    ):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    regions=region_filter,
+                    status=["NEW", "PENDING"],
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == expected_offerer_names
+
+    @pytest.mark.parametrize(
+        "tag_filter, expected_offerer_names",
+        (
+            (["Top acteur"], {"B", "E", "F"}),
+            (["Collectivité"], {"C", "E"}),
+            (["Établissement public"], {"D", "F"}),
+            (["Établissement public", "Top acteur"], {"F"}),
+            (["Festival"], {"D", "F"}),
+        ),
+    )
+    def test_list_filtering_by_tags(
+        self, authenticated_client, tag_filter, expected_offerer_names, offerers_to_be_validated
+    ):
+        tags = (
+            db.session.query(offerers_models.OffererTag)
+            .filter(offerers_models.OffererTag.label.in_(tag_filter))
+            .with_entities(offerers_models.OffererTag.id)
+            .all()
+        )
+        tags_ids = [_id for (_id,) in tags]
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", tags=tags_ids, status=["NEW", "PENDING"])
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == expected_offerer_names
+
+    def test_list_filtering_by_date(self, authenticated_client):
+        # Created before requested range, excluded from results:
+        offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 4, 4))
+        # Created within requested range: Nov 4 23:45 UTC is Nov 5 00:45 CET
+        user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 4, 23, 45)
+        )
+        # Within requested range:
+        user_offerer_3 = offerers_factories.UserNotValidatedOffererFactory(
+            offerer__dateCreated=datetime.datetime(2022, 11, 6, 5)
+        )
+        # Excluded from results: Nov 8 23:15 UTC is Now 9 00:15 CET
+        offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 8, 23, 15))
+        # Excluded from results:
+        offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    from_date="2022-11-05",
+                    to_date="2022-11-08",
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
+
+    def test_list_filtering_by_invalid_date(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    from_date="05/11/2022",
+                )
+            )
+            assert response.status_code == 400
+
+        assert "Date invalide" in response.data.decode("utf-8")
+
+    @pytest.mark.parametrize("search_filter", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
+    def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search_filter):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter, status="PENDING")
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"D"}
+
+    def test_list_search_by_rid7(self, authenticated_client):
+        nc_offerer = offerers_factories.NotValidatedCaledonianOffererFactory()
+        rid7 = nc_offerer.siren[2:]
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q=rid7))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {nc_offerer.name}
+
+    @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
+    def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q=postal_code)
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"E"}
+
+    def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q="35"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"A", "E"}
+
+    def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
+        # Ensure that outerjoin does not cause too many rows returned
+        offerers_factories.UserOffererFactory.create_batch(3, offerer=offerers_to_be_validated[1])
+
+        # Search "quimper" => results include "Quimper" and "Quimperlé"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper", status="PENDING")
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"B", "D"}
+        assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
+
+    @pytest.mark.parametrize("search_filter", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
+    def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_filter):
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
+            )
+            assert response.status_code == 400
+
+        assert (
+            "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DN CB"
+            in response.data.decode("utf-8")
+        )
+
+    def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com", status="PENDING")
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"B"}
+
+    def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q="Felix faure")
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == {"C"}
+
+    @pytest.mark.parametrize(
+        "search_filter, expected_offerer_names",
+        (
+            ("cinema de la plage", {"Cinéma de la Plage"}),
+            ("cinéma", {"Cinéma de la Petite Plage", "Cinéma de la Plage", "Cinéma du Centre"}),
+            ("Plage", {"Librairie de la Plage", "Cinéma de la Petite Plage", "Cinéma de la Plage"}),
+            ("Librairie du Centre", set()),
+        ),
+    )
+    def test_list_search_by_name(self, authenticated_client, search_filter, expected_offerer_names):
+        for name in (
+            "Librairie de la Plage",
+            "Cinéma de la Petite Plage",
+            "Cinéma du Centre",
+            "Cinéma de la Plage",
+        ):
+            offerers_factories.NewOffererFactory(name=name)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Nom"] for row in rows} == expected_offerer_names
+
+    @pytest.mark.parametrize(
+        "status_filter, expected_status, expected_offerer_names",
+        (
+            ("NEW", 200, {"A", "C", "E"}),
+            ("PENDING", 200, {"B", "D", "F"}),
+            (["NEW", "PENDING"], 200, {"A", "B", "C", "D", "E", "F"}),
+            ("VALIDATED", 200, {"G"}),
+            ("REJECTED", 200, {"H"}),
+            ("CLOSED", 200, {"Z"}),
+            (None, 200, {"C", "A", "E"}),  # status NEW as default
+            ("OTHER", 400, set()),  # unknown value
+            (["REJECTED", "OTHER"], 400, set()),
+        ),
+    )
+    def test_list_filtering_by_status(
+        self, authenticated_client, status_filter, expected_status, expected_offerer_names, offerers_to_be_validated
+    ):
+        offerers_factories.ClosedOffererFactory(name="Z")
+
+        expected_num_queries = self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(
+                url_for("backoffice_web.validation.list_offerers_to_validate", status=status_filter)
+            )
+            assert response.status_code == expected_status
+
+        if expected_status == 200:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom"] for row in rows} == expected_offerer_names
-
-        @pytest.mark.parametrize(
-            "tag_filter, expected_offerer_names",
-            (
-                (["Top acteur"], {"B", "E", "F"}),
-                (["Collectivité"], {"C", "E"}),
-                (["Établissement public"], {"D", "F"}),
-                (["Établissement public", "Top acteur"], {"F"}),
-                (["Festival"], {"D", "F"}),
-            ),
-        )
-        def test_list_filtering_by_tags(
-            self, authenticated_client, tag_filter, expected_offerer_names, offerers_to_be_validated
-        ):
-            tags = (
-                db.session.query(offerers_models.OffererTag)
-                .filter(offerers_models.OffererTag.label.in_(tag_filter))
-                .with_entities(offerers_models.OffererTag.id)
-                .all()
-            )
-            tags_ids = [_id for (_id,) in tags]
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate", tags=tags_ids, status=["NEW", "PENDING"]
-                    )
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == expected_offerer_names
-
-        def test_list_filtering_by_date(self, authenticated_client):
-            # Created before requested range, excluded from results:
-            offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 4, 4))
-            # Created within requested range: Nov 4 23:45 UTC is Nov 5 00:45 CET
-            user_offerer_2 = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 4, 23, 45)
-            )
-            # Within requested range:
-            user_offerer_3 = offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 6, 5)
-            )
-            # Excluded from results: Nov 8 23:15 UTC is Now 9 00:15 CET
-            offerers_factories.UserNotValidatedOffererFactory(
-                offerer__dateCreated=datetime.datetime(2022, 11, 8, 23, 15)
-            )
-            # Excluded from results:
-            offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        from_date="2022-11-05",
-                        to_date="2022-11-08",
-                    )
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
-
-        def test_list_filtering_by_invalid_date(self, authenticated_client):
-            with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        from_date="05/11/2022",
-                    )
-                )
-                assert response.status_code == 400
-
-            assert "Date invalide" in response.data.decode("utf-8")
-
-        @pytest.mark.parametrize("search_filter", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
-        def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search_filter):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter, status="PENDING")
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"D"}
-
-        def test_list_search_by_rid7(self, authenticated_client):
-            nc_offerer = offerers_factories.NotValidatedCaledonianOffererFactory()
-            rid7 = nc_offerer.siren[2:]
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=rid7)
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {nc_offerer.name}
-
-        @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
-        def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=postal_code)
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"E"}
-
-        def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q="35")
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"A", "E"}
-
-        def test_list_search_by_city(self, authenticated_client, offerers_to_be_validated):
-            # Ensure that outerjoin does not cause too many rows returned
-            offerers_factories.UserOffererFactory.create_batch(3, offerer=offerers_to_be_validated[1])
-
-            # Search "quimper" => results include "Quimper" and "Quimperlé"
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper", status="PENDING")
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"B", "D"}
-            assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
-
-        @pytest.mark.parametrize("search_filter", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
-        def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search_filter):
-            with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
-                )
-                assert response.status_code == 400
-
-            assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DN CB"
-                in response.data.decode("utf-8")
-            )
-
-        def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com", status="PENDING"
-                    )
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"B"}
-
-        def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q="Felix faure")
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == {"C"}
-
-        @pytest.mark.parametrize(
-            "search_filter, expected_offerer_names",
-            (
-                ("cinema de la plage", {"Cinéma de la Plage"}),
-                ("cinéma", {"Cinéma de la Petite Plage", "Cinéma de la Plage", "Cinéma du Centre"}),
-                ("Plage", {"Librairie de la Plage", "Cinéma de la Petite Plage", "Cinéma de la Plage"}),
-                ("Librairie du Centre", set()),
-            ),
-        )
-        def test_list_search_by_name(self, authenticated_client, search_filter, expected_offerer_names):
-            for name in (
-                "Librairie de la Plage",
-                "Cinéma de la Petite Plage",
-                "Cinéma du Centre",
-                "Cinéma de la Plage",
-            ):
-                offerers_factories.NewOffererFactory(name=name)
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {row["Nom"] for row in rows} == expected_offerer_names
-
-        @pytest.mark.parametrize(
-            "status_filter, expected_status, expected_offerer_names",
-            (
-                ("NEW", 200, {"A", "C", "E"}),
-                ("PENDING", 200, {"B", "D", "F"}),
-                (["NEW", "PENDING"], 200, {"A", "B", "C", "D", "E", "F"}),
-                ("VALIDATED", 200, {"G"}),
-                ("REJECTED", 200, {"H"}),
-                ("CLOSED", 200, {"Z"}),
-                (None, 200, {"C", "A", "E"}),  # status NEW as default
-                ("OTHER", 400, set()),  # unknown value
-                (["REJECTED", "OTHER"], 400, set()),
-            ),
-        )
-        def test_list_filtering_by_status(
-            self, authenticated_client, status_filter, expected_status, expected_offerer_names, offerers_to_be_validated
-        ):
-            offerers_factories.ClosedOffererFactory(name="Z")
-
-            expected_num_queries = (
-                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
-            )
-            with assert_num_queries(expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", status=status_filter)
-                )
-                assert response.status_code == expected_status
-
-            if expected_status == 200:
-                rows = html_parser.extract_table_rows(response.data)
-                assert {row["Nom"] for row in rows} == expected_offerer_names
-            else:
-                assert html_parser.count_table_rows(response.data) == 0
-
-        def test_list_filtering_by_ae_documents_received(self, authenticated_client, offerers_to_be_validated):
-            _, yes, no1, no2, _, _ = offerers_to_be_validated
-
-            offerers_factories.IndividualOffererSubscriptionFactory(
-                offerer=yes, isEmailSent=True, isCriminalRecordReceived=True, isExperienceReceived=True
-            )
-            offerers_factories.IndividualOffererSubscriptionFactory(
-                offerer=no1, isEmailSent=True, isCertificateReceived=True
-            )
-            offerers_factories.IndividualOffererSubscriptionFactory(offerer=no2, isEmailSent=True)
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        status=["NEW", "PENDING"],
-                        ae_documents_received="no",
-                    )
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {int(row["ID"]) for row in rows} == {no1.id, no2.id}
-
-        def test_list_filtering_by_instructor(self, authenticated_client, offerers_to_be_validated):
-            _, pending1, _, pending2, _, pending3 = offerers_to_be_validated
-
-            instructor = users_factories.AdminFactory()
-            instructor_id = instructor.id
-            other_instructor = users_factories.AdminFactory()
-
-            history_factories.ActionHistoryFactory(
-                actionType=history_models.ActionType.OFFERER_PENDING,
-                authorUser=instructor,
-                offerer=pending1,
-            )
-
-            history_factories.ActionHistoryFactory(
-                actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-                actionType=history_models.ActionType.OFFERER_PENDING,
-                authorUser=other_instructor,
-                offerer=pending2,
-            )
-            history_factories.ActionHistoryFactory(
-                actionType=history_models.ActionType.USER_OFFERER_PENDING,
-                authorUser=instructor,
-                user=users_factories.NonAttachedProFactory(),
-                offerer=pending2,
-            )
-
-            history_factories.ActionHistoryFactory(
-                actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
-                actionType=history_models.ActionType.OFFERER_PENDING,
-                authorUser=instructor,
-                offerer=pending3,
-            )
-            history_factories.ActionHistoryFactory(
-                actionType=history_models.ActionType.OFFERER_PENDING,
-                authorUser=other_instructor,
-                offerer=pending3,
-            )
-
-            # +1 query to fill in instructor filter
-            with assert_num_queries(self.expected_num_queries + 1):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        status="PENDING",
-                        instructors=instructor_id,
-                    )
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert {int(row["ID"]) for row in rows} == {pending1.id}
-
-        @pytest.mark.parametrize(
-            "dms_status_filter, expected_status, expected_offerer_names",
-            (
-                ("accepted", 200, {"A", "E"}),
-                ("on_going", 200, {"B"}),
-                (["accepted", "on_going"], 200, {"A", "B", "E"}),
-                ("draft", 200, {"C"}),
-                ("without_continuation", 200, {"D"}),
-                ("refused", 200, {"A"}),
-                (None, 200, {"A", "B", "C", "D", "E", "F"}),  # same as default
-                ("OTHER", 400, set()),  # unknown value
-                (["accepted", "OTHER"], 400, set()),
-            ),
-        )
-        def test_list_filtering_by_dms_adage_status(
-            self,
-            authenticated_client,
-            dms_status_filter,
-            expected_status,
-            expected_offerer_names,
-            offerers_to_be_validated,
-        ):
-            expected_num_queries = (
-                self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
-            )
-            with assert_num_queries(expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        dms_adage_status=dms_status_filter,
-                        status=["NEW", "PENDING"],
-                    )
-                )
-                assert response.status_code == expected_status
-
-            if expected_status == 200:
-                rows = html_parser.extract_table_rows(response.data)
-                assert {row["Nom"] for row in rows} == expected_offerer_names
-            else:
-                assert html_parser.count_table_rows(response.data) == 0
-
-        @pytest.mark.parametrize(
-            "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
-        )
-        def test_list_filtering_by_dms_token(self, authenticated_client, query, offerers_to_be_validated):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="123a456b789c")
-            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=query)
-                )
-                assert response.status_code == 200
-
-            rows = html_parser.extract_table_rows(response.data)
-            assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-
-        @pytest.mark.parametrize(
-            "query, dms_status_filter",
-            (
-                ("124578235689", "accepted"),
-                ("PRO-124578235689", "on_going"),
-                ("124578235689", None),
-                (None, "accepted"),
-            ),
-        )
-        def test_list_filtering_with_filters_using_same_joins(
-            self, authenticated_client, query, dms_status_filter, offerers_to_be_validated
-        ):
-            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(
-                    url_for(
-                        "backoffice_web.validation.list_offerers_to_validate",
-                        q=query,
-                        dms_adage_status=dms_status_filter,
-                    )
-                )
-                assert response.status_code == 200
-
-        def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
-            offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)
-            offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.REJECTED)
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            cards = html_parser.extract_cards_text(response.data)
-            assert "3 nouvelles entités juridiques" in cards
-            assert "4 entités juridiques en attente" in cards
-            assert "1 entité juridique validée" in cards
-            assert "2 entités juridiques rejetées" in cards
-
-        def test_no_offerer(self, authenticated_client):
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
-                assert response.status_code == 200
-
-            cards = html_parser.extract_cards_text(response.data)
-            assert "0 nouvelle entité juridique" in cards
-            assert "0 entité juridique en attente" in cards
-            assert "0 entité juridique validée" in cards
-            assert "0 entité juridique rejetée" in cards
+        else:
             assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_filtering_by_ae_documents_received(self, authenticated_client, offerers_to_be_validated):
+        _, yes, no1, no2, _, _ = offerers_to_be_validated
+
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer=yes, isEmailSent=True, isCriminalRecordReceived=True, isExperienceReceived=True
+        )
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer=no1, isEmailSent=True, isCertificateReceived=True
+        )
+        offerers_factories.IndividualOffererSubscriptionFactory(offerer=no2, isEmailSent=True)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    status=["NEW", "PENDING"],
+                    ae_documents_received="no",
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {no1.id, no2.id}
+
+    def test_list_filtering_by_instructor(self, authenticated_client, offerers_to_be_validated):
+        _, pending1, _, pending2, _, pending3 = offerers_to_be_validated
+
+        instructor = users_factories.AdminFactory()
+        instructor_id = instructor.id
+        other_instructor = users_factories.AdminFactory()
+
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=instructor,
+            offerer=pending1,
+        )
+
+        history_factories.ActionHistoryFactory(
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=other_instructor,
+            offerer=pending2,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=instructor,
+            user=users_factories.NonAttachedProFactory(),
+            offerer=pending2,
+        )
+
+        history_factories.ActionHistoryFactory(
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=instructor,
+            offerer=pending3,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.OFFERER_PENDING,
+            authorUser=other_instructor,
+            offerer=pending3,
+        )
+
+        # +1 query to fill in instructor filter
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    status="PENDING",
+                    instructors=instructor_id,
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {pending1.id}
+
+    @pytest.mark.parametrize(
+        "dms_status_filter, expected_status, expected_offerer_names",
+        (
+            ("accepted", 200, {"A", "E"}),
+            ("on_going", 200, {"B"}),
+            (["accepted", "on_going"], 200, {"A", "B", "E"}),
+            ("draft", 200, {"C"}),
+            ("without_continuation", 200, {"D"}),
+            ("refused", 200, {"A"}),
+            (None, 200, {"A", "B", "C", "D", "E", "F"}),  # same as default
+            ("OTHER", 400, set()),  # unknown value
+            (["accepted", "OTHER"], 400, set()),
+        ),
+    )
+    def test_list_filtering_by_dms_adage_status(
+        self,
+        authenticated_client,
+        dms_status_filter,
+        expected_status,
+        expected_offerer_names,
+        offerers_to_be_validated,
+    ):
+        expected_num_queries = self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 1
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    dms_adage_status=dms_status_filter,
+                    status=["NEW", "PENDING"],
+                )
+            )
+            assert response.status_code == expected_status
+
+        if expected_status == 200:
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom"] for row in rows} == expected_offerer_names
+        else:
+            assert html_parser.count_table_rows(response.data) == 0
+
+    @pytest.mark.parametrize(
+        "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
+    )
+    def test_list_filtering_by_dms_token(self, authenticated_client, query, offerers_to_be_validated):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="123a456b789c")
+        offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate", q=query))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(user_offerer.offerer.id)
+
+    @pytest.mark.parametrize(
+        "query, dms_status_filter",
+        (
+            ("124578235689", "accepted"),
+            ("PRO-124578235689", "on_going"),
+            ("124578235689", None),
+            (None, "accepted"),
+        ),
+    )
+    def test_list_filtering_with_filters_using_same_joins(
+        self, authenticated_client, query, dms_status_filter, offerers_to_be_validated
+    ):
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    "backoffice_web.validation.list_offerers_to_validate",
+                    q=query,
+                    dms_adage_status=dms_status_filter,
+                )
+            )
+            assert response.status_code == 200
+
+    def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
+        offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)
+        offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.REJECTED)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        cards = html_parser.extract_cards_text(response.data)
+        assert "3 nouvelles entités juridiques" in cards
+        assert "4 entités juridiques en attente" in cards
+        assert "1 entité juridique validée" in cards
+        assert "2 entités juridiques rejetées" in cards
+
+    def test_no_offerer(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+            assert response.status_code == 200
+
+        cards = html_parser.extract_cards_text(response.data)
+        assert "0 nouvelle entité juridique" in cards
+        assert "0 entité juridique en attente" in cards
+        assert "0 entité juridique validée" in cards
+        assert "0 entité juridique rejetée" in cards
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
