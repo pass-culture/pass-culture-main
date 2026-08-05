@@ -201,8 +201,6 @@
         </div>
       {% endif %}
     </td>
-    <td>
-      {% if update_request.lastInstructor %}{{ update_request.lastInstructor.full_name }}{% endif %}
-    </td>
+    <td>{% if update_request.lastInstructor %}{{ update_request.lastInstructor.full_name }}{% endif %}</td>
   </tr>
 {% endfor %}

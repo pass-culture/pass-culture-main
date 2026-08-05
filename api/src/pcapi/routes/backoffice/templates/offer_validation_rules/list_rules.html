@@ -67,9 +67,9 @@
             </table>
             {% for rule in rows %}
               {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_edit_offer_validation_rule_form", rule_id=rule.id) ,
-              "edit-offer-validation-rule-" + rule.id|string) }}
+                "edit-offer-validation-rule-" + rule.id|string) }}
               {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form", rule_id=rule.id) ,
-              "delete-offer-validation-rule-" + rule.id|string) }}
+                "delete-offer-validation-rule-" + rule.id|string) }}
             {% endfor %}
           </div>
         {% endcall %}
@@ -80,4 +80,5 @@
         {% endcall %}
       {% endcall %}
     </div>
-  {% endblock %}
+  </div>
+{% endblock %}

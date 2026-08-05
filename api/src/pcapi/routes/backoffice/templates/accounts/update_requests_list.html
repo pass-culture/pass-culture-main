@@ -12,9 +12,8 @@
     target="_blank"
     rel="noreferrer noopener"
     title="Ouvrir la Démarche Numérique">{{ procedure_id }}
-  <i class="bi bi-box-arrow-up-right">
-  </i>
-</a>
+  <i class="bi bi-box-arrow-up-right"></i>
+  </a>
 {% endblock title %}
 {% block search_block %}
   {{ build_filters_form_ng(form, dst) }}
@@ -27,9 +26,9 @@
     {% if date_last_update_sort_url %}
       <a href="{{ date_last_update_sort_url }}"
          class="text-decoration-none"
-         title="Changer pour un tri {{ 'décroissant' if request.args.get("order") == 'asc' else 'croissant' }}">
+         title="Changer pour un tri {{ 'décroissant' if request.args.get('order') == 'asc' else 'croissant' }}">
         Date de dernière MàJ
-        <i class="bi bi-sort-{{ 'up' if request.args.get("order") == 'asc' else 'down' }}-alt"></i>
+        <i class="bi bi-sort-{{ 'up' if request.args.get('order') == 'asc' else 'down' }}-alt"></i>
       </a>
     {% else %}
       Date de dernière MàJ

@@ -11,7 +11,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper with context %}
 {% from "components/dynamic/spinner.html" import build_loading_spinner with context %}
 {% from "components/description.html" import description_detail_vertical with context %}
-{% import "components/clipboard.html" as clipboard  with context %}
+{% import "components/clipboard.html" as clipboard with context %}
 {% block before_title %}
   {% if search_form %}{{ build_result_page_form(search_form, search_dst, col_width=12) }}{% endif %}
 {% endblock %}
@@ -309,9 +309,9 @@
   {% endif %}
   {% if allowed_actions.actions.RESET_PASSWORD in allowed_actions %}
     {{ build_simple_modal_form("send-reset-password-email", password_reset_dst, password_reset_form,
-        "Envoyer le mail de changement de mot de passe",
-        "Confirmer l'envoi",
-        "En confirmant, l'email de mot de passe perdu contenant un lien de réinitialisation valide 24 heures sera envoyé à " + user.email + ".") }}
+      "Envoyer le mail de changement de mot de passe",
+      "Confirmer l'envoi",
+      "En confirmant, l'email de mot de passe perdu contenant un lien de réinitialisation valide 24 heures sera envoyé à " + user.email + ".") }}
   {% endif %}
   {% if allowed_actions.actions.BREVO in allowed_actions %}
     <form name="brevo-link"
@@ -339,9 +339,9 @@
   {% endif %}
   {% if allowed_actions.actions.DISCONNECT in allowed_actions %}
     {{ build_simple_modal_form("disconnect-public-account", disconnect_user_dst, disconnect_user_form,
-        "Déconnecter l'utilisateur",
-        "Confirmer la déconnexion",
-        "⚠️ Seules les sessions créées après le 01/05/2026 seront déconnectées.") }}
+      "Déconnecter l'utilisateur",
+      "Confirmer la déconnexion",
+      "⚠️ Seules les sessions créées après le 01/05/2026 seront déconnectées.") }}
   {% endif %}
   {% if allowed_actions.actions.SUSPEND in allowed_actions %}
     {{ build_simple_modal_form("suspend-public-account", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}

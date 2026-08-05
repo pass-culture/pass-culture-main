@@ -30,9 +30,7 @@
       <td>{{ provider.id }}</td>
       <td>{{ links.build_provider_name_to_details_link(provider) }}</td>
       <td>{{ row.is_active_count | format_venue_provider_count }}</td>
-      <td>
-        {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
-      </td>
+      <td>{% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}</td>
       <td>{{ provider.apiKeys | length }}</td>
       <td>{{ provider.logoUrl | empty_string_if_null }}</td>
       <td>{{ provider.enabledForPro | format_bool_badge }}</td>

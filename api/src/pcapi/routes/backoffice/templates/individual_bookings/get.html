@@ -189,21 +189,21 @@
 {% block extra_main_content %}
   <!-- HIDDEN FORMS/AND MODALS -->
   {% if allowed_actions.actions.VALIDATE in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, mark_as_used_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) ) }}
+    {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, mark_as_used_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id)) }}
   {% endif %}
   {% if allowed_actions.actions.INVALIDATE in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) ) }}
+    {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id)) }}
   {% endif %}
   {% if allowed_actions.actions.CREATE_INCIDENT in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Créer un incident pour la réservation " + booking.token, "overpayment-creation-modal", create_incident_form, url_for('backoffice_web.finance_incidents.create_individual_booking_overpayment') ) }}
+    {{ booking_modal(booking, "Créer un incident pour la réservation " + booking.token, "overpayment-creation-modal", create_incident_form, url_for('backoffice_web.finance_incidents.create_individual_booking_overpayment')) }}
   {% endif %}
   {% if allowed_actions.actions.CREATE_COMMERCIAL_GESTURE in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Créer un geste commercial pour la réservation " + booking.token, "commercial-gesture-creation-modal", create_commercial_gesture_form, url_for('backoffice_web.finance_incidents.create_individual_booking_commercial_gesture') ) }}
+    {{ booking_modal(booking, "Créer un geste commercial pour la réservation " + booking.token, "commercial-gesture-creation-modal", create_commercial_gesture_form, url_for('backoffice_web.finance_incidents.create_individual_booking_commercial_gesture')) }}
   {% endif %}
   {% if allowed_actions.actions.MARK_FRAUDULENT in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "batch-tag-fraudulent-booking-modal", mark_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_tag_fraudulent_bookings') ) }}
+    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "batch-tag-fraudulent-booking-modal", mark_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_tag_fraudulent_bookings')) }}
   {% endif %}
   {% if allowed_actions.actions.MARK_NON_FRAUDULENT in allowed_actions.inline_actions %}
-    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme non frauduleuse", "batch-remove-fraudulent-booking-tag-modal", mark_non_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag') ) }}
+    {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme non frauduleuse", "batch-remove-fraudulent-booking-tag-modal", mark_non_fraudulent_form, url_for('backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag')) }}
   {% endif %}
 {% endblock extra_main_content %}

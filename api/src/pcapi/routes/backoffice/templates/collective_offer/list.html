@@ -26,9 +26,9 @@
     <th scope="col">
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
-         title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+         title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
-        <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+        <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
     </th>
   {% else %}

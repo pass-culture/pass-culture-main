@@ -19,9 +19,7 @@
         <td>{{ collective_dms_application.depositDate | format_date }}</td>
         <td>{{ collective_dms_application.state | format_dms_status }}</td>
         <td>{{ collective_dms_application.lastChangeDate | format_date }}</td>
-        <td>
-          {% if collective_dms_application.venue %}{{ links.build_venue_name_to_details_link(collective_dms_application.venue) }}{% endif %}
-        </td>
+        <td>{% if collective_dms_application.venue %}{{ links.build_venue_name_to_details_link(collective_dms_application.venue) }}{% endif %}</td>
         <td>{{ collective_dms_application.siret }}</td>
       </tr>
     {% endfor %}

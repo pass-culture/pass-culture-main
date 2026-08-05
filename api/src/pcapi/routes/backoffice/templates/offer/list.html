@@ -14,17 +14,17 @@
     "Recherche exhaustive des offres",
     "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en base de données.",
     "advanced-search", page=="offer") ,
-  (
-  "Recherche des offres réservables sur l’app",
-  "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
-  "algolia-search", page=="algolia"
-  ),
-  (
-  'Recherche sémantique <i class="bi bi-stars"></i>',
-  "Recherchez des offres via une phrase, thématique ou question.",
-  "llm-search-container",
-  page=="llm"
-  ),
+    (
+    "Recherche des offres réservables sur l’app",
+    "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
+    "algolia-search", page=="algolia"
+    ),
+    (
+    'Recherche sémantique <i class="bi bi-stars"></i>',
+    "Recherchez des offres via une phrase, thématique ou question.",
+    "llm-search-container",
+    page=="llm"
+    ),
   ), '33%', "mb-4") }}
   {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
   {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
@@ -83,9 +83,9 @@
     <th scope="col">
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
-         title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+         title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
-        <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+        <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
     </th>
   {% else %}
