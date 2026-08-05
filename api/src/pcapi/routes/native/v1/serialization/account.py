@@ -12,6 +12,7 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance.utils import CurrencyEnum
+from pcapi.core.finance.utils import to_cents
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
@@ -26,7 +27,6 @@ from pcapi.routes.native.v1.serialization.common_models import DeviceInfo
 from pcapi.routes.native.v2.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
-from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils.email import sanitize_email
 
 
@@ -88,8 +88,8 @@ class Credit(HttpBodyModel):
 
     @pydantic_v2.field_validator("initial", "remaining", mode="before")
     @classmethod
-    def _to_cent(cls, amount: typing.Any) -> int | None:
-        return convert_to_cent(amount)
+    def _to_cent(cls, amount: typing.Any) -> int:
+        return to_cents(amount)
 
 
 class DomainsCredit(HttpBodyModel):
@@ -256,7 +256,9 @@ class UserProfileResponse(HttpBodyModel):
                 postal_code=user.postalCode,
                 qf_bonification_status=users_api.get_user_qf_bonification_status(user),
                 disability_bonification_status=users_api.get_user_disability_bonification_status(user),
-                recredit_amount_to_show=convert_to_cent(user.recreditAmountToShow),
+                recredit_amount_to_show=to_cents(user.recreditAmountToShow)
+                if user.recreditAmountToShow is not None
+                else None,
                 recredit_type_to_show=users_api.get_latest_user_recredit_type(user),
                 remaining_bonus_attempts=users_api.get_user_remaining_bonus_attempts(user),
                 requires_id_check=subscription_api.requires_identity_check_step(user),
