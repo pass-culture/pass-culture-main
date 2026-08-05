@@ -565,7 +565,7 @@ class GetVenueTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert ' data-has-reset="true" ' in str(response.data)
+        assert 'data-has-reset="true"' in str(response.data)
 
     def test_get_venue_with_acceslibre_url(self, authenticated_client):
         acceslibre_url = "https://acceslibre.beta.gouv.fr/api/erps/la-traversée/"

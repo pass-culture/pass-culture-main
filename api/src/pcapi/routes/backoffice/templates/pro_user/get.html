@@ -31,7 +31,7 @@
                 {% if has_permission("MANAGE_PRO_ENTITY") and can_be_deleted %}
                   {{ build_modal_form("delete-pro-user", delete_dst, delete_form, "Supprimer le compte", "Supprimer le compte", "Supprimer le compte", "Pour confirmer la suppression du compte merci de saisir son adresse email") }}
                 {% endif %}
-                {% if  has_permission("MANAGE_PRO_ENTITY") and can_be_disconnected %}
+                {% if has_permission("MANAGE_PRO_ENTITY") and can_be_disconnected %}
                   {% set disconnect_text = sessions_count | pluralize("La session active de "~ user.full_name ~" sera déconnectée.", "Les "~ sessions_count ~" sessions actives de "~ user.full_name ~" seront déconnectées.") %}
                   {{ build_modal_form("delete-pro-user", disconnect_dst, disconnect_form, "Déconnecter les sessions", "Déconnecter " + user.full_name, "Déconnecter", disconnect_text) }}
                 {% endif %}
@@ -95,7 +95,7 @@
       <div class="mt-4">
         <div id="pro_user_details_frame"
              hx-trigger="load"
-             hx-get="{{ url_for('backoffice_web.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history') ) }}">
+             hx-get="{{ url_for('backoffice_web.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history')) }}">
           {{ build_loading_spinner() }}
         </div>
       </div>

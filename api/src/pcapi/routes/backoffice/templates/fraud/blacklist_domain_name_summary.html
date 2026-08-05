@@ -36,9 +36,7 @@
             <div id="collapse-{{ domain_name | replace('.', '-') }}"
                  class="accordion-collapse collapse"
                  data-bs-parent="#blacklist-domain-names-accordion-summary">
-              <div class="accordion-body">
-                {% for user in targeted_non_pro_accounts %}{{ user.email }} ({{ user.id }}),{% endfor %}
-              </div>
+              <div class="accordion-body">{% for user in targeted_non_pro_accounts %}{{ user.email }} ({{ user.id }}),{% endfor %}</div>
             </div>
           </div>
         </div>
@@ -73,9 +71,7 @@
             <div id="collapse-pro-{{ domain_name | replace('.', '-') }}"
                  class="accordion-collapse collapse"
                  data-bs-parent="#blacklist-domain-names-pro-accordion-summary">
-              <div class="accordion-body">
-                {% for pro in untouched_pro_accounts %}{{ pro.email }} ({{ pro.id }}),{% endfor %}
-              </div>
+              <div class="accordion-body">{% for pro in untouched_pro_accounts %}{{ pro.email }} ({{ pro.id }}),{% endfor %}</div>
             </div>
           </div>
         </div>

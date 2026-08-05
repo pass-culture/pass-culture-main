@@ -10,7 +10,7 @@
   {% if has_permission("MANAGE_SPECIAL_EVENTS") %}
     <div class="mt-4">
       {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
-      create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
+        create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
     </div>
   {% endif %}
 {% endblock %}

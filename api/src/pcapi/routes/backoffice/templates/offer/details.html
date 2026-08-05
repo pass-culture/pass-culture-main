@@ -249,9 +249,7 @@
                    class="link-primary"
                    data-bs-toggle="tooltip"
                    data-bs-title="Voir les réservations du stock {{ stock.id }}"
-                   href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', q=stock.id) }}">
-                  {{ stock.id }}
-                </a>
+                   href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', q=stock.id) }}">{{ stock.id }}</a>
               </td>
               <td>{{ stock.dnBookedQuantity }}</td>
               <td>
@@ -264,9 +262,7 @@
                 {% endif %}
               </td>
               {% if show_price_category %}
-                <td>
-                  {% if stock.priceCategory %}{{ stock.priceCategory.label }}{% endif %}
-                </td>
+                <td>{% if stock.priceCategory %}{{ stock.priceCategory.label }}{% endif %}</td>
               {% endif %}
               <td>
                 {% if stock.priceCategory %}

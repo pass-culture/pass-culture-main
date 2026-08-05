@@ -83,7 +83,7 @@
     <td class="px-2 py-3">
       {% if row.offer_mediation %}
         {% set mediation_url = row.offer_mediation.id | offer_mediation_link(row.offer_mediation.thumbCount) %}
-      {% elif  row.product_mediation %}
+      {% elif row.product_mediation %}
         {% set mediation_url = row.product_mediation | product_mediation_link %}
       {% endif %}
       {% if mediation_url %}
@@ -113,9 +113,7 @@
       <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
     {% endif %}
     {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("VALIDATE_OFFERER") %}
-      <td>
-        {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
-      </td>
+      <td>{% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}</td>
     {% endif %}
     {% if has_permission("PRO_FRAUD_ACTIONS") %}
       <td>
@@ -186,9 +184,7 @@
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
     <td data-pc-sort-table-value="{{ offer.dateCreated.timestamp() }}">{{ offer.dateCreated | format_date }}</td>
     <td>{{ offer.lastValidationDate | format_date }}</td>
-    <td>
-      {% if address %}{{ address.departmentCode }}{% endif %}
-    </td>
+    <td>{% if address %}{{ address.departmentCode }}{% endif %}</td>
     <td data-pc-sort-table-value="{{ offer.venue.managingOfferer.name | lower }}">
       {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}
@@ -202,21 +198,17 @@
       {% endcall %}
     </td>
     <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
-    <td>
-      {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
-    </td>
-    <td>
-      {% if offer.culturalOutreach %}{{ offer.culturalOutreach.status | format_cultural_outreach_status }}{% endif %}
-    </td>
+    <td>{% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}</td>
+    <td>{% if offer.culturalOutreach %}{{ offer.culturalOutreach.status | format_cultural_outreach_status }}{% endif %}</td>
     <td {%+ if not(page and page =="llm") %}
         data-pc-display-column="false"
         class="d-none"
         {% endif +%}>
-      {% if offer.id in offers_pertinence %}
-        {{ offers_pertinence[offer.id] }}
-      {% else %}
-        -
-      {% endif %}
-    </td>
-  </tr>
+    {% if offer.id in offers_pertinence %}
+      {{ offers_pertinence[offer.id] }}
+    {% else %}
+      -
+    {% endif %}
+  </td>
+</tr>
 {% endfor %}

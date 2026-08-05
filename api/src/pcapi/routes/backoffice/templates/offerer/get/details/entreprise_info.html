@@ -28,7 +28,7 @@
               <p class="mb-1">
                 <span class="fw-bold">SIRET du siège social :</span>
                 {% if siren_info.head_office_siret %}
-                  <a href="{{ url_for("backoffice_web.pro.search_pro", pro_type='VENUE', q=siren_info.head_office_siret) }}">
+                  <a href="{{ url_for('backoffice_web.pro.search_pro', pro_type='VENUE', q=siren_info.head_office_siret) }}">
                     {{ siren_info.head_office_siret }}
                   </a>
                 {% endif %}

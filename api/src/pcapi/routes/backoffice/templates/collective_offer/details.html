@@ -326,12 +326,12 @@
 {% block extra_main_content %}
   {% if allowed_actions.actions.CANCEL_BOOKING in allowed_actions.allowed_actions %}
     {{ build_simple_modal_form("pc-cancel-booking-" + collective_booking.id |string,
-        url_for('backoffice_web.collective_bookings.mark_booking_as_cancelled', collective_booking_id=collective_booking.id) , cancel_booking_form, "Annuler la réservation" + collective_booking.id |string, "Annuler la réservation")
+      url_for('backoffice_web.collective_bookings.mark_booking_as_cancelled', collective_booking_id=collective_booking.id) , cancel_booking_form, "Annuler la réservation" + collective_booking.id |string, "Annuler la réservation")
     }}
   {% endif %}
   {% if allowed_actions.actions.VALIDATE_BOOKING in allowed_actions.allowed_actions %}
     {{ build_simple_modal_form("pc-validate-booking-" + collective_booking.id |string,
-        url_for('backoffice_web.collective_bookings.mark_booking_as_used', collective_booking_id=collective_booking.id) ,mark_as_used_booking_form, "Valider la réservation" + collective_booking.id |string, "Valider la réservation")
+      url_for('backoffice_web.collective_bookings.mark_booking_as_used', collective_booking_id=collective_booking.id) ,mark_as_used_booking_form, "Valider la réservation" + collective_booking.id |string, "Valider la réservation")
     }}
   {% endif %}
   {% if allowed_actions.actions.VALIDATE_OFFER in allowed_actions.allowed_actions %}

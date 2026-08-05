@@ -1,5 +1,5 @@
 {% for campaign in rows %}
-  <tr id="campaign-row-{{ campaign.id  }}">
+  <tr id="campaign-row-{{ campaign.id }}">
     <td>
       <div class="dropdown">
         <button type="button"
@@ -21,7 +21,7 @@
               <a class="btn btn-sm d-block w-100 text-start px-3"
                  type="button"
                  data-bs-toggle="modal"
-                 data-bs-target="#campaign-history-{{ campaign.id }}">Voir l'historique</a>
+                 data-bs-target="#campaign-history-{{ campaign.id }}">Voir l'historique</a>
             </li>
           {% endif %}
         </ul>
@@ -31,14 +31,14 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Historique de la campagne #{{ campaign.id }}</h4>
+              <h4 class="modal-title">Historique de la campagne #{{ campaign.id }}</h4>
               <button type="button"
                       class="btn-close"
                       data-bs-dismiss="modal"
                       aria-label="Fermer"></button>
             </div>
             <div class="modal-body">
-              <table id="history-table-{{ campaign.id }}"
+              <table id="history-table-{{ campaign.id }}"
                      class="table">
                 <thead>
                   <tr>
@@ -51,13 +51,11 @@
                 <tbody>
                   {% for action in campaign.action_history | reverse %}
                     <tr>
-                      <td>{{ action.actionType | format_user_profile_refresh_campaign_action_type }}</td>
+                      <td>{{ action.actionType | format_user_profile_refresh_campaign_action_type }}</td>
+                      <td>{% if action.authorUser %}{{ action.authorUser.full_name }}{% endif %}</td>
+                      <td>{{ action.actionDate | format_date_time }}</td>
                       <td>
-                        {% if action.authorUser %}{{ action.authorUser.full_name }}{% endif %}
-                      </td>
-                      <td>{{ action.actionDate | format_date_time }}</td>
-                      <td>
-                        {% if action.comment %}<p>{{ action.comment }}</p>{% endif %}
+                        {% if action.comment %}<p>{{ action.comment }}</p>{% endif %}
                         {% set modified_info = action.extraData.get('modified_info', {}) %}
                         {% if modified_info %}
                           {% for field, modifications in modified_info.items() %}
@@ -82,9 +80,9 @@
       </div>
     </td>
     <td>{{ campaign.id }}</td>
-    <td>{{ campaign.isActive | format_bool_badge }}</td>
+    <td>{{ campaign.isActive | format_bool_badge }}</td>
     <td>{{ campaign.campaignDate | format_date_time }}</td>
-    <td>{{ campaign.creationDate | format_date_time }}</td>
-    <td>{{ campaign.updateDate | format_date_time }}</td>
+    <td>{{ campaign.creationDate | format_date_time }}</td>
+    <td>{{ campaign.updateDate | format_date_time }}</td>
   </tr>
 {% endfor %}

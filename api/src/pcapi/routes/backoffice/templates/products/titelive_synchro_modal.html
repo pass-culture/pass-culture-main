@@ -6,26 +6,26 @@
         target="_top"
         class="modal-content">
     {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
+{% endif %}
+<div class="modal-header">
+  <h5 class="modal-title">{{ title }}</h5>
+  <button type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Fermer"></button>
+</div>
+{% if titelive_data %}
+  {{ render_titelive_information(titelive_data, ineligibility_reasons, product_whitelist) }}
+  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+    <div class="modal-footer">
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg"
+              data-bs-dismiss="modal">Annuler</button>
+      {% if button_text %}
+        <button type="submit"
+                class="btn btn-primary">{{ button_text }}</button>
+      {% endif %}
+    </div>
   {% endif %}
-  <div class="modal-header">
-    <h5 class="modal-title">{{ title }}</h5>
-    <button type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Fermer"></button>
-  </div>
-  {% if titelive_data %}
-    {{ render_titelive_information(titelive_data, ineligibility_reasons, product_whitelist) }}
-    {% if has_permission("PRO_FRAUD_ACTIONS") %}
-      <div class="modal-footer">
-        <button type="button"
-                class="btn btn-outline-primary-subtle-bg"
-                data-bs-dismiss="modal">Annuler</button>
-        {% if button_text %}
-          <button type="submit"
-                  class="btn btn-primary">{{ button_text }}</button>
-        {% endif %}
-      </div>
-    {% endif %}
-  {% endif %}
-  {% if form %}</form>{% endif %}
+{% endif %}
+{% if form %}</form>{% endif %}

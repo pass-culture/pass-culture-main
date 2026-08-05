@@ -42,9 +42,7 @@
     <td>{{ build_connect_as_link(connect_as[collective_offer.id], collective_offer.name, "link-primary") }}</td>
     <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
     {% if has_permission("PRO_FRAUD_ACTIONS") %}
-      <td>
-        {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
-      </td>
+      <td>{% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}</td>
     {% endif %}
     <td>
       {{ collective_offer.validation | format_offer_validation_status(with_badge=True) }}
@@ -73,7 +71,7 @@
         {{ badges.build_offer_offerer_fraud_badges(row.offerer_badges) }}
       {% endcall %}
     </td>
-    <td data-pc-sort-table-value="{{ collective_offer.venue.publicName  | lower }}">
+    <td data-pc-sort-table-value="{{ collective_offer.venue.publicName | lower }}">
       {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(row.venue_badges) }}
@@ -90,8 +88,6 @@
       {% endfor %}
     </td>
     <td>{{ row.institution_info.educational_year | empty_string_if_null }}</td>
-    <td>
-      {% if collective_offer.providerId %}{{ collective_offer.provider.name | format_badge("primary") }}{% endif %}
-    </td>
+    <td>{% if collective_offer.providerId %}{{ collective_offer.provider.name | format_badge("primary") }}{% endif %}</td>
   </tr>
 {% endfor %}

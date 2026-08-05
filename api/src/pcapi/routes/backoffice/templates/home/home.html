@@ -54,35 +54,35 @@
           "limit": "1000"
         } %}
         {{ stats_card(pending_individual_offers_count,
-                "offre individuelle en attente",
-                "offres individuelles en attente",
-                url_for("backoffice_web.offer.list_offers", **offers_params) ) }}
+          "offre individuelle en attente",
+          "offres individuelles en attente",
+          url_for("backoffice_web.offer.list_offers", **offers_params)) }}
         {{ stats_card(pending_collective_offers_count,
-                "offre collective en attente",
-                "offres collectives en attente",
-                url_for("backoffice_web.collective_offer.list_collective_offers", **offers_params) ) }}
+          "offre collective en attente",
+          "offres collectives en attente",
+          url_for("backoffice_web.collective_offer.list_collective_offers", **offers_params)) }}
         {{ stats_card(pending_collective_templates_count,
-                "offre collective vitrine en attente",
-                "offres collectives vitrine en attente",
-                url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", status="PENDING", only_validated_offerers="on", sort="dateCreated", order="desc", limit="1000") ) }}
+          "offre collective vitrine en attente",
+          "offres collectives vitrine en attente",
+          url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", status="PENDING", only_validated_offerers="on", sort="dateCreated", order="desc", limit="1000")) }}
         {% if conformite_tag_id %}
           {{ stats_card(pending_conformite_offerers_count,
-                    "entité juridique en attente de conformité",
-                    "entités juridiques en attente de conformité",
-                    url_for("backoffice_web.validation.list_offerers_to_validate", status=["PENDING"], tags=conformite_tag_id, sort="dateCreated", order="desc") ) }}
+            "entité juridique en attente de conformité",
+            "entités juridiques en attente de conformité",
+            url_for("backoffice_web.validation.list_offerers_to_validate", status=["PENDING"], tags=conformite_tag_id, sort="dateCreated", order="desc")) }}
         {% endif %}
       </div>
     {% endif %}
     {% if has_permission("MANAGE_ACCOUNT_UPDATE_REQUEST") and current_user.backoffice_profile.dsInstructorId %}
       <div class="row row-cols-4 g-3 py-4">
         {{ stats_card(pending_unassigned_update_requests_count,
-                "dossier DN non affecté",
-                "dossiers DN non affectés",
-                url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], only_unassigned="on") ) }}
+          "dossier DN non affecté",
+          "dossiers DN non affectés",
+          url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], only_unassigned="on")) }}
         {{ stats_card(pending_self_update_requests_count,
-                "dossier DN suivi",
-                "dossiers DN suivis",
-                url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], last_instructor=current_user.id) ) }}
+          "dossier DN suivi",
+          "dossiers DN suivis",
+          url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], last_instructor=current_user.id)) }}
       </div>
     {% endif %}
     {% if has_permission("MANAGE_CULTURAL_OUTREACH") %}
@@ -96,9 +96,9 @@
           "search-1-cultural_outreach": "PENDING"
         } %}
         {{ stats_card(pending_claimed_cultural_outreach_count,
-                "offre individuelle avec action de médiation à qualifier",
-                "offres individuelles avec actions de médiation à qualifier",
-                url_for("backoffice_web.offer.list_offers", **offers_params) ) }}
+          "offre individuelle avec action de médiation à qualifier",
+          "offres individuelles avec actions de médiation à qualifier",
+          url_for("backoffice_web.offer.list_offers", **offers_params)) }}
       </div>
     {% endif %}
   </div>

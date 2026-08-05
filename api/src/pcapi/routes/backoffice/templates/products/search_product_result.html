@@ -31,7 +31,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#import-product-modal">Importer ce produit dans la base de données du pass Culture</button>
           {{ build_lazy_modal(url_for('backoffice_web.product.get_import_product_from_titelive_form',
-                    ean=titelive_data.ean, is_ineligible=ineligibility_reason | length > 0) , "import-product-modal", "true")
+            ean=titelive_data.ean, is_ineligible=ineligibility_reason | length > 0) , "import-product-modal", "true")
           }}
         </div>
       {% endif %}
@@ -47,8 +47,8 @@
         <p class="lead">
           Le produit est introuvable
           {%- if is_ean_product -%}. Il ne figure ni dans notre base de données ni sur Titelive{%- endif -%}
-          </p>
-        </div>
-      {% endif %}
-    </div>
-  {% endblock page %}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock page %}

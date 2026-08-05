@@ -56,18 +56,16 @@
         {% if has_read_ae_permission %}
           <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
              title="Parcours auto-entrepreneur">
-          {% endif %}
-          {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
-          {% if has_read_ae_permission %}</a>{% endif %}
+        {% endif %}
+        {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
+        {% if has_read_ae_permission %}</a>{% endif %}
       {% endif %}
     </td>
     <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
     <td>{{ links.build_siren_to_external_link(offerer) }}</td>
     <td>{{ (item.creator_email) | empty_string_if_null }}</td>
     <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
-    <td>
-      {% if offerer.cities %}{{ offerer.cities | sort | format_string_list(50) }}{% endif %}
-    </td>
+    <td>{% if offerer.cities %}{{ offerer.cities | sort | format_string_list(50) }}{% endif %}</td>
   </tr>
   {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
 {% endfor %}

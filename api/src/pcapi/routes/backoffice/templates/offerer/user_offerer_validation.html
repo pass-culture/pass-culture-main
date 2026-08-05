@@ -25,9 +25,9 @@
   <th>
     <a href="{{ date_created_sort_url }}"
        class="text-decoration-none"
-       title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+       title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
       Date de la demande
-      <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+      <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
     </a>
   </th>
   <th>Nom Entité juridique</th>
@@ -73,11 +73,11 @@
     {% for item in rows.items %}
       {% set user_offerer_id = item.UserOfferer.id %}
       {{ build_dynamic_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
-      "reject-modal-" + user_offerer_id|string) }}
+        "reject-modal-" + user_offerer_id|string) }}
       {{ build_dynamic_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
-      "pending-modal-" + user_offerer_id|string) }}
+        "pending-modal-" + user_offerer_id|string) }}
     {% endfor %}
-    {{ build_dynamic_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal",  form="form-ids-" + table_name) }}
+    {{ build_dynamic_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", form="form-ids-" + table_name) }}
     {{ build_dynamic_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", form="form-ids-" + table_name) }}
   {% endif %}
 {% endblock %}

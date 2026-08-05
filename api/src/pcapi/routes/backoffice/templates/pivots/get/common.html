@@ -7,9 +7,7 @@
           method="get"
           class="col-8 row">
       <div class="col-8">
-        <div class="input-group mb-3">
-          {% for form_field in form %}{{ form_field }}{% endfor %}
-        </div>
+        <div class="input-group mb-3">{% for form_field in form %}{{ form_field }}{% endfor %}</div>
       </div>
       <div class="col-4">
         <button type="submit"

@@ -18,7 +18,7 @@
             <div class="pe-3">
               <h2 class="text-black">
                 {% set individual_offers = 0 %}
-                {% if stats.active_individual_offers is not none  and stats.inactive_individual_offers is not none %}
+                {% if stats.active_individual_offers is not none and stats.inactive_individual_offers is not none %}
                   {% set individual_offers = stats.active_individual_offers + stats.inactive_individual_offers %}
                   {{ individual_offers | format_count }}
                 {% else %}
@@ -56,7 +56,7 @@
               <h2 class="text-black">
                 {% set collective_offers = 0 %}
                 {% if stats.active_collective_offers is not none and stats.inactive_collective_offers is not none %}
-                  {% set collective_offers = stats.active_collective_offers +  stats.inactive_collective_offers %}
+                  {% set collective_offers = stats.active_collective_offers + stats.inactive_collective_offers %}
                   {{ collective_offers | format_count }}
                 {% else %}
                   N/A
@@ -164,7 +164,7 @@
       <div class="card-body p-4">
         <h5>Chiffre d'affaires</h5>
         <h2 class="text-black">
-          {% if  stats.total_revenue is not none %}
+          {% if stats.total_revenue is not none %}
             {{ stats.total_revenue | format_amount(target=object) }}
           {% else %}
             N/A

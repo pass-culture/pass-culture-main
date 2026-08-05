@@ -10,7 +10,7 @@
              data-id="{{ collective_offer_template.id }}" />
     </td>
     <td class="text-center">
-      {% if has_permission("PRO_FRAUD_ACTIONS")  and collective_offer_template.validation.value == "PENDING" %}
+      {% if has_permission("PRO_FRAUD_ACTIONS") and collective_offer_template.validation.value == "PENDING" %}
         <div class="dropdown">
           <button type="button"
                   data-bs-toggle="dropdown"
@@ -50,13 +50,13 @@
     <td data-pc-sort-table-value="{{ collective_offer_template.dateCreated.timestamp() }}">
       {{ collective_offer_template.dateCreated | format_date }}
     </td>
-    <td data-pc-sort-table-value="{{ collective_offer_template.venue.managingOfferer.name  | lower }}">
+    <td data-pc-sort-table-value="{{ collective_offer_template.venue.managingOfferer.name | lower }}">
       {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
       {% endcall %}
     </td>
-    <td data-pc-sort-table-value="{{ collective_offer_template.venue.publicName  | lower }}">
+    <td data-pc-sort-table-value="{{ collective_offer_template.venue.publicName | lower }}">
       {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
