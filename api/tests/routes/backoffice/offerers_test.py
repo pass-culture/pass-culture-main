@@ -2090,9 +2090,19 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         ]
 
     def test_payload_content(self, authenticated_client, offerer_tags):
+        offerer = offerers_factories.NewOffererFactory(dateCreated=datetime.datetime(2022, 10, 3, 11))
+        offerers_factories.DeletedUserOffererFactory(  # must no longer be displayed as the creator
+            offerer=offerer,
+            user__firstName="Deleted",
+            dateCreated=datetime.datetime(2022, 9, 1),
+        )
+        offerers_factories.RejectedUserOffererFactory(  # must not be displayed as the creator
+            offerer=offerer,
+            user__firstName="Rejected",
+            dateCreated=datetime.datetime(2022, 9, 15),
+        )
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
-            offerer__validationStatus=ValidationStatus.NEW,
+            offerer=offerer,
             user__phoneNumber="+33610203040",
         )
         offerer = user_offerer.offerer
@@ -3269,20 +3279,33 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             ]
 
     def test_payload_content(self, authenticated_client, offerer_tags):
-        owner_user_offerer = offerers_factories.UserOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
-            offerer__tags=[offerer_tags[1]],
-            dateCreated=datetime.datetime(2022, 11, 2, 11, 59),
+        offerer = offerers_factories.OffererFactory(
+            dateCreated=datetime.datetime(2022, 11, 2, 11),
+            tags=[offerer_tags[1]],
+        )
+        offerers_factories.DeletedUserOffererFactory(  # must no longer be displayed as the creator
+            offerer=offerer,
+            user__firstName="Deleted",
+            dateCreated=datetime.datetime(2022, 11, 2, 11),
+        )
+        offerers_factories.RejectedUserOffererFactory(  # must not be displayed as the creator
+            offerer=offerer,
+            user__firstName="Rejected",
+            dateCreated=datetime.datetime(2022, 11, 3, 11),
+        )
+        new_owner_user_offerer = offerers_factories.UserOffererFactory(
+            offerer=offerer,
+            dateCreated=datetime.datetime(2022, 11, 4, 11),
         )
         new_user_offerer = offerers_factories.NewUserOffererFactory(
-            offerer=owner_user_offerer.offerer,
+            offerer=offerer,
             validationStatus=ValidationStatus.NEW,
-            dateCreated=datetime.datetime(2022, 11, 3, 11, 59),
+            dateCreated=datetime.datetime(2022, 11, 5, 11),
             user__phoneNumber="+33612345678",
         )
         commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 11, 3, 12, 0),
+            actionDate=datetime.datetime(2022, 11, 5, 12),
             actionType=history_models.ActionType.USER_OFFERER_NEW,
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
@@ -3290,7 +3313,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             comment=None,
         )
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime(2022, 11, 4, 13, 1),
+            actionDate=datetime.datetime(2022, 11, 6, 13),
             actionType=history_models.ActionType.COMMENT,
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
@@ -3317,9 +3340,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == "Nouveau"
         assert rows[0]["Tags Entité juridique"] == offerer_tags[1].label
-        assert rows[0]["Date de la demande"] == "03/11/2022"
-        assert rows[0]["Nom Entité juridique"] == owner_user_offerer.offerer.name
-        assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
+        assert rows[0]["Date de la demande"] == "05/11/2022"
+        assert rows[0]["Nom Entité juridique"] == new_owner_user_offerer.offerer.name
+        assert rows[0]["Email Responsable"] == new_owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
 
     def test_payload_content_no_action(self, authenticated_client, offerer_tags):
