@@ -238,6 +238,9 @@ def list_offerers_to_be_validated(
         db.session.query(offerers_models.UserOfferer.id)
         .filter(
             offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+            offerers_models.UserOfferer.validationStatus.in_(
+                [ValidationStatus.NEW, ValidationStatus.PENDING, ValidationStatus.VALIDATED]
+            ),
         )
         .order_by(offerers_models.UserOfferer.id.asc())
         .limit(1)
@@ -392,7 +395,10 @@ def list_users_offerers_to_be_validated(
         db.session.query(users_models.User.email)
         .select_from(offerers_models.UserOfferer)
         .join(offerers_models.UserOfferer.user)
-        .filter(offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .filter(
+            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+            offerers_models.UserOfferer.isValidated,
+        )
         .order_by(offerers_models.UserOfferer.id.asc())
         .limit(1)
         .correlate(offerers_models.Offerer)
