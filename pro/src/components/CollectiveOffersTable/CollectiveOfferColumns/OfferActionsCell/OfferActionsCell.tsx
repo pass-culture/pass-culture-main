@@ -33,17 +33,25 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
-import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import {
+  DropDownItemVariant,
+  Dropdown,
+} from '@/design-system/Dropdown/Dropdown'
 import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
+import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
-import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
-import { DropdownItemColor } from '@/ui-kit/Dropdown/types'
+import connectStrokeIcon from '@/icons/stroke-connect.svg'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 import styles from './OfferActionsCell.module.scss'
@@ -67,6 +75,7 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
     useState(false)
   const [isArchivedModalOpen, setIsArchivedModalOpen] = useState(false)
+  const [isShareLinkDrawerOpen, setIsShareLinkDrawerOpen] = useState(false)
   const isLocalStorageAvailable = storageAvailable('localStorage')
   const shouldDisplayModal =
     !isLocalStorageAvailable ||
@@ -280,73 +289,106 @@ export const OfferActionsCell = ({ offer }: OfferActionsCellProps) => {
     <div className={styles['actions-column']}>
       {!noActionsAllowed && (
         <Dropdown
-          title="Voir les actions"
-          triggerTooltip
-          dropdownTriggerRef={dropdownTriggerRef}
+          label="Voir les actions"
+          trigger={
+            <Button
+              ref={dropdownTriggerRef}
+              variant={ButtonVariant.SECONDARY}
+              icon={fullThreeDotsIcon}
+              size={ButtonSize.SMALL}
+              color={ButtonColor.NEUTRAL}
+              tooltip="Voir les actions"
+            />
+          }
           open={isDropdownOpen}
           onOpenChange={setIsDropdownOpen}
-        >
-          {canDuplicateOffer && (
-            <DropdownItem
-              title="Dupliquer"
-              icon={fullCopyIcon}
-              onSelect={handleCreateOfferClick}
-            />
-          )}
-          {canCreateBookableOffer && (
-            <DropdownItem
-              title="Créer une offre réservable"
-              icon={fullPlusIcon}
-              onSelect={handleCreateOfferClick}
-            />
-          )}
-          {canEditOffer && (
-            <DropdownItem
-              title="Modifier"
-              icon={fullPenIcon}
-              onSelect={() => handleEditOfferClick(editionOfferLink)}
-            />
-          )}
-          {canPublishOffer && (
-            <DropdownItem
-              title="Publier"
-              icon={strokeCheckIcon}
-              onSelect={hideOrPublishOffer}
-            />
-          )}
-          {!isCollectiveOfferBookable(offer) && canShareOffer && (
-            <DropdownItem>
-              <ShareLinkDrawer
-                offerId={offer.id}
-                triggerButtonVariant={ButtonVariant.TERTIARY}
-                triggerButtonSize={ButtonSize.DEFAULT}
-              />
-            </DropdownItem>
-          )}
-          {canHideOffer && (
-            <DropdownItem
-              title="Mettre en pause"
-              icon={fullHideIcon}
-              onSelect={hideOrPublishOffer}
-            />
-          )}
-          {isBookingCancellable && (
-            <DropdownItem
-              title="Annuler la réservation"
-              icon={fullClearIcon}
-              onSelect={() => setIsCancelledBookingModalOpen(true)}
-              color={DropdownItemColor.DANGER}
-            />
-          )}
-          {canArchiveOffer && (
-            <DropdownItem
-              title="Archiver"
-              icon={fullArchiveIcon}
-              onSelect={() => setIsArchivedModalOpen(true)}
-              color={DropdownItemColor.DANGER}
-            />
-          )}
-        </Dropdown>
+          items={[
+            [
+              ...(canDuplicateOffer
+                ? [
+                    {
+                      text: 'Dupliquer',
+                      icon: fullCopyIcon,
+                      onClick: handleCreateOfferClick,
+                    },
+                  ]
+                : []),
+              ...(canCreateBookableOffer
+                ? [
+                    {
+                      text: 'Créer une offre réservable',
+                      icon: fullPlusIcon,
+                      onClick: handleCreateOfferClick,
+                    },
+                  ]
+                : []),
+              ...(canEditOffer
+                ? [
+                    {
+                      text: 'Modifier',
+                      icon: fullPenIcon,
+                      onClick: () => handleEditOfferClick(editionOfferLink),
+                    },
+                  ]
+                : []),
+              ...(canPublishOffer
+                ? [
+                    {
+                      text: 'Publier',
+                      icon: strokeCheckIcon,
+                      onClick: hideOrPublishOffer,
+                    },
+                  ]
+                : []),
+              ...(!isCollectiveOfferBookable(offer) && canShareOffer
+                ? [
+                    {
+                      text: 'Partager l’offre',
+                      icon: connectStrokeIcon,
+                      onClick: () => setIsShareLinkDrawerOpen(true),
+                    },
+                  ]
+                : []),
+              ...(canHideOffer
+                ? [
+                    {
+                      text: 'Mettre en pause',
+                      icon: fullHideIcon,
+                      onClick: hideOrPublishOffer,
+                    },
+                  ]
+                : []),
+              ...(isBookingCancellable
+                ? [
+                    {
+                      text: 'Annuler la réservation',
+                      variant: DropDownItemVariant.DESTRUCTIVE,
+                      icon: fullClearIcon,
+                      onClick: () => setIsCancelledBookingModalOpen(true),
+                    },
+                  ]
+                : []),
+              ...(canArchiveOffer
+                ? [
+                    {
+                      text: 'Archiver',
+                      variant: DropDownItemVariant.DESTRUCTIVE,
+                      icon: fullArchiveIcon,
+                      onClick: () => setIsArchivedModalOpen(true),
+                    },
+                  ]
+                : []),
+            ],
+          ]}
+        />
+      )}
+      {!isCollectiveOfferBookable(offer) && canShareOffer && (
+        <ShareLinkDrawer
+          offerId={offer.id}
+          open={isShareLinkDrawerOpen}
+          onOpenChange={setIsShareLinkDrawerOpen}
+          refToFocusOnClose={dropdownTriggerRef}
+        />
       )}
       <DuplicateOfferDialog
         onCancel={() => setIsModalOpen(false)}

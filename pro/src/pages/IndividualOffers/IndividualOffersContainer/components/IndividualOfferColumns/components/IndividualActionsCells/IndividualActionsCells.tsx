@@ -8,7 +8,6 @@ import {
   ButtonVariant,
 } from 'design-system/Button/types'
 import { useCallback, useRef, useState } from 'react'
-import { Link } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -27,10 +26,13 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Dropdown } from '@/design-system/Dropdown/Dropdown'
+import fullBoostedIcon from '@/icons/full-boosted.svg'
 import penIcon from '@/icons/full-edit.svg'
 import fullMessageIcon from '@/icons/full-message.svg'
 import fullStarIcon from '@/icons/full-star.svg'
 import fullStockIcon from '@/icons/full-stock.svg'
+import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeMessageIcon from '@/icons/stroke-message.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
@@ -40,10 +42,7 @@ import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/comp
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
 import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
-import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
-import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
-import { HeadlineOfferCell } from '../HeadlineOfferCell/HeadlineOfferCell'
 import { HeadlineOfferImageDialogs } from '../HeadlineOfferImageDialogs'
 import styles from './IndividualActionsCells.module.scss'
 
@@ -261,61 +260,69 @@ export const IndividualActionsCells = ({
           </>
         )}
         <Dropdown
-          title="Voir les actions"
-          triggerTooltip
-          dropdownTriggerRef={dropdownTriggerRef}
-        >
-          <DropdownItem icon={penIcon}>
-            <Link
-              className={styles['action-item']}
-              to={editionOfferLink}
-              onClick={() =>
-                logOfferNavigation(
-                  INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_VIEW_OFFER
-                )
-              }
-            >
-              Voir l’offre
-            </Link>
-          </DropdownItem>
-          {offer.status === OfferStatus.DRAFT ? (
-            <DropdownItem
-              className={styles['action-item']}
-              onSelect={() =>
-                setIsConfirmDialogDeleteDraftOpen(
-                  !isConfirmDialogDeleteDraftOpen
-                )
-              }
-              title="Supprimer l’offre"
-              icon={fullTrashIcon}
+          label="Voir les actions"
+          trigger={
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              icon={fullThreeDotsIcon}
+              ref={dropdownTriggerRef}
+              size={ButtonSize.SMALL}
+              color={ButtonColor.NEUTRAL}
+              tooltip="Voir les actions"
             />
-          ) : (
-            <DropdownItem icon={fullStockIcon}>
-              <Link
-                className={styles['action-item']}
-                to={editionStockLink}
-                onClick={() =>
-                  logOfferNavigation(
-                    INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_EDIT_OFFER_STOCK
-                  )
-                }
-              >
-                {offer.isEvent ? `Dates et capacités` : `Stocks`}
-              </Link>
-            </DropdownItem>
-          )}
-          {isHeadlineActionDisplayed && (
-            <HeadlineOfferCell
-              offer={offer}
-              setIsConfirmReplacementDialogOpen={
-                setIsConfirmDialogReplaceHeadlineOfferOpen
-              }
-              setIsOfferWithoutImageDialogOpen={
-                setIsDialogForHeadlineOfferWithoutImageOpen
-              }
-            />
-          )}
-        </Dropdown>
+          }
+          items={[
+            [
+              {
+                text: 'Voir l’offre',
+                icon: penIcon,
+                link: {
+                  to: editionOfferLink,
+                  onClick: () =>
+                    logOfferNavigation(
+                      INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_VIEW_OFFER
+                    ),
+                },
+              },
+              ...(offer.status === OfferStatus.DRAFT
+                ? [
+                    {
+                      text: 'Supprimer l’offre',
+                      icon: fullTrashIcon,
+                      onClick: () =>
+                        setIsConfirmDialogDeleteDraftOpen(
+                          !isConfirmDialogDeleteDraftOpen
+                        ),
+                    },
+                  ]
+                : [
+                    {
+                      text: offer.isEvent ? 'Dates et capacités' : 'Stocks',
+                      icon: fullStockIcon,
+                      link: {
+                        to: editionStockLink,
+                        onClick: () =>
+                          logOfferNavigation(
+                            INDIVIDUAL_OFFERS_NAVIGATION_SOURCE.ACTIONS_MENU_EDIT_OFFER_STOCK
+                          ),
+                      },
+                    },
+                  ]),
+              ...(isHeadlineActionDisplayed
+                ? [
+                    {
+                      text:
+                        offer.id === headlineOffer?.id
+                          ? 'Ne plus mettre à la une'
+                          : 'Mettre à la une',
+                      icon: fullBoostedIcon,
+                      onClick: onClickAddHeadlineOffer,
+                    },
+                  ]
+                : []),
+            ],
+          ]}
+        />
       </div>
       <ConfirmDialog
         icon={strokeTrashIcon}
@@ -344,6 +351,9 @@ export const IndividualActionsCells = ({
         }
       />
       <HeadlineOfferImageDialogs
+        refToFocusOnClose={
+          isNewProAdviceAccess ? headlineButtonTriggerRef : dropdownTriggerRef
+        }
         offerId={offer.id}
         isFirstDialogOpen={isDialogForHeadlineOfferWithoutImageOpen}
         setIsFirstDialogOpen={setIsDialogForHeadlineOfferWithoutImageOpen}

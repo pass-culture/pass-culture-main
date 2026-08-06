@@ -2,7 +2,6 @@
 
 import classnames from 'classnames'
 import { useState } from 'react'
-import { Link } from 'react-router'
 
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -17,6 +16,7 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import { Dropdown } from '@/design-system/Dropdown/Dropdown'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullParametersIcon from '@/icons/full-parameters.svg'
@@ -26,8 +26,6 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
-import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 import { type NavItem, SideNavLinks } from '../SideNavLinks/SideNavLinks'
 import styles from './LateralMenu.module.scss'
@@ -179,7 +177,7 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         <div className={styles['nav-section-create-button-wrapper']}>
           {!withVenueHelpers(selectedPartnerVenue).isClosed && (
             <Dropdown
-              title="Créer une offre"
+              label="Créer une offre"
               open={isOpen}
               onOpenChange={setIsOpen}
               align="start"
@@ -192,25 +190,29 @@ export const LateralMenu = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   fullWidth
                 />
               }
-            >
-              <DropdownItem icon={strokePhoneIcon}>
-                <Link
-                  onClick={() => setIsOpen(false)}
-                  to={getIndividualOfferUrl({
-                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                    mode: OFFER_WIZARD_MODE.CREATION,
-                    isOnboarding: false,
-                  })}
-                >
-                  Pour le grand public
-                </Link>
-              </DropdownItem>
-              <DropdownItem icon={strokeBagIcon}>
-                <Link onClick={() => setIsOpen(false)} to="/offre/creation">
-                  Pour les groupes scolaires
-                </Link>
-              </DropdownItem>
-            </Dropdown>
+              items={[
+                [
+                  {
+                    text: 'Pour le grand public',
+                    icon: strokePhoneIcon,
+                    link: {
+                      to: getIndividualOfferUrl({
+                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                        mode: OFFER_WIZARD_MODE.CREATION,
+                        isOnboarding: false,
+                      }),
+                    },
+                  },
+                  {
+                    text: 'Pour les groupes scolaires',
+                    icon: strokeBagIcon,
+                    link: {
+                      to: '/offre/creation',
+                    },
+                  },
+                ],
+              ]}
+            />
           )}
           {withVenueHelpers(selectedPartnerVenue).isClosed && (
             <Button disabled fullWidth label="Créer une offre" />

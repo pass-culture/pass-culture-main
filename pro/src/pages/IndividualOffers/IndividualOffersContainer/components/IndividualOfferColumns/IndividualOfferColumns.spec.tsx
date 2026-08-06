@@ -178,7 +178,7 @@ describe('getIndividualOfferColumns', () => {
       screen.getByRole('button', { name: 'Voir les actions' })
     )
 
-    expect(screen.getByRole('link', { name: 'Stocks' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: 'Stocks' })).toHaveAttribute(
       'href',
       expect.stringContaining('/edition/tarifs')
     )
@@ -198,7 +198,7 @@ describe('getIndividualOfferColumns', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'Dates et capacités' })
+      screen.getByRole('menuitem', { name: 'Dates et capacités' })
     ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
   })
 
@@ -237,7 +237,9 @@ describe('getIndividualOfferColumns', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
     )
-    await userEvent.click(screen.getByRole('link', { name: 'Voir l’offre' }))
+    await userEvent.click(
+      screen.getByRole('menuitem', { name: 'Voir l’offre' })
+    )
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
@@ -254,7 +256,7 @@ describe('getIndividualOfferColumns', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
     )
-    await userEvent.click(screen.getByRole('link', { name: 'Stocks' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Stocks' }))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
@@ -303,7 +305,7 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(
-        await screen.findByRole('link', { name: 'Stocks' })
+        await screen.findByRole('menuitem', { name: 'Stocks' })
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Mettre à la une' })

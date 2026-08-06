@@ -182,6 +182,25 @@ describe('OfferActionsCells', () => {
     expect(screen.getByText('Publier')).toBeInTheDocument()
   })
 
+  it('should open share link drawer when clicking share action on template offer', async () => {
+    const user = userEvent.setup()
+    renderOfferActionsCell({
+      offer: collectiveOfferTemplateFactory({
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+      }),
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
+
+    await user.click(screen.getByText('Partager l’offre'))
+
+    expect(
+      await screen.findByText(
+        'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should not show action buttons when action is not allowed', async () => {
     renderOfferActionsCell({
       offer: collectiveOfferFactory({
@@ -430,22 +449,21 @@ describe('OfferActionsCells', () => {
       actions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
       name: 'institution',
     },
-  ])(
-    'should show edition button when the $name edition action is allowed',
-    async ({ actions }) => {
-      renderOfferActionsCell({
-        offer: collectiveOfferFactory({
-          allowedActions: actions,
-        }),
-      })
+  ])('should show edition button when the $name edition action is allowed', async ({
+    actions,
+  }) => {
+    renderOfferActionsCell({
+      offer: collectiveOfferFactory({
+        allowedActions: actions,
+      }),
+    })
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
-      expect(screen.getByText('Modifier')).toBeInTheDocument()
-    }
-  )
+    expect(screen.getByText('Modifier')).toBeInTheDocument()
+  })
 
   it('should not show edition button when no edition action is allowed', async () => {
     renderOfferActionsCell({
