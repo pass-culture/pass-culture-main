@@ -71,7 +71,7 @@ dependencies = [
   "rapidfuzz ==3.14.5",
   "regex==2026.7.19",
   "requests==2.34.2",
-  "schwifty==2026.7.2",
+  "schwifty==2026.7.3",
   "semver ==3.0.4",
   "sentry-sdk[flask,celery]==2.66.1",
   "shapely ==2.1.2",
