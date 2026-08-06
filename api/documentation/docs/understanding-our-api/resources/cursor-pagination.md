@@ -38,16 +38,17 @@ import os
 import requests
 
 # should come from an env variable (as it is a very sensitive data & as it varies between envs)
-PASSCULTURE_API_KEY = os.getenv('PASSCULTURE_API_KEY')
+PASSCULTURE_API_KEY = os.getenv("PASSCULTURE_API_KEY")
 # should vary between envs
 PASSCULTURE_BASE_URI = "https://backend.integration.passculture.pro"
+
 
 def fetch_all_events(venue_id: int, items_per_page: int = 50):
     all_data = []
     has_more_data = True
     params = {"venueId": venue_id, "limit": items_per_page}
     headers = {"Authorization": f"Bearer {PASSCULTURE_API_KEY}"}
-    
+
     while has_more_data:
         response = requests.get(
             f"{PASSCULTURE_BASE_URI}/public/offers/v1/events",
@@ -58,7 +59,7 @@ def fetch_all_events(venue_id: int, items_per_page: int = 50):
             raise Exception(f"Failed to fetch data: {response.status_code} {response.text}")
 
         data = response.json()
-        events = data.get("events",[])
+        events = data.get("events", [])
         all_data.extend(events)
 
         has_more_data = len(events) == items_per_page
@@ -66,7 +67,7 @@ def fetch_all_events(venue_id: int, items_per_page: int = 50):
         if has_more_data:
             # Update params to fetch next page using the last event id + 1
             params["firstIndex"] = events[-1]["id"] + 1
-    
+
     return all_data
 ```
 

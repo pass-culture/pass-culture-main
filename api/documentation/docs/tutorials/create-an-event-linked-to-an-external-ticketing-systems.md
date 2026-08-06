@@ -61,7 +61,7 @@ import hmac
 from hashlib import sha256
 
 # should come from an env variable (as it is a very sensitive data & as it varies between envs)
-PASSCULTURE_HMAC_KEY = os.getenv('YOUR_HMAC_KEY')
+PASSCULTURE_HMAC_KEY = os.getenv("YOUR_HMAC_KEY")
 if not PASSCULTURE_HMAC_KEY:
     raise ValueError("HMAC key not found in environment variables")
 
@@ -81,14 +81,16 @@ class PassCultureAuthenticationService:
 
     @classmethod
     def authenticate_request(cls, request):
-        request_signature = request.headers.get('PassCulture-Signature')
-        
-        if not request_signature or not cls._verify_signature(request.json, request.headers.get('PassCulture-Signature')):
+        request_signature = request.headers.get("PassCulture-Signature")
+
+        if not request_signature or not cls._verify_signature(
+            request.json, request.headers.get("PassCulture-Signature")
+        ):
             raise PassCultureAuthenticationError()
 
 
 # Booking URL controller
-@app.post('/your/booking/url')
+@app.post("/your/booking/url")
 def book_ticket():
     try:
         # checks that the request comes from the pass Culture
@@ -97,32 +99,30 @@ def book_ticket():
         # ... (your business logic)
 
         # Your success response
-        return jsonify({
-            "remainingQuantity": 12,  # the remaining quantity after this booking
-            "tickets" : [{
-                "barcode": "1234567AJSQ",  # the ticket barcode that will given to the beneficiary
-                "seat": "A12"  # the ticket seat (if relevant)
-            }],
-        }), 200
-    except PassCultureAuthenticationError: 
+        return jsonify(
+            {
+                "remainingQuantity": 12,  # the remaining quantity after this booking
+                "tickets": [
+                    {
+                        "barcode": "1234567AJSQ",  # the ticket barcode that will given to the beneficiary
+                        "seat": "A12",  # the ticket seat (if relevant)
+                    }
+                ],
+            }
+        ), 200
+    except PassCultureAuthenticationError:
         # failed to authenticate the request
         return jsonify({"message": "Invalid Signature"}), 401
-    except SoldOutError:  
-        # error on your side because the event date is sold-out 
-        return jsonify({
-            "error": "sold_out",
-            "remainingQuantity": 0
-        }), 409
-    except NotEnoughSeatsError:  
+    except SoldOutError:
+        # error on your side because the event date is sold-out
+        return jsonify({"error": "sold_out", "remainingQuantity": 0}), 409
+    except NotEnoughSeatsError:
         # error on your side because we tried to book 2 seats and you have only one seat remaining
-        return jsonify({
-            "error": "not_enough_seats",
-            "remainingQuantity": 1
-        }), 409
+        return jsonify({"error": "not_enough_seats", "remainingQuantity": 1}), 409
 
 
 # Cancellation URL controller
-@app.post('/your/cancellation/url')
+@app.post("/your/cancellation/url")
 def cancel_ticket():
     try:
         # checks that the request comes from the pass Culture
@@ -131,15 +131,17 @@ def cancel_ticket():
         # ... (your business logic)
 
         # Your success response
-        return jsonify({
-            "remainingQuantity": 45,  # the remaining quantity after this cancellation
-        }), 200
+        return jsonify(
+            {
+                "remainingQuantity": 45,  # the remaining quantity after this cancellation
+            }
+        ), 200
     except PassCultureAuthenticationError:
         # failed to authenticate the request
         return jsonify({"message": "Invalid Signature"}), 401
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
 ```
 

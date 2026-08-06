@@ -20,7 +20,6 @@ On utilise la librairie `pydantic` pour sérialiser les données.
 @authenticated_and_active_user_required
 def get_user_profile() -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(current_user)
-
 ```
 
 
@@ -50,7 +49,7 @@ class GetRoute:
         user = UserFactory()
         offer = OfferFactory(user, 20)
 
-        response = client.with_session_auth(email='user@test.com').get('/offers')
+        response = client.with_session_auth(email="user@test.com").get("/offers")
 
         assert response.status_code == 200
         assert len(response.json()) == 10

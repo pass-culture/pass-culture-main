@@ -21,6 +21,7 @@ Here is how we compute the signature:
 import hmac
 from hashlib import sha256
 
+
 def generate_signature(json_string: str):
     return hmac.new(YOUR_HMAC_KEY.encode(), json_string.encode(), sha256).hexdigest()
 ```
@@ -48,20 +49,22 @@ PASSCULTURE_HMAC_KEY = YOUR_HMAC_KEY  # should come from an env variable
 
 app = Flask(__name__)
 
+
 def _verify_signature(data: str, signature: str):
     # check that the signature of the body is matching the signature sent in the header
-    return hmac.new(PASSCULTURE_HMAC_KEY.encode(), data.encode(), sha256).hexdigest() ==  signature
+    return hmac.new(PASSCULTURE_HMAC_KEY.encode(), data.encode(), sha256).hexdigest() == signature
+
 
 # the URL controller
-@app.post('/tickets/create')
+@app.post("/tickets/create")
 def create_ticket():
-    request_signature = request.headers.get('PassCulture-Signature')
+    request_signature = request.headers.get("PassCulture-Signature")
 
     if not request_signature:
         # `PassCulture-Signature` header is missing
         return jsonify({"message": "Invalid Signature"}), 401
 
-    if not _verify_signature(request.json, request.headers.get('PassCulture-Signature')):
+    if not _verify_signature(request.json, request.headers.get("PassCulture-Signature")):
         # the request body signature doesn't match the signature in the `PassCulture-Signature` header
         return jsonify({"message": "Invalid Signature"}), 401
 
@@ -70,7 +73,7 @@ def create_ticket():
     return jsonify(response_object), 200
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
 ```
 
