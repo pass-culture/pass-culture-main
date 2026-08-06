@@ -270,8 +270,22 @@ def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
 # use this validator for a query parameter that we need to parse as a list
 ArgsAsListBeforeValidator = pydantic_v2.BeforeValidator(parse_args_as_list)
 
-HttpUrl = typing.Annotated[pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(partial(check_url, pydantic_version="v2"))]
-HttpUrlString = typing.Annotated[HttpUrl, pydantic_v2.AfterValidator(str)]
+
+def _ensure_http_url(url: str) -> str:
+    """Apply pydantic HttpUrl validation while still returning the original str"""
+    pydantic_v2.TypeAdapter(pydantic_v2.HttpUrl).validate_python(url)
+    return url
+
+
+HttpUrlStr = typing.Annotated[str, pydantic_v2.AfterValidator(_ensure_http_url)]
+ValidHttpUrl = typing.Annotated[
+    pydantic_v2.HttpUrl, pydantic_v2.AfterValidator(partial(check_url, pydantic_version="v2"))
+]
+ValidHttpUrlStr = typing.Annotated[
+    str,
+    pydantic_v2.AfterValidator(_ensure_http_url),
+    pydantic_v2.AfterValidator(partial(check_url, pydantic_version="v2")),
+]
 
 # by default a Decimal field will have number | string in the generated schema
 # this allows us to keep only number

@@ -566,7 +566,7 @@ class PostCollectiveOfferBodyModel(HttpBodyModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: str | None = pydantic_v2.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
-    contact_url: utils.HttpUrl | None = None
+    contact_url: utils.ValidHttpUrl | None = None
     contact_form: models.OfferContactFormEnum | None = None
     dates: PostDateRangeModel | None = None
 
