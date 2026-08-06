@@ -5,8 +5,10 @@ import enum
 import logging
 import typing
 
+import pydantic
 import pydantic.v1 as pydantic_v1
 from flask import request
+from pydantic import RootModel
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
@@ -22,10 +24,12 @@ from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
 from pcapi.routes.public.documentation_constants.fields import fields
+from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
+from pcapi.serialization.exceptions import PydanticError
 
 
 logger = logging.getLogger(__name__)
@@ -631,60 +635,52 @@ class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
     products: list[ProductOfferResponse]
 
 
-class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
-    eans: str = fields.EANS_FILTER
-    venueId: int = fields.VENUE_ID
+def _validate_ean_list(eans: str) -> list[str]:
+    if not eans:
+        raise PydanticError("EAN list must not be empty")
 
-    @pydantic_v1.validator("eans")
+    ean_list = eans.split(",")
+
+    if len(ean_list) > 100:
+        raise PydanticError("Too many EANs")
+    for ean in ean_list:
+        if not ean.isdigit():
+            raise PydanticError("EAN must be an integer")
+        if len(ean) != 13:
+            raise PydanticError("Only 13 characters EAN are accepted")
+    return ean_list
+
+
+class GetProductsListByEansQuery(serialization.HttpQueryParamsModel):
+    eans: str = fields_v2.EANS_FILTER
+    venueId: int = fields_v2.VENUE_ID
+
+    @pydantic.field_validator("eans")
     def validate_ean_list(cls, eans: str) -> list[str]:
         """The ean list must contain at least one element, at most 100
         An ean must be a 13 digit integer"""
-        ean_list = eans.split(",")
-        if len(ean_list) > 100:
-            raise ValueError("Too many EANs")
-        if len(ean_list) == 0:
-            raise ValueError("EAN list must not be empty")
-        for ean in ean_list:
-            if not ean.isdigit():
-                raise ValueError("EAN must be an integer")
-            if int(ean) < 0:
-                raise ValueError("EAN must be positive")
-            if len(ean) != 13:
-                raise ValueError("Only 13 characters EAN are accepted")
-        return ean_list
+        return _validate_ean_list(eans)
 
 
-class GetAvailableEANsListQuery(serialization.ConfiguredBaseModel):
-    eans: str = fields.EANS_FILTER
+class GetAvailableEANsListQuery(serialization.HttpQueryParamsModel):
+    eans: str = fields_v2.EANS_FILTER
 
-    @pydantic_v1.validator("eans")
+    @pydantic.field_validator("eans")
     def validate_ean_list(cls, eans: str) -> list[str]:
         """The ean list must contain at least one element, at most 100
         An ean must be a 13 digit integer"""
-        if not eans:
-            raise ValueError("EAN list must not be empty")
-
-        ean_list = eans.split(",")
-
-        if len(ean_list) > 100:
-            raise ValueError("Too many EANs")
-        for ean in ean_list:
-            if not ean.isdigit():
-                raise ValueError("EAN must be an integer")
-            if len(ean) != 13:
-                raise ValueError("Only 13 characters EAN are accepted")
-        return ean_list
+        return _validate_ean_list(eans)
 
 
-class RejectedEANsPartialResponse(serialization.ConfiguredBaseModel):
-    not_found: list[str] = fields.EANS_REJECTED_BECAUSE_NOT_FOUND
-    subcategory_not_allowed: list[str] = fields.EANS_REJECTED_BECAUSE_CATEGORY_NOT_ALLOWED
-    not_compliant_with_cgu: list[str] = fields.EANS_REJECTED_BECAUSE_NOT_COMPLIANT
+class RejectedEANsPartialResponse(serialization.HttpBodyModel):
+    not_found: list[str] = fields_v2.EANS_REJECTED_BECAUSE_NOT_FOUND
+    subcategory_not_allowed: list[str] = fields_v2.EANS_REJECTED_BECAUSE_CATEGORY_NOT_ALLOWED
+    not_compliant_with_cgu: list[str] = fields_v2.EANS_REJECTED_BECAUSE_NOT_COMPLIANT
 
 
-class AvailableEANsResponse(serialization.ConfiguredBaseModel):
-    available: list[str] = fields.EANS_AVAILABLE
-    rejected: RejectedEANsPartialResponse = fields.EANS_REJECTED
+class AvailableEANsResponse(serialization.HttpBodyModel):
+    available: list[str] = fields_v2.EANS_AVAILABLE
+    rejected: RejectedEANsPartialResponse = fields_v2.EANS_REJECTED
 
     @classmethod
     def build_response(
@@ -710,16 +706,16 @@ class LocationTypeEnum(str, enum.Enum):
     PHYSICAL = "PHYSICAL"
 
 
-class ProductCategoryResponse(serialization.ConfiguredBaseModel):
+class ProductCategoryResponse(serialization.HttpBodyModel):
     id: ProductCategoryEnum  # type: ignore[valid-type]
-    conditional_fields: dict[str, bool] = pydantic_v1.Field(
+    conditional_fields: dict[str, bool] = pydantic.Field(
         description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
     )
-    locationType: LocationTypeEnum | None
+    locationType: LocationTypeEnum | None = None
     label: str
 
     @classmethod
-    def build_category(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
+    def build(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
         conditional_fields = {}
         for field_name, condition in subcategory.conditional_fields.items():
             if field_name in ExtraDataModel.__fields__:
@@ -739,36 +735,36 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
         )
 
 
-class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[ProductCategoryResponse]
+class GetProductCategoriesResponse(RootModel):
+    root: list[ProductCategoryResponse]
 
 
-class ShowTypeResponse(serialization.ConfiguredBaseModel):
+class ShowTypeResponse(serialization.HttpBodyModel):
     id: ShowTypeEnum  # type: ignore[valid-type]
     label: str
     family_label: str
 
 
-class GetShowTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[ShowTypeResponse]
+class GetShowTypesResponse(RootModel):
+    root: list[ShowTypeResponse]
 
 
-class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
+class TiteliveMusicTypeResponse(serialization.HttpBodyModel):
     id: TiteliveMusicTypeEnum  # type: ignore[valid-type]
     label: str
 
 
-class TiteliveEventMusicTypeResponse(serialization.ConfiguredBaseModel):
+class TiteliveEventMusicTypeResponse(serialization.HttpBodyModel):
     id: TiteliveEventMusicTypeEnum  # type: ignore[valid-type]
     label: str
 
 
-class GetTiteliveMusicTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[TiteliveMusicTypeResponse]
+class GetTiteliveMusicTypesResponse(RootModel):
+    root: list[TiteliveMusicTypeResponse]
 
 
-class GetTiteliveEventMusicTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[TiteliveEventMusicTypeResponse]
+class GetTiteliveEventMusicTypesResponse(RootModel):
+    root: list[TiteliveEventMusicTypeResponse]
 
 
 #### Taken from spectree.models

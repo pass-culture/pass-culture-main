@@ -269,7 +269,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, query_params={"eans": ean})
             assert response.status_code == 400
 
-        assert response.json == {"venueId": ["field required"]}
+        assert response.json == {"venueId": ["Field required"]}
 
     def test_no_404_when_ean_not_found(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -377,4 +377,4 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, query_params={"venueId": venue_id})
             assert response.status_code == 400
 
-        assert response.json == {"eans": ["field required"]}
+        assert response.json == {"eans": ["Field required"]}

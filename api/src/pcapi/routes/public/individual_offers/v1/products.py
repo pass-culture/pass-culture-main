@@ -68,7 +68,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     # Individual offers API only relies on show subtypes, not show types.
     # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
     return serialization.GetShowTypesResponse(
-        __root__=[
+        [
             serialization.ShowTypeResponse(
                 id=show_type_slug, label=show_type.label, family_label=show.SHOW_TYPES_BY_SLUG[show_type_slug].label
             )
@@ -100,7 +100,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
     for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-Attributes/operation/GetEventTiteliveMusicTypes).
     """
     return serialization.GetTiteliveMusicTypesResponse(
-        __root__=[
+        [
             serialization.TiteliveMusicTypeResponse(
                 id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
             )
@@ -131,7 +131,7 @@ def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypes
     Return eligible music types for events.
     """
     return serialization.GetTiteliveEventMusicTypesResponse(
-        __root__=[
+        [
             serialization.TiteliveEventMusicTypeResponse(
                 id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
             )
@@ -629,10 +629,10 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
     product_categories_response = [
-        serialization.ProductCategoryResponse.build_category(subcategory)
+        serialization.ProductCategoryResponse.build(subcategory)
         for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES
     ]
-    return serialization.GetProductCategoriesResponse(__root__=product_categories_response)
+    return serialization.GetProductCategoriesResponse(product_categories_response)
 
 
 @blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])

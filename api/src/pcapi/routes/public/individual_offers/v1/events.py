@@ -791,7 +791,7 @@ def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
                     label=subcategory.pro_label,
                 )
             )
-    return events_serializers.GetEventCategoriesResponse(root=event_categories_response)
+    return events_serializers.GetEventCategoriesResponse(event_categories_response)
 
 
 def _get_existing_addresses_ids(addresses_ids: set[int]) -> set[int]:
