@@ -43,7 +43,7 @@ jobs:
           node-version-file: "pro/package.json"
           cache-dependency-path: "pro/pnpm-lock.yaml"
 
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
 
       - uses: pass-culture/common-workflows/actions/setup-firebase-tools@IC-1390-create-setup-firebase-tools-action
 
