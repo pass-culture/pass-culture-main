@@ -1,5 +1,6 @@
+import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
+
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -34,10 +35,10 @@ export const IndividualOfferExposureScreen = ({
 
   const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const {
-    shouldDisplayRecommendationCard,
-    shouldDisplayHighlightCard,
-    shouldDisplayHeadlineCard,
-  } = getOfferEnhancementCardsVisibility(offer)
+    shouldDisplayRecommendationAction,
+    shouldDisplayHighlightAction,
+    shouldDisplayHeadlineAction,
+  } = getOfferEnhancementActionsVisibility(offer)
 
   return (
     <SummaryLayout className={styles['individual-offer-exposure-screen']}>
@@ -45,20 +46,20 @@ export const IndividualOfferExposureScreen = ({
         <OfferExposureCards offer={offer} />
         <h2 className={styles['title']}>Actions de mise en avant</h2>
         <div className={styles['cards-container']}>
-          {shouldDisplayRecommendationCard && (
+          {shouldDisplayRecommendationAction && (
             <OfferRecommendationCard
               isReadOnly={isVenueClosed}
               offerId={offer.id}
             />
           )}
-          {shouldDisplayHighlightCard && (
+          {shouldDisplayHighlightAction && (
             <OfferHighlightCard
               offerId={offer.id}
               highlightRequests={offer.highlightRequests}
               isReadOnly={isVenueClosed}
             />
           )}
-          {shouldDisplayHeadlineCard && (
+          {shouldDisplayHeadlineAction && (
             <OfferHeadlineCard
               isReadOnly={isVenueClosed}
               offerId={offer.id}

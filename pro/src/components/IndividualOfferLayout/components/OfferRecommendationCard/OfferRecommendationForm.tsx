@@ -152,7 +152,7 @@ export function OfferRecommendationForm({
                 <img src={phoneImg} alt="Affichage sur l’offre" />
                 <span
                   aria-hidden={true}
-                  className={styles['recommandation-header-image-desc']}
+                  className={styles['recommandation-header-image-caption']}
                 >
                   Affichage sur l’offre
                 </span>

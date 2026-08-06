@@ -5,19 +5,19 @@ import {
 } from '@/apiClient/v1'
 
 type OfferEnhancementCardsVisibility = {
-  shouldDisplayRecommendationCard: boolean
-  shouldDisplayHighlightCard: boolean
-  shouldDisplayHeadlineCard: boolean
+  shouldDisplayRecommendationAction: boolean
+  shouldDisplayHighlightAction: boolean
+  shouldDisplayHeadlineAction: boolean
 }
 
-export const getOfferEnhancementCardsVisibility = (
+export const getOfferEnhancementActionsVisibility = (
   offer: GetIndividualOfferResponseModel | ListOffersOfferResponseModel | null
 ): OfferEnhancementCardsVisibility => {
   if (!offer) {
     return {
-      shouldDisplayRecommendationCard: false,
-      shouldDisplayHighlightCard: false,
-      shouldDisplayHeadlineCard: false,
+      shouldDisplayRecommendationAction: false,
+      shouldDisplayHighlightAction: false,
+      shouldDisplayHeadlineAction: false,
     }
   }
 
@@ -30,16 +30,16 @@ export const getOfferEnhancementCardsVisibility = (
   const isNotAProductWithoutImage = !isProduct || hasImage
 
   return {
-    shouldDisplayRecommendationCard: ![
+    shouldDisplayRecommendationAction: ![
       OfferStatus.PENDING,
       OfferStatus.REJECTED,
       OfferStatus.DRAFT,
     ].includes(offer.status),
-    shouldDisplayHighlightCard:
+    shouldDisplayHighlightAction:
       ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
         offer.status
       ) && offer.isEvent,
-    shouldDisplayHeadlineCard:
+    shouldDisplayHeadlineAction:
       offer.status === OfferStatus.ACTIVE && isNotAProductWithoutImage,
   }
 }

@@ -1,59 +1,59 @@
 import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
-import { getOfferEnhancementCardsVisibility } from '../getOfferEnhancementCardsVisibility'
+import { getOfferEnhancementActionsVisibility } from '../getOfferEnhancementActionsVisibility'
 
-describe('getOfferEnhancementCardsVisibility', () => {
-  it('hide all cards when offer is null', () => {
-    expect(getOfferEnhancementCardsVisibility(null)).toEqual({
-      shouldDisplayRecommendationCard: false,
-      shouldDisplayHighlightCard: false,
-      shouldDisplayHeadlineCard: false,
+describe('getOfferEnhancementActionsVisibility', () => {
+  it('hide all actions when offer is null', () => {
+    expect(getOfferEnhancementActionsVisibility(null)).toEqual({
+      shouldDisplayRecommendationAction: false,
+      shouldDisplayHighlightAction: false,
+      shouldDisplayHeadlineAction: false,
     })
   })
 
-  it('displays all cards for an active event offer', () => {
+  it('displays all actions for an active event offer', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       isEvent: true,
     })
 
-    const result = getOfferEnhancementCardsVisibility(offer)
+    const result = getOfferEnhancementActionsVisibility(offer)
 
-    expect(result.shouldDisplayRecommendationCard).toBe(true)
-    expect(result.shouldDisplayHighlightCard).toBe(true)
-    expect(result.shouldDisplayHeadlineCard).toBe(true)
+    expect(result.shouldDisplayRecommendationAction).toBe(true)
+    expect(result.shouldDisplayHighlightAction).toBe(true)
+    expect(result.shouldDisplayHeadlineAction).toBe(true)
   })
 
   describe.each([OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT])(
     'when status is %s',
     (status) => {
-      it('hides all cards', () => {
+      it('hides all Actions', () => {
         const offer = getIndividualOfferFactory({ status, isEvent: true })
 
-        const result = getOfferEnhancementCardsVisibility(offer)
+        const result = getOfferEnhancementActionsVisibility(offer)
 
-        expect(result.shouldDisplayRecommendationCard).toBe(false)
-        expect(result.shouldDisplayHighlightCard).toBe(false)
-        expect(result.shouldDisplayHeadlineCard).toBe(false)
+        expect(result.shouldDisplayRecommendationAction).toBe(false)
+        expect(result.shouldDisplayHighlightAction).toBe(false)
+        expect(result.shouldDisplayHeadlineAction).toBe(false)
       })
     }
   )
 
-  it('hide headline card when offer is not active', () => {
+  it('hide headline Action when offer is not active', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.PUBLISHED,
       isEvent: true,
     })
 
-    const result = getOfferEnhancementCardsVisibility(offer)
+    const result = getOfferEnhancementActionsVisibility(offer)
 
-    expect(result.shouldDisplayHeadlineCard).toBe(false)
-    expect(result.shouldDisplayRecommendationCard).toBe(true)
-    expect(result.shouldDisplayHighlightCard).toBe(true)
+    expect(result.shouldDisplayHeadlineAction).toBe(false)
+    expect(result.shouldDisplayRecommendationAction).toBe(true)
+    expect(result.shouldDisplayHighlightAction).toBe(true)
   })
 
-  it('hide headline card when offer is imageless and product-based', () => {
+  it('hide headline Action when offer is imageless and product-based', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       productId: 12,
@@ -62,23 +62,23 @@ describe('getOfferEnhancementCardsVisibility', () => {
       thumbUrl: null,
     })
 
-    const result = getOfferEnhancementCardsVisibility(offer)
+    const result = getOfferEnhancementActionsVisibility(offer)
 
-    expect(result.shouldDisplayHeadlineCard).toBe(false)
-    expect(result.shouldDisplayRecommendationCard).toBe(true)
-    expect(result.shouldDisplayHighlightCard).toBe(true)
+    expect(result.shouldDisplayHeadlineAction).toBe(false)
+    expect(result.shouldDisplayRecommendationAction).toBe(true)
+    expect(result.shouldDisplayHighlightAction).toBe(true)
   })
 
-  it('hide highlight card when offer is not an event', () => {
+  it('hide highlight Action when offer is not an event', () => {
     const offer = getIndividualOfferFactory({
       status: OfferStatus.ACTIVE,
       isEvent: false,
     })
 
-    const result = getOfferEnhancementCardsVisibility(offer)
+    const result = getOfferEnhancementActionsVisibility(offer)
 
-    expect(result.shouldDisplayHeadlineCard).toBe(true)
-    expect(result.shouldDisplayRecommendationCard).toBe(true)
-    expect(result.shouldDisplayHighlightCard).toBe(false)
+    expect(result.shouldDisplayHeadlineAction).toBe(true)
+    expect(result.shouldDisplayRecommendationAction).toBe(true)
+    expect(result.shouldDisplayHighlightAction).toBe(false)
   })
 })
