@@ -11,9 +11,10 @@ def get_frobulation_email_data(user) -> TransactionalEmailData:
     return TransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
-            "CREDIT": int(user.deposit.amount), 
+            "CREDIT": int(user.deposit.amount),
         },
     )
+
 
 def send_frobulation_email(user) -> None:
     data = get_frobulation_email_data(user)
@@ -86,6 +87,7 @@ l'envoi des mails ainsi :
 
 ```python
 import pcapi.core.mails.testing as mails_testing
+
 
 def test_frobulation():
     user = UserFactory()
