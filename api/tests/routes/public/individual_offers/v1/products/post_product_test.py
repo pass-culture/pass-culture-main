@@ -84,12 +84,21 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "name": "Le champ des possibles",
         }
 
-    def test_should_raise_404_because_has_no_access_to_venue(self):
+    def test_should_raise_404_because_has_no_access_to_venue(self, caplog):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
 
-        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue.id))
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue.id))
         assert response.status_code == 404
+        assert len(caplog.records) == 1
+        assert caplog.records[0].public_api == {
+            "api_key": self._api_key.id,
+            "provider_id": self._api_key.providerId,
+            "module": "products",
+            "function": "post_product_offer",
+            "venue": venue.id,
+        }
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
