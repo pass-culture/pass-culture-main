@@ -173,12 +173,11 @@ describe('getIndividualOfferColumns', () => {
 
   it('should redirect to stocks edition page when the offer is not isEvent', async () => {
     renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
+    const user = userEvent.setup()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
 
-    expect(screen.getByRole('link', { name: 'Stocks' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: 'Stocks' })).toHaveAttribute(
       'href',
       expect.stringContaining('/edition/tarifs')
     )
@@ -192,13 +191,12 @@ describe('getIndividualOfferColumns', () => {
       },
       {}
     )
+    const user = userEvent.setup()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
 
     expect(
-      screen.getByRole('link', { name: 'Dates et capacités' })
+      screen.getByRole('menuitem', { name: 'Dates et capacités' })
     ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
   })
 
@@ -233,11 +231,10 @@ describe('getIndividualOfferColumns', () => {
 
   it('should log source tracker on offer redirection link', async () => {
     renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
+    const user = userEvent.setup()
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-    await userEvent.click(screen.getByRole('link', { name: 'Voir l’offre' }))
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Voir l’offre' }))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
@@ -251,10 +248,10 @@ describe('getIndividualOfferColumns', () => {
   it('should log source tracker on offer edit redirection link', async () => {
     renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-    await userEvent.click(screen.getByRole('link', { name: 'Stocks' }))
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Stocks' }))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
@@ -298,12 +295,12 @@ describe('getIndividualOfferColumns', () => {
       ])
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
+
+      const user = userEvent.setup()
+      await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
 
       expect(
-        await screen.findByRole('link', { name: 'Stocks' })
+        await screen.findByRole('menuitem', { name: 'Stocks' })
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Mettre à la une' })
@@ -333,9 +330,8 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(
-        await screen.findByLabelText('Ne plus mettre à la une')
-      )
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Ne plus mettre à la une'))
 
       expect(deleteMock).toHaveBeenCalled()
     })
@@ -350,17 +346,18 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(await screen.findByLabelText('Recommander'))
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Recommander'))
 
       expect(
         await screen.findByText('Ajouter votre recommandation')
       ).toBeVisible()
 
-      await userEvent.type(
+      await user.type(
         await screen.findByLabelText(/Recommandation/),
         'Recommandation 111'
       )
-      await userEvent.click(
+      await user.click(
         await screen.findByRole('button', {
           name: 'Enregistrer la recommandation',
         })
@@ -382,7 +379,8 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(await screen.findByLabelText('Recommander'))
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Recommander'))
 
       expect(snackBarError).toHaveBeenCalledWith(
         "Offre non-conforme : aucune modification n'est possible dans ce cas. Veuillez créer une nouvelle offre."
@@ -402,7 +400,8 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(await screen.findByLabelText('Recommander'))
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Recommander'))
 
       expect(snackBarError).toHaveBeenCalledWith(
         "Offre en cours de vérification : aucune modification n'est possible durant la vérification d’éligibilité."
@@ -422,7 +421,8 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(await screen.findByLabelText('Recommander'))
+      const user = userEvent.setup()
+      await user.click(await screen.findByLabelText('Recommander'))
 
       expect(snackBarError).toHaveBeenCalledWith(
         'Votre offre doit être publiée pour faire cette action.'
@@ -451,7 +451,8 @@ describe('getIndividualOfferColumns', () => {
       )
 
       expect(await screen.findByText('My Offer')).toBeVisible()
-      await userEvent.click(
+      const user = userEvent.setup()
+      await user.click(
         await screen.findByLabelText('Modifier la recommandation')
       )
 
@@ -459,7 +460,7 @@ describe('getIndividualOfferColumns', () => {
         await screen.findByText('Ajouter votre recommandation')
       ).toBeVisible()
 
-      await userEvent.type(
+      await user.type(
         await screen.findByLabelText(/Recommandation/),
         'Recommandation 111'
       )

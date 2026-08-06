@@ -184,6 +184,26 @@ describe('OfferActionsCells', () => {
     expect(screen.getByText('Publier')).toBeInTheDocument()
   })
 
+  it('should open share link drawer when clicking share action on template offer', async () => {
+    renderOfferActionsCell({
+      offer: collectiveOfferTemplateFactory({
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+      }),
+    })
+
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
+
+    await user.click(screen.getByText('Partager l’offre'))
+
+    expect(
+      await screen.findByText(
+        'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should not show action buttons when action is not allowed', async () => {
     renderOfferActionsCell({
       offer: collectiveOfferFactory({
@@ -345,12 +365,10 @@ describe('OfferActionsCells', () => {
         }),
       })
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
-      await userEvent.click(
-        screen.getAllByText('Créer une offre réservable')[1]
-      )
+      const user = userEvent.setup()
+
+      await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
+      await user.click(screen.getAllByText('Créer une offre réservable')[1])
       expect(api.createCollectiveOffer).toHaveBeenCalledWith({
         body: {
           audioDisabilityCompliant: false,
@@ -443,9 +461,9 @@ describe('OfferActionsCells', () => {
         }),
       })
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
+      const user = userEvent.setup()
+
+      await user.click(screen.getByRole('button', { name: 'Voir les actions' }))
 
       expect(screen.getByText('Modifier')).toBeInTheDocument()
     }

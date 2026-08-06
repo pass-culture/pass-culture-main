@@ -1,9 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_z-index.scss" as zIndex;
 
 .dropdown-width {
   &-auto {
-    min-width: rem.torem(280px);
     max-width: rem.torem(320px);
     width: auto;
   }
@@ -14,6 +14,8 @@
 }
 
 .dropdown-content {
+  position: relative;
+  z-index: zIndex.$dropdown-button-z-index;
   border-radius: var(--size-spacing-xs);
   border: rem.torem(1px) solid var(--color-border-subtle);
   background-color: var(--color-background-default);
@@ -41,12 +43,16 @@
 
   border-radius: var(--size-spacing-xs);
   cursor: pointer;
-  padding: var(--size-spacing-s) var(--size-spacing-m);
+  padding: var(--size-spacing-s) var(--size-spacing-xxl) var(--size-spacing-s) var(--size-spacing-m);
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
   background-color: var(--color-background-default);
+
+  &:has(.tag-wrapper) {
+    padding-right: var(--size-spacing-m);
+  }
 
   &-icon {
     width: var(--size-icon-s);
@@ -57,6 +63,7 @@
 
   .tag-wrapper {
     margin-left: auto;
+    padding-left: var(--size-spacing-s);
     display: flex;
     align-items: center;
   }
