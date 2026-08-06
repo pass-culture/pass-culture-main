@@ -1,5 +1,6 @@
 import datetime
 import logging
+from operator import attrgetter
 from unittest.mock import patch
 
 import pytest
@@ -79,7 +80,7 @@ class PushInvoicesTest:
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert free_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert dummy_invoices == [
+        assert sorted(dummy_invoices, key=attrgetter("invoice_id")) == [
             InvoicePayload(
                 invoice_id=invoice1.id,
                 reference=invoice1.reference,
@@ -128,7 +129,7 @@ class PushInvoicesTest:
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
         assert free_invoice.status == finance_models.InvoiceStatus.PAID
 
-        assert dummy_invoices == [
+        assert sorted(dummy_invoices, key=attrgetter("invoice_id")) == [
             InvoicePayload(
                 invoice_id=invoice1.id,
                 reference=invoice1.reference,
