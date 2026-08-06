@@ -304,6 +304,7 @@ def _silence_noisy_loggers() -> None:
     # fontTools is used by weasyprint
     logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
     logging.getLogger("fontTools.ttLib.ttFont").setLevel(logging.WARNING)
+    logging.getLogger("weasyprint").setLevel(logging.WARNING)
     # model overriding skips a lot of bindings
     logging.getLogger("transitions").setLevel(logging.ERROR)
 
@@ -311,6 +312,10 @@ def _silence_noisy_loggers() -> None:
     # We don't want Werkzeug INFO log for each request, we already
     # have our own request logs.
     logging.getLogger("werkzeug").setLevel(getattr(logging, werkzeug_log_level))
+
+    # alembic has some "setup plugin" logs
+    # this should not affect logs when running alembic commands
+    logging.getLogger("alembic").setLevel(logging.WARNING)
 
 
 @contextlib.contextmanager
