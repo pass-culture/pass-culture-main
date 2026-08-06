@@ -1059,6 +1059,7 @@
                 "type": "object"
             },
             "AvailableEANsResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "available": {
                         "description": "List of EANs that are available for upsert",
@@ -1073,13 +1074,8 @@
                         "type": "array"
                     },
                     "rejected": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/RejectedEANsPartialResponse"
-                            }
-                        ],
-                        "description": "List of EANs that are not available for upsert, sorted by their rejection reasons",
-                        "title": "Rejected"
+                        "$ref": "#/components/schemas/RejectedEANsPartialResponse",
+                        "description": "List of EANs that are not available for upsert, sorted by their rejection reasons"
                     }
                 },
                 "required": [
@@ -4184,6 +4180,7 @@
                 "type": "array"
             },
             "GetAvailableEANsListQuery": {
+                "additionalProperties": false,
                 "properties": {
                     "eans": {
                         "description": "EANs list (max 100)",
@@ -4796,6 +4793,7 @@
                 "type": "array"
             },
             "GetProductsListByEansQuery": {
+                "additionalProperties": false,
                 "properties": {
                     "eans": {
                         "description": "EANs list (max 100)",
@@ -5812,7 +5810,6 @@
                 "type": "array"
             },
             "LocationTypeEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "DIGITAL",
                     "PHYSICAL"
@@ -7129,7 +7126,6 @@
                 "type": "object"
             },
             "ProductCategoryEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "ABO_BIBLIOTHEQUE",
                     "ABO_CONCERT",
@@ -7164,6 +7160,7 @@
                 "type": "string"
             },
             "ProductCategoryResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "conditionalFields": {
                         "additionalProperties": {
@@ -7184,9 +7181,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/LocationTypeEnum"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
                     }
                 },
                 "required": [
@@ -8542,6 +8542,7 @@
                 "type": "object"
             },
             "RejectedEANsPartialResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "notCompliantWithCgu": {
                         "description": "List of EANS that do not comply with our CGU (General Terms and Conditions)",
@@ -9291,6 +9292,7 @@
                 "type": "string"
             },
             "ShowTypeResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "familyLabel": {
                         "title": "Familylabel",
@@ -9624,7 +9626,6 @@
                 "type": "object"
             },
             "TiteliveEventMusicTypeEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "MUSIQUE_CLASSIQUE",
                     "JAZZ-BLUES",
@@ -9646,6 +9647,7 @@
                 "type": "string"
             },
             "TiteliveEventMusicTypeResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "$ref": "#/components/schemas/TiteliveEventMusicTypeEnum"
@@ -9689,6 +9691,7 @@
                 "type": "string"
             },
             "TiteliveMusicTypeResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "id": {
                         "$ref": "#/components/schemas/TiteliveMusicTypeEnum"

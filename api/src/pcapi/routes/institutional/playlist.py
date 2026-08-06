@@ -33,4 +33,4 @@ def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
         .limit(PLAYLIST_MAX_SIZE)
         .all()
     )
-    return serializers.OffersResponse(root=[serializers.OfferResponse.model_validate(offer) for offer in offers])
+    return serializers.OffersResponse([serializers.OfferResponse.model_validate(offer) for offer in offers])
