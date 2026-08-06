@@ -5,13 +5,20 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import { Dropdown } from '@/design-system/Dropdown/Dropdown'
 import fullDownloadIcon from '@/icons/full-download.svg'
-import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
-import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
 }
+
+import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 
 export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   const snackBar = useSnackBar()
@@ -55,17 +62,32 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <Dropdown title="Téléchargement des justificatifs" triggerTooltip>
-      <DropdownItem
-        title="Télécharger le justificatif comptable (.pdf)"
-        icon={fullDownloadIcon}
-        onSelect={() => downloadPDFFile(invoice.url)}
-      />
-      <DropdownItem
-        title="Télécharger le détail des réservations (.csv)"
-        icon={fullDownloadIcon}
-        onSelect={() => downloadCSVFile(invoice.reference)}
-      />
-    </Dropdown>
+    <Dropdown
+      label="Téléchargement des justificatifs"
+      trigger={
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          icon={fullThreeDotsIcon}
+          size={ButtonSize.SMALL}
+          color={ButtonColor.NEUTRAL}
+          tooltip="Téléchargement des justificatifs"
+        />
+      }
+      width={370}
+      items={[
+        [
+          {
+            text: 'Télécharger le justificatif comptable (.pdf)',
+            icon: fullDownloadIcon,
+            onClick: () => downloadPDFFile(invoice.url),
+          },
+          {
+            text: 'Télécharger le détail des réservations (.csv)',
+            icon: fullDownloadIcon,
+            onClick: () => downloadCSVFile(invoice.reference),
+          },
+        ],
+      ]}
+    />
   )
 }
