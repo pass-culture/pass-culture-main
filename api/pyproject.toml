@@ -92,7 +92,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "commitizen==4.16.5",
+  "commitizen==4.17.0",
   "debugpy==1.8.21",
   "djlint==1.44.0",
   "fakeredis==2.37.0",
