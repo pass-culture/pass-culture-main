@@ -27,12 +27,12 @@ class ProviderResponse(serialization.HttpBodyModel):
 
 
 class ProviderUpdate(serialization.HttpBodyModel):
-    notification_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
-    booking_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
-    cancel_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
+    notification_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
+    booking_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
+    cancel_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
 
 
 class VenueProviderExternalUrlsUpdate(serialization.HttpBodyModel):
-    notification_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
-    booking_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
-    cancel_url: serialization_utils.HttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED
+    notification_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_NOTIFICATION_URL_NOT_REQUIRED
+    booking_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_BOOKING_URL_NOT_REQUIRED
+    cancel_url: serialization_utils.ValidHttpUrl | None = fields_v2.PROVIDER_CANCEL_URL_NOT_REQUIRED

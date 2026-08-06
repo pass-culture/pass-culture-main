@@ -22,7 +22,7 @@ from pcapi.routes.serialization import venue_finance_serialize
 from pcapi.serialization.common_models import LatitudeDecimal
 from pcapi.serialization.common_models import LongitudeDecimal
 from pcapi.serialization.exceptions import PydanticError
-from pcapi.serialization.utils import HttpUrlString
+from pcapi.serialization.utils import HttpUrlStr
 from pcapi.utils import date as date_utils
 from pcapi.utils.siren import SIRET_LENGTH
 
@@ -122,7 +122,7 @@ class GetVenueResponseModel(HttpBodyModel):
     has_partner_page: bool
     can_display_highlights: bool
     has_non_draft_offers: bool
-    volunteeringUrl: HttpUrlString | None
+    volunteeringUrl: HttpUrlStr | None
     audioDisabilityCompliant: bool | None
     mentalDisabilityCompliant: bool | None
     motorDisabilityCompliant: bool | None
@@ -288,9 +288,7 @@ class EditVenueBodyModel(HttpBodyModel):
     contact: offerers_schemas.VenueContactModelV2 | None = None
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None
     isOpenToPublic: bool | None = None
-    volunteeringUrl: typing.Annotated[HttpUrlString, pydantic_v2.AfterValidator(validate_volunteering_url)] | None = (
-        None
-    )
+    volunteeringUrl: typing.Annotated[HttpUrlStr, pydantic_v2.AfterValidator(validate_volunteering_url)] | None = None
     audioDisabilityCompliant: bool | None = None
     mentalDisabilityCompliant: bool | None = None
     motorDisabilityCompliant: bool | None = None

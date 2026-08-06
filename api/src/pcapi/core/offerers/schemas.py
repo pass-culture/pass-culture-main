@@ -18,7 +18,7 @@ from pcapi.utils.date import format_into_utc_date
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
-SocialMediasV2 = dict[SocialMedia, serialization_utils.HttpUrlString]
+SocialMediasV2 = dict[SocialMedia, serialization_utils.ValidHttpUrlStr]
 
 
 class CoreLocationModelV2(BaseModelV2):

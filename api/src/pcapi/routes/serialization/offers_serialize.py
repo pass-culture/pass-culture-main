@@ -30,7 +30,7 @@ from pcapi.routes.serialization.address_serialize import retrieve_address_info_f
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import DecimalField
-from pcapi.serialization.utils import HttpUrlString
+from pcapi.serialization.utils import HttpUrlStr
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.serialization.utils import validate_url
@@ -159,7 +159,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class UpdateOfferVideoBodyModel(HttpBodyModel):
-    video_url: HttpUrlString | None
+    video_url: HttpUrlStr | None
 
     @pydantic_v2.field_validator("video_url", mode="before")
     @classmethod
