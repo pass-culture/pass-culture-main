@@ -1,3 +1,4 @@
+import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { QRCodeSVG } from 'qrcode.react'
 import { useNavigate } from 'react-router'
 
@@ -8,7 +9,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureSelectedPartnerVenue } from '@/commons/store/user/selectors'
@@ -67,16 +67,16 @@ export const IndividualOfferConfirmationScreen = ({
   }
 
   const {
-    shouldDisplayRecommendationCard,
-    shouldDisplayHighlightCard,
-    shouldDisplayHeadlineCard,
-  } = getOfferEnhancementCardsVisibility(offer)
+    shouldDisplayRecommendationAction,
+    shouldDisplayHighlightAction,
+    shouldDisplayHeadlineAction,
+  } = getOfferEnhancementActionsVisibility(offer)
 
   const isVenueClosed = withVenueHelpers(selectedPartnerVenue).isClosed
   const shouldDisplayCardsSection =
-    shouldDisplayRecommendationCard ||
-    shouldDisplayHighlightCard ||
-    shouldDisplayHeadlineCard
+    shouldDisplayRecommendationAction ||
+    shouldDisplayHighlightAction ||
+    shouldDisplayHeadlineAction
 
   return (
     <div className={styles['container']}>
@@ -150,7 +150,7 @@ export const IndividualOfferConfirmationScreen = ({
             Allez plus loin et optimisez votre offre :
           </h2>
           <div className={styles['enhancement-cards']}>
-            {shouldDisplayRecommendationCard && (
+            {shouldDisplayRecommendationAction && (
               <OfferRecommendationCard
                 isReadOnly={isVenueClosed}
                 offerId={offer.id}
@@ -158,7 +158,7 @@ export const IndividualOfferConfirmationScreen = ({
                 submitLabel="Enregistrer et accéder à l’offre"
               />
             )}
-            {shouldDisplayHighlightCard && (
+            {shouldDisplayHighlightAction && (
               <OfferHighlightCard
                 isReadOnly={isVenueClosed}
                 offerId={offer.id}
@@ -167,7 +167,7 @@ export const IndividualOfferConfirmationScreen = ({
                 submitLabel="Enregistrer et accéder à l’offre"
               />
             )}
-            {shouldDisplayHeadlineCard && (
+            {shouldDisplayHeadlineAction && (
               <OfferHeadlineCard
                 isReadOnly={isVenueClosed}
                 offerId={offer.id}

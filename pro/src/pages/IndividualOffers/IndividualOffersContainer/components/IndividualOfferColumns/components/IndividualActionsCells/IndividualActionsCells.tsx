@@ -1,4 +1,4 @@
-import { getOfferEnhancementCardsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OfferRecommendationDialogBuilder } from 'components/IndividualOfferLayout/components/OfferRecommendationCard/OfferRecommendationDialogBuilder'
 import { Button } from 'design-system/Button/Button'
@@ -100,8 +100,8 @@ export const IndividualActionsCells = ({
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }, [])
 
-  const { shouldDisplayRecommendationCard, shouldDisplayHeadlineCard } =
-    getOfferEnhancementCardsVisibility(offer)
+  const { shouldDisplayRecommendationAction, shouldDisplayHeadlineAction } =
+    getOfferEnhancementActionsVisibility(offer)
 
   const apiFilters = computeIndividualApiFilters({
     finalSearchFilters,
@@ -139,7 +139,7 @@ export const IndividualActionsCells = ({
   }
 
   async function onClickAddHeadlineOffer() {
-    if (!shouldDisplayHeadlineCard) {
+    if (!shouldDisplayHeadlineAction) {
       snackBar.error(
         'Seules les offres au statut « Publié » peuvent être mises à la une.'
       )
@@ -162,7 +162,7 @@ export const IndividualActionsCells = ({
   }
 
   function onClickAddProAdvice() {
-    if (!shouldDisplayRecommendationCard) {
+    if (!shouldDisplayRecommendationAction) {
       let errorMessage =
         'Votre offre doit être publiée pour faire cette action.'
       if (offer.status === OfferStatus.REJECTED) {
@@ -210,7 +210,7 @@ export const IndividualActionsCells = ({
               variant={ButtonVariant.SECONDARY}
               size={ButtonSize.SMALL}
               icon={
-                isHeadline && shouldDisplayHeadlineCard
+                isHeadline && shouldDisplayHeadlineAction
                   ? fullStarIcon
                   : strokeStarIcon
               }
@@ -223,7 +223,7 @@ export const IndividualActionsCells = ({
 
             <OfferRecommendationDialogBuilder
               onOpenChange={() => {
-                if (shouldDisplayRecommendationCard) {
+                if (shouldDisplayRecommendationAction) {
                   setIsProAdviceOpen(!isProAdviceOpen)
                 }
               }}
@@ -239,14 +239,14 @@ export const IndividualActionsCells = ({
             >
               <Button
                 color={
-                  offer.hasProAdvice && shouldDisplayRecommendationCard
+                  offer.hasProAdvice && shouldDisplayRecommendationAction
                     ? ButtonColor.BRAND
                     : ButtonColor.NEUTRAL
                 }
                 variant={ButtonVariant.SECONDARY}
                 size={ButtonSize.SMALL}
                 icon={
-                  offer.hasProAdvice && shouldDisplayRecommendationCard
+                  offer.hasProAdvice && shouldDisplayRecommendationAction
                     ? fullMessageIcon
                     : strokeMessageIcon
                 }

@@ -1,3 +1,4 @@
+import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -9,7 +10,6 @@ import {
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -68,10 +68,10 @@ export const IndividualOfferLayout = ({
     ].includes(offer.status)
 
   const {
-    shouldDisplayRecommendationCard,
-    shouldDisplayHighlightCard,
-    shouldDisplayHeadlineCard,
-  } = getOfferEnhancementCardsVisibility(offer)
+    shouldDisplayRecommendationAction,
+    shouldDisplayHighlightAction,
+    shouldDisplayHeadlineAction,
+  } = getOfferEnhancementActionsVisibility(offer)
 
   const snackBar = useSnackBar()
   const navigate = useNavigate()
@@ -152,28 +152,28 @@ export const IndividualOfferLayout = ({
         mode !== OFFER_WIZARD_MODE.CREATION &&
         !isOfferExposureEnabled && (
           <div className={styles['banner-container']}>
-            {(shouldDisplayRecommendationCard ||
-              shouldDisplayHighlightCard ||
-              shouldDisplayHeadlineCard) && (
+            {(shouldDisplayRecommendationAction ||
+              shouldDisplayHighlightAction ||
+              shouldDisplayHeadlineAction) && (
               <h2 className={styles['banner-container-title']}>
                 Mises en avant de votre offre
               </h2>
             )}
             <div className={styles['cards-container']}>
-              {shouldDisplayRecommendationCard && (
+              {shouldDisplayRecommendationAction && (
                 <OfferRecommendationCard
                   isReadOnly={isVenueClosed}
                   offerId={offer.id}
                 />
               )}
-              {shouldDisplayHighlightCard && (
+              {shouldDisplayHighlightAction && (
                 <OfferHighlightCard
                   isReadOnly={isVenueClosed}
                   offerId={offer.id}
                   highlightRequests={offer.highlightRequests}
                 />
               )}
-              {shouldDisplayHeadlineCard && (
+              {shouldDisplayHeadlineAction && (
                 <OfferHeadlineCard
                   isReadOnly={isVenueClosed}
                   offerId={offer.id}

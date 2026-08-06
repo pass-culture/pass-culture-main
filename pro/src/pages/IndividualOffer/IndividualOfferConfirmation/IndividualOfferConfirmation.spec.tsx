@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { getOfferEnhancementActionsVisibility } from 'commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -10,7 +11,6 @@ import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -39,9 +39,9 @@ vi.mock('@/commons/utils/config', async () => {
 })
 
 vi.mock(
-  '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility',
+  '@/commons/core/Offers/utils/getOfferEnhancementActionsVisibility',
   () => ({
-    getOfferEnhancementCardsVisibility: vi.fn(),
+    getOfferEnhancementActionsVisibility: vi.fn(),
   })
 )
 
@@ -114,10 +114,10 @@ describe('IndividualOfferConfirmation', () => {
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({
       proAdvice: null,
     })
-    vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-      shouldDisplayRecommendationCard: true,
-      shouldDisplayHighlightCard: true,
-      shouldDisplayHeadlineCard: true,
+    vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
+      shouldDisplayRecommendationAction: true,
+      shouldDisplayHighlightAction: true,
+      shouldDisplayHeadlineAction: true,
     })
   })
 
@@ -224,10 +224,10 @@ describe('IndividualOfferConfirmation', () => {
     })
 
     it('should not display the cards section when there is no card to display', () => {
-      vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-        shouldDisplayRecommendationCard: false,
-        shouldDisplayHighlightCard: false,
-        shouldDisplayHeadlineCard: false,
+      vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
+        shouldDisplayRecommendationAction: false,
+        shouldDisplayHighlightAction: false,
+        shouldDisplayHeadlineAction: false,
       })
       renderOffer(contextOverride)
 

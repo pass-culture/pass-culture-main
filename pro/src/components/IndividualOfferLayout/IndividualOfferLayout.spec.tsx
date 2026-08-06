@@ -9,7 +9,7 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { getOfferEnhancementCardsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility'
+import { getOfferEnhancementActionsVisibility } from '@/commons/core/Offers/utils/getOfferEnhancementActionsVisibility'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -39,9 +39,9 @@ vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
 }))
 vi.mock(
-  '@/commons/core/Offers/utils/getOfferEnhancementCardsVisibility',
+  '@/commons/core/Offers/utils/getOfferEnhancementActionsVisibility',
   () => ({
-    getOfferEnhancementCardsVisibility: vi.fn(),
+    getOfferEnhancementActionsVisibility: vi.fn(),
   })
 )
 const renderIndividualOfferLayout: RenderComponentFunction<
@@ -105,10 +105,10 @@ describe('IndividualOfferLayout', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOfferProAdvice').mockResolvedValue({ proAdvice: null })
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
-    vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-      shouldDisplayRecommendationCard: true,
-      shouldDisplayHighlightCard: true,
-      shouldDisplayHeadlineCard: true,
+    vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
+      shouldDisplayRecommendationAction: true,
+      shouldDisplayHighlightAction: true,
+      shouldDisplayHeadlineAction: true,
     })
   })
 
@@ -417,7 +417,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props: { offer } })
 
       await waitFor(() => {
-        expect(getOfferEnhancementCardsVisibility).toHaveBeenCalledWith(offer)
+        expect(getOfferEnhancementActionsVisibility).toHaveBeenCalledWith(offer)
       })
     })
 
@@ -492,10 +492,10 @@ describe('IndividualOfferLayout', () => {
     it('should not display the enhancement cards when exposure is activated', () => {
       const offer = getIndividualOfferFactory()
 
-      vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-        shouldDisplayRecommendationCard: true,
-        shouldDisplayHighlightCard: true,
-        shouldDisplayHeadlineCard: true,
+      vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
+        shouldDisplayRecommendationAction: true,
+        shouldDisplayHighlightAction: true,
+        shouldDisplayHeadlineAction: true,
       })
 
       renderIndividualOfferLayout({
@@ -517,10 +517,10 @@ describe('IndividualOfferLayout', () => {
     it('should not display the enhancement cards', () => {
       const offer = getIndividualOfferFactory()
 
-      vi.mocked(getOfferEnhancementCardsVisibility).mockReturnValue({
-        shouldDisplayRecommendationCard: false,
-        shouldDisplayHighlightCard: false,
-        shouldDisplayHeadlineCard: false,
+      vi.mocked(getOfferEnhancementActionsVisibility).mockReturnValue({
+        shouldDisplayRecommendationAction: false,
+        shouldDisplayHighlightAction: false,
+        shouldDisplayHeadlineAction: false,
       })
 
       renderIndividualOfferLayout({
