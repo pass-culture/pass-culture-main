@@ -4,6 +4,7 @@ import inspect
 import typing
 
 from flask import g
+from flask import request
 
 from pcapi.core.geography import models as geography_models
 from pcapi.models import api_errors
@@ -61,6 +62,10 @@ def setup_public_api_log_extra(route: typing.Callable) -> None:
             "module": module,
             "function": route.__name__,
         }
+        if request.path.startswith("/public/offers/v1") and request.is_json:
+            venue_id = request.json.get("location", {}).get("venueId", None)
+            if venue_id is not None:
+                g.public_api_log_request_details_extra["public_api"]["venue"] = venue_id
 
 
 def public_api_add_log_extra(**kwargs: typing.Any) -> None:
