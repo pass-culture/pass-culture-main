@@ -1,7 +1,3 @@
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  SubcategoryResponseModel,
-} from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -12,10 +8,6 @@ import { LabelBooking } from '../LabelBooking/LabelBooking'
 export interface StepPattern {
   id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: string | React.ReactNode
-  canGoBeyondStep?: (
-    offer: GetIndividualOfferWithAddressResponseModel,
-    subCategory?: SubcategoryResponseModel
-  ) => boolean
 }
 
 type GetStepsContext = {
@@ -29,9 +21,6 @@ interface StepDefinition {
   id: StepPattern['id']
   label: StepPattern['label'] | ((ctx: GetStepsContext) => StepPattern['label'])
   shouldInclude?: (ctx: GetStepsContext) => boolean
-  buildCanGoBeyondStep?: (
-    ctx: GetStepsContext
-  ) => StepPattern['canGoBeyondStep'] | undefined
 }
 
 const STEP_DEFINITIONS: StepDefinition[] = [
@@ -47,12 +36,10 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     label: 'Description',
-    buildCanGoBeyondStep: () => (offer) => Boolean(offer.name),
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
     label: 'Localisation',
-    buildCanGoBeyondStep: () => (offer) => Boolean(offer.location ?? offer.url),
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
@@ -61,30 +48,15 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     label: 'Tarifs',
-    buildCanGoBeyondStep:
-      (ctx) =>
-      (offer): boolean => {
-        // We also show all possible steps when we don't know yet
-        // (meaning `isEvent` is null or undefined).
-        if (ctx.isEvent === null || ctx.isEvent === true) {
-          return Boolean(offer?.priceCategories?.length)
-        }
-        return Boolean(offer?.hasStocks)
-      },
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
     label: 'Horaires et stocks',
     shouldInclude: (ctx) => ctx.isEvent === null || ctx.isEvent === true,
-    buildCanGoBeyondStep: () => (offer) => Boolean(offer?.hasStocks),
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
     label: 'Informations pratiques',
-    buildCanGoBeyondStep:
-      () =>
-      (offer, subCategory): boolean =>
-        subCategory?.canBeWithdrawable ? Boolean(offer.bookingContact) : true,
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -118,6 +90,5 @@ export const getSteps = ({
   ).map<StepPattern>((def) => ({
     id: def.id,
     label: typeof def.label === 'function' ? def.label(ctx) : def.label,
-    canGoBeyondStep: def.buildCanGoBeyondStep?.(ctx),
   }))
 }

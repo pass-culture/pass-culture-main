@@ -103,7 +103,7 @@ describe('CollectiveOfferLayout', () => {
   it('should render the navigation stepper when the partner venue is open', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/', { isCreation: true })
 
-    expect(screen.getByTestId('stepper')).toBeVisible()
+    expect(screen.getByText("Détails de l'offre")).toBeVisible()
   })
 
   it('should not render the navigation stepper when the partner venue is not allowed on Adage', () => {
@@ -113,7 +113,7 @@ describe('CollectiveOfferLayout', () => {
       { allowedOnAdage: false }
     )
 
-    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
+    expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
   })
 
   it('should not render the navigation stepper when the partner venue is closed', () => {
@@ -123,6 +123,6 @@ describe('CollectiveOfferLayout', () => {
       { state: VenueState.CLOSED }
     )
 
-    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
+    expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
   })
 })

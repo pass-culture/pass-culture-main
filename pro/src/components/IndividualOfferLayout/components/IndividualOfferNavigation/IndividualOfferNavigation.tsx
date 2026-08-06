@@ -9,18 +9,17 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { type Step, Stepper } from '@/components/Stepper/Stepper'
+import { type StepItem, Stepper } from '@/design-system/Stepper/Stepper'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './IndividualOfferNavigation.module.scss'
-import { getLastSubmittedStepIndex } from './utils/getLastSubmittedStepIndex'
 import { getSteps, type StepPattern } from './utils/getSteps'
 
 export const IndividualOfferNavigation = () => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const isOfferExposureEnabled = useActiveFeature('WIP_OFFER_EXPOSURE')
-  const { offer, isEvent, subCategories } = useIndividualOfferContext()
+  const { offer, isEvent } = useIndividualOfferContext()
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
@@ -34,50 +33,32 @@ export const IndividualOfferNavigation = () => {
     isOfferExposureEnabled,
   })
 
-  // Steps are passed as argument since they are not static.
-  const lastSubmittedStepIndex = getLastSubmittedStepIndex({
-    offer,
-    subCategory: subCategories.find((cat) => offer?.subcategoryId === cat.id),
-    orderedSteps: steps,
-  })
-
   const stepList = steps.map(
-    ({ id, label }: StepPattern, stepIndex: number): Step => {
-      const step: Step = { id, label }
-      // In edition or read-only, offer has been published,
-      // so any step can be accessed. In creation, offer can
-      // be left as draft - all steps that have been submitted once,
-      // and the step that follows are accessible via links.
-      const canBeClicked =
-        offer &&
-        (mode !== OFFER_WIZARD_MODE.CREATION ||
-          stepIndex <= lastSubmittedStepIndex + 1)
-
-      if (canBeClicked) {
-        step.url = generatePath(
-          getIndividualOfferPath({
-            step: id,
-            mode,
-            isOnboarding,
-            isOfferExposureEnabled,
-          }),
-          {
-            offerId: offer.id.toString(),
-          }
-        )
-      }
-      return step
-    }
+    ({ id, label }: StepPattern): StepItem => ({
+      id,
+      label,
+      url: offer
+        ? generatePath(
+            getIndividualOfferPath({
+              step: id,
+              mode,
+              isOnboarding,
+              isOfferExposureEnabled,
+            }),
+            {
+              offerId: offer.id.toString(),
+            }
+          )
+        : undefined,
+    })
   )
 
   return (
     <>
       {mode === OFFER_WIZARD_MODE.CREATION ? (
-        <Stepper
-          activeStep={activeStep}
-          steps={stepList}
-          className={styles.stepper}
-        />
+        <div className={styles['stepper-wrapper']}>
+          <Stepper activeStep={activeStep} steps={stepList} />
+        </div>
       ) : (
         <div className={styles.tabs}>
           <Tabs

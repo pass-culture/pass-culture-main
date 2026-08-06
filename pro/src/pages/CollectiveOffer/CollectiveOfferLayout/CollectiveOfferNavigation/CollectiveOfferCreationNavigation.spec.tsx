@@ -30,8 +30,6 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     const activeStep = CollectiveOfferStep.DETAILS
     renderCollectiveOfferNavigation({ activeStep })
 
-    expect(screen.getByTestId('stepper')).toBeVisible()
-
     const listItems = await screen.findAllByRole('listitem')
 
     expect(listItems).toHaveLength(5)
@@ -50,16 +48,15 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     const offer = getCollectiveOfferFactory({ institution: undefined })
     renderCollectiveOfferNavigation({ activeStep, offer })
 
+    // Only the steps preceding the active one are navigable, the active step
+    // never links to the page currently displayed.
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offer.id}/creation`
     )
     expect(links[1].getAttribute('href')).toBe(
       `/offre/${offer.id}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/etablissement`
     )
   })
 
@@ -79,7 +76,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     renderCollectiveOfferNavigation({ activeStep, offer })
 
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(5)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offer.id}/creation`
     )
@@ -89,47 +86,18 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     expect(links[2].getAttribute('href')).toBe(
       `/offre/${offer.id}/collectif/etablissement`
     )
-    expect(links[3].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/creation/recapitulatif`
-    )
-    expect(links[4].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/creation/apercu`
-    )
   })
 
-  it('should show links if confirmation is the active step', () => {
-    const activeStep = CollectiveOfferStep.CONFIRMATION
-    const offer = getCollectiveOfferFactory({
-      institution: {
-        city: '',
-        id: 1,
-        institutionId: '2',
-        name: '',
-        phoneNumber: '',
-        postalCode: '',
-        institutionType: '',
-      },
-    })
+  it('should not display any link when the first step is the active one', () => {
+    const activeStep = CollectiveOfferStep.DETAILS
+    const offer = getCollectiveOfferFactory()
     renderCollectiveOfferNavigation({ activeStep, offer })
 
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(5)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offer.id}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/stocks`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/etablissement`
-    )
-    expect(links[3].getAttribute('href')).toBe(
-      `/offre/${offer.id}/collectif/creation/recapitulatif`
-    )
+    expect(screen.queryAllByRole('link')).toHaveLength(0)
   })
 
-  it('should be able to go to the institution and stocks step if the institution and stock are already filled', () => {
-    const activeStep = CollectiveOfferStep.DETAILS
+  it('should be able to go back to the institution and stocks step if the institution and stock are already filled', () => {
+    const activeStep = CollectiveOfferStep.PREVIEW
     const offer = getCollectiveOfferFactory()
     renderCollectiveOfferNavigation({ activeStep, offer })
 
@@ -139,8 +107,8 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     expect(screen.getByRole('link', { name: /Dates et prix/ })).toBeVisible()
   })
 
-  it('should be able to go to the stocks step if the details are already filled', () => {
-    const activeStep = CollectiveOfferStep.DETAILS
+  it('should not link the institution step if the stocks are not filled', () => {
+    const activeStep = CollectiveOfferStep.SUMMARY
     const offer = getCollectiveOfferFactory({
       institution: undefined,
       collectiveStock: undefined,
@@ -158,7 +126,7 @@ describe('<CollectiveOfferCreationNavigation />', () => {
     const features = ['WIP_ENABLE_NEW_COLLECTIVE_PRICE_DETAILS']
 
     it('should keep the Établissement step reachable when the institution is set but additional details are empty', () => {
-      const activeStep = CollectiveOfferStep.DETAILS
+      const activeStep = CollectiveOfferStep.SUMMARY
       const offer = getCollectiveOfferFactory({
         additionalDetails: null,
         institution: {

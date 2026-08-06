@@ -34,20 +34,28 @@ describe('<CollectiveOfferTemplateCreationNavigation />', () => {
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(3)
 
+    // Only the step preceding the active one is navigable.
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(1)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/vitrine/${offer.id}/creation`
     )
   })
 
-  it('should show links if confirmation is the active step', () => {
+  it('should link every step preceding the active one', () => {
     const offer = getCollectiveOfferTemplateFactory()
     renderCollectiveOfferNavigation({
-      activeStep: CollectiveOfferTemplateStep.CONFIRMATION,
+      activeStep: CollectiveOfferTemplateStep.PREVIEW,
       offer,
     })
+
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(2)
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/vitrine/${offer.id}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
+    )
   })
 })

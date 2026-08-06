@@ -117,33 +117,42 @@ describe('IndividualOfferNavigation', () => {
       expect(bookingStep).not.toBeDefined()
     })
 
-    it('should only display some steps as links when those where submitted', () => {
-      const offerWithNumerousStepsBase = getIndividualOfferFactory({
+    it('should only display steps preceding the active one as links', () => {
+      const contextValues = individualOfferContextValuesFactory({
         isEvent: true,
-        priceCategories: [priceCategoryFactory()],
-        location: getLocationResponseModel(),
-        hasStocks: false,
-      })
-      const contextValuesWithNumerousSteps =
-        individualOfferContextValuesFactory({
+        offer: getIndividualOfferFactory({
           isEvent: true,
-          offer: offerWithNumerousStepsBase,
-        })
+          priceCategories: [priceCategoryFactory()],
+          location: getLocationResponseModel(),
+          hasStocks: false,
+        }),
+      })
 
       renderIndividualOfferNavigation({
-        contextValues: contextValuesWithNumerousSteps,
-        path,
+        contextValues,
+        path: getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
       })
 
-      const steps = screen.getAllByRole('listitem')
-      const lastSubmittedStepIndex = steps.findIndex((listItem) =>
-        listItem.textContent?.match(LABELS.PRICES)
-      )
-
-      const links = screen.getAllByRole('link')
-      // +1 since steps is an array starting at 0.
-      // +1 since we'd like to access the step following the submitted one.
-      expect(links.length).toEqual(lastSubmittedStepIndex + 2)
+      expect(screen.getAllByRole('link')).toHaveLength(3)
+      expect(
+        screen.getByRole('link', { name: /Description/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: /Localisation/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: LABELS.MEDIA })
+      ).toBeInTheDocument()
+      // The active step and the ones that follow are never navigable.
+      expect(
+        screen.queryByRole('link', { name: LABELS.PRICES })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: LABELS.SUMMARY })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -313,7 +322,7 @@ describe('IndividualOfferNavigation', () => {
       ).toBeDefined()
     })
 
-    it('should display the expected active steps when the offer is completed', () => {
+    it('should display every step but the last one as a link when the last step is active', () => {
       const contextValues = individualOfferContextValuesFactory({
         isEvent: true,
         offer: getIndividualOfferFactory({
@@ -322,11 +331,19 @@ describe('IndividualOfferNavigation', () => {
         }),
       })
 
-      renderIndividualOfferNavigation({ contextValues })
+      renderIndividualOfferNavigation({
+        contextValues,
+        path: getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        }),
+      })
 
-      const locationStep = screen.getByRole('link', { name: '7 Récapitulatif' })
-
-      expect(locationStep).toBeInTheDocument()
+      const steps = screen.getAllByRole('listitem')
+      expect(screen.getAllByRole('link')).toHaveLength(steps.length - 1)
+      expect(
+        screen.queryByRole('link', { name: LABELS.SUMMARY })
+      ).not.toBeInTheDocument()
     })
   })
 })

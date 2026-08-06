@@ -117,7 +117,7 @@ describe('test SignupJourneyStepper', () => {
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
-  it('should render validation step and navigate through steps', async () => {
+  it('should render validation step and navigate back through steps', async () => {
     contextValue.offerer = {
       name: 'test name',
       siret: '1234567893333',
@@ -145,17 +145,12 @@ describe('test SignupJourneyStepper', () => {
     if (tabValidation) {
       await userEvent.click(tabValidation)
     }
-    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
 
     if (tabAuthentication) {
       await userEvent.click(tabAuthentication)
     }
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
-
-    if (tabValidation) {
-      await userEvent.click(tabValidation)
-    }
-    expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
   it('should not render stepper when step is not included in steps', () => {

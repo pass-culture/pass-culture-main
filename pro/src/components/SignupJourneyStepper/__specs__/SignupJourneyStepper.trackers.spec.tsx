@@ -182,22 +182,14 @@ describe('test renderSignupJourneyStepper', () => {
     if (tabValidation) {
       await userEvent.click(tabValidation)
     }
-    expect(mockLogEvent).toHaveBeenCalledTimes(2)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      2,
-      Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
-      {
-        to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
-        used: SignupJourneyAction.Breadcrumb,
-      }
-    )
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
 
     if (tabAuthentication) {
       await userEvent.click(tabAuthentication)
     }
-    expect(mockLogEvent).toHaveBeenCalledTimes(3)
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
-      3,
+      2,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
