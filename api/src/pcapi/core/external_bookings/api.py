@@ -14,6 +14,7 @@ import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
+from pcapi.core.bookings.utils import generate_ed25519_signature
 from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.providers.clients import cinema_client
@@ -190,6 +191,7 @@ def book_event_ticket(
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
+    ed25519_signature = generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY, data=json_payload)
 
     # Booking Url (Venue booking url > provider booking url)
     booking_url = provider.bookingExternalUrl
@@ -204,6 +206,7 @@ def book_event_ticket(
         booking_url,
         json=json_payload,
         hmac=hmac_signature,
+        ed25519_signature=ed25519_signature,
         headers={"Content-Type": "application/json"},
         timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         record_metrics=True,
@@ -291,6 +294,8 @@ def cancel_event_ticket(
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
+    ed25519_signature = generate_ed25519_signature(private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY, data=json_payload)
+
     headers = {"Content-Type": "application/json"}
 
     # Cancel Url (Venue cancel url > provider cancel url)
@@ -307,6 +312,7 @@ def cancel_event_ticket(
         json=json_payload,
         headers=headers,
         hmac=hmac_signature,
+        ed25519_signature=ed25519_signature,
         timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         record_metrics=True,
         metric_name_suffix="external_booking_cancel",
@@ -350,10 +356,14 @@ def send_booking_notification_to_external_service(
     try:
         external_api_notification_request = providers_tasks.ExternalApiBookingNotificationRequest.build(booking, action)
         signature = generate_hmac_signature(hmacKey, external_api_notification_request.model_dump_json())
+        ed25519_signature = generate_ed25519_signature(
+            data=external_api_notification_request.model_dump_json(), private_key=settings.WEBHOOK_AUTH_PRIVATE_KEY
+        )
         payload = providers_tasks.ExternalApiBookingNotificationTaskPayload(
             data=external_api_notification_request,
             notificationUrl=notification_url,
             signature=signature,
+            ed25519_signature=ed25519_signature,
         )
         on_commit(functools.partial(providers_tasks.external_api_booking_notification_task.delay, payload.model_dump()))
 

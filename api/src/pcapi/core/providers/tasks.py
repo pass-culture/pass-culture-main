@@ -52,6 +52,7 @@ class ExternalApiBookingNotificationRequest(ExternalEventBookingRequest):
 class ExternalApiBookingNotificationTaskPayload(BaseModelV2):
     data: ExternalApiBookingNotificationRequest
     signature: str
+    ed25519_signature: str | None = None
     notificationUrl: str
 
 
@@ -68,6 +69,7 @@ def external_api_booking_notification_task(
             payload.notificationUrl,
             json=payload.data.model_dump_json(),
             hmac=payload.signature,
+            ed25519_signature=payload.ed25519_signature,
             headers={"Content-Type": "application/json"},
         )
         response.raise_for_status()
