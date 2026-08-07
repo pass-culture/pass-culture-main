@@ -56,6 +56,17 @@ const renderCollaborators = (options?: RenderWithProvidersOptions) => {
 
 describe('Collaborators', () => {
   beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = vi
+      .fn()
+      .mockImplementation(function (this: HTMLDialogElement) {
+        this.setAttribute('open', '')
+      })
+    HTMLDialogElement.prototype.close = vi.fn().mockImplementation(function (
+      this: HTMLDialogElement
+    ) {
+      this.removeAttribute('open')
+    })
+
     vi.spyOn(api, 'getOffererMembers').mockResolvedValue({ members: [] })
 
     vi.spyOn(api, 'inviteMember').mockResolvedValue(undefined)
@@ -63,6 +74,10 @@ describe('Collaborators', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('should display a button to open invite form', () => {
@@ -76,7 +91,7 @@ describe('Collaborators', () => {
       screen.queryByText(
         /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
       )
-    ).not.toBeInTheDocument()
+    ).not.toBeVisible()
 
     expect(
       screen.queryByRole('button', {
