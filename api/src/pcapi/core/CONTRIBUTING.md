@@ -43,13 +43,7 @@ Par exemple :
 
 ```python
 def get_offerer_by_offer_id(offer_id: int) -> Offerer | None:
-    return (
-        db.session.query(Offerer)
-        .join(Venue)
-        .join(Offer)
-        .filter_by(id=offer_id)
-        .first()
-    )
+    return db.session.query(Offerer).join(Venue).join(Offer).filter_by(id=offer_id).first()
 ```
 
 Ces fonctions ne doivent pas contenir :
@@ -103,7 +97,7 @@ def test_flush_inside_transaction():
     db.session.flush()
     venue_type_id = venue_type.id
     db.session.rollback()
-    assert db.session.get(offerers_models.VenueType, venue_type_id) is not None # the object is still present
+    assert db.session.get(offerers_models.VenueType, venue_type_id) is not None  # the object is still present
 
 
 @conftest.clean_database
@@ -113,7 +107,7 @@ def test_flush_does_not_commit():
     db.session.flush()
     venue_type_id = venue_type.id
     db.session.rollback()
-    assert db.session.query(offerers_models.VenueType).first() is None # the object is no longer present
+    assert db.session.query(offerers_models.VenueType).first() is None  # the object is no longer present
 ```
 
 

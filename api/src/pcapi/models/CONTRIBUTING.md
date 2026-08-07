@@ -10,7 +10,7 @@
 
   - Exemple:
     ```python
-    quantity = sa_orm.mapped_column(sa.Integer, nullable=True) # quantity est de type int | None
+    quantity = sa_orm.mapped_column(sa.Integer, nullable=True)  # quantity est de type int | None
     ```
 
 - Cas 2 : le cas des colonnes non nullables
@@ -33,7 +33,7 @@
 
   - Exemple :
     ```python
-    subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False) # subcategoryId est de type str
+    subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)  # subcategoryId est de type str
     ```
 
 - Cas 3 : le cas où mypy ne sait pas inférer
@@ -43,7 +43,7 @@
 
   - Exemple :
     ```python
-    product: sa_orm.Mapped[Product] = sa_orm.relationship(Product, back_populates="offers") # product est de type Product
+    product: sa_orm.Mapped[Product] = sa_orm.relationship(Product, back_populates="offers")  # product est de type Product
     ```
 
 ### Quand utiliser Mapped ?
@@ -57,8 +57,10 @@ Toutes les `relationship` ont besoin de `Mapped` avec sqlalchemy 2.0.
   ```python
   import sqlalchemy.orm as sa_orm
 
+
   class Offer:
-    id: sa_orm.Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+      id: sa_orm.Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+
 
   db.session.query(Offer).filter(Offer.id.in_(my_list))
   ```

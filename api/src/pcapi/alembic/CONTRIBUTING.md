@@ -109,7 +109,7 @@ ALTER TABLE "booking" ADD COLUMN amount numeric(10,2);
 soit par les fonctions fournies par la bibliothèque alembic:
 
 ```python
-op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullable=True))
+op.add_column("venue_provider", sa.Column("syncWorkerId", sa.VARCHAR(24), nullable=True))
 ```
 
 ## Typage
@@ -161,10 +161,10 @@ Note : La valeur constante, ou non-volatile d'après le jargon PostgreSQL, est e
 
 ```python
 op.alter_column(
-    'offer',
-    'dateCreated',
+    "offer",
+    "dateCreated",
     existing_type=postgresql.TIMESTAMP(),
-    server_default=sa.text('now()'),
+    server_default=sa.text("now()"),
 )
 ```
 
@@ -222,7 +222,7 @@ Si on timeout, toutes les requêtes échouent avec une erreur 500. Si on ne time
 ❌ Ne fonctionnera pas entre la migration *pre* et le déploiement du code N+1 :
 
 ```python
-op.add_column('offer', sa.Column('foo', sa.Text(), nullable=False))
+op.add_column("offer", sa.Column("foo", sa.Text(), nullable=False))
 ```
 
 ❓ Il existe une fenêtre de temps où la migration pre est effectuée mais le code N+1 n'est pas déployé. Dans cette fenêtre, il est possible d'écrire une ligne avec la colonne `foo` nulle parce que le code N n'a pas connaissance de cette colonne, ce qui entraîne une erreur d'intégrité en base de donnée.
@@ -230,14 +230,14 @@ op.add_column('offer', sa.Column('foo', sa.Text(), nullable=False))
 ✅ Deux déploiements doivent être réalisés, donc deux migrations *pre* doivent être écrites :
 
 ```python
-op.add_column('offer', sa.Column('foo', sa.Text(), nullable=True))
+op.add_column("offer", sa.Column("foo", sa.Text(), nullable=True))
 ```
 
 Le code N+1 doit écrire la colonne `foo` qui peut être peuplée via une migration *post* du premier déploiement. 
 Après assurance qu'il n'existe pas de ligne pour laquelle `foo` soit nulle, alors la deuxième migration *pre* peut être écrite :
 
 ```python
-op.alter_column('offer', sa.Column('foo', sa.Text(), nullable=False))
+op.alter_column("offer", sa.Column("foo", sa.Text(), nullable=False))
 ```
 
 Note : Cette manière de rendre la colonne non-nullable n'est possible que si la table ne contient que peu de lignes (< 1 million). 
@@ -252,10 +252,12 @@ Si la table est trop grosse (> 1 million de lignes), il faut [passer par un util
 def upgrade() -> None:
     op.add_column("allocine_venue_provider", sa.Column("price", sa.Numeric(precision=10, scale=2)))
 
+
 # pre/post deployment: post
 def upgrade() -> None:
     op.execute(backfill_data_from_a_table_to_another)
     op.drop_column("allocine_venue_provider_price_rule", "price")
+
 
 # in the N+1 code, all the reads/writes go from allocine_venue_provider_price_rule.price to allocine_venue_provider.price
 ```
@@ -270,7 +272,9 @@ def upgrade() -> None:
 def upgrade() -> None:
     op.add_column("allocine_venue_provider", sa.Column("price", sa.Numeric(precision=10, scale=2)))
 
+
 # in the N+1 code, allocine_venue_provider_price_rule.price is read and both columns are written
+
 
 # pre/post deployment: post
 def upgrade() -> None:
@@ -328,7 +332,7 @@ op.create_foreign_key(
     postgresql_not_valid=True,
 )
 
-# make sure that the constraint is enforced for all the existing table lines 
+# make sure that the constraint is enforced for all the existing table lines
 
 op.execute("SET SESSION statement_timeout='300s'")  # or more if needed
 op.execute("""ALTER TABLE stock VALIDATE CONSTRAINT "stock_offererAddressId_fkey" """)
@@ -344,7 +348,7 @@ Note : [Un utilitaire](/api/bin/alembic_add_not_null_constraint.py) existe pour 
 ```python
 # in models.py file
 class Reaction(BaseModel):
-    __table_args__ = sa.UniqueConstraint("userId", "offerId", "productId"),
+    __table_args__ = (sa.UniqueConstraint("userId", "offerId", "productId"),)
 ```
 
 ❓ Ajouter une contrainte valide verrouille exclusivement la table, empêchant toute lecture et écriture en plus du risque de timeout. Voir [la documentation de Squawk](https://squawkhq.com/docs/disallowed-unique-constraint/)
@@ -354,7 +358,8 @@ class Reaction(BaseModel):
 ```python
 # in models.py file
 class Reaction(BaseModel):
-    __table_args__ = sa.Index("userId", "offerId", "productId", unique=True),
+    __table_args__ = (sa.Index("userId", "offerId", "productId", unique=True),)
+
 
 # in migration file
 with op.get_context().autocommit_block():
@@ -403,18 +408,14 @@ with op.get_context().autocommit_block():
 ❌ Supprimer un index verrouille exclusivement la table, empêchant toute lecture et écriture :
 
 ```python
-op.drop_index(
-    op.f("ix_venue_offererAddressId"), table_name="venue", if_exists=True
-)
+op.drop_index(op.f("ix_venue_offererAddressId"), table_name="venue", if_exists=True)
 ```
 
 ✅ La suppression d'un index doit être faite en dehors d'une transaction et de manière concurrente dans une migration *post* :
 
 ```python
 with op.get_context().autocommit_block():
-    op.drop_index(
-        op.f("ix_venue_offererAddressId"), table_name="venue", postgresql_concurrently=True, if_exists=True
-    )
+    op.drop_index(op.f("ix_venue_offererAddressId"), table_name="venue", postgresql_concurrently=True, if_exists=True)
 ```
 
 # Squasher les migrations
