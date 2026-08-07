@@ -13,7 +13,9 @@
 {% from "components/description.html" import description_detail_vertical with context %}
 {% import "components/clipboard.html" as clipboard with context %}
 {% block before_title %}
-  {% if search_form %}{{ build_result_page_form(search_form, search_dst, col_width=12) }}{% endif %}
+  {% if search_form %}
+    {{ build_result_page_form(search_form, search_dst, col_width=12, extra_hidden_params=search_hidden_params) }}
+  {% endif %}
 {% endblock %}
 {% block title %}{{ user.full_name }}{% endblock %}
 {% block header_extra %}

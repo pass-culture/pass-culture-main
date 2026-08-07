@@ -123,6 +123,7 @@
         {{ form.order }}
         {% if form.algolia_search %}{{ form.algolia_search }}{% endif %}
         {% if form.llm_search %}{{ form.llm_search }}{% endif %}
+        {% if form.q %}{{ form.q }}{% endif %}
         <div class="input-group mb-3 w-100">{{ form.search }}</div>
         <div class="text-center d-flex  justify-content-between">
           {{ form.limit }}
