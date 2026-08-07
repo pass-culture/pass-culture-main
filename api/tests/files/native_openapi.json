@@ -4168,6 +4168,7 @@
                     "allocineId": {
                         "anyOf": [
                             {
+                                "pattern": "^\\d+$",
                                 "type": "string"
                             },
                             {
@@ -4203,6 +4204,7 @@
                     "visa": {
                         "anyOf": [
                             {
+                                "pattern": "^[a-zA-Z0-9]+$",
                                 "type": "string"
                             },
                             {
@@ -11536,6 +11538,7 @@
                         "schema": {
                             "anyOf": [
                                 {
+                                    "pattern": "^\\d+$",
                                     "type": "string"
                                 },
                                 {
@@ -11554,6 +11557,7 @@
                         "schema": {
                             "anyOf": [
                                 {
+                                    "pattern": "^[a-zA-Z0-9]+$",
                                     "type": "string"
                                 },
                                 {
@@ -11666,6 +11670,7 @@
                         "schema": {
                             "anyOf": [
                                 {
+                                    "pattern": "^\\d+$",
                                     "type": "string"
                                 },
                                 {
@@ -11684,6 +11689,7 @@
                         "schema": {
                             "anyOf": [
                                 {
+                                    "pattern": "^[a-zA-Z0-9]+$",
                                     "type": "string"
                                 },
                                 {
