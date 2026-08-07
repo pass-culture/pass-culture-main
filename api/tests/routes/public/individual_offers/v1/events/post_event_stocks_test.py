@@ -1,5 +1,6 @@
 import datetime
 import decimal
+from unittest import mock
 
 import pytest
 import time_machine
@@ -7,6 +8,7 @@ import time_machine
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -37,6 +39,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         provider=None,
         publication_datetime=None,
         booking_allowed_datetime=None,
+        validation: offer_mixin.OfferStatus | None = None,
     ) -> tuple[offers_models.Offer, offers_models.PriceCategory]:
         additional_offer_params = {}
 
@@ -44,6 +47,8 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             additional_offer_params["publicationDatetime"] = publication_datetime
         if booking_allowed_datetime:
             additional_offer_params["bookingAllowedDatetime"] = booking_allowed_datetime
+        if validation:
+            additional_offer_params["validation"] = validation
 
         offer = offers_factories.EventOfferFactory(
             venue=venue or self.setup_venue(),
@@ -260,3 +265,94 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         assert response.json == expected_response_json
 
         assert db.session.query(offers_models.Stock).filter(offers_models.Stock.id != existing_stock.id).count() == 0
+
+    def test_new_dates_are_added_to_offer_to_be_reviewed(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider, validation=offer_mixin.OfferStatus.DRAFT
+        )
+        free_price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            price=decimal.Decimal("0"),
+            label="gratuit",
+        )
+
+        next_week = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
+        two_months_from_now = next_month + datetime.timedelta(days=30)
+        two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")
+
+        payload = {
+            "dates": [
+                {
+                    "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "price_category_id": carre_or_price_category.id,
+                    "quantity": 10,
+                    "id_at_provider": "id_143556",
+                },
+                {
+                    "beginningDatetime": two_months_from_now_in_non_utc_tz.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "price_category_id": free_price_category.id,
+                    "quantity": "unlimited",
+                },
+            ],
+        }
+
+        assert offer.validation == offer_mixin.OfferValidationStatus.DRAFT
+
+        with mock.patch(
+            "pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria",
+            return_value=offers_models.OfferValidationStatus.PENDING,
+        ):
+            response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=payload)
+
+        assert response.status_code == 200
+        created_stocks = db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId == offer.id).all()
+        assert len(created_stocks) == 2
+        first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
+        assert first_stock.price == decimal.Decimal("88.99")
+        assert first_stock.quantity == 10
+        assert first_stock.idAtProviders == "id_143556"
+        second_stock = next(stock for stock in created_stocks if stock.beginningDatetime == two_months_from_now)
+        assert second_stock.price == decimal.Decimal("0")
+        assert second_stock.quantity is None
+        assert second_stock.idAtProviders is None
+
+        assert response.json == {
+            "dates": [
+                {
+                    "beginningDatetime": date_utils.format_into_utc_date(next_month),
+                    "bookedQuantity": 0,
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "id": first_stock.id,
+                    "priceCategory": {
+                        "id": first_stock.priceCategoryId,
+                        "label": first_stock.priceCategory.label,
+                        "idAtProvider": None,
+                        "price": 8899,
+                    },
+                    "quantity": 10,
+                    "idAtProvider": "id_143556",
+                },
+                {
+                    "beginningDatetime": date_utils.format_into_utc_date(two_months_from_now),
+                    "bookedQuantity": 0,
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "id": second_stock.id,
+                    "priceCategory": {
+                        "id": second_stock.priceCategoryId,
+                        "label": second_stock.priceCategory.label,
+                        "idAtProvider": None,
+                        "price": 0,
+                    },
+                    "quantity": "unlimited",
+                    "idAtProvider": None,
+                },
+            ],
+        }
+
+        db.session.refresh(offer)
+        assert offer.validation == offer_mixin.OfferValidationStatus.PENDING

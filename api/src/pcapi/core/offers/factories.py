@@ -193,6 +193,7 @@ class OfferFactory(BaseFactory[models.Offer]):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     lastValidationType = OfferValidationType.AUTO
+    validation = models.OfferValidationStatus.APPROVED
 
     ean = factory.LazyAttributeSequence(lambda o, n: fake.ean13() if getattr(o, "set_all_fields", False) else None)
 

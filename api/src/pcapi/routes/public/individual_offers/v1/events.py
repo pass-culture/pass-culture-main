@@ -571,9 +571,15 @@ def post_event_stocks(
                     id_at_provider=date_item.id_at_provider,
                 )
             )
-            if not existing_stocks_count and body.dates:
-                offers_api.update_offer_fraud_information(offer, user=None)
         except offers_exceptions.OfferException as exc:
+            for error_key, error_msg in exc.errors.items():
+                errors[f"dates.{date_index}.{error_key}"] = error_msg
+
+    try:
+        if not errors and not existing_stocks_count and body.dates:
+            offers_api.update_offer_fraud_information(offer, user=None)
+    except offers_exceptions.OfferException as exc:
+        for date_index, _ in enumerate(body.dates):
             for error_key, error_msg in exc.errors.items():
                 errors[f"dates.{date_index}.{error_key}"] = error_msg
 
