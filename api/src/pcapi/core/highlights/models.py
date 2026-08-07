@@ -47,8 +47,8 @@ class Highlight(PcObject, Model):
     communication_date: sa_orm.Mapped[datetime.date] = sa_orm.mapped_column(sa.Date, nullable=False)
 
     __table_args__ = (
-        sa.CheckConstraint('length("mediation_uuid") <= 100'),
-        sa.CheckConstraint('length("description") <= 2000'),
+        sa.CheckConstraint('length("mediation_uuid") <= 100', name="highlight_mediation_uuid_check"),
+        sa.CheckConstraint('length("description") <= 2000', name="highlight_description_check"),
         sa.Index(
             "ix_highlight_unaccent_name",
             sa.func.immutable_unaccent("name"),
