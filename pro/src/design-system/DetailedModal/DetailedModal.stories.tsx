@@ -145,9 +145,8 @@ export const WithLinkAndIconActions: Story = {
   args: {
     tertiaryAction: (
       <Button
-        as="a"
+        as="router-link"
         to="/offres"
-        isExternal={false}
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}
         label="Voir les offres"
