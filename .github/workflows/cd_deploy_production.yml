@@ -27,7 +27,10 @@ jobs:
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
       message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `production`"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   version:
     name: "Version"
@@ -58,7 +61,10 @@ jobs:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
       message-ts: ${{ needs.ask-for-review-on-slack.outputs.message-ts }}
       message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `production`"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   deploy:
     name: Deploy
@@ -119,7 +125,10 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `production`"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   notify-failure:
     name: Notify deployment has failed
@@ -129,4 +138,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `production`"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

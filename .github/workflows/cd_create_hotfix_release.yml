@@ -50,7 +50,9 @@ jobs:
       tag-number: ${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}
       ref: ${{ github.ref }}
       base-ref-is-a-branch: true
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   notify-success:
     name: "Send workflow success notification"
@@ -60,7 +62,10 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-success: Release `v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}` créée avec succès. <https://github.com/pass-culture/pass-culture-main/actions/workflows/cd_deploy_staging.yml|Déployer> :rocket:"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   notify-failure:
     name: "Send workflow failure notification"
@@ -70,4 +75,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-failure: La création de la release `v${{ needs.compute-hotfix-tag-number.outputs.hotfix-tag-number }}` a échoué. <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Voir le détail>"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

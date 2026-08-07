@@ -15,7 +15,10 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` est lancée"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   get-release-number: # version without v
     name: Get release number
@@ -62,7 +65,10 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
       message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   notify-failure:
     name: Notify deployment has failed
@@ -75,4 +81,7 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
       message: ":github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué  cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

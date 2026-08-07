@@ -75,7 +75,10 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|création de la release>  `v${{ needs.compute-major-version-variables.outputs.release-number }}` est lancée"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   create-release:
     name: Create major release
@@ -85,7 +88,9 @@ jobs:
       tag-number: ${{ needs.compute-major-version-variables.outputs.release-number }}.0.0
       ref: ${{ needs.compute-major-version-variables.outputs.sha }}
       base-ref-is-a-branch: false
-    secrets: inherit
+    secrets: 
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   edit-maintenance-branches:
     name: Edit maintenance branches
@@ -122,7 +127,10 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
       message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a été créé avec succès"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   notify-failure:
     name: "Send workflow failure notification"
@@ -136,4 +144,7 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       message-ts: ${{ needs.notify-workflow-start.outputs.message-ts }}
       message: ":github-failure: La création de la <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|release> `v${{ needs.compute-major-version-variables.outputs.release-number }}` a échoué cc <!subteam^${{vars.SLACK_SHERIF_BACK_ID}}> <!subteam^${{vars.SLACK_SHERIF_INFRA_ID}}>"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
