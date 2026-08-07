@@ -139,8 +139,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_BATCH = (
         "Activer le backend de tâches asynchrones Celery pour la synchro et les notifs Batch"
     )
-
-    WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES = "Active l'utilisation du cron pour les màj des attributs pro"
     WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK = "Active la nouvelle version du webhook de recommandation Brevo"
     WIP_OFFER_EXPOSURE = "Activer l'onglet 'visibilité' sur la page d'une offre individuelle"
@@ -209,7 +207,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_ALLOCINE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.SYNCHRONIZE_EVENT_SERIES_FROM_BIGQUERY_TABLES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH,
-    FeatureToggle.WIP_ENABLE_CRON_FOR_PRO_ATTRIBUTES_UPDATES,
     FeatureToggle.WIP_ENABLE_CULTURAL_OUTREACH,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_BREVO_RECOMMENDATION_WEBHOOK,

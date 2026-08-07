@@ -8,7 +8,6 @@ import time_machine
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.finance import factories as finance_factories
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -516,47 +515,6 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert cd_stock.price == decimal.Decimal("12.34")
         assert book_stock.quantity == 10
         assert book_stock.price == decimal.Decimal("100.00")
-
-    @mock.patch("pcapi.tasks.brevo_tasks.update_brevo_pro_attributes_task")
-    def test_valid_ean_without_task_autoflush(self, update_brevo_pro_task_mock):
-        product_provider = providers_factories.ProviderFactory()
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-            ean="1234567890123",
-            lastProviderId=product_provider.id,
-        )
-        finance_factories.CustomReimbursementRuleFactory(
-            offerer=venue_provider.provider.offererProvider.offerer, rate=0.2, offer=None
-        )
-
-        # the update task autoflushes the SQLAlchemy session, but is not executed synchronously in cloud
-        # environments, therefore we cannot rely on its side effects
-        update_brevo_pro_task_mock.side_effect = None
-
-        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
-            minutes=10
-        )
-        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        payload = {
-            "products": [
-                {
-                    "ean": product.ean,
-                    "stock": {
-                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                        "price": 1234,
-                        "quantity": 3,
-                    },
-                }
-            ],
-            "location": {"type": "physical", "venueId": venue_provider.venue.id},
-        }
-        response = self.make_request(plain_api_key, json_body=payload)
-
-        assert response.status_code == 204
-
-        assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(offers_models.Stock).count() == 1
 
     @pytest.mark.parametrize(
         "gcu_compatibility_type",
