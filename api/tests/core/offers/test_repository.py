@@ -1119,7 +1119,7 @@ class IncomingEventStocksTest:
 
         overseas_offerer_address = offerers_factories.OfferLocationFactory(address=address_overseas)
         offer = factories.OfferFactory(
-            venue__offererAddress__address__departmentCode="97",
+            venue__offererAddress__address__departmentCode="971",
             venue__offererAddress__address__postalCode="97180",
             offererAddress=overseas_offerer_address,
         )
@@ -1606,7 +1606,7 @@ class GetStocksListFiltersTest:
 
         venue = offerers_factories.VenueFactory(
             offererAddress__address__timezone="America/Miquelon",
-            offererAddress__address__departmentCode="97",
+            offererAddress__address__departmentCode="975",
             offererAddress__address__postalCode="97500",
         )
 
