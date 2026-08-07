@@ -4,8 +4,7 @@ from pcapi.core.educational import repository
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
-from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
-from pcapi.routes.adage.v1.serialization.educational_institution import serialize_deposit
+from pcapi.routes.adage.v1.serialization import educational_institution as educational_institution_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -22,11 +21,13 @@ educational_institution_path = "years/<string:year_id>/educational_institution/<
 @adage_api_key_required
 @spectree_serialize(
     api=blueprint.api,
-    response_model=EducationalInstitutionResponse,
+    response_model=educational_institution_serialization.EducationalInstitutionResponse,
     on_error_statuses=[404],
     tags=("get educational institution",),
 )
-def get_educational_institution(year_id: str, uai_code: str) -> EducationalInstitutionResponse:
+def get_educational_institution(
+    year_id: str, uai_code: str
+) -> educational_institution_serialization.EducationalInstitutionResponse:
     educational_institution = repository.find_educational_institution_by_uai_code(uai_code)
 
     if not educational_institution:
@@ -39,6 +40,10 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
         educational_year_id=year_id, educational_institution_id=educational_institution.id
     )
 
-    return EducationalInstitutionResponse(
-        prebookings=prebookings, deposits=[serialize_deposit(deposit) for deposit in educational_deposits]
+    return educational_institution_serialization.EducationalInstitutionResponse(
+        prebookings=prebookings,
+        deposits=[
+            educational_institution_serialization.EducationalInstitutionDepositResponse.build(deposit)
+            for deposit in educational_deposits
+        ],
     )

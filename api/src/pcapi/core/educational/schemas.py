@@ -193,11 +193,6 @@ class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
 
 
-class EducationalDepositPeriodResponse(AdageBaseResponseModel):
-    start: datetime.datetime
-    end: datetime.datetime
-
-
 class GetAllBookingsPerYearQueryModel(BaseModel):
     page: PositiveInt | None
     per_page: PositiveInt | None
