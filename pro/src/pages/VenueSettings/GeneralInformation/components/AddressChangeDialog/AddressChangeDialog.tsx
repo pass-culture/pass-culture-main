@@ -1,4 +1,6 @@
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 
 interface AddressChangeDialogProps {
   open: boolean
@@ -10,19 +12,22 @@ export const AddressChangeDialog = ({
   onOpenChange,
 }: AddressChangeDialogProps): JSX.Element => {
   return (
-    <ConfirmDialog
-      open={open}
-      onConfirm={() => onOpenChange(false)}
-      onCancel={() => onOpenChange(false)}
+    <SimpleModal
       title="Important : Le changement d'adresse postale de votre structure ne
-                    modifie pas automatiquement la localisation de vos offres existantes"
-      overrideCancel
-      confirmText="J'ai compris"
+      modifie pas automatiquement la localisation de vos offres existantes"
+      isOpen={open}
+      onClose={() => onOpenChange(false)}
+      actionButtons={
+        <Button
+          onClick={() => onOpenChange(false)}
+          variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.BRAND}
+          label={"J'ai compris"}
+        />
+      }
     >
-      <span>
-        Pour mettre à jour leur localisation, vous devrez les modifier une par
-        une.
-      </span>
-    </ConfirmDialog>
+      Pour mettre à jour leur localisation, vous devrez les modifier une par
+      une.
+    </SimpleModal>
   )
 }

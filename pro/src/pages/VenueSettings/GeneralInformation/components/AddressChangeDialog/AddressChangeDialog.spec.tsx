@@ -19,25 +19,27 @@ describe('AddressChangeDialog', () => {
     renderDialog({ open: false })
 
     expect(
-      screen.queryByText(/Le changement d.adresse postale/)
-    ).not.toBeInTheDocument()
+      screen.getByText(/Le changement d.adresse postale/)
+    ).not.toBeVisible()
   })
 
   it('should call onOpenChange(false) when clicking the confirm button', async () => {
+    const user = userEvent.setup()
     const onOpenChange = vi.fn()
     renderDialog({ onOpenChange })
 
-    await userEvent.click(screen.getByRole('button', { name: "J'ai compris" }))
+    await user.click(screen.getByRole('button', { name: "J'ai compris" }))
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
   it('should call onOpenChange(false) when clicking the cancel button', async () => {
+    const user = userEvent.setup()
     const onOpenChange = vi.fn()
     renderDialog({ onOpenChange })
 
-    const closeBtn = screen.getByTestId('dialog-builder-close-button')
-    await userEvent.click(closeBtn)
+    const closeBtn = screen.getByLabelText('Fermer la boite de dialogue')
+    await user.click(closeBtn)
 
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
