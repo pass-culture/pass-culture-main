@@ -71,7 +71,10 @@ export const OnboardingOffersChoice = ({
             src={collective}
             alt="Illustration avec un ordinateur affichant ADAGE, un tableau noir et des livres"
           />
-          <Card.Header title="Sur ADAGE à destination des enseignants" />
+          <Card.Header
+            title="Sur ADAGE à destination des enseignants"
+            titleTag="h3"
+          />
           <Card.Content>
             <span>
               Vos offres seront visibles{' '}
