@@ -42,20 +42,24 @@ describe('DownloadDropdown', () => {
     renderDownloadDropdown()
 
     expect(
-      screen.getByRole('button', { name: 'Télécharger' })
+      screen.getByRole('button', { name: 'Télécharger les offres' })
     ).toBeInTheDocument()
   })
 
   it('should disable the button when isDisabled is true', () => {
     renderDownloadDropdown({ isDisabled: true })
 
-    expect(screen.getByRole('button', { name: 'Télécharger' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger les offres' })
+    ).toBeDisabled()
   })
 
   it('should log toggle event when clicking the button', async () => {
     renderDownloadDropdown()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les offres' })
+    )
 
     expect(mockLogEvent).toHaveBeenCalledWith('downloadToggle')
   })
@@ -63,7 +67,9 @@ describe('DownloadDropdown', () => {
   it('should display XLS and CSV options when dropdown is open', async () => {
     renderDownloadDropdown()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les offres' })
+    )
 
     expect(
       screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
@@ -77,7 +83,9 @@ describe('DownloadDropdown', () => {
     const onSelect = vi.fn().mockResolvedValue(undefined)
     renderDownloadDropdown({ onSelect })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les offres' })
+    )
     await userEvent.click(
       screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
     )
@@ -90,7 +98,9 @@ describe('DownloadDropdown', () => {
     const onSelect = vi.fn().mockResolvedValue(undefined)
     renderDownloadDropdown({ onSelect })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Télécharger les offres' })
+    )
     await userEvent.click(
       screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
     )
