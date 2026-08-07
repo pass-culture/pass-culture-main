@@ -31,7 +31,10 @@ jobs:
     uses: ./.github/workflows/slack_post_message_workflow.yml
     with:
       message: ":github-failure: Les tests <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|${{matrix.failed-test}}> ont échoué sur `master`"
-    secrets: inherit
+    secrets:
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   deploy-storybook:
     name: "Deploy Storybook"
