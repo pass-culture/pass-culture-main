@@ -428,6 +428,47 @@ class MovieCalendarTest:
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
         assert today_screenings[0]["nextScreening"]["bookability"] == "STOCK_BOOKING_IS_DISABLED"
 
+    @pytest.mark.parametrize(
+        "field_name,value",
+        [
+            ("allocineId", "https://malware.0rg"),
+            ("allocineId", "&'@09839"),
+            ("visa", "https://malware.0rg"),
+            ("visa", "&'@09839"),
+        ],
+    )
+    def test_invalid_query_params(self, client, field_name, value):
+        params = {
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": date.today(),
+            "to": date.today() + timedelta(days=1),
+            **{field_name: value},
+        }
+        response = client.get("/native/v1/movie/calendar", params=params)
+        assert response.status_code == 400
+        assert list(response.json) == [field_name]
+
+    @pytest.mark.parametrize(
+        "field_name,value",
+        [
+            ("allocineId", "09839"),
+            ("visa", "abc1234def"),
+            ("visa", "abc"),
+            ("visa", "1234"),
+        ],
+    )
+    def test_valid_query_params(self, client, field_name, value):
+        params = {
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": date.today(),
+            "to": date.today() + timedelta(days=1),
+            **{field_name: value},
+        }
+        response = client.get("/native/v1/movie/calendar", params=params)
+        assert response.status_code == 404
+
 
 class MovieCalendarForUserTest:
     def test_get_movie_shows_for_user(self, client):
@@ -861,6 +902,58 @@ class MovieCalendarForUserTest:
 
         today_screenings = [e["screenings"] for e in response.json["calendar"] if e["date"] == today.isoformat()][0]
         assert today_screenings[0]["dayScreenings"][0]["bookability"] == "USER_HAS_APPLICATION_ERROR"
+
+    @pytest.mark.parametrize(
+        "field_name,value",
+        [
+            ("allocineId", "https://malware.0rg"),
+            ("allocineId", "&'@09839"),
+            ("allocineId", "abcdef"),
+            ("visa", "https://malware.0rg"),
+            ("visa", "&'@09839"),
+        ],
+    )
+    def test_invalid_query_params(self, client, field_name, value):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        params = {
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": date.today(),
+            "to": date.today() + timedelta(days=1),
+            **{field_name: value},
+        }
+        client.with_token(user)
+        response = client.get("/native/v1/movie/calendar/me", params=params)
+        assert response.status_code == 400
+        assert list(response.json) == [field_name]
+
+    @pytest.mark.parametrize(
+        "field_name,value",
+        [
+            ("allocineId", "09839"),
+            ("visa", "abc1234def"),
+            ("visa", "abc"),
+            ("visa", "1234"),
+        ],
+    )
+    def test_valid_query_params(self, client, field_name, value):
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        params = {
+            "latitude": 48.85,
+            "longitude": 2.35,
+            "from": date.today(),
+            "to": date.today() + timedelta(days=1),
+            **{field_name: value},
+        }
+        client.with_token(user)
+        response = client.get("/native/v1/movie/calendar/me", params=params)
+        assert response.status_code == 404
 
 
 class VenueMovieCalendarTest:
