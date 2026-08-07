@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWR from 'swr'
 
@@ -18,12 +17,12 @@ import { ensureSelectedAdminOfferer } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { DetailedModal } from '@/design-system/DetailedModal/DetailedModal'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { validationSchema } from '@/pages/Collaborators/validationSchema'
-import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './Collaborators.module.scss'
 
@@ -39,6 +38,7 @@ const Collaborators = () => {
   const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const formId = useId()
 
   const selectedAdminOfferer = useAppSelector(ensureSelectedAdminOfferer)
   const userPermissions = useCurrentUserPermissions()
@@ -171,66 +171,64 @@ const Collaborators = () => {
         </div>
       )}
 
-      <DialogBuilder
-        variant="drawer"
+      <Button
+        variant={ButtonVariant.PRIMARY}
+        onClick={() => {
+          logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR)
+          setIsDialogOpen(true)
+        }}
+        label="Ajouter un collaborateur"
+      />
+
+      <DetailedModal
         title="Ajout de collaborateurs"
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        trigger={
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        primaryAction={
           <Button
-            variant={ButtonVariant.PRIMARY}
-            onClick={() => {
-              logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR)
-            }}
-            label="Ajouter un collaborateur"
+            type="submit"
+            form={formId}
+            isLoading={isSubmitting}
+            data-error={errors.email?.message ? 'true' : 'false'}
+            label="Inviter le collaborateur"
           />
         }
+        secondaryAction={
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={() => setIsDialogOpen(false)}
+            label="Annuler"
+          />
+        }
+        isFooterFixed
       >
         <form
+          id={formId}
           className={styles['invitation-form']}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className={styles['invitation-form']}>
-            <p className={styles['description']}>
-              Vous pouvez inviter des collaborateurs à rejoindre votre espace.
-              Une invitation leur sera envoyée par email. Vous serez notifié
-              quand ils auront rejoint l’espace.
-            </p>
+          <p className={styles['description']}>
+            Vous pouvez inviter des collaborateurs à rejoindre votre espace. Une
+            invitation leur sera envoyée par email. Vous serez notifié quand ils
+            auront rejoint l’espace.
+          </p>
 
-            <FormLayout>
-              <FormLayout.Row>
-                <TextInput
-                  label="Adresse email"
-                  type="email"
-                  description="Format : email@exemple.com"
-                  error={errors.email?.message}
-                  required
-                  requiredIndicator="explicit"
-                  {...register('email')}
-                />
-              </FormLayout.Row>
-            </FormLayout>
-          </div>
-
-          <DialogBuilder.Footer>
-            <div className={styles['action-buttons']}>
-              <Dialog.Close asChild>
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  color={ButtonColor.NEUTRAL}
-                  label="Annuler"
-                />
-              </Dialog.Close>
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                data-error={errors.email?.message ? 'true' : 'false'}
-                label="Inviter le collaborateur"
+          <FormLayout>
+            <FormLayout.Row>
+              <TextInput
+                label="Adresse email"
+                type="email"
+                description="Format : email@exemple.com"
+                error={errors.email?.message}
+                required
+                requiredIndicator="explicit"
+                {...register('email')}
               />
-            </div>
-          </DialogBuilder.Footer>
+            </FormLayout.Row>
+          </FormLayout>
         </form>
-      </DialogBuilder>
+      </DetailedModal>
     </section>
   )
 }
