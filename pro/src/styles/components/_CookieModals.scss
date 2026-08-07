@@ -8,6 +8,26 @@
 
 $action-gap: var(--size-spacing-m);
 
+@keyframes orejime-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes orejime-slide-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
 .orejime-Env {
   .orejime-Modal-header,
   .orejime-Modal-body,
@@ -17,10 +37,25 @@ $action-gap: var(--size-spacing-m);
 
   .orejime-ModalOverlay {
     background-color: var(--color-background-overlay);
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    padding: 0;
   }
 
   .orejime-ModalWrapper {
     box-shadow: none;
+    width: min(rem.torem(684px), 100vw);
+    max-width: 100vw;
+    height: 100dvh;
+    margin: 0 0 0 auto;
+    border-top-left-radius: var(--size-border-radius-l);
+    border-bottom-left-radius: var(--size-border-radius-l);
+    overflow: hidden;
+
+    @media not (prefers-reduced-motion) {
+      animation: orejime-slide-in-right 0.25s ease-out;
+    }
   }
 
   .orejime-Banner-body,
@@ -136,14 +171,15 @@ $action-gap: var(--size-spacing-m);
     }
   }
 
-  .orejime-ModalWrapper,
   .orejime-Modal {
-    width: rem.torem(1104px);
+    width: 100%;
     max-width: 100%;
-  }
-
-  .orejime-Modal {
+    height: 100%;
+    margin: 0;
     padding: var(--size-spacing-xxl);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
 
     &-body {
       margin-bottom: rem.torem(26px);
@@ -158,11 +194,13 @@ $action-gap: var(--size-spacing-m);
         width: 16px;
         height: 16px;
         stroke-width: 1px;
+        cursor: pointer;
       }
     }
 
     &-title {
       margin-bottom: var(--size-spacing-m);
+      padding-right: var(--size-spacing-xxxxl);
 
       @include fonts.title3;
     }
@@ -293,6 +331,13 @@ $action-gap: var(--size-spacing-m);
     margin-bottom: var(--size-spacing-l);
   }
 
+  .orejime-Modal-footer {
+    border-top: rem.torem(1px) solid var(--color-border-subtle);
+    padding-top: var(--size-spacing-l);
+    margin-top: auto;
+    background-color: var(--color-background-default);
+  }
+
   .orejime-Purpose-children {
     .orejime-PurposeList-item {
       display: block;
@@ -370,6 +415,26 @@ $action-gap: var(--size-spacing-m);
         &:focus-visible {
           @include outline.focus-outline(rem.torem(4px));
         }
+      }
+    }
+  }
+
+  @media (max-width: size.$tablet) {
+    .orejime-ModalWrapper {
+      width: 100vw;
+      border-radius: 0;
+
+      @media not (prefers-reduced-motion) {
+        animation: orejime-slide-in-bottom 0.25s ease-out;
+      }
+    }
+
+
+    .orejime-Modal {
+      padding: var(--size-spacing-xxl);
+
+      &-title {
+        text-align: center;
       }
     }
   }
