@@ -62,14 +62,15 @@ def get_collective_favorites(authenticated_information: AuthenticatedInformation
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    offer_templates = educational_repository.get_all_offer_template_by_redactor_id(redactor_id=redactor.id)
-
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    offer_templates = educational_repository.get_all_offer_template_by_redactor_id(redactor_id=redactor.id)
 
     return FavoritesResponseModel(
         favoritesTemplate=[
             serialize_offers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=True)
             for offer in offer_templates
+            if offer.is_eligible_for_search
         ]
     )
