@@ -371,7 +371,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
                 "last_name": "",  # leave that empty for the Zendesk api
                 "description": venue.description,
-                "industry": venue.venueTypeCode.value,
+                "industry": venue.activity.value,
                 "website": venue.contact.website if venue.contact else None,
                 "email": venue.bookingEmail,
                 "phone": venue.contact.phone_number if venue.contact else None,
