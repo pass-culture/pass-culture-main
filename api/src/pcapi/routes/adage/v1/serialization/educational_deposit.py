@@ -18,13 +18,17 @@ class EducationalDepositPeriodResponseV2(HttpBodyModel):
 class EducationalDepositResponse(HttpBodyModel):
     uai: str
     deposit: float
+    lastPeriodRemainingDeposit: float | None
     isFinal: bool
     period: EducationalDepositPeriodResponseV2
 
     @classmethod
     def build(cls, deposit: "EducationalDeposit") -> typing.Self:
+        remaining = float(deposit.lastPeriodRemainingAmount) if deposit.lastPeriodRemainingAmount is not None else None
+
         return cls(
             deposit=float(deposit.amount),
+            lastPeriodRemainingDeposit=remaining,
             uai=deposit.educationalInstitution.institutionId,
             isFinal=deposit.isFinal,
             period=EducationalDepositPeriodResponseV2(start=deposit.period.lower, end=deposit.period.upper),

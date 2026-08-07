@@ -18,13 +18,19 @@ class EducationalDepositPeriodResponse(schemas.AdageBaseResponseModel):
 
 class EducationalInstitutionDepositResponse(schemas.AdageBaseResponseModel):
     credit: float = Field(description="Total credit granted to the educational institution")
+    lastPeriodRemainingCredit: float | None = Field(
+        description="The protion of the total credit that was transfered from the previous period"
+    )
     isFinal: bool = Field(description="Flag to know if the credit has been approved and is now final")
     period: EducationalDepositPeriodResponse = Field(description="Period of this deposit")
 
     @classmethod
     def build(cls, deposit: "EducationalDeposit") -> typing.Self:
+        remaining = float(deposit.lastPeriodRemainingAmount) if deposit.lastPeriodRemainingAmount is not None else None
+
         return cls(
             credit=float(deposit.amount),
+            lastPeriodRemainingCredit=remaining,
             isFinal=deposit.isFinal,
             period=EducationalDepositPeriodResponse(start=deposit.period.lower, end=deposit.period.upper),
         )

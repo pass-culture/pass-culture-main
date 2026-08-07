@@ -12,6 +12,7 @@ class Returns200Test:
             educationalInstitution=educational_institution1,
             educationalYear=educational_year1,
             amount=2000,
+            lastPeriodRemainingAmount=200,
             isFinal=True,
         )
 
@@ -21,6 +22,7 @@ class Returns200Test:
             educationalInstitution=educational_institution2,
             educationalYear=educational_year2,
             amount=3000,
+            lastPeriodRemainingAmount=None,
             isFinal=False,
         )
 
@@ -32,6 +34,7 @@ class Returns200Test:
                 {
                     "uai": educational_institution1.institutionId,
                     "deposit": 2000.0,
+                    "lastPeriodRemainingDeposit": 200.0,
                     "isFinal": True,
                     "period": {
                         "start": educational_year1.beginningDate.isoformat() + "Z",
@@ -49,6 +52,7 @@ class Returns200Test:
                 {
                     "uai": educational_institution2.institutionId,
                     "deposit": 3000.0,
+                    "lastPeriodRemainingDeposit": None,
                     "isFinal": False,
                     "period": {
                         "start": educational_year2.beginningDate.isoformat() + "Z",
@@ -65,11 +69,13 @@ class Returns200Test:
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=2000,
+            lastPeriodRemainingAmount=200,
         )
         deposit_second_period = factories.EducationalDepositSecondPeriodFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=2500,
+            lastPeriodRemainingAmount=None,
         )
 
         response = client.with_eac_token().get(f"/adage/v1/years/{educational_year.adageId}/deposits")
@@ -80,6 +86,7 @@ class Returns200Test:
                 {
                     "uai": educational_institution.institutionId,
                     "deposit": 2000,
+                    "lastPeriodRemainingDeposit": 200,
                     "isFinal": True,
                     "period": {
                         "start": deposit_first_period.period.lower.isoformat() + "Z",
@@ -89,6 +96,7 @@ class Returns200Test:
                 {
                     "uai": educational_institution.institutionId,
                     "deposit": 2500,
+                    "lastPeriodRemainingDeposit": None,
                     "isFinal": True,
                     "period": {
                         "start": deposit_second_period.period.lower.isoformat() + "Z",
