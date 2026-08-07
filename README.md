@@ -1,3 +1,7 @@
+<!-- hy-mt2-i18n:start -->
+**Español** · [中文](./README_zh-CN.md) · [English](./README_en.md) · [日本語](./README_ja.md)
+<!-- hy-mt2-i18n:end -->
+
 <div align=center>
   <img src="https://storage.googleapis.com/passculture-metier-prod-production-assets-fine-grained/assets/passculture.gif" style="width: 360px">
   <br />

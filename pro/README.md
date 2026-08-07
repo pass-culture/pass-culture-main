@@ -1,5 +1,9 @@
 # 🚀 pass Culture PRO — App Front-End
 
+<!-- hy-mt2-i18n:start -->
+**Español** · [中文](./README_zh-CN.md) · [English](./README_en.md) · [日本語](./README_ja.md)
+<!-- hy-mt2-i18n:end -->
+
 Ce dossier `/pro` contient l’ensemble de la configuration et les sources de l'application Web du portail professionnel du pass Culture.
 
 **Sommaire**
@@ -73,13 +77,13 @@ nvm alias default 24.8
 
 Le projet utilise **pnpm** pour la gestion des dépendances.
 
-La méthode recommandée pour installer pnpm en local est la suivante :
+La méthode recommandée pour installer pnpm en local est la suivante :
 
 ```bash
 npm install -g pnpm
 ```
 
-Assurez-vous ensuite d’utiliser la version 11 (ou supérieure) avec :
+Assurez-vous ensuite d’utiliser la version 11 (ou supérieure) avec :
 
 ```bash
 pnpm -v
