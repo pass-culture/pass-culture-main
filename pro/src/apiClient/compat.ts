@@ -1,5 +1,17 @@
 type OnCancel = (handler: () => void) => void
 
+/**
+ * Numeric path segments are replaced by a placeholder so that every call to an
+ * endpoint produces the same label, instead of one Sentry issue per resource id.
+ */
+export function normalizeApiPath(url: string): string {
+  try {
+    return new URL(url).pathname.replace(/\/\d+/g, '/{id}')
+  } catch {
+    return url
+  }
+}
+
 export type ApiRequestOptions = {
   readonly method:
     | 'GET'
@@ -42,16 +54,21 @@ export class ApiError extends Error {
     url: string,
     status: number,
     statusText: string,
-    originalError: unknown
+    originalError: unknown,
+    requestLabel?: string
   )
   constructor(
     urlOrRequest: string | ApiRequestOptions,
     statusOrResponse: number | ApiResult,
     statusTextOrMessage: string,
-    originalError?: unknown
+    originalError?: unknown,
+    requestLabel?: string
   ) {
     if (typeof urlOrRequest === 'string') {
-      super(`${statusOrResponse} ${statusTextOrMessage}`)
+      // `requestLabel` describes the endpoint ("POST /offers/{id}/stocks/delete").
+      // It is preferred over `statusText`, which is always empty over HTTP/2 —
+      // the protocol dropped the reason phrase — leaving an unreadable "500 ".
+      super(`${statusOrResponse} ${requestLabel || statusTextOrMessage}`)
       this.url = urlOrRequest
       this.status = statusOrResponse as number
       this.statusText = statusTextOrMessage

@@ -112,15 +112,26 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     }
   )
 
+  async function deleteStock(ids: number[]) {
+    // call the API many times to test an error in local
+    // await concurrently with a limit of 10,000 times to test the error in local
+    const promises = []
+
+    let i = 0
+    while (i < 100) {
+      promises.push(
+        api.deleteStocks({
+          path: { offer_id: offer.id },
+          body: { ids_to_delete: ids },
+        })
+      )
+      i++
+    }
+    await Promise.all(promises)
+  }
+
   async function deleteStocks(ids: number[]) {
-    await mutate(
-      stockQueryKeys,
-      api.deleteStocks({
-        path: { offer_id: offer.id },
-        body: { ids_to_delete: ids },
-      }),
-      { revalidate: true }
-    )
+    await mutate(stockQueryKeys, deleteStock(ids), { revalidate: true })
 
     if (
       page > 1 &&
