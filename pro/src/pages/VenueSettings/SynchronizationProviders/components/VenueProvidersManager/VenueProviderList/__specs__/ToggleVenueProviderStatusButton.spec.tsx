@@ -75,7 +75,7 @@ describe('ToggleVenueProviderStatusButton', () => {
           screen.getByText(
             'Voulez-vous mettre en pause la synchronisation de vos offres ?'
           )
-        ).toBeInTheDocument()
+        ).toBeVisible()
       })
 
       // Click on Cancel
@@ -85,10 +85,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       // Verify that the modal is closed
       await waitFor(() => {
         expect(
-          screen.queryByText(
+          screen.getByText(
             'Voulez-vous mettre en pause la synchronisation de vos offres ?'
           )
-        ).not.toBeInTheDocument()
+        ).not.toBeVisible()
       })
     })
   })
@@ -136,10 +136,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       // Verify that the modal is closed
       await waitFor(() => {
         expect(
-          screen.queryByText(
+          screen.getByText(
             'Voulez-vous mettre en pause la synchronisation de vos offres ?'
           )
-        ).not.toBeInTheDocument()
+        ).not.toBeVisible()
       })
     })
 
@@ -191,10 +191,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       // Verify that the modal is closed
       await waitFor(() =>
         expect(
-          screen.queryByText(
+          screen.getByText(
             'Vous êtes sur le point de réactiver la synchronisation de vos offres.'
           )
-        ).not.toBeInTheDocument()
+        ).not.toBeVisible()
       )
     })
   })
@@ -233,10 +233,10 @@ describe('ToggleVenueProviderStatusButton', () => {
       // Verify that the modal is closed even in case of error
       await waitFor(() => {
         expect(
-          screen.queryByText(
+          screen.getByText(
             'Voulez-vous mettre en pause la synchronisation de vos offres ?'
           )
-        ).not.toBeInTheDocument()
+        ).not.toBeVisible()
       })
     })
   })

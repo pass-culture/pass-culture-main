@@ -108,10 +108,10 @@ describe('DeleteVenueProviderButton', () => {
     // Dialog should be closed
     await waitFor(() => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Voulez-vous supprimer la synchronisation de vos offres ?'
         )
-      ).not.toBeInTheDocument()
+      ).not.toBeVisible()
     })
 
     // Focus should be set on selectSoftwareButtonRef
@@ -159,10 +159,10 @@ describe('DeleteVenueProviderButton', () => {
     // Dialog should be closed even on error
     await waitFor(() => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Voulez-vous supprimer la synchronisation de vos offres ?'
         )
-      ).not.toBeInTheDocument()
+      ).not.toBeVisible()
     })
 
     // Focus should still be set on selectSoftwareButtonRef
@@ -195,10 +195,10 @@ describe('DeleteVenueProviderButton', () => {
     // Dialog should be closed
     await waitFor(() => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Voulez-vous supprimer la synchronisation de vos offres ?'
         )
-      ).not.toBeInTheDocument()
+      ).not.toBeVisible()
     })
 
     // API should not be called
