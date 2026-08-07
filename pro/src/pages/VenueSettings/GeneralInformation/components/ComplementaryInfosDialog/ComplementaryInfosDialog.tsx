@@ -1,10 +1,12 @@
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 
 interface ComplementaryInfosDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   openNextDialog: (open: boolean) => void
-  onCancel?: () => void
+  onCancel: () => void
 }
 
 export const ComplementaryInfosDialog = ({
@@ -14,22 +16,38 @@ export const ComplementaryInfosDialog = ({
   onCancel,
 }: ComplementaryInfosDialogProps): JSX.Element => {
   return (
-    <ConfirmDialog
-      open={open}
-      onConfirm={() => {
-        onOpenChange(false)
-        openNextDialog(true)
-      }}
-      onCancel={() => {
-        onOpenChange(false)
-        onCancel?.()
-      }}
+    <SimpleModal
       title="Informations complémentaires requises"
-      confirmText="Compléter maintenant"
-      cancelText="Compléter plus tard"
+      isOpen={open}
+      onClose={() => {
+        onOpenChange(false)
+        onCancel()
+      }}
+      actionButtons={
+        <>
+          <Button
+            onClick={() => {
+              onOpenChange(false)
+              onCancel()
+            }}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.BRAND}
+            label={'Compléter plus tard'}
+          />
+          <Button
+            onClick={() => {
+              onOpenChange(false)
+              openNextDialog(true)
+            }}
+            variant={ButtonVariant.PRIMARY}
+            color={ButtonColor.BRAND}
+            label={'Compléter maintenant'}
+          />
+        </>
+      }
     >
       Pour confirmer l'accueil du public, quelques précisions sont nécessaires.
       Vous pouvez les saisir directement dans le volet latéral.
-    </ConfirmDialog>
+    </SimpleModal>
   )
 }

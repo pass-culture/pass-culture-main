@@ -1,13 +1,13 @@
 import type React from 'react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 import type { PostVenueProviderBody } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeConnectIcon from '@/icons/stroke-connect.svg'
-import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
@@ -28,8 +28,6 @@ export const StocksProviderForm = ({
   const { logEvent } = useAnalytics()
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
-
-  const startSynchroButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleOpenConfirmDialog = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -81,19 +79,24 @@ export const StocksProviderForm = ({
         )}
         <Button
           onClick={handleOpenConfirmDialog}
-          ref={startSynchroButtonRef}
           label="Lancer la synchronisation"
         />
       </div>
-      <ConfirmDialog
-        cancelText="Annuler"
-        confirmText="Continuer"
-        onCancel={handleCloseConfirmDialog}
-        onConfirm={handleFormSubmit}
+      <SimpleModal
         title="Demander la synchronisation par API avec un logiciel tiers ?"
-        icon={strokeConnectIcon}
-        open={isConfirmDialogOpened}
-        refToFocusOnClose={startSynchroButtonRef}
+        iconPath={strokeConnectIcon}
+        isOpen={isConfirmDialogOpened}
+        onClose={handleCloseConfirmDialog}
+        actionButtons={
+          <>
+            <Button
+              onClick={handleCloseConfirmDialog}
+              variant={ButtonVariant.SECONDARY}
+              label="Annuler"
+            />
+            <Button onClick={handleFormSubmit} label="Continuer" />
+          </>
+        }
       >
         <p>
           En sélectionnant un logiciel, vous l’autorisez à créer des offres
@@ -111,7 +114,7 @@ export const StocksProviderForm = ({
           color={ButtonColor.NEUTRAL}
           label="Visitez notre FAQ pour plus d’informations"
         />
-      </ConfirmDialog>
+      </SimpleModal>
     </>
   )
 }
