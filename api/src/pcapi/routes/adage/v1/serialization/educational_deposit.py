@@ -1,38 +1,37 @@
+import datetime
 import typing
 
-from pcapi.core.educational import schemas
+import pydantic
+
+from pcapi.routes.serialization import HttpBodyModel
 
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import EducationalDeposit
 
 
-class EducationalDepositResponse(schemas.AdageBaseResponseModel):
+class EducationalDepositPeriodResponseV2(HttpBodyModel):
+    start: datetime.datetime
+    end: datetime.datetime
+
+
+class EducationalDepositResponse(HttpBodyModel):
     uai: str
     deposit: float
     isFinal: bool
-    period: schemas.EducationalDepositPeriodResponse
+    period: EducationalDepositPeriodResponseV2
+
+    @classmethod
+    def build(cls, deposit: "EducationalDeposit") -> typing.Self:
+        return cls(
+            deposit=float(deposit.amount),
+            uai=deposit.educationalInstitution.institutionId,
+            isFinal=deposit.isFinal,
+            period=EducationalDepositPeriodResponseV2(start=deposit.period.lower, end=deposit.period.upper),
+        )
 
 
-class EducationalDepositsResponse(schemas.AdageBaseResponseModel):
+class EducationalDepositsResponse(HttpBodyModel):
     deposits: list[EducationalDepositResponse]
 
-    class Config:
-        title = "List of deposit"
-
-
-def serialize_educational_deposits(
-    educational_deposits: list["EducationalDeposit"],
-) -> list[EducationalDepositResponse]:
-    return [serialize_educational_deposit(educational_deposit) for educational_deposit in educational_deposits]
-
-
-def serialize_educational_deposit(educational_deposit: "EducationalDeposit") -> EducationalDepositResponse:
-    return EducationalDepositResponse(
-        deposit=float(educational_deposit.amount),
-        uai=educational_deposit.educationalInstitution.institutionId,
-        isFinal=educational_deposit.isFinal,
-        period=schemas.EducationalDepositPeriodResponse(
-            start=educational_deposit.period.lower, end=educational_deposit.period.upper
-        ),
-    )
+    model_config = pydantic.ConfigDict(title="List of deposit")
