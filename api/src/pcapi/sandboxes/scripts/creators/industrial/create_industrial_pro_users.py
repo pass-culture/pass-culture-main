@@ -33,7 +33,7 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     pro_adage_eligible = users_factories.ProFactory.create(
         lastName="PC Test Pro",
         firstName="97 0",
-        departementCode="97",
+        departementCode="971",
         postalCode="97100",
         email="pro_adage_eligible@example.com",
     )

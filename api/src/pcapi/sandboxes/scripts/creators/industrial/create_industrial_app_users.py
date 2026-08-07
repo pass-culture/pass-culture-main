@@ -29,7 +29,7 @@ from pcapi.utils import date as date_utils
 logger = logging.getLogger(__name__)
 
 
-DEPARTEMENT_CODES = ["93", "97"]
+DEPARTEMENT_CODES = ["93", "971"]
 BENEFICIARIES_TAGS = [
     "has-filled-cultural-survey",
     "has-booked-some",
@@ -83,7 +83,7 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             firstName="PC Test Jeune",
             lastName=f"{departement_code} {short_tag} {deposit_version}",
             needsToFillCulturalSurvey=False,
-            postalCode="{}100".format(departement_code),
+            postalCode=f"{departement_code:0<5}",
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
@@ -138,7 +138,7 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
             firstName="PC Test Mineur",
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=False,
-            postalCode="{}100".format(departement_code),
+            postalCode=f"{departement_code:0<5}",
             deposit__source="sandbox",
         )
 
@@ -187,7 +187,7 @@ def create_industrial_app_other_users() -> dict[str, User]:
             firstName="PC Test Utilisateur",
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
-            postalCode="{}100".format(departement_code),
+            postalCode=f"{departement_code:0<5}",
         )
 
         user_key = f"jeune{departement_code} {tag}"
@@ -227,7 +227,7 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
             roles=[],
             lastName=f"{short_age}",
             needsToFillCulturalSurvey=True,
-            postalCode="{}100".format(departement_code),
+            postalCode=f"{departement_code:0<5}",
         )
         user_key = f"grandpublic{age}"
         users_by_name[user_key] = user
