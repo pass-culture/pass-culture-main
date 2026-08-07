@@ -29,7 +29,7 @@ jobs:
           cache: pnpm
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
           cache-dependency-path: "${{ inputs.doc-api-entrypoint }}/pnpm-lock.yaml"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@afae2577022181fccdaead9537235886c461f36a
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@6483091347df28b22c7b10d39bb6e3e058d7278a
       - name: "Build documentation"
         run: |
           set -e
