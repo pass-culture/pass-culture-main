@@ -64,7 +64,7 @@ MENU_SECTIONS = [
         all_items=[
             MenuItem(
                 label="Jeunes bénéficiaires ou à venir",
-                url_name="backoffice_web.public_accounts.search_public_accounts",
+                url_name="backoffice_web.public_accounts.list_public_accounts",
                 permissions=["READ_PUBLIC_ACCOUNT"],
             ),
             MenuItem(
