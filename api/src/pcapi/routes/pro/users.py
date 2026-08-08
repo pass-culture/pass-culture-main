@@ -18,6 +18,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
@@ -71,7 +72,15 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 
     try:
         new_user = users_api.create_pro_user(body)
-        users_api.create_and_send_signup_email_confirmation(new_user)
+        structure_simulation_infos = None
+        if body.structure_simulation_infos is not None:
+            structure_simulation_infos = offerers_models.StructureSimulationInfos(
+                activity=offerers_models.Activity[body.structure_simulation_infos.activity.name],
+                is_open_to_public=body.structure_simulation_infos.is_open_to_public,
+                siret=body.structure_simulation_infos.siret,
+                targets=body.structure_simulation_infos.targets,
+            )
+        users_api.create_and_send_signup_email_confirmation(new_user, structure_simulation_infos)
     except users_exceptions.UserAlreadyExistsException:
         user = users_repo.find_user_by_email(body.email)
         assert user

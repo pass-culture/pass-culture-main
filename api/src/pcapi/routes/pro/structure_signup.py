@@ -189,6 +189,10 @@ def send_signup_simulation_summary(body: sirene_serialize.SignupSimulationSummar
         targets=body.targets,
         activity=activity,
     )
+
+    if settings.IS_DEV or settings.IS_TESTING:
+        logger.info("Link for signup simulation summary: %s", signup_link)
+
     eligibility_documents = structure_signup_api.get_signup_documents_and_messages(
         ape_code=data.ape_code,
         legal_category_code=data.legal_category_code,

@@ -296,6 +296,13 @@ DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
 )
 
 
+class StructureSimulationInfos(typing.TypedDict):
+    siret: str
+    is_open_to_public: bool
+    targets: list[TargetAudience]
+    activity: Activity
+
+
 class VenueState(enum.Enum):
     CLOSED = "CLOSED"
     CLOSING = "CLOSING"
