@@ -4,10 +4,8 @@ import { useBlocker, useLocation, useNavigate } from 'react-router'
 
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
+import { SimpleModal } from '@/design-system/SimpleModal/SimpleModal'
 import strokeErrorIcon from '@/icons/stroke-error.svg'
-import { Dialog } from '@/ui-kit/Dialog/Dialog'
-
-import styles from './useFormNavigationGuard.module.scss'
 
 /** @link https://app.notion.com/p/passcultureapp/Modale-de-pr-vention-de-changement-de-page-sur-les-formulaires-non-sauvegard-s-38bad4e0ff9880a89338f302f1361f38 */
 export const useFormNavigationGuard = <
@@ -149,28 +147,32 @@ export const useFormNavigationGuard = <
   }
 
   const navigationGuardDialog = (
-    <Dialog
-      explanation="Vous avez des modifications non enregistrées. Voulez-vous les sauvegarder avant de quitter cette page ?"
-      icon={strokeErrorIcon}
-      onCancel={close}
+    <SimpleModal
+      iconPath={strokeErrorIcon}
       onClose={close}
-      open={blocker.state !== 'unblocked'}
+      isOpen={blocker.state !== 'unblocked'}
       title="Des modifications ont été apportées à cette page"
+      actionButtons={
+        <>
+          <Button
+            isLoading={isSubmitting}
+            label="Ignorer les modifications"
+            onClick={leaveWithoutSubmitting}
+            variant={ButtonVariant.SECONDARY}
+          />
+          <Button
+            isLoading={isSubmitting}
+            label="Enregistrer et quitter"
+            onClick={navigationGuardedSubmitHandler}
+          />
+        </>
+      }
     >
-      <div className={styles['confirm-dialog-actions']}>
-        <Button
-          isLoading={isSubmitting}
-          label="Ignorer les modifications"
-          onClick={leaveWithoutSubmitting}
-          variant={ButtonVariant.SECONDARY}
-        />
-        <Button
-          isLoading={isSubmitting}
-          label="Enregistrer et quitter"
-          onClick={navigationGuardedSubmitHandler}
-        />
-      </div>
-    </Dialog>
+      <p>
+        Vous avez des modifications non enregistrées. Voulez-vous les
+        sauvegarder avant de quitter cette page ?
+      </p>
+    </SimpleModal>
   )
 
   return {

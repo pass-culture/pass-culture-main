@@ -38,7 +38,7 @@ export interface IndividualOfferLocationScreenProps {
 export const IndividualOfferLocationScreen = ({
   offer,
 }: IndividualOfferLocationScreenProps) => {
-  const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
+  const [isSaving, setIsSaving] = useState(false)
   const updateWarningDialogDeferredCallRef = useRef<
     ((shouldSendMail: boolean | null) => void) | null
   >(null)
@@ -101,7 +101,16 @@ export const IndividualOfferLocationScreen = ({
       }
     }
 
-    return await save({ formValues, shouldSendMail: shouldSendMail ?? false })
+    // This state is used to disable the action bar buttons while the save is in progress,
+    // we cannot use the form's isSubmitting state because it disables the button even when cancelling the dialog
+    // which conduct to loosing the focus on the button
+    setIsSaving(true)
+    try {
+      await save({ formValues, shouldSendMail: shouldSendMail ?? false })
+      return true
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const afterSubmitPath = getAfterSubmitPath({
@@ -144,15 +153,16 @@ export const IndividualOfferLocationScreen = ({
 
   return (
     <>
-      {isUpdateWarningDialogOpen && (
-        <UpdateWarningDialog
-          onCancel={() => updateWarningDialogDeferredCallRef.current?.(null)}
-          onConfirm={(shouldSendMail) =>
-            updateWarningDialogDeferredCallRef.current?.(shouldSendMail)
-          }
-          refToFocusOnClose={saveEditionChangesButtonRef}
-        />
-      )}
+      <UpdateWarningDialog
+        onCancel={() => {
+          setIsUpdateWarningDialogOpen(false)
+          updateWarningDialogDeferredCallRef.current?.(null)
+        }}
+        onConfirm={(shouldSendMail) =>
+          updateWarningDialogDeferredCallRef.current?.(shouldSendMail)
+        }
+        isOpen={isUpdateWarningDialogOpen}
+      />
 
       <FormProvider key={JSON.stringify(initialValues)} {...form}>
         <form onSubmit={navigationGuardedSubmitHandler}>
@@ -171,7 +181,7 @@ export const IndividualOfferLocationScreen = ({
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION}
             isDisabled={
-              form.formState.isSubmitting ||
+              isSaving ||
               isOfferDisabled(offer) ||
               !!hasPublishedOfferWithSameEan ||
               (isOfferExposureEnabled &&
@@ -180,7 +190,6 @@ export const IndividualOfferLocationScreen = ({
               isVenueClosed
             }
             dirtyForm={form.formState.isDirty}
-            saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           />
         </form>
       </FormProvider>

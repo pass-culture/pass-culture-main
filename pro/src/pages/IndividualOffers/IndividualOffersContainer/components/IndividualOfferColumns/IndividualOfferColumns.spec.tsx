@@ -160,7 +160,7 @@ describe('getIndividualOfferColumns', () => {
       isRefactoFutureOfferEnabled: false,
       headlineOffer,
     })
-    expect(await screen.findByText(/Offre à la une/i)).toBeInTheDocument()
+    expect(await screen.findByText('Offre à la une')).toBeInTheDocument()
   })
 
   it('renders bookings column if refacto feature is enabled', async () => {

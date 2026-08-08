@@ -18,7 +18,6 @@ interface ActionBarLeftProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   publicationMode?: 'later' | 'now'
-  saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement | null>
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
 }
 
@@ -28,7 +27,6 @@ export const ActionBarLeft = ({
   mode,
   onClickNext,
   onClickPrevious,
-  saveEditionChangesButtonRef,
   step,
 }: Readonly<ActionBarLeftProps>) => {
   const { logEvent } = useAnalytics()
@@ -92,7 +90,6 @@ export const ActionBarLeft = ({
           onClickNext?.()
         }}
         disabled={isDisabled}
-        ref={saveEditionChangesButtonRef}
         label="Enregistrer les modifications"
       />
     </>

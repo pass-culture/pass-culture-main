@@ -76,6 +76,33 @@ beforeEach(() => {
   document.body.style.pointerEvents = ''
 })
 
+// Mock the dialog behavior not implemented in jsdom (showModal, close, open attribute)
+// we mock globally so we don't need it in each test
+let originalShowModal: typeof HTMLDialogElement.prototype.showModal
+let originalClose: typeof HTMLDialogElement.prototype.close
+
+beforeAll(() => {
+  originalShowModal = HTMLDialogElement.prototype.showModal
+  HTMLDialogElement.prototype.showModal = vi.fn(function (
+    this: HTMLDialogElement
+  ) {
+    this.open = true
+    this.setAttribute('open', '')
+  })
+
+  originalClose = HTMLDialogElement.prototype.close
+  HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+    this.open = false
+    this.removeAttribute('open')
+    this.dispatchEvent(new Event('close'))
+  })
+})
+
+afterAll(() => {
+  HTMLDialogElement.prototype.showModal = originalShowModal
+  HTMLDialogElement.prototype.close = originalClose
+})
+
 // jsdom logs `Not implemented: navigation to another Document` whenever a test triggers a real navigation.
 // These are inherent jsdom limitations (https://github.com/jsdom/jsdom/issues/2112), not actionable test issues,
 // so we strip them at the virtualConsole level rather than hiding `console.error` downstream.
