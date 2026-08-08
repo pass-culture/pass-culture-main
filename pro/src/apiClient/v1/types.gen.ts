@@ -5766,6 +5766,7 @@ export type ProUserCreationBodyV2Model = {
      * Phonenumber
      */
     phoneNumber?: string | null;
+    structureSimulationInfos?: SignupSimulationPayload | null;
     /**
      * Token
      */

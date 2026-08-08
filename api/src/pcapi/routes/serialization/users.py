@@ -7,6 +7,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.routes.serialization import sirene_serialize as sirene_serialization
 from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import validate_phone_number
 from pcapi.utils.email import sanitize_email
@@ -61,6 +62,7 @@ class ProUserCreationBodyV2Model(HttpBodyModel):
     phone_number: str | None = None
     contact_ok: bool
     token: str
+    structure_simulation_infos: sirene_serialization.SignupSimulationPayload | None = None
 
     @pydantic_v2.field_validator("email", mode="after")
     @classmethod

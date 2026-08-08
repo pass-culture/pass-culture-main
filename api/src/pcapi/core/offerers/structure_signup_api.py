@@ -165,7 +165,7 @@ def get_signup_documents_and_messages(
     return SignupSimulationResult(documents=eligibility_documents, messages=messages)
 
 
-def build_signup_link(
+def build_signup_structure_params(
     siret: str,
     is_open_to_public: bool,
     targets: list[offerers_models.TargetAudience],
@@ -180,5 +180,14 @@ def build_signup_link(
             "activity": activity.name,
         }
     )
-    encoded_params = urlencode(params, doseq=True)
+    return urlencode(params, doseq=True)
+
+
+def build_signup_link(
+    siret: str,
+    is_open_to_public: bool,
+    targets: list[offerers_models.TargetAudience],
+    activity: offerers_models.Activity,
+) -> str:
+    encoded_params = build_signup_structure_params(siret, is_open_to_public, targets, activity)
     return f"{settings.PRO_URL}/inscription/compte/creation?{encoded_params}"
