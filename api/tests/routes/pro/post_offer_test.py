@@ -232,12 +232,6 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch offer meta data
     success_num_queries += 1  # fetch highlight requests
     success_num_queries += 1  # fetch cultural outreach
-    success_num_queries += 1  # fetch user
-    success_num_queries += 2  # fetch offerer + selectinload on eductional_domain
-    success_num_queries += 1  # check national program (?)
-    success_num_queries += 1  # check venue has collective offers (?)
-    success_num_queries += 1  # check offer regarding offer status (?)
-    success_num_queries += 1  # check offer's venue has at least one cancelled booking (?)
 
 
 class CreateThingsTest(CreateOfferBase):

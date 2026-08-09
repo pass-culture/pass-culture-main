@@ -58,11 +58,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     base_num_queries += 1  # select mediation
     base_num_queries += 1  # select price category
     base_num_queries += 1  # select offer's meta data
-    base_num_queries += 1  # select user
-    base_num_queries += 2  # select offerer/venue/bank account/... + selectinload on educational_domains
-    base_num_queries += 2  # select existing collective offers (x2) on venue
-    base_num_queries += 1  # select existing active offers on venue
-    base_num_queries += 1  # select existing non cancelled bookings
 
     num_queries_location_type_venue = base_num_queries
     num_queries_location_type_address_existing = base_num_queries
